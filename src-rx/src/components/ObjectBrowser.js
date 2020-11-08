@@ -14,7 +14,6 @@ import copy from '@iobroker/adapter-react/Components/copy-to-clipboard';
 import withStyles from '@material-ui/core/styles/withStyles';
 
 import IconButton from '@material-ui/core/IconButton';
-import Toolbar from '@material-ui/core/Toolbar';
 import withWidth from '@material-ui/core/withWidth';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -74,13 +73,14 @@ import IconCheck from '@material-ui/icons/Check';
 import IconAdapter from '../icons/IconAdapter';
 import IconAlias from '../icons/IconAlias';
 import IconChannel from '../icons/IconChannel';
-import IconClosed from '../icons/IconClosed';
 import IconCopy from '../icons/IconCopy';
 import IconDevice from '../icons/IconDevice';
 import IconDocument from '../icons/IconDocument';
 import IconInstance from '../icons/IconInstance';
-import IconOpen from '../icons/IconOpen';
 import IconState from '../icons/IconState';
+
+import { FaFolder as IconClosed } from 'react-icons/fa';
+import { FaFolderOpen as IconOpen } from 'react-icons/fa';
 
 import { ICON_SIZE } from '../icons';
 
@@ -1181,13 +1181,11 @@ const ITEM_IMAGES = {
     script: <IconScript className="itemIcon" />,
 };
 
-const StyledBadge = withStyles((theme) => ({
+const StyledBadge = withStyles(theme => ({
     badge: {
-        right: 3,
-        top: 3,
         border: `2px solid ${theme.palette.background.paper}`,
-        padding: '0 4px',
-    },
+        padding: '0 4px'
+    }
 }))(Badge);
 
 const SCREEN_WIDTHS = {
@@ -2096,21 +2094,59 @@ class ObjectBrowser extends Component {
     }
 
     getToolbar() {
-        return <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar">
-            { this.props.showExpertButton ? <IconButton key="expertMode" variant="contained" className={ this.props.classes.toolbarButtons } color={ this.state.filter.expertMode ? 'secondary' : 'default' } onClick={ () => this.onFilter('expertMode', !this.state.filter.expertMode) }><IconExpert /></IconButton>: null }
-
-            { !this.props.disableColumnSelector ? <IconButton key="columnSelector" variant="contained" className={ this.props.classes.toolbarButtons } onClick={ () => this.setState({columnsSelectorShow: true}) }><IconColumns /></IconButton>: null }
-            { this.state.expandAllVisible ? <IconButton key="expandAll"  variant="contained" className={ this.props.classes.toolbarButtons } onClick={ () => this.onExpandAll() }><IconOpen /></IconButton> : null }
-            <IconButton key="collapseAll"     variant="contained" className={ this.props.classes.toolbarButtons } onClick={ () => this.onCollapseAll() }>
-                <IconClosed/>
-            </IconButton>
-            <StyledBadge badgeContent={ this.state.depth } color="secondary">
-                <IconButton key="expandVisible"   variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={ () => this.onExpandVisible() }><IconOpen /></IconButton>
-            </StyledBadge>
-            <StyledBadge badgeContent={ this.state.depth } color="secondary">
-                <IconButton key="collapseVisible" variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={ () => this.onCollapseVisible() }><IconClosed /></IconButton>
-            </StyledBadge>
-        </Toolbar>;
+        return (
+            <>
+                { this.props.showExpertButton &&
+                    <IconButton
+                        key="expertMode"
+                        color={ this.state.filter.expertMode ? 'secondary' : 'default' }
+                        onClick={ () => this.onFilter('expertMode', !this.state.filter.expertMode) }
+                    >
+                        <IconExpert />
+                    </IconButton>
+                }
+                { !this.props.disableColumnSelector &&
+                    <IconButton
+                        key="columnSelector"
+                        onClick={ () => this.setState({columnsSelectorShow: true}) }
+                    >
+                        <IconColumns />
+                    </IconButton>
+                }
+                { this.state.expandAllVisible &&
+                    <IconButton
+                        key="expandAll"
+                        onClick={ () => this.onExpandAll() }
+                    >
+                        <IconOpen />
+                    </IconButton>
+                }
+                <IconButton
+                    key="collapseAll"
+                    onClick={ () => this.onCollapseAll() }
+                >
+                    <IconClosed/>
+                </IconButton>
+                <IconButton
+                    key="expandVisible"
+                    color="primary"
+                    onClick={ () => this.onExpandVisible() }
+                >
+                    <StyledBadge badgeContent={ this.state.depth } color="secondary">
+                        <IconOpen />
+                    </StyledBadge>
+                </IconButton>
+                <IconButton
+                    key="collapseVisible"
+                    color="primary"
+                    onClick={ () => this.onCollapseVisible() }
+                >
+                    <StyledBadge badgeContent={ this.state.depth } color="secondary">
+                        <IconClosed />
+                    </StyledBadge>
+                </IconButton>
+            </>
+        );
     }
 
     toggleExpanded(id) {
