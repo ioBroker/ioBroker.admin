@@ -90,7 +90,7 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 4.1.11 (2020-11-22)
 * (theimo1221) Prevent Duplicate Event Handling on Dropdown Checkboxes
 * (paul53) fix Objects dialog
 
@@ -106,17 +106,6 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 ### 4.1.5 (2020-07-26)
 * (ldittmar) Add option to check for active/inactive instances and uuid-hash
 * (Apollon77) prevent Sentry crash IOBROKER-ADMIN-Z
-
-### 4.1.3 (2020-07-25)
-* (bluefox) Added binary state read and write
-* (bluefox) small fixes
-
-### 4.0.10 (2020-05-14)
-* (bluefox/Apollon77) Caught the web server errors
-* (Apollon77) Prepare for js-controller 3.0 release
-
-### 4.0.9 (2020-04-19)
-* (Apollon77) Fix password encryption logics and make compatible to js-controller 3.x again
 
 ## License
 

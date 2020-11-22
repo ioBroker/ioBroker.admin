@@ -2,8 +2,20 @@
     "common": {
         "name": "admin",
         "title": "Admin",
-        "version": "4.1.10",
+        "version": "4.1.11",
         "news": {
+            "4.1.11": {
+                "en": "Prevent Duplicate Event Handling on Dropdown Checkboxes\nfix Objects dialog",
+                "de": "Verhindern Sie die Behandlung doppelter Ereignisse in Dropdown-Kontrollkästchen\nDialogfeld \"Objekte reparieren\"",
+                "ru": "Предотвращение повторяющейся обработки событий в выпадающих флажках\nдиалог исправлений объектов",
+                "pt": "Impedir manipulação de eventos duplicados em caixas de seleção suspensas\ndiálogo de correção de objetos",
+                "nl": "Voorkom dubbele gebeurtenisafhandeling in vervolgkeuzevakjes\nFix Objecten dialoogvenster",
+                "fr": "Empêcher la gestion des événements en double dans les cases à cocher déroulantes\nboîte de dialogue Fix Objects",
+                "it": "Impedisci la gestione di eventi duplicati nelle caselle di controllo a discesa\nfinestra di dialogo di correzione degli oggetti",
+                "es": "Evitar el manejo de eventos duplicados en casillas de verificación desplegables\ncuadro de diálogo reparar objetos",
+                "pl": "Zapobiegaj obsłudze zduplikowanych zdarzeń w rozwijanych polach wyboru\nNaprawianie obiektów",
+                "zh-cn": "防止下拉复选框上的重复事件处理\n修复对象对话框"
+            },
             "4.1.10": {
                 "en": "Corrected the icons of the custom tabs",
                 "de": "Die Symbole der benutzerdefinierten Registerkarten wurden korrigiert",

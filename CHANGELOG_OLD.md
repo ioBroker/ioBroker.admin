@@ -1,3 +1,14 @@
+## 4.1.3 (2020-07-25)
+* (bluefox) Added binary state read and write
+* (bluefox) small fixes
+
+## 4.0.10 (2020-05-14)
+* (bluefox/Apollon77) Caught the web server errors
+* (Apollon77) Prepare for js-controller 3.0 release
+
+## 4.0.9 (2020-04-19)
+* (Apollon77) Fix password encryption logics and make compatible to js-controller 3.x again
+
 ## 4.0.8 (2020-04-18)
 * (bluefox) The attempt to process error by the gz log show.
 * (bluefox) Implement new automatic encryption/decryption for js-controller 3.0
