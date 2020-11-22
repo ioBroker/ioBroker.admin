@@ -28,7 +28,7 @@
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
-    "express-fileupload": "^1.1.6",
+    "express-fileupload": "^1.2.0",
     "express-session": "^1.17.1",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
@@ -40,13 +40,13 @@
     "xtend": "^4.0.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.10.5",
+    "@babel/core": "^7.12.7",
     "@alcalzone/release-script": "^1.8.1",
-    "@babel/plugin-transform-arrow-functions": "^7.10.4",
-    "@babel/plugin-transform-block-scoping": "^7.10.5",
-    "@babel/plugin-transform-classes": "^7.10.4",
-    "@babel/plugin-transform-template-literals": "^7.10.5",
-    "@iobroker/testing": "^2.2.0",
+    "@babel/plugin-transform-arrow-functions": "^7.12.1",
+    "@babel/plugin-transform-block-scoping": "^7.12.1",
+    "@babel/plugin-transform-classes": "^7.12.1",
+    "@babel/plugin-transform-template-literals": "^7.12.1",
+    "@iobroker/testing": "^2.3.0",
     "ansi-colors": "^4.1.1",
     "chai": "^4.2.0",
     "fancy-log": "^1.3.3",
@@ -60,7 +60,7 @@
     "gulp-sourcemaps": "^2.6.5",
     "gulp-terser": "^1.2.1",
     "materialize-css": "^1.0.0",
-    "mocha": "^8.0.1"
+    "mocha": "^8.2.1"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.admin/issues"

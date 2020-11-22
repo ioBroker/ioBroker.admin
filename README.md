@@ -89,6 +89,11 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
+
+### __WORK IN PROGRESS__
+* (theimo1221) Prevent Duplicate Event Handling on Dropdown Checkboxes
+* (paul53) fix Objects dialog
+
 ### 4.1.10 (2020-10-08)
 * (bluefox) Corrected the icons of the custom tabs. 
 
