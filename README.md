@@ -92,6 +92,16 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 ### 5.0.0 (2020-09_23)
 * (bluefox) The tile view implemented for the file browser
 
+### 4.1.11 (2020-11-22)
+* (theimo1221) Prevent Duplicate Event Handling on Dropdown Checkboxes
+* (paul53) fix Objects dialog
+
+### 4.1.10 (2020-10-08)
+* (bluefox) Corrected the icons of the custom tabs. 
+
+### 4.1.8 (2020-09-03)
+* (bluefox) Fixed editing of the objects with % sign in the ID. 
+
 ### 4.1.6 (2020-07-26)
 * (Apollon77) Increased the socket ping Interval and Timeout to maybe prevent the too fast reconnect attempts.
 
