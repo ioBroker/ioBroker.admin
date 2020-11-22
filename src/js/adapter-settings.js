@@ -421,10 +421,13 @@ function preInit () {
                         M.updateTextFields();
 
                         // workaround for materialize checkbox problem
-                        $('input[type="checkbox"]+span').off('click').on('click', function () {
+                        $('input[type="checkbox"]+span').off('click').on('click', function (event) {
                             var $input = $(this).prev();
                             if (!$input.prop('disabled')) {
                                 $input.prop('checked', !$input.prop('checked')).trigger('change');
+				// prevent propagation to prevent original handling from reverting our value change
+			    	event.preventDefault();
+			    	event.stopImmediatePropagation();
                             }
                         });
                     }
