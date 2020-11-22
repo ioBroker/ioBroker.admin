@@ -133,7 +133,7 @@ function Objects(main) {
 
         $dialogNewObject.find('#object-tab-new-object-type').on('change', function () {
             if ($(this).val() === 'state') {
-                $dialogNewObject.find('.object-tabe-new-object-tr').show();
+                $dialogNewObject.find('.object-tab-new-object-tr').show();
             } else {
                 $dialogNewObject.find('.object-tab-new-object-tr').hide();
             }
