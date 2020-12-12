@@ -620,7 +620,7 @@ function Enums(main) {
         } else {
             var parts = id.split('.');
             name = parts.pop();
-            name = name[0].toUpperCase() + name.substring(1).toLowerCase();
+            name = name ? name[0].toUpperCase() + name.substring(1).toLowerCase() : '__noname__';
         }
         return name;
     }
@@ -1029,11 +1029,11 @@ function Enums(main) {
         }
         return items;
     }
-    
+
     function deleteEnum(id) {
         if (that.main.objects[id].type === 'enum') {
             var children = getEnumsChildren(id);
-            
+
             if (children && children.length) {
                 // ask if only object must be deleted or just this one
                 that.main.confirmMessage(_('All sub-enums of %s will be deleted too?', id), null, 'help', function (result) {
@@ -1062,7 +1062,7 @@ function Enums(main) {
             }
         }
     }
-    
+
     function removeMember(id, parent) {
         that.main.socket.emit('getObject', parent, function (err, obj) {
             if (obj && obj.common && obj.common.members) {
@@ -1104,7 +1104,7 @@ function Enums(main) {
             }
         });
     }
-    
+
     function showMessage(text, duration, isError) {
         if (typeof duration === 'boolean') {
             isError = duration;

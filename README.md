@@ -88,7 +88,15 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/garage.svg" height="48" /> - designed by [Pause08](https://www.flaticon.com/authors/Pause08) from [Flaticon](https://www.flaticon.com/)
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
+<!--
+	Placeholder for the next version (at the beginning of the line):
+	### __WORK IN PROGRESS__
+-->
+
 ## Changelog
+
+### 4.1.12 (2020-12-12)
+* (bluefox) Corrected the error with empty names in enums
 
 ### 4.1.11 (2020-11-22)
 * (theimo1221) Prevent Duplicate Event Handling on Dropdown Checkboxes
@@ -102,10 +110,6 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 
 ### 4.1.6 (2020-07-26)
 * (Apollon77) Increased the socket ping Interval and Timeout to maybe prevent the too fast reconnect attempts.
-
-### 4.1.5 (2020-07-26)
-* (ldittmar) Add option to check for active/inactive instances and uuid-hash
-* (Apollon77) prevent Sentry crash IOBROKER-ADMIN-Z
 
 ## License
 

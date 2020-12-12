@@ -1,3 +1,7 @@
+## 4.1.5 (2020-07-26)
+* (ldittmar) Add option to check for active/inactive instances and uuid-hash
+* (Apollon77) prevent Sentry crash IOBROKER-ADMIN-Z
+
 ## 4.1.3 (2020-07-25)
 * (bluefox) Added binary state read and write
 * (bluefox) small fixes

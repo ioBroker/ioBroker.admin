@@ -414,7 +414,7 @@ $(document).ready(function () {
                 let name = '';
                 if (!obj || !obj.common || !obj.common.name) {
                     name = main.currentUser.replace(/^system\.user\./);
-                    name = name[0].toUpperCase() + name.substring(1).toLowerCase();
+                    name = name ? name[0].toUpperCase() + name.substring(1).toLowerCase() : '__noname__';
                 } else {
                     name = translateName(obj.common.name);
                 }

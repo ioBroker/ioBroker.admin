@@ -1070,7 +1070,7 @@ function fillUsers(elemId, current, callback) {
         for (var u in users) {
             if (users.hasOwnProperty(u)) {
                 var id = users[u]._id.substring(len);
-                text += '<option value="' + id + '" ' + (current === id ? 'selected' : '') + ' >' + u[0].toUpperCase() + u.substring(1)  + '</option>\n';
+                text += '<option value="' + id + '" ' + (current === id ? 'selected' : '') + ' >' + (u ? u[0].toUpperCase() + u.substring(1) : '__noname__')  + '</option>\n';
             }
         }
         $(elemId).html(text);

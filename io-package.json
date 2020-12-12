@@ -2,8 +2,20 @@
     "common": {
         "name": "admin",
         "title": "Admin",
-        "version": "4.1.11",
+        "version": "4.1.12",
         "news": {
+            "4.1.12": {
+                "en": "Corrected the error with empty names in enums",
+                "de": "Der Fehler mit leeren Namen in Aufzählungen wurde behoben",
+                "ru": "Исправлена ошибка с пустыми именами в перечислениях",
+                "pt": "Corrigido o erro com nomes vazios em enums",
+                "nl": "Fout gecorrigeerd met lege namen in enums",
+                "fr": "Correction de l'erreur avec des noms vides dans les énumérations",
+                "it": "Corretto l'errore con nomi vuoti nelle enumerazioni",
+                "es": "Se corrigió el error con nombres vacíos en enumeraciones.",
+                "pl": "Poprawiono błąd z pustymi nazwami w wyliczeniach",
+                "zh-cn": "纠正了枚举中带有空名称的错误"
+            },
             "4.1.11": {
                 "en": "Prevent Duplicate Event Handling on Dropdown Checkboxes\nfix Objects dialog",
                 "de": "Verhindern Sie die Behandlung doppelter Ereignisse in Dropdown-Kontrollkästchen\nDialogfeld \"Objekte reparieren\"",
