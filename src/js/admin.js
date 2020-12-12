@@ -576,6 +576,11 @@ $(document).ready(function () {
 
     let firstConnect     = true;
 
+    const d = new Date();
+    if (d.getMonth() === 11 || (d.getMonth() === 0 && d.getDate() < 15)) {
+        $('.main-logo').attr('src', 'img/iobroker-logo-small-ny.png');
+    }
+
     // detect touch devices
     if (!('ontouchstart' in window || navigator.maxTouchPoints)) {
         $('body').addClass('desktop-screen');
