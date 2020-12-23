@@ -62,6 +62,7 @@ function Readme(main) {
         html = html.replace(/href="(\S*).md/g, function (match) {
             return 'href="" class="md-link" data-url="' + that.mainUrl + match.replace('href="', '');
         });
+        html = html.replace(/<!--[^>]*-->/g, '\n');
         return html.replace(/href="http/g, 'target="_blank" href="http');
     }
 

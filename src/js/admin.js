@@ -414,7 +414,7 @@ $(document).ready(function () {
                 let name = '';
                 if (!obj || !obj.common || !obj.common.name) {
                     name = main.currentUser.replace(/^system\.user\./);
-                    name = name[0].toUpperCase() + name.substring(1).toLowerCase();
+                    name = name ? name[0].toUpperCase() + name.substring(1).toLowerCase() : '__noname__';
                 } else {
                     name = translateName(obj.common.name);
                 }
@@ -576,6 +576,11 @@ $(document).ready(function () {
 
     let firstConnect     = true;
 
+    const d = new Date();
+    if (d.getMonth() === 11 || (d.getMonth() === 0 && d.getDate() < 15)) {
+        $('.main-logo').attr('src', 'img/iobroker-logo-small-ny.png');
+    }
+
     // detect touch devices
     if (!('ontouchstart' in window || navigator.maxTouchPoints)) {
         $('body').addClass('desktop-screen');
@@ -620,15 +625,15 @@ $(document).ready(function () {
 
     function initHtmlButtons() {
         main.socket.emit('getVersion', function (err, version) {
-            var $versionBtn = $('.button-version');
+			const $versionBtn = $('.button-version');
             if (!$versionBtn.hasClass('vendor')) {
                 $versionBtn.text('ioBroker.admin ' + version);
             }
         });
 
         $('.choose-tabs-config-button').off('click').on('click', function(event) {
-            var $dialog = $('#admin_sidemenu_dialog');
-            var html = $dialog.html();
+            const $dialog = $('#admin_sidemenu_dialog');
+            const html = $dialog.html();
             if (html) {
                 $dialog.html('');
                 // disable global handler
@@ -639,8 +644,8 @@ $(document).ready(function () {
                 // enable global handler
                 $('html').on('click', globalClickHandler);
             }, 100);
-            var $e = $(event.target);
-            var offs = $e.offset();
+            const $e = $(event.target);
+            const offs = $e.offset();
             offs.top += $e.height() - 2;
 
             let text =
@@ -648,10 +653,10 @@ $(document).ready(function () {
                 '<div>' +
                 '<ul style="">';
 
-            var $lis = $adminSideMenu;
-            for (var tid in allTabs) {
-                var name = allTabs[tid];
-                var found = $adminSideMenu.find('.admin-sidemenu-items[data-tab="' + tid + '"]').length;
+            const $lis = $adminSideMenu;
+            for (const tid in allTabs) {
+                const name = allTabs[tid];
+                const found = $adminSideMenu.find('.admin-sidemenu-items[data-tab="' + tid + '"]').length;
                 // TABS
                 /*$adminSideMenu.each(function (i, e) {
                     if (tid === $(e).attr('aria-controls')) {
@@ -659,7 +664,7 @@ $(document).ready(function () {
                         return false;
                     }
                 });*/
-                var id = 'chk-' + tid;
+                const id = 'chk-' + tid;
                 text +=
                     '<li><input ' + (found ? 'checked' : 'unchecked') + ' class="chk-tab filled-in" type="checkbox" id="' + id + '" />' +
                     '<span for="' + id + '">' + _(name) + '</span></id>';
@@ -671,11 +676,11 @@ $(document).ready(function () {
             $dialog.append(text);
 
             $dialog.find('.chk-tab').off('change').on('change', function (event) {
-                var id = $(this).attr('id').substr(4);
+                const id = $(this).attr('id').substr(4);
                 if ($(this).prop('checked')) {
                     main.systemConfig.common.tabs.push(id);
                 } else {
-                    var pos = main.systemConfig.common.tabs.indexOf(id);
+                    const pos = main.systemConfig.common.tabs.indexOf(id);
                     if (id !== -1) {
                         main.systemConfig.common.tabs.splice(pos, 1);
                     }
@@ -685,7 +690,7 @@ $(document).ready(function () {
             });
             // workaround for materialize checkbox problem
             $dialog.find('input[type="checkbox"]+span').off('click').on('click', function () {
-                var $input = $(this).prev();
+                const $input = $(this).prev();
                 if (!$input.prop('disabled')) {
                     $input.prop('checked', !$input.prop('checked')).trigger('change');
                 }

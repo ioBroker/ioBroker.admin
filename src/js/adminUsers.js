@@ -86,8 +86,10 @@ function Users(main) {
         that.main.showToast(that.$grid.find('#tab-users-dialog-new'), text, null, duration, isError);
     }
 
-    function firstUpper (str) {
-        if (!str) return str;
+    function firstUpper(str) {
+        if (!str) {
+            return str;
+        }
         return str[0].toUpperCase() + str.substring(1).toLowerCase();
     }
 

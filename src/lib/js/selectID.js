@@ -321,7 +321,8 @@ function filterChanged(e) {
 
             if (data.filter.common && data.filter.common.custom) {
                 if (!data.objects[id].common) return false;
-                var custom = data.objects[id].common.custom;
+                // todo: remove history sometime 09.2016
+                var custom = data.objects[id].common.custom || data.objects[id].common.history;
 
                 if (!custom) return false;
                 if (data.filter.common.custom === true) {

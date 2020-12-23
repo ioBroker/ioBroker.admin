@@ -620,7 +620,7 @@ function Enums(main) {
         } else {
             var parts = id.split('.');
             name = parts.pop();
-            name = name[0].toUpperCase() + name.substring(1).toLowerCase();
+            name = name ? name[0].toUpperCase() + name.substring(1).toLowerCase() : '__noname__';
         }
         return name;
     }

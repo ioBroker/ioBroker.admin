@@ -114,7 +114,7 @@
      * @param {Event} e
      */
     _handleOptionClick(e) {
-      e.preventDefault();
+      //e.preventDefault();
       let option = $(e.target).closest('li')[0];
       let key = option.id;
       if (!$(option).hasClass('disabled') && !$(option).hasClass('optgroup') && key.length) {
