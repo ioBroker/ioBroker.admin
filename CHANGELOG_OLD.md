@@ -1,3 +1,49 @@
+## 4.1.6 (2020-07-26)
+* (Apollon77) Increased the socket ping Interval and Timeout to maybe prevent the too fast reconnect attempts.
+
+## 4.1.5 (2020-07-26)
+* (ldittmar) Add option to check for active/inactive instances and uuid-hash
+* (Apollon77) prevent Sentry crash IOBROKER-ADMIN-Z
+
+## 4.1.3 (2020-07-25)
+* (bluefox) Added binary state read and write
+* (bluefox) small fixes
+
+## 4.1.1 (2020-04-25)
+* (bluefox) Started the development of GUI based on React (only for developers)
+
+## 4.0.10 (2020-05-14)
+* (bluefox/Apollon77) Caught the web server errors
+* (Apollon77) Prepare for js-controller 3.0 release
+
+## 4.0.9 (2020-04-19)
+* (Apollon77) Fix password encryption logics and make compatible to js-controller 3.x again
+
+## 4.0.8 (2020-04-18)
+* (bluefox) The attempt to process error by the gz log show.
+* (bluefox) Implement new automatic encryption/decryption for js-controller 3.0
+* (bluefox) add Sentry for error reporting with js-controller 3.0
+
+## 4.0.5 (2020-02-23)
+* (Apollon77) Workaround for socket.io bug #3555 added to make sure always the correct client files are delivered
+* (Apollon77) remove socket.io-client dep again because we lookup via socket.io lib
+* (klein0r) Added a warning message to Custom/GitHub installs (thanky @ldittmar81 for translations)
+
+## 4.0.4 (2020-02-19)
+* (Apollon77) Fix socket.io-client dependency
+
+## 4.0.3 (2020-02-19)
+* (bluefox) Encrypted configuration was corrected.
+
+## 4.0.2 (2020-02-12)
+* (Apollon77) Downgrade semver to 6.3 to stay compatible with nodejs 8
+
+## 4.0.1 (2020-02-07)
+* (bluefox) Fixed the loading of some adapter configurations
+
+## 4.0.0 (2020-01-15)
+* (Apollon77) upgrade all dependencies, especially socketio to current version! This might break ipad 1/2 devices
+
 ### 3.7.9 (2020-01-28)
 * (bluefox) The log downloading was fixed
 
