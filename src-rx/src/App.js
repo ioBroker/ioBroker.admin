@@ -32,9 +32,6 @@ import Brightness5Icon from '@material-ui/icons/Brightness5';
 import Brightness6Icon from '@material-ui/icons/Brightness6';
 import Brightness7Icon from '@material-ui/icons/Brightness7';
 
-// @material-ui/lab
-import Alert from '@material-ui/lab/Alert';
-
 import ConfirmDialog from './dialogs/ConfirmDialog';
 import CommandDialog from './dialogs/CommandDialog';
 import Drawer from './components/Drawer';
@@ -148,6 +145,15 @@ const styles = theme => ({
     },
     baseSettingsButton: {
         color: 'red',
+    },
+    alert_info: {
+
+    },
+    alert_error: {
+        backgroundColor: '#f44336'
+    },
+    alert_success: {
+        backgroundColor: '#4caf50'
     }
 });
 
@@ -960,11 +966,13 @@ class App extends Router {
                     >
                         { this.getCurrentTab() }
                     </Paper>
-                    <Snackbar open={ this.state.alert } autoHideDuration={ 6000 } onClose={ () => this.handleAlertClose() }>
-                        <Alert onClose={ () => this.handleAlertClose() } variant="filled" severity={ this.state.alertType }>
-                            { this.state.alertMessage }
-                        </Alert>
-                    </Snackbar>
+                    <Snackbar
+                        className={this.props.classes['alert_' + this.state.alertType]}
+                        open={ this.state.alert }
+                        autoHideDuration={ 6000 }
+                        onClose={ () => this.handleAlertClose() }
+                        message={ this.state.alertMessage }
+                    />
                 </Paper>
                 { this.getCurrentDialog() }
                 { this.renderConfirmDialog() }

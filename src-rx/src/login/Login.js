@@ -12,8 +12,6 @@ import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import Alert from '@material-ui/lab/Alert';
-
 function Copyright() {
     return (
         <Typography
@@ -57,7 +55,8 @@ const useStyles = makeStyles(theme => ({
         margin: theme.spacing(3, 0, 2),
     },
     alert: {
-        marginTop: theme.spacing(2)
+        marginTop: theme.spacing(2),
+        backgroundColor: '#f44336',
     }
 }));
 
@@ -71,76 +70,71 @@ export default function Login(props) {
         debugger;
         window.location = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
     }
-    
-    return (
-        <Container component="main" maxWidth="xs" className={ classes.root }>
-            <Paper className={ classes.paper }>
-                <Grid
-                    container
-                    direction="column"
-                    alignItems="center"  
+
+    return <Container component="main" maxWidth="xs" className={ classes.root }>
+        <Paper className={ classes.paper }>
+            <Grid
+                container
+                direction="column"
+                alignItems="center"
+            >
+                { window.loginHideLogo && window.loginHideLogo === 'false' &&
+                    <Avatar className={ classes.avatar } src="img/logo.png" />
+                }
+                <Typography component="h1" variant="h5">
+                    { props.t('loginTitle') }
+                </Typography>
+                { window.location.search.indexOf('error') !== -1 &&
+                    <div className={ classes.alert }>
+                        { props.t('wrongPassword') }
+                    </div>
+                }
+                <form
+                    className={ classes.form }
+                    action={ action }
+                    method="post"
                 >
-                    { window.loginHideLogo && window.loginHideLogo === 'false' &&
-                        <Avatar className={ classes.avatar } src="img/logo.png" />
-                    }
-                    <Typography component="h1" variant="h5">
-                        { props.t('loginTitle') }
-                    </Typography>
-                    { window.location.search.indexOf('error') !== -1 &&
-                        <Alert
-                            severity="error"
-                            className={ classes.alert }
-                        >
-                            { props.t('wrongPassword') }
-                        </Alert>
-                    }
-                    <form
-                        className={ classes.form }
-                        action={ action }
-                        method="post"
+                    <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="username"
+                        label={ props.t('enterLogin') }
+                        name="username"
+                        autoComplete="username"
+                        autoFocus
+                    />
+                    <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="password"
+                        label={ props.t('enterPassword') }
+                        type="password"
+                        id="password"
+                        autoComplete="current-password"
+                    />
+                    <FormControlLabel
+                        control={ <Checkbox id="stayloggedin" name="stayloggedin" value="on" color="primary" /> }
+                        label={ props.t('Stay signed in') }
+                    />
+                    <input id="origin" type="hidden" name="origin" value={ window.location.search.replace('&error', '') }/>
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        className={ classes.submit }
                     >
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="username"
-                            label={ props.t('enterLogin') }
-                            name="username"
-                            autoComplete="username"
-                            autoFocus
-                        />
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="password"
-                            label={ props.t('enterPassword') }
-                            type="password"
-                            id="password"
-                            autoComplete="current-password"
-                        />
-                        <FormControlLabel
-                            control={ <Checkbox id="stayloggedin" name="stayloggedin" value="on" color="primary" /> }
-                            label={ props.t('Stay signed in') }
-                        />
-                        <input id="origin" type="hidden" name="origin" value={ window.location.search.replace('&error', '') }/>
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            className={ classes.submit }
-                        >
-                            { props.t('login') }
-                        </Button>
-                    </form>
-                </Grid>
-                <Box mt={ 8 }>
-                    <Copyright />
-                </Box>
-            </Paper>
-        </Container>
-    );
+                        { props.t('login') }
+                    </Button>
+                </form>
+            </Grid>
+            <Box mt={ 8 }>
+                <Copyright />
+            </Box>
+        </Paper>
+    </Container>;
 }

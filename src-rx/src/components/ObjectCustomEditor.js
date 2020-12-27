@@ -474,21 +474,29 @@ class ObjectCustomEditor extends Component {
             .catch(err => fetch(URL_PREFIX + '/adapter/' + adapter + '/custom.html'))
             .then(data => data.text())
             .catch(err => {
-                console.error('Cannot load template for ' + adapter + ': ' + err);
+                console.error(`Cannot load template for ${adapter}: ${err}`);
                 return null;
             })
             .then(data => {
                 if (data) {
                     let [template, translations] = data.split('<script type="text/javascript">');
-                    translations = translations.replace('</script>', '');
-                    template = template.replace('<script type="text/x-iobroker" data-template-name="' + adapter + '">', '');
-                    template = template.replace('</script>', '');
-                    // eslint-disable-next-line
-                    const addTranslations = new Function('systemDictionary', translations + '\nreturn systemDictionary;');
-                    try {
-                        window.systemDictionary = addTranslations(window.systemDictionary || {});
-                    } catch (e) {
-                        console.error('Cannot add translations for ' + adapter + ': ' + e);
+                    if (template) {
+                        template = template.replace(`<script type="text/x-iobroker" data-template-name="${adapter}">`, '');
+                        template = template.replace('</script>', '');
+                    } else {
+                        console.error(`Cannot find template for ${adapter}`);
+                    }
+
+
+                    if (translations) {
+                        translations = translations.replace('</script>', '');
+                        // eslint-disable-next-line
+                        const addTranslations = new Function('systemDictionary', translations + '\nreturn systemDictionary;');
+                        try {
+                            window.systemDictionary = addTranslations(window.systemDictionary || {});
+                        } catch (e) {
+                            console.error(`Cannot add translations for ${adapter}: ${e}`);
+                        }
                     }
 
                     GLOBAL_TEMPLATES[adapter] = template;

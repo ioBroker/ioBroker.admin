@@ -3,14 +3,15 @@
  *
  * MIT License
  *
+ * To all editors: please merge asap the changes to https://github.com/ioBroker/adapter-react/blob/master/src/Components/ObjectBrowser.js
+ * This file is here only temporary for better debugging
  **/
-import React from 'react';
+import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 import copy from '@iobroker/adapter-react/Components/copy-to-clipboard';
 import withStyles from '@material-ui/core/styles/withStyles';
 
 import IconButton from '@material-ui/core/IconButton';
-import Toolbar from '@material-ui/core/Toolbar';
 import withWidth from '@material-ui/core/withWidth';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -21,7 +22,6 @@ import Grid from '@material-ui/core/Grid';
 import Badge from '@material-ui/core/Badge';
 import Tooltip from '@material-ui/core/Tooltip';
 import Snackbar from '@material-ui/core/Snackbar';
-import Alert from '@material-ui/lab/Alert';
 import Checkbox from '@material-ui/core/Checkbox';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -30,11 +30,11 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Slider from '@material-ui/core/Slider';
@@ -47,7 +47,6 @@ import TabContent from './TabContent';
 import TabHeader from './TabHeader';
 
 // Icons
-import IconExpert from  '@iobroker/adapter-react/Components/ExpertIcon';
 import IconEdit from '@material-ui/icons/Edit';
 import IconDelete from '@material-ui/icons/Delete';
 import IconConfig from '@material-ui/icons/Settings';
@@ -67,10 +66,23 @@ import IconColumns from '@material-ui/icons/ViewColumn';
 import IconClose from '@material-ui/icons/Close';
 import IconCheck from '@material-ui/icons/Check';
 
+import IconExpert from  '@iobroker/adapter-react/icons/IconExpert';
+import IconAdapter from '@iobroker/adapter-react/icons/IconAdapter';
+import IconAlias from '@iobroker/adapter-react/icons/IconAlias';
+import IconChannel from '@iobroker/adapter-react/icons/IconChannel';
+import IconCopy from '@iobroker/adapter-react/icons/IconCopy';
+import IconDevice from '@iobroker/adapter-react/icons/IconDevice';
+import IconDocument from '@iobroker/adapter-react/icons/IconDocument';
+import IconInstance from '@iobroker/adapter-react/icons/IconInstance';
+import IconState from '@iobroker/adapter-react/icons/IconState';
+import IconClosed from '@iobroker/adapter-react/icons/IconClosed';
+import IconOpen from '@iobroker/adapter-react/icons/IconOpen';
+import IconClearFilter from '@iobroker/adapter-react/icons/IconClearFilter';
+
+const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
 const ITEM_LEVEL = ROW_HEIGHT;
 const SMALL_BUTTON_SIZE = 20;
-const ICON_SIZE = 24;
 const COLOR_NAME_SYSTEM = '#ff6d69';
 const COLOR_NAME_SYSTEM_ADAPTER = '#5773ff';
 
@@ -190,7 +202,7 @@ const styles = theme => ({
         padding: 0,
     },
     cellId: {
-        //display: 'inline-block',
+        position: 'relative',
         fontSize: '1rem',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -244,13 +256,13 @@ const styles = theme => ({
         color: 'white',
         width: SMALL_BUTTON_SIZE,
         height: SMALL_BUTTON_SIZE,
-        //position: 'absolute',
-        //top: (ROW_HEIGHT - SMALL_BUTTON_SIZE) / 2,
-        right: 0,
-        opacity: 0.7,
+        top: (ROW_HEIGHT - SMALL_BUTTON_SIZE) / 2,
+        opacity: 0.8,
         '&:hover': {
             opacity: 1,
         },
+        position: 'absolute',
+        right: 3,
     },
     cellEditButton: {
         width: SMALL_BUTTON_SIZE,
@@ -364,10 +376,14 @@ const styles = theme => ({
         height: SMALL_BUTTON_SIZE + 4,
         '&:hover': {
             opacity: 1,
-        }
+        },
+        paddingTop: 0,
+        marginTop: -2,
     },
     cellButtonsButtonAlone: {
         marginLeft: SMALL_BUTTON_SIZE + 4,
+        paddingTop: 0,
+        marginTop: -2,
     },
     cellButtonsButtonWithCustoms: {
         color: theme.palette.secondary.main,
@@ -1073,6 +1089,8 @@ function getSelectIdIcon(objects, id, imagePrefix) {
         if (!aIcon.startsWith('data:image/')) {
             if (aIcon.includes('.')) {
                 src = imagePrefix + '/adapter/' + objects[_id_].common.name + '/' + aIcon;
+            } else if (aIcon && aIcon.length < 3) {
+                return aIcon; // utf-8
             } else {
                 return null; //'<i class="material-icons iob-list-icon">' + objects[_id_].common.icon + '</i>';
             }
@@ -1107,6 +1125,8 @@ function getSelectIdIcon(objects, id, imagePrefix) {
                             }
                             src = imagePrefix + '/adapter/' + instance[0];
                         }
+                    } else if (aIcon && aIcon.length < 3) {
+                        return aIcon; // utf-8
                     } else {
                         return null;
                     }
@@ -1168,108 +1188,6 @@ const DEFAULT_FILTER = {
     expertMode: false
 };
 
-class IconState extends React.Component {
-    render() {
-        return <svg viewBox="0 0 320 320" width={ICON_SIZE} height={ICON_SIZE} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
-            <g>
-                <rect rx="32" id="svg_1" height="272" width="267" y="25" x="25" strokeWidth="15" stroke="currentColor" fill="none"/>
-                <ellipse ry="54" rx="54" id="svg_2" cy="160" cx="160" fillOpacity="null" strokeOpacity="null" strokeWidth="15" stroke="currentColor" fill="#fff"/>
-            </g>
-        </svg>;
-    }
-}
-
-class IconChannel extends React.Component {
-    render() {
-        return <svg viewBox="0 0 320 320" width={ICON_SIZE} height={ICON_SIZE} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
-            <g>
-                <rect rx="32" id="svg_1" height="272" width="267" y="25" x="25" strokeWidth="15" stroke="currentColor" fill="none"/>
-                <ellipse stroke="currentColor" ry="26" rx="26" id="svg_2" cy="248" cx="160" fill="none" strokeWidth="15"/>
-                <line strokeLinecap="null" strokeLinejoin="null" id="svg_3" y2="201.94531" x2="159.5" y1="46.94531" x1="159.5" fillOpacity="null" strokeOpacity="null" strokeWidth="15" stroke="currentColor" fill="none"/>
-                <rect id="svg_4" height="27" width="50" y="79.7979" x="133.5" fillOpacity="null" strokeOpacity="null" strokeWidth="15" stroke="currentColor" fill="#fff"/>
-            </g>
-        </svg>;
-    }
-}
-
-class IconDevice extends React.Component {
-    render() {
-        return <svg viewBox="0 0 320 320" width={ICON_SIZE} height={ICON_SIZE} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
-            <g>
-                <rect rx="32" id="svg_1" height="272" width="267" y="25" x="25" strokeWidth="15" stroke="currentColor" fill="none"/>
-                <ellipse stroke="currentColor" ry="26" rx="26" id="svg_2" cy="252" cx="160" fillOpacity="null" strokeOpacity="null" strokeWidth="15" fill="#fff"/>
-                <line strokeLinecap="null" strokeLinejoin="null" id="svg_3" y2="201.94531" x2="159.5" y1="46.94531" x1="159.5" fillOpacity="null" strokeOpacity="null" strokeWidth="15" stroke="currentColor" fill="none"/>
-                <rect height="27" width="50" y="140.83068" x="133.5" fillOpacity="null" strokeOpacity="null" strokeWidth="15" stroke="currentColor" fill="#fff"/>
-                <ellipse stroke="currentColor" ry="26" rx="26" id="svg_5" cy="251" cx="241" fillOpacity="null" strokeOpacity="null" strokeWidth="15" fill="#fff"/>
-                <line strokeLinecap="null" strokeLinejoin="null" id="svg_6" y2="200.94531" x2="240.5" y1="45.94531" x1="240.5" fillOpacity="null" strokeOpacity="null" strokeWidth="15" stroke="currentColor" fill="none"/>
-                <rect height="27" width="50" y="78.7979" x="214.5" strokeWidth="15" stroke="currentColor" fill="#fff"/>
-                <ellipse stroke="currentColor" ry="26" rx="26" id="svg_8" cy="252" cx="84" fillOpacity="null" strokeOpacity="null" strokeWidth="15" fill="#fff"/>
-                <line strokeLinecap="null" strokeLinejoin="null" id="svg_9" y2="201.94531" x2="83.5" y1="46.94531" x1="83.5" fillOpacity="null" strokeOpacity="null" strokeWidth="15" stroke="currentColor" fill="none"/>
-                <rect height="27" width="50" y="79.7979" x="57.5" fillOpacity="null" strokeOpacity="null" strokeWidth="15" stroke="currentColor" fill="#fff"/>
-            </g>
-        </svg>;
-    }
-}
-// Copyright Apache 2.0 https://raw.githubusercontent.com/material-icons/material-icons/master/svg/filter_alt/baseline.svg
-// https://github.com/material-icons/material-icons/blob/master/LICENSE
-class IconClearFilter extends React.Component {
-    render() {
-        return <svg viewBox="0 0 24 24" width={ICON_SIZE} height={ICON_SIZE} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
-            <path fill="currentColor" stroke="currentColor" d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04c-.83 0-1.3.95-.79 1.61z"/>
-        </svg>;
-    }
-}
-
-// all icons are copied from https://github.com/FortAwesome/Font-Awesome/blob/0d1f27efb836eb2ab994ba37221849ed64a73e5c/svgs/regular/
-class IconClosed extends React.Component {
-    render() {
-        return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 650 512" xmlns="http://www.w3.org/2000/svg" width={this.props.width || 28} height={this.props.height || 28} className={ this.props.className }>
-            <path fill="currentColor" d="M464 128H272l-64-64H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V176c0-26.51-21.49-48-48-48z"/>
-        </svg>;
-    }
-}
-class IconOpen extends React.Component {
-    render() {
-        return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 650 512" xmlns="http://www.w3.org/2000/svg" width={this.props.width || 28} height={this.props.height || 28} className={ this.props.className }>
-            <path fill="currentColor" d="M572.694 292.093L500.27 416.248A63.997 63.997 0 0 1 444.989 448H45.025c-18.523 0-30.064-20.093-20.731-36.093l72.424-124.155A64 64 0 0 1 152 256h399.964c18.523 0 30.064 20.093 20.73 36.093zM152 224h328v-48c0-26.51-21.49-48-48-48H272l-64-64H48C21.49 64 0 85.49 0 112v278.046l69.077-118.418C86.214 242.25 117.989 224 152 224z"/>
-        </svg>;
-    }
-}
-class IconDocument extends React.Component {
-    render() {
-        return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 512 512" width={this.props.width || 20} height={this.props.width || 20} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
-            <path fill="currentColor" d="M369.9 97.9L286 14C277 5 264.8-.1 252.1-.1H48C21.5 0 0 21.5 0 48v416c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V131.9c0-12.7-5.1-25-14.1-34zM332.1 128H256V51.9l76.1 76.1zM48 464V48h160v104c0 13.3 10.7 24 24 24h104v288H48z"/>
-        </svg>;
-    }
-}
-class IconCopy extends React.Component {
-    render() {
-        return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 512 512" width={this.props.width || 20} height={this.props.width || 20} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
-            <path fill="currentColor" d="M433.941 65.941l-51.882-51.882A48 48 0 0 0 348.118 0H176c-26.51 0-48 21.49-48 48v48H48c-26.51 0-48 21.49-48 48v320c0 26.51 21.49 48 48 48h224c26.51 0 48-21.49 48-48v-48h80c26.51 0 48-21.49 48-48V99.882a48 48 0 0 0-14.059-33.941zM266 464H54a6 6 0 0 1-6-6V150a6 6 0 0 1 6-6h74v224c0 26.51 21.49 48 48 48h96v42a6 6 0 0 1-6 6zm128-96H182a6 6 0 0 1-6-6V54a6 6 0 0 1 6-6h106v88c0 13.255 10.745 24 24 24h88v202a6 6 0 0 1-6 6zm6-256h-64V48h9.632c1.591 0 3.117.632 4.243 1.757l48.368 48.368a6 6 0 0 1 1.757 4.243V112z"/>
-        </svg>;
-    }
-}
-class IconAlias extends React.Component {
-    render() {
-        return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 512 512" width={this.props.width || 20} height={this.props.width || 20} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
-            <path fill="currentColor" d="M96.06 454.35c.01 6.29 1.87 12.45 5.36 17.69l17.09 25.69a31.99 31.99 0 0 0 26.64 14.28h61.71a31.99 31.99 0 0 0 26.64-14.28l17.09-25.69a31.989 31.989 0 0 0 5.36-17.69l.04-38.35H96.01l.05 38.35zM0 176c0 44.37 16.45 84.85 43.56 115.78 16.52 18.85 42.36 58.23 52.21 91.45.04.26.07.52.11.78h160.24c.04-.26.07-.51.11-.78 9.85-33.22 35.69-72.6 52.21-91.45C335.55 260.85 352 220.37 352 176 352 78.61 272.91-.3 175.45 0 73.44.31 0 82.97 0 176zm176-80c-44.11 0-80 35.89-80 80 0 8.84-7.16 16-16 16s-16-7.16-16-16c0-61.76 50.24-112 112-112 8.84 0 16 7.16 16 16s-7.16 16-16 16z"/>
-        </svg>;
-    }
-}
-class IconInstance extends React.Component {
-    render() {
-        return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 512 512" width={this.props.width || 20} height={this.props.width || 20} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
-            <path fill="currentColor" d="M448 0L320 96v62.06l-83.03 83.03c6.79 4.25 13.27 9.06 19.07 14.87 5.8 5.8 10.62 12.28 14.87 19.07L353.94 192H416l96-128-64-64zM128 278.59L10.92 395.67c-14.55 14.55-14.55 38.15 0 52.71l52.7 52.7c14.56 14.56 38.15 14.56 52.71 0L233.41 384c29.11-29.11 29.11-76.3 0-105.41s-76.3-29.11-105.41 0z"/>        </svg>;
-    }
-}
-class IconAdapter extends React.Component {
-    render() {
-        return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 512 512" width={this.props.width || 20} height={this.props.width || 20} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
-            <path d="M448 0L320 96v62.06l-83.03 83.03c6.79 4.25 13.27 9.06 19.07 14.87 5.8 5.8 10.62 12.28 14.87 19.07L353.94 192H416l96-128-64-64zM128 278.59L10.92 395.67c-14.55 14.55-14.55 38.15 0 52.71l52.7 52.7c14.56 14.56 38.15 14.56 52.71 0L233.41 384c29.11-29.11 29.11-76.3 0-105.41s-76.3-29.11-105.41 0z"/>
-        </svg>;
-    }
-}
-
 const ITEM_IMAGES = {
     state: <IconState className="itemIcon" />,
     channel: <IconChannel className="itemIcon" />,
@@ -1287,7 +1205,7 @@ const ITEM_IMAGES = {
     script: <IconScript className="itemIcon" />,
 };
 
-const StyledBadge = withStyles((theme) => ({
+const StyledBadge = withStyles(theme => ({
     badge: {
         right: 3,
         top: 3,
@@ -1333,7 +1251,7 @@ const SCREEN_WIDTHS = {
 /**
  * @extends {React.Component<import('./types').ObjectBrowserProps>}
  */
-class ObjectBrowser extends React.Component {
+class ObjectBrowser extends Component {
     /**
      * @param {import('./types').ObjectBrowserProps} props
      */
@@ -1372,11 +1290,11 @@ class ObjectBrowser extends React.Component {
         }
 
         filter.expertMode = props.expertMode !== undefined ? props.expertMode : (window.localStorage.getItem('App.expertMode') === 'true');
-        this.tableRef  = React.createRef();
+        this.tableRef  = createRef();
         this.filterRefs = {};
 
         Object.keys(DEFAULT_FILTER).forEach(name =>
-            this.filterRefs[name] = React.createRef());
+            this.filterRefs[name] = createRef());
 
         this.lastAppliedFilter = null;
         this.pausedSubscribes = false;
@@ -2387,21 +2305,57 @@ class ObjectBrowser extends React.Component {
      * @returns {JSX.Element}
      */
     getToolbar() {
-        return <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar">
-            { this.props.showExpertButton ? <IconButton key="expertMode" variant="contained" className={ this.props.classes.toolbarButtons } color={ this.state.filter.expertMode ? 'secondary' : 'default' } onClick={ () => this.onFilter('expertMode', !this.state.filter.expertMode) }><IconExpert /></IconButton>: null }
-
-            { !this.props.disableColumnSelector ? <IconButton key="columnSelector" variant="contained" className={ this.props.classes.toolbarButtons } onClick={ () => this.setState({columnsSelectorShow: true}) }><IconColumns /></IconButton>: null }
-            { this.state.expandAllVisible ? <IconButton key="expandAll"  variant="contained" className={ this.props.classes.toolbarButtons } onClick={ () => this.onExpandAll() }><IconOpen /></IconButton> : null }
-            <IconButton key="collapseAll"     variant="contained" className={ this.props.classes.toolbarButtons } onClick={ () => this.onCollapseAll() }>
+        return <>
+            { this.props.showExpertButton &&
+            <IconButton
+                key="expertMode"
+                color={ this.state.filter.expertMode ? 'secondary' : 'default' }
+                onClick={ () => this.onFilter('expertMode', !this.state.filter.expertMode) }
+            >
+                <IconExpert />
+            </IconButton>
+            }
+            { !this.props.disableColumnSelector &&
+            <IconButton
+                key="columnSelector"
+                onClick={ () => this.setState({columnsSelectorShow: true}) }
+            >
+                <IconColumns />
+            </IconButton>
+            }
+            { this.state.expandAllVisible &&
+            <IconButton
+                key="expandAll"
+                onClick={ () => this.onExpandAll() }
+            >
+                <IconOpen />
+            </IconButton>
+            }
+            <IconButton
+                key="collapseAll"
+                onClick={ () => this.onCollapseAll() }
+            >
                 <IconClosed/>
             </IconButton>
-            <StyledBadge badgeContent={ this.state.depth } color="secondary">
-                <IconButton key="expandVisible"   variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={ () => this.onExpandVisible() }><IconOpen /></IconButton>
-            </StyledBadge>
-            <StyledBadge badgeContent={ this.state.depth } color="secondary">
-                <IconButton key="collapseVisible" variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={ () => this.onCollapseVisible() }><IconClosed /></IconButton>
-            </StyledBadge>
-        </Toolbar>;
+            <IconButton
+                key="expandVisible"
+                color="primary"
+                onClick={ () => this.onExpandVisible() }
+            >
+                <StyledBadge badgeContent={ this.state.depth } color="secondary">
+                    <IconOpen />
+                </StyledBadge>
+            </IconButton>
+            <IconButton
+                key="collapseVisible"
+                color="primary"
+                onClick={ () => this.onCollapseVisible() }
+            >
+                <StyledBadge badgeContent={ this.state.depth } color="secondary">
+                    <IconClosed />
+                </StyledBadge>
+            </IconButton>
+        </>;
     }
 
     /**
@@ -2446,26 +2400,41 @@ class ObjectBrowser extends React.Component {
      */
     renderColumnButtons(id, item, classes) {
         if (!item.data.obj) {
-            return <IconButton className={ Utils.clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone) }  size="small" aria-label="delete" title={ this.texts.deleteObject }>
-                <IconDelete className={ classes.cellButtonsButtonIcon }  />
-            </IconButton>;
+            return this.props.onObjectDelete ? <IconButton
+                className={ Utils.clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone) }
+                size="small"
+                aria-label="delete"
+                title={ this.texts.deleteObject }
+                onClick={ () => this.props.onObjectDelete(id, !!(item.children && item.children.length), false)}
+            >
+                <IconDelete className={ classes.cellButtonsButtonIcon } />
+            </IconButton> : null;
         }
 
         return [
-            <IconButton key="edit" className={ classes.cellButtonsButton } size="small" aria-label="edit" title={ this.texts.editObject }
-                        onClick={ () => {
-                            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', id);
-                            this.setState({ editObjectDialog: id});
-                        }}>
+            <IconButton
+                key="edit"
+                className={ classes.cellButtonsButton }
+                size="small"
+                aria-label="edit"
+                title={ this.texts.editObject }
+                onClick={ () => {
+                    window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', id);
+                    this.setState({ editObjectDialog: id});
+                }}
+            >
                 <IconEdit className={ classes.cellButtonsButtonIcon } />
             </IconButton>,
-            <IconButton key="delete" className={ classes.cellButtonsButton }  size="small" aria-label="delete"
-                        onClick={ () => {
-                            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', id);
-                        }}
-                        title={ this.texts.deleteObject }>
-                <IconDelete className={ classes.cellButtonsButtonIcon }  />
-            </IconButton>,
+            this.props.onObjectDelete ? <IconButton
+                key="delete"
+                className={ classes.cellButtonsButton }
+                size="small"
+                aria-label="delete"
+                onClick={ () => this.props.onObjectDelete(id, !!(item.children && item.children.length), true)}
+                title={ this.texts.deleteObject }
+            >
+                <IconDelete className={ classes.cellButtonsButtonIcon } />
+            </IconButton> : null,
             this.props.objectCustomDialog && this.info.hasSomeCustoms && item.data.obj.type === 'state' ? <IconButton
                 className={ Utils.clsx(classes.cellButtonsButton, item.data.hasCustoms && classes.cellButtonsButtonWithCustoms)}
                 key="custom"
@@ -2733,7 +2702,7 @@ class ObjectBrowser extends React.Component {
                                             this.setState({customColumnDialogValueChanged: changed});
                                         }
                                     }}
-                                    />}
+                                />}
                                 label={this.state.columnsEditCustomDialog.it.name + ' (' + this.state.columnsEditCustomDialog.it.pathText + ')'}
                             />
                             :
@@ -2760,7 +2729,7 @@ class ObjectBrowser extends React.Component {
                     <Button onClick={() => this.onColumnsEditCustomDialogClose(true)}
                             disabled={!this.state.customColumnDialogValueChanged}
                             color="primary">
-                        <IconCheck className={this.props.classes.buttonIcon}/> {this.props.t('Update')}
+                        <IconCheck className={this.props.classes.buttonIcon}/> {this.props.t('ra_Update')}
                     </Button>
                 </DialogActions>
             </Dialog>;
@@ -2893,7 +2862,11 @@ class ObjectBrowser extends React.Component {
         let iconItem = null;
         if (item.data.icon) {
             if (typeof item.data.icon === 'string') {
-                iconItem = <img className={ Utils.clsx(classes.cellIdIconOwn, 'iconOwn') } src={ item.data.icon } alt="" />;
+                if (item.data.icon.length < 3) {
+                    iconItem = <span className={ Utils.clsx(classes.cellIdIconOwn, 'iconOwn') }>{item.data.icon}</span>; // utf-8 char
+                } else {
+                    iconItem = <img className={ Utils.clsx(classes.cellIdIconOwn, 'iconOwn') } src={ item.data.icon } alt="" />;
+                }
             } else {
                 iconItem = item.data.icon;
             }
@@ -2970,13 +2943,7 @@ class ObjectBrowser extends React.Component {
                 >
                     { iconItem }
                 </Grid>
-                <Grid
-                    item
-                    container
-                    alignItems="center"
-                >
-                    <IconCopy className={ Utils.clsx(classes.cellCopyButton, 'copyButton') } onClick={(e) => this.onCopy(e, id) } />
-                </Grid>
+                <IconCopy className={ Utils.clsx(classes.cellCopyButton, 'copyButton') } onClick={(e) => this.onCopy(e, id) } />
             </Grid>
             {this.columnsVisibility.name    ? <div className={ classes.cellName }    style={{ width: this.columnsVisibility.name }}>{ (item.data && item.data.title) || '' }</div> : null }
             {this.columnsVisibility.type    ? <div className={ classes.cellType }    style={{ width: this.columnsVisibility.type }}>{ typeImg } { obj && obj.type }</div> : null }
@@ -3182,7 +3149,7 @@ class ObjectBrowser extends React.Component {
 
         let filterClearInValue = null;
         if (!this.columnsVisibility.buttons && !this.isFilterEmpty()) {
-            filterClearInValue = <IconButton onClick={() => this.clearFilter()} className={classes.buttonClearFilter} title={this.props.t('Clear filter')}>
+            filterClearInValue = <IconButton onClick={() => this.clearFilter()} className={classes.buttonClearFilter} title={this.props.t('ra_Clear filter')}>
                 <IconClearFilter />
                 <IconClose className={classes.buttonClearFilterIcon}/>
             </IconButton>;
@@ -3206,9 +3173,20 @@ class ObjectBrowser extends React.Component {
      * @returns {JSX.Element}
      */
     renderToast() {
-        return <Snackbar open={ !!this.state.toast } autoHideDuration={ 3000 } onClick={ () => this.setState({ toast: '' }) } onClose={ () => this.setState({ toast: '' }) }>
-            <Alert color="info" severity="success" >{ this.state.toast }</Alert>
-        </Snackbar>;
+        return <Snackbar
+            open={ !!this.state.toast }
+            autoHideDuration={ 3000 }
+            onClick={ () => this.setState({ toast: '' }) }
+            onClose={ () => this.setState({ toast: '' }) }
+            message={this.state.toast}
+            action={
+                <React.Fragment>
+                    <IconButton size="small" aria-label="close" color="inherit" onClick={() => this.setState({toast: ''})}>
+                        <IconClose fontSize="small" />
+                    </IconButton>
+                </React.Fragment>
+            }
+        />;
     }
 
     /**
@@ -3403,6 +3381,7 @@ ObjectBrowser.propTypes = {
         PropTypes.object,
         PropTypes.func
     ]),
+    onObjectDelete: PropTypes.func, // optional function (id, hasChildren, objectExists) {  }
     customFilter: PropTypes.object, // optional {common: {custom: true}} or {common: {custom: 'sql.0'}}
     objectBrowserValue: PropTypes.object,
     objectBrowserEditObject: PropTypes.object,

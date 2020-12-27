@@ -1,7 +1,7 @@
 {
   "name": "iobroker.admin",
   "description": "The adapter opens a webserver for the ioBroker admin UI.",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "contributors": [
     "bluefox <dogafox@gmail.com>",
     "apollon77",
@@ -45,6 +45,7 @@
     "@babel/plugin-transform-classes": "^7.12.1",
     "@babel/plugin-transform-template-literals": "^7.12.1",
     "@iobroker/testing": "^2.4.0",
+    "eslint": "^7.11.0",
     "ansi-colors": "^4.1.1",
     "chai": "^4.2.0",
     "del": "^6.0.0",

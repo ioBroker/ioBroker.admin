@@ -4,7 +4,7 @@
 
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
-import { Component } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Dropzone from 'react-dropzone'
 
@@ -46,6 +46,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 import ExpertIcon from  '@iobroker/adapter-react/Components/ExpertIcon';
 import NoImage from '@iobroker/adapter-react/assets/no_icon.svg';
+import IconClosed from '@iobroker/adapter-react/icons/IconClosed';
+import IconOpen from '@iobroker/adapter-react/icons/IconOpen';
 
 const ROW_HEIGHT = 32;
 const BUTTON_WIDTH = 32;
@@ -353,26 +355,16 @@ function isFile(path) {
     }
 }
 
-// all icons are copied from https://github.com/FortAwesome/Font-Awesome/blob/0d1f27efb836eb2ab994ba37221849ed64a73e5c/svgs/regular/
-class IconClosed extends Component {
-    render() {
-        return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 650 512" xmlns="http://www.w3.org/2000/svg" width={this.props.width || 28} height={this.props.height || 28} className={ this.props.className }>
-            <path fill="currentColor" d="M464 128H272l-64-64H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V176c0-26.51-21.49-48-48-48z"/>
-        </svg>;
-    }
-}
-class IconOpen extends Component {
-    render() {
-        return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 650 512" xmlns="http://www.w3.org/2000/svg" width={this.props.width || 28} height={this.props.height || 28} className={ this.props.className }>
-            <path fill="currentColor" d="M572.694 292.093L500.27 416.248A63.997 63.997 0 0 1 444.989 448H45.025c-18.523 0-30.064-20.093-20.731-36.093l72.424-124.155A64 64 0 0 1 152 256h399.964c18.523 0 30.064 20.093 20.73 36.093zM152 224h328v-48c0-26.51-21.49-48-48-48H272l-64-64H48C21.49 64 0 85.49 0 112v278.046l69.077-118.418C86.214 242.25 117.989 224 152 224z"/>
-        </svg>;
-    }
-}
-
 const TABLE = 'Table';
 const TILE = 'Tile';
 
+/**
+ * @extends {React.Component<import('./types').FileBrowserProps>}
+ */
 class FileBrowser extends Component {
+    /**
+     * @param {Readonly<import("./types").FileBrowserProps>} props
+     */
     constructor(props) {
         super(props);
         let expanded = window.localStorage.getItem('files.expanded') || '[]';
@@ -806,11 +798,11 @@ class FileBrowser extends Component {
             ><DownloadIcon/></IconButton> : null }
 
             {   this.state.viewType === TABLE &&
-            this.props.allowDelete &&
-            item.id !== 'vis.0/' &&
-            item.id !== USER_DATA &&
-            (this.state.expertMode || item.id.startsWith(USER_DATA) || item.id.startsWith('vis.0/'))
-                ?
+                this.props.allowDelete &&
+                item.id !== 'vis.0/' &&
+                item.id !== USER_DATA &&
+                (this.state.expertMode || item.id.startsWith(USER_DATA) || item.id.startsWith('vis.0/'))
+            ?
                 <IconButton aria-label="delete"
                             onClick={e => {
                                 e.stopPropagation();
@@ -826,9 +818,9 @@ class FileBrowser extends Component {
                 </IconButton>
                 :
                 (this.state.viewType === TABLE && this.props.allowDelete ?
-                        <div className={this.props.classes['itemDeleteButton' + this.state.viewType]}/>
+                    <div className={this.props.classes['itemDeleteButton' + this.state.viewType]}/>
                         :
-                        null
+                    null
                 )
             }
         </div>;
@@ -990,40 +982,41 @@ class FileBrowser extends Component {
                 return window.alert(this.props.t('ra_Invalid parent folder!'));
             }
 
-            return <TextInputDialog key="inputDialog"
-                                    applyText={this.props.t('ra_Create')}
-                                    cancelText={this.props.t('ra_Cancel')}
-                                    titleText={this.props.t('ra_Create new folder in %s', this.state.selected)}
-                                    promptText={this.props.t('ra_If no file will be created in the folder, it will disappear after the browser closed')}
-                                    labelText={this.props.t('ra_Folder name')}
-                                    verify={text => this.state.folders[parentFolder].find(item => item.name === text) ? '' : this.props.t('ra_Duplicate name')}
-                                    onClose={name => {
-                                        if (name) {
-                                            const folders = {};
-                                            Object.keys(this.state.folders).forEach(folder => folders[folder] = this.state.folders[folder]);
-                                            const parent = this.findItem(parentFolder);
-                                            folders[parentFolder].push({
-                                                id: parentFolder + '/' + name,
-                                                level: parent.level + 1,
-                                                name,
-                                                folder: true,
-                                                temp: true,
-                                            });
+            return <TextInputDialog
+                key="inputDialog"
+                applyText={this.props.t('ra_Create')}
+                cancelText={this.props.t('ra_Cancel')}
+                titleText={this.props.t('ra_Create new folder in %s', this.state.selected)}
+                promptText={this.props.t('ra_If no file will be created in the folder, it will disappear after the browser closed')}
+                labelText={this.props.t('ra_Folder name')}
+                verify={text => this.state.folders[parentFolder].find(item => item.name === text) ? '' : this.props.t('ra_Duplicate name')}
+                onClose={name => {
+                    if (name) {
+                        const folders = {};
+                        Object.keys(this.state.folders).forEach(folder => folders[folder] = this.state.folders[folder]);
+                        const parent = this.findItem(parentFolder);
+                        folders[parentFolder].push({
+                            id: parentFolder + '/' + name,
+                            level: parent.level + 1,
+                            name,
+                            folder: true,
+                            temp: true,
+                        });
 
-                                            folders[parentFolder].sort(sortFolders);
+                        folders[parentFolder].sort(sortFolders);
 
-                                            folders[parentFolder + '/' + name] = [];
-                                            const expanded = [...this.state.expanded];
-                                            if (!expanded.includes(parentFolder)) {
-                                                expanded.push(parentFolder);
-                                                expanded.sort();
-                                            }
-                                            this.setState({addFolder: false, folders, expanded});
-                                        } else {
-                                            this.setState({addFolder: false});
-                                        }
-                                    }}
-                                    replace={text => text.replace(/[^-_\w\d]/, '_')}
+                        folders[parentFolder + '/' + name] = [];
+                        const expanded = [...this.state.expanded];
+                        if (!expanded.includes(parentFolder)) {
+                            expanded.push(parentFolder);
+                            expanded.sort();
+                        }
+                        this.setState({addFolder: false, folders, expanded});
+                    } else {
+                        this.setState({addFolder: false});
+                    }
+                }}
+                replace={text => text.replace(/[^-_\w\d]/, '_')}
             />;
         } else {
             return null;
@@ -1312,4 +1305,6 @@ FileBrowser.propTypes = {
     onSelect: PropTypes.func, // function (id, isDoubleClick)
 };
 
-export default withWidth()(withStyles(styles)(FileBrowser));
+/** @type {typeof FileBrowser} */
+const _export = withWidth()(withStyles(styles)(FileBrowser));
+export default _export;

@@ -2,9 +2,9 @@
     "common": {
         "name": "admin",
         "title": "Admin",
-        "version": "5.0.1",
+        "version": "5.0.2",
         "news": {
-            "5.0.1": {
+            "5.0.2": {
                 "en": "Merged the changes from admin4",
                 "de": "Die Änderungen von admin4 wurden zusammengeführt",
                 "ru": "Слил изменения от admin4",
