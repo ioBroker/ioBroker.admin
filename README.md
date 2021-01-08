@@ -94,7 +94,7 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 4.2.0 (2021-01-08)
 * (bluefox) Support of new Let's Encrypt (only with js-controller 3.2.x)
 
 ### 4.1.12 (2020-12-12)
