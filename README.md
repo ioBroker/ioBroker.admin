@@ -94,6 +94,8 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 -->
 
 ## Changelog
+### 4.1.13 (2021-01-08)
+* (bluefox) Support of new Let's Encrypt (only with js-controller 3.2.x)
 
 ### 4.1.12 (2020-12-12)
 * (bluefox) Corrected the error with empty names in enums
@@ -107,9 +109,6 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 
 ### 4.1.8 (2020-09-03)
 * (bluefox) Fixed editing of the objects with % sign in the ID. 
-
-### 4.1.6 (2020-07-26)
-* (Apollon77) Increased the socket ping Interval and Timeout to maybe prevent the too fast reconnect attempts.
 
 ## License
 
