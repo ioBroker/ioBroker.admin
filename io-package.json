@@ -4,18 +4,6 @@
         "title": "Admin",
         "version": "4.1.13",
         "news": {
-            "4.1.13": {
-                "en": "Support of new Let's Encrypt (only with js-controller 3.2.x)",
-                "de": "Unterstützung des neuen Let's Encrypt (nur mit js-controller 3.2.x)",
-                "ru": "Поддержка нового Let's Encrypt (только с js-controller 3.2.x)",
-                "pt": "Suporte do novo Let's Encrypt (apenas com js-controller 3.2.x)",
-                "nl": "Ondersteuning van nieuwe Let's Encrypt (alleen met js-controller 3.2.x)",
-                "fr": "Prise en charge du nouveau Let's Encrypt (uniquement avec js-controller 3.2.x)",
-                "it": "Supporto del nuovo Let's Encrypt (solo con js-controller 3.2.x)",
-                "es": "Soporte del nuevo Let's Encrypt (solo con js-controller 3.2.x)",
-                "pl": "Obsługa nowego Let's Encrypt (tylko z js-controller 3.2.x)",
-                "zh-cn": "支持新的Let's Encrypt（仅适用于js-controller 3.2.x）"
-            },
             "4.1.12": {
                 "en": "Corrected the error with empty names in enums",
                 "de": "Der Fehler mit leeren Namen in Aufzählungen wurde behoben",
