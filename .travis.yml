@@ -6,7 +6,7 @@ language: node_js
 node_js:
   - '10'
   - '12'
-  - 'node'
+  - '14'
 before_script:
   - export NPMVERSION=$(echo "$($(which npm) -v)"|cut -c1)
   - 'if [[ $NPMVERSION == 5 ]]; then npm install -g npm@5; fi'
