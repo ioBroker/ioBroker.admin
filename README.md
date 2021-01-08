@@ -100,6 +100,12 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 ### 5.0.0 (2020-09_23)
 * (bluefox) The tile view implemented for the file browser
 
+### 4.1.13 (2021-01-08)
+* (bluefox) Support of new Let's Encrypt (only with js-controller 3.2.x)
+
+### 4.1.12 (2020-12-12)
+* (bluefox) Corrected the error with empty names in enums
+
 ### 4.1.11 (2020-11-22)
 * (theimo1221) Prevent Duplicate Event Handling on Dropdown Checkboxes
 * (paul53) fix Objects dialog
