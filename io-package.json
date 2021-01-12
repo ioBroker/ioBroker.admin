@@ -2,8 +2,20 @@
     "common": {
         "name": "admin",
         "title": "Admin",
-        "version": "4.2.0",
+        "version": "4.2.1",
         "news": {
+            "4.2.1": {
+                "en": "Also allow pre-prelease versions for dependency checks",
+                "de": "Erlauben Sie auch Pre-Prelease-Versionen für Abhängigkeitsprüfungen",
+                "ru": "Также разрешить предварительные версии для проверки зависимостей",
+                "pt": "Também permite versões de pré-pré-lançamento para verificações de dependência",
+                "nl": "Sta ook pre-prelease-versies toe voor afhankelijkheidscontroles",
+                "fr": "Autoriser également les versions préliminaires pour les vérifications de dépendance",
+                "it": "Consenti anche versioni pre-prelease per i controlli delle dipendenze",
+                "es": "También permite versiones preliminares para verificaciones de dependencia",
+                "pl": "Zezwalaj również na wersje wstępne do sprawdzania zależności",
+                "zh-cn": "还允许预发行版本进行依赖性检查"
+            },
             "4.2.0": {
                 "en": "Support of new Let's Encrypt (only with js-controller 3.2.x)",
                 "de": "Unterstützung des neuen Let's Encrypt (nur mit js-controller 3.2.x)",

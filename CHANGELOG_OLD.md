@@ -1,3 +1,6 @@
+## 4.1.8 (2020-09-03)
+* (bluefox) Fixed editing of the objects with % sign in the ID. 
+
 ## 4.1.6 (2020-07-26)
 * (Apollon77) Increased the socket ping Interval and Timeout to maybe prevent the too fast reconnect attempts.
 

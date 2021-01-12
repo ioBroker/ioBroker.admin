@@ -95,7 +95,7 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 4.2.1 (2021-01-12)
 * (Apollon77) Also allow pre-prelease versions for dependency checks
 
 ### 4.2.0 (2021-01-08)
@@ -110,9 +110,6 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 
 ### 4.1.10 (2020-10-08)
 * (bluefox) Corrected the icons of the custom tabs. 
-
-### 4.1.8 (2020-09-03)
-* (bluefox) Fixed editing of the objects with % sign in the ID. 
 
 ## License
 
