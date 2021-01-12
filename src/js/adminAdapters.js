@@ -750,14 +750,14 @@ function Adapters(main) {
         for (const adapter in adapters) {
             if (adapters.hasOwnProperty(adapter)) {
                 if (adapter === 'js-controller') {
-                    if (!semver.satisfies(that.main.objects['system.host.' + that.main.currentHost].common.installedVersion, adapters[adapter])) {
+                    if (!semver.satisfies(that.main.objects['system.host.' + that.main.currentHost].common.installedVersion, adapters[adapter], {includePrerelease: true})) {
                         return _('Invalid version of %s. Required %s', adapter, adapters[adapter]);
                     }
                 } else {
                     if (!that.main.objects['system.adapter.' + adapter] || !that.main.objects['system.adapter.' + adapter].common || !that.main.objects['system.adapter.' + adapter].common.installedVersion) {
                         return _('No version of %s', adapter);
                     }
-                    if (!semver.satisfies(that.main.objects['system.adapter.' + adapter].common.installedVersion, adapters[adapter])) {
+                    if (!semver.satisfies(that.main.objects['system.adapter.' + adapter].common.installedVersion, adapters[adapter], {includePrerelease: true})) {
                         return _('Invalid version of %s', adapter);
                     }
                 }

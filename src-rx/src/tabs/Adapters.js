@@ -457,7 +457,7 @@ class Adapters extends Component {
 
                     entry.installed = !!installed;
                     entry.installedVersion = installed ? installed.version : null;
-                    entry.rightVersion = installed ? checkVersion ? Semver.satisfies(installed.version, entry.version): true : false;
+                    entry.rightVersion = installed ? checkVersion ? Semver.satisfies(installed.version, entry.version, {includePrerelease: true}): true : false;
                 }
 
                 result.push(entry);
@@ -503,7 +503,7 @@ class Adapters extends Component {
 
                             const installed = this.state.installed[name];
 
-                            result = installed ? (checkVersion ? Semver.satisfies(installed.version, dependency[name]) : true) : false;
+                            result = installed ? (checkVersion ? Semver.satisfies(installed.version, dependency[name], {includePrerelease: true}) : true) : false;
                         }
                     });
                 } else if (typeof dependencies === 'object') {
@@ -511,7 +511,7 @@ class Adapters extends Component {
                         if (dependency && dependencies[dependency] !== undefined && result) {
                             const installed = this.state.installed[dependency];
                             const checkVersion = typeof dependencies[dependency] !== 'string';
-                            result = installed ? (checkVersion ? Semver.satisfies(installed.version, dependency[dependency]) : true) : false;
+                            result = installed ? (checkVersion ? Semver.satisfies(installed.version, dependency[dependency], {includePrerelease: true}) : true) : false;
                         }
                     });
                 } else {
