@@ -936,6 +936,43 @@ class App extends Router {
                             </Grid>
                         </Toolbar>
                     </AppBar>
+                    <Drawer
+                        state={ this.state.drawerState }
+                        handleNavigation={ name => this.handleNavigation(name) }
+                        onStateChange={ state => this.handleDrawerState(state) }
+                        onLogout={ () => this.logout() }
+                        currentTab={ this.state.currentTab && this.state.currentTab.tab }
+                        logsWorker={ this.logsWorker }
+                        instancesWorker={ this.instancesWorker }
+                        logoutTitle={ I18n.t('Logout') }
+                        isSecure={ this.socket.isSecure }
+                        t={ I18n.t }
+                        lang={ I18n.getLanguage() }
+                        socket={ this.socket }
+                        currentHost={ this.state.currentHost }
+                        expertMode={ this.state.expertMode }
+                        ready={ this.state.ready }
+                    />
+                    <Paper
+                        elevation={ 0 }
+                        square
+                        className={
+                            clsx(classes.content, {
+                                [classes.contentMargin]: !small && this.state.drawerState !== DrawerStates.compact,
+                                [classes.contentMarginCompact]: !small && this.state.drawerState !== DrawerStates.opened,
+                                [classes.contentShift]: !small && this.state.drawerState !== DrawerStates.closed
+                            })
+                        }
+                    >
+                        { this.getCurrentTab() }
+                    </Paper>
+                    <Snackbar
+                        className={this.props.classes['alert_' + this.state.alertType]}
+                        open={ this.state.alert }
+                        autoHideDuration={ 6000 }
+                        onClose={ () => this.handleAlertClose() }
+                        message={ this.state.alertMessage }
+                    />
                 </Paper>
                 { this.getCurrentDialog() }
                 { this.renderConfirmDialog() }
