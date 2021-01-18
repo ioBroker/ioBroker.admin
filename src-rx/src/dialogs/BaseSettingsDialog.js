@@ -249,7 +249,8 @@ class BaseSettingsDialog extends Component {
                     <Tabs
                         value={ this.state.currentTab }
                         onChange={ (event, newTab) => this.setState({ currentTab: newTab }) }
-                        aria-label="system tabs">
+                        aria-label="system tabs"
+                    >
                         <Tab label={ this.props.t('System') }     id={ 'system-tab' }    aria-controls={ 'simple-tabpanel-0' } />
                         <Tab label={ this.props.t('Multi-host') } id={ 'multihost-tab' } aria-controls={ 'simple-tabpanel-1' } />
                         <Tab label={ this.props.t('Objects') }    id={ 'objects-tab' }   aria-controls={ 'simple-tabpanel-3' } />
