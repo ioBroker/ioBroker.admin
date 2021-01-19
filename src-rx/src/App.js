@@ -1,3 +1,4 @@
+import React, { Suspense } from 'react';
 import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -46,20 +47,20 @@ import InstancesWorker from './components/InstancesWorker';
 import HostsWorker from './components/HostsWorker';
 import Login from './login/Login';
 
-// Tabs
-import Adapters from './tabs/Adapters';
-import Instances from './tabs/Instances';
-import Intro from './tabs/Intro';
-import Logs from './tabs/Logs';
-import Files from './tabs/Files';
-import Objects from './tabs/Objects';
-import CustomTab from './tabs/CustomTab';
-
 import i18n from '@iobroker/adapter-react/i18n';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import WizardDialog from './dialogs/WizardDialog';
 import BaseSettingsDialog from './dialogs/BaseSettingsDialog';
 import SystemSettingsDialog from "./dialogs/SystemSettingsDialog";
+
+// Tabs
+const Adapters = React.lazy(() => import ('./tabs/Adapters'));
+const Instances = React.lazy(() => import ('./tabs/Instances'));
+const Intro = React.lazy(() => import ('./tabs/Intro'));
+const Logs = React.lazy(() => import ('./tabs/Logs'));
+const Files = React.lazy(() => import ('./tabs/Files'));
+const Objects = React.lazy(() => import ('./tabs/Objects'));
+const CustomTab = React.lazy(() => import ('./tabs/CustomTab'));
 
 const query = {};
 (window.location.search || '').replace(/^\?/, '').split('&').forEach(attr => {
@@ -565,83 +566,99 @@ class App extends Router {
         if (this.state && this.state.currentTab && this.state.currentTab.tab) {
             if (this.state.currentTab.tab === 'tab-adapters') {
                 return (
-                    <Adapters
-                        key="adapters"
-                        systemConfig={ this.state.systemConfig }
-                        socket={ this.socket }
-                        hosts={ this.state.hosts }
-                        currentHost={ this.state.currentHost }
-                        currentHostName={ this.state.currentHostName }
-                        ready={ this.state.ready }
-                        t={ I18n.t }
-                        lang={ I18n.getLanguage() }
-                        expertMode={ this.state.expertMode }
-                        executeCommand={ cmd => this.executeCommand(cmd) }
-                    />
+                    <Suspense fallback={ <Connecting /> }>
+                        <Adapters
+                            key="adapters"
+                            systemConfig={ this.state.systemConfig }
+                            socket={ this.socket }
+                            hosts={ this.state.hosts }
+                            currentHost={ this.state.currentHost }
+                            currentHostName={ this.state.currentHostName }
+                            ready={ this.state.ready }
+                            t={ I18n.t }
+                            lang={ I18n.getLanguage() }
+                            expertMode={ this.state.expertMode }
+                            executeCommand={ cmd => this.executeCommand(cmd) }
+                        />
+                    </Suspense>
                 );
             } else
             if (this.state.currentTab.tab === 'tab-instances') {
                 return (
-                    <Instances
-                        key="instances"
-                        socket={ this.socket }
-                        lang={ I18n.getLanguage() }
-                        protocol={ this.state.protocol }
-                        hostname={ this.state.hostname }
-                        themeName={ this.state.themeName }
-                        expertMode={ this.state.expertMode }
-                        t={ I18n.t }
-                        configStored={ value => this.allStored(value) }
-                    />
+                    <Suspense fallback={ <Connecting /> }>
+                        <Instances
+                            key="instances"
+                            socket={ this.socket }
+                            lang={ I18n.getLanguage() }
+                            protocol={ this.state.protocol }
+                            hostname={ this.state.hostname }
+                            themeName={ this.state.themeName }
+                            expertMode={ this.state.expertMode }
+                            t={ I18n.t }
+                            configStored={ value => this.allStored(value) }
+                        />
+                    </Suspense>
                 );
             } else
             if (this.state.currentTab.tab === 'tab-intro') {
                 return (
-                    <Intro
-                        key="intro"
-                        protocol={ this.state.protocol }
-                        hostname={ this.state.hostname }
-                        showAlert={ (message, type) => this.showAlert(message, type) }
-                        socket={ this.socket }
-                        t={ I18n.t }
-                        lang={ I18n.getLanguage() }
-                    />
+                    <Suspense fallback={ <Connecting /> }>
+                        <Intro
+                            key="intro"
+                            protocol={ this.state.protocol }
+                            hostname={ this.state.hostname }
+                            showAlert={ (message, type) => this.showAlert(message, type) }
+                            socket={ this.socket }
+                            t={ I18n.t }
+                            lang={ I18n.getLanguage() }
+                        />
+                    </Suspense>
                 );
             } else
             if (this.state.currentTab.tab === 'tab-logs') {
                 return (
-                    <Logs
-                        key="logs"
-                        t={ I18n.t }
-                        lang={ this.state.lang }
-                        socket={ this.socket }
-                        ready={ this.state.ready }
-                        logsWorker={ this.logsWorker }
-                        expertMode={ this.state.expertMode }
-                        currentHost={ this.state.currentHost }
-                        clearErrors={ cb => this.clearLogErrors(cb) }
-                    />
+                    <Suspense fallback={ <Connecting /> }>
+                        <Logs
+                            key="logs"
+                            t={ I18n.t }
+                            lang={ this.state.lang }
+                            socket={ this.socket }
+                            ready={ this.state.ready }
+                            logsWorker={ this.logsWorker }
+                            expertMode={ this.state.expertMode }
+                            currentHost={ this.state.currentHost }
+                            clearErrors={ cb => this.clearLogErrors(cb) }
+                        />
+                    </Suspense>
                 );
             } else
             if (this.state.currentTab.tab === 'tab-files') {
-                return <Files
-                    key="files"
-                    ready={ this.state.ready }
-                    t={ I18n.t }
-                    expertMode={ this.state.expertMode }
-                    lang={ I18n.getLanguage() }
-                    socket={ this.socket }
-                />;
+                return (
+                    <Suspense fallback={ <Connecting /> }>
+                        <Files
+                            key="files"
+                            ready={ this.state.ready }
+                            t={ I18n.t }
+                            expertMode={ this.state.expertMode }
+                            lang={ I18n.getLanguage() }
+                            socket={ this.socket }
+                        />
+                    </Suspense>
+                );
             } else
             if (this.state.currentTab.tab === 'tab-objects') {
-                return <Objects
-                    key="objects"
-                    t={ I18n.t }
-                    themeName={ this.state.themeName }
-                    expertMode={ this.state.expertMode }
-                    lang={ I18n.getLanguage() }
-                    socket={ this.socket }
-                />;
+                return (
+                    <Suspense fallback={ <Connecting /> }>
+                        <Objects
+                            key="objects"
+                            t={ I18n.t }
+                            themeName={ this.state.themeName }
+                            expertMode={ this.state.expertMode }
+                            lang={ I18n.getLanguage() }
+                            socket={ this.socket }
+                        />
+                    </Suspense>
+                );
             } else {
                 const m = this.state.currentTab.tab.match(/^tab-([-\w\d]+)(-\d+)?$/);
                 if (m) {
@@ -654,17 +671,21 @@ class App extends Router {
                     }*/
 
                     // /adapter/javascript/tab.html
-                    return <CustomTab
-                        key={ this.state.currentTab.tab }
-                        t={ I18n.t }
-                        protocol={ this.state.protocol }
-                        hostname={ this.state.hostname }
-                        instancesWorker={ this.instancesWorker }
-                        tab={ this.state.currentTab.tab }
-                        themeName={ this.state.themeName }
-                        expertMode={ this.state.expertMode }
-                        lang={ I18n.getLanguage() }
-                    />;
+                    return (
+                        <Suspense fallback={ <Connecting /> }>
+                            <CustomTab
+                                key={ this.state.currentTab.tab }
+                                t={ I18n.t }
+                                protocol={ this.state.protocol }
+                                hostname={ this.state.hostname }
+                                instancesWorker={ this.instancesWorker }
+                                tab={ this.state.currentTab.tab }
+                                themeName={ this.state.themeName }
+                                expertMode={ this.state.expertMode }
+                                lang={ I18n.getLanguage() }
+                            />
+                        </Suspense>
+                    );
                 }
             }
         }
@@ -833,7 +854,7 @@ class App extends Router {
     }
 
     renderConfirmDialog() {
-        return                 <ConfirmDialog
+        return <ConfirmDialog
             onClose={ () => this.closeDataNotStoredDialog() }
             open={ this.state.dataNotStoredDialog }
             header={ i18n.t('Please confirm') }
