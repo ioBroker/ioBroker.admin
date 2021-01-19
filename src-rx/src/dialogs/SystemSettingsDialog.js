@@ -140,6 +140,7 @@ class SystemSettingsDialog extends Component
 
     render() 
     {
+        // console.log(this.state)
         const changed = JSON.stringify(this.state.systemSettings)     !== this.originalSettings ||
                         JSON.stringify(this.state.systemRepositories) !== this.originalRepositories;
         const tabs = this. getTabs().map((e,i) =>
@@ -148,6 +149,7 @@ class SystemSettingsDialog extends Component
                 label={ this.props.t( e.title ) } 
                 id={ (e.id).toString() } 
                 aria-controls={ 'simple-tabpanel-' +  e.id } 
+                key={i}
             />;
         })
         return <Dialog
@@ -204,37 +206,37 @@ class SystemSettingsDialog extends Component
                 id : 0,
                 title: 'System settings',
                 component: MainSettingsDialog,
-                data: this.state.systemSettings
+                data: "systemSettings"
             },
             {
                 id : 1,
                 title: 'Repositories',
                 component: RepositoriesDialog,
-                data: this.state.systemRepositories
+                data: "systemRepositories"
             },
             {
                 id : 2,
                 title: 'Certificates',
                 component: SertificatsDialog,
-                data: this.state.systemRepositories
+                data: "systemRepositories"
             },
             {
                 id : 3,
                 title: "Let's encrypt SSL",
                 component: SSLDialog,
-                data: this.state.systemRepositories
+                data: "systemRepositories"
             },
             {
                 id : 4,
                 title: "Default ACL",
                 component: ACLDialog,
-                data: this.state.systemRepositories
+                data: "systemRepositories"
             },
             {
                 id : 5,
                 title: "Statistics",
                 component: StatisticsDialog,
-                data: this.state.systemRepositories
+                data: "systemRepositories"
             }
         ]
     }
@@ -245,10 +247,11 @@ class SystemSettingsDialog extends Component
        const _t =  this. getTabs().filter((e, i) => {
            return e.id == (this.props.currentTab.id ).toString() ||  e.id == parseInt(this.props.currentTab.id) 
        }) [0] || this. getTabs()[0];
-       const _Cmponent =  _t.component;
+       const _Component =  _t.component;
        return <div className={ this.props.classes.tabPanel }> 
-           <_Cmponent
-                { ..._t.data }
+           <_Component
+                onChange={(id, data) => this.onChangedTab(id, data, _t.data) }
+                { ...this.state[_t.data] }
                 t={this.props.t}
            />
        </div>
@@ -256,6 +259,12 @@ class SystemSettingsDialog extends Component
     onTab = (event, newTab) =>
     { 
         Router.doNavigate(null, 'system', newTab)
+    }
+    onChangedTab(id, data, param)
+    {
+        let state = {...this.state};
+        state[param][id] = data;
+        this.setState(state);  
     }
 }
 

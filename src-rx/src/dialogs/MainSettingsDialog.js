@@ -1,18 +1,23 @@
 import { Component } from 'react';
 
+import { MapContainer as LeafletMap, TileLayer, Marker, Popup } from 'react-leaflet';
+
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import TextField from '@material-ui/core/TextField';
 
 // colors
 import blueGrey from '@material-ui/core/colors/blueGrey'
 
 // icons
+
+//data
+import countries from "../assets/json/countries";
 
 const styles = theme => ({
     tabPanel: 
@@ -40,7 +45,8 @@ class MainSettingsDialog extends Component
     {
         super(props);
         this.state={
-            values:[]
+            values:[],
+            ...props
         }
 
     }
@@ -48,7 +54,7 @@ class MainSettingsDialog extends Component
     {
         return [
             {
-                id      : "system_language",
+                id      : "language",
                 title   : "System language:",       
                 values  : [
                     {
@@ -94,43 +100,43 @@ class MainSettingsDialog extends Component
                 ]      
             },
             {
-                id:"system_tempUnit",
+                id:"tempUnit",
                 title:"Temperature units",
                 values: [
                     {
-                        id:"celcius",
+                        id:"°C",
                         title:"°C"
                     },
                     {
-                        id:"fahrenheit",
+                        id:"°F",
                         title:"°F"
                     }
                 ]
             },
             {
-                id:"system_currency",
+                id:"currency",
                 title:"Currency sign",
                 values: [
                     {
-                        id:"euro",
+                        id:"€",
                         title:"€"
                     },
                     {
-                        id:"dollar",
+                        id:"$",
                         title:"$"
                     },
                     {
-                        id:"ruble",
+                        id:"₽",
                         title:"₽"
                     },
                     {
-                        id:"pound",
+                        id:"₤",
                         title:"₤"
                     }
                 ]
             },
             {
-                id:"system_dateFormat",
+                id:"dateFormat",
                 title:"Date format",
                 values: [
                     {
@@ -148,28 +154,28 @@ class MainSettingsDialog extends Component
                 ]
             },
             {
-                id:"system_isFloatComma",
+                id:"isFloatComma",
                 title:"Date Float comma sign",
                 values: [
                     {
-                        id:"comma",
-                        title:"Comma"
+                        id:true,
+                        title:"comma"
                     },
                     {
-                        id:"point",
-                        title:"Point"
+                        id:false,
+                        title:"point"
                     }
                 ]
             },
             {
-                id:"system_defaultHistory",
+                id:"defaultHistory",
                 title:"Default History",
                 values: [
                    
                 ]
             },
             {
-                id:"system_activeRepo",
+                id:"activeRepo",
                 title:"Default Repository",
                 values: [
                     {
@@ -186,31 +192,117 @@ class MainSettingsDialog extends Component
     }
     render()
     {
-        const {classes} = this.props;
-        
+        const {classes} = this.props;        
         const selectors = this.getSettings().map((e,i) =>
         {
             return this.getSelect( e, i )
-        })
+        }) 
+        const center = [
+            this.state.longitude  ? this.state.longitude : 50,
+            this.state.latitude   ? this.state.latitude : 10
+        ]
         return <div className={ classes.tabPanel }>
-            <Grid container spacing={3}>
+            <Grid container spacing={6}>
                 <Grid item xs={6}>
                     <Grid container spacing={3}>
                         {selectors}
                     </Grid>
                 </Grid>
                 <Grid item xs={6}>
-                     MainSettings Map
+                    <LeafletMap
+                        center={center}
+                        zoom={14}
+                        maxZoom={18}
+                        attributionControl={true}
+                        zoomControl={true}
+                        doubleClickZoom={true}
+                        scrollWheelZoom={true}
+                        dragging={true}
+                        animate={true}
+                        easeLinearity={0.35}
+                        onClick={this.onMap} 
+                    >
+                        <TileLayer
+                            url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
+                        />
+                        <Marker position={center}>
+                            <Popup>
+                                Popup for any custom information.
+                            </Popup>
+                        </Marker>
+                    </LeafletMap>
                 </Grid>
                 
             </Grid>
+            <Grid container spacing={6}>
+                <Grid item xs={3}>
+                    {this.getCounters()}
+                </Grid>
+                <Grid item xs={3}> 
+                    <FormControl className={classes.formControl}>
+                        <InputLabel shrink id={ "city-label"}>
+                            { this.props.t("City")}
+                        </InputLabel>
+                        <TextField
+                            id="city"
+                            label="City"
+                            defaultValue={ this.state.city }
+                            InputLabelProps={{
+                                readOnly: false,
+                                shrink: true,
+                            }}
+                            onChange={evt => this.onChangeText(evt, "city") }
+                        />
+                    </FormControl>
+                </Grid>
+                <Grid item xs={3}> 
+                    <FormControl className={classes.formControl}>
+                        <InputLabel shrink id={ "latitude-label"}>
+                            { this.props.t("Latitude")}
+                        </InputLabel>
+                        <TextField
+                            id="latitude"
+                            label="Latitude"
+                            defaultValue={ this.state.latitude }
+                            InputLabelProps={{
+                                readOnly: false,
+                                shrink: true,
+                            }}
+                            onChange={evt => this.onChangeText(evt, "latitude") }
+                        />
+                    </FormControl>
+                </Grid>
+                <Grid item xs={3}> 
+                    <FormControl className={classes.formControl}>
+                        <InputLabel shrink id={ "longitude-label"}>
+                            { this.props.t("Longitude")}
+                        </InputLabel>
+                        <TextField
+                            id="longitude"
+                            label="Longitude"
+                            defaultValue={ this.state.longitude }
+                            InputLabelProps={{
+                                readOnly: false,
+                                shrink: true,
+                            }}
+                            onChange={evt => this.onChangeText(evt, "longitude") }
+                        />
+                    </FormControl>
+                </Grid>
+            </Grid>
         </div>
+
+    }
+    onMap = evt =>
+    {
+        console.log('evt');
 
     }
     getSelect( e, i )
     {
         const {classes} = this.props;
-        const value = this.state.values[this.getSettings()[i].id];
+        const value = this.state[this.getSettings()[i].id];
+        //console.log( this.getSettings()[i].id, value );
         const items = this.getSettings()[i].values.map((elem, index)=>
         {
              return <MenuItem value={elem.id} key={index}>
@@ -231,19 +323,64 @@ class MainSettingsDialog extends Component
                     inputProps={{ 'aria-label': 'Without label' }}
                 > 
                     {items}
-                </Select>
-                {/*
-                <FormHelperText>
-                    { this.props.t(this.getSettings()[i].title)  }
-                </FormHelperText>
-                */}
+                </Select> 
             </FormControl> 
         </Grid >
 
     }
+    getCounters = () =>
+    {
+        const {classes} = this.props;
+        const items = countries.map((elem, index) =>
+        {
+            return <MenuItem value={elem.name} key={index}>
+                { this.props.t(elem.name) }
+            </MenuItem> 
+        })
+        return <FormControl className={classes.formControl}>
+            <InputLabel shrink id={"country-label"}>
+                { this.props.t("Country")}
+            </InputLabel>
+            <Select
+                className={classes.formControl}
+                id={"country"}
+                value={ this.state.country }
+                onChange={ this.handleChangeCountry }
+                displayEmpty 
+                inputProps={{ 'aria-label': 'Without label' }}
+            > 
+                {items}
+            </Select> 
+        </FormControl> 
+    }
+    handleChangeCountry = evt  =>
+    {
+        const value = evt.target.value; 
+        const id = "country";
+        this.props.onChange( id, value);
+        console.log( id, value );
+        let state = {...this.state};
+        state[id] = value;
+        this.setState(state);
+    }
+    onChangeText = (evt, id) =>
+    {
+        const value = evt.target.value; 
+        this.props.onChange( id, value);
+        console.log( id, value );
+        let state = {...this.state};
+        state[id] = value;
+        this.setState(state);        
+    }
     handleChange = (evt, selectId) =>
     {
-
+        const value = evt.target.value; 
+        const id = this.getSettings()[selectId].id;
+        this.props.onChange( id, value);
+        console.log( id, value );
+        let state = {...this.state};
+        state[id] = value;
+        this.setState(state);
     }
 }
 
