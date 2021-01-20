@@ -28,7 +28,7 @@ const styles = theme => ({
         overflow:   'auto',
         overflowX   : "hidden",
         padding:    15,
-        backgroundColor: blueGrey[ 50 ]
+        //backgroundColor: blueGrey[ 50 ]
     } ,
     formControl: 
     {

@@ -23,7 +23,7 @@ const styles = theme => ({
         height:     '100% ',
         overflow:   'auto',
         padding:    15,
-        backgroundColor: blueGrey[ 50 ]
+        //backgroundColor: blueGrey[ 50 ]
     },
     buttonPanel :
     {
@@ -38,6 +38,11 @@ const styles = theme => ({
         border:"none",
         display:'flex',
         alignItems:"center"
+    },
+    formControl: 
+    {
+        margin: theme.spacing(1),
+        minWidth: "100%",
     },
 });
 
@@ -72,13 +77,10 @@ class SSLDialog extends Component
             </div>
             <Grid container spacing={6}> 
                 <Grid item xs={3}> 
-                    <FormControl className={classes.formControl}>
-                        <InputLabel shrink id={ "city-label"}>
-                            { this.props.t("Email for account:")}
-                        </InputLabel>
+                    <FormControl className={classes.formControl}> 
                         <TextField
                             id="email"
-                            label="email"
+                            label={ this.props.t("Email for account:")}
                             defaultValue={ this.state.email }
                             InputLabelProps={{
                                 readOnly: false,
@@ -87,21 +89,32 @@ class SSLDialog extends Component
                             onChange={evt => this.onChangeText(evt, "email") }
                         />
                     </FormControl>
-                </Grid>
+                </Grid> 
                 <Grid item xs={3}> 
-                    <FormControl className={classes.formControl}>
-                        <InputLabel shrink id={ "city-label"}>
-                            { this.props.t("Email for account:")}
-                        </InputLabel>
+                    <FormControl className={classes.formControl}> 
                         <TextField
-                            id="email"
-                            label="email"
-                            defaultValue={ this.state.email }
+                            id="domains"
+                            label={ this.props.t("Domains:")}
+                            defaultValue={ this.state.domains }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
                             }}
-                            onChange={evt => this.onChangeText(evt, "email") }
+                            onChange={evt => this.onChangeText(evt, "domains") }
+                        />
+                    </FormControl>
+                </Grid>
+                <Grid item xs={3}> 
+                    <FormControl className={classes.formControl}> 
+                        <TextField
+                            id="path" 
+                            label={ this.props.t("Path to storage:")}
+                            defaultValue={ this.state.path }
+                            InputLabelProps={{
+                                readOnly: false,
+                                shrink: true,
+                            }}
+                            onChange={evt => this.onChangeText(evt, "path") }
                         />
                     </FormControl>
                 </Grid>

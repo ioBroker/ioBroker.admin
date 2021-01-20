@@ -36,8 +36,8 @@ const styles = theme => ({
         overflow: 'hidden'
     },
     tab: {
-        backgroundColor:"#FFF",
-        color:lightBlue[500]
+        // backgroundColor:"#FFF",
+        // color:lightBlue[500]
     }
 });
 

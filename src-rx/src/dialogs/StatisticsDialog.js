@@ -19,7 +19,7 @@ const styles = theme => ({
         height:     '100% ',
         overflow:   'auto',
         padding:    15,
-        backgroundColor: blueGrey[ 50 ]
+        //backgroundColor: blueGrey[ 50 ]
     },
     note:
     {
