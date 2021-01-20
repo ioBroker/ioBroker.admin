@@ -10,6 +10,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
+import Paper from '@material-ui/core/Paper';
 
 // colors
 import blueGrey from '@material-ui/core/colors/blueGrey'
@@ -25,6 +26,7 @@ const styles = theme => ({
         width:      '100%',
         height:     '100% ',
         overflow:   'auto',
+        overflowX   : "hidden",
         padding:    15,
         backgroundColor: blueGrey[ 50 ]
     } ,
@@ -36,6 +38,15 @@ const styles = theme => ({
     selectEmpty: 
     {
         marginTop: theme.spacing(2),
+    },
+    descrPanel:
+    {
+        width:"100%",
+        // backgroundColor:"transparent",
+        padding :16,
+        // border:"none",
+        display:'flex',
+        alignItems:"center"
     },
 });
 
@@ -198,12 +209,15 @@ class MainSettingsDialog extends Component
             return this.getSelect( e, i )
         }) 
         const center = [
-            this.state.longitude  ? this.state.longitude : 50,
-            this.state.latitude   ? this.state.latitude : 10
+            this.state.latitude   ? this.state.latitude : 50,
+            this.state.longitude  ? this.state.longitude : 10
         ]
         return <div className={ classes.tabPanel }>
             <Grid container spacing={6}>
-                <Grid item xs={6}>
+                <Grid item xs={6}> 
+                    <Paper variant="outlined" className={ classes.descrPanel }>
+                        { this.props.t( "cert_path_note" ) }
+                    </Paper>
                     <Grid container spacing={3}>
                         {selectors}
                     </Grid>

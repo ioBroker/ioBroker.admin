@@ -80,9 +80,19 @@ class SystemSettingsDialog extends Component
                     });
                     this.originalRepositories = JSON.stringify(systemRepositories.native.repositories);
                     this.originalSettings = JSON.stringify(newState.systemSettings);
-                    newState.systemRepositories = systemRepositories.native.repositories;
-                    this.setState(newState);
-                });
+                    newState.systemRepositories = systemRepositories.native.repositories;                    
+                    return this.props.socket.getObject('system.config');
+                })
+                    .then(systemcConfig => {
+                        //console.log(systemcConfig);
+                        newState.systemcConfig = systemcConfig;
+                        return this.props.socket.getObject('system.certificates');
+                    })
+                        .then(systemcCertificates => {
+                            //console.log(systemcCertificates);
+                            newState.systemcCertificates = systemcCertificates;
+                            this.setState(newState);                            
+                        });
     }
     renderConfirmDialog() 
     {
@@ -140,7 +150,7 @@ class SystemSettingsDialog extends Component
 
     render() 
     {
-        // console.log(this.state)
+        //console.log(this.state)
         const changed = JSON.stringify(this.state.systemSettings)     !== this.originalSettings ||
                         JSON.stringify(this.state.systemRepositories) !== this.originalRepositories;
         const tabs = this. getTabs().map((e,i) =>
@@ -218,7 +228,7 @@ class SystemSettingsDialog extends Component
                 id : 2,
                 title: 'Certificates',
                 component: SertificatsDialog,
-                data: "systemRepositories"
+                data: "systemcCertificates"
             },
             {
                 id : 3,

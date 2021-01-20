@@ -1,16 +1,27 @@
 // SertificatsDialog.js
-
-
 import { Component } from 'react';
 
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
+import Fab from '@material-ui/core/Fab'; 
+import Paper from '@material-ui/core/Paper';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import TextField from '@material-ui/core/TextField';
 
-import blueGrey from '@material-ui/core/colors/blueGrey'
+import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
+
+import blueGrey from '@material-ui/core/colors/blueGrey' 
 
 
 // icons
+
+
 
 const styles = theme => ({
     tabPanel: {
@@ -19,25 +30,159 @@ const styles = theme => ({
         overflow:   'auto',
         padding:    15,
         backgroundColor: blueGrey[ 50 ]
+    },
+    table: 
+    {
+        minWidth: 650,
+    },
+    buttonPanel :
+    {
+        paddingBottom: 40,
+        display:'flex'
+    },
+    descrPanel:
+    {
+        width:"100%",
+        backgroundColor:"transparent",
+        marginLeft:40,
+        border:"none",
+        display:'flex',
+        alignItems:"center"
+    },
+    littleRow : 
+    {
+        width: 110
+    },
+    nameRow : 
+    {
+        width: 220
+    },
+    input : 
+    {
+        width: "100%"
     }
 });
 
 class SertificatsDialog extends Component 
 {
+    constructor(props)
+    {
+        super(props);
+        const arr = Object.keys(props.native.certificates)
+            .map(e => { return  {data : props.native.certificates[e], title : e} } )
+        
+        this.state={
+            ...props,
+            arr     : arr
+        }
+
+    }
     render()
     {
-        const {classes} = this.props;
+        const { classes } = this.props; 
+        console.log( this.state );
+        const rows = this.state.arr.map((e, i) =>
+        {
+            return <TableRow key={e.title + e.data} >
+                <TableCell className={this.props.classes.littleRow}>
+                    {i + 1}
+                </TableCell>
+                <TableCell className={this.props.classes.nameRow}>                               
+                    <TextField 
+                        defaultValue={e.title}
+                        InputLabelProps={{
+                            readOnly: false,
+                            shrink: true,
+                        }} 
+                        className={this.props.classes.input}
+                    />
+                </TableCell>
+                <TableCell>
+                    <TextField
+                        id="default" 
+                        defaultValue={ e.data }
+                        InputLabelProps={{
+                            readOnly: false,
+                            shrink: true,
+                        }}
+                        className={this.props.classes.input}
+                        onChange={evt => this.onChangeText(evt, e.title) }
+                    />
+                </TableCell>
+                <TableCell className={this.props.classes.littleRow}>
+                    <Fab
+                        size="small"  
+                        color="secondary" 
+                        aria-label="add" 
+                        onClick={evt => this.onDelete( i )}
+                    >
+                       <DeleteIcon />
+                    </Fab>
+                </TableCell>
+            </TableRow>
+        })
         return <div className={ classes.tabPanel }>
-            <Grid container spacing={3}>
-                <Grid item xs={3}>
-                    SertificatsDialog
-                </Grid>
-                <Grid item xs={9}>
-                    SertificatsDialog
-                </Grid>
-            </Grid>
+            <div className={ classes.buttonPanel }>
+            <Fab 
+                    size="small"  
+                    color="primary" 
+                    aria-label="add"
+                    onClick={this.onAdd}
+                >
+                    <AddIcon />
+                </Fab>
+                <Paper variant="outlined" className={ classes.descrPanel }>
+                    {
+                        this.props.t(
+                            "вы можете использовать абсолютный путь к сертификату, например '/opt/certs/cert.pem', или просто перетащить файл сюда"
+                        )
+                    }
+                </Paper>
+            </div>
+            <TableContainer>
+                <Table className={classes.table} aria-label="customized table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell className={this.props.classes.littleRow}> </TableCell>
+                            <TableCell className={this.props.classes.nameRow}>
+                                {this.props.t("name")}
+                            </TableCell>
+                            <TableCell>{this.props.t("Sertificate")}</TableCell>
+                            <TableCell className={this.props.classes.littleRow}> </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        { rows }                        
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </div>
 
+    }
+    onChangeText = (evt, id) =>
+    {
+        const value = evt.target.value; 
+        this.props.onChange( id, value);
+        console.log( id, value );
+        let state = {...this.state};
+        state[id] = value;
+        this.setState(state);        
+    }
+    onDelete = i =>
+    {
+        let arr = [...this.state.arr];
+        arr.splice(i, 1);
+        console.log(arr, i )
+        this.setState({arr});
+    }
+    onAdd = () =>
+    {
+        let arr = [...this.state.arr];
+        arr.push({
+            link: "",
+            title: ""  
+        });
+        this.setState({arr});
     }
 }
 
