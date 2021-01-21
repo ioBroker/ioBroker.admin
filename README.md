@@ -95,6 +95,9 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 
 ## Changelog
 
+### __WORK IN PROGRESS__
+* (Apollon77) Make sure subscribe patterns are strings (Sentry IOBROKER-ADMIN-34)
+
 ### 4.2.1 (2021-01-12)
 * (Apollon77) Also allow pre-prelease versions for dependency checks
 
