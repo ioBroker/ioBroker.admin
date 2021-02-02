@@ -11,6 +11,9 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
 
 import blueGrey from '@material-ui/core/colors/blueGrey'
 
@@ -64,38 +67,56 @@ class ACLDialog extends Component
     render()
     {
         const {classes} = this.props;
+        const users = this.props.users.map((elem, index)=>
+        {
+             return <MenuItem value={elem.id} key={index}>
+                 { this.props.t(elem.common.name) }
+             </MenuItem>   
+        } );
+        const groups = this.props.groups.map((elem, index)=>
+        {
+             return <MenuItem value={elem.id} key={index}>
+                 { this.props.t(elem.common.name['ru']) }
+             </MenuItem>   
+        } );
         return <div className={ classes.tabPanel }>
             <Typography variant="h5" component="div">
                 {this.props.t("Access control list")}
             </Typography>
             <Grid container spacing={3}>
                 <Grid item xs={3}>
-                    <FormControl className={classes.formControl}> 
-                        <TextField
-                            id="owner"
-                            label={ this.props.t("Owner user")}
-                            defaultValue={ this.state.owner }
-                            InputLabelProps={{
-                                readOnly: false,
-                                shrink: true,
-                            }}
-                            onChange={evt => this.onChangeText(evt, "owner") }
-                        />
-                    </FormControl>
+                    <FormControl className={classes.formControl}>
+                        <InputLabel shrink id={"owner" + "-label"}>
+                            { this.props.t("Owner user")}
+                        </InputLabel>
+                        <Select
+                            className={classes.formControl}
+                            id={"owner"}
+                            value={ this.state.owner }
+                            onChange={ evt => this.handleChange(evt, "owner") }
+                            displayEmpty 
+                            inputProps={{ 'aria-label': 'users' }}
+                        > 
+                            {users}
+                        </Select> 
+                    </FormControl> 
                 </Grid>
                 <Grid item xs={3}>
-                    <FormControl className={classes.formControl}> 
-                        <TextField
-                            id="ownergroup"
-                            label={ this.props.t("Owner group")}
-                            defaultValue={ this.state.ownergroup }
-                            InputLabelProps={{
-                                readOnly: false,
-                                shrink: true,
-                            }}
-                            onChange={evt => this.onChangeText(evt, "ownergroup") }
-                        />
-                    </FormControl>
+                    <FormControl className={classes.formControl}>
+                        <InputLabel shrink id={"ownergroup" + "-label"}>
+                            { this.props.t("Owner group")}
+                        </InputLabel>
+                        <Select
+                            className={classes.formControl}
+                            id={"ownergroup"}
+                            value={ this.state.ownergroup }
+                            onChange={ evt => this.handleChange(evt, "ownergroup")  }
+                            displayEmpty 
+                            inputProps={{ 'aria-label': 'ownergroup' }}
+                        > 
+                            {groups}
+                        </Select> 
+                    </FormControl> 
                 </Grid>
             </Grid> 
             <Grid container spacing={3}>
@@ -209,11 +230,12 @@ class ACLDialog extends Component
             </Table>
         </TableContainer>
     }
-    onChangeText = (evt, id) =>
+    handleChange = (evt, id) =>
     {
+        alert("AAAAAAAAAAAAAAAAAAAAAAAAAA")
         const value = evt.target.value; 
+        console.log( evt, id, value );
         this.props.onChange( id, value);
-        console.log( id, value );
         let state = {...this.state};
         state[id] = value;
         this.setState(state);        

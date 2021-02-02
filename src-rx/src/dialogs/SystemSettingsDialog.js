@@ -29,6 +29,10 @@ import CloseIcon from '@material-ui/icons/Close';
 //fills
 import lightBlue from '@material-ui/core/colors/lightBlue'
 
+//style
+import "../assets/css/style.css";
+
+
 const styles = theme => ({
     tabPanel: {
         width:    '100%',
@@ -59,6 +63,7 @@ class SystemSettingsDialog extends Component
         const newState = {loading: false};
          return this.props.socket.getSystemConfig(true)
             .then(systemSettings => {
+                console.log(systemSettings); 
                 newState.systemSettings = systemSettings && systemSettings.common ? systemSettings.common : {};
                 return this.props.socket.getObject('system.repositories');
             })
@@ -83,16 +88,34 @@ class SystemSettingsDialog extends Component
                     newState.systemRepositories = systemRepositories.native.repositories;                    
                     return this.props.socket.getObject('system.config');
                 })
+                
                     .then(systemcConfig => {
-                        //console.log(systemcConfig);
+                        console.log(systemcConfig);
                         newState.systemcConfig = systemcConfig;
-                        return this.props.socket.getObject('system.certificates');
+                        // return this.props.socket.getObject('system.certificates');
+                        return this.props.socket.getRawSocket().emit('sendToHost', this.props.currentHost, 'getDiagData', systemcConfig.diag);
                     })
-                        .then(systemcCertificates => {
-                            //console.log(systemcCertificates);
-                            newState.systemcCertificates = systemcCertificates;
-                            this.setState(newState);                            
-                        });
+                        /**/
+                        .then(diagData => {
+                            console.log(diagData);  
+                            newState.diagData = diagData;                           
+                            return this.props.socket.getUsers();
+                        })
+                            .then(users => {
+                                console.log(users);       
+                                newState.users = users;                           
+                                return this.props.socket.getGroups();
+                            })  
+                                .then(groups => {
+                                    console.log(groups);   
+                                    newState.groups = groups;                             
+                                    return this.props.socket.getObject('system.certificates');
+                                })                        
+                                    .then(systemcCertificates => {
+                                        console.log(systemcCertificates);
+                                        newState.systemcCertificates = systemcCertificates;
+                                        this.setState(newState);                            
+                                    });
     }
     renderConfirmDialog() 
     {
@@ -234,19 +257,19 @@ class SystemSettingsDialog extends Component
                 id : 3,
                 title: "Let's encrypt SSL",
                 component: SSLDialog,
-                data: "systemRepositories"
+                data: "systemcCertificates"
             },
             {
                 id : 4,
                 title: "Default ACL",
                 component: ACLDialog,
-                data: "systemRepositories"
+                data: "systemcConfig"
             },
             {
                 id : 5,
                 title: "Statistics",
                 component: StatisticsDialog,
-                data: "systemRepositories"
+                data: "systemcConfig"
             }
         ]
     }
@@ -258,10 +281,13 @@ class SystemSettingsDialog extends Component
            return e.id == (this.props.currentTab.id ).toString() ||  e.id == parseInt(this.props.currentTab.id) 
        }) [0] || this. getTabs()[0];
        const _Component =  _t.component;
+       const {groups, users} = this.state;
        return <div className={ this.props.classes.tabPanel }> 
            <_Component
                 onChange={(id, data) => this.onChangedTab(id, data, _t.data) }
                 { ...this.state[_t.data] }
+                users={users}
+                groups={groups}
                 t={this.props.t}
            />
        </div>

@@ -61,6 +61,11 @@ class MainSettingsDialog extends Component
         }
 
     }
+    componentDidMount()
+    {
+        console.log("mount")
+
+    }
     getSettings()
     {
         return [
@@ -203,6 +208,7 @@ class MainSettingsDialog extends Component
     }
     render()
     {
+        //console.log(this.state)
         const {classes} = this.props;        
         const selectors = this.getSettings().map((e,i) =>
         {
@@ -234,16 +240,12 @@ class MainSettingsDialog extends Component
                         dragging={true}
                         animate={true}
                         easeLinearity={0.35}
-                        onClick={this.onMap} 
+                        whenCreated={this.onMap} 
                     >
                         <TileLayer
                             url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
                         />
-                        <Marker position={center}>
-                            <Popup>
-                                Popup for any custom information.
-                            </Popup>
-                        </Marker>
+                        
                     </LeafletMap>
                 </Grid>
                 
@@ -260,7 +262,7 @@ class MainSettingsDialog extends Component
                         <TextField
                             id="city"
                             label="City"
-                            defaultValue={ this.state.city }
+                            value={ this.state.city }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
@@ -277,7 +279,7 @@ class MainSettingsDialog extends Component
                         <TextField
                             id="latitude"
                             label="Latitude"
-                            defaultValue={ this.state.latitude }
+                            value={ this.state.latitude }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
@@ -294,7 +296,7 @@ class MainSettingsDialog extends Component
                         <TextField
                             id="longitude"
                             label="Longitude"
-                            defaultValue={ this.state.longitude }
+                            value={ this.state.longitude }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
@@ -307,10 +309,36 @@ class MainSettingsDialog extends Component
         </div>
 
     }
-    onMap = evt =>
+    onMap = map =>
     {
-        console.log('evt');
+        //console.log(map);
+        //console.log(window.L);
+        const center = [
+            this.state.latitude   ? this.state.latitude : 50,
+            this.state.longitude  ? this.state.longitude : 10
+        ]
+        var marker = window.L.marker(
+            center, 
+            {
+                draggable:true,
+                title:"Resource location",
+                alt:"Resource Location",
+                riseOnHover:true
+           }
+        )
+            .addTo(map)
+                .bindPopup(" Popup for any custom information.")
+                    .on({
+                         dragend: evt => this.onMarkerDragend(evt)
+                    });
 
+        map.on({  click: evt => console.log(evt.latlng.lat)  }); 
+        /*
+        var elements = document.getElementsByClassName("leaflet-marker-icon");
+        while(elements.length > 0){
+           // elements[0].parentNode.removeChild(elements[0]);
+        }
+        */
     }
     getSelect( e, i )
     {
@@ -395,6 +423,18 @@ class MainSettingsDialog extends Component
         let state = {...this.state};
         state[id] = value;
         this.setState(state);
+    }
+    onMarkerDragend = evt =>
+    {
+        const ll = evt.target._latlng;
+        //console.log(ll)
+        this.props.onChange( "latitude",  ll.lat);
+        this.props.onChange( "longitude", ll.lng);
+        this.setState({
+           latitude  : ll.lat,
+           longitude : ll.lng
+        })
+
     }
 }
 

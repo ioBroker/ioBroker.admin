@@ -293,9 +293,10 @@ class App extends Router {
         }
     }
 
-    componentDidMount() {
-        if (!this.state.login) {
-
+    componentDidMount() 
+    {
+        if (!this.state.login) 
+        {
             window.addEventListener('hashchange', () => this.onHashChanged(), false);
 
             if (!this.state.currentTab.tab) {

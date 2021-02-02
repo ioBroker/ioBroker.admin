@@ -56,7 +56,7 @@ class StatisticsDialog extends Component
     {
         const {classes} = this.props;
         return <div className={ classes.tabPanel }>
-            <Grid container spacing={3}>
+            <Grid container spacing={3}  className="sendData-grid">
                 <Grid item xs={4}>
                     <Card  className={classes.note} >
                         <Typography gutterBottom variant="h6" component="div">
@@ -71,12 +71,15 @@ class StatisticsDialog extends Component
                      </Card >
                     { this.getTypesSelector() }
                 </Grid>
-                <Grid item xs={8}>
+                <Grid item xs={8} className="sendData-grid">
                     <Paper className={classes.statis} >
                         <Typography gutterBottom variant="h6" component="div">
                             {this.props.t("Sent data:")}
                         </Typography>                       
                     </Paper>
+                    <pre id="diagSample">
+
+                    </pre>
                 </Grid>
             </Grid>
         </div>

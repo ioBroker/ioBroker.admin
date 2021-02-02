@@ -1,0 +1,22 @@
+#diagSample {
+    background: #fff;
+}
+#tabs-system, #diagSample {
+    overflow: auto;
+}
+.m pre {
+    font-family: monospace,monospace;
+    font-size: 1em;
+}
+
+@media screen and (min-width: 993px)
+{
+    .sendData-grid 
+    {
+        height: calc(100% - 1rem);
+    }
+    #diagSample 
+    {
+        height: calc(100% - 6rem);
+    }
+}

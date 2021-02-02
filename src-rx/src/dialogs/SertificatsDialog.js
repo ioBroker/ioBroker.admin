@@ -79,8 +79,8 @@ class SertificatsDialog extends Component
     }
     render()
     {
+        //console.log( this.props );
         const { classes } = this.props; 
-        console.log( this.state );
         const rows = this.state.arr.map((e, i) =>
         {
             return <TableRow key={e.title + e.data} >

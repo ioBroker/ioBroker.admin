@@ -58,7 +58,9 @@ class SSLDialog extends Component
     }
     render()
     {
-        const { classes } = this.props; 
+        console.log( this.props.native.letsEncrypt );
+        const { classes, native } = this.state; 
+        const {letsEncrypt} = native || {};
         return <div className={ classes.tabPanel }>
             <div className={ classes.buttonPanel }>
                 <Fab 
@@ -81,7 +83,7 @@ class SSLDialog extends Component
                         <TextField
                             id="email"
                             label={ this.props.t("Email for account:")}
-                            defaultValue={ this.state.email }
+                            value={ letsEncrypt.email }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
@@ -95,7 +97,7 @@ class SSLDialog extends Component
                         <TextField
                             id="domains"
                             label={ this.props.t("Domains:")}
-                            defaultValue={ this.state.domains }
+                            value={ letsEncrypt.domains }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
@@ -109,7 +111,7 @@ class SSLDialog extends Component
                         <TextField
                             id="path" 
                             label={ this.props.t("Path to storage:")}
-                            defaultValue={ this.state.path }
+                            value={ letsEncrypt.path }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
