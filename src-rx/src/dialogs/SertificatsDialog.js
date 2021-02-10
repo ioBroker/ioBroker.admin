@@ -1,8 +1,11 @@
 // SertificatsDialog.js
 import { Component } from 'react';
+import clsx from 'clsx';
+import Dropzone from 'react-dropzone'
 
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
+
 import Fab from '@material-ui/core/Fab'; 
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -29,7 +32,11 @@ const styles = theme => ({
         height:     '100% ',
         overflow:   'auto',
         padding:    15,
+        position:   "relative",
         //backgroundColor: blueGrey[ 50 ]
+    },
+    tableContainer:{
+        zIndex:100
     },
     table: 
     {
@@ -71,9 +78,10 @@ class SertificatsDialog extends Component
         const arr = Object.keys(props.native.certificates)
             .map(e => { return  {data : props.native.certificates[e], title : e} } )
         
-        this.state={
+        this.state = {
             ...props,
-            arr     : arr
+            arr     : arr,
+            chclass : false
         }
 
     }
@@ -122,8 +130,87 @@ class SertificatsDialog extends Component
             </TableRow>
         })
         return <div className={ classes.tabPanel }>
+            <Dropzone 
+                noClick 
+                accept="text/plain,application/json"
+            >
+            {({ getRootProps, getInputProps, acceptedFiles, fileRejections }) => (
+                <div {...getRootProps({ 
+                    accept:  "text/plain",
+                    className   : clsx( this.state.chclass ? "drop-container drop-dop" : 'drop-container'),
+                    onDragEnter : evt => {
+                        //console.log( getRootProps(), evt );
+                        this.setState({chclass : true}) 
+                    },
+                    onDragLeave : evt => {
+                        //console.log( "onDragLeave", evt, acceptedFiles, fileRejections ) 
+                        this.setState({chclass : false}) 
+                    },
+                    onDrop      : evt => {
+                        //console.log( "onDrop", evt, acceptedFiles, fileRejections );
+                        if( fileRejections.length > 0 ) 
+                        {
+                            //console.log( "onDrop fileRejections", fileRejections);
+                            let msg = [];
+                            fileRejections.map((e =>
+                                {
+                                    let m = e.file.name + ": ", mm = [];
+                                    e.errors.forEach(ee =>
+                                        {
+                                           mm.push( ee.message );
+                                        })
+                                    msg.push( m + mm.join( "," ) );   
+                                }));
+                            alert(msg.join(", "))
+                        }
+                        if( acceptedFiles.length > 0 )
+                        {
+                            //console.log( "onDrop acceptedFiles", acceptedFiles);
+                            acceptedFiles.map(file =>
+                            {
+                                var reader = new FileReader();
+                                reader.onload = async (e) =>
+                                { 
+                                    //console.log( file.name ); 
+                                    //console.log( e.target.result ); 
+                                    let arr = [...this.state.arr];
+                                    let name = file.name;
+                                    name =  name.split(".");   
+                                    name.splice( name.length - 1, 100 ) 
+                                    arr.push({
+                                        data: e.target.result,
+                                        title:  name.join(".")
+                                    });
+                                    this.setState({arr});
+                                    let dat = {};
+                                    arr.forEach(ar =>
+                                    {
+                                        dat[ar.title] = ar.data;
+                                    })
+                                    this.props.onChange( 
+                                        "native", 
+                                        {
+                                            certificates : dat
+                                        }
+                                    );
+                                };
+                                reader.readAsText(file);
+                            })
+                            
+                        }
+                        else if(fileRejections.length == 0)
+                        {
+                            alert("No files exists")
+                        }
+                        this.setState({chclass : false}) 
+                    }
+                })}>
+                    <input {...getInputProps()} /> 
+                </div>
+            )}
+            </Dropzone>
             <div className={ classes.buttonPanel }>
-            <Fab 
+                <Fab 
                     size="small"  
                     color="primary" 
                     aria-label="add"
@@ -139,7 +226,7 @@ class SertificatsDialog extends Component
                     }
                 </Paper>
             </div>
-            <TableContainer>
+            <TableContainer className={classes.tableContainer}>
                 <Table className={classes.table} aria-label="customized table">
                     <TableHead>
                         <TableRow>
@@ -157,7 +244,6 @@ class SertificatsDialog extends Component
                 </Table>
             </TableContainer>
         </div>
-
     }
     onChangeText = (evt, id) =>
     {

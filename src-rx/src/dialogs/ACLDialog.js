@@ -69,14 +69,14 @@ class ACLDialog extends Component
         const {classes} = this.props;
         const users = this.props.users.map((elem, index)=>
         {
-             return <MenuItem value={elem.id} key={index}>
+             return <MenuItem value={elem.ts} key={index}>
                  { this.props.t(elem.common.name) }
              </MenuItem>   
         } );
         const groups = this.props.groups.map((elem, index)=>
         {
-             return <MenuItem value={elem.id} key={index}>
-                 { this.props.t(elem.common.name['ru']) }
+             return <MenuItem value={elem._id} key={index}>
+                { this.props.t(elem.common.name['ru']) }
              </MenuItem>   
         } );
         return <div className={ classes.tabPanel }>
@@ -232,7 +232,6 @@ class ACLDialog extends Component
     }
     handleChange = (evt, id) =>
     {
-        alert("AAAAAAAAAAAAAAAAAAAAAAAAAA")
         const value = evt.target.value; 
         console.log( evt, id, value );
         this.props.onChange( id, value);

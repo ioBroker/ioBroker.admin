@@ -68,7 +68,7 @@ class RepositoriesDialog extends Component
     {
         super(props);
         const arr = Object.keys(props)
-            .filter((e,i) => typeof props[e].link === "string" )
+            .filter((e,i) => props[e] && typeof props[e].link === "string" )
                 .map(e => { return  {...props[e], title:e} } )
         
         this.state={

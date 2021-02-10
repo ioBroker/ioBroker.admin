@@ -35,7 +35,7 @@ import "../assets/css/style.css";
 
 const styles = theme => ({
     tabPanel: {
-        width:    '100%',
+        width: '100%',
         height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
         overflow: 'hidden'
     },
@@ -63,7 +63,7 @@ class SystemSettingsDialog extends Component
         const newState = {loading: false};
          return this.props.socket.getSystemConfig(true)
             .then(systemSettings => {
-                console.log(systemSettings); 
+                //console.log(systemSettings); 
                 newState.systemSettings = systemSettings && systemSettings.common ? systemSettings.common : {};
                 return this.props.socket.getObject('system.repositories');
             })
@@ -85,34 +85,42 @@ class SystemSettingsDialog extends Component
                     });
                     this.originalRepositories = JSON.stringify(systemRepositories.native.repositories);
                     this.originalSettings = JSON.stringify(newState.systemSettings);
+                    //console.log(systemRepositories.native.repositories);
                     newState.systemRepositories = systemRepositories.native.repositories;                    
                     return this.props.socket.getObject('system.config');
                 })
                 
                     .then(systemcConfig => {
-                        console.log(systemcConfig);
+                        //console.log(systemcConfig);
                         newState.systemcConfig = systemcConfig;
                         // return this.props.socket.getObject('system.certificates');
-                        return this.props.socket.getRawSocket().emit('sendToHost', this.props.currentHost, 'getDiagData', systemcConfig.diag);
+                        return this.props.socket.getRawSocket().emit(
+                            'sendToHost', 
+                            this.props.currentHost, 
+                            'getDiagData', 
+                            systemcConfig.common.diag, 
+                            diagData => {
+                                //console.log(diagData)
+                                newState.diagData = diagData;    
+                            });
                     })
                         /**/
                         .then(diagData => {
-                            console.log(diagData);  
-                            newState.diagData = diagData;                           
                             return this.props.socket.getUsers();
                         })
                             .then(users => {
-                                console.log(users);       
+                                //console.log(users);       
                                 newState.users = users;                           
                                 return this.props.socket.getGroups();
                             })  
                                 .then(groups => {
-                                    console.log(groups);   
+                                    //console.log(groups);   
                                     newState.groups = groups;                             
                                     return this.props.socket.getObject('system.certificates');
                                 })                        
                                     .then(systemcCertificates => {
                                         console.log(systemcCertificates);
+                                        this.originalCertificates = JSON.stringify( systemcCertificates );
                                         newState.systemcCertificates = systemcCertificates;
                                         this.setState(newState);                            
                                     });
@@ -154,7 +162,7 @@ class SystemSettingsDialog extends Component
                         systemRepositories = systemRepositories || {};
                         systemRepositories.native = systemRepositories.native || {};
                         systemRepositories.native.repositories = systemRepositories.native.repositories || {};
-                        const newRepo = JSON.pars(JSON.stringify(this.state.systemRepositories));
+                        const newRepo = JSON.parse(JSON.stringify(this.state.systemRepositories));
 
                         // merge new and existing info
                         Object.keys(newRepo).forEach(repo => {
@@ -173,9 +181,10 @@ class SystemSettingsDialog extends Component
 
     render() 
     {
-        //console.log(this.state)
-        const changed = JSON.stringify(this.state.systemSettings)     !== this.originalSettings ||
-                        JSON.stringify(this.state.systemRepositories) !== this.originalRepositories;
+        //console.log(this.props)
+        const changed = JSON.stringify(this.state.systemSettings)       !== this.originalSettings ||
+                        JSON.stringify(this.state.systemRepositories)   !== this.originalRepositories ||
+                        JSON.stringify(this.state.systemcCertificates)  !== this.originalCertificates;
         const tabs = this. getTabs().map((e,i) =>
         {
             return  <Tab
@@ -245,31 +254,36 @@ class SystemSettingsDialog extends Component
                 id : 1,
                 title: 'Repositories',
                 component: RepositoriesDialog,
-                data: "systemRepositories"
+                data: "systemRepositories",
+                data2:{}
             },
             {
                 id : 2,
                 title: 'Certificates',
                 component: SertificatsDialog,
-                data: "systemcCertificates"
+                data: "systemcCertificates",
+                data2:{}
             },
             {
                 id : 3,
                 title: "Let's encrypt SSL",
                 component: SSLDialog,
-                data: "systemcCertificates"
+                data: "systemcCertificates",
+                data2:{}
             },
             {
                 id : 4,
                 title: "Default ACL",
                 component: ACLDialog,
-                data: "systemcConfig"
+                data: "systemcConfig",
+                data2:{}
             },
             {
                 id : 5,
                 title: "Statistics",
                 component: StatisticsDialog,
-                data: "systemcConfig"
+                data: "systemcConfig",
+                data2: "diagData"
             }
         ]
     }
@@ -286,7 +300,9 @@ class SystemSettingsDialog extends Component
            <_Component
                 onChange={(id, data) => this.onChangedTab(id, data, _t.data) }
                 { ...this.state[_t.data] }
+                data2= { this.state[_t.data2] } 
                 users={users}
+                themeName={this.props.themeName}
                 groups={groups}
                 t={this.props.t}
            />
@@ -301,6 +317,7 @@ class SystemSettingsDialog extends Component
         let state = {...this.state};
         state[param][id] = data;
         this.setState(state);  
+        // console.log( id, data, param, state );
     }
 }
 

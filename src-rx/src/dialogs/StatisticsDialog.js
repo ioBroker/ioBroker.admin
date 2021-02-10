@@ -2,6 +2,11 @@
 
 
 import { Component } from 'react';
+import AceEditor from 'react-ace';
+import 'ace-builds/src-noconflict/mode-json';
+import 'ace-builds/src-noconflict/theme-clouds_midnight';
+import 'ace-builds/src-noconflict/theme-chrome';
+import 'ace-builds/src-noconflict/ext-language_tools'
 
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
@@ -54,6 +59,8 @@ class StatisticsDialog extends Component
     }
     render()
     {
+        //console.log(this.state)
+        const {common} = this.props;
         const {classes} = this.props;
         return <div className={ classes.tabPanel }>
             <Grid container spacing={3}  className="sendData-grid">
@@ -77,9 +84,27 @@ class StatisticsDialog extends Component
                             {this.props.t("Sent data:")}
                         </Typography>                       
                     </Paper>
-                    <pre id="diagSample">
-
-                    </pre>
+                    <AceEditor
+                        mode="json"
+                        width="100%"
+                        height="100%"
+                        showPrintMargin={true}
+                        showGutter={true}
+                        highlightActiveLine={true}
+                        theme={ this.props.themeName === 'dark' || this.props.themeName === 'blue' ? 'clouds_midnight' : 'chrome' }
+                        value={ JSON.stringify(this.state.data2, null, 2) }
+                        onChange={ newValue => this.onChange(newValue) }
+                        name="UNIQUE_ID_OF_DIV"
+                        fontSize={14}
+                        setOptions={{ 
+                            enableBasicAutocompletion: true,
+                            enableLiveAutocompletion: true,
+                            enableSnippets: true,
+                            showLineNumbers: true,
+                            tabSize: 2,
+                        }}
+                        editorProps={{ $blockScrolling: true }}
+                    />  
                 </Grid>
             </Grid>
         </div>
@@ -109,6 +134,7 @@ class StatisticsDialog extends Component
     getTypesSelector = () =>
     {
         const {classes} = this.props;
+        const {common} = this.state;
         const items = this.getTypes().map((elem, index) =>
         {
             return <MenuItem value={elem.title} key={index}>
@@ -116,20 +142,28 @@ class StatisticsDialog extends Component
             </MenuItem> 
         })
         return <FormControl className={classes.formControl}>
-            <InputLabel shrink id={"country-label"}>
-                { this.props.t("Country")}
+            <InputLabel shrink id={"statistics-label"}>
+                { this.props.t("Statistics")}
             </InputLabel>
             <Select
                 className={classes.formControl}
-                id={"country"}
-                value={ this.state.country }
-                onChange={ this.handleChangeCountry }
+                id={"statistics"}
+                value={ this.state.common.diag }
+                onChange={ this.handleChangeStatistics }
                 displayEmpty 
                 inputProps={{ 'aria-label': 'Without label' }}
             > 
                 {items}
             </Select> 
         </FormControl> 
+    }
+    handleChangeStatistics = evt =>
+    {
+        console.log( evt.target.value );
+        this.setState({
+            common: {...this.state.common, diag:evt.target.value }
+        })
+        
     }
 }
 
