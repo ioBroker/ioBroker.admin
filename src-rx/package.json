@@ -12,6 +12,8 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@material-ui/pickers": "^3.2.10",
+    "@rjsf/core": "^2.4.2",
+    "@rjsf/material-ui": "^2.4.2",
     "@sentry/browser": "^5.29.2",
     "@sentry/integrations": "^5.29.2",
     "@testing-library/jest-dom": "^5.11.6",
@@ -33,7 +35,8 @@
     "react-leaflet": "^3.0.5",
     "react-markdown": "^5.0.3",
     "react-scripts": "4.0.1",
-    "semver": "^7.3.4"
+    "semver": "^7.3.4",
+    "to-json-schema": "^0.2.5"
   },
   "homepage": ".",
   "scripts": {

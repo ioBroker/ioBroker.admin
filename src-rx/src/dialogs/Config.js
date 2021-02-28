@@ -11,11 +11,17 @@ import Typography from '@material-ui/core/Typography';
 
 import Router from '@iobroker/adapter-react/Components/Router';
 
+import JsonSchemaConfig from './JsonSchemaConfig';
+
 const styles = {
     root: {
         height: '100%',
         display: 'flex',
         flexDirection: 'column'
+    },
+    scroll: {
+        height: '100%',
+        overflowY: 'auto'
     }
 };
 
@@ -50,6 +56,27 @@ class Config extends Component {
         }
     }
 
+    getConfigurator() {
+        if (this.props.jsonSchema) {
+            return (
+                <JsonSchemaConfig 
+                    adapter={this.props.adapter}
+                    instance={this.props.instance}
+                    socket={this.props.socket}
+                    themeName={this.props.themeName}
+                    t={this.props.t} />
+                );
+        }
+
+        return (
+            <iframe
+                title="config"
+                className={this.props.className}
+                src={`adapter/${this.props.adapter}/${this.props.materialize ? 'index_m.html' : ''}?${this.props.instance}&react=${this.props.themeName}`}>
+            </iframe>
+            );
+    }
+
     render() {
 
         const { classes } = this.props;
@@ -66,11 +93,7 @@ class Config extends Component {
                             </Typography>
                         </Toolbar>
                     </AppBar>
-                    <iframe
-                        title="config"
-                        className={this.props.className}
-                        src={`adapter/${this.props.adapter}/${this.props.materialize ? 'index_m.html' : ''}?${this.props.instance}&react=${this.props.themeName}`}>
-                    </iframe>
+                    { this.getConfigurator() }
                 </Paper>
             );
         }
@@ -82,6 +105,8 @@ Config.propTypes = {
     adapter: PropTypes.string,
     instance: PropTypes.number,
     materialize: PropTypes.bool,
+    jsonSchema: PropTypes.bool,
+    socket: PropTypes.object,
     themeName: PropTypes.string,
     t: PropTypes.func
 };

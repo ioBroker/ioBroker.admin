@@ -307,6 +307,7 @@ class Instances extends Component {
             instance.canStart = !common.onlyWWW;
             instance.config = !common.noConfig;
             instance.materialize = common.materialize || false;
+            instance.jsonSchema = common.jsonSchema || false;
             instance.compactMode = common.runAsCompactMode || false;
             instance.mode = common.mode || null;
             instance.loglevel = common.loglevel || null;
@@ -838,6 +839,8 @@ class Instances extends Component {
                             adapter={ instance.id.split('.')[0] }
                             instance={ parseInt(instance.id.split('.')[1]) }
                             materialize={ instance.materialize }
+                            jsonSchema={ instance.jsonSchema }
+                            socket={ this.props.socket }
                             themeName={ this.props.themeName }
                             t={ this.props.t }
                             configStored={ this.props.configStored }
