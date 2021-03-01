@@ -293,9 +293,9 @@ class App extends Router {
         }
     }
 
-    componentDidMount() 
+    componentDidMount()
     {
-        if (!this.state.login) 
+        if (!this.state.login)
         {
             window.addEventListener('hashchange', () => this.onHashChanged(), false);
 
@@ -725,6 +725,7 @@ class App extends Router {
         return <SystemSettingsDialog
             currentHost={ this.state.currentHost }
             themeName={ this.state.themeName }
+            theme={ this.state.theme }
             key="systemSettings"
             onClose={ () => Router.doNavigate(null) }
             lang={ this.state.lang }
