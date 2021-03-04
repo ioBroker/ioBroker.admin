@@ -27,7 +27,7 @@ import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 
 //fills
-import lightBlue from '@material-ui/core/colors/lightBlue'
+// import lightBlue from '@material-ui/core/colors/lightBlue'
 
 //style
 import "../assets/css/style.css";
@@ -216,13 +216,14 @@ class SystemSettingsDialog extends Component {
     getDialogContent() {
         if (this.state.loading)
             return <LinearProgress/>;
+        // eslint-disable-next-line no-whitespace-before-property
         const _t = this.getTabs().filter((e, i) => {
-            return e.id == (this.props.currentTab.id).toString() || e.id == parseInt(this.props.currentTab.id)
+            return e.id === (this.props.currentTab.id).toString() || e.id === parseInt(this.props.currentTab.id)
         }) [0] || this.getTabs()[0];
-        const _Component = _t.component;
+        const ComponentT = _t.component;
         const {groups, users} = this.state;
         return <div className={this.props.classes.tabPanel}>
-            <_Component
+            <ComponentT
                 onChange={(id, data) => this.onChangedTab(id, data, _t.data)}
                 {...this.state[_t.data]}
                 data2={this.state[_t.data2]}

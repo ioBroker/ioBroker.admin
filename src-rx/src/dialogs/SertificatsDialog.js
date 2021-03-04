@@ -19,7 +19,7 @@ import TextField from '@material-ui/core/TextField';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import blueGrey from '@material-ui/core/colors/blueGrey' 
+// import blueGrey from '@material-ui/core/colors/blueGrey' 
 
 
 // icons
@@ -152,6 +152,7 @@ class SertificatsDialog extends Component
                         {
                             //console.log( "onDrop fileRejections", fileRejections);
                             let msg = [];
+                            // eslint-disable-next-line array-callback-return
                             fileRejections.map((e =>
                                 {
                                     let m = e.file.name + ": ", mm = [];
@@ -166,6 +167,7 @@ class SertificatsDialog extends Component
                         if( acceptedFiles.length > 0 )
                         {
                             //console.log( "onDrop acceptedFiles", acceptedFiles);
+                            // eslint-disable-next-line array-callback-return
                             acceptedFiles.map(file =>
                             {
                                 var reader = new FileReader();
@@ -198,7 +200,7 @@ class SertificatsDialog extends Component
                             })
                             
                         }
-                        else if(fileRejections.length == 0)
+                        else if(fileRejections.length === 0)
                         {
                             alert("No files exists")
                         }

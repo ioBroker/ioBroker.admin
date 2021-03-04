@@ -1,6 +1,8 @@
 import { Component } from 'react';
 
-import { MapContainer as LeafletMap, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer as LeafletMap, TileLayer, 
+    // Marker, Popup
+ } from 'react-leaflet';
 
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
@@ -13,7 +15,7 @@ import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 
 // colors
-import blueGrey from '@material-ui/core/colors/blueGrey'
+// import blueGrey from '@material-ui/core/colors/blueGrey'
 
 // icons
 
@@ -317,6 +319,7 @@ class MainSettingsDialog extends Component
             this.state.latitude   ? this.state.latitude : 50,
             this.state.longitude  ? this.state.longitude : 10
         ]
+        // eslint-disable-next-line no-unused-vars
         var marker = window.L.marker(
             center, 
             {

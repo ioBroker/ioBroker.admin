@@ -155,6 +155,13 @@ const styles = theme => ({
     },
     alert_success: {
         backgroundColor: '#4caf50'
+    },
+    avatarNotVisible:{
+        opacity:0,
+        transition:'opacity 0.3s'
+    },
+    avatarVisible:{
+        opacity:1
     }
 });
 
@@ -950,7 +957,7 @@ class App extends Router {
                                 </IconButton>
                             }
                             <Typography variant="h6" className={classes.title} style={{flexGrow: 1}}/>
-                            <Grid container spacing={ 1 } alignItems="center" style={{width: 'initial'}}>
+                            <Grid container className={clsx(this.state.drawerState !== 0 && classes.avatarVisible,classes.avatarNotVisible)} spacing={ 1 } alignItems="center" style={{width: 'initial'}}>
                                 <Grid item>
                                     <Typography>admin</Typography>
                                 </Grid>
@@ -976,6 +983,7 @@ class App extends Router {
                         currentHost={ this.state.currentHost }
                         expertMode={ this.state.expertMode }
                         ready={ this.state.ready }
+                        themeName={this.state.themeName}
                     />
                     <Paper
                         elevation={ 0 }

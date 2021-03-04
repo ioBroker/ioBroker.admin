@@ -12,7 +12,7 @@ import { CardMedia } from '@material-ui/core';
 import { Collapse } from '@material-ui/core';
 import { Divider } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
-import { IconButton }  from '@material-ui/core';
+import { IconButton } from '@material-ui/core';
 import { Link } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
 
@@ -50,6 +50,28 @@ const styles = theme => ({
             overflowY: 'auto',
             boxShadow: boxShadowHover
         }
+    },
+    cardInfo: {
+        display: 'flex',
+        minHeight: '235px',
+        position: 'relative',
+        overflow: 'initial',
+        maxHeight: '235p',
+        flexDirection: 'column',
+        '&:hover': {
+            // overflowY: 'auto',
+            boxShadow: boxShadowHover
+        }
+    },
+    cardInfoHead: {
+        position: 'sticky',
+        top: 0,
+        background: theme.palette.background.default,
+        display: 'flex',
+        width: '100%',
+        justifyContent: 'space-between',
+        borderBottom: '1px solid',
+        padding: '5px 5px 0px 5px'
     },
     edit: {
         opacity: '.6',
@@ -90,17 +112,17 @@ const styles = theme => ({
         backgroundColor: '#ffffff',
         position: 'absolute',
         width: '100%',
-        '& button': {
-            position: 'absolute',
-            top: '10px',
-            color: '#000000',
-            '&:focus': {
-                color: '#ffffff',
-                backgroundColor: blue[500]
-            }
-        }
+        // '& button': {
+        //     position: 'absolute',
+        //     top: '10px',
+        //     color: '#000000',
+        //     '&:focus': {
+        //         color: '#ffffff',
+        //         backgroundColor: blue[500]
+        //     }
+        // }
     },
-    close: { 
+    close: {
         right: '10px'
     },
     save: {
@@ -185,7 +207,8 @@ class IntroCard extends Component {
         this.cameraUpdateTimer = null;
 
         this.interval = this.props.interval;
-        this.camera   = this.props.camera;
+        this.camera = this.props.camera;
+        this.t = props.t;
     }
 
     updateCamera() {
@@ -204,7 +227,7 @@ class IntroCard extends Component {
                 const parts = this.props.camera.split('.');
                 const adapter = parts.shift();
                 const instance = parts.shift();
-                this.props.socket.sendTo(adapter + '.' + instance, 'image', {name: parts.pop(), width: this.cameraRef.current.width})
+                this.props.socket.sendTo(adapter + '.' + instance, 'image', { name: parts.pop(), width: this.cameraRef.current.width })
                     .then(result => {
                         if (result && result.data && this.cameraRef.current) {
                             this.cameraRef.current.src = 'data:image/jpeg;base64,' + result.data;
@@ -231,11 +254,11 @@ class IntroCard extends Component {
             return null;
         } else {
             return <CameraIntroDialog
-                socket={ this.props.socket }
-                camera={ this.props.camera }
-                name={ this.props.title }
-                t={ this.props.t }
-                onClose={ () => {
+                socket={this.props.socket}
+                camera={this.props.camera}
+                name={this.props.title}
+                t={this.props.t}
+                onClose={() => {
                     if (this.props.camera && this.props.camera !== 'text') {
                         this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
                         this.cameraUpdateTimer = setInterval(() => this.updateCamera(), Math.max(parseInt(this.props.interval, 10), 500));
@@ -244,9 +267,9 @@ class IntroCard extends Component {
 
                     this.setState({ dialog: false });
                 }}
-                >
-                    { this.props.children }
-                </CameraIntroDialog>;
+            >
+                {this.props.children}
+            </CameraIntroDialog>;
         }
     }
 
@@ -304,24 +327,24 @@ class IntroCard extends Component {
                 <Grid
                     item
                     container
-                    className={ classes.imgContainer }
+                    className={classes.imgContainer}
                     justify="center"
                     alignItems="center"
                 >
                     <img
-                        ref={ this.cameraRef }
-                        src={ url }
+                        ref={this.cameraRef}
+                        src={url}
                         alt="Camera"
-                        className={ this.state.loaded && !this.state.error ? classes.cameraImg : classes.hidden }
-                        onLoad={ () => this.handleImageLoad() }
-                        onError={ () => this.handleImageError() }
+                        className={this.state.loaded && !this.state.error ? classes.cameraImg : classes.hidden}
+                        onLoad={() => this.handleImageLoad()}
+                        onError={() => this.handleImageError()}
                     />
                     { !this.state.loaded && !this.state.error &&
                         <Skeleton
                             height="100%"
                             width="100%"
                             animation="wave"
-                            className={ classes.imgSkeleton }
+                            className={classes.imgSkeleton}
                         />
                     }
                     { this.state.error &&
@@ -330,7 +353,7 @@ class IntroCard extends Component {
                 </Grid>
             );
         } else if (this.props.camera.startsWith('cameras.')) {
-            return <img ref={ this.cameraRef } src="" alt="camera" className={ this.props.classes.cameraImg } />;
+            return <img ref={this.cameraRef} src="" alt="camera" className={this.props.classes.cameraImg} />;
         }
     }
 
@@ -353,51 +376,52 @@ class IntroCard extends Component {
         return (
             <Grid
                 item
-                xs={ 12 }
-                sm={ 6 }
-                md={ 4 }
-                lg={ 3 }
-                className={ classes.root }
+                xs={12}
+                sm={6}
+                md={4}
+                lg={3}
+                className={classes.root}
             >
-                <Card className={ classes.card } onClick={ e => {
+                <Card className={classes.card} onClick={e => {
                     e.stopPropagation();
                     if (!this.props.edit && this.props.camera && this.props.camera !== 'text') {
                         this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
                         this.cameraUpdateTimer = null;
-                        this.setState( { dialog: true });
+                        this.setState({ dialog: true });
                     }
                 }}>
                     {
                         this.props.reveal &&
                         <Button
-                            className={ classes.expand + editClass }
+                            className={classes.expand + editClass}
                             variant="contained"
                             size="small"
-                            onClick={ () => this.handleExpandClick() }
+                            disabled={this.props.disabled}
+                            onClick={() => this.handleExpandClick()}
                             color="primary"
                         >
-                            { this.props.t('Info') }
+                            {this.props.t('Info')}
                         </Button>
                     }
-                    <div className={ classes.media + editClass } style={{ backgroundColor: this.props.color }}>
+                    <div className={classes.media + editClass} style={{ backgroundColor: this.props.color }}>
                         <CardMedia
-                            className={ classes.img }
+                            className={classes.img}
                             component="img"
-                            image={ this.props.image }
+                            image={this.props.image}
                         />
                     </div>
-                    <div className={ classes.contentContainer + editClass }>
-                        <CardContent className={ classes.content }>
+                    <div className={classes.contentContainer + editClass}>
+                        <CardContent className={classes.content}>
                             <Grid
                                 container
                                 direction="column"
                                 wrap="nowrap"
-                                className={ classes.contentGrid }
+                                className={classes.contentGrid}
                             >
                                 <Typography gutterBottom variant="h5" component="h5">
-                                    { this.props.title }
+                                    {this.props.title}
                                 </Typography>
-                                { this.renderContent() }
+                                {this.renderContent()}
                             </Grid>
                         </CardContent>
                         {
@@ -406,13 +430,13 @@ class IntroCard extends Component {
                         }
                         {
                             this.props.action && this.props.action.link &&
-                            <CardActions className={ classes.action }>
+                            <CardActions className={classes.action}>
                                 <Link
-                                    href={ this.props.action.link }
+                                    href={this.props.action.link}
                                     underline="none"
                                     target="_blank"
                                 >
-                                    { this.props.action.text }
+                                    {this.props.action.text}
                                 </Link>
                             </CardActions>
                         }
@@ -420,38 +444,47 @@ class IntroCard extends Component {
                     {
                         this.props.reveal &&
                         <Collapse
-                            className={ classes.collapse }
-                            in={ this.state.expanded }
+                            className={classes.collapse}
+                            in={this.state.expanded}
                             timeout="auto"
                             unmountOnExit
                         >
-                            <IconButton className={ classes.save } size="small" onClick={ () => copy(this.props.reveal) }>
-                                <SaveIcon />
-                            </IconButton>
-                            <IconButton className={ classes.close } size="small" onClick={ () => this.handleExpandClick() }>
-                                <CloseIcon />
-                            </IconButton>
-                            <CardContent>
-                                <Typography gutterBottom variant="h5" component="h5">
-                                    Info
+                            <Card className={classes.cardInfo}>
+                                <div className={classes.cardInfoHead}>
+                                    <Typography gutterBottom variant="h5" component="h5">
+                                        Info
                                 </Typography>
-                                { this.props.reveal }
-                            </CardContent>
+                                    <div>
+                                        <IconButton size="small" onClick={() => copy(this.props.getHostDescriptionAll()[1], {
+                                            format: 'text/plain'
+                                        })}>
+                                            <SaveIcon />
+                                        </IconButton>
+                                        <IconButton size="small" onClick={() => this.handleExpandClick()}>
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </div>
+                                </div>
+                                <CardContent >
+                                    {this.props.getHostDescriptionAll()[0]}
+                                    {/* { this.props.reveal } */}
+                                </CardContent>
+                            </Card>
                         </Collapse>
                     }
                     {
                         this.props.edit && this.props.toggleActivation &&
-                        <IconButton className={ this.props.enabled ? classes.enabled : classes.disabled } onClick={ () => this.props.toggleActivation() }>
+                        <IconButton className={this.props.enabled ? classes.enabled : classes.disabled} onClick={() => this.props.toggleActivation()}>
                             <CheckIcon />
                         </IconButton>
                     }
                     {
                         this.props.edit && this.props.onEdit &&
-                        <IconButton className={ classes.editButton } onClick={ () => this.props.onEdit() }>
+                        <IconButton className={classes.editButton} onClick={() => this.props.onEdit()}>
                             <EditIcon />
                         </IconButton>
                     }
-                    { this.renderCameraDialog() }
+                    {this.renderCameraDialog()}
                 </Card>
             </Grid>
         );

@@ -60,7 +60,7 @@ class StatisticsDialog extends Component
     render()
     {
         //console.log(this.state)
-        const {common} = this.props;
+        // const {common} = this.props;
         const {classes} = this.props;
         return <div className={ classes.tabPanel }>
             <Grid container spacing={3}  className="sendData-grid">
@@ -134,7 +134,7 @@ class StatisticsDialog extends Component
     getTypesSelector = () =>
     {
         const {classes} = this.props;
-        const {common} = this.state;
+        // const {common} = this.state;
         const items = this.getTypes().map((elem, index) =>
         {
             return <MenuItem value={elem.title} key={index}>

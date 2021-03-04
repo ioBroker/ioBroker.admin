@@ -4,7 +4,9 @@ import { Component } from 'react';
 
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles'; 
-import { Grid,  Typography, TextField, FormControl, Checkbox  } from '@material-ui/core';
+import { Grid,  Typography, 
+    // TextField, 
+    FormControl, Checkbox  } from '@material-ui/core';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -15,7 +17,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 
-import blueGrey from '@material-ui/core/colors/blueGrey'
+// import blueGrey from '@material-ui/core/colors/blueGrey'
 
 
 // icons
@@ -86,7 +88,7 @@ class ACLDialog extends Component
             <Grid container spacing={3}>
                 <Grid item xs={3}>
                     <FormControl className={classes.formControl}>
-                        <InputLabel shrink id={"owner" + "-label"}>
+                        <InputLabel shrink id={"owner-label"}>
                             { this.props.t("Owner user")}
                         </InputLabel>
                         <Select
@@ -103,7 +105,7 @@ class ACLDialog extends Component
                 </Grid>
                 <Grid item xs={3}>
                     <FormControl className={classes.formControl}>
-                        <InputLabel shrink id={"ownergroup" + "-label"}>
+                        <InputLabel shrink id={"ownergroup-label"}>
                             { this.props.t("Owner group")}
                         </InputLabel>
                         <Select

@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
-import { Drawer as MaterialDrawer } from '@material-ui/core';
+import { Avatar, Drawer as MaterialDrawer } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import DrawerItem from './DrawerItem';
@@ -81,6 +81,28 @@ const styles = theme => ({
     icon: {
         width: 20,
         height: 20,
+    },
+    logoWhite: {
+        background: '#FFFFFF'
+    },
+    logoSize: {
+        width: 70,
+        height: 70
+    },
+    avatarBlock: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        marginLeft: 48,
+        marginTop: 5,
+        marginBottom: 5
+    },
+    avatarNotVisible: {
+        opacity: 0,
+        transition: 'opacity 0.3s'
+    },
+    avatarVisible: {
+        opacity: 1
     }
 });
 
@@ -91,33 +113,33 @@ export const STATES = {
 };
 
 const tabsInfo = {
-    'tab-intro':            {order: 1,    icon: <AppsIcon />},
-    'tab-info':             {order: 5,    icon: <InfoIcon />,               host: true},
-    'tab-adapters':         {order: 10,   icon: <StoreIcon />,              host: true},
-    'tab-instances':        {order: 15,   icon: <SubtitlesIcon />,          host: true},
-    'tab-objects':          {order: 20,   icon: <ViewListIcon />},
-    'tab-enums':            {order: 25,   icon: <ArtTrackIcon />},
-    'tab-devices':          {order: 27,   icon: <DvrIcon />,                host: true},
-    'tab-logs':             {order: 30,   icon: <ViewHeadlineIcon />,       host: true},
-    'tab-scenes':           {order: 35,   icon: <SubscriptionsIcon />},
-    'tab-events':           {order: 40,   icon: <FlashOnIcon />},
-    'tab-users':            {order: 45,   icon: <PersonOutlineIcon />},
-    'tab-javascript':       {order: 50},
-    'tab-text2command-0':   {order: 55, instance: 0},
-    'tab-text2command-1':   {order: 56, instance: 1},
-    'tab-text2command-2':   {order: 57, instance: 2},
-    'tab-node-red-0':       {order: 60, instance: 0},
-    'tab-node-red-1':       {order: 61, instance: 1},
-    'tab-node-red-2':       {order: 62, instance: 2},
-    'tab-fullcalendar-0':   {order: 65, instance: 0},
-    'tab-fullcalendar-1':   {order: 66, instance: 1},
-    'tab-fullcalendar-2':   {order: 67, instance: 2},
-    'tab-echarts':          {order: 70, instance: 2},
-    'tab-eventlist-0':      {order: 80, instance: 0},
-    'tab-eventlist-1':      {order: 81, instance: 1},
-    'tab-eventlist-2':      {order: 82, instance: 2},
-    'tab-hosts':            {order: 100,  icon: <StorageIcon />},
-    'tab-files':            {order: 110,  icon: <FilesIcon />},
+    'tab-intro': { order: 1, icon: <AppsIcon /> },
+    'tab-info': { order: 5, icon: <InfoIcon />, host: true },
+    'tab-adapters': { order: 10, icon: <StoreIcon />, host: true },
+    'tab-instances': { order: 15, icon: <SubtitlesIcon />, host: true },
+    'tab-objects': { order: 20, icon: <ViewListIcon /> },
+    'tab-enums': { order: 25, icon: <ArtTrackIcon /> },
+    'tab-devices': { order: 27, icon: <DvrIcon />, host: true },
+    'tab-logs': { order: 30, icon: <ViewHeadlineIcon />, host: true },
+    'tab-scenes': { order: 35, icon: <SubscriptionsIcon /> },
+    'tab-events': { order: 40, icon: <FlashOnIcon /> },
+    'tab-users': { order: 45, icon: <PersonOutlineIcon /> },
+    'tab-javascript': { order: 50 },
+    'tab-text2command-0': { order: 55, instance: 0 },
+    'tab-text2command-1': { order: 56, instance: 1 },
+    'tab-text2command-2': { order: 57, instance: 2 },
+    'tab-node-red-0': { order: 60, instance: 0 },
+    'tab-node-red-1': { order: 61, instance: 1 },
+    'tab-node-red-2': { order: 62, instance: 2 },
+    'tab-fullcalendar-0': { order: 65, instance: 0 },
+    'tab-fullcalendar-1': { order: 66, instance: 1 },
+    'tab-fullcalendar-2': { order: 67, instance: 2 },
+    'tab-echarts': { order: 70, instance: 2 },
+    'tab-eventlist-0': { order: 80, instance: 0 },
+    'tab-eventlist-1': { order: 81, instance: 1 },
+    'tab-eventlist-2': { order: 82, instance: 2 },
+    'tab-hosts': { order: 100, icon: <StorageIcon /> },
+    'tab-files': { order: 110, icon: <FilesIcon /> },
 };
 
 class Drawer extends Component {
@@ -149,7 +171,7 @@ class Drawer extends Component {
         this.props.instancesWorker.registerHandler(this.instanceChangedHandlerBound);
     }
 
-    componentWillUnmount () {
+    componentWillUnmount() {
         this.props.logsWorker.unregisterErrorCountHandler(this.logErrorHandlerBound);
         this.props.logsWorker.unregisterWarningCountHandler(this.logWarningHandlerBound);
         this.props.instancesWorker.unregisterHandler(this.instanceChangedHandlerBound);
@@ -221,13 +243,13 @@ class Drawer extends Component {
 
                         let obj;
                         if (tabsInfo[tab]) {
-                            obj = Object.assign({name: tab}, tabsInfo[tab]);
+                            obj = Object.assign({ name: tab }, tabsInfo[tab]);
                         } else {
-                            obj = {name: tab, order: 200};
+                            obj = { name: tab, order: 200 };
                         }
 
                         if (!obj.icon) {
-                            obj.icon = <img alt="" className={this.props.classes.icon} src={`adapter/${instance.common.name}/${instance.common.icon}`}/>;
+                            obj.icon = <img alt="" className={this.props.classes.icon} src={`adapter/${instance.common.name}/${instance.common.icon}`} />;
                         }
 
                         obj.title = title;
@@ -247,7 +269,7 @@ class Drawer extends Component {
                 let tabs = Object.keys(tabsInfo).filter(name => READY_TO_USE.includes(name));
 
                 tabs = tabs.map(name => {
-                    const obj = Object.assign({name}, tabsInfo[name]);
+                    const obj = Object.assign({ name }, tabsInfo[name]);
                     obj.title = I18n.t(ucFirst(name.replace('tab-', '').replace('-0', '').replace(/-(\d+)$/, ' $1')));
                     return obj;
                 });
@@ -277,26 +299,29 @@ class Drawer extends Component {
 
     getHeader() {
 
-        const { classes } = this.props;
+        const { classes, state } = this.props;
 
         return (
-            <div className={ clsx(
+            <div className={clsx(
                 classes.header,
                 this.props.state === STATES.opened && this.props.isSecure && classes.headerLogout,
                 !this.isSwipeable() && this.props.state !== STATES.opened && classes.headerCompact
-            ) }>
+            )}>
+                <div className={clsx(classes.avatarBlock, state === 0 && classes.avatarVisible, classes.avatarNotVisible)}>
+                    <Avatar className={clsx((this.props.themeName === 'colored' || this.props.themeName === 'blue') && classes.logoWhite, classes.logoSize)} alt="ioBroker" src="img/no-image.png" />
+                </div>
                 { this.props.isSecure &&
-                    <IconButton title={ this.props.logoutTitle } onClick={ this.props.onLogout }>
-                        <LogoutIcon className={ classes.logout }/>
+                    <IconButton title={this.props.logoutTitle} onClick={this.props.onLogout}>
+                        <LogoutIcon className={classes.logout} />
                     </IconButton>
                 }
-                <IconButton onClick={ () => {
+                <IconButton onClick={() => {
                     if (this.isSwipeable() || this.props.state === STATES.compact) {
                         this.props.onStateChange(STATES.closed);
                     } else {
                         this.props.onStateChange(STATES.compact)
                     }
-                } }>
+                }}>
                     <ChevronLeftIcon />
                 </IconButton>
             </div>
@@ -313,14 +338,14 @@ class Drawer extends Component {
         this.state.tabs.forEach(tab => {
             items.push(
                 <DrawerItem
-                    key={ tab.name }
-                    compact={ !this.isSwipeable() && this.props.state !== STATES.opened }
-                    onClick={ () => this.props.handleNavigation(tab.name) }
-                    icon={ tab.icon }
-                    text={ tab.title }
-                    selected={ this.props.currentTab === tab.name }
-                    badgeContent={ tab.name === 'tab-logs' ? this.state.logErrors || this.state.logWarnings : 0 }
-                    badgeColor={ tab.name === 'tab-logs' ? this.state.logErrors ? 'error' : 'warn' : '' }
+                    key={tab.name}
+                    compact={!this.isSwipeable() && this.props.state !== STATES.opened}
+                    onClick={() => this.props.handleNavigation(tab.name)}
+                    icon={tab.icon}
+                    text={tab.title}
+                    selected={this.props.currentTab === tab.name}
+                    badgeContent={tab.name === 'tab-logs' ? this.state.logErrors || this.state.logWarnings : 0}
+                    badgeColor={tab.name === 'tab-logs' ? this.state.logErrors ? 'error' : 'warn' : ''}
                 />
             );
         });
@@ -335,31 +360,31 @@ class Drawer extends Component {
         if (this.isSwipeable()) {
             return (
                 <SwipeableDrawer
-                    className={ classes.root }
+                    className={classes.root}
                     anchor="left"
-                    open={ this.props.state !== STATES.closed }
-                    onClose={ () => this.props.onStateChange(STATES.closed) }
-                    onOpen={ () => this.props.onStateChange(STATES.opened) }
+                    open={this.props.state !== STATES.closed}
+                    onClose={() => this.props.onStateChange(STATES.closed)}
+                    onOpen={() => this.props.onStateChange(STATES.opened)}
                     classes={{ paper: classes.paper }}
                 >
-                    { this.getHeader() }
+                    { this.getHeader()}
                     <List>
-                        { this.getNavigationItems() }
+                        {this.getNavigationItems()}
                     </List>
                 </SwipeableDrawer>
             );
         } else {
             return (
                 <MaterialDrawer
-                    className={ clsx(classes.root, this.props.state !== STATES.opened ? classes.rootCompactWidth : classes.rootFullWidth) }
+                    className={clsx(classes.root, this.props.state !== STATES.opened ? classes.rootCompactWidth : classes.rootFullWidth)}
                     variant="persistent"
                     anchor="left"
-                    open={ this.props.state !== STATES.closed }
+                    open={this.props.state !== STATES.closed}
                     classes={{ paper: classes.paper }}
                 >
-                    { this.getHeader() }
-                    <List className={ classes.list }>
-                        { this.getNavigationItems() }
+                    { this.getHeader()}
+                    <List className={classes.list}>
+                        {this.getNavigationItems()}
                     </List>
                 </MaterialDrawer>
             );

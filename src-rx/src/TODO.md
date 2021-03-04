@@ -1,6 +1,6 @@
 - Check base settings (BF), show on non-mobile as dialog (not full screen)
 - Overview - add dailog - add close button at bottom
-- Overview - Make info work (for hosts)
+- Overview - Make info work (for hosts)//
 - Adapters/list view - add indents to items by open of folder
 - Adapters/Tile view, and filter by type and sort by (A-Z, popular, recently updated)
 - Adapters - button to filter adapters that need to be updated
@@ -23,7 +23,7 @@
 - Left menu - reorder(drug&drop) and hide/show of items
 - Logs - by selection of log, the number of new logs must be hidden, By deletion
 - Files - bulk edit of access rights
-- Left menu - show iobroker logo at the top left corner (only if opend on full width, else show on top right corner)
+- Left menu - show iobroker logo at the top left corner (only if opend on full width, else show on top right corner)//
 - Hosts tab
 - Easy admin mode
 - Switch of hosts (if host only one, do not show the switcher)

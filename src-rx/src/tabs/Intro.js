@@ -59,12 +59,12 @@ const styles = theme => ({
 });
 
 const formatInfo = {
-    'Uptime':        Utils.formatSeconds,
+    'Uptime': Utils.formatSeconds,
     'System uptime': Utils.formatSeconds,
-    'RAM':           Utils.formatRam,
-    'Speed':         Utils.formatSpeed,
-    'Disk size':     Utils.formatBytes,
-    'Disk free':     Utils.formatBytes
+    'RAM': Utils.formatRam,
+    'Speed': Utils.formatSpeed,
+    'Disk size': Utils.formatBytes,
+    'Disk free': Utils.formatBytes
 };
 
 class Intro extends Component {
@@ -105,7 +105,7 @@ class Intro extends Component {
                 const introLinks = systemConfig && systemConfig.native && systemConfig.native.introLinks ? systemConfig.native.introLinks : [];
 
                 this.introLinksOriginal = JSON.parse(JSON.stringify(introLinks));
-                this.instancesOriginal  = JSON.parse(JSON.stringify(instances));
+                this.instancesOriginal = JSON.parse(JSON.stringify(instances));
 
                 this.setState({
                     instances,
@@ -123,7 +123,7 @@ class Intro extends Component {
 
         // restore old state
         this.setState({
-            instances:  this.instancesOriginal,
+            instances: this.instancesOriginal,
             introLinks: this.introLinksOriginal,
             hasUnsavedChanges: false,
             edit: false
@@ -163,21 +163,24 @@ class Intro extends Component {
                     linkText = linkText.substring(0, pos);
                 }
 
+                const hostData = this.state.hostsData ? this.state.hostsData[instance.id] : null;
                 return (
                     <IntroCard
-                        key={ instance.id }
-                        socket={ this.props.socket }
-                        image={ instance.image }
-                        title={ instance.name }
+                        key={instance.id}
+                        socket={this.props.socket}
+                        image={instance.image}
+                        title={instance.name}
                         action={{ link: instance.link, text: linkText }}
-                        t={ this.props.t }
-                        color={ instance.color }
-                        reveal={ instance.info }
-                        edit={ this.state.edit }
-                        enabled={ instance.enabled }
-                        toggleActivation={ () => this.toggleCard(instance.id) }
+                        t={this.props.t}
+                        color={instance.color}
+                        reveal={instance.info}
+                        edit={this.state.edit}
+                        enabled={instance.enabled}
+                        disabled={!Boolean(hostData && typeof hostData === 'object')}
+                        getHostDescriptionAll={() => this.getHostDescriptionAll(instance.id)}
+                        toggleActivation={() => this.toggleCard(instance.id)}
                     >
-                        { instance.description || this.getHostDescription(instance.id) }
+                        { instance.description || this.getHostDescription(instance.id)}
                     </IntroCard>
                 );
             } else {
@@ -204,27 +207,27 @@ class Intro extends Component {
             } else {
                 return (
                     <IntroCard
-                        key={ 'link' + i }
-                        image={ item.image }
-                        title={ item.name }
+                        key={'link' + i}
+                        image={item.image}
+                        title={item.name}
                         action={{ link: item.link, text: item.linkName }}
-                        t={ this.props.t }
-                        socket={ this.props.socket }
-                        color={ item.color }
-                        edit={ this.state.edit }
-                        interval={ item.interval }
-                        camera={ item.camera }
-                        addTs={ item.addTs }
+                        t={this.props.t}
+                        socket={this.props.socket}
+                        color={item.color}
+                        edit={this.state.edit}
+                        interval={item.interval}
+                        camera={item.camera}
+                        addTs={item.addTs}
 
-                        onEdit={ () => this.setState({
+                        onEdit={() => this.setState({
                             editLink: true,
                             editLinkIndex: i,
                             link: JSON.parse(JSON.stringify(this.state.introLinks[i]))
-                        }) }
-                        enabled={ item.enabled }
-                        toggleActivation={ () => this.toggleLinkCard(i) }
+                        })}
+                        enabled={item.enabled}
+                        toggleActivation={() => this.toggleLinkCard(i)}
                     >
-                        { item.desc || '' }
+                        { item.desc || ''}
                     </IntroCard>
                 );
             }
@@ -234,13 +237,13 @@ class Intro extends Component {
     editLinkCard() {
         if (this.state.editLink) {
             return <EditIntroLinkDialog
-                open={ this.state.editLink }
-                link={ this.state.link }
-                socket={ this.props.socket }
-                isNew={ this.state.editLinkIndex === -1}
-                t={ this.props.t }
-                lang={ this.props.lang }
-                onClose={ link => {
+                open={this.state.editLink}
+                link={this.state.link}
+                socket={this.props.socket}
+                isNew={this.state.editLinkIndex === -1}
+                t={this.props.t}
+                lang={this.props.lang}
+                onClose={link => {
                     if (link) {
                         const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
                         if (this.state.editLinkIndex === -1) {
@@ -253,11 +256,11 @@ class Intro extends Component {
                         const hasUnsavedChanges = JSON.stringify(this.state.instances) !== JSON.stringify(this.instancesOriginal) ||
                             JSON.stringify(introLinks) !== JSON.stringify(this.introLinksOriginal);
 
-                        this.setState({introLinks, editLink: false, hasUnsavedChanges, link: null});
+                        this.setState({ introLinks, editLink: false, hasUnsavedChanges, link: null });
                     } else {
                         this.setState({ editLink: false });
                     }
-                }}/>;
+                }} />;
         } else {
             return null;
         }
@@ -271,13 +274,13 @@ class Intro extends Component {
                 <Fab
                     key="add"
                     color="primary"
-                    className={ classes.button + ' ' + classes.addButton }
-                    onClick={ () =>
+                    className={classes.button + ' ' + classes.addButton}
+                    onClick={() =>
                         this.setState({
                             editLink: true,
                             editLinkIndex: -1,
                             link: {}
-                        }) }
+                        })}
                 >
                     <AddIcon />
                 </Fab>
@@ -286,9 +289,9 @@ class Intro extends Component {
                 <Fab
                     key="save"
                     color="primary"
-                    disabled={ !this.state.hasUnsavedChanges }
-                    className={ classes.button + ' ' + classes.saveButton }
-                    onClick={ () => this.saveCards() }
+                    disabled={!this.state.hasUnsavedChanges}
+                    className={classes.button + ' ' + classes.saveButton}
+                    onClick={() => this.saveCards()}
                 >
                     <CheckIcon />
                 </Fab>
@@ -298,8 +301,8 @@ class Intro extends Component {
                 <Fab
                     key="close"
                     color="primary"
-                    className={ classes.button + ' ' + classes.closeButton }
-                    onClick={ () => this.deactivateEditMode() }
+                    className={classes.button + ' ' + classes.closeButton}
+                    onClick={() => this.deactivateEditMode()}
                 >
                     <CloseIcon />
                 </Fab>
@@ -309,8 +312,8 @@ class Intro extends Component {
                 <Fab
                     color="primary"
                     key="edit"
-                    className={ classes.button}
-                    onClick={ () => this.activateEditMode() }
+                    className={classes.button}
+                    onClick={() => this.activateEditMode()}
                 >
                     <CreateIcon />
                 </Fab>
@@ -368,7 +371,7 @@ class Intro extends Component {
                     return error;
                 })
                 .then(data =>
-                    ({id: obj._id, data})));
+                    ({ id: obj._id, data })));
 
         return new Promise(resolve =>
             Promise.all(promises)
@@ -440,19 +443,19 @@ class Intro extends Component {
                         const ws = common.welcomeScreen ? common.welcomeScreen : null;
                         let links = /*(ws && ws.link) ? ws.link :*/ common.localLinks || common.localLink || '';
                         if (typeof links === 'string') {
-                            links = {_default: links};
+                            links = { _default: links };
                         }
 
                         Object.keys(links).forEach(linkName => {
                             const link = links[linkName];
                             const instance = {};
 
-                            instance.id          = obj._id.replace('system.adapter.', '') + (linkName === '_default' ? '' : ' ' + linkName);
-                            instance.name        = (/*(ws && ws.name) ? ws.name :*/ common.titleLang ? common.titleLang[this.props.lang] : common.title) + (linkName === '_default' ? '' : ' ' + linkName);
-                            instance.color       = ws && ws.color ? ws.color : '';
+                            instance.id = obj._id.replace('system.adapter.', '') + (linkName === '_default' ? '' : ' ' + linkName);
+                            instance.name = (/*(ws && ws.name) ? ws.name :*/ common.titleLang ? common.titleLang[this.props.lang] : common.title) + (linkName === '_default' ? '' : ' ' + linkName);
+                            instance.color = ws && ws.color ? ws.color : '';
                             instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
-                            instance.image       = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
-                            instance.link        = Utils.replaceLink(link, common.name, instanceId, {
+                            instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
+                            instance.link = Utils.replaceLink(link, common.name, instanceId, {
                                 objects,
                                 hostname: this.props.hostname,
                                 protocol: this.props.protocol
@@ -483,12 +486,12 @@ class Intro extends Component {
                     if (common) {
                         const instance = {};
 
-                        instance.id      = obj._id;
-                        instance.name    = common.name;
-                        instance.color   = '';
-                        instance.image   = common.icon || 'img/no-image.png';
+                        instance.id = obj._id;
+                        instance.name = common.name;
+                        instance.color = '';
+                        instance.image = common.icon || 'img/no-image.png';
                         instance.enabled = deactivated.hasOwnProperty(instance.id) ? !!deactivated[instance.id] : true;
-                        instance.info    = this.t('Info');
+                        instance.info = this.t('Info');
                         introInstances.push(instance);
                     }
                 });
@@ -509,11 +512,11 @@ class Intro extends Component {
                 {
                     ['Platform', 'RAM', 'Node.js', 'NPM'].map(value => {
                         return (
-                            <li key={ value }>
+                            <li key={value}>
                                 { hostData && typeof hostData === 'object' ?
                                     <span>
-                                        <span className={ classes.bold }>{ this.t(value) }: </span>
-                                        { (formatInfo[value] ? formatInfo[value](hostData[value]) : hostData[value] || '--') }
+                                        <span className={classes.bold}>{this.t(value)}: </span>
+                                        {(formatInfo[value] ? formatInfo[value](hostData[value]) : hostData[value] || '--')}
                                     </span>
                                     :
                                     <Skeleton />
@@ -524,6 +527,27 @@ class Intro extends Component {
                 }
             </ul>
         );
+    }
+
+    getHostDescriptionAll(id) {
+
+        const { classes } = this.props;
+        const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
+        return [(<ul>
+            {
+                hostData && typeof hostData === 'object' && Object.keys(hostData).map(value => <li key={value}>
+                    {hostData && typeof hostData === 'object' ?
+                        <span>
+                            <span className={classes.bold}>{this.t(value)}: </span>
+                            {(formatInfo[value] ? formatInfo[value](hostData[value], this.t) : hostData[value] || '--')}
+                        </span>
+                        :
+                        <Skeleton />
+                    }
+                </li>)
+            }
+        </ul>), hostData && typeof hostData === 'object' && Object.keys(hostData).reduce((acom, item) => acom + `${this.t(item)}:${(formatInfo[item] ? formatInfo[item](hostData[item], this.t) : hostData[item] || '--')}\n`)
+        ];
     }
 
     getData(update) {
@@ -562,16 +586,16 @@ class Intro extends Component {
 
         return (
             <TabContainer
-                elevation={ 0 }
+                elevation={0}
                 overflow="visible"
             >
                 <TabContent>
-                    <Grid container spacing={ 2 }>
-                        { this.getInstancesCards() }
-                        { this.getLinkCards() }
+                    <Grid container spacing={2}>
+                        {this.getInstancesCards()}
+                        {this.getLinkCards()}
                     </Grid>
-                    { this.getButtons(classes) }
-                    { this.editLinkCard() }
+                    {this.getButtons(classes)}
+                    {this.editLinkCard()}
                 </TabContent>
             </TabContainer>
         );
