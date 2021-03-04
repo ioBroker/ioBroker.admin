@@ -1,5 +1,7 @@
 node_modules
 .idea
+/src-rx/.eslintcache
+/src-rx/.cache
 www
 .i18n-editor-metadata
 nbproject
