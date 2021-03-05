@@ -26,6 +26,7 @@
 - Hosts tab
 - Easy admin mode
 - Switch of hosts (if host only one, do not show the switcher)
+- Initial Wizard
 
 - After all is done
 - config.json describes how configuration dialog looks like

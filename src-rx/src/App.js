@@ -343,8 +343,6 @@ class App extends Router {
                     this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
                     this.hostsWorker = this.hostsWorker || new HostsWorker(this.socket);
 
-
-
                     const newState = {
                         lang: this.socket.systemLang,
                         ready: true,
@@ -672,7 +670,7 @@ class App extends Router {
                                     if (m) {
                                         /*const adapter  = m[1];
                                         const instance = m[2] ? parseInt(m[2], 10) : null;
-                    
+
                                         let link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab.html';
                                         if (tab.common.materializeTab) {
                                             link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab_m.html';

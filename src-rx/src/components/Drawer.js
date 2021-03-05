@@ -370,7 +370,7 @@ class Drawer extends Component {
                     <DragWrapper
                         idx={idx}
                         canDrag={this.state.editList}
-                        iconJSX={!!tabsInfo[tab.name].icon ? tabsInfo[tab.name].icon : <img alt="" className={this.props.classes.icon} src={tab.icon} />}
+                        iconJSX={!!tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <img alt="" className={this.props.classes.icon} src={tab.icon} />}
                         _id={tab.name}
                         selected={this.props.currentTab === tab.name}
                         tab={tab}
@@ -383,9 +383,7 @@ class Drawer extends Component {
                             let newObjCopy = JSON.parse(JSON.stringify(this.props.systemConfig));
                             this.props.socket.setSystemConfig(newObjCopy).then(el => console.log('ok', el))
                         }}
-                        setTabs={(newObj) => {
-                            this.setState({ tabs: newObj })
-                        }}>
+                        setTabs={(newObj) => this.setState({ tabs: newObj })}>
                         <DrawerItem
                             key={tab.name}
                             editList={this.state.editList}
@@ -397,7 +395,7 @@ class Drawer extends Component {
                             }}
                             compact={!this.isSwipeable() && this.props.state !== STATES.opened}
                             onClick={() => this.props.handleNavigation(tab.name)}
-                            icon={!!tabsInfo[tab.name].icon ? tabsInfo[tab.name].icon : <img alt="" className={this.props.classes.icon} src={tab.icon} />}
+                            icon={!!tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <img alt="" className={this.props.classes.icon} src={tab.icon} />}
                             text={tab.title}
                             selected={this.props.currentTab === tab.name}
                             badgeContent={tab.name === 'tab-logs' ? this.state.logErrors || this.state.logWarnings : 0}

@@ -18,7 +18,12 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+import IconWorld from '@material-ui/icons/Language';
+import IconCheck from '@material-ui/icons/Check';
+import IconCancel from '@material-ui/icons/Close';
+
 import I18n from '@iobroker/adapter-react/i18n';
+import LicenseTexts from './LicenseTexts';
 
 const TOOLBAR_HEIGHT = 64;
 
@@ -34,6 +39,7 @@ const styles = theme => ({
         width: '100%',
         overflow: 'hidden',
         padding: theme.spacing(2),
+        textAlign: 'center'
     },
     languageSelect: {
         minWidth: 200,
@@ -42,7 +48,7 @@ const styles = theme => ({
     licenseDiv: {
         width: '100%',
         height: 'calc(100% - ' + (theme.mixins.toolbar.minHeight + theme.spacing(1) + 70) + 'px)',
-        overflow: 'auto'
+        overflow: 'auto',
     },
     grow: {
         flexGrow: 1,
@@ -64,6 +70,14 @@ const styles = theme => ({
     toolbar: {
         height: TOOLBAR_HEIGHT,
         lineHeight: TOOLBAR_HEIGHT + 'px',
+    },
+    licenseTextDiv: {
+        width: '100%',
+        maxWidth: 600,
+        textAlign: 'left',
+    },
+    licenseText: {
+        marginBottom: 15,
     }
 });
 
@@ -105,18 +119,25 @@ class WizardLicenseTab extends Component {
         </Dialog>
     }
 
+    renderLicenseText() {
+        let lines = LicenseTexts[I18n.getLanguage()] || LicenseTexts.en;
+        lines = lines.split('\n');
+        return <div className={this.props.classes.licenseTextDiv}>{lines.map((line, i) => <div className={this.props.classes.licenseText} key={i}>{line}</div>)}</div>;
+    }
+
     render() {
         return <Paper className={ this.props.classes.paper }>
             <Grid container className={ this.props.classes.gridDiv } direction="column">
                 <Grid item>
                     <FormControl className={ this.props.classes.languageSelect }>
-                        <InputLabel>{ this.props.t('Language') }</InputLabel>
+                        <InputLabel><IconWorld/>{ this.props.t('Language') }</InputLabel>
                         <Select
                             value={ I18n.getLanguage() }
                             onChange={e => {
-                            I18n.setLanguage(e.target.value);
-                            this.setState( { lang: e.target.value });
-                        }}>
+                                I18n.setLanguage(e.target.value);
+                                this.setState( { lang: e.target.value });
+                            }}
+                        >
                             <MenuItem value="en">English</MenuItem>
                             <MenuItem value="de">Deutsch</MenuItem>
                             <MenuItem value="ru">русский</MenuItem>
@@ -139,16 +160,16 @@ class WizardLicenseTab extends Component {
                     </div>
                 </Grid>
                 <Grid item>
-                    <h2>{ this.props.t('License terms') }</h2>
+                    <h1>{ this.props.t('License terms') }</h1>
                 </Grid>
                 <Grid item className={ this.props.classes.licenseDiv }>
-                    This is a very long license
+                    {this.renderLicenseText()}
                 </Grid>
             </Grid>
             <Toolbar className={ this.props.classes.toolbar }>
                 <div className={ this.props.classes.grow }/>
-                <Button variant="contained" color="secondary" className={ this.props.classes.greenButton } disabled={ !this.state.statisticsAccepted } onClick={ () => this.props.onDone() }>{ this.props.t('Agree') }</Button>
-                <Button variant="contained" onClick={ () => this.setState({notAgree: true}) }>{ this.props.t('Not agree') }</Button>
+                <Button variant="contained" color="secondary" className={ this.props.classes.greenButton } disabled={ !this.state.statisticsAccepted } onClick={ () => this.props.onDone() }><IconCheck/>{ this.props.t('Agree') }</Button>
+                <Button variant="contained" onClick={ () => this.setState({notAgree: true}) }><IconCancel/>{ this.props.t('Not agree') }</Button>
                 <div className={ this.props.classes.grow }/>
             </Toolbar>
             { this.renderNotAgree() }

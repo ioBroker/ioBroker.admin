@@ -88,7 +88,7 @@ class WizardPasswordTab extends Component {
                             autoComplete="off"
                             className={ this.props.classes.input }
                             ref={ this.focusRef }
-                            label="Administrator password"
+                            label={this.props.t('Administrator password')}
                             type="password"
                             value={ this.state.password }
                             error={ this.state.errorPassword }

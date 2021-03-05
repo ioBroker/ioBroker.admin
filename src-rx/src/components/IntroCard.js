@@ -297,7 +297,7 @@ class IntroCard extends Component {
     }
 
     handleImageError() {
-        if (!this.state.erro) {
+        if (!this.state.error) {
             this.setState({
                 loaded: false,
                 error: true
@@ -323,35 +323,33 @@ class IntroCard extends Component {
                 }
             }
 
-            return (
-                <Grid
-                    item
-                    container
-                    className={classes.imgContainer}
-                    justify="center"
-                    alignItems="center"
-                >
-                    <img
-                        ref={this.cameraRef}
-                        src={url}
-                        alt="Camera"
-                        className={this.state.loaded && !this.state.error ? classes.cameraImg : classes.hidden}
-                        onLoad={() => this.handleImageLoad()}
-                        onError={() => this.handleImageError()}
+            return <Grid
+                item
+                container
+                className={classes.imgContainer}
+                justify="center"
+                alignItems="center"
+            >
+                <img
+                    ref={this.cameraRef}
+                    src={url}
+                    alt="Camera"
+                    className={this.state.loaded && !this.state.error ? classes.cameraImg : classes.hidden}
+                    onLoad={() => this.handleImageLoad()}
+                    onError={() => this.handleImageError()}
+                />
+                { !this.state.loaded && !this.state.error &&
+                    <Skeleton
+                        height="100%"
+                        width="100%"
+                        animation="wave"
+                        className={classes.imgSkeleton}
                     />
-                    { !this.state.loaded && !this.state.error &&
-                        <Skeleton
-                            height="100%"
-                            width="100%"
-                            animation="wave"
-                            className={classes.imgSkeleton}
-                        />
-                    }
-                    { this.state.error &&
-                        <ErrorIcon fontSize="large" />
-                    }
-                </Grid>
-            );
+                }
+                { this.state.error &&
+                    <ErrorIcon fontSize="large" />
+                }
+            </Grid>;
         } else if (this.props.camera.startsWith('cameras.')) {
             return <img ref={this.cameraRef} src="" alt="camera" className={this.props.classes.cameraImg} />;
         }

@@ -18,11 +18,13 @@ import clsx from 'clsx';
 // Icons
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import CheckIcon from '@material-ui/icons/Check';
+
 import WizardPasswordTab from '../components/WizardPasswordTab';
 import WizardLicenseTab from '../components/WizardLicenseTab';
 import WizardFinishImage from '../assets/wizard-finish.jpg';
 import WizardWelcomeImage from '../assets/wizard-welcome.jpg';
 import WizardSettingsTab from '../components/WizardSettingsTab';
+import Logo from '../assets/logo.png';
 
 const TOOLBAR_HEIGHT = 64;
 
@@ -70,6 +72,13 @@ const styles = theme => ({
     },
     toolbar: {
         height: TOOLBAR_HEIGHT,
+    },
+    logo: {
+        width: 32,
+        height: 32,
+        float: 'right',
+        borderRadius: '50%',
+        background: 'white',
     }
 });
 
@@ -88,6 +97,7 @@ class WizardDialog extends Component {
     }
 
     renderWelcome() {
+        // shutterstock Standard commercial license on ioBroker GmbH: https://www.shutterstock.com/de/image-vector/welcome-neon-text-vector-sign-design-1186433386
         return <div className={ clsx(this.props.classes.paper, this.props.classes.welcomeBackground) }>
             <div className={ this.props.classes.fullHeightWithoutToolbar }>
 
@@ -150,6 +160,7 @@ class WizardDialog extends Component {
         />;
     }
     renderFinish() {
+        // Free Image license: https://pixabay.com/illustrations/road-sky-mountains-clouds-black-908176/
         return <div className={ clsx(this.props.classes.paper, this.props.classes.finishBackground) }>
             <div className={ this.props.classes.fullHeightWithoutToolbar }>
 
@@ -171,7 +182,7 @@ class WizardDialog extends Component {
             fullScreen={ true }
             aria-labelledby="wizard-dialog-title"
         >
-            <DialogTitle id="wizard-dialog-title">{ this.props.t('Initial ioBroker setup') }</DialogTitle>
+            <DialogTitle id="wizard-dialog-title">{ this.props.t('Initial ioBroker setup') } <img src={Logo} className={this.props.classes.logo} alt="logo"/></DialogTitle>
             <DialogContent className={ this.props.classes.content }>
                 <AppBar position="static">
                     <Stepper activeStep={ this.state.activeStep }>
