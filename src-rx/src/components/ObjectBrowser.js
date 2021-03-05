@@ -1,5 +1,5 @@
 /**
- * Copyright 2020, bluefox <dogafox@gmail.com>
+ * Copyright 2020-2021, bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -79,7 +79,6 @@ import IconState from '@iobroker/adapter-react/icons/IconState';
 import IconClosed from '@iobroker/adapter-react/icons/IconClosed';
 import IconOpen from '@iobroker/adapter-react/icons/IconOpen';
 import IconClearFilter from '@iobroker/adapter-react/icons/IconClearFilter';
-//import IconCancel from "@material-ui/icons/Close";
 
 const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
