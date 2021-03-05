@@ -75,6 +75,7 @@ const styles = theme => ({
         width: '100%',
         maxWidth: 600,
         textAlign: 'left',
+        margin: 'auto',
     },
     licenseText: {
         marginBottom: 15,
