@@ -455,9 +455,12 @@ class IntroCard extends Component {
                                         Info
                                 </Typography>
                                     <div>
-                                        <IconButton size="small" onClick={() => copy(this.props.getHostDescriptionAll()[1], {
-                                            format: 'text/plain'
-                                        })}>
+                                        <IconButton size="small" onClick={() => {
+                                            copy(this.props.getHostDescriptionAll()[1], {
+                                                format: 'text/plain'
+                                            });
+                                            this.props.openSnackBarFunc();
+                                        }}>
                                             <SaveIcon />
                                         </IconButton>
                                         <IconButton size="small" onClick={() => this.handleExpandClick()}>

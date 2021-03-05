@@ -1,6 +1,5 @@
 - Check base settings (BF), show on non-mobile as dialog (not full screen)
 - Overview - add dailog - add close button at bottom
-- Overview - Make info work (for hosts)//
 - Adapters/list view - add indents to items by open of folder
 - Adapters/Tile view, and filter by type and sort by (A-Z, popular, recently updated)
 - Adapters - button to filter adapters that need to be updated
@@ -20,7 +19,7 @@
 - Objects - allow to filter only of states/channels/devices => another view (ack, ts, lc, etc)
 - Objects - export/import and creation of new state
 - Objects - edit of access control (similar to files)
-- Left menu - reorder(drug&drop) and hide/show of items
+- Left menu - reorder(drug&drop) and hide/show of items//
 - Logs - by selection of log, the number of new logs must be hidden, By deletion
 - Files - bulk edit of access rights
 - Left menu - show iobroker logo at the top left corner (only if opend on full width, else show on top right corner)//
@@ -30,3 +29,28 @@
 
 - After all is done
 - config.json describes how configuration dialog looks like
+
+
+## How to get list of possible tabs
+- this.props.socket.getAdapterInstances()
+    .then(instances => {
+        instances.forEach(instanceObj => {
+            if (!instanceObj.common || !instanceObj.common.adminTab) {
+                return;
+            }
+            if (instanceObj.common.adminTab.singleton) {
+                let isFound = false;
+                const inst1 = instance.replace(/\.(\d+)$/, '.');
+                for (let j = 0; j < addTabs.length; j++) {
+                    const inst2 = addTabs[j].replace(/\.(\d+)$/, '.');
+                    if (inst1 === inst2) {
+                        isFound = true;
+                        break;
+                    }
+                }
+                !isFound && addTabs.push(instance);
+            } else {
+                addTabs.push(instance);
+            }
+        }
+    });

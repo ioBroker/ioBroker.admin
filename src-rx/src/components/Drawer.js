@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
-import { Avatar, Drawer as MaterialDrawer } from '@material-ui/core';
+import { Avatar, Button, Drawer as MaterialDrawer } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import DrawerItem from './DrawerItem';
@@ -33,6 +33,9 @@ import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 // import ShowChartIcon from '@material-ui/icons/ShowChart';
 import StorageIcon from '@material-ui/icons/Storage';
 import FilesIcon from '@material-ui/icons/FileCopy';
+
+import DragWrapper from './DragWrapper';
+import CustomDragLayer from './CustomDragLayer';
 
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
@@ -86,14 +89,14 @@ const styles = theme => ({
         background: '#FFFFFF'
     },
     logoSize: {
-        width: 70,
-        height: 70
+        width: 50,
+        height: 50
     },
     avatarBlock: {
         width: '100%',
         display: 'flex',
-        justifyContent: 'center',
-        marginLeft: 48,
+        // justifyContent: 'center',
+        // marginLeft: 48,
         marginTop: 5,
         marginBottom: 5
     },
@@ -103,6 +106,10 @@ const styles = theme => ({
     },
     avatarVisible: {
         opacity: 1
+    },
+    expand: {
+        marginBottom: 5,
+        marginLeft: 5
     }
 });
 
@@ -149,7 +156,8 @@ class Drawer extends Component {
         this.state = {
             logErrors: 0,
             logWarnings: 0,
-            tabs: []
+            tabs: [],
+            editList: false
         };
 
         this.logErrorHandlerBound = this.logErrorHandler.bind(this);
@@ -192,12 +200,15 @@ class Drawer extends Component {
             });
         }
     }
-
+    componentDidUpdate() {
+        if (!this.isSwipeable() && this.props.state !== STATES.opened && this.state.editList) {
+            this.setState({ editList: false });
+        }
+    }
     getTabs() {
         return this.props.instancesWorker.getInstances()
             .then(instances => {
                 let dynamicTabs = [];
-
                 if (instances) {
                     Object.keys(instances).forEach(id => {
                         const instance = instances[id];
@@ -249,7 +260,7 @@ class Drawer extends Component {
                         }
 
                         if (!obj.icon) {
-                            obj.icon = <img alt="" className={this.props.classes.icon} src={`adapter/${instance.common.name}/${instance.common.icon}`} />;
+                            obj.icon = `adapter/${instance.common.name}/${instance.common.icon}`;
                         }
 
                         obj.title = title;
@@ -271,29 +282,43 @@ class Drawer extends Component {
                 tabs = tabs.map(name => {
                     const obj = Object.assign({ name }, tabsInfo[name]);
                     obj.title = I18n.t(ucFirst(name.replace('tab-', '').replace('-0', '').replace(/-(\d+)$/, ' $1')));
+                    obj.visable = true;
                     return obj;
                 });
 
                 // add dynamic tabs
                 tabs = tabs.concat(dynamicTabs);
-
+                tabs = tabs.map(obj => {
+                    obj.visable = true;
+                    return obj;
+                });
                 // tabs ith order first, then by name
-                tabs.sort((a, b) => {
-                    if (a.order && b.order) {
-                        return a.order > b.order ? 1 : (a.order < b.order ? -1 : 0);
-                    } else if (a.order) {
-                        return 1;
-                    } else if (b.order) {
-                        return -1;
-                    } else {
-                        return a.name > b.name ? 1 : (a.name < b.name ? -1 : 0);
-                    }
-                });
-
+                // tabs.sort((a, b) => {
+                //     if (a.order && b.order) {
+                //         return a.order > b.order ? 1 : (a.order < b.order ? -1 : 0);
+                //     } else if (a.order) {
+                //         return 1;
+                //     } else if (b.order) {
+                //         return -1;
+                //     } else {
+                //         return a.name > b.name ? 1 : (a.name < b.name ? -1 : 0);
+                //     }
+                // });
                 // Convert
-                this.setState({
-                    tabs,
-                });
+                if (!this.props.systemConfig.common['test'] || tabs.length !== this.props.systemConfig.common['test'].length) {
+                    this.setState({
+                        tabs,
+                    }, async () => {
+                        this.props.systemConfig.common['test'] = tabs;
+                        let newObj = JSON.parse(JSON.stringify(this.props.systemConfig));
+                        await this.props.socket.setSystemConfig(newObj).then(el => console.log('ok', el));
+
+                    });
+                } else {
+                    this.setState({
+                        tabs: this.props.systemConfig.common['test']
+                    });
+                }
             });
     }
 
@@ -333,24 +358,55 @@ class Drawer extends Component {
     }
 
     getNavigationItems() {
-        const items = [];
-
-        this.state.tabs.forEach(tab => {
-            items.push(
-                <DrawerItem
-                    key={tab.name}
-                    compact={!this.isSwipeable() && this.props.state !== STATES.opened}
-                    onClick={() => this.props.handleNavigation(tab.name)}
-                    icon={tab.icon}
-                    text={tab.title}
-                    selected={this.props.currentTab === tab.name}
-                    badgeContent={tab.name === 'tab-logs' ? this.state.logErrors || this.state.logWarnings : 0}
-                    badgeColor={tab.name === 'tab-logs' ? this.state.logErrors ? 'error' : 'warn' : ''}
-                />
+        if (!this.props.systemConfig) {
+            return
+        }
+        return this.state.tabs.map((tab, idx) => {
+            if (!this.state.editList && !tab.visable) {
+                return null
+            }
+            return (
+                <div key={tab.name}>
+                    <DragWrapper
+                        idx={idx}
+                        canDrag={this.state.editList}
+                        iconJSX={!!tabsInfo[tab.name].icon ? tabsInfo[tab.name].icon : <img alt="" className={this.props.classes.icon} src={tab.icon} />}
+                        _id={tab.name}
+                        selected={this.props.currentTab === tab.name}
+                        tab={tab}
+                        compact={!this.isSwipeable() && this.props.state !== STATES.opened}
+                        badgeContent={tab.name === 'tab-logs' ? this.state.logErrors || this.state.logWarnings : 0}
+                        badgeColor={tab.name === 'tab-logs' ? this.state.logErrors ? 'error' : 'warn' : ''}
+                        tabs={this.props.systemConfig.common['test']}
+                        setEndDrag={() => {
+                            this.props.systemConfig.common['test'] = this.state.tabs;
+                            let newObjCopy = JSON.parse(JSON.stringify(this.props.systemConfig));
+                            this.props.socket.setSystemConfig(newObjCopy).then(el => console.log('ok', el))
+                        }}
+                        setTabs={(newObj) => {
+                            this.setState({ tabs: newObj })
+                        }}>
+                        <DrawerItem
+                            key={tab.name}
+                            editList={this.state.editList}
+                            visable={tab.visable}
+                            editListFunc={() => {
+                                this.props.systemConfig.common['test'][idx].visable = !tab.visable;
+                                let newObj = JSON.parse(JSON.stringify(this.props.systemConfig));
+                                this.setState({ tabs: newObj.common['test'] }, async () => await this.props.socket.setSystemConfig(newObj).then(el => console.log('ok', el)))
+                            }}
+                            compact={!this.isSwipeable() && this.props.state !== STATES.opened}
+                            onClick={() => this.props.handleNavigation(tab.name)}
+                            icon={!!tabsInfo[tab.name].icon ? tabsInfo[tab.name].icon : <img alt="" className={this.props.classes.icon} src={tab.icon} />}
+                            text={tab.title}
+                            selected={this.props.currentTab === tab.name}
+                            badgeContent={tab.name === 'tab-logs' ? this.state.logErrors || this.state.logWarnings : 0}
+                            badgeColor={tab.name === 'tab-logs' ? this.state.logErrors ? 'error' : 'warn' : ''}
+                        />
+                    </DragWrapper>
+                </div>
             );
         });
-
-        return items;
     }
 
     render() {
@@ -367,8 +423,19 @@ class Drawer extends Component {
                     onOpen={() => this.props.onStateChange(STATES.opened)}
                     classes={{ paper: classes.paper }}
                 >
+                    <CustomDragLayer />
+
                     { this.getHeader()}
                     <List>
+                        {this.props.state === STATES.opened && <Button
+                            className={classes.expand}
+                            onClick={() => this.setState({ editList: !this.state.editList })}
+                            variant="contained"
+                            size="small"
+                            color="primary"
+                        >
+                            {this.props.t('Edit')}
+                        </Button>}
                         {this.getNavigationItems()}
                     </List>
                 </SwipeableDrawer>
@@ -382,8 +449,19 @@ class Drawer extends Component {
                     open={this.props.state !== STATES.closed}
                     classes={{ paper: classes.paper }}
                 >
+                    <CustomDragLayer />
+
                     { this.getHeader()}
                     <List className={classes.list}>
+                        {this.props.state === STATES.opened && <Button
+                            className={classes.expand}
+                            onClick={() => this.setState({ editList: !this.state.editList })}
+                            variant="contained"
+                            size="small"
+                            color="primary"
+                        >
+                            {this.props.t('Edit')}
+                        </Button>}
                         {this.getNavigationItems()}
                     </List>
                 </MaterialDrawer>

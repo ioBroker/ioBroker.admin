@@ -12,6 +12,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import amber from '@material-ui/core/colors/amber';
 
 import Utils from '../Utils';
+import { Checkbox } from '@material-ui/core';
 
 const styles = theme => ({
     selected: {
@@ -43,43 +44,49 @@ const DrawerItem = props => {
         icon,
         onClick,
         selected,
-        text
+        text,
+        editList,visable,editListFunc
     } = props;
 
     const content = text ? text.replace('&gt;', '>') : '';
 
-    return (
+    return (<div style={{display:'flex'}}>
+
+        { !!editList && 
+            <Checkbox checked={visable} onChange={editListFunc}/>
+        
+        }
         <ListItem
             button
-            className={ clsx({ [classes.selected]: selected }, compact && classes.compactBadge) }
-            onClick={ onClick }
+            className={clsx({ [classes.selected]: selected }, compact && classes.compactBadge)}
+            onClick={onClick}
         >
             <Grid
                 container
-                spacing={ 1 }
+                spacing={1}
                 alignItems="center"
-                className={ classes.noWrap }
+                className={classes.noWrap}
             >
                 <Grid item>
                     <ListItemIcon style={{ minWidth: 0 }}>
                         <Badge
-                            badgeContent={ badgeContent || 0 }
-                            color={ (badgeColor === 'warn' ? 'default' : badgeColor) || 'primary' }
-                            classes={ badgeColor === 'warn' ? {badge: classes.warn } : {} }
+                            badgeContent={badgeContent || 0}
+                            color={(badgeColor === 'warn' ? 'default' : badgeColor) || 'primary'}
+                            classes={badgeColor === 'warn' ? { badge: classes.warn } : {}}
                         >
-                            { icon }
+                            {icon}
                         </Badge>
                     </ListItemIcon>
                 </Grid>
-                { !compact &&
+                {!compact &&
                     <Grid item>
                         <ListItemText>
-                            { content }
+                            {content}
                         </ListItemText>
                     </Grid>
                 }
             </Grid>
-        </ListItem>
+        </ListItem></div>
     );
 }
 

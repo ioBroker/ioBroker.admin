@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
 
-import { Fab } from '@material-ui/core';
+import { Fab, Snackbar } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
 import { LinearProgress } from '@material-ui/core';
 
@@ -80,7 +80,7 @@ class Intro extends Component {
             introLinks: [],
             editLink: false,
             editLinkIndex: -1,
-
+            openSnackBar: false,
             hasUnsavedChanges: false,
         };
 
@@ -179,6 +179,7 @@ class Intro extends Component {
                         disabled={!Boolean(hostData && typeof hostData === 'object')}
                         getHostDescriptionAll={() => this.getHostDescriptionAll(instance.id)}
                         toggleActivation={() => this.toggleCard(instance.id)}
+                        openSnackBarFunc={() => this.setState({ openSnackBar: true })}
                     >
                         { instance.description || this.getHostDescription(instance.id)}
                     </IntroCard>
@@ -589,6 +590,16 @@ class Intro extends Component {
                 elevation={0}
                 overflow="visible"
             >
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    open={this.state.openSnackBar}
+                    autoHideDuration={3000}
+                    onClose={() => this.setState({ openSnackBar: false })}
+                    message={this.t('copied')}
+                />
                 <TabContent>
                     <Grid container spacing={2}>
                         {this.getInstancesCards()}

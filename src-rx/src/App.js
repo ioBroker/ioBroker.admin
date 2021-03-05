@@ -26,7 +26,7 @@ import Typography from '@material-ui/core/Typography';
 import MenuIcon from '@material-ui/icons/Menu';
 import BuildIcon from '@material-ui/icons/Build';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import ExpertIcon from  '@iobroker/adapter-react/Components/ExpertIcon';
+import ExpertIcon from '@iobroker/adapter-react/Components/ExpertIcon';
 
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import Brightness5Icon from '@material-ui/icons/Brightness5';
@@ -53,14 +53,17 @@ import WizardDialog from './dialogs/WizardDialog';
 import BaseSettingsDialog from './dialogs/BaseSettingsDialog';
 import SystemSettingsDialog from "./dialogs/SystemSettingsDialog";
 
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { TouchBackend } from 'react-dnd-touch-backend';
 // Tabs
-const Adapters = React.lazy(() => import ('./tabs/Adapters'));
-const Instances = React.lazy(() => import ('./tabs/Instances'));
-const Intro = React.lazy(() => import ('./tabs/Intro'));
-const Logs = React.lazy(() => import ('./tabs/Logs'));
-const Files = React.lazy(() => import ('./tabs/Files'));
-const Objects = React.lazy(() => import ('./tabs/Objects'));
-const CustomTab = React.lazy(() => import ('./tabs/CustomTab'));
+const Adapters = React.lazy(() => import('./tabs/Adapters'));
+const Instances = React.lazy(() => import('./tabs/Instances'));
+const Intro = React.lazy(() => import('./tabs/Intro'));
+const Logs = React.lazy(() => import('./tabs/Logs'));
+const Files = React.lazy(() => import('./tabs/Files'));
+const Objects = React.lazy(() => import('./tabs/Objects'));
+const CustomTab = React.lazy(() => import('./tabs/CustomTab'));
 
 const query = {};
 (window.location.search || '').replace(/^\?/, '').split('&').forEach(attr => {
@@ -73,8 +76,8 @@ const query = {};
 
 const styles = theme => ({
     root: {
-        display:    'flex',
-        height:     '100%',
+        display: 'flex',
+        height: '100%',
     },
     appBar: {
         transition: theme.transitions.create(['margin', 'width'], {
@@ -86,23 +89,23 @@ const styles = theme => ({
         background: '#FFFFFF'
     },
     appBarShift: {
-      width: `calc(100% - ${DRAWER_FULL_WIDTH}px)`,
-      marginLeft: DRAWER_FULL_WIDTH,
-      transition: theme.transitions.create(['margin', 'width'], {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
+        width: `calc(100% - ${DRAWER_FULL_WIDTH}px)`,
+        marginLeft: DRAWER_FULL_WIDTH,
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
     },
     appBarShiftCompact: {
-      width: `calc(100% - ${DRAWER_COMPACT_WIDTH}px)`,
-      marginLeft: DRAWER_COMPACT_WIDTH,
-      transition: theme.transitions.create(['margin', 'width'], {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
+        width: `calc(100% - ${DRAWER_COMPACT_WIDTH}px)`,
+        marginLeft: DRAWER_COMPACT_WIDTH,
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
     },
     menuButton: {
-      marginRight: theme.spacing(2),
+        marginRight: theme.spacing(2),
     },
     hide: {
         display: 'none'
@@ -130,11 +133,11 @@ const styles = theme => ({
         marginLeft: -DRAWER_COMPACT_WIDTH,
     },
     contentShift: {
-      transition: theme.transitions.create('margin', {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-      marginLeft: 0
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        marginLeft: 0
     },
     expertIcon: {
         width: 22,
@@ -156,12 +159,12 @@ const styles = theme => ({
     alert_success: {
         backgroundColor: '#4caf50'
     },
-    avatarNotVisible:{
-        opacity:0,
-        transition:'opacity 0.3s'
+    avatarNotVisible: {
+        opacity: 0,
+        transition: 'opacity 0.3s'
     },
-    avatarVisible:{
-        opacity:1
+    avatarVisible: {
+        opacity: 1
     }
 });
 
@@ -223,44 +226,44 @@ class App extends Router {
             const theme = this.createTheme();
 
             this.state = {
-                connected:      false,
-                progress:       0,
-                ready:          false,
-                lang:           'en',
+                connected: false,
+                progress: 0,
+                ready: false,
+                lang: 'en',
 
                 //Finished
-                protocol:       this.getProtocol(),
-                hostname:       window.location.hostname,
-                port:           this.getPort(),
+                protocol: this.getProtocol(),
+                hostname: window.location.hostname,
+                port: this.getPort(),
                 //---------
 
-                allTabs:        null,
+                allTabs: null,
 
-                expertMode:     window.localStorage.getItem('App.expertMode') === 'true',
+                expertMode: window.localStorage.getItem('App.expertMode') === 'true',
 
-                states:         {},
-                hosts:          [],
-                currentHost:    '',
+                states: {},
+                hosts: [],
+                currentHost: '',
                 currentHostName: '',
-                currentTab:     Router.getLocation(),
-                currentDialog:  null,
-                currentUser:    '',
+                currentTab: Router.getLocation(),
+                currentDialog: null,
+                currentUser: '',
                 subscribesStates: {},
                 subscribesObjects: {},
                 subscribesLogs: 0,
-                systemConfig:   null,
+                systemConfig: null,
 
-                objects:        {},
+                objects: {},
 
                 waitForRestart: false,
-                tabs:           null,
-                config:         {},
+                tabs: null,
+                config: {},
 
                 stateChanged: false,
 
                 theme,
-                themeName:      this.getThemeName(theme),
-                themeType:      this.getThemeType(theme),
+                themeName: this.getThemeName(theme),
+                themeType: this.getThemeType(theme),
 
                 alert: false,
                 alertType: 'info',
@@ -286,7 +289,7 @@ class App extends Router {
         } else {
             const theme = this.createTheme();
             this.state = {
-                login:     true,
+                login: true,
                 theme,
                 themeName: this.getThemeName(theme),
                 themeType: this.getThemeType(theme)
@@ -296,14 +299,12 @@ class App extends Router {
 
     setUnsavedData(hasUnsavedData) {
         if (hasUnsavedData !== this.state.unsavedDataInDialog) {
-            this.setState({unsavedDataInDialog: hasUnsavedData});
+            this.setState({ unsavedDataInDialog: hasUnsavedData });
         }
     }
 
-    componentDidMount()
-    {
-        if (!this.state.login)
-        {
+    componentDidMount() {
+        if (!this.state.login) {
             window.addEventListener('hashchange', () => this.onHashChanged(), false);
 
             if (!this.state.currentTab.tab) {
@@ -338,9 +339,9 @@ class App extends Router {
                     I18n.setLanguage(this.socket.systemLang);
 
                     // create Workers
-                    this.logsWorker      = this.logsWorker      || new LogsWorker(this.socket, 1000);
+                    this.logsWorker = this.logsWorker || new LogsWorker(this.socket, 1000);
                     this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
-                    this.hostsWorker     = this.hostsWorker     || new HostsWorker(this.socket);
+                    this.hostsWorker = this.hostsWorker || new HostsWorker(this.socket);
 
 
 
@@ -363,7 +364,6 @@ class App extends Router {
                         newState.currentHost = newState.hosts[0]._id;
                         newState.currentHostName = newState.hosts[0].common.name;
                     }
-
                     this.setState(newState, () => this.setCurrentTabTitle());
 
                     this.logsWorker && this.logsWorker.setCurrentHost(this.state.currentHost);
@@ -458,7 +458,7 @@ class App extends Router {
 
         const newThemeName = themeName === 'dark' ? 'blue' :
             themeName === 'blue' ? 'colored' : themeName === 'colored' ? 'light' :
-            themeName === 'light' ? 'dark' : 'colored';
+                themeName === 'light' ? 'dark' : 'colored';
 
         Utils.setThemeName(newThemeName);
 
@@ -574,128 +574,128 @@ class App extends Router {
         if (this.state && this.state.currentTab && this.state.currentTab.tab) {
             if (this.state.currentTab.tab === 'tab-adapters') {
                 return (
-                    <Suspense fallback={ <Connecting /> }>
+                    <Suspense fallback={<Connecting />}>
                         <Adapters
                             key="adapters"
-                            systemConfig={ this.state.systemConfig }
-                            socket={ this.socket }
-                            hosts={ this.state.hosts }
-                            currentHost={ this.state.currentHost }
-                            currentHostName={ this.state.currentHostName }
-                            ready={ this.state.ready }
-                            t={ I18n.t }
-                            lang={ I18n.getLanguage() }
-                            expertMode={ this.state.expertMode }
-                            executeCommand={ cmd => this.executeCommand(cmd) }
+                            systemConfig={this.state.systemConfig}
+                            socket={this.socket}
+                            hosts={this.state.hosts}
+                            currentHost={this.state.currentHost}
+                            currentHostName={this.state.currentHostName}
+                            ready={this.state.ready}
+                            t={I18n.t}
+                            lang={I18n.getLanguage()}
+                            expertMode={this.state.expertMode}
+                            executeCommand={cmd => this.executeCommand(cmd)}
                         />
                     </Suspense>
                 );
             } else
-            if (this.state.currentTab.tab === 'tab-instances') {
-                return (
-                    <Suspense fallback={ <Connecting /> }>
-                        <Instances
-                            key="instances"
-                            socket={ this.socket }
-                            lang={ I18n.getLanguage() }
-                            protocol={ this.state.protocol }
-                            hostname={ this.state.hostname }
-                            themeName={ this.state.themeName }
-                            expertMode={ this.state.expertMode }
-                            t={ I18n.t }
-                            configStored={ value => this.allStored(value) }
-                        />
-                    </Suspense>
-                );
-            } else
-            if (this.state.currentTab.tab === 'tab-intro') {
-                return (
-                    <Suspense fallback={ <Connecting /> }>
-                        <Intro
-                            key="intro"
-                            protocol={ this.state.protocol }
-                            hostname={ this.state.hostname }
-                            showAlert={ (message, type) => this.showAlert(message, type) }
-                            socket={ this.socket }
-                            t={ I18n.t }
-                            lang={ I18n.getLanguage() }
-                        />
-                    </Suspense>
-                );
-            } else
-            if (this.state.currentTab.tab === 'tab-logs') {
-                return (
-                    <Suspense fallback={ <Connecting /> }>
-                        <Logs
-                            key="logs"
-                            t={ I18n.t }
-                            lang={ this.state.lang }
-                            socket={ this.socket }
-                            ready={ this.state.ready }
-                            logsWorker={ this.logsWorker }
-                            expertMode={ this.state.expertMode }
-                            currentHost={ this.state.currentHost }
-                            clearErrors={ cb => this.clearLogErrors(cb) }
-                        />
-                    </Suspense>
-                );
-            } else
-            if (this.state.currentTab.tab === 'tab-files') {
-                return (
-                    <Suspense fallback={ <Connecting /> }>
-                        <Files
-                            key="files"
-                            ready={ this.state.ready }
-                            t={ I18n.t }
-                            expertMode={ this.state.expertMode }
-                            lang={ I18n.getLanguage() }
-                            socket={ this.socket }
-                        />
-                    </Suspense>
-                );
-            } else
-            if (this.state.currentTab.tab === 'tab-objects') {
-                return (
-                    <Suspense fallback={ <Connecting /> }>
-                        <Objects
-                            key="objects"
-                            t={ I18n.t }
-                            themeName={ this.state.themeName }
-                            expertMode={ this.state.expertMode }
-                            lang={ I18n.getLanguage() }
-                            socket={ this.socket }
-                        />
-                    </Suspense>
-                );
-            } else {
-                const m = this.state.currentTab.tab.match(/^tab-([-\w\d]+)(-\d+)?$/);
-                if (m) {
-                    /*const adapter  = m[1];
-                    const instance = m[2] ? parseInt(m[2], 10) : null;
-
-                    let link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab.html';
-                    if (tab.common.materializeTab) {
-                        link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab_m.html';
-                    }*/
-
-                    // /adapter/javascript/tab.html
+                if (this.state.currentTab.tab === 'tab-instances') {
                     return (
-                        <Suspense fallback={ <Connecting /> }>
-                            <CustomTab
-                                key={ this.state.currentTab.tab }
-                                t={ I18n.t }
-                                protocol={ this.state.protocol }
-                                hostname={ this.state.hostname }
-                                instancesWorker={ this.instancesWorker }
-                                tab={ this.state.currentTab.tab }
-                                themeName={ this.state.themeName }
-                                expertMode={ this.state.expertMode }
-                                lang={ I18n.getLanguage() }
+                        <Suspense fallback={<Connecting />}>
+                            <Instances
+                                key="instances"
+                                socket={this.socket}
+                                lang={I18n.getLanguage()}
+                                protocol={this.state.protocol}
+                                hostname={this.state.hostname}
+                                themeName={this.state.themeName}
+                                expertMode={this.state.expertMode}
+                                t={I18n.t}
+                                configStored={value => this.allStored(value)}
                             />
                         </Suspense>
                     );
-                }
-            }
+                } else
+                    if (this.state.currentTab.tab === 'tab-intro') {
+                        return (
+                            <Suspense fallback={<Connecting />}>
+                                <Intro
+                                    key="intro"
+                                    protocol={this.state.protocol}
+                                    hostname={this.state.hostname}
+                                    showAlert={(message, type) => this.showAlert(message, type)}
+                                    socket={this.socket}
+                                    t={I18n.t}
+                                    lang={I18n.getLanguage()}
+                                />
+                            </Suspense>
+                        );
+                    } else
+                        if (this.state.currentTab.tab === 'tab-logs') {
+                            return (
+                                <Suspense fallback={<Connecting />}>
+                                    <Logs
+                                        key="logs"
+                                        t={I18n.t}
+                                        lang={this.state.lang}
+                                        socket={this.socket}
+                                        ready={this.state.ready}
+                                        logsWorker={this.logsWorker}
+                                        expertMode={this.state.expertMode}
+                                        currentHost={this.state.currentHost}
+                                        clearErrors={cb => this.clearLogErrors(cb)}
+                                    />
+                                </Suspense>
+                            );
+                        } else
+                            if (this.state.currentTab.tab === 'tab-files') {
+                                return (
+                                    <Suspense fallback={<Connecting />}>
+                                        <Files
+                                            key="files"
+                                            ready={this.state.ready}
+                                            t={I18n.t}
+                                            expertMode={this.state.expertMode}
+                                            lang={I18n.getLanguage()}
+                                            socket={this.socket}
+                                        />
+                                    </Suspense>
+                                );
+                            } else
+                                if (this.state.currentTab.tab === 'tab-objects') {
+                                    return (
+                                        <Suspense fallback={<Connecting />}>
+                                            <Objects
+                                                key="objects"
+                                                t={I18n.t}
+                                                themeName={this.state.themeName}
+                                                expertMode={this.state.expertMode}
+                                                lang={I18n.getLanguage()}
+                                                socket={this.socket}
+                                            />
+                                        </Suspense>
+                                    );
+                                } else {
+                                    const m = this.state.currentTab.tab.match(/^tab-([-\w\d]+)(-\d+)?$/);
+                                    if (m) {
+                                        /*const adapter  = m[1];
+                                        const instance = m[2] ? parseInt(m[2], 10) : null;
+                    
+                                        let link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab.html';
+                                        if (tab.common.materializeTab) {
+                                            link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab_m.html';
+                                        }*/
+
+                                        // /adapter/javascript/tab.html
+                                        return (
+                                            <Suspense fallback={<Connecting />}>
+                                                <CustomTab
+                                                    key={this.state.currentTab.tab}
+                                                    t={I18n.t}
+                                                    protocol={this.state.protocol}
+                                                    hostname={this.state.hostname}
+                                                    instancesWorker={this.instancesWorker}
+                                                    tab={this.state.currentTab.tab}
+                                                    themeName={this.state.themeName}
+                                                    expertMode={this.state.expertMode}
+                                                    lang={I18n.getLanguage()}
+                                                />
+                                            </Suspense>
+                                        );
+                                    }
+                                }
         }
 
         return null;
@@ -714,32 +714,32 @@ class App extends Router {
 
     getBaseSettingsDialog() {
         return <BaseSettingsDialog
-            currentHost={ this.state.currentHost }
-            hosts={ this.state.hosts }
-            themeName={ this.state.themeName }
-            currentHostName={ this.state.currentHostName }
+            currentHost={this.state.currentHost}
+            hosts={this.state.hosts}
+            themeName={this.state.themeName}
+            currentHostName={this.state.currentHostName}
             key="base"
-            onClose={ () => Router.doNavigate(null) }
-            lang={ this.state.lang }
-            showAlert={ (message, type) => this.showAlert(message, type) }
-            socket={ this.socket }
+            onClose={() => Router.doNavigate(null)}
+            lang={this.state.lang}
+            showAlert={(message, type) => this.showAlert(message, type)}
+            socket={this.socket}
             currentTab={this.state.currentTab}
-            t={ I18n.t }
+            t={I18n.t}
         />;
     }
 
     getSystemSettingsDialog() {
         return <SystemSettingsDialog
-            currentHost={ this.state.currentHost }
-            themeName={ this.state.themeName }
-            theme={ this.state.theme }
+            currentHost={this.state.currentHost}
+            themeName={this.state.themeName}
+            theme={this.state.theme}
             key="systemSettings"
-            onClose={ () => Router.doNavigate(null) }
-            lang={ this.state.lang }
-            showAlert={ (message, type) => this.showAlert(message, type) }
-            socket={ this.socket }
+            onClose={() => Router.doNavigate(null)}
+            lang={this.state.lang}
+            showAlert={(message, type) => this.showAlert(message, type)}
+            socket={this.socket}
             currentTab={this.state.currentTab}
-            t={ I18n.t }
+            t={I18n.t}
         />;
     }
 
@@ -748,7 +748,7 @@ class App extends Router {
             return;
         }
 
-        this.setState({alert: false});
+        this.setState({ alert: false });
     }
 
     showAlert(message, type) {
@@ -785,7 +785,7 @@ class App extends Router {
 
                 Router.doNavigate(tab);
 
-                this.setState({currentTab: Router.getLocation()});
+                this.setState({ currentTab: Router.getLocation() });
             } else {
                 this.setState({
                     dataNotStoredDialog: true,
@@ -810,7 +810,7 @@ class App extends Router {
     };
 
     closeDataNotStoredDialog() {
-        this.setState({dataNotStoredDialog: false});
+        this.setState({ dataNotStoredDialog: false });
     }
 
     confirmDataNotStored() {
@@ -839,10 +839,10 @@ class App extends Router {
     renderWizardDialog() {
         if (this.state.wizard) {
             return <WizardDialog
-                socket={ this.socket }
-                t={ I18n.t }
-                lang={ I18n.getLanguage() }
-                onClose={ () => this.setState({ wizard: false }) }
+                socket={this.socket}
+                t={I18n.t}
+                lang={I18n.getLanguage()}
+                onClose={() => this.setState({ wizard: false })}
             />;
         }
     }
@@ -850,44 +850,44 @@ class App extends Router {
     renderCommandDialog() {
         return this.state.cmd ?
             <CommandDialog
-                onClose={ () => this.closeCmdDialog() }
-                open={ this.state.cmdDialog }
-                header={ i18n.t('Command') /* Placeholder */}
-                onConfirm={ () => {} /* Test command */}
-                cmd={ this.state.cmd }
-                confirmText={ i18n.t('Ok') /* Test command */}
-                socket={ this.socket }
-                currentHost={ this.state.currentHost }
-                ready={ this.state.ready }
-                t={ I18n.t }
+                onClose={() => this.closeCmdDialog()}
+                open={this.state.cmdDialog}
+                header={i18n.t('Command') /* Placeholder */}
+                onConfirm={() => { } /* Test command */}
+                cmd={this.state.cmd}
+                confirmText={i18n.t('Ok') /* Test command */}
+                socket={this.socket}
+                currentHost={this.state.currentHost}
+                ready={this.state.ready}
+                t={I18n.t}
             /> : null;
     }
 
     renderConfirmDialog() {
         return <ConfirmDialog
-            onClose={ () => this.closeDataNotStoredDialog() }
-            open={ this.state.dataNotStoredDialog }
-            header={ i18n.t('Please confirm') }
-            onConfirm={ () => this.confirmDataNotStored() }
-            confirmText={ i18n.t('Ok') }
+            onClose={() => this.closeDataNotStoredDialog()}
+            open={this.state.dataNotStoredDialog}
+            header={i18n.t('Please confirm')}
+            onConfirm={() => this.confirmDataNotStored()}
+            confirmText={i18n.t('Ok')}
         >
-            { i18n.t('Some data are not stored. Discard?') }
+            {i18n.t('Some data are not stored. Discard?')}
         </ConfirmDialog>;
     }
 
     render() {
         if (this.state.login) {
             return (
-                <ThemeProvider theme={ this.state.theme }>
-                    <Login t={ I18n.t } />
+                <ThemeProvider theme={this.state.theme}>
+                    <Login t={I18n.t} />
                 </ThemeProvider>
             );
         }
 
         if (!this.state.ready) {
             return (
-                <ThemeProvider theme={ this.state.theme }>
-                    <Loader theme={ this.state.themeType } />
+                <ThemeProvider theme={this.state.theme}>
+                    <Loader theme={this.state.themeType} />
                 </ThemeProvider>
             );
         }
@@ -896,22 +896,22 @@ class App extends Router {
         const small = this.props.width === 'xs' || this.props.width === 'sm';
 
         return (
-            <ThemeProvider theme={ this.state.theme }>
-                <Paper elevation={ 0 } className={ classes.root }>
+            <ThemeProvider theme={this.state.theme}>
+                <Paper elevation={0} className={classes.root}>
                     <AppBar
                         color="default"
                         position="fixed"
-                        className={ clsx(
+                        className={clsx(
                             classes.appBar,
-                            {[classes.appBarShift]:        !small && this.state.drawerState === DrawerStates.opened},
-                            {[classes.appBarShiftCompact]: !small && this.state.drawerState === DrawerStates.compact}
-                        ) }
+                            { [classes.appBarShift]: !small && this.state.drawerState === DrawerStates.opened },
+                            { [classes.appBarShiftCompact]: !small && this.state.drawerState === DrawerStates.compact }
+                        )}
                     >
                         <Toolbar>
                             <IconButton
                                 edge="start"
-                                className={ clsx(classes.menuButton, !small && this.state.drawerState !== DrawerStates.closed && classes.hide) }
-                                onClick={ () => this.handleDrawerState(DrawerStates.opened) }
+                                className={clsx(classes.menuButton, !small && this.state.drawerState !== DrawerStates.closed && classes.hide)}
+                                onClick={() => this.handleDrawerState(DrawerStates.opened)}
                             >
                                 <MenuIcon />
                             </IconButton>
@@ -921,72 +921,75 @@ class App extends Router {
                             <IconButton onClick={() => Router.doNavigate(null, 'system')}>
                                 <BuildIcon />
                             </IconButton>
-                            <IconButton onClick={ () => this.toggleTheme() }>
-                                { this.state.themeName === 'dark' &&
+                            <IconButton onClick={() => this.toggleTheme()}>
+                                {this.state.themeName === 'dark' &&
                                     <Brightness4Icon />
                                 }
-                                { this.state.themeName === 'blue' &&
+                                {this.state.themeName === 'blue' &&
                                     <Brightness5Icon />
                                 }
-                                { this.state.themeName === 'colored' &&
+                                {this.state.themeName === 'colored' &&
                                     <Brightness6Icon />
                                 }
-                                { this.state.themeName === 'light' &&
+                                {this.state.themeName === 'light' &&
                                     <Brightness7Icon />
                                 }
                             </IconButton>
                             {/*This will be removed later to settings, to not allow so easy to enable it*/}
                             <IconButton
-                                onClick={ () => {
+                                onClick={() => {
                                     window.localStorage.setItem('App.expertMode', !this.state.expertMode);
-                                    this.setState({expertMode: !this.state.expertMode});
+                                    this.setState({ expertMode: !this.state.expertMode });
                                 }}
-                                color={ this.state.expertMode ? 'secondary' : 'default' }
+                                color={this.state.expertMode ? 'secondary' : 'default'}
                             >
                                 <ExpertIcon
-                                    title={ I18n.t('Toggle expert mode')}
-                                    glowColor={ this.state.theme.palette.secondary.main }
-                                    active={ this.state.expertMode }
-                                    className={ clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
+                                    title={I18n.t('Toggle expert mode')}
+                                    glowColor={this.state.theme.palette.secondary.main}
+                                    active={this.state.expertMode}
+                                    className={clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
                                 />
                             </IconButton>
                             {/*This will be removed later to settings, to not allow so easy to edit it*/}
-                            {   this.state.expertMode &&
-                                <IconButton onClick={() => Router.doNavigate(null, 'base') }>
-                                    <BuildIcon className={ classes.baseSettingsButton }/>
+                            {this.state.expertMode &&
+                                <IconButton onClick={() => Router.doNavigate(null, 'base')}>
+                                    <BuildIcon className={classes.baseSettingsButton} />
                                 </IconButton>
                             }
-                            <Typography variant="h6" className={classes.title} style={{flexGrow: 1}}/>
-                            <Grid container className={clsx(this.state.drawerState !== 0 && classes.avatarVisible,classes.avatarNotVisible)} spacing={ 1 } alignItems="center" style={{width: 'initial'}}>
+                            <Typography variant="h6" className={classes.title} style={{ flexGrow: 1 }} />
+                            <Grid container className={clsx(this.state.drawerState !== 0 && classes.avatarVisible, classes.avatarNotVisible)} spacing={1} alignItems="center" style={{ width: 'initial' }}>
                                 <Grid item>
                                     <Typography>admin</Typography>
                                 </Grid>
                                 <Grid item>
-                                    <Avatar className={ clsx((this.state.themeName === 'colored' || this.state.themeName === 'blue') && classes.logoWhite) } alt="ioBroker" src="img/no-image.png" />
+                                    <Avatar className={clsx((this.state.themeName === 'colored' || this.state.themeName === 'blue') && classes.logoWhite)} alt="ioBroker" src="img/no-image.png" />
                                 </Grid>
                             </Grid>
                         </Toolbar>
                     </AppBar>
-                    <Drawer
-                        state={ this.state.drawerState }
-                        handleNavigation={ name => this.handleNavigation(name) }
-                        onStateChange={ state => this.handleDrawerState(state) }
-                        onLogout={ () => this.logout() }
-                        currentTab={ this.state.currentTab && this.state.currentTab.tab }
-                        logsWorker={ this.logsWorker }
-                        instancesWorker={ this.instancesWorker }
-                        logoutTitle={ I18n.t('Logout') }
-                        isSecure={ this.socket.isSecure }
-                        t={ I18n.t }
-                        lang={ I18n.getLanguage() }
-                        socket={ this.socket }
-                        currentHost={ this.state.currentHost }
-                        expertMode={ this.state.expertMode }
-                        ready={ this.state.ready }
-                        themeName={this.state.themeName}
-                    />
+                    <DndProvider backend={!small ? HTML5Backend : TouchBackend}>
+                        <Drawer
+                            state={this.state.drawerState}
+                            systemConfig={this.state.systemConfig}
+                            handleNavigation={name => this.handleNavigation(name)}
+                            onStateChange={state => this.handleDrawerState(state)}
+                            onLogout={() => this.logout()}
+                            currentTab={this.state.currentTab && this.state.currentTab.tab}
+                            logsWorker={this.logsWorker}
+                            instancesWorker={this.instancesWorker}
+                            logoutTitle={I18n.t('Logout')}
+                            isSecure={this.socket.isSecure}
+                            t={I18n.t}
+                            lang={I18n.getLanguage()}
+                            socket={this.socket}
+                            currentHost={this.state.currentHost}
+                            expertMode={this.state.expertMode}
+                            ready={this.state.ready}
+                            themeName={this.state.themeName}
+                        />
+                    </DndProvider>
                     <Paper
-                        elevation={ 0 }
+                        elevation={0}
                         square
                         className={
                             clsx(classes.content, {
@@ -996,21 +999,21 @@ class App extends Router {
                             })
                         }
                     >
-                        { this.getCurrentTab() }
+                        {this.getCurrentTab()}
                     </Paper>
                     <Snackbar
                         className={this.props.classes['alert_' + this.state.alertType]}
-                        open={ this.state.alert }
-                        autoHideDuration={ 6000 }
-                        onClose={ () => this.handleAlertClose() }
-                        message={ this.state.alertMessage }
+                        open={this.state.alert}
+                        autoHideDuration={6000}
+                        onClose={() => this.handleAlertClose()}
+                        message={this.state.alertMessage}
                     />
                 </Paper>
-                { this.getCurrentDialog() }
-                { this.renderConfirmDialog() }
-                { this.renderCommandDialog() }
-                { this.renderWizardDialog() }
-                { !this.state.connected && <Connecting /> }
+                { this.getCurrentDialog()}
+                { this.renderConfirmDialog()}
+                { this.renderCommandDialog()}
+                { this.renderWizardDialog()}
+                { !this.state.connected && <Connecting />}
             </ThemeProvider>
         );
     }
