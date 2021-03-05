@@ -952,5 +952,9 @@
   "Latitude": "Szerokość",
   "Week starts with": "Tydzień zaczyna się od",
   "monday": "poniedziałek",
-  "sunday": "niedziela"
+  "sunday": "niedziela",
+  "Press ENTER to write the value, when focused": "Naciśnij klawisz ENTER, aby zapisać wartość, gdy jest ustawiona",
+  "Write value": "Wpisz wartość",
+  "Update role for %s": "Ustaw rolę dla \"%s\"",
+  "Apply": "Zastosować"
 }

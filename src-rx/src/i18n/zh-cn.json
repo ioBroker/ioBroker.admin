@@ -952,5 +952,9 @@
   "Latitude": "纬度",
   "Week starts with": "周始于",
   "monday": "周一",
-  "sunday": "星期日"
+  "sunday": "星期日",
+  "Press ENTER to write the value, when focused": "聚焦后按ENTER输入值",
+  "Write value": "写值",
+  "Update role for %s": "设置 \"%s\"的角色",
+  "Apply": "申请"
 }

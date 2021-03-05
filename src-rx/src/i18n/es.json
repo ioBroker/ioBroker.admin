@@ -952,5 +952,9 @@
   "Latitude": "Latitud",
   "Week starts with": "La semana comienza con",
   "monday": "lunes",
-  "sunday": "domingo"
+  "sunday": "domingo",
+  "Press ENTER to write the value, when focused": "Presione ENTER para escribir el valor, cuando esté enfocado",
+  "Write value": "Escribir valor",
+  "Update role for %s": "Establecer el rol de \"%s\"",
+  "Apply": "Aplicar"
 }

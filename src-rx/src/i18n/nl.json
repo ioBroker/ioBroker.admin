@@ -952,5 +952,9 @@
   "Latitude": "Breedtegraad",
   "Week starts with": "Week begint met",
   "monday": "maandag",
-  "sunday": "zondag"
+  "sunday": "zondag",
+  "Press ENTER to write the value, when focused": "Druk op ENTER om de waarde te schrijven, wanneer gefocust",
+  "Write value": "Schrijf waarde",
+  "Update role for %s": "Stel de rol in voor \"%s\"",
+  "Apply": "Van toepassing zijn"
 }

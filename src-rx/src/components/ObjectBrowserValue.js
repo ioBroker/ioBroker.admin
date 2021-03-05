@@ -90,9 +90,7 @@ class ObjectBrowserValue extends Component {
                                     helperText={ this.props.t('Press ENTER to write the value, when focused')}
                                     defaultChecked={ this.props.value }
                                     onKeyUp={e => e.keyCode === 13 && this.onUpdate() }
-                                    onChange={e => {
-                                        this.value = e.target.checked;
-                                    }}/>}
+                                    onChange={e => this.value = e.target.checked}/>}
                                 label={this.props.t('Value')}
                             />
                             :
@@ -161,8 +159,8 @@ class ObjectBrowserValue extends Component {
                 </form>
             </DialogContent>
             <DialogActions>
-                <Button onClick={ () => this.props.onClose() } color="secondary">{ this.props.t('Cancel') }</Button>
                 <Button onClick={ () => this.onUpdate() }      color="primary">{   this.props.t('Write') }</Button>
+                <Button onClick={ () => this.props.onClose() } color="secondary">{ this.props.t('Cancel') }</Button>
             </DialogActions>
         </Dialog>;
     }

@@ -952,5 +952,9 @@
   "Latitude": "Широта",
   "Week starts with": "Неделя начинается с",
   "monday": "понедельника",
-  "sunday": "воскресенья"
+  "sunday": "воскресенья",
+  "Press ENTER to write the value, when focused": "Нажмите ENTER, чтобы ввести значение, когда сфокусирован",
+  "Write value": "Записать значение",
+  "Update role for %s": "Установить роль для \"%s\"",
+  "Apply": "Применить"
 }

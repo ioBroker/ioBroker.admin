@@ -952,5 +952,9 @@
   "Latitude": "Breite",
   "Week starts with": "Die Woche beginnt mit",
   "monday": "Montag",
-  "sunday": "Sonntag"
+  "sunday": "Sonntag",
+  "Press ENTER to write the value, when focused": "Drücken Sie die EINGABETASTE, um den Wert zu schreiben, wenn er fokussiert ist",
+  "Write value": "Wert schreiben",
+  "Update role for %s": "Legen Sie die Rolle für \"%s\" fest",
+  "Apply": "Anwenden"
 }

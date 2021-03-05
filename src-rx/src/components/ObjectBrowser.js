@@ -34,6 +34,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
@@ -78,6 +79,7 @@ import IconState from '@iobroker/adapter-react/icons/IconState';
 import IconClosed from '@iobroker/adapter-react/icons/IconClosed';
 import IconOpen from '@iobroker/adapter-react/icons/IconOpen';
 import IconClearFilter from '@iobroker/adapter-react/icons/IconClearFilter';
+//import IconCancel from "@material-ui/icons/Close";
 
 const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
@@ -402,6 +404,7 @@ const styles = theme => ({
     },
     cellButtonsValueButtonCopy: {
         right: theme.spacing(1),
+        cursor: 'pointer',
     },
     cellButtonsValueButtonEdit: {
         right: SMALL_BUTTON_SIZE / 2 + theme.spacing(2),
@@ -477,8 +480,16 @@ const styles = theme => ({
         width: 24,
         height: 24
     },
+    enumDialog: {
+        overflow: 'hidden',
+    },
     enumList: {
         minWidth: 250,
+        height: 'calc(100% - 50px)',
+        overflow: 'auto',
+    },
+    enumButton: {
+        float: 'right'
     },
     enumCheckbox: {
         minWidth: 0,
@@ -886,6 +897,7 @@ function findEnumsForObjectAsIds(data, id, enumName, funcs) {
             funcs.push(data[enumName][i]);
         }
     }
+    funcs.sort();
 
     return funcs;
 }
@@ -1372,6 +1384,7 @@ class ObjectBrowser extends Component {
             customDialog,
             editObjectDialog: '',
             enumDialog: null,
+            roleDialog: null,
 
             columns,
             columnsForAdmin: null,
@@ -2564,11 +2577,73 @@ class ObjectBrowser extends Component {
             ];
         }
 
-        return <Tooltip title={ info.valFull } classes={ {tooltip: this.props.classes.cellValueTooltip, popper: this.props.classes.cellValueTooltipBox} } onOpen={ () => this.readHistory(id) }>
-            <div style={ info.style } className={ classes.cellValueText }>
+        return <Tooltip
+            title={ info.valFull }
+            classes={ {tooltip: this.props.classes.cellValueTooltip, popper: this.props.classes.cellValueTooltipBox} }
+            onOpen={ () => this.readHistory(id) }
+        >
+            <div style={ info.style } className={ classes.cellValueText } >
                 { info.valText }
             </div>
         </Tooltip>;
+    }
+
+    /**
+     * @private
+     * @returns {undefined}
+     */
+    _syncEnum(id, enumIds, newArray, cb) {
+        if (!enumIds || !enumIds.length) {
+            return cb && cb();
+        } else {
+            const enumId = enumIds.pop();
+            const promises = [];
+            if (this.info.objects[enumId]?.common) {
+                if (this.info.objects[enumId].common.members?.length) {
+                    const pos = this.info.objects[enumId].common.members.indexOf(id);
+                    if (pos !== -1 && !newArray.includes(enumId)) {
+                        // delete from members
+                        const obj = JSON.parse(JSON.stringify(this.info.objects[enumId]));
+                        obj.common.members.splice(pos, 1);
+                        promises.push(this.props.socket.setObject(enumId, obj)
+                            .then(() => this.info.objects[enumId] = obj)
+                            .catch(e => this.showError(e))
+                        );
+                    }
+                }
+
+                // add to it
+                if (newArray.includes(enumId) && !this.info.objects[enumId].common.members?.includes(id)) {
+                    // add to object
+                    const obj = JSON.parse(JSON.stringify(this.info.objects[enumId]));
+                    obj.common.members = obj.common.members || [];
+                    obj.common.members.push(id);
+                    obj.common.members.sort();
+                    promises.push(this.props.socket.setObject(enumId, obj)
+                        .then(() => this.info.objects[enumId] = obj)
+                        .catch(e => this.showError(e))
+                    );
+                }
+            }
+
+            Promise.all(promises)
+                .then(() => setTimeout(() =>
+                    this._syncEnum(id, enumIds, newArray, cb), 0));
+        }
+    }
+
+    /**
+     * @private
+     * @returns {Promise}
+     */
+    syncEnum(id, enumName, newArray) {
+        const toCheck = [...this.info[enumName === 'func' ? 'funcEnums' : 'roomEnums']];
+
+        return new Promise(resolve => this._syncEnum(id, toCheck, newArray, error => {
+            error && this.showError(error);
+            // force update of object
+            resolve();
+        }));
     }
 
     /**
@@ -2577,10 +2652,10 @@ class ObjectBrowser extends Component {
      */
     renderEnumDialog() {
         if (this.state.enumDialog) {
-
             const type = this.state.enumDialog.type;
             const item = this.state.enumDialog.item;
-            const itemEnums = findEnumsForObjectAsIds(this.info, item.data.id, type === 'room' ? 'roomEnums' : 'funcEnums');
+            const itemEnums = this.state.enumDialogEnums;
+            const enumsOriginal = this.state.enumDialog.enumsOriginal;
 
             const enums = (type === 'room' ? this.info.roomEnums : this.info.funcEnums).map(id =>
                 ({
@@ -2591,14 +2666,29 @@ class ObjectBrowser extends Component {
 
             enums.forEach(item => {
                 if (item.icon) {
-                    item.icon = <div className={ this.props.classes.enumIconDiv }><img src={ item.icon } className={ this.props.classes.enumIcon } alt={ item.name }/></div>;
+                    item.icon = <div className={ this.props.classes.enumIconDiv }>
+                        <img src={ item.icon } className={ this.props.classes.enumIcon } alt={ item.name }/>
+                    </div>;
                 }
             });
 
             // const hasIcons = !!enums.find(item => item.icon);
 
-            return <Dialog onClose={() => this.setState({enumDialog: null})} aria-labelledby="enum-dialog-title" open={ true }>
-                <DialogTitle id="enum-dialog-title">{ type === 'func' ? this.props.t('ra_Define functions') : this.props.t('ra_Define rooms') }</DialogTitle>
+            return <Dialog className={this.props.classes.enumDialog} onClose={() => this.setState({enumDialog: null})} aria-labelledby="enum-dialog-title" open={ true }>
+                <DialogTitle id="enum-dialog-title">
+                    { type === 'func' ? this.props.t('ra_Define functions') : this.props.t('ra_Define rooms') }
+                    <Fab
+                        className={this.props.classes.enumButton}
+                        color="primary"
+                        disabled={JSON.stringify(enumsOriginal) === JSON.stringify(itemEnums)}
+                        size="small"
+                        onClick={() =>
+                            this.syncEnum(item.data.id, type, itemEnums)
+                                .then(() => this.setState({enumDialog: null, enumDialogEnums: null}))}
+                    >
+                        <IconCheck/>
+                    </Fab>
+                </DialogTitle>
                 <List classes={{ root: this.props.classes.enumList }}>
                     {
                         enums.map(item => {
@@ -2616,9 +2706,21 @@ class ObjectBrowser extends Component {
                             }
                             const labelId = `checkbox-list-label-${id}`;
 
-                            return <ListItem className={ this.props.classes.headerCellSelectItem } key={ id } onClick={() => {
-
-                            }}>
+                            return <ListItem
+                                className={ this.props.classes.headerCellSelectItem }
+                                key={ id }
+                                onClick={() => {
+                                    const pos = itemEnums.indexOf(id);
+                                    const enumDialogEnums = JSON.parse(JSON.stringify(this.state.enumDialogEnums));
+                                    if (pos === -1) {
+                                        enumDialogEnums.push(id);
+                                        enumDialogEnums.sort();
+                                    } else {
+                                        enumDialogEnums.splice(pos, 1);
+                                    }
+                                    this.setState({enumDialogEnums});
+                                }}
+                            >
                                 <ListItemIcon classes={{ root: this.props.classes.enumCheckbox }}>
                                     <Checkbox
                                         edge="start"
@@ -2634,7 +2736,30 @@ class ObjectBrowser extends Component {
                         })
                     }
                 </List>
-            </Dialog>
+            </Dialog>;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @private
+     * @returns {JSX.Element | null}
+     */
+    renderEditRoleDialog() {
+        if (this.state.roleDialog && this.props.objectBrowserEditRole) {
+            const ObjectBrowserEditRole = this.props.objectBrowserEditRole;
+            return <ObjectBrowserEditRole
+                key="objectBrowserEditRole"
+                id={this.state.roleDialog}
+                socket={this.props.socket}
+                t={this.props.t}
+                roles={this.info.roles}
+                onClose={obj => {
+                    this.info.objects[this.state.roleDialog] = obj;
+                    this.setState({roleDialog: null});
+                }}
+            />;
         } else {
             return null;
         }
@@ -2897,6 +3022,9 @@ class ObjectBrowser extends Component {
             console.log(item.data.funcs);
         }*/
 
+        const valueEditable = !this.props.notEditable && item.data.obj?.type === 'state' && (this.props.expertMode || item.data.obj?.common?.write !== false);
+        const enumEditable = !this.props.notEditable && (this.props.expertMode || item.data.obj?.type === 'state' || item.data.obj?.type === 'channel' || item.data.obj?.type === 'device');
+
         return <Grid
             container
             direction="row"
@@ -2947,25 +3075,22 @@ class ObjectBrowser extends Component {
             </Grid>
             {this.columnsVisibility.name    ? <div className={ classes.cellName }    style={{ width: this.columnsVisibility.name }}>{ (item.data && item.data.title) || '' }</div> : null }
             {this.columnsVisibility.type    ? <div className={ classes.cellType }    style={{ width: this.columnsVisibility.type }}>{ typeImg } { obj && obj.type }</div> : null }
-            {this.columnsVisibility.role    ? <div className={ classes.cellRole }    style={{ width: this.columnsVisibility.role }}>{ obj && obj.common && obj.common.role }</div> : null }
-            {this.columnsVisibility.room    ? <div className={ classes.cellRoom }    style={{ width: this.columnsVisibility.room, cursor: this.props.notEditable ? 'default': 'text'}} onClick={ e => !this.props.notEditable && this.setState({enumDialog: {item, type: 'room'}}) }>{ item.data.rooms }</div> : null }
-            {this.columnsVisibility.func    ? <div className={ classes.cellFunc }    style={{ width: this.columnsVisibility.func, cursor: this.props.notEditable ? 'default': 'text'}} onClick={ e => !this.props.notEditable && this.setState({enumDialog: {item, type: 'func'}}) }>{ item.data.funcs }</div> : null }
+            {this.columnsVisibility.role    ? <div className={ classes.cellRole }    style={{ width: this.columnsVisibility.role, cursor: enumEditable && this.props.objectBrowserEditRole ? 'text' : 'default'}} onClick={ enumEditable && this.props.objectBrowserEditRole ? () => this.setState({roleDialog: item.data.id}) : undefined}>{ obj && obj.common && obj.common.role }</div> : null }
+            {this.columnsVisibility.room    ? <div className={ classes.cellRoom }    style={{ width: this.columnsVisibility.room, cursor: enumEditable ? 'text' : 'default'}} onClick={ enumEditable ? () => {const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'roomEnums'); this.setState({enumDialogEnums: enums, enumDialog: {item, type: 'room', enumsOriginal: JSON.parse(JSON.stringify(enums))}});} : undefined }>{ item.data.rooms }</div> : null }
+            {this.columnsVisibility.func    ? <div className={ classes.cellFunc }    style={{ width: this.columnsVisibility.func, cursor: enumEditable ? 'text' : 'default'}} onClick={ enumEditable ? () => {const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'funcEnums'); this.setState({enumDialogEnums: enums, enumDialog: {item, type: 'func', enumsOriginal: JSON.parse(JSON.stringify(enums))}});} : undefined }>{ item.data.funcs }</div> : null }
             {this.adapterColumns.map(it =>    <div className={ classes.cellAdapter } style={{ width: this.columnsVisibility[it.id] }} key={it.id} title={it.adapter + ' => ' + it.pathText}>{ this.renderCustomValue(obj, it, item) }</div>)}
-            {this.columnsVisibility.val     ? <div className={ classes.cellValue }   style={{ width: this.columnsVisibility.val,  cursor: this.props.notEditable ? 'default': 'text'}} onClick={ e => {
-                if (!this.props.notEditable) {
-                    return;
-                }
+            {this.columnsVisibility.val     ? <div className={ classes.cellValue }   style={{ width: this.columnsVisibility.val, cursor: valueEditable ? 'text' : 'default'}} onClick={ valueEditable ? () => {
                 if (!item.data.obj || !this.states) {
                     return null;
                 }
                 this.edit = {
-                    val:    this.states[id].val,
+                    val:    this.states[id] ? this.states[id].val : '',
                     q:      0,
                     ack:    false,
                     id,
                 };
                 this.setState({ updateOpened: true });
-            }}>{ this.renderColumnValue(id, item, classes) }</div> : null }
+            } : undefined}>{ this.renderColumnValue(id, item, classes) }</div> : null }
             {this.columnsVisibility.buttons ? <div className={ classes.cellButtons } style={{ width: this.columnsVisibility.buttons }}>{ this.renderColumnButtons(id, item, classes) }</div> : null }
         </Grid>;
     }
@@ -3346,6 +3471,7 @@ class ObjectBrowser extends Component {
                 { this.renderCustomDialog() }
                 { this.renderEditValueDialog() }
                 { this.renderEditObjectDialog() }
+                { this.renderEditRoleDialog() }
                 { this.renderEnumDialog() }
                 { this.renderErrorDialog() }
             </TabContainer>;
@@ -3385,6 +3511,7 @@ ObjectBrowser.propTypes = {
     customFilter: PropTypes.object, // optional {common: {custom: true}} or {common: {custom: 'sql.0'}}
     objectBrowserValue: PropTypes.object,
     objectBrowserEditObject: PropTypes.object,
+    objectBrowserEditRole: PropTypes.object, // on Edit role
     router: PropTypes.oneOfType([
         PropTypes.object,
         PropTypes.func

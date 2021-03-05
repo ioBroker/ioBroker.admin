@@ -952,5 +952,9 @@
   "Latitude": "Latitude",
   "Week starts with": "Week starts with",
   "monday": "monday",
-  "sunday": "sunday"
+  "sunday": "sunday",
+  "Press ENTER to write the value, when focused": "Press ENTER to write the value, when focused",
+  "Write value": "Write value",
+  "Update role for %s": "Set the role for \"%s\"",
+  "Apply": "Apply"
 }

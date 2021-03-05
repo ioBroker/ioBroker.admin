@@ -3,6 +3,7 @@ import withWidth from '@material-ui/core/withWidth';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
+import {withStyles} from '@material-ui/core/styles';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -25,7 +26,7 @@ import ObjectCustomDialog from '../dialogs/ObjectCustomDialog';
 import Router from '@iobroker/adapter-react/Components/Router';
 import ObjectBrowserValue from '../components/ObjectBrowserValue';
 import ObjectBrowserEditObject from '../components/ObjectBrowserEditObject';
-import {withStyles} from "@material-ui/core/styles";
+import ObjectBrowserEditRole from '../components/ObjectBrowserEditRole';
 
 const styles = theme => ({
     buttonIcon: {
@@ -149,6 +150,8 @@ class Objects extends Component {
                 objectCustomDialog={ ObjectCustomDialog }
                 objectBrowserValue={ ObjectBrowserValue }
                 objectBrowserEditObject={ ObjectBrowserEditObject }
+                objectBrowserEditRole={ ObjectBrowserEditRole }
+                enableStateValueEdit={true}
                 onObjectDelete={(id, hasChildren, exists) => this.setState({deleteObjectShow: {id, hasChildren, exists}})}
                 router={ Router }
                 onFilterChanged={ filterConfig => {
