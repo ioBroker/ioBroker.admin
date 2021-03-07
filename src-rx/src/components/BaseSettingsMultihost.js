@@ -41,7 +41,7 @@ class BaseSettingsMultihost extends Component {
             password:  '',
         };
 
-        settings.password && this.props.socket.decryptPhrase(settings.password)
+        settings.password && this.props.socket.decrypt(settings.password)
             .then(plainPass =>
                 this.setState({ password: plainPass }));
 
@@ -59,7 +59,7 @@ class BaseSettingsMultihost extends Component {
         };
 
         if (this.state.password) {
-            this.props.socket.encryptPhrase(this.state.password)
+            this.props.socket.encrypt(this.state.password)
                 .then(encodedPass => {
                     newState.password = encodedPass;
                     this.props.onChange(newState);
@@ -124,7 +124,7 @@ BaseSettingsMultihost.propTypes = {
     t: PropTypes.func,
     onChange: PropTypes.func.isRequired,
     settings: PropTypes.object.isRequired,
-    socket: PropTypes.string,
+    socket: PropTypes.object,
 };
 
 export default withWidth()(withStyles(styles)(BaseSettingsMultihost));

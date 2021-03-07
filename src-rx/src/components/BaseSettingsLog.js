@@ -8,6 +8,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -23,6 +24,11 @@ import Fab from '@material-ui/core/Fab';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import IconPlus from '@material-ui/icons/Add';
 import IconDelete from '@material-ui/icons/Delete';
+import IconHttp from '@material-ui/icons/Language';
+import IconFile from '@material-ui/icons/InsertDriveFile';
+import IconSyslog from '@material-ui/icons/Computer';
+import IconStream from '@material-ui/icons/Send';
+import IconSeq from '../assets/seq.png';
 
 const styles = theme => ({
     paper: {
@@ -50,6 +56,13 @@ const styles = theme => ({
     },
     addButton: {
         marginRight: theme.spacing(1),
+    },
+    buttonIcon: {
+        height: 24,
+    },
+    headingIcon: {
+        height: 24,
+        marginRight: theme.spacing(1),
     }
 });
 
@@ -62,8 +75,10 @@ class BaseSettingsLog extends Component {
         Object.keys(settings.transport).forEach(id => {
             if (settings.transport[id].type === 'file') {
                 settings.transport[id].maxSize    = settings.transport[id].maxSize || 0;
+                settings.transport[id].level      = settings.transport[id].level   || '';
                 settings.transport[id].maxFiles   = settings.transport[id].maxFiles || 0;
             } else if (settings.transport[id].type === 'syslog') {
+                settings.transport[id].level      = settings.transport[id].level   || '';
                 settings.transport[id].host       = settings.transport[id].host || '';
                 settings.transport[id].port       = settings.transport[id].port || 0;
                 settings.transport[id].path       = settings.transport[id].path || '';
@@ -72,6 +87,7 @@ class BaseSettingsLog extends Component {
                 settings.transport[id].app_name   = settings.transport[id].app_name || '';
                 settings.transport[id].eol        = settings.transport[id].eol || '';
             } else if (settings.transport[id].type === 'http') {
+                settings.transport[id].level      = settings.transport[id].level   || '';
                 settings.transport[id].host       = settings.transport[id].host || '';
                 settings.transport[id].port       = settings.transport[id].port || 0;
                 settings.transport[id].path       = settings.transport[id].path || '/';
@@ -79,9 +95,14 @@ class BaseSettingsLog extends Component {
                 settings.transport[id].ssl        = settings.transport[id].ssl || false;
             } else if (settings.transport[id].type === 'stream') {
                 settings.transport[id].stream     = settings.transport[id].stream || '';
-                settings.transport[id].level      = settings.transport[id].level  || 'info';
+                settings.transport[id].level      = settings.transport[id].level  || '';
                 settings.transport[id].silent     = settings.transport[id].silent || false;
                 settings.transport[id].eol        = settings.transport[id].eol    || '';
+            } else if (settings.transport[id].type === 'seq') {
+                settings.transport[id].level      = settings.transport[id].level     || '';
+                settings.transport[id].serverUrl  = settings.transport[id].serverUrl || '';
+                settings.transport[id].apiKey     = settings.transport[id].apiKey    || '';
+                settings.transport[id].eol        = settings.transport[id].eol       || '';
             }
         });
 
@@ -143,11 +164,55 @@ class BaseSettingsLog extends Component {
     onDelete(id) {
         const transport = JSON.parse(JSON.stringify(this.state.transport));
         delete transport[id];
-        this.setState({ transport });
+        this.setState({ transport }, () => this.onChange());
+    }
+
+    renderEnabled(name) {
+        return <Grid item>
+            <FormControlLabel
+                className={ this.props.classes.controlItem }
+                control={
+                    <Checkbox
+                        checked={ this.state.transport[name].enabled }
+                        onChange={ e => {
+                            const transport = JSON.parse(JSON.stringify(this.state.transport));
+                            transport[name].enabled = e.target.checked;
+                            this.setState( { transport }, () => this.onChange())
+                        } }
+                    />
+                }
+                label={ this.props.t(`Enabled`) }
+            />
+        </Grid>;
+    }
+
+    renderLogLevel(name) {
+        return this.state.transport[name].enabled ? <Grid item>
+            <FormControl className={this.props.classes.controlItem}>
+                <InputLabel>{ this.props.t('Level') }</InputLabel>
+                <Select
+                    value={ this.state.transport[name].level || '_' }
+                    renderValue={() => this.state.transport[name].level || this.props.t('default') }
+                    onChange={ e => {
+                        const transport = JSON.parse(JSON.stringify(this.state.transport));
+                        transport[name].level = e.target.value === '_' ? '' : e.target.value;
+                        this.setState( { transport }, () => this.onChange());
+                    } }
+                >
+                    <MenuItem value="_">{this.props.t('default')}</MenuItem>
+                    <MenuItem value="silly">silly</MenuItem>
+                    <MenuItem value="debug">debug</MenuItem>
+                    <MenuItem value="info">info</MenuItem>
+                    <MenuItem value="warn">warn</MenuItem>
+                    <MenuItem value="error">error</MenuItem>
+                </Select>
+                <FormHelperText>{ this.props.t('Level of messages that this transport should log (default: level set on parent logger)')}</FormHelperText>
+            </FormControl>
+        </Grid> : null
     }
 
     renderSyslog(name) {
-        return <Accordion expanded={this.state.expanded.includes(name)} onChange={() => {
+        return <Accordion key={name} expanded={this.state.expanded.includes(name)} onChange={() => {
             const expanded = [...this.state.expanded];
             const pos = expanded.indexOf(name);
             if (pos === -1) {
@@ -159,27 +224,14 @@ class BaseSettingsLog extends Component {
             this.setState({ expanded });
         }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ position: 'relative' }}>
+                <IconSyslog className={ this.props.classes.headingIcon }/>
                 <Typography className={ this.props.classes.heading }>{ name }</Typography>
                 <Fab size="small" className={ this.props.classes.delButton }  onClick={() => this.onDelete(name)}><IconDelete/></Fab>
             </AccordionSummary>
             <AccordionDetails>
                 <Grid container direction="column">
-                    <Grid item>
-                        <FormControlLabel
-                            className={ this.props.classes.controlItem }
-                            control={
-                                <Checkbox
-                                    checked={ this.state.transport[name].enabled }
-                                    onChange={ e => {
-                                        const transport = JSON.parse(JSON.stringify(this.state.transport));
-                                        transport[name].enabled = e.target.checked;
-                                        this.setState( { transport }, () => this.onChange())
-                                    } }
-                                />
-                            }
-                            label={ this.props.t(`Enabled`) }
-                        />
-                    </Grid>
+                    { this.renderEnabled(name) }
+                    { this.renderLogLevel(name) }
                     { this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             className={ this.props.classes.controlItem }
@@ -309,7 +361,7 @@ class BaseSettingsLog extends Component {
     }
 
     renderFile(name) {
-        return <Accordion expanded={this.state.expanded.includes(name)} onChange={() => {
+        return <Accordion key={name} expanded={this.state.expanded.includes(name)} onChange={() => {
             const expanded = [...this.state.expanded];
             const pos = expanded.indexOf(name);
             if (pos === -1) {
@@ -321,27 +373,14 @@ class BaseSettingsLog extends Component {
             this.setState({ expanded });
         }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <IconFile className={ this.props.classes.headingIcon }/>
                 <Typography className={ this.props.classes.heading }>{ name }</Typography>
                 <Fab size="small" className={ this.props.classes.delButton } onClick={() => this.onDelete(name)}><IconDelete/></Fab>
             </AccordionSummary>
             <AccordionDetails>
                 <Grid container direction="column">
-                    <Grid item>
-                        <FormControlLabel
-                            className={ this.props.classes.controlItem }
-                            control={
-                                <Checkbox
-                                    checked={ this.state.transport[name].enabled }
-                                    onChange={ e => {
-                                        const transport = JSON.parse(JSON.stringify(this.state.transport));
-                                        transport[name].enabled = e.target.checked;
-                                        this.setState( { transport }, () => this.onChange());
-                                    } }
-                                />
-                            }
-                            label={ this.props.t(`Enabled`) }
-                        />
-                    </Grid>
+                    { this.renderEnabled(name) }
+                    { this.renderLogLevel(name) }
                     { this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             className={ this.props.classes.controlItem }
@@ -402,7 +441,7 @@ class BaseSettingsLog extends Component {
     }
 
     renderHttp(name) {
-        return <Accordion expanded={this.state.expanded.includes(name)} onChange={() => {
+        return <Accordion key={name} expanded={this.state.expanded.includes(name)} onChange={() => {
             const expanded = [...this.state.expanded];
             const pos = expanded.indexOf(name);
             if (pos === -1) {
@@ -414,27 +453,14 @@ class BaseSettingsLog extends Component {
             this.setState({ expanded });
         }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ position: 'relative' }}>
+                <IconHttp className={ this.props.classes.headingIcon }/>
                 <Typography className={ this.props.classes.heading }>{ name }</Typography>
                 <Fab size="small" className={ this.props.classes.delButton }  onClick={() => this.onDelete(name)}><IconDelete/></Fab>
             </AccordionSummary>
             <AccordionDetails>
                 <Grid container direction="column">
-                    <Grid item>
-                        <FormControlLabel
-                            className={ this.props.classes.controlItem }
-                            control={
-                                <Checkbox
-                                    checked={ this.state.transport[name].enabled }
-                                    onChange={ e => {
-                                        const transport = JSON.parse(JSON.stringify(this.state.transport));
-                                        transport[name].enabled = e.target.checked;
-                                        this.setState( { transport }, () => this.onChange())
-                                    } }
-                                />
-                            }
-                            label={ this.props.t(`Enabled`) }
-                        />
-                    </Grid>
+                    { this.renderEnabled(name) }
+                    { this.renderLogLevel(name) }
                     { this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             className={ this.props.classes.controlItem }
@@ -510,7 +536,7 @@ class BaseSettingsLog extends Component {
     }
 
     renderStream(name) {
-        return <Accordion expanded={this.state.expanded.includes(name)} onChange={() => {
+        return <Accordion key={name} expanded={this.state.expanded.includes(name)} onChange={() => {
             const expanded = [...this.state.expanded];
             const pos = expanded.indexOf(name);
             if (pos === -1) {
@@ -522,27 +548,13 @@ class BaseSettingsLog extends Component {
             this.setState({ expanded });
         }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ position: 'relative' }}>
+                <IconStream className={ this.props.classes.headingIcon } />
                 <Typography className={ this.props.classes.heading }>{ name }</Typography>
                 <Fab size="small" className={ this.props.classes.delButton }  onClick={() => this.onDelete(name)}><IconDelete/></Fab>
             </AccordionSummary>
             <AccordionDetails>
                 <Grid container direction="column">
-                    <Grid item>
-                        <FormControlLabel
-                            className={ this.props.classes.controlItem }
-                            control={
-                                <Checkbox
-                                    checked={ this.state.transport[name].enabled }
-                                    onChange={ e => {
-                                        const transport = JSON.parse(JSON.stringify(this.state.transport));
-                                        transport[name].enabled = e.target.checked;
-                                        this.setState( { transport }, () => this.onChange())
-                                    } }
-                                />
-                            }
-                            label={ this.props.t(`Enabled`) }
-                        />
-                    </Grid>
+                    { this.renderEnabled(name) }
                     { this.state.transport[name].enabled ? <Grid item>
                         <TextField
                             className={ this.props.classes.controlItem }
@@ -554,19 +566,6 @@ class BaseSettingsLog extends Component {
                                 this.setState( { transport }, () => this.onChange())
                             } }
                             label={ this.props.t('File name') }
-                        />
-                    </Grid> : null }
-                    { this.state.transport[name].enabled ? <Grid item>
-                        <TextField
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.transport[name].level }
-                            helperText={ this.props.t('Level of messages that this transport should log (default: level set on parent logger)')}
-                            onChange={ e => {
-                                const transport = JSON.parse(JSON.stringify(this.state.transport));
-                                transport[name].level = e.target.value;
-                                this.setState( { transport }, () => this.onChange());
-                            } }
-                            label={ this.props.t('Level') }
                         />
                     </Grid> : null }
                     { this.state.transport[name].enabled ? <Grid item>
@@ -596,6 +595,58 @@ class BaseSettingsLog extends Component {
                                 this.setState( { transport }, () => this.onChange())
                             } }
                             label={ this.props.t('EOL') }
+                        />
+                    </Grid> : null }
+                </Grid>
+            </AccordionDetails>
+        </Accordion>
+    }
+
+    renderSEQ(name) {
+        return <Accordion key={name} expanded={this.state.expanded.includes(name)} onChange={() => {
+            const expanded = [...this.state.expanded];
+            const pos = expanded.indexOf(name);
+            if (pos === -1) {
+                expanded.push(name);
+            } else {
+                expanded.splice(pos, 1);
+            }
+
+            this.setState({ expanded });
+        }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ position: 'relative' }}>
+                <img className={ this.props.classes.headingIcon } src={IconSeq} alt="seq"/>
+                <Typography className={ this.props.classes.heading }>{ name }</Typography>
+                <Fab size="small" className={ this.props.classes.delButton }  onClick={() => this.onDelete(name)}><IconDelete/></Fab>
+            </AccordionSummary>
+            <AccordionDetails>
+                <Grid container direction="column">
+                    { this.renderEnabled(name) }
+                    { this.renderLogLevel(name) }
+                    { this.state.transport[name].enabled ? <Grid item>
+                        <TextField
+                            className={ this.props.classes.controlItem }
+                            value={ this.state.transport[name].serverUrl }
+                            helperText={ this.props.t('The http(s) URL including port of the seq server. If you use HTTPS a real certificate is needed; self signed certs are ot accepted.')}
+                            onChange={ e => {
+                                const transport = JSON.parse(JSON.stringify(this.state.transport));
+                                transport[name].serverUrl = e.target.value;
+                                this.setState( { transport }, () => this.onChange())
+                            } }
+                            label={ this.props.t('Server URL') }
+                        />
+                    </Grid> : null }
+                    { this.state.transport[name].enabled ? <Grid item>
+                        <TextField
+                            className={ this.props.classes.controlItem }
+                            value={ this.state.transport[name].apiKey }
+                            helperText={ this.props.t('The apiKey of the seq system') }
+                            onChange={ e => {
+                                const transport = JSON.parse(JSON.stringify(this.state.transport));
+                                transport[name].apiKey = e.target.value;
+                                this.setState( { transport }, () => this.onChange())
+                            } }
+                            label={ this.props.t('API key') }
                         />
                     </Grid> : null }
                 </Grid>
@@ -682,24 +733,42 @@ class BaseSettingsLog extends Component {
                 eol:                 '',
             };
             this.setState( { transport }, () => this.onChange())
+        } else if (type === 'seq') {
+            let i = 1;
+            // eslint-disable-next-line
+            while (Object.keys(this.state.transport).find(id => id === type + i)) {
+                i++;
+            }
+            const name = type + i;
+            const transport = JSON.parse(JSON.stringify(this.state.transport));
+            transport[name] = {
+                type,
+                enabled:              true,
+
+                level:                'info',
+                serverUrl:            'http://IP:PORT',
+                apiKey:               '',
+            };
+            this.setState( { transport }, () => this.onChange())
         }
     }
 
     render() {
         return <Paper className={ this.props.classes.paper }>
             <Toolbar>
-                <Button className={ this.props.classes.addButton } variant="contained" onClick={ () => this.add('file') }><IconPlus/>{ this.props.t('File log') }</Button>
-                <Button className={ this.props.classes.addButton } variant="contained" onClick={ () => this.add('syslog') }><IconPlus/>{ this.props.t('Syslog') }</Button>
-                <Button className={ this.props.classes.addButton } variant="contained" onClick={ () => this.add('http') }><IconPlus/>{ this.props.t('HTTP log') }</Button>
-                <Button className={ this.props.classes.addButton } variant="contained" onClick={ () => this.add('stream') }><IconPlus/>{ this.props.t('Stream log') }</Button>
+                <Button className={ this.props.classes.addButton } variant="contained" onClick={ () => this.add('file') }><IconPlus/><IconFile className={ this.props.classes.buttonIcon }/>{ this.props.t('File log') }</Button>
+                <Button className={ this.props.classes.addButton } variant="contained" onClick={ () => this.add('syslog') }><IconPlus/><IconSyslog className={ this.props.classes.buttonIcon }/>{ this.props.t('Syslog') }</Button>
+                <Button className={ this.props.classes.addButton } variant="contained" onClick={ () => this.add('http') }><IconPlus/><IconHttp className={ this.props.classes.buttonIcon }/>{ this.props.t('HTTP log') }</Button>
+                <Button className={ this.props.classes.addButton } variant="contained" onClick={ () => this.add('stream') }><IconPlus/><IconStream className={ this.props.classes.buttonIcon }/>{ this.props.t('Stream log') }</Button>
+                <Button className={ this.props.classes.addButton } variant="contained" onClick={ () => this.add('seq') }><IconPlus/><img src={IconSeq} className={ this.props.classes.buttonIcon } alt="seq"/>{ this.props.t('SEQ log') }</Button>
             </Toolbar>
             <Grid item className={ this.props.classes.gridSettings }>
                 <Grid container direction="column">
                     <Grid item>
                         <FormControl className={this.props.classes.controlItem}>
-                            <InputLabel>{ this.props.t('Type') }</InputLabel>
+                            <InputLabel>{ this.props.t('Level') }</InputLabel>
                             <Select
-                                value={ this.state.type }
+                                value={ this.state.level }
                                 onChange={ e => this.setState( { level: e.target.value }, () => this.onChange()) }
                             >
                                 <MenuItem value="silly">silly</MenuItem>
@@ -745,6 +814,9 @@ class BaseSettingsLog extends Component {
 
                             case 'stream':
                                 return this.renderStream(id);
+
+                            case 'seq':
+                                return this.renderSEQ(id);
 
                             default:
                                 return null;

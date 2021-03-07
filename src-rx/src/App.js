@@ -51,7 +51,7 @@ import i18n from '@iobroker/adapter-react/i18n';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import WizardDialog from './dialogs/WizardDialog';
 import BaseSettingsDialog from './dialogs/BaseSettingsDialog';
-import SystemSettingsDialog from "./dialogs/SystemSettingsDialog";
+import SystemSettingsDialog from './dialogs/SystemSettingsDialog';
 
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';

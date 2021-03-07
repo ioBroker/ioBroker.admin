@@ -116,7 +116,7 @@ class BaseSettingsObjects extends Component {
                                     if (e.target.value === 'redis') {
                                         port = 6379;
                                     } else {
-                                        port = 9001;
+                                        port = 9000;
                                     }
                                     this.setState({ type: e.target.value, port }, () => this.onChange());
                                 }}
@@ -199,7 +199,7 @@ class BaseSettingsObjects extends Component {
                             }}
                             autoComplete="off"
                             onChange={ e => this.setState({ options_auth_pass: e.target.value })}
-                            label={ this.props.t('Redis password') }
+                            label={ this.state.type === 'redis' ? this.props.t('Redis password') : this.props.t('Connection password') }
                         />
                     </Grid>
 
@@ -208,9 +208,9 @@ class BaseSettingsObjects extends Component {
                             className={ this.props.classes.controlItem }
                             value={ this.state.options_retry_max_delay }
                             type="number"
-                            helperText={ 'Maximum delay between connection attempts' }
+                            helperText={ this.props.t('Maximum delay between connection attempts') }
                             onChange={ e => this.setState({ options_retry_max_delay: e.target.value }, () => this.onChange())}
-                            label={ 'Retry maximum delay' }
+                            label={ this.props.t('Retry maximum delay') }
                         />
                     </Grid> : null }
 
@@ -219,9 +219,9 @@ class BaseSettingsObjects extends Component {
                             className={ this.props.classes.controlItem }
                             value={ this.state.options_retry_max_count }
                             type="number"
-                            helperText={ 'Maximum number of connection retries' }
+                            helperText={ this.props.t('Maximum number of connection retries') }
                             onChange={ e => this.setState({ options_retry_max_count: e.target.value }, () => this.onChange())}
-                            label={ 'Retry maximum count' }
+                            label={ this.props.t('Retry maximum count') }
                         />
                     </Grid> : null }
 
@@ -230,9 +230,9 @@ class BaseSettingsObjects extends Component {
                             className={ this.props.classes.controlItem }
                             value={ this.state.options_db }
                             type="number"
-                            helperText={ 'Used for sentinels' }
+                            helperText={ this.props.t('Used for sentinels') }
                             onChange={ e => this.setState({ options_db: e.target.value })}
-                            label={ 'DB number' }
+                            label={ this.props.t('DB number') }
                         />
                     </Grid> : null }
 
@@ -241,9 +241,9 @@ class BaseSettingsObjects extends Component {
                             className={ this.props.classes.controlItem }
                             value={ this.state.options_family }
                             type="number"
-                            helperText={ 'Used for sentinels' }
+                            helperText={ this.props.t('Used for sentinels') }
                             onChange={ e => this.setState({ options_family: e.target.value }, () => this.onChange())}
-                            label={ 'Family number' }
+                            label={ this.props.t('Family number') }
                         />
                     </Grid> : null }
 
@@ -266,9 +266,9 @@ class BaseSettingsObjects extends Component {
                             className={ this.props.classes.controlItem }
                             value={ this.state.backup_files }
                             type="number"
-                            helperText={ 'Minimal number of backup files, after the deletion will be executed according to the backup time settings' }
+                            helperText={ this.props.t('Minimal number of backup files, after the deletion will be executed according to the backup time settings') }
                             onChange={ e => this.setState({ backup_files: e.target.value }, () => this.onChange())}
-                            label={ 'Number of files' }
+                            label={ this.props.t('Number of files') }
                         />
                     </Grid> : null }
 
@@ -277,9 +277,9 @@ class BaseSettingsObjects extends Component {
                             className={ this.props.classes.controlItem }
                             value={ this.state.backup_hours }
                             type="number"
-                            helperText={ 'All backups older than these hours will be deleted, but only if the number of files is greater than of the files number' }
+                            helperText={ this.props.t('All backups older than these hours will be deleted, but only if the number of files is greater than of the files number') }
                             onChange={ e => this.setState({ backup_hours: e.target.value }, () => this.onChange())}
-                            label={ 'Backup hours' }
+                            label={ this.props.t('Backup hours') }
                         />
                     </Grid> : null }
 
@@ -288,9 +288,9 @@ class BaseSettingsObjects extends Component {
                             className={ this.props.classes.controlItem }
                             value={ this.state.backup_period }
                             type="number"
-                            helperText={ 'By default the backup is every 2 hours. Time is in minutes. To disable backup set the value to 0' }
+                            helperText={ this.props.t('By default the backup is every 2 hours. Time is in minutes. To disable backup set the value to 0') }
                             onChange={ e => this.setState({ backup_period: e.target.value }, () => this.onChange())}
-                            label={ 'How often' }
+                            label={ this.props.t('How often') }
                         />
                     </Grid> : null }
 
@@ -298,9 +298,9 @@ class BaseSettingsObjects extends Component {
                     <TextField
                         className={ this.props.classes.controlItem }
                         value={ this.state.backup_path }
-                        helperText={ 'Absolute path to backup directory or empty to backup in data directory. Leave it empty for default storage place.' }
+                        helperText={ this.props.t('Absolute path to backup directory or empty to backup in data directory. Leave it empty for default storage place.') }
                         onChange={ e => this.setState({ backup_path: e.target.value }, () => this.onChange())}
-                        label={ 'Path' }
+                        label={ this.props.t('Path') }
                     />
                 </Grid> : null }
                 </Grid>

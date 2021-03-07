@@ -1,6 +1,6 @@
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
-import { Component } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -25,11 +25,15 @@ import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 
 const styles = theme => ({
-    tabPanel: {
-        width:    '100%',
-        height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
+    content: {
+        height: 500,
         overflow: 'hidden',
-    }
+    },
+    tabPanel: {
+        width:  '100%',
+        height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
+        overflow: 'auto',
+    },
 });
 
 class BaseSettingsDialog extends Component {
@@ -44,6 +48,7 @@ class BaseSettingsDialog extends Component {
             hosts: this.props.hosts,
             loading: true,
             confirmExit: false,
+            showRestart: false,
 
             system: null,
             multihostService: null,
@@ -59,11 +64,24 @@ class BaseSettingsDialog extends Component {
     renderConfirmDialog() {
         if (this.state.confirmExit) {
             return <ConfirmDialog
-                text={ this.props.t('Discard unsaved changes? ')}
+                text={ this.props.t('Discard unsaved changes?')}
                 onClose={result =>
                     this.setState({ confirmExit: false }, () =>
                         result && this.props.onClose())}
                 />;
+        } else {
+            return null;
+        }
+    }
+
+    renderRestartDialog() {
+        if (this.state.showRestart) {
+            return <ConfirmDialog
+                text={ this.props.t('Restart controller?')}
+                onClose={result =>
+                    this.setState({ showRestart: false }, () =>
+                        result && this.props.socket.restartController(this.props.currentHost).catch(e => window.alert('Cannot restart: ' + e)))}
+            />;
         } else {
             return null;
         }
@@ -94,7 +112,9 @@ class BaseSettingsDialog extends Component {
         this.props.socket.writeBaseSettings(host || this.state.currentHost, settings)
             .then(() => {
                 this.originalSettings = JSON.parse(JSON.stringify(settings));
-                this.setState({ hasChanges: [] });
+                // ask about restart
+                this.setState({ hasChanges: [], showRestart: true });
+
             });
     }
 
@@ -240,7 +260,8 @@ class BaseSettingsDialog extends Component {
             open={ true }
             onClose={ () => {} }
             fullWidth={ true }
-            fullScreen={ true }
+            maxWidth="xl"
+            //fullScreen={ true }
             aria-labelledby="base-settings-dialog-title"
         >
             <DialogTitle id="base-settings-dialog-title">{ this.props.t('Base settings') }</DialogTitle>
@@ -267,6 +288,7 @@ class BaseSettingsDialog extends Component {
                 {!this.state.loading && this.state.currentTab === 4 ? <div className={ this.props.classes.tabPanel }>{ this.renderLog() }</div> : null }
                 {!this.state.loading && this.state.currentTab === 5 ? <div className={ this.props.classes.tabPanel }>{ this.renderPlugins() }</div> : null }
                 { this.renderConfirmDialog() }
+                { this.renderRestartDialog() }
             </DialogContent>
             <DialogActions>
                 <Button variant="contained" disabled={ !this.state.hasChanges.length } onClick={ () => this.onSave() } color="primary"><CheckIcon />{ this.props.t('Save') }</Button>
