@@ -1052,5 +1052,6 @@
   "The http(s) URL including port of the seq server. If you use HTTPS a real certificate is needed; self signed certs are ot accepted.": "http（s）URL，包括seq服务器的端口。如果您使用HTTPS，则需要一个真实的证书。可以接受自签名证书。",
   "Server URL": "服务器网址",
   "The apiKey of the seq system": "seq系统的apiKey",
-  "default": "默认"
+  "default": "默认",
+  "show/hide item": "显示/隐藏项目"
 }

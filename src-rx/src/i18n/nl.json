@@ -1052,5 +1052,6 @@
   "The http(s) URL including port of the seq server. If you use HTTPS a real certificate is needed; self signed certs are ot accepted.": "De http (s) URL inclusief poort van de seq server. Als u HTTPS gebruikt, is een echt certificaat nodig; zelfondertekende certificaten worden niet geaccepteerd.",
   "Server URL": "Server-URL",
   "The apiKey of the seq system": "De apiKey van het seq-systeem",
-  "default": "standaard"
+  "default": "standaard",
+  "show/hide item": "item weergeven / verbergen"
 }

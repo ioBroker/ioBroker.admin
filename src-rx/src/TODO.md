@@ -8,8 +8,9 @@
 - Adapters - install from custom source button (github)
 - Adapters - install dialog - hide in background, OK does not work - fix it
 - Adapters - install dialog - less/more, close on ready
-- Adapters - add type/group icons in list mode (recently updated => versionDate: "2021-01-12T07:11:09.223Z")
-  - Popular
+- Adapters - add type/group icons in list mode 
+  - recently updated => versionDate: "2021-01-12T07:11:09.223Z"
+  - Popular => `stat`: 21874
 - Adapters - update all adapters and allow to select from list
 - Instances - Open in new window must be shown only for instances with localLink (BF)
 - Instances - Fix layout on narrow screens (text is overlapped)
