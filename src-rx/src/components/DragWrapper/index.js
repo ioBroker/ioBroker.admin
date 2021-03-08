@@ -6,7 +6,7 @@ const style = {
     cursor: 'move',
 };
 const DragWrapper = ({ canDrag, setEndDrag, iconJSX, selected, compact, badgeContent, badgeColor, tab, tabs, setTabs, _id, children }) => {
-    const ref = useRef(null)
+    const ref = useRef(null);
     const [{ handlerId }, drop] = useDrop({
         accept: 'box',
         collect(monitor) {

@@ -1,7 +1,9 @@
 # Todo
 - Check base settings (BF), show on non-mobile as dialog (not full screen)
-- Overview - add dialog - add close button at bottom
-- Adapters/list view - add indents to items by open of folder
+- Overview - add dialog - add close button at bottom//
+- Adapters/list view - add indents to items by open of folder//
+- Adapters/list added button list//
+- Adapters/list optimization of table rendering//
 - Adapters/Tile view, and filter by type and sort by (A-Z, popular, recently updated)
 - Adapters - button to filter adapters that need to be updated
 - Adapters - install from custom source button (github)
@@ -18,8 +20,8 @@
 - Objects - allow to filter only of states/channels/devices => another view (ack, ts, lc, etc)
 - Objects - export/import and creation of new state
 - Objects - edit of access control (similar to files)
-- Left menu - reorder(drug&drop) and hide/show of items//
-- Logs - by selection of log, the number of new logs must be hidden, By deletion
+- Left menu - reorder(drug&drop) and hide/show of items//*
+- Logs - by selection of log, the number of new logs must be hidden, By deletion//
 - Files - bulk edit of access rights
 - Left menu - show iobroker logo at the top left corner (only if opened on full width, else show on top right corner)//
 - Hosts tab

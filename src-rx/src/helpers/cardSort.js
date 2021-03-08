@@ -21,7 +21,6 @@ const moveCard = (
     if (index > atIndex && hoverClientY > hoverMiddleY) {
         return;
     }
-    console.log(index, atIndex, hoverClientY, hoverMiddleY)
     if (card && index !== atIndex) {
         const copyCard = JSON.parse(JSON.stringify(tabs));
         copyCard.splice(index, 1);

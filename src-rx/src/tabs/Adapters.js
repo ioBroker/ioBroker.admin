@@ -1,4 +1,5 @@
-import { Component } from 'react';
+/* eslint-disable array-callback-return */
+import { Component, Fragment } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -21,6 +22,9 @@ import CloudOffIcon from '@material-ui/icons/CloudOff';
 import FolderIcon from '@material-ui/icons/Folder';
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import ListIcon from '@material-ui/icons/List';
+import ViewListIcon from '@material-ui/icons/ViewList';
+import ViewModuleIcon from '@material-ui/icons/ViewModule';
 
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 
@@ -67,6 +71,10 @@ const styles = theme => ({
         flexWrap: 'nowrap',
         width: 300
     },
+    emptyBlock: {
+        flexWrap: 'nowrap',
+        width: 50
+    },
     description: {
         width: 600
     },
@@ -90,7 +98,7 @@ const styles = theme => ({
     license: {
         width: 150
     },
-    install:{
+    install: {
         width: 220
     },
     green: {
@@ -137,7 +145,9 @@ class Adapters extends Component {
             dialog: null,
             dialogProp: null,
             filterConnectionType: false,
-            search: ''
+            search: '',
+            list: false,
+            viewMode: false
         };
 
         this.rebuildSupported = false;
@@ -185,7 +195,7 @@ class Adapters extends Component {
 
             try {
                 const hostDataProm = this.props.socket.getHostInfo(currentHost);
-                const repositoryProm = this.props.socket.getRepository(currentHost, {repo: this.props.systemConfig.common.activeRepo, update: updateRepo}, updateRepo);
+                const repositoryProm = this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: updateRepo }, updateRepo);
                 const installedProm = this.props.socket.getInstalled(currentHost, updateRepo);
                 const instancesProm = this.props.socket.getAdapterInstances(updateRepo);
                 const rebuildProm = this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD');
@@ -295,7 +305,11 @@ class Adapters extends Component {
                         a.translation > b.translation ? 1 : 0;
                 });
 
+                const list = JSON.parse(window.localStorage.getItem('Adapters.list'));
+                const viewMode = JSON.parse(window.localStorage.getItem('Adapters.viewMode'));
                 this.setState({
+                    viewMode,
+                    list,
                     lastUpdate: Date.now(),
                     hostData,
                     hostOs,
@@ -308,7 +322,7 @@ class Adapters extends Component {
                     init: true,
                     update: false
                 });
-            } catch(error) {
+            } catch (error) {
                 console.error(error);
             }
         }
@@ -328,7 +342,7 @@ class Adapters extends Component {
 
                 let cancel = false;
 
-                for(let i = 0; i < this.state.instances.length; i++) {
+                for (let i = 0; i < this.state.instances.length; i++) {
 
                     const instance = this.state.instances[i];
 
@@ -420,8 +434,8 @@ class Adapters extends Component {
 
         try {
             return Semver.gt(newVersion, oldVersion) === true;
-        } catch(e) {
-            console.warn('Cannot compare "' + newVersion + '" and "' + oldVersion  + '"');
+        } catch (e) {
+            console.warn('Cannot compare "' + newVersion + '" and "' + oldVersion + '"');
             return false;
         }
     }
@@ -457,7 +471,7 @@ class Adapters extends Component {
 
                     entry.installed = !!installed;
                     entry.installedVersion = installed ? installed.version : null;
-                    entry.rightVersion = installed ? checkVersion ? Semver.satisfies(installed.version, entry.version, {includePrerelease: true}): true : false;
+                    entry.rightVersion = installed ? checkVersion ? Semver.satisfies(installed.version, entry.version, { includePrerelease: true }) : true : false;
                 }
 
                 result.push(entry);
@@ -503,7 +517,7 @@ class Adapters extends Component {
 
                             const installed = this.state.installed[name];
 
-                            result = installed ? (checkVersion ? Semver.satisfies(installed.version, dependency[name], {includePrerelease: true}) : true) : false;
+                            result = installed ? (checkVersion ? Semver.satisfies(installed.version, dependency[name], { includePrerelease: true }) : true) : false;
                         }
                     });
                 } else if (typeof dependencies === 'object') {
@@ -511,7 +525,7 @@ class Adapters extends Component {
                         if (dependency && dependencies[dependency] !== undefined && result) {
                             const installed = this.state.installed[dependency];
                             const checkVersion = typeof dependencies[dependency] !== 'string';
-                            result = installed ? (checkVersion ? Semver.satisfies(installed.version, dependency[dependency], {includePrerelease: true}) : true) : false;
+                            result = installed ? (checkVersion ? Semver.satisfies(installed.version, dependency[dependency], { includePrerelease: true }) : true) : false;
                         }
                     });
                 } else {
@@ -638,115 +652,195 @@ class Adapters extends Component {
         this.setState({ categoriesExpanded });
     }
 
+    listTable() {
+        let list = !this.state.list;
+        if (list) {
+            this.expandAll();
+        }
+        window.localStorage.setItem('Adapters.list', JSON.stringify(list));
+        this.setState({ list });
+    }
+
+
+    changeViewMode() {
+        let viewMode = !this.state.viewMode;
+        window.localStorage.setItem('Adapters.viewMode', JSON.stringify(viewMode));
+        this.setState({ viewMode });
+    }
+
     getRows() {
-
-        let rows = [];
         const search = (this.state.search || '').toLowerCase().trim();
-
-        this.state.categories.forEach(category => {
-
+        return this.state.categories.map(category => {
             const categoryName = category.name;
             const expanded = this.state.categoriesExpanded[categoryName];
-            const adapters = [];
             let showCategory = false;
-
-            category.adapters.forEach(value => {
-
-                const adapter = this.state.repository[value];
-
-                if (!adapter.controller) {
-
-                    const installed = this.state.installed[value];
-
-                    const title = ((adapter.title || '').toString() || '').replace('ioBroker Visualisation - ', '');
-                    const desc = adapter.desc ? adapter.desc[this.props.lang] || adapter.desc['en'] || adapter.desc : '';
-                    const image = installed ? installed.localIcon : adapter.extIcon;
-                    const connectionType = adapter.connectionType ? adapter.connectionType : '-';
-                    const updateAvailable = installed ? this.updateAvailable(installed.version, adapter.version) : false;
-                    const rightDependencies = this.rightDependencies(value);
-                    const rightOs = this.rightOs(value);
-                    const sentry = !!(adapter.plugins && adapter.plugins.sentry);
-
-                    let show = !search;
-
-                    if (search) {
-                        if (title && title.toLowerCase().includes(search)) {
-                            show = true;
-                        } else if(desc && desc.toLowerCase().includes(search)) {
-                            show = true;
-                        } else {
-                            adapter.keywords && adapter.keywords.forEach(value => {
-                                if(value.toLowerCase().includes(search)) {
-                                    show = true;
-                                }
-                            });
+            return <Fragment key={`category-${categoryName} ${category.adapters.length}`}>
+                {!this.state.list && category.adapters.map((value, idx) => {
+                    const adapter = this.state.repository[value];
+                    if (!adapter.controller) {
+                        const title = ((adapter.title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                        const desc = adapter.desc ? adapter.desc[this.props.lang] || adapter.desc['en'] || adapter.desc : '';
+                        const connectionType = adapter.connectionType ? adapter.connectionType : '-';
+                        let show = !search;
+                        if (search) {
+                            if (title && title.toLowerCase().includes(search)) {
+                                show = true;
+                            } else if (desc && desc.toLowerCase().includes(search)) {
+                                show = true;
+                            } else {
+                                adapter.keywords && adapter.keywords.forEach(value => {
+                                    if (value.toLowerCase().includes(search)) {
+                                        show = true;
+                                    }
+                                });
+                            }
                         }
+                        if (show && this.state.filterConnectionType) {
+                            show = connectionType === 'local';
+                        }
+                        if (show) {
+                            showCategory = true;
+                        }
+                        return category.adapters.length === idx + 1 ? <AdapterRow
+                            key={'category-' + categoryName + 1}
+                            category
+                            count={category.count}
+                            expanded={expanded}
+                            installedCount={category.installed}
+                            name={category.translation}
+                            onToggle={() => this.toggleCategory(categoryName)}
+                            t={this.t}
+                            hidden={!showCategory}
+                        /> : null
                     }
-
-                    if (show && this.state.filterConnectionType) {
-                        show = connectionType === 'local';
+                })}
+                {category.adapters.map(value => {
+                    const adapter = this.state.repository[value];
+                    if (!adapter.controller) {
+                        const installed = this.state.installed[value];
+                        const title = ((adapter.title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                        const desc = adapter.desc ? adapter.desc[this.props.lang] || adapter.desc['en'] || adapter.desc : '';
+                        const image = installed ? installed.localIcon : adapter.extIcon;
+                        const connectionType = adapter.connectionType ? adapter.connectionType : '-';
+                        const updateAvailable = installed ? this.updateAvailable(installed.version, adapter.version) : false;
+                        const rightDependencies = this.rightDependencies(value);
+                        const rightOs = this.rightOs(value);
+                        const sentry = !!(adapter.plugins && adapter.plugins.sentry);
+                        let show = !search;
+                        if (search) {
+                            if (title && title.toLowerCase().includes(search)) {
+                                show = true;
+                            } else if (desc && desc.toLowerCase().includes(search)) {
+                                show = true;
+                            } else {
+                                adapter.keywords && adapter.keywords.forEach(value => {
+                                    if (value.toLowerCase().includes(search)) {
+                                        show = true;
+                                    }
+                                });
+                            }
+                        }
+                        if (show && this.state.filterConnectionType) {
+                            show = connectionType === 'local';
+                        }
+                        if (show) {
+                            showCategory = true;
+                        }
+                        if (title instanceof Object || !desc) {
+                            console.warn(adapter);
+                        }
+                        return expanded && <AdapterRow
+                            key={'adapter-' + value}
+                            connectionType={connectionType}
+                            description={desc}
+                            enabledCount={installed && installed.enabled}
+                            expertMode={this.props.expertMode}
+                            image={image}
+                            installedCount={installed && installed.count}
+                            installedFrom={installed && installed.installedFrom}
+                            installedVersion={installed && installed.version}
+                            keywords={adapter.keywords}
+                            name={title}
+                            license={adapter.license}
+                            onAddInstance={() => this.addInstance(value)}
+                            onDeletion={() => this.openAdapterDeletionDialog(value)}
+                            onInfo={() => this.openInfoDialog(value)}
+                            onRebuild={() => this.rebuild(value)}
+                            onUpdate={() => this.openUpdateDialog(value)}
+                            onUpload={() => this.upload(value)}
+                            updateAvailable={updateAvailable}
+                            version={adapter.version}
+                            hidden={!show}
+                            rightDependencies={rightDependencies}
+                            rightOs={rightOs}
+                            sentry={sentry}
+                            rebuild={this.rebuildSupported}
+                        />
                     }
-
-                    if (show) {
-                        showCategory = true;
-                    }
-
-                    if (title instanceof Object || !desc) {
-                        console.warn(adapter);
-                    }
-
-                    if(expanded) {
-                        adapters.push(
-                            <AdapterRow
-                                key={ 'adapter-' + value }
-                                connectionType={ connectionType }
-                                description={ desc }
-                                enabledCount={ installed && installed.enabled }
-                                expertMode={ this.props.expertMode }
-                                image={ image }
-                                installedCount={ installed && installed.count }
-                                installedFrom={ installed && installed.installedFrom }
-                                installedVersion={ installed && installed.version }
-                                keywords={ adapter.keywords }
-                                name={ title }
-                                license={ adapter.license }
-                                onAddInstance={ () => this.addInstance(value) }
-                                onDeletion={ () => this.openAdapterDeletionDialog(value) }
-                                onInfo={ () => this.openInfoDialog(value) }
-                                onRebuild={ () => this.rebuild(value) }
-                                onUpdate={ () => this.openUpdateDialog(value) }
-                                onUpload={ () => this.upload(value) }
-                                updateAvailable={ updateAvailable }
-                                version={ adapter.version }
-                                hidden={ !show }
-                                rightDependencies={ rightDependencies }
-                                rightOs={ rightOs }
-                                sentry={ sentry }
-                                rebuild={ this.rebuildSupported }
-                            />
-                        );
-                    }
-                }
-            });
-
-            rows.push(
-                <AdapterRow
-                    key={ 'category-' + categoryName }
-                    category
-                    count={ category.count }
-                    expanded={ expanded }
-                    installedCount={ category.installed }
-                    name={ category.translation }
-                    onToggle={ () => this.toggleCategory(categoryName) }
-                    t={ this.t }
-                    hidden={ !showCategory }
-                />
-            );
-
-            rows = [...rows, ...adapters];
+                })}
+            </Fragment>
         });
+    }
 
-        return rows;
+    getBloks() {
+        const search = (this.state.search || '').toLowerCase().trim();
+        return this.state.categories.map(category => {
+            const categoryName = category.name;
+            // const expanded = this.state.categoriesExpanded[categoryName];
+            // let showCategory = false;
+            return <Fragment key={`category-${categoryName} ${category.adapters.length}`}>
+                {category.adapters.map((value, idx) => {
+                    const adapter = this.state.repository[value];
+                    if (!adapter.controller) {
+                        // const installed = this.state.installed[value];
+                        const title = ((adapter.title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                        const desc = adapter.desc ? adapter.desc[this.props.lang] || adapter.desc['en'] || adapter.desc : '';
+                        // const image = installed ? installed.localIcon : adapter.extIcon;
+                        const connectionType = adapter.connectionType ? adapter.connectionType : '-';
+                        // const updateAvailable = installed ? this.updateAvailable(installed.version, adapter.version) : false;
+                        // const rightDependencies = this.rightDependencies(value);
+                        // const rightOs = this.rightOs(value);
+                        // const sentry = !!(adapter.plugins && adapter.plugins.sentry);
+                        let show = !search;
+                        if (search) {
+                            if (title && title.toLowerCase().includes(search)) {
+                                show = true;
+                            } else if (desc && desc.toLowerCase().includes(search)) {
+                                show = true;
+                            } else {
+                                adapter.keywords && adapter.keywords.forEach(value => {
+                                    if (value.toLowerCase().includes(search)) {
+                                        show = true;
+                                    }
+                                });
+                            }
+                        }
+                        if (show && this.state.filterConnectionType) {
+                            show = connectionType === 'local';
+                        }
+                        if (show) {
+                            // showCategory = true;
+                        }
+                        if (title instanceof Object || !desc) {
+                            console.warn(adapter);
+                        }
+                        return <div style={{
+                            width: 200,
+                            height: 200,
+                            margin: 10,
+                            padding: 10,
+                            background: '#ffffff2e',
+                            borderRadius: 10,
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}>
+                            {title}
+                        </div>
+                    }
+                })}
+            </Fragment>
+        });
     }
 
     render() {
@@ -763,8 +857,8 @@ class Adapters extends Component {
                 return (
                     <TabContainer>
                         <AdapterInfoDialog
-                            link={ adapter.readme || '' }
-                            t={ this.t }
+                            link={adapter.readme || ''}
+                            t={this.t}
                         />
                     </TabContainer>
                 );
@@ -782,113 +876,134 @@ class Adapters extends Component {
                 }
                 <TabHeader>
                     <IconButton
-                        onClick={ () => this.getAdaptersInfo(true) }
+                        onClick={() => this.changeViewMode()}
+                    >
+                        {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
+                    </IconButton>
+                    <IconButton
+                        onClick={() => this.getAdaptersInfo(true)}
                     >
                         <RefreshIcon />
                     </IconButton>
-                    <Tooltip title={ this.t('expand all')}>
+                    {!this.state.list && <><Tooltip title={this.t('expand all')}>
                         <IconButton
-                            onClick={ () => this.expandAll() }
+                            onClick={() => this.expandAll()}
                         >
                             <FolderOpenIcon />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title={ this.t('collapse all')}>
+                        <Tooltip title={this.t('collapse all')}>
+                            <IconButton
+                                onClick={() => this.collapseAll()}
+                            >
+                                <FolderIcon />
+                            </IconButton>
+                        </Tooltip></>}
+                    <Tooltip title={this.t('list')}>
                         <IconButton
-                            onClick={ () => this.collapseAll() }
+                            onClick={() => this.listTable()}
                         >
-                            <FolderIcon />
+                            <ListIcon color={this.state.list ? 'primary' : 'inherit'} />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title={ this.t('Filter local connection type')}>
+
+                    <Tooltip title={this.t('Filter local connection type')}>
                         <IconButton
-                            onClick={ () => this.toogleConnectionTypeFilter() }
+                            onClick={() => this.toogleConnectionTypeFilter()}
                         >
-                            <CloudOffIcon color={ this.state.filterConnectionType ? 'primary' : 'inherit' } />
+                            <CloudOffIcon color={this.state.filterConnectionType ? 'primary' : 'inherit'} />
                         </IconButton>
                     </Tooltip>
-                    { this.props.expertMode &&
+                    {this.props.expertMode &&
                         <IconButton>
                             <GithubIcon />
                         </IconButton>
                     }
-                    <div className={ classes.grow } />
+                    <div className={classes.grow} />
                     <TextField
-                        label={ this.t('Filter') }
-                        onKeyDown={ event => this.handleFilterChange(event) }
-                        onKeyUp={ event => this.handleFilterChange(event) }
+                        label={this.t('Filter')}
+                        onKeyDown={event => this.handleFilterChange(event)}
+                        onKeyUp={event => this.handleFilterChange(event)}
                     />
-                    <div className={ classes.grow } />
+                    <div className={classes.grow} />
                 </TabHeader>
-                <TabContent>
-                    <TableContainer className={ classes.container }>
-                        <Table stickyHeader size="small" className={ classes.table }>
+                {this.state.viewMode && <TabContent>
+                    <TableContainer className={classes.container}>
+                        <Table stickyHeader size="small" className={classes.table}>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell className={ classes.name }>
-                                        <Typography>{ this.t('Name') }</Typography>
+                                    <TableCell className={classes.emptyBlock}>
                                     </TableCell>
-                                    <TableCell className={ classes.description }>
-                                        <Typography>{ this.t('Description') }</Typography>
+                                    <TableCell className={classes.name}>
+                                        <Typography>{this.t('Name')}</Typography>
                                     </TableCell>
-                                    <TableCell className={ classes.keywords }>
-                                        <Typography>{ this.t('Keywords') }</Typography>
+                                    <TableCell className={classes.description}>
+                                        <Typography>{this.t('Description')}</Typography>
                                     </TableCell>
-                                    <TableCell className={ classes.connectionType } />
-                                    <TableCell className={ classes.installed }>
-                                        <Typography>{ this.t('Installed') }</Typography>
+                                    <TableCell className={classes.keywords}>
+                                        <Typography>{this.t('Keywords')}</Typography>
                                     </TableCell>
-                                    <TableCell className={ classes.available }>
-                                        <Typography>{ this.t('Available') }</Typography>
+                                    <TableCell className={classes.connectionType} />
+                                    <TableCell className={classes.installed}>
+                                        <Typography>{this.t('Installed')}</Typography>
                                     </TableCell>
-                                    <TableCell className={ classes.license }>
-                                        <Typography>{ this.t('License') }</Typography>
+                                    <TableCell className={classes.available}>
+                                        <Typography>{this.t('Available')}</Typography>
                                     </TableCell>
-                                    <TableCell className={ classes.install }>
-                                        <Typography>{ this.t('Install') }</Typography>
+                                    <TableCell className={classes.license}>
+                                        <Typography>{this.t('License')}</Typography>
+                                    </TableCell>
+                                    <TableCell className={classes.install}>
+                                        <Typography>{this.t('Install')}</Typography>
                                     </TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                { this.getRows() }
+                                {this.getRows()}
                             </TableBody>
                         </Table>
                     </TableContainer>
-                </TabContent>
+                </TabContent>}
+                {!this.state.viewMode && <div style={{
+                    display: 'flex',
+                    flexFlow: 'wrap',
+                    overflow: 'auto',
+                    justifyContent: 'center'
+                }}>{this.getBloks()}</div>}
                 { this.state.addInstanceDialog &&
                     <AddInstanceDialog
-                        open={ this.state.addInstanceDialog }
-                        adapter={ this.state.addInstanceAdapter }
-                        hosts={ this.props.hosts }
-                        instances={ this.state.instances }
-                        currentHost={ this.state.addInstanceHost }
-                        currentInstance={ this.state.addInstanceId }
-                        t={ this.t }
-                        onClick={ () => this.addInstance(this.state.addInstanceAdapter, this.state.addInstanceId) }
-                        onClose={ () => this.closeAddInstanceDialog() }
-                        onHostChange={ event => this.handleHostsChange(event) }
-                        onInstanceChange={ event => this.handleInstanceChange(event) }
+                        open={this.state.addInstanceDialog}
+                        adapter={this.state.addInstanceAdapter}
+                        hosts={this.props.hosts}
+                        instances={this.state.instances}
+                        currentHost={this.state.addInstanceHost}
+                        currentInstance={this.state.addInstanceId}
+                        t={this.t}
+                        onClick={() => this.addInstance(this.state.addInstanceAdapter, this.state.addInstanceId)}
+                        onClose={() => this.closeAddInstanceDialog()}
+                        onHostChange={event => this.handleHostsChange(event)}
+                        onInstanceChange={event => this.handleInstanceChange(event)}
                     />
                 }
                 { this.state.adapterDeletionDialog &&
                     <AdapterDeletionDialog
-                        open={ this.state.adapterDeletionDialog }
-                        adapter={ this.state.adapterDeletionAdapter }
-                        t={ this.t }
-                        onClick={ () => this.delete(this.state.adapterDeletionAdapter) }
-                        onClose={ () => this.closeAdapterDeletionDialog() }
+                        open={this.state.adapterDeletionDialog}
+                        adapter={this.state.adapterDeletionAdapter}
+                        t={this.t}
+                        onClick={() => this.delete(this.state.adapterDeletionAdapter)}
+                        onClose={() => this.closeAdapterDeletionDialog()}
                     />
                 }
                 { this.state.adapterUpdateDialog &&
                     <AdapterUpdateDialog
-                        open={ this.state.adapterUpdateDialog }
-                        adapter={ this.state.adapterUpdateAdapter }
-                        t={ this.t }
-                        dependencies={ this.getDependencies(this.state.adapterUpdateAdapter) }
-                        rightDependencies={ this.rightDependencies(this.state.adapterUpdateAdapter) }
-                        news={ this.getNews(this.state.adapterUpdateAdapter) }
-                        onClick={ () => this.update(this.state.adapterUpdateAdapter) }
-                        onClose={ () => this.closeAdapterUpdateDialog() }
+                        open={this.state.adapterUpdateDialog}
+                        adapter={this.state.adapterUpdateAdapter}
+                        t={this.t}
+                        dependencies={this.getDependencies(this.state.adapterUpdateAdapter)}
+                        rightDependencies={this.rightDependencies(this.state.adapterUpdateAdapter)}
+                        news={this.getNews(this.state.adapterUpdateAdapter)}
+                        onClick={() => this.update(this.state.adapterUpdateAdapter)}
+                        onClose={() => this.closeAdapterUpdateDialog()}
                     />
                 }
             </TabContainer>

@@ -52,8 +52,8 @@ const styles = theme => ({
         tableLayout: 'fixed',
         minWidth: 960,
         '& td:nth-of-type(5)': {
-           overflow: 'hidden',
-           whiteSpace: 'nowrap'
+            overflow: 'hidden',
+            whiteSpace: 'nowrap'
         }
     },
     row: {
@@ -145,9 +145,9 @@ function padding3(num) {
     if (s.length < 2) {
         s = '00' + s;
     } else
-    if (s.length < 3) {
-        s = '0' + s;
-    }
+        if (s.length < 3) {
+            s = '0' + s;
+        }
     return s;
 }
 
@@ -176,7 +176,7 @@ class Logs extends Component {
             'warn': 3,
             'error': 4
         };
-        
+
         this.t = props.t;
 
         this.logHandlerBound = this.logHandler.bind(this);
@@ -262,7 +262,7 @@ class Logs extends Component {
                     `${padding2(date.getHours())}:${padding2(date.getMinutes())}:${padding2(date.getSeconds())}.${padding3(date.getMilliseconds())}`;
             }
         });
-        this.setState({logs});
+        this.setState({ logs });
     }
 
     clearLog() {
@@ -270,6 +270,7 @@ class Logs extends Component {
         this.setState({
             logs: []
         });
+        this.props.clearErrors();
     }
 
     handleMessageChange(event) {
@@ -318,7 +319,6 @@ class Logs extends Component {
         this.props.socket.delLogs(this.props.currentHost)
             .then(() => this.clearLog())
             .catch(error => window.alert(error));
-
         this.closeLogDelete();
     }
 
@@ -340,19 +340,19 @@ class Logs extends Component {
         return this.state.logFiles.map(entry => {
             return (
                 <MenuItem
-                    className={ classes.downloadEntry }
-                    key={ entry.name }
-                    onClick={ () => {
+                    className={classes.downloadEntry}
+                    key={entry.name}
+                    onClick={() => {
                         this.openTab(entry.path.fileName);
                         this.closeLogDownload();
-                    } }
+                    }}
                 >
-                    { entry.name }
+                    { entry.name}
                     <Typography
-                        className={ classes.downloadLogSize }
+                        className={classes.downloadLogSize}
                         variant="caption"
                     >
-                        { Utils.formatBytes(entry.path.size) || '-' }
+                        {Utils.formatBytes(entry.path.size) || '-'}
                     </Typography>
                 </MenuItem>
             );
@@ -365,7 +365,7 @@ class Logs extends Component {
 
         for (const i in this.severities) {
             severities.push(
-                <MenuItem value={ i } key={ i }>{ i }</MenuItem>
+                <MenuItem value={i} key={i}>{i}</MenuItem>
             );
         }
 
@@ -391,7 +391,7 @@ class Logs extends Component {
         sources.sort();
 
         return sources.map(source => (
-            <MenuItem value={ source } key={ source }>{ source === '1' ? this.t('Source') : source }</MenuItem>
+            <MenuItem value={source} key={source}>{source === '1' ? this.t('Source') : source}</MenuItem>
         ));
     }
 
@@ -419,37 +419,37 @@ class Logs extends Component {
 
             const isFrom = this.state.source !== '1' && this.state.source !== row.from;
             const isHidden = isFrom || this.severities[severity] < this.severities[this.state.severity] ||
-                            !message.toLowerCase().includes(this.state.message.toLowerCase());
+                !message.toLowerCase().includes(this.state.message.toLowerCase());
 
             rows.push(
                 <TableRow
-                    className={ clsx(classes.row, isHidden && classes.hidden, this.lastRowRender && row.ts > this.lastRowRender && classes.updatedRow) }
-                    key={ row.key }
+                    className={clsx(classes.row, isHidden && classes.hidden, this.lastRowRender && row.ts > this.lastRowRender && classes.updatedRow)}
+                    key={row.key}
                     hover
                 >
                     <TableCell>
-                        { row.from }
+                        {row.from}
                     </TableCell>
                     <TableCell
-                        className={ classes[severity] }
+                        className={classes[severity]}
                     >
-                        { id }
+                        {id}
                     </TableCell>
                     <TableCell
-                        className={ classes[severity] }
+                        className={classes[severity]}
                     >
-                        { row.time }
+                        {row.time}
                     </TableCell>
                     <TableCell
-                        className={ classes[severity] }
+                        className={classes[severity]}
                     >
-                        { row.severity }
+                        {row.severity}
                     </TableCell>
                     <TableCell
-                        className={ classes[severity] }
-                        title={ message }
+                        className={classes[severity]}
+                        title={message}
                     >
-                        { message }
+                        {message}
                     </TableCell>
                 </TableRow>
             );
@@ -464,28 +464,27 @@ class Logs extends Component {
                 }, 1000);
             }
         }
-
         return rows;
     }
 
     renderClearDialog() {
         const { classes } = this.props;
 
-        return <Dialog onClose={ () => this.closeLogDelete() } open={ this.state.logDeleteDialog }>
+        return <Dialog onClose={() => this.closeLogDelete()} open={this.state.logDeleteDialog}>
             <DialogTitle>
-                { this.t('Please confirm') }
-                <IconButton className={ classes.closeButton } onClick={ () => this.closeLogDelete() }>
+                {this.t('Please confirm')}
+                <IconButton className={classes.closeButton} onClick={() => this.closeLogDelete()}>
                     <CloseIcon />
                 </IconButton>
             </DialogTitle>
             <DialogContent dividers>
                 <Typography gutterBottom>
-                    { this.t('Log file will be deleted. Are you sure?') }
+                    {this.t('Log file will be deleted. Are you sure?')}
                 </Typography>
             </DialogContent>
             <DialogActions>
-                <Button autoFocus onClick={ () => this.handleLogDelete() } color="primary">
-                    { this.t('Ok') }
+                <Button autoFocus onClick={() => this.handleLogDelete()} color="primary">
+                    {this.t('Ok')}
                 </Button>
             </DialogActions>
         </Dialog>;
@@ -498,79 +497,79 @@ class Logs extends Component {
         const { classes } = this.props;
 
         const pauseChild = !this.state.pause ? <PauseIcon /> :
-            <Typography className={ classes.pauseCount }>{ this.state.logs.length - this.state.pause }</Typography>;
+            <Typography className={classes.pauseCount}>{this.state.logs.length - this.state.pause}</Typography>;
 
         return (
             <TabContainer>
                 <TabHeader>
                     <IconButton
-                        onClick={ () => this.props.logsWorker &&
+                        onClick={() => this.props.logsWorker &&
                             this.props.logsWorker.getLogs(true).then(results => {
                                 const logs = results.logs;
                                 const logSize = results.logSize;
                                 this.setState({ logs: [...logs], logSize });
-                            }) }
+                            })}
                     >
                         <RefreshIcon />
                     </IconButton>
                     <IconButton
-                        className={ classes.pauseButton }
-                        onClick={ () => this.handleLogPause() }
+                        className={classes.pauseButton}
+                        onClick={() => this.handleLogPause()}
                     >
-                        { pauseChild }
+                        {pauseChild}
                     </IconButton>
                     <IconButton
-                        onClick={ () => this.clearLog() }
+                        onClick={() => this.clearLog()}
                     >
                         <DeleteIcon />
                     </IconButton>
                     <IconButton
-                        onClick={ () => this.openLogDelete() }
+                        onClick={() => this.openLogDelete()}
                     >
                         <DeleteForeverIcon />
                     </IconButton>
                     <div className={classes.grow} />
-                    { this.state.logFiles.length > 0 &&
+                    {this.state.logFiles.length > 0 &&
                         <div>
                             <Button
                                 variant="contained"
                                 color="primary"
-                                startIcon={ <SaveAltIcon />}
-                                onClick={ event => this.openLogDownload(event) }
+                                startIcon={<SaveAltIcon />}
+                                onClick={event => this.openLogDownload(event)}
                             >
-                                { this.t('Download log') }
+                                {this.t('Download log')}
                             </Button>
                             <Menu
                                 id="simple-menu"
-                                anchorEl={ this.state.logDownloadDialog }
+                                anchorEl={this.state.logDownloadDialog}
                                 keepMounted
-                                open={ Boolean(this.state.logDownloadDialog) }
-                                onClose={ () => this.closeLogDownload() }
+                                open={Boolean(this.state.logDownloadDialog)}
+                                onClose={() => this.closeLogDownload()}
                             >
-                                { this.getLogFiles() }
+                                {this.getLogFiles()}
                             </Menu>
                         </div>
                     }
                     <div className={classes.grow} />
                     <Typography
                         variant="body2"
-                        className={ classes.logSize }
+                        className={classes.logSize}
                     >
-                        { `${this.t('Log size:')} ${this.state.logSize || '-'}` }
+                        {`${this.t('Log size:')} ${this.state.logSize || '-'}`}
                     </Typography>
                 </TabHeader>
                 <TabContent>
-                    <TableContainer className={ classes.container }>
-                        <Table stickyHeader size="small" className={ classes.table }>
+                    <TableContainer className={classes.container}>
+                        <Table stickyHeader size="small" className={classes.table}>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell className={ classes.source }>
-                                        <FormControl className={ classes.formControl }>
+                                    <TableCell className={classes.source}>
+                                        <FormControl className={classes.formControl}>
                                             <InputLabel id="source-label" />
                                             <Select
                                                 labelId="source-label"
-                                                value={ this.state.source }
-                                                onChange={ event => this.handleSourceChange(event) }
+                                                value={this.state.source}
+                                                onChange={event => this.handleSourceChange(event)}
                                             >
                                                 {
                                                     this.getSources()
@@ -578,19 +577,19 @@ class Logs extends Component {
                                             </Select>
                                         </FormControl>
                                     </TableCell>
-                                    <TableCell className={ classes.pid }>
-                                        <TextField disabled label={ this.t('PID') } className={ classes.header } />
+                                    <TableCell className={classes.pid}>
+                                        <TextField disabled label={this.t('PID')} className={classes.header} />
                                     </TableCell>
-                                    <TableCell className={ classes.timestamp }>
-                                        <TextField disabled label={ this.t('Time') } className={ classes.header } />
+                                    <TableCell className={classes.timestamp}>
+                                        <TextField disabled label={this.t('Time')} className={classes.header} />
                                     </TableCell>
-                                    <TableCell className={ classes.severity }>
+                                    <TableCell className={classes.severity}>
                                         <FormControl className={classes.formControl}>
                                             <InputLabel id="severity-label" />
                                             <Select
                                                 labelId="severity-label"
-                                                value={ this.state.severity }
-                                                onChange={ event => this.handleSeverityChange(event) }
+                                                value={this.state.severity}
+                                                onChange={event => this.handleSeverityChange(event)}
                                             >
                                                 {
                                                     this.getSeverities()
@@ -598,11 +597,11 @@ class Logs extends Component {
                                             </Select>
                                         </FormControl>
                                     </TableCell>
-                                    <TableCell className={ classes.message }>
-                                        <FormControl className={ classes.formControl }>
+                                    <TableCell className={classes.message}>
+                                        <FormControl className={classes.formControl}>
                                             <TextField
-                                                label={ this.t('Message') }
-                                                onChange={ event => this.handleMessageChange(event) }
+                                                label={this.t('Message')}
+                                                onChange={event => this.handleMessageChange(event)}
                                             />
                                         </FormControl>
                                     </TableCell>
@@ -616,7 +615,7 @@ class Logs extends Component {
                         </Table>
                     </TableContainer>
                 </TabContent>
-                { this.renderClearDialog() }
+                { this.renderClearDialog()}
             </TabContainer>
         );
     }
@@ -630,5 +629,4 @@ Logs.propTypes = {
     lang: PropTypes.string,
     t: PropTypes.func,
 };
-
 export default withWidth()(withStyles(styles)(Logs));

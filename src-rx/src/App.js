@@ -56,6 +56,7 @@ import SystemSettingsDialog from './dialogs/SystemSettingsDialog';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
+import { ContextWrapper } from './components/ContextWrapper';
 // Tabs
 const Adapters = React.lazy(() => import('./tabs/Adapters'));
 const Instances = React.lazy(() => import('./tabs/Instances'));
@@ -337,7 +338,7 @@ class App extends Router {
                 },
                 onReady: async (objects, scripts) => {
                     I18n.setLanguage(this.socket.systemLang);
-
+                    const { setStateContext } = this.context;
                     // create Workers
                     this.logsWorker = this.logsWorker || new LogsWorker(this.socket, 1000);
                     this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
@@ -365,6 +366,12 @@ class App extends Router {
                     this.setState(newState, () => this.setCurrentTabTitle());
 
                     this.logsWorker && this.logsWorker.setCurrentHost(this.state.currentHost);
+                    this.logsWorker.registerErrorCountHandler(logErrors => setStateContext({
+                        logErrors
+                    }));
+                    this.logsWorker.registerWarningCountHandler(logWarnings => setStateContext({
+                        logWarnings
+                    }));
                 },
                 //onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
                 onError: error => {
@@ -698,6 +705,14 @@ class App extends Router {
 
         return null;
     }
+    
+    clearLogErrors = async () => {
+        const { setStateContext } = this.context;
+        setStateContext({
+            logErrors: 0,
+            logWarnings: 0
+        });
+    }
 
     getCurrentDialog() {
         if (this.state && this.state.currentTab && this.state.currentTab.dialog) {
@@ -973,7 +988,6 @@ class App extends Router {
                             onStateChange={state => this.handleDrawerState(state)}
                             onLogout={() => this.logout()}
                             currentTab={this.state.currentTab && this.state.currentTab.tab}
-                            logsWorker={this.logsWorker}
                             instancesWorker={this.instancesWorker}
                             logoutTitle={I18n.t('Logout')}
                             isSecure={this.socket.isSecure}
@@ -1007,14 +1021,14 @@ class App extends Router {
                         message={this.state.alertMessage}
                     />
                 </Paper>
-                { this.getCurrentDialog()}
-                { this.renderConfirmDialog()}
-                { this.renderCommandDialog()}
-                { this.renderWizardDialog()}
-                { !this.state.connected && <Connecting />}
+                {this.getCurrentDialog()}
+                {this.renderConfirmDialog()}
+                {this.renderCommandDialog()}
+                {this.renderWizardDialog()}
+                {!this.state.connected && <Connecting />}
             </ThemeProvider>
         );
     }
 }
-
+App.contextType = ContextWrapper;
 export default withWidth()(withStyles(styles)(App));

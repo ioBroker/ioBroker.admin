@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
-import { Avatar, Button, Drawer as MaterialDrawer } from '@material-ui/core';
+import { Avatar, Drawer as MaterialDrawer } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import DrawerItem from './DrawerItem';
@@ -33,9 +33,11 @@ import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 // import ShowChartIcon from '@material-ui/icons/ShowChart';
 import StorageIcon from '@material-ui/icons/Storage';
 import FilesIcon from '@material-ui/icons/FileCopy';
+import EditIcon from '@material-ui/icons/Edit';
 
 import DragWrapper from './DragWrapper';
 import CustomDragLayer from './CustomDragLayer';
+import { ContextWrapper } from './ContextWrapper';
 
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
@@ -154,14 +156,10 @@ class Drawer extends Component {
         super(props);
 
         this.state = {
-            logErrors: 0,
-            logWarnings: 0,
             tabs: [],
             editList: false
         };
 
-        this.logErrorHandlerBound = this.logErrorHandler.bind(this);
-        this.logWarningHandlerBound = this.logWarningHandler.bind(this);
         this.instanceChangedHandlerBound = this.instanceChangedHandler.bind(this);
 
         this.instances = null;
@@ -174,32 +172,14 @@ class Drawer extends Component {
     }
 
     componentDidMount() {
-        this.props.logsWorker.registerErrorCountHandler(this.logErrorHandlerBound);
-        this.props.logsWorker.registerWarningCountHandler(this.logWarningHandlerBound);
         this.props.instancesWorker.registerHandler(this.instanceChangedHandlerBound);
     }
 
     componentWillUnmount() {
-        this.props.logsWorker.unregisterErrorCountHandler(this.logErrorHandlerBound);
-        this.props.logsWorker.unregisterWarningCountHandler(this.logWarningHandlerBound);
         this.props.instancesWorker.unregisterHandler(this.instanceChangedHandlerBound);
     }
 
-    logErrorHandler(logErrors) {
-        if (logErrors !== this.state.logErrors) {
-            this.setState({
-                logErrors
-            });
-        }
-    }
 
-    logWarningHandler(logWarnings) {
-        if (logWarnings !== this.state.logWarnings) {
-            this.setState({
-                logWarnings
-            });
-        }
-    }
     componentDidUpdate() {
         if (!this.isSwipeable() && this.props.state !== STATES.opened && this.state.editList) {
             this.setState({ editList: false });
@@ -282,41 +262,33 @@ class Drawer extends Component {
                 tabs = tabs.map(name => {
                     const obj = Object.assign({ name }, tabsInfo[name]);
                     obj.title = I18n.t(ucFirst(name.replace('tab-', '').replace('-0', '').replace(/-(\d+)$/, ' $1')));
-                    obj.visable = true;
+                    obj.visible = true;
                     return obj;
                 });
 
                 // add dynamic tabs
                 tabs = tabs.concat(dynamicTabs);
                 tabs = tabs.map(obj => {
-                    obj.visable = true;
+                    obj.visible = true;
                     return obj;
                 });
-                // tabs ith order first, then by name
-                // tabs.sort((a, b) => {
-                //     if (a.order && b.order) {
-                //         return a.order > b.order ? 1 : (a.order < b.order ? -1 : 0);
-                //     } else if (a.order) {
-                //         return 1;
-                //     } else if (b.order) {
-                //         return -1;
-                //     } else {
-                //         return a.name > b.name ? 1 : (a.name < b.name ? -1 : 0);
-                //     }
-                // });
                 // Convert
-                if (!this.props.systemConfig.common['test'] || tabs.length !== this.props.systemConfig.common['test'].length) {
+                let newObj = JSON.parse(JSON.stringify(this.props.systemConfig));
+                if (!newObj.common['tabsVisible'] || tabs.length !== newObj.common['tabsVisible'].length) {
                     this.setState({
                         tabs,
                     }, async () => {
-                        this.props.systemConfig.common['test'] = tabs;
-                        let newObj = JSON.parse(JSON.stringify(this.props.systemConfig));
-                        await this.props.socket.setSystemConfig(newObj).then(el => console.log('ok', el));
-
+                        newObj.common['tabsVisible'] = tabs.map(({ name, order, visible }) => ({ name, order, visible }));
+                        await this.props.socket.setSystemConfig(newObj).then(el => console.log('ok'));
                     });
                 } else {
+                    let newTabs = newObj.common['tabsVisible'].map(({ name, visible }) => {
+                        let tab = tabs.find(el => el.name === name);
+                        tab.visible = visible;
+                        return tab;
+                    })
                     this.setState({
-                        tabs: this.props.systemConfig.common['test']
+                        tabs: newTabs
                     });
                 }
             });
@@ -357,49 +329,61 @@ class Drawer extends Component {
         return this.props.width === 'xs' || this.props.width === 'sm';
     }
 
+    tabsEditSystemConfig = async (idx) => {
+        const { tabs } = this.state;
+        const { systemConfig, socket } = this.props;
+        let newTabs = JSON.parse(JSON.stringify(tabs));
+        if (idx !== undefined) {
+            newTabs[idx].visible = !newTabs[idx].visible;
+        }
+        let newObjCopy = JSON.parse(JSON.stringify(systemConfig));
+        newObjCopy.common['tabsVisible'] = newTabs.map(({ name, order, visible }) => ({ name, order, visible }));
+        if (idx !== undefined) {
+            this.setState({ tabs: newTabs }, async () => await socket.setSystemConfig(newObjCopy).then(el => console.log('ok')))
+        } else {
+            await socket.setSystemConfig(newObjCopy).then(el => console.log('ok'))
+        }
+    }
+
     getNavigationItems() {
-        if (!this.props.systemConfig) {
+        const { tabs, editList } = this.state;
+        const { stateContext:{logErrors, logWarnings} } = this.context;
+        const { systemConfig, currentTab, state, classes, handleNavigation } = this.props;
+        if (!systemConfig) {
             return
         }
-        return this.state.tabs.map((tab, idx) => {
-            if (!this.state.editList && !tab.visable) {
+        return tabs.map((tab, idx) => {
+            if (!editList && !tab.visible) {
                 return null
             }
             return (
                 <div key={tab.name}>
                     <DragWrapper
-                        idx={idx}
-                        canDrag={this.state.editList}
-                        iconJSX={!!tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <img alt="" className={this.props.classes.icon} src={tab.icon} />}
+                        canDrag={editList}
+                        iconJSX={!!tabsInfo[tab.name].icon ? tabsInfo[tab.name].icon : <img alt="" className={classes.icon} src={tab.icon} />}
                         _id={tab.name}
-                        selected={this.props.currentTab === tab.name}
+                        selected={currentTab === tab.name}
                         tab={tab}
-                        compact={!this.isSwipeable() && this.props.state !== STATES.opened}
-                        badgeContent={tab.name === 'tab-logs' ? this.state.logErrors || this.state.logWarnings : 0}
-                        badgeColor={tab.name === 'tab-logs' ? this.state.logErrors ? 'error' : 'warn' : ''}
-                        tabs={this.props.systemConfig.common['test']}
-                        setEndDrag={() => {
-                            this.props.systemConfig.common['test'] = this.state.tabs;
-                            let newObjCopy = JSON.parse(JSON.stringify(this.props.systemConfig));
-                            this.props.socket.setSystemConfig(newObjCopy).then(el => console.log('ok', el))
-                        }}
-                        setTabs={(newObj) => this.setState({ tabs: newObj })}>
+                        compact={!this.isSwipeable() && state !== STATES.opened}
+                        badgeContent={tab.name === 'tab-logs' ? logErrors || logWarnings : 0}
+                        badgeColor={tab.name === 'tab-logs' ? logErrors ? 'error' : 'warn' : ''}
+                        tabs={tabs}
+                        setEndDrag={() => this.tabsEditSystemConfig()}
+                        setTabs={(newObj) => {
+                            this.setState({ tabs: newObj })
+                        }}>
                         <DrawerItem
                             key={tab.name}
-                            editList={this.state.editList}
-                            visable={tab.visable}
-                            editListFunc={() => {
-                                this.props.systemConfig.common['test'][idx].visable = !tab.visable;
-                                let newObj = JSON.parse(JSON.stringify(this.props.systemConfig));
-                                this.setState({ tabs: newObj.common['test'] }, async () => await this.props.socket.setSystemConfig(newObj).then(el => console.log('ok', el)))
-                            }}
-                            compact={!this.isSwipeable() && this.props.state !== STATES.opened}
-                            onClick={() => this.props.handleNavigation(tab.name)}
-                            icon={!!tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <img alt="" className={this.props.classes.icon} src={tab.icon} />}
+                            editList={editList}
+                            visible={tab.visible}
+                            editListFunc={() => this.tabsEditSystemConfig(idx)}
+                            compact={!this.isSwipeable() && state !== STATES.opened}
+                            onClick={() => handleNavigation(tab.name)}
+                            icon={!!tabsInfo[tab.name].icon ? tabsInfo[tab.name].icon : <img alt="" className={classes.icon} src={tab.icon} />}
                             text={tab.title}
-                            selected={this.props.currentTab === tab.name}
-                            badgeContent={tab.name === 'tab-logs' ? this.state.logErrors || this.state.logWarnings : 0}
-                            badgeColor={tab.name === 'tab-logs' ? this.state.logErrors ? 'error' : 'warn' : ''}
+                            selected={currentTab === tab.name}
+                            badgeContent={tab.name === 'tab-logs' ? logErrors || logWarnings : 0}
+                            badgeColor={tab.name === 'tab-logs' ? logErrors ? 'error' : 'warn' : ''}
                         />
                     </DragWrapper>
                 </div>
@@ -425,17 +409,22 @@ class Drawer extends Component {
 
                     { this.getHeader()}
                     <List>
-                        {this.props.state === STATES.opened && <Button
-                            className={classes.expand}
-                            onClick={() => this.setState({ editList: !this.state.editList })}
-                            variant="contained"
-                            size="small"
-                            color="primary"
-                        >
-                            {this.props.t('Edit')}
-                        </Button>}
                         {this.getNavigationItems()}
                     </List>
+                    {this.props.state === STATES.opened && <div style={{
+                        position: 'sticky',
+                        bottom: 0,
+                        width: 'fit-content',
+                        marginLeft: 'auto',
+                        marginTop: 'auto'
+                    }}>
+                        <IconButton
+                            style={this.state.editList ? { color: 'red' } : null}
+                            onClick={() => this.setState({ editList: !this.state.editList })}
+                            title={this.props.t('show/hide item')}>
+                            <EditIcon />
+                        </IconButton>
+                    </div>}
                 </SwipeableDrawer>
             );
         } else {
@@ -451,17 +440,22 @@ class Drawer extends Component {
 
                     { this.getHeader()}
                     <List className={classes.list}>
-                        {this.props.state === STATES.opened && <Button
-                            className={classes.expand}
-                            onClick={() => this.setState({ editList: !this.state.editList })}
-                            variant="contained"
-                            size="small"
-                            color="primary"
-                        >
-                            {this.props.t('Edit')}
-                        </Button>}
                         {this.getNavigationItems()}
                     </List>
+                    {this.props.state === STATES.opened && <div style={{
+                        position: 'sticky',
+                        bottom: 0,
+                        width: 'fit-content',
+                        marginLeft: 'auto',
+                        marginTop: 'auto'
+                    }}>
+                        <IconButton
+                            style={this.state.editList ? { color: 'red' } : null}
+                            onClick={() => this.setState({ editList: !this.state.editList })}
+                            title={this.props.t('show/hide item')}>
+                            <EditIcon />
+                        </IconButton>
+                    </div>}
                 </MaterialDrawer>
             );
         }
@@ -482,8 +476,8 @@ Drawer.propTypes = {
     ready: PropTypes.bool,
     expertMode: PropTypes.bool,
     handleNavigation: PropTypes.func,
-    logsWorker: PropTypes.object,
     instancesWorker: PropTypes.object,
 };
 
+Drawer.contextType = ContextWrapper;
 export default withWidth()(withStyles(styles)(Drawer));

@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom';
-import {version} from '../package.json';
-import { MuiThemeProvider} from '@material-ui/core/styles';
+import { version } from '../package.json';
+import { MuiThemeProvider } from '@material-ui/core/styles';
 import * as Sentry from '@sentry/browser';
 import * as SentryIntegrations from '@sentry/integrations';
 
@@ -9,6 +9,7 @@ import Utils from '@iobroker/adapter-react/Components/Utils';
 import App from './App';
 
 import './index.css';
+import { ContextWrapperProvider } from './components/ContextWrapper';
 
 window.adapterName = 'scenes';
 
@@ -17,11 +18,13 @@ let themeName = Utils.getThemeName();
 
 function build() {
     return ReactDOM.render(
-        <MuiThemeProvider theme={ theme(themeName) }>
-            <App onThemeChange={ _themeName => {
-                themeName = _themeName;
-                build();
-            }} />
+        <MuiThemeProvider theme={theme(themeName)}>
+            <ContextWrapperProvider>
+                <App onThemeChange={_themeName => {
+                    themeName = _themeName;
+                    build();
+                }} />
+            </ContextWrapperProvider>
         </MuiThemeProvider>,
         document.getElementById('root')
     );

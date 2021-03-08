@@ -69,7 +69,7 @@ const CustomDragLayer = ({ classes }) => {
                 return <div className={classes.root} style={{ width: 179, }}><DrawerItem
                     key={item.name}
                     editList={true}
-                    visable={item.visable}
+                    visible={item.visible}
                     editListFunc={() => { }}
                     compact={item.compact}
                     // onClick={() => this.props.handleNavigation(tab.name)}

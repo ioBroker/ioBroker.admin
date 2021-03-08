@@ -45,7 +45,7 @@ const DrawerItem = props => {
         onClick,
         selected,
         text,
-        editList,visable,editListFunc
+        editList,visible,editListFunc
     } = props;
 
     const content = text ? text.replace('&gt;', '>') : '';
@@ -53,7 +53,7 @@ const DrawerItem = props => {
     return (<div style={{display:'flex'}}>
 
         { !!editList && 
-            <Checkbox checked={visable} onChange={editListFunc}/>
+            <Checkbox checked={visible} onChange={editListFunc}/>
         
         }
         <ListItem

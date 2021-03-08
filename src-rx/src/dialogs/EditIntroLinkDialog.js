@@ -337,13 +337,6 @@ class EditIntroLinkDialog extends Component {
                         </Grid>
                     </DialogContent>
                 <DialogActions>
-                    {/*<Button
-                        onClick={ () => {
-                            this.props.onClose();
-                        }}
-                        color="primary">
-                        { this.props.t('Cancel') }
-                    </Button>*/}
                     <Button
                         autoFocus
                         onClick={ () => {
@@ -361,6 +354,13 @@ class EditIntroLinkDialog extends Component {
                         }}
                         color="primary">
                         { this.props.isNew ? this.props.t('Add') : this.props.t('Save')}
+                    </Button>
+                    <Button
+                        onClick={ () => {
+                            this.props.onClose();
+                        }}
+                        color="primary">
+                        { this.props.t('Close') }
                     </Button>
                 </DialogActions>
             </Dialog>
