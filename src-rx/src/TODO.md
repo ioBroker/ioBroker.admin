@@ -1,8 +1,6 @@
 # Todo
 - Check base settings (BF), show on non-mobile as dialog (not full screen)
-- Overview - add dialog - add close button at bottom (color of close button is default)//
-- Adapters/list added button list (hide in tile view)//
-- Adapters/list optimization of table rendering (do not store filter directly in state)
+- Adapters/list optimization of table rendering (do not store filter directly in state) (BF)
 - Adapters/Tile view, and filter by type and sort by (A-Z, popular, recently updated)
 - Adapters - button to filter adapters that need to be updated
 - Adapters - install from custom source button (github)
@@ -11,7 +9,13 @@
 - Adapters - add type/group icons in list mode 
   - recently updated => versionDate: "2021-01-12T07:11:09.223Z"
   - Popular => `stat`: 21874
+  - Show text: 'all items are filtered out' if nothign to show
+  - For every filter (and may be other inputs) show "x" if not empty
 - Adapters - update all adapters and allow to select from list
+- Adapters - if update available make a big button to show updates
+- Adapters - show button to filter out adapters with update
+- Adapters - show accept license dialog for non MIT licenses (common.license !== "MIT" => common.extIcon.split('/master')[0] + '/master/LICENSE'). Only if no instances yet.
+- Adapters - if language <> 'en' => https://www.iobroker.net/<ru>/adapterref/iobroker.<ADAPTERNAME>/README.md
 - Instances - Open in new window must be shown only for instances with localLink (BF)
 - Instances - Fix layout on narrow screens (text is overlapped)
 - Instances - add filter
@@ -25,11 +29,6 @@
 - Objects - allow to filter only of states/channels/devices => another view (ack, ts, lc, etc)
 - Objects - export/import and creation of new state
 - Objects - edit of access control (similar to files)
-- Left menu - reorder(drug&drop) and hide/show of items//*
-  - show popup with "You can drag and drop list items for reorder" (3000ms)//
-  - Let the header to be always shown for left menu//
-  - Allow: open in new window for list items (link)//
-- Logs - by selection of log, the number of new logs must be hidden, By deletion//
 - Files - bulk edit of access rights
 - Hosts tab
 - Easy admin mode
