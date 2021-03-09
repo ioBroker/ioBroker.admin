@@ -33,7 +33,6 @@ import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 // import ShowChartIcon from '@material-ui/icons/ShowChart';
 import StorageIcon from '@material-ui/icons/Storage';
 import FilesIcon from '@material-ui/icons/FileCopy';
-import EditIcon from '@material-ui/icons/Edit';
 
 import DragWrapper from './DragWrapper';
 import CustomDragLayer from './CustomDragLayer';
@@ -361,38 +360,34 @@ class Drawer extends Component {
             if (!editList && !tab.visible) {
                 return null
             }
-            return (
-                <div key={tab.name}>
-                    <DragWrapper
-                        canDrag={editList}
-                        iconJSX={!!tabsInfo[tab.name].icon ? tabsInfo[tab.name].icon : <img alt="" className={classes.icon} src={tab.icon} />}
-                        _id={tab.name}
-                        selected={currentTab === tab.name}
-                        tab={tab}
+            return <a href={`/#${tab.name}`} style={{color:'inherit',textDecoration: 'none'}}  key={tab.name}>
+                <DragWrapper
+                    canDrag={editList}
+                    iconJSX={!!tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <img alt="" className={classes.icon} src={tab.icon} />}
+                    _id={tab.name}
+                    selected={currentTab === tab.name}
+                    tab={tab}
+                    compact={!this.isSwipeable() && state !== STATES.opened}
+                    badgeContent={tab.name === 'tab-logs' ? logErrors || logWarnings : 0}
+                    badgeColor={tab.name === 'tab-logs' ? logErrors ? 'error' : 'warn' : ''}
+                    tabs={tabs}
+                    setEndDrag={() => this.tabsEditSystemConfig()}
+                    setTabs={newObj => this.setState({ tabs: newObj })}>
+                    <DrawerItem
+                        key={tab.name}
+                        editList={editList}
+                        visible={tab.visible}
+                        editListFunc={() => this.tabsEditSystemConfig(idx)}
                         compact={!this.isSwipeable() && state !== STATES.opened}
+                        onClick={() => handleNavigation(tab.name)}
+                        icon={!!tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <img alt="" className={classes.icon} src={tab.icon} />}
+                        text={tab.title}
+                        selected={currentTab === tab.name}
                         badgeContent={tab.name === 'tab-logs' ? logErrors || logWarnings : 0}
-                        badgeColor={tab.name === 'tab-logs' ? logErrors ? 'error' : 'warn' : ''}
-                        tabs={tabs}
-                        setEndDrag={() => this.tabsEditSystemConfig()}
-                        setTabs={(newObj) => {
-                            this.setState({ tabs: newObj })
-                        }}>
-                        <DrawerItem
-                            key={tab.name}
-                            editList={editList}
-                            visible={tab.visible}
-                            editListFunc={() => this.tabsEditSystemConfig(idx)}
-                            compact={!this.isSwipeable() && state !== STATES.opened}
-                            onClick={() => handleNavigation(tab.name)}
-                            icon={!!tabsInfo[tab.name].icon ? tabsInfo[tab.name].icon : <img alt="" className={classes.icon} src={tab.icon} />}
-                            text={tab.title}
-                            selected={currentTab === tab.name}
-                            badgeContent={tab.name === 'tab-logs' ? logErrors || logWarnings : 0}
-                            badgeColor={tab.name === 'tab-logs' ? logErrors ? 'error' : 'warn' : ''}
-                        />
-                    </DragWrapper>
-                </div>
-            );
+                        badgeColor={tab.name === 'tab-logs' ? (logErrors ? 'error' : 'warn') : ''}
+                    />
+                </DragWrapper>
+            </a>;
         });
     }
 
@@ -401,72 +396,60 @@ class Drawer extends Component {
         const { classes } = this.props;
 
         if (this.isSwipeable()) {
-            return (
-                <SwipeableDrawer
-                    className={classes.root}
-                    anchor="left"
-                    open={this.props.state !== STATES.closed}
-                    onClose={() => this.props.onStateChange(STATES.closed)}
-                    onOpen={() => this.props.onStateChange(STATES.opened)}
-                    classes={{ paper: classes.paper }}
-                >
-                    <CustomDragLayer />
+            return <SwipeableDrawer
+                className={classes.root}
+                anchor="left"
+                open={this.props.state !== STATES.closed}
+                onClose={() => this.props.onStateChange(STATES.closed)}
+                onOpen={() => this.props.onStateChange(STATES.opened)}
+                classes={{ paper: classes.paper }}
+            >
+                <CustomDragLayer />
 
-                    { this.getHeader()}
-                    <List>
-                        {this.getNavigationItems()}
-                    </List>
-                    {this.props.state === STATES.opened && <div style={{
-                        position: 'sticky',
-                        bottom: 0,
-                        width: 'fit-content',
-                        marginLeft: 'auto',
-                        marginTop: 'auto'
-                    }}>
-                        <CustomPopper start={this.state.editList}>
-                            <IconButton
-                                style={this.state.editList ? { color: 'red' } : null}
-                                onClick={() => this.setState({ editList: !this.state.editList })}
-                                title={this.props.t('show/hide item')}>
-                                <EditIcon />
-                            </IconButton>
-                        </CustomPopper>
-                    </div>}
-                </SwipeableDrawer>
-            );
+                {this.getHeader()}
+                <List>
+                    {this.getNavigationItems()}
+                </List>
+                {this.props.state === STATES.opened && <div style={{
+                    position: 'sticky',
+                    bottom: 0,
+                    width: 'fit-content',
+                    marginLeft: 'auto',
+                    marginTop: 'auto'
+                }}>
+                    <CustomPopper
+                        editList={this.state.editList}
+                        onClick={() => this.setState({ editList: !this.state.editList })}
+                    />
+                </div>}
+            </SwipeableDrawer>
         } else {
-            return (
-                <MaterialDrawer
-                    className={clsx(classes.root, this.props.state !== STATES.opened ? classes.rootCompactWidth : classes.rootFullWidth)}
-                    variant="persistent"
-                    anchor="left"
-                    open={this.props.state !== STATES.closed}
-                    classes={{ paper: classes.paper }}
-                >
-                    <CustomDragLayer />
+            return <MaterialDrawer
+                className={clsx(classes.root, this.props.state !== STATES.opened ? classes.rootCompactWidth : classes.rootFullWidth)}
+                variant="persistent"
+                anchor="left"
+                open={this.props.state !== STATES.closed}
+                classes={{ paper: classes.paper }}
+            >
+                <CustomDragLayer />
 
-                    { this.getHeader()}
-                    <List className={classes.list}>
-                        {this.getNavigationItems()}
-                    </List>
-                    {this.props.state === STATES.opened && <div style={{
-                        position: 'sticky',
-                        bottom: 0,
-                        width: 'fit-content',
-                        marginLeft: 'auto',
-                        marginTop: 'auto'
-                    }}>
-                        <CustomPopper start={this.state.editList} editList={this.state.editList} onClick={() => this.setState({ editList: !this.state.editList })}>
-                            {/* <IconButton
-                                style={this.state.editList ? { color: 'red' } : null}
-                                onClick={() => this.setState({ editList: !this.state.editList })}
-                                title={this.props.t('show/hide item')}>
-                                <EditIcon />
-                            </IconButton> */}
-                        </CustomPopper>
-                    </div>}
-                </MaterialDrawer>
-            );
+                {this.getHeader()}
+                <List className={classes.list}>
+                    {this.getNavigationItems()}
+                </List>
+                {this.props.state === STATES.opened && <div style={{
+                    position: 'sticky',
+                    bottom: 0,
+                    width: 'fit-content',
+                    marginLeft: 'auto',
+                    marginTop: 'auto'
+                }}>
+                    <CustomPopper
+                        editList={this.state.editList}
+                        onClick={() => this.setState({ editList: !this.state.editList })}
+                    />
+                </div>}
+            </MaterialDrawer>
         }
     }
 }

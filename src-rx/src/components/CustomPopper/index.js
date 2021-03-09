@@ -14,6 +14,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+let timer;
+
 const CustomPopper = ({ editList, onClick }) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [open, setOpen] = React.useState(false);
@@ -33,15 +35,16 @@ const CustomPopper = ({ editList, onClick }) => {
                     onClick();
                     if (!editList) {
                         handleClick('right')(el);
-                        setTimeout(() => setOpen(false), 3000);
+                        timer = setTimeout(() => setOpen(false), 3000);
                     } else {
                         setOpen(false);
+                        clearTimeout(timer);
                     }
                 }}
                 title={I18n.t('show/hide item')}>
                 <EditIcon />
             </IconButton>
-            <Popper open={open} anchorEl={anchorEl} placement={placement} transition>
+            <Popper style={{ zIndex: 2222 }} open={open} anchorEl={anchorEl} placement={placement} transition>
                 {({ TransitionProps }) => (
                     <Fade {...TransitionProps} timeout={350}>
                         <Paper>

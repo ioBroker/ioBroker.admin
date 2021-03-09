@@ -359,7 +359,7 @@ class EditIntroLinkDialog extends Component {
                         onClick={ () => {
                             this.props.onClose();
                         }}
-                        color="primary">
+                        color="default">
                         { this.props.t('Close') }
                     </Button>
                 </DialogActions>

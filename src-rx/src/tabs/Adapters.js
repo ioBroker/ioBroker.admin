@@ -46,6 +46,7 @@ import TabHeader from '../components/TabHeader';
 import Router from '@iobroker/adapter-react/Components/Router';
 
 import Semver from 'semver';
+import CardAdapters from '../components/CardAdapters';
 
 const styles = theme => ({
     container: {
@@ -792,15 +793,15 @@ class Adapters extends Component {
                 {category.adapters.map((value, idx) => {
                     const adapter = this.state.repository[value];
                     if (!adapter.controller) {
-                        // const installed = this.state.installed[value];
+                        const installed = this.state.installed[value];
                         const title = ((adapter.title || '').toString() || '').replace('ioBroker Visualisation - ', '');
                         const desc = adapter.desc ? adapter.desc[this.props.lang] || adapter.desc['en'] || adapter.desc : '';
-                        // const image = installed ? installed.localIcon : adapter.extIcon;
+                        const image = installed ? installed.localIcon : adapter.extIcon;
                         const connectionType = adapter.connectionType ? adapter.connectionType : '-';
-                        // const updateAvailable = installed ? this.updateAvailable(installed.version, adapter.version) : false;
-                        // const rightDependencies = this.rightDependencies(value);
-                        // const rightOs = this.rightOs(value);
-                        // const sentry = !!(adapter.plugins && adapter.plugins.sentry);
+                        const updateAvailable = installed ? this.updateAvailable(installed.version, adapter.version) : false;
+                        const rightDependencies = this.rightDependencies(value);
+                        const rightOs = this.rightOs(value);
+                        const sentry = !!(adapter.plugins && adapter.plugins.sentry);
                         let show = !search;
                         if (search) {
                             if (title && title.toLowerCase().includes(search)) {
@@ -824,19 +825,46 @@ class Adapters extends Component {
                         if (title instanceof Object || !desc) {
                             console.warn(adapter);
                         }
-                        return <div style={{
-                            width: 200,
-                            height: 200,
-                            margin: 10,
-                            padding: 10,
-                            background: '#ffffff2e',
-                            borderRadius: 10,
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center'
-                        }}>
-                            {title}
-                        </div>
+                        return <CardAdapters
+                            key={'adapter-' + value}
+                            image={image}
+                            name={title}
+                            connectionType={connectionType}
+                            description={desc}
+                            enabledCount={installed && installed.enabled}
+                            expertMode={this.props.expertMode}
+                            installedCount={installed && installed.count}
+                            installedFrom={installed && installed.installedFrom}
+                            installedVersion={installed && installed.version}
+                            keywords={adapter.keywords}
+                            license={adapter.license}
+                            onAddInstance={() => this.addInstance(value)}
+                            onDeletion={() => this.openAdapterDeletionDialog(value)}
+                            onInfo={() => this.openInfoDialog(value)}
+                            onRebuild={() => this.rebuild(value)}
+                            onUpdate={() => this.openUpdateDialog(value)}
+                            onUpload={() => this.upload(value)}
+                            updateAvailable={updateAvailable}
+                            version={adapter.version}
+                            hidden={!show}
+                            rightDependencies={rightDependencies}
+                            rightOs={rightOs}
+                            sentry={sentry}
+                            rebuild={this.rebuildSupported}
+                        />
+                        // return <div style={{
+                        //     width: 200,
+                        //     height: 200,
+                        //     margin: 10,
+                        //     padding: 10,
+                        //     background: '#ffffff2e',
+                        //     borderRadius: 10,
+                        //     display: 'flex',
+                        //     justifyContent: 'center',
+                        //     alignItems: 'center'
+                        // }}>
+                        //     {title}
+                        // </div>
                     }
                 })}
             </Fragment>
@@ -885,7 +913,7 @@ class Adapters extends Component {
                     >
                         <RefreshIcon />
                     </IconButton>
-                    {!this.state.list && <><Tooltip title={this.t('expand all')}>
+                    {this.state.viewMode && !this.state.list && <><Tooltip title={this.t('expand all')}>
                         <IconButton
                             onClick={() => this.expandAll()}
                         >
@@ -898,14 +926,15 @@ class Adapters extends Component {
                             >
                                 <FolderIcon />
                             </IconButton>
-                        </Tooltip></>}
-                    <Tooltip title={this.t('list')}>
+                        </Tooltip>
+                        </>}
+                    {this.state.viewMode && <Tooltip title={this.t('list')}>
                         <IconButton
                             onClick={() => this.listTable()}
                         >
                             <ListIcon color={this.state.list ? 'primary' : 'inherit'} />
                         </IconButton>
-                    </Tooltip>
+                    </Tooltip>}
 
                     <Tooltip title={this.t('Filter local connection type')}>
                         <IconButton
