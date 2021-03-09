@@ -80,7 +80,9 @@ class BaseSettingsDialog extends Component {
                 text={ this.props.t('Restart controller?')}
                 onClose={result =>
                     this.setState({ showRestart: false }, () =>
-                        result && this.props.socket.restartController(this.props.currentHost).catch(e => window.alert('Cannot restart: ' + e)))}
+                        result && this.props.socket.getRawSocket().emit('sendToHost', this.props.currentHost, 'restartController', null, error =>
+                            error && window.alert('Cannot restart: ' + error)))}
+                        //this.props.socket.restartController(this.props.currentHost).catch(e => window.alert('Cannot restart: ' + e)))}
             />;
         } else {
             return null;

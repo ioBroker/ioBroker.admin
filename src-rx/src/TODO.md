@@ -1,5 +1,4 @@
 # Todo
-- Check base settings (BF), show on non-mobile as dialog (not full screen)
 - Adapters/list optimization of table rendering (do not store filter directly in state) (BF)
 - Adapters/Tile view, and filter by type and sort by (A-Z, popular, recently updated)
 - Adapters - button to filter adapters that need to be updated

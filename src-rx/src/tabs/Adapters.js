@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import { Component, Fragment } from 'react';
+import { Component, Fragment, createRef } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -15,7 +15,8 @@ import {
     TableRow,
     TextField,
     Tooltip,
-    Typography
+    Typography,
+    InputAdornment
 } from '@material-ui/core';
 
 import CloudOffIcon from '@material-ui/icons/CloudOff';
@@ -47,6 +48,7 @@ import Router from '@iobroker/adapter-react/Components/Router';
 
 import Semver from 'semver';
 import CardAdapters from '../components/CardAdapters';
+import CloseIcon from "@material-ui/icons/Close";
 
 const styles = theme => ({
     container: {
@@ -152,7 +154,7 @@ class Adapters extends Component {
         };
 
         this.rebuildSupported = false;
-
+        this.inputRef = createRef();
         this.t = props.t;
     }
 
@@ -235,7 +237,9 @@ class Adapters extends Component {
                 Object.keys(repository).forEach(value => {
 
                     const adapter = repository[value];
-
+                    if (adapter.keywords) {
+                        adapter.keywords = adapter.keywords.map(word => word.toLowerCase());
+                    }
                     if (!adapter.controller) {
 
                         const type = adapter.type;
@@ -611,21 +615,16 @@ class Adapters extends Component {
     }
 
     handleFilterChange(event) {
+        this.typingTimer && clearTimeout(this.typingTimer);
 
-        clearTimeout(this.typingTimer);
-
-        if (event.type === 'keyup') {
-
-            const value = event.target.value;
-
-            this.typingTimer = setTimeout(this.setState({ search: value }), 300);
-        }
+        this.typingTimer = setTimeout(value => {
+            this.typingTimer = null;
+            this.filterAdapters(value);
+        }, 300, event.target.value);
     }
 
-    toogleConnectionTypeFilter() {
-        this.setState(oldState => ({
-            filterConnectionType: !oldState.filterConnectionType
-        }));
+    toggleConnectionTypeFilter() {
+        this.setState({filterConnectionType: !this.state.filterConnectionType});
     }
 
     expandAll() {
@@ -634,9 +633,7 @@ class Adapters extends Component {
             const categories = oldState.categories;
             const categoriesExpanded = oldState.categoriesExpanded;
 
-            categories.forEach(category => {
-                categoriesExpanded[category.name] = true;
-            });
+            categories.forEach(category => categoriesExpanded[category.name] = true);
 
             window.localStorage.setItem('Adapters.expandedCategories', JSON.stringify(categoriesExpanded));
 
@@ -645,7 +642,6 @@ class Adapters extends Component {
     }
 
     collapseAll() {
-
         const categoriesExpanded = {};
 
         window.localStorage.setItem('Adapters.expandedCategories', JSON.stringify(categoriesExpanded));
@@ -662,15 +658,42 @@ class Adapters extends Component {
         this.setState({ list });
     }
 
-
     changeViewMode() {
         let viewMode = !this.state.viewMode;
         window.localStorage.setItem('Adapters.viewMode', JSON.stringify(viewMode));
         this.setState({ viewMode });
     }
 
+    filterAdapters(search) {
+        search = search === undefined ? this.state.search : search;
+        search = (search || '').toLowerCase().trim();
+        let filteredList = [];
+        if (search) {
+            this.state.categories.forEach(category => category.adapters.map(name => {
+                const adapter = this.state.repository[name];
+
+                const title = ((adapter.title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                const desc = adapter.desc ? adapter.desc[this.props.lang] || adapter.desc.en || adapter.desc : '';
+
+                if (name.includes(search)) {
+                    filteredList.push(name);
+                } else
+                if (title && title.toLowerCase().includes(search)) {
+                    filteredList.push(name);
+                } else if (desc && desc.toLowerCase().includes(search)) {
+                    filteredList.push(name);
+                } else {
+                    adapter.keywords && adapter.keywords.forEach(value =>
+                        value.includes(search) && filteredList.push(name));
+                }
+            }));
+        } else {
+            filteredList = null;
+        }
+        this.setState({filteredList, search});
+    }
+
     getRows() {
-        const search = (this.state.search || '').toLowerCase().trim();
         return this.state.categories.map(category => {
             const categoryName = category.name;
             const expanded = this.state.categoriesExpanded[categoryName];
@@ -679,23 +702,8 @@ class Adapters extends Component {
                 {!this.state.list && category.adapters.map((value, idx) => {
                     const adapter = this.state.repository[value];
                     if (!adapter.controller) {
-                        const title = ((adapter.title || '').toString() || '').replace('ioBroker Visualisation - ', '');
-                        const desc = adapter.desc ? adapter.desc[this.props.lang] || adapter.desc['en'] || adapter.desc : '';
                         const connectionType = adapter.connectionType ? adapter.connectionType : '-';
-                        let show = !search;
-                        if (search) {
-                            if (title && title.toLowerCase().includes(search)) {
-                                show = true;
-                            } else if (desc && desc.toLowerCase().includes(search)) {
-                                show = true;
-                            } else {
-                                adapter.keywords && adapter.keywords.forEach(value => {
-                                    if (value.toLowerCase().includes(search)) {
-                                        show = true;
-                                    }
-                                });
-                            }
-                        }
+                        let show = !this.state.filteredList || this.state.filteredList.includes(value);
                         if (show && this.state.filterConnectionType) {
                             show = connectionType === 'local';
                         }
@@ -712,7 +720,7 @@ class Adapters extends Component {
                             onToggle={() => this.toggleCategory(categoryName)}
                             t={this.t}
                             hidden={!showCategory}
-                        /> : null
+                        /> : null;
                     }
                 })}
                 {category.adapters.map(value => {
@@ -727,20 +735,7 @@ class Adapters extends Component {
                         const rightDependencies = this.rightDependencies(value);
                         const rightOs = this.rightOs(value);
                         const sentry = !!(adapter.plugins && adapter.plugins.sentry);
-                        let show = !search;
-                        if (search) {
-                            if (title && title.toLowerCase().includes(search)) {
-                                show = true;
-                            } else if (desc && desc.toLowerCase().includes(search)) {
-                                show = true;
-                            } else {
-                                adapter.keywords && adapter.keywords.forEach(value => {
-                                    if (value.toLowerCase().includes(search)) {
-                                        show = true;
-                                    }
-                                });
-                            }
-                        }
+                        let show = !this.state.filteredList || this.state.filteredList.includes(value);
                         if (show && this.state.filterConnectionType) {
                             show = connectionType === 'local';
                         }
@@ -776,15 +771,14 @@ class Adapters extends Component {
                             rightOs={rightOs}
                             sentry={sentry}
                             rebuild={this.rebuildSupported}
-                        />
+                        />;
                     }
                 })}
             </Fragment>
         });
     }
 
-    getBloks() {
-        const search = (this.state.search || '').toLowerCase().trim();
+    getTiles() {
         return this.state.categories.map(category => {
             const categoryName = category.name;
             // const expanded = this.state.categoriesExpanded[categoryName];
@@ -802,20 +796,7 @@ class Adapters extends Component {
                         const rightDependencies = this.rightDependencies(value);
                         const rightOs = this.rightOs(value);
                         const sentry = !!(adapter.plugins && adapter.plugins.sentry);
-                        let show = !search;
-                        if (search) {
-                            if (title && title.toLowerCase().includes(search)) {
-                                show = true;
-                            } else if (desc && desc.toLowerCase().includes(search)) {
-                                show = true;
-                            } else {
-                                adapter.keywords && adapter.keywords.forEach(value => {
-                                    if (value.toLowerCase().includes(search)) {
-                                        show = true;
-                                    }
-                                });
-                            }
-                        }
+                        let show = !this.state.filteredList || this.state.filteredList.includes(value);
                         if (show && this.state.filterConnectionType) {
                             show = connectionType === 'local';
                         }
@@ -874,7 +855,7 @@ class Adapters extends Component {
     render() {
 
         if (!this.state.init) {
-            return <LinearProgress />
+            return <LinearProgress />;
         }
 
         if (this.state.dialog === 'readme' && this.state.dialogProp) {
@@ -882,161 +863,162 @@ class Adapters extends Component {
             const adapter = this.state.repository[this.state.dialogProp] || null;
 
             if (adapter) {
-                return (
-                    <TabContainer>
-                        <AdapterInfoDialog
-                            link={adapter.readme || ''}
-                            t={this.t}
-                        />
-                    </TabContainer>
-                );
+                return <TabContainer>
+                    <AdapterInfoDialog
+                        adapter={this.state.dialogProp}
+                        link={adapter.readme || ''}
+                        t={this.t}
+                    />
+                </TabContainer>;
             }
         }
 
         const { classes } = this.props;
 
-        return (
-            <TabContainer>
-                { this.state.update &&
-                    <Grid item>
-                        <LinearProgress />
-                    </Grid>
-                }
-                <TabHeader>
-                    <IconButton
-                        onClick={() => this.changeViewMode()}
-                    >
-                        {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
+        return <TabContainer>
+            { this.state.update &&
+                <Grid item>
+                    <LinearProgress />
+                </Grid>
+            }
+            <TabHeader>
+                <IconButton onClick={() => this.changeViewMode()}>
+                    {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
+                </IconButton>
+                <IconButton onClick={() => this.getAdaptersInfo(true)}>
+                    <RefreshIcon />
+                </IconButton>
+                {this.state.viewMode && !this.state.list && <><Tooltip title={this.t('expand all')}>
+                    <IconButton onClick={() => this.expandAll()}>
+                        <FolderOpenIcon />
                     </IconButton>
-                    <IconButton
-                        onClick={() => this.getAdaptersInfo(true)}
-                    >
-                        <RefreshIcon />
-                    </IconButton>
-                    {this.state.viewMode && !this.state.list && <><Tooltip title={this.t('expand all')}>
-                        <IconButton
-                            onClick={() => this.expandAll()}
-                        >
-                            <FolderOpenIcon />
+                </Tooltip>
+                    <Tooltip title={this.t('collapse all')}>
+                        <IconButton onClick={() => this.collapseAll()}>
+                            <FolderIcon />
                         </IconButton>
                     </Tooltip>
-                        <Tooltip title={this.t('collapse all')}>
-                            <IconButton
-                                onClick={() => this.collapseAll()}
-                            >
-                                <FolderIcon />
-                            </IconButton>
-                        </Tooltip>
-                        </>}
-                    {this.state.viewMode && <Tooltip title={this.t('list')}>
-                        <IconButton
-                            onClick={() => this.listTable()}
-                        >
-                            <ListIcon color={this.state.list ? 'primary' : 'inherit'} />
-                        </IconButton>
-                    </Tooltip>}
+                    </>}
+                {this.state.viewMode && <Tooltip title={this.t('list')}>
+                    <IconButton onClick={() => this.listTable()}>
+                        <ListIcon color={this.state.list ? 'primary' : 'inherit'} />
+                    </IconButton>
+                </Tooltip>}
 
-                    <Tooltip title={this.t('Filter local connection type')}>
-                        <IconButton
-                            onClick={() => this.toogleConnectionTypeFilter()}
-                        >
-                            <CloudOffIcon color={this.state.filterConnectionType ? 'primary' : 'inherit'} />
-                        </IconButton>
-                    </Tooltip>
-                    {this.props.expertMode &&
-                        <IconButton>
-                            <GithubIcon />
-                        </IconButton>
-                    }
-                    <div className={classes.grow} />
-                    <TextField
-                        label={this.t('Filter')}
-                        onKeyDown={event => this.handleFilterChange(event)}
-                        onKeyUp={event => this.handleFilterChange(event)}
-                    />
-                    <div className={classes.grow} />
-                </TabHeader>
-                {this.state.viewMode && <TabContent>
-                    <TableContainer className={classes.container}>
-                        <Table stickyHeader size="small" className={classes.table}>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell className={classes.emptyBlock}>
-                                    </TableCell>
-                                    <TableCell className={classes.name}>
-                                        <Typography>{this.t('Name')}</Typography>
-                                    </TableCell>
-                                    <TableCell className={classes.description}>
-                                        <Typography>{this.t('Description')}</Typography>
-                                    </TableCell>
-                                    <TableCell className={classes.keywords}>
-                                        <Typography>{this.t('Keywords')}</Typography>
-                                    </TableCell>
-                                    <TableCell className={classes.connectionType} />
-                                    <TableCell className={classes.installed}>
-                                        <Typography>{this.t('Installed')}</Typography>
-                                    </TableCell>
-                                    <TableCell className={classes.available}>
-                                        <Typography>{this.t('Available')}</Typography>
-                                    </TableCell>
-                                    <TableCell className={classes.license}>
-                                        <Typography>{this.t('License')}</Typography>
-                                    </TableCell>
-                                    <TableCell className={classes.install}>
-                                        <Typography>{this.t('Install')}</Typography>
-                                    </TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {this.getRows()}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </TabContent>}
-                {!this.state.viewMode && <div style={{
-                    display: 'flex',
-                    flexFlow: 'wrap',
-                    overflow: 'auto',
-                    justifyContent: 'center'
-                }}>{this.getBloks()}</div>}
-                { this.state.addInstanceDialog &&
-                    <AddInstanceDialog
-                        open={this.state.addInstanceDialog}
-                        adapter={this.state.addInstanceAdapter}
-                        hosts={this.props.hosts}
-                        instances={this.state.instances}
-                        currentHost={this.state.addInstanceHost}
-                        currentInstance={this.state.addInstanceId}
-                        t={this.t}
-                        onClick={() => this.addInstance(this.state.addInstanceAdapter, this.state.addInstanceId)}
-                        onClose={() => this.closeAddInstanceDialog()}
-                        onHostChange={event => this.handleHostsChange(event)}
-                        onInstanceChange={event => this.handleInstanceChange(event)}
-                    />
+                <Tooltip title={this.t('Filter local connection type')}>
+                    <IconButton onClick={() => this.toggleConnectionTypeFilter()}>
+                        <CloudOffIcon color={this.state.filterConnectionType ? 'primary' : 'inherit'} />
+                    </IconButton>
+                </Tooltip>
+                {this.props.expertMode &&
+                    <IconButton>
+                        <GithubIcon />
+                    </IconButton>
                 }
-                { this.state.adapterDeletionDialog &&
-                    <AdapterDeletionDialog
-                        open={this.state.adapterDeletionDialog}
-                        adapter={this.state.adapterDeletionAdapter}
-                        t={this.t}
-                        onClick={() => this.delete(this.state.adapterDeletionAdapter)}
-                        onClose={() => this.closeAdapterDeletionDialog()}
-                    />
-                }
-                { this.state.adapterUpdateDialog &&
-                    <AdapterUpdateDialog
-                        open={this.state.adapterUpdateDialog}
-                        adapter={this.state.adapterUpdateAdapter}
-                        t={this.t}
-                        dependencies={this.getDependencies(this.state.adapterUpdateAdapter)}
-                        rightDependencies={this.rightDependencies(this.state.adapterUpdateAdapter)}
-                        news={this.getNews(this.state.adapterUpdateAdapter)}
-                        onClick={() => this.update(this.state.adapterUpdateAdapter)}
-                        onClose={() => this.closeAdapterUpdateDialog()}
-                    />
-                }
-            </TabContainer>
-        );
+                <div className={classes.grow} />
+                <TextField
+                    inputRef={this.inputRef}
+                    label={this.t('Filter')}
+                    defaultValue=""
+                    onChange={event => this.handleFilterChange(event)}
+                    InputProps={{
+                        endAdornment: (
+                            this.state.search ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => {
+                                        this.inputRef.current.value = '';
+                                        this.setState({ search: '', filteredList: null});
+                                    }}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </InputAdornment> : null
+                        ),
+                    }}
+                />
+                <div className={classes.grow} />
+            </TabHeader>
+            {this.state.viewMode && <TabContent>
+                <TableContainer className={classes.container}>
+                    <Table stickyHeader size="small" className={classes.table}>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell className={classes.emptyBlock}>
+                                </TableCell>
+                                <TableCell className={classes.name}>
+                                    <Typography>{this.t('Name')}</Typography>
+                                </TableCell>
+                                <TableCell className={classes.description}>
+                                    <Typography>{this.t('Description')}</Typography>
+                                </TableCell>
+                                <TableCell className={classes.keywords}>
+                                    <Typography>{this.t('Keywords')}</Typography>
+                                </TableCell>
+                                <TableCell className={classes.connectionType} />
+                                <TableCell className={classes.installed}>
+                                    <Typography>{this.t('Installed')}</Typography>
+                                </TableCell>
+                                <TableCell className={classes.available}>
+                                    <Typography>{this.t('Available')}</Typography>
+                                </TableCell>
+                                <TableCell className={classes.license}>
+                                    <Typography>{this.t('License')}</Typography>
+                                </TableCell>
+                                <TableCell className={classes.install}>
+                                    <Typography>{this.t('Install')}</Typography>
+                                </TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {this.getRows()}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </TabContent>}
+            {!this.state.viewMode && <div style={{
+                display: 'flex',
+                flexFlow: 'wrap',
+                overflow: 'auto',
+                justifyContent: 'center'
+            }}>{this.getTiles()}</div>}
+            { this.state.addInstanceDialog &&
+                <AddInstanceDialog
+                    open={this.state.addInstanceDialog}
+                    adapter={this.state.addInstanceAdapter}
+                    hosts={this.props.hosts}
+                    instances={this.state.instances}
+                    currentHost={this.state.addInstanceHost}
+                    currentInstance={this.state.addInstanceId}
+                    t={this.t}
+                    onClick={() => this.addInstance(this.state.addInstanceAdapter, this.state.addInstanceId)}
+                    onClose={() => this.closeAddInstanceDialog()}
+                    onHostChange={event => this.handleHostsChange(event)}
+                    onInstanceChange={event => this.handleInstanceChange(event)}
+                />
+            }
+            { this.state.adapterDeletionDialog &&
+                <AdapterDeletionDialog
+                    open={this.state.adapterDeletionDialog}
+                    adapter={this.state.adapterDeletionAdapter}
+                    t={this.t}
+                    onClick={() => this.delete(this.state.adapterDeletionAdapter)}
+                    onClose={() => this.closeAdapterDeletionDialog()}
+                />
+            }
+            { this.state.adapterUpdateDialog &&
+                <AdapterUpdateDialog
+                    open={this.state.adapterUpdateDialog}
+                    adapter={this.state.adapterUpdateAdapter}
+                    t={this.t}
+                    dependencies={this.getDependencies(this.state.adapterUpdateAdapter)}
+                    rightDependencies={this.rightDependencies(this.state.adapterUpdateAdapter)}
+                    news={this.getNews(this.state.adapterUpdateAdapter)}
+                    onClick={() => this.update(this.state.adapterUpdateAdapter)}
+                    onClose={() => this.closeAdapterUpdateDialog()}
+                />
+            }
+        </TabContainer>;
     }
 }
 

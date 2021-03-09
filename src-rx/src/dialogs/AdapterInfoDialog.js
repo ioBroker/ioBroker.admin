@@ -14,6 +14,7 @@ import { Tabs } from '@material-ui/core';
 import { Toolbar } from '@material-ui/core';
 
 import Router from '@iobroker/adapter-react/Components/Router';
+import I18n from '@iobroker/adapter-react/i18n';
 
 const styles = {
     root: {
@@ -34,8 +35,10 @@ class AdapterInfoDialog extends Component {
 
         super(props);
 
-        const uri = this.props.link.replace('https://github.com', 'https://raw.githubusercontent.com').replace('blob/', '');
-        const rawUri = uri.substring(0, uri.lastIndexOf('/') + 1);
+        const uri = `https://www.iobroker.net/${I18n.getLanguage()}/adapterref/iobroker.${props.adapter}/README.md`;
+        //this.props.link.replace('https://github.com', 'https://raw.githubusercontent.com').replace('blob/', '');
+        const uriGithub = this.props.link.replace('https://github.com', 'https://raw.githubusercontent.com').replace('blob/', '');
+        const rawUri = uriGithub.replace('blob/', '').substring(0, uriGithub.lastIndexOf('/') + 1);
 
         this.state = {
             tab: 0,
@@ -50,10 +53,20 @@ class AdapterInfoDialog extends Component {
     async componentDidMount() {
         try {
             const data = await fetch(this.state.uri);
-            const readme = await data.text();
-            const splitted = this.splitReadMe(readme);
+            let readme = await data.text();
+            const lines = readme.split('\n');
+            if (lines[0].trim() === '---') {
+                let i = 1;
+                while(lines[i] !== '---') i++;
+                lines.splice(0, i + 1);
+                readme = lines.join('\n');
+                lines.unshift(`![Logo](admin/${this.props.adapter}.png)`);
+                lines.unshift('# ioBroker.' + this.props.adapter);
+                lines.unshift('');
+            }
+            const split = this.splitReadMe(readme);
 
-            this.setState(splitted);
+            this.setState(split);
         } catch(error) {
             window.alert(error);
         }
@@ -96,7 +109,7 @@ class AdapterInfoDialog extends Component {
         let part = 'readme';
 
         for (let i = 0; i < lines.length; i++) {
-            
+
             if (lines[i].match(/^====/)) {
                 continue;
             }
@@ -119,7 +132,7 @@ class AdapterInfoDialog extends Component {
             result[part].push(lines[i]);
         }
 
-        
+
 
         if (result.logo) {
            // that.$divLogo.html('<img src="' + result.logo + '" />').show();
@@ -175,60 +188,59 @@ class AdapterInfoDialog extends Component {
         const { classes } = this.props;
         const { tab } = this.state;
 
-        return (
-            <Grid
-                item
-                container
-                direction="column"
-                wrap="nowrap"
-                className={ classes.root }
-            >
-                <AppBar color="default" position="static">
-                    <Tabs value={ this.state.tab } onChange={ (event, newValue) => this.changeTab(event, newValue) }>
-                        <Tab label="README" disabled={ !this.state.readme }/>
-                        <Tab label="Changelog" disabled={ !this.state.changelog }/>
-                        <Tab label="License" disabled={ !this.state.license }/>
-                    </Tabs>
-                </AppBar>
-                <Box p={ 3 } className={ classes.scroll }>
-                    <ReactMarkdown
-                        source={ this.state[tab === 1 ? 'changelog' : tab === 2 ? 'license' : 'readme'] }
-                        linkTarget="_blank"
-                        transformLinkUri={ (uri) => this.transformUri(uri) }
-                        transformImageUri={ (uri) => this.transformUri(uri) }
-                        escapeHtml={ false }
-                    />
-                </Box>
-                <AppBar  color="default" position="static">
-                    <Toolbar>
-                        <Grid container spacing={ 1 }>
-                            <Grid item>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={ () => this.openTab(this.props.link) }
-                                >
-                                    { this.t('Open original') }
-                                </Button>
-                            </Grid>
-                            <Grid item>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={ () => this.closeDialog() }
-                                >
-                                    { this.t('Close') }
-                                </Button>
-                            </Grid>
+        return <Grid
+            item
+            container
+            direction="column"
+            wrap="nowrap"
+            className={ classes.root }
+        >
+            <AppBar color="default" position="static">
+                <Tabs value={ this.state.tab } onChange={ (event, newValue) => this.changeTab(event, newValue) }>
+                    <Tab label="README" disabled={ !this.state.readme }/>
+                    <Tab label="Changelog" disabled={ !this.state.changelog }/>
+                    <Tab label="License" disabled={ !this.state.license }/>
+                </Tabs>
+            </AppBar>
+            <Box p={ 3 } className={ classes.scroll }>
+                <ReactMarkdown
+                    source={ this.state[tab === 1 ? 'changelog' : tab === 2 ? 'license' : 'readme'] }
+                    linkTarget="_blank"
+                    transformLinkUri={ (uri) => this.transformUri(uri) }
+                    transformImageUri={ (uri) => this.transformUri(uri) }
+                    escapeHtml={ false }
+                />
+            </Box>
+            <AppBar  color="default" position="static">
+                <Toolbar>
+                    <Grid container spacing={ 1 }>
+                        <Grid item>
+                            <Button
+                                variant="contained"
+                                color="default"
+                                onClick={ () => this.openTab(this.props.link) }
+                            >
+                                { this.t('Open original') }
+                            </Button>
                         </Grid>
-                    </Toolbar>
-                </AppBar>
-            </Grid>
-        );
+                        <Grid item>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={ () => this.closeDialog() }
+                            >
+                                { this.t('Close') }
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Toolbar>
+            </AppBar>
+        </Grid>;
     }
 }
 
 AdapterInfoDialog.propTypes = {
+    adapter: PropTypes.string,
     link: PropTypes.string,
     t: PropTypes.func
 };
