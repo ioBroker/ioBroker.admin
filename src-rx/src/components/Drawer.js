@@ -38,6 +38,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DragWrapper from './DragWrapper';
 import CustomDragLayer from './CustomDragLayer';
 import { ContextWrapper } from './ContextWrapper';
+import CustomPopper from './CustomPopper';
 
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
@@ -70,6 +71,10 @@ const styles = theme => ({
         padding: theme.spacing(0, 1),
         ...theme.mixins.toolbar,
         justifyContent: 'flex-end',
+        position: 'sticky',
+        top: 0,
+        zIndex: 2,
+        background: theme.palette.background.default
     },
     headerCompact: {
         padding: 0,
@@ -347,7 +352,7 @@ class Drawer extends Component {
 
     getNavigationItems() {
         const { tabs, editList } = this.state;
-        const { stateContext:{logErrors, logWarnings} } = this.context;
+        const { stateContext: { logErrors, logWarnings } } = this.context;
         const { systemConfig, currentTab, state, classes, handleNavigation } = this.props;
         if (!systemConfig) {
             return
@@ -418,12 +423,14 @@ class Drawer extends Component {
                         marginLeft: 'auto',
                         marginTop: 'auto'
                     }}>
-                        <IconButton
-                            style={this.state.editList ? { color: 'red' } : null}
-                            onClick={() => this.setState({ editList: !this.state.editList })}
-                            title={this.props.t('show/hide item')}>
-                            <EditIcon />
-                        </IconButton>
+                        <CustomPopper start={this.state.editList}>
+                            <IconButton
+                                style={this.state.editList ? { color: 'red' } : null}
+                                onClick={() => this.setState({ editList: !this.state.editList })}
+                                title={this.props.t('show/hide item')}>
+                                <EditIcon />
+                            </IconButton>
+                        </CustomPopper>
                     </div>}
                 </SwipeableDrawer>
             );
@@ -449,12 +456,14 @@ class Drawer extends Component {
                         marginLeft: 'auto',
                         marginTop: 'auto'
                     }}>
-                        <IconButton
-                            style={this.state.editList ? { color: 'red' } : null}
-                            onClick={() => this.setState({ editList: !this.state.editList })}
-                            title={this.props.t('show/hide item')}>
-                            <EditIcon />
-                        </IconButton>
+                        <CustomPopper start={this.state.editList} editList={this.state.editList} onClick={() => this.setState({ editList: !this.state.editList })}>
+                            {/* <IconButton
+                                style={this.state.editList ? { color: 'red' } : null}
+                                onClick={() => this.setState({ editList: !this.state.editList })}
+                                title={this.props.t('show/hide item')}>
+                                <EditIcon />
+                            </IconButton> */}
+                        </CustomPopper>
                     </div>}
                 </MaterialDrawer>
             );
