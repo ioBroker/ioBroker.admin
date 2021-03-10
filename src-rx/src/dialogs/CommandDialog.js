@@ -65,15 +65,15 @@ class ConfirmDialog extends Component {
 
         this.t = props.t;
     }
-    
+
     componentDidMount() {
-        if(this.props.ready && this.props.cmd) {
+        if (this.props.ready && this.props.cmd) {
             this.executeCommand();
         }
     }
 
     componentDidUpdate() {
-        if(!this.state.init && this.props.ready && this.props.cmd) {
+        if (!this.state.init && this.props.ready && this.props.cmd) {
             this.executeCommand();
         }
     }
@@ -96,7 +96,7 @@ class ConfirmDialog extends Component {
 
         try {
             await this.props.socket.cmdExec(this.props.currentHost, this.props.cmd, activeCmdId);
-        } catch(error) {
+        } catch (error) {
             console.log(error);
         }
 
@@ -248,7 +248,7 @@ class ConfirmDialog extends Component {
 
             while (text.search(regExp) >= 0) {
 
-                const [ match ] = text.match(regExp);
+                const [match] = text.match(regExp);
                 const pos = text.search(regExp);
 
                 if (pos > 0) {
@@ -258,10 +258,10 @@ class ConfirmDialog extends Component {
                     result.push(part);
                     text = text.replace(part, '');
                 }
-                
+
                 const part = text.substr(0, match.length);
 
-                result.push(<span className={ classes[match.toLowerCase()] }>{ part }</span>);
+                result.push(<span className={classes[match.toLowerCase()]}>{part}</span>);
                 text = text.replace(part, '');
             }
 
@@ -279,11 +279,11 @@ class ConfirmDialog extends Component {
         return this.state.log.map((value, index) => {
             return (
                 <Typography
-                    key={ index }
+                    key={index}
                     component="p"
                     variant="body2"
                 >
-                    { this.colorize(value) }
+                    { this.colorize(value)}
                 </Typography>
             )
         });
@@ -294,10 +294,10 @@ class ConfirmDialog extends Component {
         const { classes } = this.props;
 
         return (
-            <Dialog onClose={ this.props.onClose } open={ this.props.open } maxWidth="lg">
+            <Dialog onClose={this.props.onClose} open={this.props.open} maxWidth="lg">
                 <DialogTitle>
-                    { this.state.progressText || 'Run Command' }
-                    <IconButton className={ classes.closeButton } onClick={ this.props.onClose }>
+                    {this.state.progressText || 'Run Command'}
+                    <IconButton className={classes.closeButton} onClick={this.props.onClose}>
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
@@ -305,26 +305,29 @@ class ConfirmDialog extends Component {
                     <Grid
                         container
                         direction="column"
-                        spacing={ 2 }
+                        spacing={2}
                     >
                         <Grid item>
                             <LinearProgress
-                                variant={ this.state.max ? 'determinate' : 'indeterminate' }
-                                value={ this.state.max && this.state.value ? 100 - Math.round((this.state.value / this.state.max) * 100) : 0 }
+                                variant={this.state.max ? 'determinate' : 'indeterminate'}
+                                value={this.state.max && this.state.value ? 100 - Math.round((this.state.value / this.state.max) * 100) : 0}
                             />
                         </Grid>
                         <Grid item>
                             <Paper
-                                className={ classes.log }
+                                className={classes.log}
                             >
-                                { this.getLog() }
+                                {this.getLog()}
                             </Paper>
                         </Grid>
                     </Grid>
                 </DialogContent>
                 <DialogActions>
-                    <Button autoFocus onClick={ this.props.onConfirm } color="primary">
-                        { this.props.confirmText || 'OK' }
+                    <Button autoFocus onClick={this.props.onConfirm} color="primary">
+                        {this.props.confirmText || 'OK'}
+                    </Button>
+                    <Button autoFocus onClick={this.props.onClose} color="default">
+                        {this.props.t('Close')}
                     </Button>
                 </DialogActions>
             </Dialog>

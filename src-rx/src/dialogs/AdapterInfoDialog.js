@@ -217,7 +217,7 @@ class AdapterInfoDialog extends Component {
                         <Grid item>
                             <Button
                                 variant="contained"
-                                color="default"
+                                color="primary"
                                 onClick={ () => this.openTab(this.props.link) }
                             >
                                 { this.t('Open original') }
@@ -226,7 +226,7 @@ class AdapterInfoDialog extends Component {
                         <Grid item>
                             <Button
                                 variant="contained"
-                                color="primary"
+                                color="default"
                                 onClick={ () => this.closeDialog() }
                             >
                                 { this.t('Close') }

@@ -44,10 +44,10 @@ class AdapterUpdateDialog extends Component {
         this.props.dependencies && this.props.dependencies.forEach(dependency => {
             result.push(
                 <State
-                    key={ dependency.name }
-                    state={ dependency.rightVersion }
+                    key={dependency.name}
+                    state={dependency.rightVersion}
                 >
-                    { `${dependency.name}${dependency.version ? ` (${dependency.version})` : ''}: ${dependency.installed ? dependency.installedVersion : '-'}`}
+                    {`${dependency.name}${dependency.version ? ` (${dependency.version})` : ''}: ${dependency.installed ? dependency.installedVersion : '-'}`}
                 </State>
             );
         });
@@ -64,14 +64,14 @@ class AdapterUpdateDialog extends Component {
             const news = entry.news ? entry.news.split('\n') : [];
 
             result.push(
-                <Grid item key={ entry.version }>
+                <Grid item key={entry.version}>
                     <Typography>
-                        { entry.version + ':'}
+                        {entry.version + ':'}
                     </Typography>
-                    { news.map((value, index)=> {
+                    {news.map((value, index) => {
                         return (
-                            <Typography key={ `${entry.version}-${index}` } component="div" variant="body2">
-                                { '• ' + value }
+                            <Typography key={`${entry.version}-${index}`} component="div" variant="body2">
+                                { '• ' + value}
                             </Typography>
                         );
                     })}
@@ -88,13 +88,13 @@ class AdapterUpdateDialog extends Component {
 
         return (
             <Dialog
-                onClose={ this.props.onClose }
-                open={ this.props.open }
+                onClose={this.props.onClose}
+                open={this.props.open}
             >
-                <DialogTitle disableTypography={ true }>
+                <DialogTitle disableTypography={true}>
                     <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
-                        { this.t('Please confirm') }
-                        <IconButton className={ classes.closeButton } onClick={ this.props.onClose }>
+                        {this.t('Please confirm')}
+                        <IconButton className={classes.closeButton} onClick={this.props.onClose}>
                             <CloseIcon />
                         </IconButton>
                     </Typography>
@@ -103,28 +103,28 @@ class AdapterUpdateDialog extends Component {
                     <Grid
                         container
                         direction="column"
-                        spacing={ 2 }
+                        spacing={2}
                         wrap="nowrap"
                     >
-                        { this.props.dependencies && this.props.dependencies.length > 0 &&
+                        {this.props.dependencies && this.props.dependencies.length > 0 &&
                             <Grid item>
                                 <Typography variant="h6" gutterBottom>
-                                    { this.t('Dependencies') }
+                                    {this.t('Dependencies')}
                                 </Typography>
-                                { this.getDependencies() }
+                                {this.getDependencies()}
                             </Grid>
                         }
                         <Grid item>
                             <Typography variant="h6" gutterBottom>
-                                { this.t('News') }
+                                {this.t('News')}
                             </Typography>
                             <Grid
                                 container
-                                spacing={ 2 }
+                                spacing={2}
                                 direction="column"
                                 wrap="nowrap"
                             >
-                                { this.getNews() }
+                                {this.getNews()}
                             </Grid>
                         </Grid>
                     </Grid>
@@ -132,14 +132,23 @@ class AdapterUpdateDialog extends Component {
                 <DialogActions>
                     <Button
                         autoFocus
-                        disabled={ !this.props.rightDependencies }
-                        onClick={ () => {
+                        disabled={!this.props.rightDependencies}
+                        onClick={() => {
                             this.props.onClick();
                             this.props.onClose();
                         }}
                         color="primary"
                     >
-                        { this.t('Update') }
+                        {this.t('Update')}
+                    </Button>
+                    <Button
+                        autoFocus
+                        onClick={() => {
+                            this.props.onClose();
+                        }}
+                        color="default"
+                    >
+                        {this.t('Close')}
                     </Button>
                 </DialogActions>
             </Dialog>

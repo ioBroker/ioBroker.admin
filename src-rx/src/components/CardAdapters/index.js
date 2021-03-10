@@ -35,7 +35,8 @@ const styles = theme => ({
         minHeight: 60,
         display: 'flex',
         padding: '0 10px 0 10px',
-        position: 'relative'
+        position: 'relative',
+        justifyContent: 'space-between'
     },
     img: {
         width: 45,
@@ -117,6 +118,18 @@ const styles = theme => ({
     },
     hidden: {
         display: 'none'
+    },
+    buttonUpdate: {
+        border: '1px solid',
+        padding: '0px 7px',
+        borderRadius: 5,
+        display: 'flex',
+        alignItems: 'center',
+        cursor: 'pointer',
+        transition: 'background 0.5s',
+        '&:hover': {
+            background: '#00800026'
+        }
     }
 });
 const CardAdapters = ({
@@ -137,7 +150,9 @@ const CardAdapters = ({
     onDeletion,
     rebuild,
     onRebuild,
-    hidden
+    hidden,
+    stat,
+    versionDate
 }) => {
     const [openCollapse, setCollapse] = useState(false)
     return <Card className={clsx(classes.root, hidden ? classes.hidden : '')}>
@@ -198,12 +213,13 @@ const CardAdapters = ({
         </div>
         <div className={clsx(classes.imageBlock,
             installedVersion ? classes.istalled : '',
-            installedVersion && installedVersion !== version ? classes.update : '')}>
+            installedVersion && installedVersion !== version && updateAvailable ? classes.update : '')}>
             <CardMedia
                 className={classes.img}
                 component="img"
                 image={image || "img/no-image.png"}
             />
+            <div style={{ alignSelf: 'center' }}>{stat || versionDate}</div>
             <Fab onClick={() => setCollapse((bool) => !bool)} className={classes.fab} color="primary" aria-label="add">
                 <MoreVertIcon />
             </Fab>
@@ -229,20 +245,19 @@ const CardAdapters = ({
                         display: 'flex',
                         alignItems: 'center'
                     }}>
-                        {updateAvailable &&
-                            <IconButton
+                        {updateAvailable ?
+                            <div onClick={onUpdate} className={classes.buttonUpdate}><IconButton
                                 style={{
                                     height: 20,
                                     width: 20,
                                     marginRight: 10
                                 }}
                                 size="small"
-                                onClick={onUpdate}
                             >
                                 <RefreshIcon />
-                            </IconButton>
-                        }
-                        {version}</div>
+                            </IconButton>{version}</div> :
+                            version
+                        }</div>
                 </Typography>
                 {installedVersion && <Typography component={'span'} style={{
                     display: 'flex',

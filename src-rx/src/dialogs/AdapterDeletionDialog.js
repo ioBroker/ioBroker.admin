@@ -70,6 +70,15 @@ class AdapterDeletionDialog extends Component {
                     >
                         { this.t('Ok') }
                     </Button>
+                    <Button
+                        autoFocus
+                        onClick={ () => {
+                            this.props.onClose();
+                        }}
+                        color="default"
+                    >
+                        { this.t('Close') }
+                    </Button>
                 </DialogActions>
             </Dialog>
         );
