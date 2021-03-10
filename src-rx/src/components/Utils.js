@@ -508,7 +508,7 @@ class Utils {
             const p = text.split(m[0]);
             return [
                 p[0] ? (<span key="a1">{p[0]}</span>) : null,
-                (<a  key="a2" href={href ? href[1] : ''} target={target ? target[1] : '_blank'}>{title ? title[1] : ''}</a>),
+                <a  key="a2" rel="noopener noreferrer" href={href ? href[1] : ''} target={target ? target[1] : '_blank'}>{title ? title[1] : ''}</a>,
                 p[1] ? (<span key="a3">{p[1]}</span>) : null
             ];
         } else {

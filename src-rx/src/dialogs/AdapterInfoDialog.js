@@ -1,20 +1,21 @@
 import { Component } from 'react';
 
-import ReactMarkdown from 'react-markdown';
+//import ReactMarkdown from 'react-markdown';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
 
-import { AppBar } from '@material-ui/core';
+/*import { AppBar } from '@material-ui/core';
 import { Box } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
 import { Tab } from '@material-ui/core';
 import { Tabs } from '@material-ui/core';
-import { Toolbar } from '@material-ui/core';
+import { Toolbar } from '@material-ui/core';*/
 
 import Router from '@iobroker/adapter-react/Components/Router';
 import I18n from '@iobroker/adapter-react/i18n';
+import Markdown from '../components/Markdown';
 
 const styles = {
     root: {
@@ -54,7 +55,7 @@ class AdapterInfoDialog extends Component {
         try {
             const data = await fetch(this.state.uri);
             let readme = await data.text();
-            const lines = readme.split('\n');
+            /*const lines = readme.split('\n');
             if (lines[0].trim() === '---') {
                 let i = 1;
                 while(lines[i] !== '---') i++;
@@ -64,9 +65,13 @@ class AdapterInfoDialog extends Component {
                 lines.unshift('# ioBroker.' + this.props.adapter);
                 lines.unshift('');
             }
-            const split = this.splitReadMe(readme);
+            const split = this.splitReadMe(readme);*/
+            readme = readme.replace(/\(ru\/adapterref\//g, '(https://www.iobroker.net/ru/adapterref/');
+            readme = readme.replace(/\(en\/adapterref\//g, '(https://www.iobroker.net/en/adapterref/');
+            readme = readme.replace(/\(de\/adapterref\//g, '(https://www.iobroker.net/de/adapterref/');
+            readme = readme.replace(/\(zh-cn\/adapterref\//g, '(https://www.iobroker.net/zh-cn/adapterref/');
 
-            this.setState(split);
+            this.setState({text: readme});
         } catch(error) {
             window.alert(error);
         }
@@ -184,10 +189,18 @@ class AdapterInfoDialog extends Component {
     }
 
     render() {
+        /*const { classes } = this.props;
+        const { tab } = this.state;*/
 
-        const { classes } = this.props;
-        const { tab } = this.state;
-
+        return this.state.text ? <Markdown
+            text={this.state.text}
+            language={I18n.getLanguage()}
+            theme={this.props.theme}
+            mobile={this.props.mobile}
+            editMode={false}
+            //onNavigate={(language, tab, page, chapter) => this.onNavigate(language, tab, page, chapter)}
+        /> : null;
+        /*
         return <Grid
             item
             container
@@ -235,7 +248,7 @@ class AdapterInfoDialog extends Component {
                     </Grid>
                 </Toolbar>
             </AppBar>
-        </Grid>;
+        </Grid>;*/
     }
 }
 

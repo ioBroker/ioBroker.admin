@@ -122,6 +122,9 @@ const styles = theme => ({
     },
     updateAvailable: {
         color: green[700]
+    },
+    tabContainer: {
+        overflow: 'auto'
     }
 });
 
@@ -939,7 +942,7 @@ class Adapters extends Component {
             const adapter = this.state.repository[this.state.dialogProp] || null;
 
             if (adapter) {
-                return <TabContainer>
+                return <TabContainer className={this.props.classes.tabContainer}>
                     <AdapterInfoDialog
                         adapter={this.state.dialogProp}
                         link={adapter.readme || ''}

@@ -433,6 +433,7 @@ class IntroCard extends Component {
                                     href={this.props.action.link}
                                     underline="none"
                                     target="_blank"
+                                    rel="noopener noreferrer"
                                 >
                                     {this.props.action.text}
                                 </Link>

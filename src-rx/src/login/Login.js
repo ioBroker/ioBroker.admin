@@ -23,7 +23,7 @@ function Copyright() {
             <Link
                 color="inherit"
                 href="https://www.iobroker.net/"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 target="_blank"
             >
                 ioBroker
