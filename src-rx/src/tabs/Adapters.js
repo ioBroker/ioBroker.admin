@@ -163,7 +163,9 @@ class Adapters extends Component {
             categoriesTiles: 'All',
             filterTiles: 'A-Z',
             arrayFilter: [{ name: 'A-Z' }, { name: 'Popular first' }, { name: 'Recently updated' }],
-            gitHubInstallDialog: false
+            gitHubInstallDialog: false,
+            updateAvailable: [],
+            filteredList: null,
         };
 
         this.rebuildSupported = false;
@@ -184,15 +186,12 @@ class Adapters extends Component {
     }
 
     static getDerivedStateFromProps() {
-
         const location = Router.getLocation();
 
-        const newState = {
+        return {
             dialog: location.dialog,
             dialogProp: location.id
         };
-
-        return newState;
     }
 
     async getAdaptersInfo(updateRepo = false) {
@@ -203,9 +202,7 @@ class Adapters extends Component {
         // Do not update too often
         if (new Date().getTime() - this.state.lastUpdate > 1000) {
 
-            this.setState({
-                update: true
-            });
+            !this.state.update && this.setState({update: true});
 
             const currentHost = this.props.currentHost;
 
@@ -234,6 +231,7 @@ class Adapters extends Component {
                 const categories = {};
                 const categoriesSorted = [];
                 const categoriesExpanded = JSON.parse(window.localStorage.getItem('Adapters.expandedCategories')) || {};
+                const updateAvailable = [];
 
                 Object.keys(installed).forEach(value => {
 
@@ -253,8 +251,12 @@ class Adapters extends Component {
                     if (adapter.keywords) {
                         adapter.keywords = adapter.keywords.map(word => word.toLowerCase());
                     }
-                    if (!adapter.controller) {
+                    const _installed = installed[value];
+                    if (_installed && this.updateAvailable(_installed.version, adapter.version)) {
+                        updateAvailable.push(value);
+                    }
 
+                    if (!adapter.controller) {
                         const type = adapter.type;
                         const installedInGroup = installed[value];
 
@@ -327,13 +329,15 @@ class Adapters extends Component {
                 const viewMode = JSON.parse(window.localStorage.getItem('Adapters.viewMode'));
                 const updateList = JSON.parse(window.localStorage.getItem('Adapters.updateList'));
                 const installedList = JSON.parse(window.localStorage.getItem('Adapters.installedList'));
-                const categoriesTiles = JSON.parse(window.localStorage.getItem('Adapters.categoriesTiles'));
-                const filterTiles = JSON.parse(window.localStorage.getItem('Adapters.filterTiles'));
+                const categoriesTiles = window.localStorage.getItem('Adapters.categoriesTiles') || 'All';
+                const filterTiles = window.localStorage.getItem('Adapters.filterTiles') || 'A-Z';
+
                 this.setState({
                     filterTiles,
                     categoriesTiles,
                     installedList,
                     updateList,
+                    updateAvailable,
                     viewMode,
                     list,
                     lastUpdate: Date.now(),
@@ -460,7 +464,7 @@ class Adapters extends Component {
         try {
             return Semver.gt(newVersion, oldVersion) === true;
         } catch (e) {
-            console.warn('Cannot compare "' + newVersion + '" and "' + oldVersion + '"');
+            console.warn(`Cannot compare "${newVersion}" and "${oldVersion}"`);
             return false;
         }
     }
@@ -554,7 +558,7 @@ class Adapters extends Component {
                         }
                     });
                 } else {
-                    console.error(`Invalid dependencies for ${value}: ${JSON.stringify(dependencies)}`)
+                    console.error(`Invalid dependencies for ${value}: ${JSON.stringify(dependencies)}`);
                 }
             }
 
@@ -697,12 +701,12 @@ class Adapters extends Component {
     }
 
     changeFilterTiles(filterTiles) {
-        window.localStorage.setItem('Adapters.filterTiles', JSON.stringify(filterTiles));
+        window.localStorage.setItem('Adapters.filterTiles', filterTiles);
         this.setState({ filterTiles });
     }
 
     changeCategoriesTiles(categoriesTiles) {
-        window.localStorage.setItem('Adapters.categoriesTiles', JSON.stringify(categoriesTiles));
+        window.localStorage.setItem('Adapters.categoriesTiles', categoriesTiles);
         this.setState({ categoriesTiles });
     }
 
@@ -736,7 +740,8 @@ class Adapters extends Component {
     }
 
     getRows() {
-        return this.state.categories.map(category => {
+        let count = 0;
+        const rows = this.state.categories.map(category => {
             const categoryName = category.name;
             const expanded = this.state.categoriesExpanded[categoryName];
             let showCategory = false;
@@ -745,8 +750,7 @@ class Adapters extends Component {
                     const adapter = this.state.repository[value];
                     if (!adapter.controller) {
                         const connectionType = adapter.connectionType ? adapter.connectionType : '-';
-                        const installed = this.state.installed[value];
-                        const updateAvailable = installed ? this.updateAvailable(installed.version, adapter.version) : false;
+                        const updateAvailable = this.state.updateAvailable.includes(value);
                         let show = !this.state.filteredList || this.state.filteredList.includes(value);
                         if (show && this.state.filterConnectionType) {
                             show = connectionType === 'local';
@@ -782,7 +786,7 @@ class Adapters extends Component {
                         const desc = adapter.desc ? adapter.desc[this.props.lang] || adapter.desc['en'] || adapter.desc : '';
                         const image = installed ? installed.localIcon : adapter.extIcon;
                         const connectionType = adapter.connectionType ? adapter.connectionType : '-';
-                        const updateAvailable = installed ? this.updateAvailable(installed.version, adapter.version) : false;
+                        const updateAvailable = this.state.updateAvailable.includes(value);
                         const rightDependencies = this.rightDependencies(value);
                         const rightOs = this.rightOs(value);
                         const sentry = !!(adapter.plugins && adapter.plugins.sentry);
@@ -802,6 +806,7 @@ class Adapters extends Component {
                         if (title instanceof Object || !desc) {
                             console.warn(adapter);
                         }
+                        show && count++;
                         return expanded && <AdapterRow
                             key={'adapter-' + value}
                             connectionType={connectionType}
@@ -833,12 +838,18 @@ class Adapters extends Component {
                 })}
             </Fragment>
         });
+
+        if (!count) {
+            return <div style={{margin: 10, fontSize: 14}}>{this.props.t('all items are filtered out')}</div>;
+        } else {
+            return rows;
+        }
     }
 
     getTiles() {
         let array = this.state.categories
-            .filter(({ name }) => this.state.categoriesTiles === 'All' || name === this.state.categoriesTiles)
-            .map(category => category.adapters.map((value) => {
+            .filter(({ name }) => !this.state.categoriesTiles || this.state.categoriesTiles === 'All' || name === this.state.categoriesTiles)
+            .map(category => category.adapters.map(value => {
                 const adapter = this.state.repository[value];
                 if (!adapter.controller) {
                     const installed = this.state.installed[value];
@@ -846,7 +857,7 @@ class Adapters extends Component {
                     const desc = adapter.desc ? adapter.desc[this.props.lang] || adapter.desc['en'] || adapter.desc : '';
                     const image = installed ? installed.localIcon : adapter.extIcon;
                     const connectionType = adapter.connectionType ? adapter.connectionType : '-';
-                    const updateAvailable = installed ? this.updateAvailable(installed.version, adapter.version) : false;
+                    const updateAvailable = this.state.updateAvailable.includes(value);
                     const rightDependencies = this.rightDependencies(value);
                     const rightOs = this.rightOs(value);
                     const sentry = !!(adapter.plugins && adapter.plugins.sentry);
@@ -869,8 +880,9 @@ class Adapters extends Component {
                             key={'adapter-' + value}
                             image={image}
                             name={title}
-                            stat={this.state.filterTiles === "Popular first" && adapter.stat}
-                            versionDate={this.state.filterTiles === "Recently updated" && daysAgo ? `${daysAgo} ${this.props.t('days ago')}` : ''}
+                            adapter={value}
+                            stat={this.state.filterTiles === 'Popular first' && adapter.stat}
+                            versionDate={this.state.filterTiles === 'Recently updated' && daysAgo ? `${daysAgo} ${this.props.t('days ago')}` : ''}
                             connectionType={connectionType}
                             description={desc}
                             enabledCount={installed && installed.enabled}
@@ -902,33 +914,38 @@ class Adapters extends Component {
                 }
             })
             ).flat();
-        if (array.filter(({ hidden }) => !hidden).length === 0) {
+
+        if (!array.filter(({ hidden }) => !hidden).length) {
             return <div style={{
                 margin: 20,
                 fontSize: 26
-            }}>{this.props.t('all items are filtered out')}</div>
+            }}>{this.props.t('all items are filtered out')}</div>;
+        } else {
+            return array.sort(({ title, stat, versionDate }, b) => {
+                if (this.state.filterTiles === 'A-Z') {
+                    let nameA = title.toLowerCase(), nameB = b.title.toLowerCase()
+                    if (nameA < nameB) {
+                        return -1;
+                    } else
+                    if (nameA > nameB) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                } else
+                if (this.state.filterTiles === 'Popular first') {
+                    return b.stat - stat;
+                } else
+                if (this.state.filterTiles === 'Recently updated') {
+                    let dateFunc = (value) => Math.round((Date.parse(new Date()) - Date.parse(value)) / 86400000)
+                    if (versionDate && !b.versionDate) return -1;
+                    if (!versionDate && b.versionDate) return 1;
+                    if (dateFunc(versionDate) > dateFunc(b.versionDate)) return 1;
+                    if (dateFunc(versionDate) < dateFunc(b.versionDate)) return -1;
+                    return 0;
+                }
+            }).map(({ render }) => render);
         }
-        return array.sort(({ title, stat, versionDate }, b) => {
-            if (this.state.filterTiles === 'A-Z') {
-                let nameA = title.toLowerCase(), nameB = b.title.toLowerCase()
-                if (nameA < nameB)
-                    return -1
-                if (nameA > nameB)
-                    return 1
-                return 0
-            }
-            if (this.state.filterTiles === 'Popular first') {
-                return b.stat - stat
-            }
-            if (this.state.filterTiles === 'Recently updated') {
-                let dateFunc = (value) => Math.round((Date.parse(new Date()) - Date.parse(value)) / 86400000)
-                if (versionDate && !b.versionDate) return -1;
-                if (!versionDate && b.versionDate) return 1;
-                if (dateFunc(versionDate) > dateFunc(b.versionDate)) return 1;
-                if (dateFunc(versionDate) < dateFunc(b.versionDate)) return -1;
-                return 0;
-            }
-        }).map(({ render }) => render);
     }
 
     render() {
@@ -944,6 +961,9 @@ class Adapters extends Component {
             if (adapter) {
                 return <TabContainer className={this.props.classes.tabContainer}>
                     <AdapterInfoDialog
+                        theme={this.props.theme}
+                        themeName={this.props.themeName}
+                        themeType={this.props.themeType}
                         adapter={this.state.dialogProp}
                         link={adapter.readme || ''}
                         t={this.t}
@@ -1028,8 +1048,8 @@ class Adapters extends Component {
                     }}
                 />
 
-                {!this.state.viewMode && <CustomSelectButton arrayItem={[{ name: 'All' }, ...this.state.categories]} onClick={(value) => this.changeCategoriesTiles(value)} value={this.state.categoriesTiles} />}
-                {!this.state.viewMode && <CustomSelectButton arrayItem={this.state.arrayFilter} onClick={(value) => this.changeFilterTiles(value)} value={this.state.filterTiles} />}
+                {!this.state.viewMode && <CustomSelectButton contained={this.state.categoriesTiles !== 'All'} arrayItem={[{ name: 'All' }, ...this.state.categories]} onClick={value => this.changeCategoriesTiles(value)} value={this.state.categoriesTiles} />}
+                {!this.state.viewMode && <CustomSelectButton arrayItem={this.state.arrayFilter} onClick={value => this.changeFilterTiles(value)} value={this.state.filterTiles} />}
                 <div className={classes.grow} />
             </TabHeader>
             {this.state.viewMode && <TabContent>

@@ -617,6 +617,9 @@ class App extends Router {
                     <Suspense fallback={<Connecting />}>
                         <Adapters
                             key="adapters"
+                            theme={this.state.theme}
+                            themeName={this.state.themeName}
+                            themeType={this.state.themeType}
                             systemConfig={this.state.systemConfig}
                             socket={this.socket}
                             hosts={this.state.hosts}

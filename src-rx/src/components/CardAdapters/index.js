@@ -56,7 +56,7 @@ const styles = theme => ({
             backgroundColor: '#fff',
         }
     },
-    istalled: {
+    installed: {
         background: '#77c7ff8c'
     },
     update: {
@@ -140,6 +140,18 @@ const styles = theme => ({
         '&:hover': {
             background: '#00800026'
         }
+    },
+    versionDate: {
+        alignSelf: 'center'
+    },
+    adapter: {
+        width: '100%',
+        fontWeight: 'bold',
+        fontSize: 16,
+        verticalAlign: 'middle',
+        paddingLeft: 8,
+        paddingTop: 16,
+        color: theme.palette.type === 'dark' ? '#333' : '#555'
     }
 });
 const CardAdapters = ({
@@ -162,9 +174,11 @@ const CardAdapters = ({
     onRebuild,
     hidden,
     stat,
-    versionDate
+    versionDate,
+    adapter
 }) => {
-    const [openCollapse, setCollapse] = useState(false)
+    const [openCollapse, setCollapse] = useState(false);
+
     return <Card className={clsx(classes.root, hidden ? classes.hidden : '')}>
         <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
             <CardContent>
@@ -222,14 +236,15 @@ const CardAdapters = ({
             </div>
         </div>
         <div className={clsx(classes.imageBlock,
-            installedVersion ? classes.istalled : '',
+            installedVersion ? classes.installed : '',
             installedVersion && installedVersion !== version && updateAvailable ? classes.update : '')}>
             <CardMedia
                 className={classes.img}
                 component="img"
-                image={image || "img/no-image.png"}
+                image={image || 'img/no-image.png'}
             />
-            <div style={{ alignSelf: 'center' }}>{stat || versionDate}</div>
+            {!stat && !versionDate ? <div className={classes.adapter}>{adapter}</div> : null}
+            <div className={classes.versionDate}>{stat || versionDate}</div>
             <Fab onClick={() => setCollapse((bool) => !bool)} className={classes.fab} color="primary" aria-label="add">
                 <MoreVertIcon />
             </Fab>

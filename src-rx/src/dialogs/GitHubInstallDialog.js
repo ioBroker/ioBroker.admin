@@ -67,11 +67,11 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
     // eslint-disable-next-line array-callback-return
     const array = useCallback(() => categories.map(category => category.adapters).flat().map(el => {
         const adapter = repository[el]
-        if (!adapter.controller) {
+        if (!adapter?.controller) {
             return ({
-                value: el, name: `${adapter.name} [${adapter.meta
+                value: el, name: `${adapter?.name} [${(adapter.meta || '')
                     .replace('https://raw.githubusercontent.com/', '')
-                    .substr(0, adapter.meta.replace('https://raw.githubusercontent.com/', '')
+                    .substr(0, (adapter.meta || '').replace('https://raw.githubusercontent.com/', '')
                         .indexOf('/'))}]`
             });
         }

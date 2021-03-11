@@ -1053,5 +1053,17 @@
   "Server URL": "URL-адрес сервера",
   "The apiKey of the seq system": "ApiKey системы seq",
   "default": "по умолчанию",
-  "show/hide item": "показать / скрыть элемент"
+  "show/hide item": "показать / скрыть элемент",
+  "Translated from %s": "Переведено с %s",
+  "Click to copy %s": "Нажмите, чтобы скопировать %s",
+  "Information": "Информация",
+  "Open repository": "Открыть репозиторий",
+  "authors": "авторы",
+  "Edit on github": "Редактировать на github",
+  "Install or update the adapter from Github": "Установите или обновите адаптер с Github",
+  "Debug outputs": "Выходы отладки",
+  "Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!": "Не устанавливайте адаптеры с GitHub, если об этом не попросит разработчик или если вы на 100% уверены, что делаете! Адаптеры на GitHub могут работать не так, как должны (они все еще находятся в разработке). Устанавливайте их только в том случае, если вы участвуете в тестировании! Пожалуйста, дождитесь официального релиза!",
+  "URL or file path": "URL или путь к файлу",
+  "Filter local connection type": "Отфильтровать тип локального подключения",
+  "all items are filtered out": "Все драйвера отфильтрованы"
 }

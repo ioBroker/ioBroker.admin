@@ -1053,5 +1053,17 @@
   "Server URL": "URL du serveur",
   "The apiKey of the seq system": "L'apiKey du système seq",
   "default": "défaut",
-  "show/hide item": "afficher / masquer l'élément"
+  "show/hide item": "afficher / masquer l'élément",
+  "Translated from %s": "Traduit de %s",
+  "Click to copy %s": "Cliquez pour copier %s",
+  "Information": "Informations",
+  "Open repository": "Dépôt ouvert",
+  "authors": "auteurs",
+  "Edit on github": "Modifier sur github",
+  "Install or update the adapter from Github": "Installez ou mettez à jour l'adaptateur depuis Github",
+  "Debug outputs": "Déboguer les sorties",
+  "Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!": "N'installez pas d'adaptateurs à partir de GitHub sauf si un développeur vous le demande ou si vous êtes sûr à 100% de ce que vous faites! Les adaptateurs sur GitHub peuvent ne pas fonctionner comme ils le devraient (ils sont toujours en cours de développement). Installez-les uniquement si vous participez à un test! Veuillez attendre une sortie officielle!",
+  "URL or file path": "URL ou chemin de fichier",
+  "Filter local connection type": "Filtrer le type de connexion locale",
+  "all items are filtered out": "Tous les éléments sont filtrés"
 }

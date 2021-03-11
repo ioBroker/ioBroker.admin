@@ -112,6 +112,10 @@ class MDUtils {
             if (line.startsWith('=========')) {
                 // ignore it
             } else
+            //<h1><img src="ru/adapterref/iobroker.linkeddevices/admin/linkeddevices.png" width="32"/> ioBroker.linkeddevices</h1>
+            if (line.match(/^<h1>.+<\/h1>/)) {
+                // skip
+            } else
             if (line.match(/^# /)) {
                 const cont = MDUtils.findTitle(line, -1, path);
                 title = cont.title;
@@ -232,6 +236,10 @@ class MDUtils {
         return {body: newLines.join('\n'), license: license.join('\n'), changelog: changelog.join('\n')};
     }
 
+    static findTitleFromH1(line, level, path) {
+
+    }
+
     static findTitle(line, level, path) {
         let name = line.substring(level + 3).trim()
             // remove bold and italic modifier
@@ -250,7 +258,7 @@ class MDUtils {
         const link = MDUtils.text2docLink(name, path);
 
         return {
-            level: level,
+            level,
             title: link ? link.name : name,
             link: link ? link.link : t,
             href: t,

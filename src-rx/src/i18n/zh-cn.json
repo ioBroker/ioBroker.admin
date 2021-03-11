@@ -1053,5 +1053,17 @@
   "Server URL": "服务器网址",
   "The apiKey of the seq system": "seq系统的apiKey",
   "default": "默认",
-  "show/hide item": "显示/隐藏项目"
+  "show/hide item": "显示/隐藏项目",
+  "Translated from %s": "从%s翻译",
+  "Click to copy %s": "点击复制%s",
+  "Information": "信息",
+  "Open repository": "公开资料库",
+  "authors": "作家",
+  "Edit on github": "在github上编辑",
+  "Install or update the adapter from Github": "从Github安装或更新适配器",
+  "Debug outputs": "调试输出",
+  "Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!": "除非开发人员要求，否则不要从GitHub安装适配器，否则您是否100％确信自己在做什么！ GitHub上的适配器可能无法正常工作（它们仍在开发中）。仅在参加测试时才安装它们！请等待正式发布！",
+  "URL or file path": "URL或文件路径",
+  "Filter local connection type": "过滤本地连接类型",
+  "all items are filtered out": "所有项目都被过滤掉"
 }

@@ -1053,5 +1053,17 @@
   "Server URL": "Server-URL",
   "The apiKey of the seq system": "De apiKey van het seq-systeem",
   "default": "standaard",
-  "show/hide item": "item weergeven / verbergen"
+  "show/hide item": "item weergeven / verbergen",
+  "Translated from %s": "Vertaald uit %s",
+  "Click to copy %s": "Klik om %s te kopiëren",
+  "Information": "Informatie",
+  "Open repository": "Open de opslagplaats",
+  "authors": "auteurs",
+  "Edit on github": "Bewerken op github",
+  "Install or update the adapter from Github": "Installeer of update de adapter vanuit Github",
+  "Debug outputs": "Foutopsporingsoutputs",
+  "Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!": "Installeer geen adapters van GitHub tenzij daarom gevraagd wordt door een ontwikkelaar of als je 100% zeker weet wat je doet! Adapters op GitHub werken mogelijk niet zoals ze zouden moeten (ze zijn nog in ontwikkeling). Installeer ze alleen als u deelneemt aan een test! Wacht alstublieft op een officiële release!",
+  "URL or file path": "URL of bestandspad",
+  "Filter local connection type": "Filter het lokale verbindingstype",
+  "all items are filtered out": "Alle items worden uitgefilterd"
 }

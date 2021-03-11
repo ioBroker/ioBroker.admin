@@ -1,21 +1,22 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 
 //import ReactMarkdown from 'react-markdown';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
 
-/*import { AppBar } from '@material-ui/core';
-import { Box } from '@material-ui/core';
+import { AppBar } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
+import { Toolbar } from '@material-ui/core';
+/*import { Box } from '@material-ui/core';
 import { Tab } from '@material-ui/core';
-import { Tabs } from '@material-ui/core';
-import { Toolbar } from '@material-ui/core';*/
+import { Tabs } from '@material-ui/core';*/
 
 import Router from '@iobroker/adapter-react/Components/Router';
 import I18n from '@iobroker/adapter-react/i18n';
 import Markdown from '../components/Markdown';
+import Loader from '@iobroker/adapter-react/Components/Loader';
 
 const styles = {
     root: {
@@ -66,10 +67,12 @@ class AdapterInfoDialog extends Component {
                 lines.unshift('');
             }
             const split = this.splitReadMe(readme);*/
-            readme = readme.replace(/\(ru\/adapterref\//g, '(https://www.iobroker.net/ru/adapterref/');
-            readme = readme.replace(/\(en\/adapterref\//g, '(https://www.iobroker.net/en/adapterref/');
+            readme = readme.replace(/\(([-\w]+)\/adapterref\//g, '(https://www.iobroker.net/$1u/adapterref/');
+            /*readme = readme.replace(/\(en\/adapterref\//g, '(https://www.iobroker.net/en/adapterref/');
             readme = readme.replace(/\(de\/adapterref\//g, '(https://www.iobroker.net/de/adapterref/');
             readme = readme.replace(/\(zh-cn\/adapterref\//g, '(https://www.iobroker.net/zh-cn/adapterref/');
+            readme = readme.replace(/\(zh-cn\/adapterref\//g, '(https://www.iobroker.net/zh-cn/adapterref/');*/
+            readme = readme.replace(/src="([-\w]+)\/adapterref\//g, 'src="https://www.iobroker.net/zh-cn/adapterref/');
 
             this.setState({text: readme});
         } catch(error) {
@@ -189,18 +192,12 @@ class AdapterInfoDialog extends Component {
     }
 
     render() {
-        /*const { classes } = this.props;
-        const { tab } = this.state;*/
+        if (!this.state.text) {
+            return <Loader theme={this.props.theme}/>;
+        }
+        const { classes } = this.props;
+        //const { tab } = this.state;
 
-        return this.state.text ? <Markdown
-            text={this.state.text}
-            language={I18n.getLanguage()}
-            theme={this.props.theme}
-            mobile={this.props.mobile}
-            editMode={false}
-            //onNavigate={(language, tab, page, chapter) => this.onNavigate(language, tab, page, chapter)}
-        /> : null;
-        /*
         return <Grid
             item
             container
@@ -208,7 +205,7 @@ class AdapterInfoDialog extends Component {
             wrap="nowrap"
             className={ classes.root }
         >
-            <AppBar color="default" position="static">
+            {/*<AppBar color="default" position="static">
                 <Tabs value={ this.state.tab } onChange={ (event, newValue) => this.changeTab(event, newValue) }>
                     <Tab label="README" disabled={ !this.state.readme }/>
                     <Tab label="Changelog" disabled={ !this.state.changelog }/>
@@ -223,7 +220,17 @@ class AdapterInfoDialog extends Component {
                     transformImageUri={ (uri) => this.transformUri(uri) }
                     escapeHtml={ false }
                 />
-            </Box>
+            </Box>*/}
+            <Markdown className={ classes.scroll }
+                text={this.state.text}
+                language={I18n.getLanguage()}
+                theme={this.props.theme}
+                themeName={this.props.themeName}
+                themeType={this.props.themeType}
+                mobile={this.props.mobile}
+                editMode={false}
+                //onNavigate={(language, tab, page, chapter) => this.onNavigate(language, tab, page, chapter)}
+            />
             <AppBar  color="default" position="static">
                 <Toolbar>
                     <Grid container spacing={ 1 }>
@@ -248,14 +255,17 @@ class AdapterInfoDialog extends Component {
                     </Grid>
                 </Toolbar>
             </AppBar>
-        </Grid>;*/
+        </Grid>;
     }
 }
 
 AdapterInfoDialog.propTypes = {
     adapter: PropTypes.string,
     link: PropTypes.string,
-    t: PropTypes.func
+    t: PropTypes.func,
+    theme: PropTypes.object,
+    themeName: PropTypes.string,
+    themeType: PropTypes.string
 };
 
 export default withStyles(styles)(AdapterInfoDialog);

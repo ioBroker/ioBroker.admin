@@ -4,10 +4,12 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
 import MarkdownView from 'react-showdown';
+import clsx from 'clsx';
+
 import Paper from '@material-ui/core/Paper';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionActions from '@material-ui/core/AccordionActions';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import IconButton from '@material-ui/core/IconButton';
@@ -33,9 +35,9 @@ import Utils from './MDUtils';
 
 const styles = theme => ({
     root: {
-        width: 'calc(100% - 40px)',
+        width: 'calc(100% - 10px)',
         maxWidth: 1400,
-        margin: 20,
+        margin: 5,
         '& .md-link': {
             display: 'inline-block'
         },
@@ -242,11 +244,11 @@ const styles = theme => ({
 
     summary: {
         transition: 'background 0.5s, color: 0.5s',
+        fontSize: 20,
+        backgroundColor: theme.palette.type === 'dark' ? '#444' : '#DDD'
     },
     summaryExpanded: {
-        fontWeight: 'bold',
-        //color: '#FFFFFF',
-        background: '#DDDDDD'
+        //fontWeight: 'bold',
     },
 
 
@@ -554,7 +556,9 @@ class Markdown extends Component {
         body = body.replace(/\r\n|\n/g, '§$§$');
         body = body.replace(/<!--[^>]*-->/, '\n');
         body = body.replace(/§\$§\$/g, '\n');
-        //body = body.replace(/\[\*\*\s.+\s\*\*]/g, '\n');
+        body = body.replace(/\[\*\*\*\s(.+)\s\*\*\*]/g, '[***$1***]');
+        body = body.replace(/\[\*\*\s(.+)\s\*\*]/g, '[**$1**]');
+        body = body.replace(/\[\*\s(.+)\s\*]/g, '[*$1*]');
 
         body = Utils.removeDocsify(body);
         let {parts, content, license, changeLog, title} = Utils.decorateText(body, header, `${this.props.path && (this.props.path[0] === '/' ? this.props.path : '/' + this.props.path)}`);
@@ -611,7 +615,7 @@ class Markdown extends Component {
         if (Object.keys(this.state.header).find(attr => ADAPTER_CARD.indexOf(attr) !== -1)) {
             data.push(<Accordion key="header" className={this.props.classes.adapterCard}>
                 <AccordionSummary className={this.props.classes.summary} classes={{expanded: this.props.classes.summaryExpanded}} expandIcon={<IconExpandMore />}>{I18n.t('Information')}</AccordionSummary>
-                <AccordionActions><List>{
+                <AccordionDetails><List>{
                     ADAPTER_CARD
                         .filter(attr => this.state.header.hasOwnProperty(attr))
                         .map(attr =>
@@ -619,20 +623,20 @@ class Markdown extends Component {
                                 <div className={this.props.classes.adapterCardAttr}>{I18n.t(attr)}: </div>
                                 <span>{attr === 'authors' ? this.formatAuthors(this.state.header[attr]) : this.state.header[attr].toString()}</span>
                             </ListItem>)}
-                </List></AccordionActions>
+                </List></AccordionDetails>
             </Accordion>);
         }
 
         if (Object.keys(this.state.header).find(attr => attr.startsWith('BADGE-'))) {
             data.push(<Accordion key="header_badges" className={this.props.classes.adapterCard}>
                 <AccordionSummary className={this.props.classes.summary} classes={{expanded: this.props.classes.summaryExpanded}} expandIcon={<IconExpandMore />}>{I18n.t('Badges')}</AccordionSummary>
-                <AccordionActions classes={{root: this.props.classes.badgesDetails}}>{
+                <AccordionDetails classes={{root: this.props.classes.badgesDetails}}>{
                     Object.keys(this.state.header).filter(attr => attr.startsWith('BADGE-'))
                         .map((attr, i) => [
                             this.state.header[attr].indexOf('nodei.co') !== -1 ? (<br key={'br' + i}/>) : null,
                             <img key={'img' + i} src={this.state.header[attr]} alt={attr.substring(6)}/>
                         ])}
-                </AccordionActions>
+                </AccordionDetails>
             </Accordion>);
         }
 
@@ -647,7 +651,7 @@ class Markdown extends Component {
             ] : null}
             {this.state.header.editLink ?
                 <a className={this.props.classes.infoEdit}
-                   href={this.state.header.editLink}
+                   href={this.state.header.editLink.replace(/\/edit\//, '/blob/')}
                    rel="noopener noreferrer"
                    target="_blank"><IconGithub />{I18n.t('Edit on github')}
                 </a> : null}
@@ -741,9 +745,9 @@ class Markdown extends Component {
                     className={this.props.classes.summary}
                     classes={{expanded: this.props.classes.summaryExpanded}}
                     expandIcon={<IconExpandMore />}>{I18n.t('License')} <span className={this.props.classes.license}> {this.state.header.license}</span></AccordionSummary>
-                <AccordionActions>
+                <AccordionDetails>
                     <MarkdownView markdown={this.state.license} options={CONVERTER_OPTIONS} components={{CustomLink, CustomH}}/>
-                </AccordionActions>
+                </AccordionDetails>
             </Accordion>;
         }
     }
@@ -756,9 +760,9 @@ class Markdown extends Component {
             const CustomH = this.customH;
             return <Accordion>
                 <AccordionSummary className={this.props.classes.summary} classes={{expanded: this.props.classes.summaryExpanded}} expandIcon={<IconExpandMore />}>{I18n.t('Changelog')}</AccordionSummary>
-                <AccordionActions>
+                <AccordionDetails>
                     <MarkdownView markdown={this.state.changeLog} options={CONVERTER_OPTIONS} components={{CustomLink, CustomH}}/>
-                </AccordionActions>
+                </AccordionDetails>
             </Accordion>;
         }
     }
@@ -958,7 +962,7 @@ class Markdown extends Component {
             }
         });
 
-        return <div className={this.props.classes.root} ref={this.contentRef}>
+        return <div className={clsx(this.props.classes.root, this.props.className)} ref={this.contentRef}>
             {this.renderHeader()}
             {this.state.title && !this.state.header.adapter ? <h1>{this.state.title}</h1> : null}
             {this.renderAffiliates()}
@@ -986,6 +990,7 @@ Markdown.propTypes = {
     editEnabled:  PropTypes.bool,
     affiliates: PropTypes.object,
     editor: PropTypes.object,
+    className: PropTypes.string,
 };
 
 export default withStyles(styles)(Markdown);
