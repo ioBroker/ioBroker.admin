@@ -1,11 +1,7 @@
 # Todo
-- Adapters/list optimization of table rendering (do not store filter directly in state) (BF)
-- Adapters - install from custom source button (github)//
-- Adapters - install dialog - hide in background, OK does not work - fix it//
-- Adapters - install dialog - less/more, close on ready//
-- Adapters - add type/group icons in list mode// 
-  - recently updated => versionDate: "2021-01-12T07:11:09.223Z" (NaN days ago => show nothing)//
-- Adapters - update all adapters and allow to select from list
+- Adapters - install dialog - stop progress if finshed or error
+- Adapters - if filter enabled (by category) => show background as primary color, remove icons for A-Z/Popular/Recently  
+- Adapters - update all adapters and allow to select from list (BF)
 - Adapters - show accept license dialog for non MIT licenses (common.license !== "MIT" => common.extIcon.split('/master')[0] + '/master/LICENSE'). Only if no instances yet.
 - Adapters - if language <> 'en' => https://www.iobroker.net/<ru>/adapterref/iobroker.<ADAPTERNAME>/README.md (BF) Use readme renderer from www.iobroker.net
 - Instances - Open in new window must be shown only for instances with localLink (BF)
