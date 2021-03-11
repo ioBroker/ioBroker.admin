@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
 
@@ -31,8 +31,8 @@ const styles = theme => ({
 
 export const EXTENSIONS = {
     images: ['png', 'jpg', 'svg', 'jpeg'],
-    code:   ['js', 'json'],
-    txt:    ['log', 'txt', 'html', 'css', 'xml'],
+    code: ['js', 'json'],
+    txt: ['log', 'txt', 'html', 'css', 'xml'],
 };
 
 class ObjectEditDialog extends Component {
@@ -58,33 +58,42 @@ class ObjectEditDialog extends Component {
 
     render() {
         return <Dialog
-            className={ this.props.classes.dialog }
-            open={ true }
-            onClose={ () => this.props.onClose() }
-            fullWidth={ true }
-            fullScreen={ true }
+            className={this.props.classes.dialog}
+            open={true}
+            onClose={() => this.props.onClose()}
+            fullWidth={true}
+            fullScreen={true}
             aria-labelledby="object-edit-dialog-title"
         >
             <DialogTitle id="object-edit-dialog-title">{
-                    this.props.t('Edit object: %s', this.props.obj._id)
+                this.props.t('Edit object: %s', this.props.obj._id)
             }</DialogTitle>
-            <DialogContent className={ this.props.classes.content }>
+            <DialogContent className={this.props.classes.content}>
                 <MonacoEditor
                     width="100%"
                     height="100%"
                     language="json"
-                    theme={ this.props.themeName === 'dark' ? 'vs-dark' : 'vs-light' }
-                    value={ this.state.code }
+                    theme={this.props.themeName === 'dark' ? 'vs-dark' : 'vs-light'}
+                    value={this.state.code}
                     options={{
                         selectOnLineNumbers: true
                     }}
-                    onChange={(newValue, e) => this.onChange(newValue, e) }
+                    onChange={(newValue, e) => this.onChange(newValue, e)}
                     editorDidMount={(editor, monaco) => this.editorDidMount(editor, monaco)}
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => this.props.onClose()} ><CloseIcon />{ this.props.t('Close') }</Button>
-                <Button disabled={ !this.state.changed } onClick={() => this.onSave()} ><CloseIcon />{ this.props.t('Save') }</Button>
+                <Button
+                    variant="contained"
+                    onClick={() => this.props.onClose()} >
+                    <CloseIcon />{this.props.t('Close')}
+                </Button>
+                <Button
+                    variant="contained"
+                    disabled={!this.state.changed}
+                    onClick={() => this.onSave()} >
+                    <CloseIcon />{this.props.t('Save')}
+                </Button>
             </DialogActions>
         </Dialog>;
     }

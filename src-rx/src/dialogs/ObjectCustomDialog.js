@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
 
@@ -38,8 +38,8 @@ const styles = theme => ({
 
 export const EXTENSIONS = {
     images: ['png', 'jpg', 'svg', 'jpeg'],
-    code:   ['js', 'json'],
-    txt:    ['log', 'txt', 'html', 'css', 'xml'],
+    code: ['js', 'json'],
+    txt: ['log', 'txt', 'html', 'css', 'xml'],
 };
 
 class ObjectCustomDialog extends Component {
@@ -82,53 +82,53 @@ class ObjectCustomDialog extends Component {
 
     renderCharts() {
         return <ObjectChart
-            id={'chart-tabpanel' }
-            t={ this.props.t }
-            lang={ this.props.lang }
-            expertMode={ this.props.expertMode }
-            socket={ this.props.socket }
-            obj={ this.props.objects[this.props.objectIDs[0]] }
-            customsInstances={ this.props.customsInstances }
-            themeName={ this.props.themeName }
-            objects={ this.props.objects }
+            id={'chart-tabpanel'}
+            t={this.props.t}
+            lang={this.props.lang}
+            expertMode={this.props.expertMode}
+            socket={this.props.socket}
+            obj={this.props.objects[this.props.objectIDs[0]]}
+            customsInstances={this.props.customsInstances}
+            themeName={this.props.themeName}
+            objects={this.props.objects}
         />;
     }
 
     renderTable() {
         return <ObjectHistoryData
-            id={'table-tabpanel' }
-            t={ this.props.t }
-            lang={ this.props.lang }
-            expertMode={ this.props.expertMode }
-            socket={ this.props.socket }
-            obj={ this.props.objects[this.props.objectIDs[0]] }
-            customsInstances={ this.props.customsInstances }
-            themeName={ this.props.themeName }
-            objects={ this.props.objects }
+            id={'table-tabpanel'}
+            t={this.props.t}
+            lang={this.props.lang}
+            expertMode={this.props.expertMode}
+            socket={this.props.socket}
+            obj={this.props.objects[this.props.objectIDs[0]]}
+            customsInstances={this.props.customsInstances}
+            themeName={this.props.themeName}
+            objects={this.props.objects}
         />;
     }
 
     renderCustomEditor() {
         return <ObjectCustomEditor
-            id={ 'custom-settings-tabpanel' }
-            t={ this.props.t }
-            lang={ this.props.lang }
-            expertMode={ this.props.expertMode }
-            socket={ this.props.socket }
-            objectIDs={ this.props.objectIDs }
-            customsInstances={ this.props.customsInstances }
-            objects={ this.props.objects }
-            onChange={ haveChanges => this.setState({ allSaved: !haveChanges }) }
+            id={'custom-settings-tabpanel'}
+            t={this.props.t}
+            lang={this.props.lang}
+            expertMode={this.props.expertMode}
+            socket={this.props.socket}
+            objectIDs={this.props.objectIDs}
+            customsInstances={this.props.customsInstances}
+            objects={this.props.objects}
+            onChange={haveChanges => this.setState({ allSaved: !haveChanges })}
         />;
     }
 
     render() {
         return <Dialog
-            className={ this.props.classes.dialog }
-            open={ true }
-            onClose={ () => this.props.onClose() }
-            fullWidth={ true }
-            fullScreen={ true }
+            className={this.props.classes.dialog}
+            open={true}
+            onClose={() => this.props.onClose()}
+            fullWidth={true}
+            fullScreen={true}
             aria-labelledby="form-dialog-title"
         >
             <DialogTitle id="form-dialog-title">{
@@ -136,23 +136,28 @@ class ObjectCustomDialog extends Component {
                     this.props.t('Edit config for %s states', this.props.objectIDs.length) :
                     this.props.t('Edit config: %s', this.props.objectIDs[0])
             }</DialogTitle>
-            <DialogContent className={ this.props.classes.content }>
+            <DialogContent className={this.props.classes.content}>
                 <AppBar position="static">
-                    <Tabs value={ this.state.currentTab } onChange={(event, newTab) => {
+                    <Tabs value={this.state.currentTab} onChange={(event, newTab) => {
                         Router.doNavigate(null, null, null, newTab === 1 ? 'table' : (newTab === 2 ? 'chart' : 'config'));
                         this.setState({ currentTab: newTab });
                     }} aria-label="simple tabs example">
-                        <Tab label={ this.props.t('Custom settings') } id={ 'custom-settings-tab' } aria-controls={ 'simple-tabpanel-0' } />
-                        {this.chartAvailable ? <Tab label={ this.props.t('History data') }   id={ 'history-data-tab' } aria-controls={ 'simple-tabpanel-1' } /> : null}
-                        {this.chartAvailable ? <Tab label={ this.props.t('Chart') } id={ 'chart-tab' } aria-controls={ 'simple-tabpanel-2' } /> : null}
+                        <Tab label={this.props.t('Custom settings')} id={'custom-settings-tab'} aria-controls={'simple-tabpanel-0'} />
+                        {this.chartAvailable ? <Tab label={this.props.t('History data')} id={'history-data-tab'} aria-controls={'simple-tabpanel-1'} /> : null}
+                        {this.chartAvailable ? <Tab label={this.props.t('Chart')} id={'chart-tab'} aria-controls={'simple-tabpanel-2'} /> : null}
                     </Tabs>
                 </AppBar>
-                {this.state.currentTab === 0 ? <div className={ this.props.classes.tabPanel }>{ this.renderCustomEditor() }</div>: null }
-                {this.chartAvailable && this.state.currentTab === 1 ? <div className={ this.props.classes.tabPanel }>{ this.renderTable() }</div>: null }
-                {this.chartAvailable && this.state.currentTab === 2 ? <div className={ this.props.classes.tabPanel }>{ this.renderCharts() }</div>: null }
+                {this.state.currentTab === 0 ? <div className={this.props.classes.tabPanel}>{this.renderCustomEditor()}</div> : null}
+                {this.chartAvailable && this.state.currentTab === 1 ? <div className={this.props.classes.tabPanel}>{this.renderTable()}</div> : null}
+                {this.chartAvailable && this.state.currentTab === 2 ? <div className={this.props.classes.tabPanel}>{this.renderCharts()}</div> : null}
             </DialogContent>
             <DialogActions>
-                <Button disabled={ !this.state.allSaved } onClick={() => this.props.onClose()} ><CloseIcon />{ this.props.t('Close') }</Button>
+                <Button
+                    variant="contained"
+                    disabled={!this.state.allSaved}
+                    onClick={() => this.props.onClose()} >
+                    <CloseIcon />{this.props.t('Close')}
+                </Button>
             </DialogActions>
         </Dialog>;
     }

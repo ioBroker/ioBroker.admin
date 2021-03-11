@@ -6,14 +6,17 @@ import { withStyles } from '@material-ui/core/styles';
 
 import {
     Button,
+    Checkbox,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
+    FormControlLabel,
     Grid,
     IconButton,
     LinearProgress,
     Paper,
+    Switch,
     Typography
 } from '@material-ui/core';
 
@@ -60,7 +63,9 @@ class ConfirmDialog extends Component {
             init: false,
             max: null,
             value: null,
-            progressText: ''
+            progressText: '',
+            closeOnReady: false,
+            checked: true
         };
 
         this.t = props.t;
@@ -229,7 +234,14 @@ class ConfirmDialog extends Component {
             this.setState({
                 log
             });
-
+            if (exitCode !== 0) {
+                this.props.errorFunc && this.props.errorFunc();
+            } else {
+                this.props.performed && this.props.performed();
+                if (this.state.closeOnReady) {
+                    this.props.onClose();
+                }
+            }
             console.log('cmdExit');
             console.log(id);
             console.log(exitCode);
@@ -294,7 +306,7 @@ class ConfirmDialog extends Component {
         const { classes } = this.props;
 
         return (
-            <Dialog onClose={this.props.onClose} open={this.props.open} maxWidth="lg">
+            <Dialog onClose={this.props.inBackground ? this.props.onClose : this.props.onConfirm} open={this.props.open} maxWidth="lg">
                 <DialogTitle>
                     {this.state.progressText || 'Run Command'}
                     <IconButton className={classes.closeButton} onClick={this.props.onClose}>
@@ -313,22 +325,64 @@ class ConfirmDialog extends Component {
                                 value={this.state.max && this.state.value ? 100 - Math.round((this.state.value / this.state.max) * 100) : 0}
                             />
                         </Grid>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: this.props.inBackground ? 'space-between' : 'flex-end'
+                        }}>
+                            <Typography style={this.props.inBackground ? null : { display: 'none' }} component="div">{this.colorize(this.state.log[this.state.log.length - 1])}</Typography>
+                            <Typography component="div">
+                                <Grid component="label" container alignItems="center" spacing={1}>
+                                    <Grid item>{this.props.t('less')}</Grid>
+                                    <Grid item>
+                                        <Switch
+                                            checked={this.state.checked}
+                                            onChange={(event) => this.setState({ checked: event.target.checked })}
+                                            color="primary"
+                                            name="checkedB"
+                                            inputProps={{ 'aria-label': 'primary checkbox' }}
+                                        />
+                                    </Grid>
+                                    <Grid item>{this.props.t('more')}</Grid>
+                                </Grid>
+                            </Typography>
+                        </div>
                         <Grid item>
                             <Paper
                                 className={classes.log}
                             >
-                                {this.getLog()}
+                                {this.state.checked ? this.getLog() : null}
                             </Paper>
                         </Grid>
                     </Grid>
                 </DialogContent>
-                <DialogActions>
-                    <Button autoFocus onClick={this.props.onConfirm} color="primary">
-                        {this.props.confirmText || 'OK'}
-                    </Button>
-                    <Button autoFocus onClick={this.props.onClose} color="default">
-                        {this.props.t('Close')}
-                    </Button>
+                <DialogActions style={{ justifyContent: 'space-between' }}>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                disabled={this.props.inBackground}
+                                checked={this.state.closeOnReady}
+                                onChange={(e) => this.setState({ closeOnReady: e.target.checked })} />}
+                        label={this.props.t('close on ready')}
+                    />
+                    <div>
+                        <Button
+                            variant="contained"
+                            autoFocus
+                            disabled={this.props.inBackground}
+                            style={{ marginRight: 8 }}
+                            onClick={this.props.onConfirm}
+                            color="primary">
+                            {this.props.confirmText || this.props.t('In background')}
+                        </Button>
+                        <Button
+                            variant="contained"
+                            autoFocus
+                            onClick={this.props.onClose}
+                            color="default">
+                            {this.props.t('Close')}
+                        </Button>
+                    </div>
                 </DialogActions>
             </Dialog>
         );

@@ -32,6 +32,7 @@ import Brightness4Icon from '@material-ui/icons/Brightness4';
 import Brightness5Icon from '@material-ui/icons/Brightness5';
 import Brightness6Icon from '@material-ui/icons/Brightness6';
 import Brightness7Icon from '@material-ui/icons/Brightness7';
+import PictureInPictureAltIcon from '@material-ui/icons/PictureInPictureAlt';
 
 import ConfirmDialog from './dialogs/ConfirmDialog';
 import CommandDialog from './dialogs/CommandDialog';
@@ -166,6 +167,38 @@ const styles = theme => ({
     },
     avatarVisible: {
         opacity: 1
+    },
+    cmd: {
+        animation: '1s linear infinite alternate $myEffect',
+        opacity: 0.2,
+    },
+    "@keyframes myEffect": {
+        "0%": {
+            opacity: 0.2,
+            transform: "translateY(0)"
+        },
+        "100%": {
+            opacity: 1,
+            transform: "translateY(-10%)"
+        }
+    },
+    errorCmd: {
+        color: '#a90000',
+        animation: '0.2s linear infinite alternate $myEffect2',
+    },
+    performed: {
+        color: '#388e3c',
+        animation: '0.2s linear infinite alternate $myEffect2',
+    },
+    "@keyframes myEffect2": {
+        "0%": {
+            opacity: 1,
+            transform: "translateX(0)"
+        },
+        "100%": {
+            opacity: 0.7,
+            transform: "translateX(-2%)"
+        }
     }
 });
 
@@ -283,6 +316,8 @@ class App extends Router {
                 cmd: null,
                 cmdDialog: false,
                 wizard: true,
+                commandError: false,
+                performed: false
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -705,7 +740,7 @@ class App extends Router {
 
         return null;
     }
-    
+
     clearLogErrors = async () => {
         const { setStateContext } = this.context;
         setStateContext({
@@ -845,7 +880,9 @@ class App extends Router {
     closeCmdDialog() {
         this.setState({
             cmd: null,
-            cmdDialog: false
+            cmdDialog: false,
+            commandError: false,
+            performed: false
         });
     }
 
@@ -866,9 +903,14 @@ class App extends Router {
                 onClose={() => this.closeCmdDialog()}
                 open={this.state.cmdDialog}
                 header={i18n.t('Command') /* Placeholder */}
-                onConfirm={() => { } /* Test command */}
+                onConfirm={() => {
+                    this.setState({ cmdDialog: false })
+                } /* Test command */}
                 cmd={this.state.cmd}
-                confirmText={i18n.t('Ok') /* Test command */}
+                errorFunc={() => this.setState({ commandError: true })}
+                performed={() => this.setState({ performed: true })}
+                inBackground={this.state.commandError || this.state.performed}
+                // confirmText={i18n.t('Ok') /* Test command */}
                 socket={this.socket}
                 currentHost={this.state.currentHost}
                 ready={this.state.ready}
@@ -970,6 +1012,9 @@ class App extends Router {
                                 </IconButton>
                             }
                             <Typography variant="h6" className={classes.title} style={{ flexGrow: 1 }} />
+                            {this.state.cmd && !this.state.cmdDialog && <IconButton onClick={() => this.setState({ cmdDialog: true })}>
+                                <PictureInPictureAltIcon className={this.state.commandError ? classes.errorCmd : this.state.performed ? classes.performed : classes.cmd} />
+                            </IconButton>}
                             <Grid container className={clsx(this.state.drawerState !== 0 && classes.avatarVisible, classes.avatarNotVisible)} spacing={1} alignItems="center" style={{ width: 'initial' }}>
                                 <Grid item>
                                     <Typography>admin</Typography>

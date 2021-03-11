@@ -74,7 +74,7 @@ class EditIntroLinkDialog extends Component {
                 const parts = this.props.camera.split('.');
                 const adapter = parts.shift();
                 const instance = parts.shift();
-                this.props.socket.sendTo(adapter + '.' + instance, 'image', {name: parts.pop(), width: this.cameraRef.current.width})
+                this.props.socket.sendTo(adapter + '.' + instance, 'image', { name: parts.pop(), width: this.cameraRef.current.width })
                     .then(result => {
                         if (result && result.data && this.cameraRef.current) {
                             this.cameraRef.current.src = 'data:image/jpeg;base64,' + result.data;
@@ -89,33 +89,34 @@ class EditIntroLinkDialog extends Component {
 
         return (
             <Dialog
-                onClose={ () => this.props.onClose() }
-                open={ true }
+                onClose={() => this.props.onClose()}
+                open={true}
                 maxWidth="xl"
-                fullWidth={ true }
-                fullScreen={ true }
+                fullWidth={true}
+                fullScreen={true}
                 classes={{ paper: classes.paper }}
             >
-                <DialogTitle disableTypography={ true }>
+                <DialogTitle disableTypography={true}>
                     <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
-                        { this.props.name }
-                        <IconButton className={ classes.closeButton } onClick={ () => this.props.onClose() }>
+                        {this.props.name}
+                        <IconButton className={classes.closeButton} onClick={() => this.props.onClose()}>
                             <CloseIcon />
                         </IconButton>
                     </Typography>
                 </DialogTitle>
                 <DialogContent dividers>
-                    <img className={ this.props.classes.img } src="" alt="camera" ref={ this.cameraRef }/>
+                    <img className={this.props.classes.img} src="" alt="camera" ref={this.cameraRef} />
                 </DialogContent>
                 <DialogActions>
                     <Button
+                        variant="contained"
                         autoFocus
-                        onClick={ e => {
+                        onClick={e => {
                             e.stopPropagation();
                             this.props.onClose();
-                        } }
+                        }}
                         color="primary">
-                        { this.props.t('Close') }
+                        {this.props.t('Close')}
                     </Button>
                 </DialogActions>
             </Dialog>

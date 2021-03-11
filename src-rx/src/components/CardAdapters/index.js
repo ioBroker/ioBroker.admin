@@ -41,14 +41,25 @@ const styles = theme => ({
     img: {
         width: 45,
         height: 45,
-        margin: 'auto 0'
+        margin: 'auto 0',
+        position: 'relative',
+        '&:after': {
+            content: '""',
+            position: 'absolute',
+            zIndex: 2,
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'url("img/no-image.png") 100% 100% no-repeat',
+            backgroundSize: 'cover',
+            backgroundColor: '#fff',
+        }
     },
     istalled: {
-        // background: theme.palette.primary.main,#10ff006b
         background: '#77c7ff8c'
     },
     update: {
-        // background: theme.palette.success.main,#77f2ff63
         background: '#10ff006b'
     },
     fab: {
@@ -60,7 +71,6 @@ const styles = theme => ({
     },
     greenText: {
         color: theme.palette.success.dark,
-        // color: '#10ff006b'
     },
 
     collapse: {
@@ -68,7 +78,7 @@ const styles = theme => ({
         backgroundColor: 'silver',
         position: 'absolute',
         width: '100%',
-        zIndex: 2,
+        zIndex: 3,
         marginTop: 'auto',
         bottom: 0,
         transition: 'height 0.3s',

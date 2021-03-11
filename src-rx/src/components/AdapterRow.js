@@ -36,6 +36,7 @@ import {
     green,
     red
 } from '@material-ui/core/colors';
+import MaterialDynamicIcon from '../helpers/MaterialDynamicIcon';
 
 const styles = theme => ({
     smallAvatar: {
@@ -132,7 +133,8 @@ class AdapterRow extends Component {
             name,
             rightDependencies,
             rightOs,
-            sentry
+            sentry,
+            categoryName
         } = this.props;
 
         return (
@@ -167,7 +169,10 @@ class AdapterRow extends Component {
                         </Grid>}
                     </Grid>
                 </TableCell>
-                {isCategory && <TableCell colSpan={1}>{name}</TableCell>}
+                {isCategory && <TableCell colSpan={1}><div style={{
+                    display: 'flex',
+                    alignItems: 'center'
+                }}><MaterialDynamicIcon objIconBool iconName={categoryName} style={{ marginRight: 5 }} />{name}</div></TableCell>}
                 { isCategory ?
                     <TableCell>
                         <Typography component="span" variant="body2" className={classes.green}>

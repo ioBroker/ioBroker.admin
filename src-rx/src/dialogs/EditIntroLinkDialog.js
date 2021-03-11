@@ -26,7 +26,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import clsx from "clsx";
 
 // icons
-import {FaFileUpload as UploadIcon} from 'react-icons/fa';
+import { FaFileUpload as UploadIcon } from 'react-icons/fa';
 
 import IntroCard from '../components/IntroCard';
 
@@ -155,8 +155,8 @@ class EditIntroLinkDialog extends Component {
                                 // get the list of cameras
                                 .then(state => state && state.val && this.props.socket.sendTo(instance, 'list', null))
                                 .then(result =>
-                                        result && result.list && result.list.forEach(cam =>
-                                            cameraList.push({id: cam.id, name: `${cam.desc} [${instance}/${cam.name}]`}))));
+                                    result && result.list && result.list.forEach(cam =>
+                                        cameraList.push({ id: cam.id, name: `${cam.desc} [${instance}/${cam.name}]` }))));
 
                     }
                 });
@@ -180,7 +180,7 @@ class EditIntroLinkDialog extends Component {
 
         reader.onabort = () => console.log('file reading was aborted');
         reader.onerror = () => console.log('file reading has failed');
-        reader.onload  = () => {
+        reader.onload = () => {
             let ext = 'image/' + file.name.split('.').pop().toLowerCase();
             if (ext === 'image/jpg') {
                 ext = 'image/jpeg';
@@ -188,7 +188,7 @@ class EditIntroLinkDialog extends Component {
                 ext = 'image/svg+xml';
             }
 
-            const base64 = 'data:' + ext + ';base64,'  + btoa(
+            const base64 = 'data:' + ext + ';base64,' + btoa(
                 new Uint8Array(reader.result)
                     .reduce((data, byte) => data + String.fromCharCode(byte), ''));
 
@@ -202,165 +202,167 @@ class EditIntroLinkDialog extends Component {
 
         return (
             <Dialog
-                onClose={ () => this.props.onClose() }
-                open={ this.props.open }
+                onClose={() => this.props.onClose()}
+                open={this.props.open}
                 maxWidth="md"
-                fullWidth={ true }
+                fullWidth={true}
                 classes={{ paper: classes.paper }}
             >
-                <DialogTitle disableTypography={ true }>
+                <DialogTitle disableTypography={true}>
                     <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
-                        { this.props.isNew ? this.props.t('Add new link: ') : this.props.t('Edit link') }
-                        <IconButton className={ classes.closeButton } onClick={ () => this.props.onClose() }>
+                        {this.props.isNew ? this.props.t('Add new link: ') : this.props.t('Edit link')}
+                        <IconButton className={classes.closeButton} onClick={() => this.props.onClose()}>
                             <CloseIcon />
                         </IconButton>
                     </Typography>
                 </DialogTitle>
-                    <DialogContent dividers>
+                <DialogContent dividers>
 
-                        <Grid
-                            className={ this.props.classes.rootGrid }
-                            container
-                            direction="row"
-                        >
-                            <Grid item
-                                  xs={ 12 }
-                                  sm={ 6 }
-                                  md={ 8 }
-                                  lg={ 9 }>
-                                <Grid
-                                    container
-                                    direction="column"
-                                >
-                                    <FormControl className={ classes.formControl }>
-                                        <InputLabel id="select-helper-label">{ this.props.t('Link type') }</InputLabel>
-                                        <Select
-                                            labelId="select-helper-label"
-                                            value={ this.state.camera }
-                                            onChange={e => this.setState( { camera: e.target.value })}
-                                        >
-                                            <MenuItem value="text" key="desc"><em>{ this.props.t('Description') }</em></MenuItem>
-                                            { this.state.cameraList.map(cam => <MenuItem key={ cam.id } value={ cam.id }>{ cam.name }</MenuItem>) }
-                                            <MenuItem value="custom" key="custom">{ this.props.t('Custom camera URL') }</MenuItem>
-                                        </Select>
-                                    </FormControl>
-
-                                    <TextField
-                                        label={ this.props.t('URL')}
-                                        value={ this.state.link }
-                                        className={ this.props.classes.editItem }
-                                        onChange={ e => {
-                                            const oldLinkName = this.getLinkNameFromLink(this.state.link);
-                                            if (oldLinkName && (!this.state.linkName || oldLinkName === this.state.linkName)) {
-                                                this.setState({ link: e.target.value, linkName: this.getLinkNameFromLink(e.target.value) });
-                                            } else {
-                                                this.setState({ link: e.target.value });
-                                            }
-                                        } }
-                                    />
-
-                                    <TextField className={ this.props.classes.editItem } label={ this.props.t('Name')} value={ this.state.name || ''}  onChange={ e => this.setState({ name:     e.target.value }) } />
-
-                                    {this.state.link ? <TextField className={ this.props.classes.editItem } label={ this.props.t('Link name')} value={ this.state.linkName || '' } onChange={ e => this.setState({ linkName: e.target.value }) } /> : null }
-
-                                    { this.state.camera === 'custom' || this.state.camera === 'text' ? <TextField className={ this.props.classes.editItem } label={ this.state.camera === 'custom' ? this.props.t('Camera URL') : this.props.t('Description') } value={ this.state.desc   || '' } onChange={ e => this.setState({ desc: e.target.value }) } /> : null }
-
-                                    { this.state.camera === 'custom' ? <FormControlLabel className={ this.props.classes.editItem }
-                                                      control={<Checkbox checked={ this.state.addTs } onChange={ e => this.setState({ addTs: e.target.checked }) } />}
-                                                      label={ this.props.t('Add timestamp to URL')}
-                                    /> : null }
-
-                                    { this.state.camera !== 'text' ? <Typography  className={ this.props.classes.labelSlider } gutterBottom>
-                                        Polling interval in ms
-                                    </Typography> : null }
-                                    { this.state.camera !== 'text' ? <Slider
-                                        className={ this.props.classes.editItemSlider }
-                                        value={ this.state.interval }
-                                        getAriaValueText={ () => this.state.interval + 'ms' }
-                                        onChange={ (e, interval) => this.setState({ interval }) }
-                                        step={ 100 }
-                                        min={ 500 }
-                                        max={ 60000 }
-                                        valueLabelDisplay="on"
-                                    /> : null }
-
-                                    <div style={{ width: 50 }} className={ this.props.classes.editItem }>
-                                        <TextField fullWidth={ true } label={ this.props.t('Color')}     className={ this.props.editColor } type="color" value={ this.state.color }    onChange={ e => this.setState({ color:    e.target.value }) } />
-                                    </div>
-
-                                    <Dropzone
-                                        key="dropzone"
-                                        multiple={ false }
-                                        accept="image/svg+xml,image/png,image/jpeg"
-                                        maxSize={ 256 * 1024 }
-                                        onDragEnter={() => this.setState({uploadFile: 'dragging'})}
-                                        onDragLeave={() => this.setState({uploadFile: true})}
-                                        onDrop={acceptedFiles => this.onDrop(acceptedFiles) }
-                                    >
-                                        {({ getRootProps, getInputProps }) => (
-                                            <div className={ clsx(
-                                                this.props.classes.uploadDiv,
-                                                this.state.uploadFile === 'dragging' && this.props.classes.uploadDivDragging,
-                                                this.props.classes.dropZone,
-                                                !this.state.image && this.props.classes.dropZoneEmpty
-                                            )}
-                                                 {...getRootProps()}>
-                                                <input {...getInputProps()} />
-                                                <div className={this.props.classes.uploadCenterDiv}>
-                                                    <div className={this.props.classes.uploadCenterTextAndIcon}>
-                                                        <UploadIcon className={this.props.classes.uploadCenterIcon}/>
-                                                        <div className={this.props.classes.uploadCenterText}>{
-                                                            this.state.uploadFile === 'dragging' ? this.props.t('Drop file here') :
-                                                                this.props.t('Place your files here or click here to open the browse dialog')}</div>
-                                                    </div>
-                                                    {this.state.image ? <img src={ this.state.image } className={ this.props.classes.image} alt="icon" /> : null }
-                                                </div>
-
-                                            </div>)}
-                                    </Dropzone>
-                                </Grid>
-                            </Grid>
-                            <IntroCard
-                                interval={ this.state.interval }
-                                camera={ this.state.camera }
-                                addTs={ this.state.addTs }
-                                image={ this.state.image }
-                                title={ this.state.name }
-                                socket={ this.props.socket }
-                                action={{ link: this.state.link, text: this.state.linkName }}
-                                t={ this.props.t }
-                                color={ this.state.color }
-                                enabled={ true }
+                    <Grid
+                        className={this.props.classes.rootGrid}
+                        container
+                        direction="row"
+                    >
+                        <Grid item
+                            xs={12}
+                            sm={6}
+                            md={8}
+                            lg={9}>
+                            <Grid
+                                container
+                                direction="column"
                             >
-                                { this.state.desc ||'' }
-                            </IntroCard>
+                                <FormControl className={classes.formControl}>
+                                    <InputLabel id="select-helper-label">{this.props.t('Link type')}</InputLabel>
+                                    <Select
+                                        labelId="select-helper-label"
+                                        value={this.state.camera}
+                                        onChange={e => this.setState({ camera: e.target.value })}
+                                    >
+                                        <MenuItem value="text" key="desc"><em>{this.props.t('Description')}</em></MenuItem>
+                                        {this.state.cameraList.map(cam => <MenuItem key={cam.id} value={cam.id}>{cam.name}</MenuItem>)}
+                                        <MenuItem value="custom" key="custom">{this.props.t('Custom camera URL')}</MenuItem>
+                                    </Select>
+                                </FormControl>
+
+                                <TextField
+                                    label={this.props.t('URL')}
+                                    value={this.state.link}
+                                    className={this.props.classes.editItem}
+                                    onChange={e => {
+                                        const oldLinkName = this.getLinkNameFromLink(this.state.link);
+                                        if (oldLinkName && (!this.state.linkName || oldLinkName === this.state.linkName)) {
+                                            this.setState({ link: e.target.value, linkName: this.getLinkNameFromLink(e.target.value) });
+                                        } else {
+                                            this.setState({ link: e.target.value });
+                                        }
+                                    }}
+                                />
+
+                                <TextField className={this.props.classes.editItem} label={this.props.t('Name')} value={this.state.name || ''} onChange={e => this.setState({ name: e.target.value })} />
+
+                                {this.state.link ? <TextField className={this.props.classes.editItem} label={this.props.t('Link name')} value={this.state.linkName || ''} onChange={e => this.setState({ linkName: e.target.value })} /> : null}
+
+                                {this.state.camera === 'custom' || this.state.camera === 'text' ? <TextField className={this.props.classes.editItem} label={this.state.camera === 'custom' ? this.props.t('Camera URL') : this.props.t('Description')} value={this.state.desc || ''} onChange={e => this.setState({ desc: e.target.value })} /> : null}
+
+                                {this.state.camera === 'custom' ? <FormControlLabel className={this.props.classes.editItem}
+                                    control={<Checkbox checked={this.state.addTs} onChange={e => this.setState({ addTs: e.target.checked })} />}
+                                    label={this.props.t('Add timestamp to URL')}
+                                /> : null}
+
+                                {this.state.camera !== 'text' ? <Typography className={this.props.classes.labelSlider} gutterBottom>
+                                    Polling interval in ms
+                                    </Typography> : null}
+                                {this.state.camera !== 'text' ? <Slider
+                                    className={this.props.classes.editItemSlider}
+                                    value={this.state.interval}
+                                    getAriaValueText={() => this.state.interval + 'ms'}
+                                    onChange={(e, interval) => this.setState({ interval })}
+                                    step={100}
+                                    min={500}
+                                    max={60000}
+                                    valueLabelDisplay="on"
+                                /> : null}
+
+                                <div style={{ width: 50 }} className={this.props.classes.editItem}>
+                                    <TextField fullWidth={true} label={this.props.t('Color')} className={this.props.editColor} type="color" value={this.state.color} onChange={e => this.setState({ color: e.target.value })} />
+                                </div>
+
+                                <Dropzone
+                                    key="dropzone"
+                                    multiple={false}
+                                    accept="image/svg+xml,image/png,image/jpeg"
+                                    maxSize={256 * 1024}
+                                    onDragEnter={() => this.setState({ uploadFile: 'dragging' })}
+                                    onDragLeave={() => this.setState({ uploadFile: true })}
+                                    onDrop={acceptedFiles => this.onDrop(acceptedFiles)}
+                                >
+                                    {({ getRootProps, getInputProps }) => (
+                                        <div className={clsx(
+                                            this.props.classes.uploadDiv,
+                                            this.state.uploadFile === 'dragging' && this.props.classes.uploadDivDragging,
+                                            this.props.classes.dropZone,
+                                            !this.state.image && this.props.classes.dropZoneEmpty
+                                        )}
+                                            {...getRootProps()}>
+                                            <input {...getInputProps()} />
+                                            <div className={this.props.classes.uploadCenterDiv}>
+                                                <div className={this.props.classes.uploadCenterTextAndIcon}>
+                                                    <UploadIcon className={this.props.classes.uploadCenterIcon} />
+                                                    <div className={this.props.classes.uploadCenterText}>{
+                                                        this.state.uploadFile === 'dragging' ? this.props.t('Drop file here') :
+                                                            this.props.t('Place your files here or click here to open the browse dialog')}</div>
+                                                </div>
+                                                {this.state.image ? <img src={this.state.image} className={this.props.classes.image} alt="icon" /> : null}
+                                            </div>
+
+                                        </div>)}
+                                </Dropzone>
+                            </Grid>
                         </Grid>
-                    </DialogContent>
+                        <IntroCard
+                            interval={this.state.interval}
+                            camera={this.state.camera}
+                            addTs={this.state.addTs}
+                            image={this.state.image}
+                            title={this.state.name}
+                            socket={this.props.socket}
+                            action={{ link: this.state.link, text: this.state.linkName }}
+                            t={this.props.t}
+                            color={this.state.color}
+                            enabled={true}
+                        >
+                            {this.state.desc || ''}
+                        </IntroCard>
+                    </Grid>
+                </DialogContent>
                 <DialogActions>
                     <Button
+                        variant="contained"
                         autoFocus
-                        onClick={ () => {
+                        onClick={() => {
                             this.props.onClose({
-                                link:     this.state.link,
-                                name:     this.state.name,
-                                desc:     this.state.desc,
+                                link: this.state.link,
+                                name: this.state.name,
+                                desc: this.state.desc,
                                 linkName: this.state.linkName,
-                                color:    this.state.color,
-                                image:    this.state.image,
-                                addTs:    this.state.addTs,
-                                camera:   this.state.camera,
+                                color: this.state.color,
+                                image: this.state.image,
+                                addTs: this.state.addTs,
+                                camera: this.state.camera,
                                 interval: this.state.interval,
                             });
                         }}
                         color="primary">
-                        { this.props.isNew ? this.props.t('Add') : this.props.t('Save')}
+                        {this.props.isNew ? this.props.t('Add') : this.props.t('Save')}
                     </Button>
                     <Button
-                        onClick={ () => {
+                        variant="contained"
+                        onClick={() => {
                             this.props.onClose();
                         }}
                         color="default">
-                        { this.props.t('Close') }
+                        {this.props.t('Close')}
                     </Button>
                 </DialogActions>
             </Dialog>

@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
 
@@ -14,7 +14,7 @@ import NoImage from '@iobroker/adapter-react/assets/no_icon.svg';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 
 // Icons
-import {FaCopy as CopyIcon} from 'react-icons/fa';
+import { FaCopy as CopyIcon } from 'react-icons/fa';
 import CloseIcon from '@material-ui/icons/Close';
 
 const styles = theme => ({
@@ -39,8 +39,8 @@ const styles = theme => ({
 
 export const EXTENSIONS = {
     images: ['png', 'jpg', 'svg', 'jpeg', 'jpg'],
-    code:   ['js', 'json'],
-    txt:    ['log', 'txt', 'html', 'css', 'xml'],
+    code: ['js', 'json'],
+    txt: ['log', 'txt', 'html', 'css', 'xml'],
 };
 
 function getFileExtension(fileName) {
@@ -69,9 +69,9 @@ class FileViewer extends Component {
                 .then(response => response.text())
                 .then(data => {
                     if (EXTENSIONS.txt.includes(this.ext)) {
-                        this.setState({text: data});
+                        this.setState({ text: data });
                     } else if (EXTENSIONS.code.includes(this.ext)) {
-                        this.setState({code: data});
+                        this.setState({ code: data });
                     }
                 });
         }
@@ -84,50 +84,56 @@ class FileViewer extends Component {
     getContent() {
         if (EXTENSIONS.images.includes(this.ext)) {
             return <img
-                onError={ e => {
+                onError={e => {
                     e.target.onerror = null;
                     e.target.src = NoImage
-                } }
-                className={ this.props.classes.img }
-                src={ this.props.href } alt={ this.props.href }/>;
+                }}
+                className={this.props.classes.img}
+                src={this.props.href} alt={this.props.href} />;
         } else if (this.state.code !== null) {
             return <TextField
-                className={ this.props.classes.textarea }
+                className={this.props.classes.textarea}
                 multiline
-                value={ this.state.code }
-                readOnly={true}/>;
-        } else  if (this.state.text !== null) {
+                value={this.state.code}
+                readOnly={true} />;
+        } else if (this.state.text !== null) {
             return <TextField
-                className={ this.props.classes.textarea }
-                value={ this.state.code }
+                className={this.props.classes.textarea}
+                value={this.state.code}
                 multiline
-                readOnly={true}/>;
+                readOnly={true} />;
         }
     }
 
     render() {
         return <Dialog
             key={this.props.key}
-            className={ this.props.classes.dialog }
-            open={ this.props.href }
-            onClose={ () => this.props.onClose() }
-            fullWidth={ true }
-            fullScreen={ true }
+            className={this.props.classes.dialog}
+            open={this.props.href}
+            onClose={() => this.props.onClose()}
+            fullWidth={true}
+            fullScreen={true}
             aria-labelledby="form-dialog-title"
         >
-            <DialogTitle id="form-dialog-title">{ this.props.t('View: %s', this.props.href) }</DialogTitle>
-            <DialogContent className={ this.props.classes.content }>
-                    { this.getContent() }
+            <DialogTitle id="form-dialog-title">{this.props.t('View: %s', this.props.href)}</DialogTitle>
+            <DialogContent className={this.props.classes.content}>
+                {this.getContent()}
             </DialogContent>
             <DialogActions>
-                { this.state.copyPossible ? <Button onClick={e => Utils.copyToClipboard(this.state.text || this.state.code, e) } >
-                    <CopyIcon />
-                    { this.props.t('Copy content') }
-                </Button> : null }
+                {this.state.copyPossible ?
+                    <Button
+                        variant="contained"
+                        onClick={e => Utils.copyToClipboard(this.state.text || this.state.code, e)} >
+                        <CopyIcon />
+                        {this.props.t('Copy content')}
+                    </Button> : null}
 
-                <Button onClick={() => this.props.onClose()} color="primary">
+                <Button
+                    variant="contained"
+                    onClick={() => this.props.onClose()}
+                    color="primary">
                     <CloseIcon />
-                    { this.props.t('Close') }
+                    {this.props.t('Close')}
                 </Button>
             </DialogActions>
         </Dialog>;

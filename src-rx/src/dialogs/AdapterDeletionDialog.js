@@ -43,41 +43,43 @@ class AdapterDeletionDialog extends Component {
 
         return (
             <Dialog
-                onClose={ this.props.onClose }
-                open={ this.props.open }
+                onClose={this.props.onClose}
+                open={this.props.open}
             >
-                <DialogTitle disableTypography={ true }>
+                <DialogTitle disableTypography={true}>
                     <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
-                        { this.t('Please confirm') }
-                        <IconButton className={ classes.closeButton } onClick={ this.props.onClose }>
+                        {this.t('Please confirm')}
+                        <IconButton className={classes.closeButton} onClick={this.props.onClose}>
                             <CloseIcon />
                         </IconButton>
                     </Typography>
                 </DialogTitle>
                 <DialogContent dividers>
                     <Typography gutterBottom>
-                        { this.t('Are you sure you want to delete adapter %s?', this.props.adapter) }
+                        {this.t('Are you sure you want to delete adapter %s?', this.props.adapter)}
                     </Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button
+                        variant="contained"
                         autoFocus
-                        onClick={ () => {
+                        onClick={() => {
                             this.props.onClick();
                             this.props.onClose();
                         }}
                         color="primary"
                     >
-                        { this.t('Ok') }
+                        {this.t('Ok')}
                     </Button>
                     <Button
+                        variant="contained"
                         autoFocus
-                        onClick={ () => {
+                        onClick={() => {
                             this.props.onClose();
                         }}
                         color="default"
                     >
-                        { this.t('Close') }
+                        {this.t('Close')}
                     </Button>
                 </DialogActions>
             </Dialog>

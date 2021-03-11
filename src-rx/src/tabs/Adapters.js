@@ -354,9 +354,9 @@ class Adapters extends Component {
         }
     }
 
-    addInstance(adapter, instance) {
+    addInstance(adapter, instance, debug = false, customUrl = false) {
 
-        if (!instance && this.props.expertMode) {
+        if (!instance && this.props.expertMode && !customUrl) {
             this.setState({
                 addInstanceDialog: true,
                 addInstanceAdapter: adapter,
@@ -364,7 +364,7 @@ class Adapters extends Component {
             });
         } else {
 
-            if (instance) {
+            if (instance && !customUrl) {
 
                 let cancel = false;
 
@@ -388,8 +388,7 @@ class Adapters extends Component {
                     return;
                 }
             }
-
-            this.props.executeCommand(`add ${adapter} ${instance ? instance + ' ' : ''}--host ${this.props.currentHostName}`);
+            this.props.executeCommand(`${customUrl ? 'url' : 'add'} ${adapter} ${instance ? instance + ' ' : ''}--host ${this.props.currentHostName} ${debug ? '--debug' : ''}`);
         }
     }
 
@@ -764,6 +763,7 @@ class Adapters extends Component {
                         return category.adapters.length === idx + 1 ? <AdapterRow
                             key={'category-' + categoryName + 1}
                             category
+                            categoryName={categoryName}
                             count={category.count}
                             expanded={expanded}
                             installedCount={category.installed}
@@ -838,7 +838,7 @@ class Adapters extends Component {
     getTiles() {
         let array = this.state.categories
             .filter(({ name }) => this.state.categoriesTiles === 'All' || name === this.state.categoriesTiles)
-            .map(category => category.adapters.map((value, idx) => {
+            .map(category => category.adapters.map((value) => {
                 const adapter = this.state.repository[value];
                 if (!adapter.controller) {
                     const installed = this.state.installed[value];
@@ -863,14 +863,14 @@ class Adapters extends Component {
                     if (title instanceof Object || !desc) {
                         console.warn(adapter);
                     }
-                    console.log(adapter)
+                    let daysAgo = Math.round((Date.parse(new Date()) - Date.parse(adapter.versionDate)) / 86400000)
                     return ({
                         render: <CardAdapters
                             key={'adapter-' + value}
                             image={image}
                             name={title}
                             stat={this.state.filterTiles === "Popular first" && adapter.stat}
-                            versionDate={this.state.filterTiles === "Recently updated" && `${Math.round((Date.parse(new Date()) - Date.parse(adapter.versionDate)) / 86400000)} ${this.props.t('days ago')}`}
+                            versionDate={this.state.filterTiles === "Recently updated" && daysAgo ? `${daysAgo} ${this.props.t('days ago')}` : ''}
                             connectionType={connectionType}
                             description={desc}
                             enabledCount={installed && installed.enabled}
@@ -1001,7 +1001,7 @@ class Adapters extends Component {
                 </Tooltip>
 
                 {this.props.expertMode &&
-                    <IconButton onClick={()=>this.setState({ gitHubInstallDialog: true })}>
+                    <IconButton onClick={() => this.setState({ gitHubInstallDialog: true })}>
                         <GithubIcon />
                     </IconButton>
                 }
@@ -1101,8 +1101,10 @@ class Adapters extends Component {
             }
             <GitHubInstallDialog
                 open={this.state.gitHubInstallDialog}
+                categories={this.state.categories}
+                addInstance={(value, debug, customUrl) => this.addInstance(value, this.state.addInstanceId, debug, customUrl)}
+                repository={this.state.repository}
                 onClose={() => { this.setState({ gitHubInstallDialog: false }) }}
-                onClick={() => { }}
             />
             {this.state.adapterUpdateDialog &&
                 <AdapterUpdateDialog

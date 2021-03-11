@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import SmsIcon from '@material-ui/icons/Sms';
+import CloseIcon from "@material-ui/icons/Close";
 import PropTypes from 'prop-types';
 
 import Button from '@material-ui/core/Button';
@@ -10,9 +11,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
 
 import I18n from '@iobroker/adapter-react/i18n';
-import { AppBar, Box, Checkbox, makeStyles, Tab, Tabs, TextField, useTheme } from '@material-ui/core';
+import { AppBar, Box, Checkbox, FormControlLabel, IconButton, InputAdornment, makeStyles, Tab, Tabs, TextField, useTheme } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
-// import { useStyles } from '@material-ui/pickers/views/Calendar/SlideTransition';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -27,7 +27,7 @@ function TabPanel(props) {
         >
             {value === index && (
                 <Box style={{ paddingTop: 10 }} p={3}>
-                    <Typography>{children}</Typography>
+                    <Typography component="div">{children}</Typography>
                 </Box>
             )}
         </div>
@@ -57,116 +57,173 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 1000
     }
 }));
-
-const GitHubInstallDialog = (props) => {
+const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstance }) => {
     const classes = useStyles();
     const theme = useTheme();
-    console.log(theme.palette.primary.main)
+    const [autocompleteValue, setAutocompleteValue] = useState(null);
+    const [debug, setDebug] = useState(false);
+    const [url, setUrl] = useState('');
     const [value, setValue] = useState(0);
-
+    // eslint-disable-next-line array-callback-return
+    const array = useCallback(() => categories.map(category => category.adapters).flat().map(el => {
+        const adapter = repository[el]
+        if (!adapter.controller) {
+            return ({
+                value: el, name: `${adapter.name} [${adapter.meta
+                    .replace('https://raw.githubusercontent.com/', '')
+                    .substr(0, adapter.meta.replace('https://raw.githubusercontent.com/', '')
+                        .indexOf('/'))}]`
+            });
+        }
+    }), [categories, repository]);
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
-    let top100Films = [
-        { title: 'The Shawshank Redemption', year: 1994 },
-        { title: 'The Godfather', year: 1972 },]
-    return (
-        <Dialog
-            onClose={props.onClose}
-            open={props.open}
-            classes={{ paper: classes.paper }}
-        >
-            <DialogContent dividers>
-                <div className={classes.root}>
-                    <AppBar position="static" color="default">
-                        <Tabs
-                            value={value}
-                            onChange={handleChange}
-                            indicatorColor="primary"
-                            textColor="primary"
-                            variant="fullWidth"
-                            aria-label="full width tabs example"
-                        >
-                            <Tab label="From github" {...a11yProps(0)} />
-                            <Tab label="Custom" {...a11yProps(1)} />
-                        </Tabs>
-                    </AppBar>
-                    <div style={{
-                        marginTop: 10,
-                        padding: 7,
-                        fontSize: 18,
-                        background: theme.palette.primary.main
-                    }}>{value === 0 ?
-                        I18n.t('Install or update the adapter from Github') :
-                        I18n.t('Install or update the adapter from URL')}
-                    </div>
-                    <TabPanel value={value} index={0} dir={theme.direction}>
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center'
-                        }}><Checkbox /> {I18n.t('Debug outputs')}</div>
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'flex-end'
-                        }}><SmsIcon style={{ marginRight: 10 }} /><Autocomplete
-                                id="combo-box-demo"
-                                options={top100Films}
-                                getOptionLabel={(option) => option.title}
-                                style={{ width: 300 }}
-                                renderInput={(params) => <TextField {...params} label="Select adapter" />}
-                            /></div>
-                        <div style={{
-                            fontSize: 40,
-                            fontWeight: 'bold'
-                        }}>{I18n.t('Warning!')}</div>
-                        <div style={{ color: '#f53939' }}>
-                            {I18n.t(`Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!`)}
-                        </div>
-                    </TabPanel>
-                    <TabPanel value={value} index={1} dir={theme.direction}>
-                        <div>
-                            <TextField
-                                fullWidth
-                                label={I18n.t('URL')}
-                                helperText={I18n.t('URL or file path')}
-                                defaultValue=""
-                            // onChange={event => this.handleFilterChange(event)}
-                            /></div>
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center'
-                        }}><Checkbox /> {I18n.t('Debug outputs')}</div>
-                        <div style={{
-                            fontSize: 40,
-                            fontWeight: 'bold'
-                        }}>{I18n.t('Warning!')}</div>
-                        <div style={{ color: '#f53939' }}>
-                            {I18n.t(`Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!`)}
-                        </div>
-                    </TabPanel>
+    const closeInit = () => {
+        setAutocompleteValue(null);
+        setDebug(false);
+        setValue(0);
+        setUrl('')
+    }
+    return <Dialog
+        onClose={onClose}
+        open={open}
+        classes={{ paper: classes.paper }}
+    >
+        <DialogContent dividers>
+            <div className={classes.root}>
+                <AppBar position="static" color="default">
+                    <Tabs
+                        value={value}
+                        onChange={handleChange}
+                        indicatorColor="primary"
+                        textColor="primary"
+                        variant="fullWidth"
+                        aria-label="full width tabs example"
+                    >
+                        <Tab label="From github" {...a11yProps(0)} />
+                        <Tab label="Custom" {...a11yProps(1)} />
+                    </Tabs>
+                </AppBar>
+                <div style={{
+                    marginTop: 10,
+                    padding: 7,
+                    fontSize: 18,
+                    background: theme.palette.primary.main
+                }}>{value === 0 ?
+                    I18n.t('Install or update the adapter from Github') :
+                    I18n.t('Install or update the adapter from URL')}
                 </div>
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    autoFocus
-                    onClick={() => {
-                        props.onClick();
-                        props.onClose();
-                    }}
-                    color="primary">
-                    {I18n.t('Install')}
-                </Button>
-                <Button
-                    autoFocus
-                    onClick={() => {
-                        props.onClose();
-                    }}
-                    color="default">
-                    {I18n.t('Close')}
-                </Button>
-            </DialogActions>
-        </Dialog>
-    );
+                <TabPanel value={value} index={0} dir={theme.direction}>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center'
+                    }}>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={debug}
+                                    onChange={(e) => setDebug(e.target.checked)} />}
+                            label={I18n.t('Debug outputs')}
+                        />
+                    </div>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'flex-end'
+                    }}>
+                        <SmsIcon style={{ marginRight: 10 }} />
+                        <Autocomplete
+                            fullWidth
+                            id="combo-box-demo"
+                            value={autocompleteValue}
+                            getOptionSelected={(option, value) => option.name === value.name}
+                            onChange={(_, e) => setAutocompleteValue(e)}
+                            options={array()}
+                            getOptionLabel={(option) => option.name}
+                            renderInput={(params) => <TextField {...params} label="Select adapter" />}
+                        /></div>
+                    <div style={{
+                        fontSize: 40,
+                        fontWeight: 'bold'
+                    }}>{I18n.t('Warning!')}</div>
+                    <div style={{ color: '#f53939' }}>
+                        {I18n.t(`Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!`)}
+                    </div>
+                </TabPanel>
+                <TabPanel value={value} index={1} dir={theme.direction}>
+                    <div>
+                        <TextField
+                            fullWidth
+                            label={I18n.t('URL')}
+                            helperText={I18n.t('URL or file path')}
+                            value={url}
+                            onChange={event => setUrl(event.target.value)}
+                            InputProps={{
+                                endAdornment: (
+                                    url ? <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => setUrl('')}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment> : null
+                                ),
+                            }}
+                        />
+                    </div>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center'
+                    }}>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={debug}
+                                    onChange={(e) => setDebug(e.target.checked)} />}
+                            label={I18n.t('Debug outputs')}
+                        />
+                    </div>
+                    <div style={{
+                        fontSize: 40,
+                        fontWeight: 'bold'
+                    }}>{I18n.t('Warning!')}</div>
+                    <div style={{ color: '#f53939' }}>
+                        {I18n.t(`Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!`)}
+                    </div>
+                </TabPanel>
+            </div>
+        </DialogContent>
+        <DialogActions>
+            <Button
+                variant="contained"
+                disabled={(value === 0 && !autocompleteValue) || (value === 1 && !url)}
+                autoFocus
+                onClick={() => {
+                    if (value === 0) {
+                        addInstance(autocompleteValue.value, debug, false);
+
+                    } else {
+                        addInstance(url, debug, true);
+                    }
+                    onClose();
+                    closeInit();
+                }}
+                color="primary">
+                {I18n.t('Install')}
+            </Button>
+            <Button
+                variant="contained"
+                autoFocus
+                onClick={() => {
+                    onClose();
+                    closeInit();
+                }}
+                color="default">
+                {I18n.t('Close')}
+            </Button>
+        </DialogActions>
+    </Dialog>
 }
 
 export default GitHubInstallDialog;

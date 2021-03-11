@@ -1,6 +1,7 @@
 import I18n from '@iobroker/adapter-react/i18n';
 import { Button, Menu, MenuItem } from '@material-ui/core';
 import React, { useState } from 'react';
+import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 
 const CustomSelectButton = ({ arrayItem, onClick, value }) => {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -27,7 +28,7 @@ const CustomSelectButton = ({ arrayItem, onClick, value }) => {
                         onClick(name);
                         setAnchorEl(null)
                     }}>
-                    {I18n.t(name)}
+                    <MaterialDynamicIcon objIconBool iconName={name} style={{ marginRight: 5 }} />{I18n.t(name)}
                 </MenuItem>
             })}
         </Menu>

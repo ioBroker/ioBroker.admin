@@ -133,6 +133,7 @@ class AddInstanceDialog extends Component {
                 </DialogContent>
                 <DialogActions>
                     <Button
+                        variant="contained"
                         autoFocus
                         onClick={() => {
                             this.props.onClick();
@@ -142,6 +143,7 @@ class AddInstanceDialog extends Component {
                         {this.t('Add')}
                     </Button>
                     <Button
+                        variant="contained"
                         autoFocus
                         onClick={() => {
                             this.props.onClose();

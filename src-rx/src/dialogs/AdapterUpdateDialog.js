@@ -131,6 +131,7 @@ class AdapterUpdateDialog extends Component {
                 </DialogContent>
                 <DialogActions>
                     <Button
+                        variant="contained"
                         autoFocus
                         disabled={!this.props.rightDependencies}
                         onClick={() => {
@@ -142,6 +143,7 @@ class AdapterUpdateDialog extends Component {
                         {this.t('Update')}
                     </Button>
                     <Button
+                        variant="contained"
                         autoFocus
                         onClick={() => {
                             this.props.onClose();
