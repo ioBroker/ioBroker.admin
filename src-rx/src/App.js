@@ -398,6 +398,9 @@ class App extends Router {
                         newState.currentHost = newState.hosts[0]._id;
                         newState.currentHostName = newState.hosts[0].common.name;
                     }
+
+                    this.subscribeOnHostsStatus();
+
                     this.setState(newState, () => this.setCurrentTabTitle());
 
                     this.logsWorker && this.logsWorker.setCurrentHost(this.state.currentHost);
@@ -417,8 +420,23 @@ class App extends Router {
         }
     }
 
+    onHostStatusChanged = (id, state) => {
+        const host = this.state.hosts.find(_id => id + '.alive' === id);
+        if (host) {
+            console.log('Current status ' + id + ': ' + state?.val);
+        }
+    };
+
+    subscribeOnHostsStatus() {
+        // this.state.hosts.forEach
+        // this.socket.subscribeState(id + '.alive', this.onHostStatusChanged)
+    }
+
     componentWillUnmount() {
         window.removeEventListener('hashchange', () => this.onHashChanged(), false);
+        // unsubscibe
+        // this.state.hosts.forEach
+        // this.socket.unsubscribeState(id + '.alive', this.onHostStatusChanged);
     }
 
     /**
@@ -935,6 +953,10 @@ class App extends Router {
         </ConfirmDialog>;
     }
 
+    renderHostSelector() {
+
+    }
+
     render() {
         if (this.state.login) {
             return (
@@ -1019,6 +1041,7 @@ class App extends Router {
                             {this.state.cmd && !this.state.cmdDialog && <IconButton onClick={() => this.setState({ cmdDialog: true })}>
                                 <PictureInPictureAltIcon className={this.state.commandError ? classes.errorCmd : this.state.performed ? classes.performed : classes.cmd} />
                             </IconButton>}
+                            {/* Show host selector */}
                             <Grid container className={clsx(this.state.drawerState !== 0 && classes.avatarVisible, classes.avatarNotVisible)} spacing={1} alignItems="center" style={{ width: 'initial' }}>
                                 <Grid item>
                                     <Typography>admin</Typography>
