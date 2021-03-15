@@ -12,7 +12,6 @@ export const ContextWrapperProvider = ({ children }) => {
         logWarnings: 0//logsWorker.registerWarningCountHandler
     });
     const setStateContext = (obj) => {
-        console.log('setContext')
         setState(prevState => (Object.keys(prevState).length === Object.keys(obj).length ? { ...obj } : { ...prevState, ...obj }));
     };
     return <ContextWrapper.Provider value={{ stateContext, setStateContext }}>

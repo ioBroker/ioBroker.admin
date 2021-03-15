@@ -31,6 +31,10 @@ import BugReportIcon from '@material-ui/icons/BugReport';
 import InfoIcon from '@material-ui/icons/Info';
 import WarningIcon from '@material-ui/icons/Warning';
 import ErrorIcon from '@material-ui/icons/Error';
+import DevicesIcon from '@material-ui/icons/Devices';
+import ViewListIcon from '@material-ui/icons/ViewList';
+import ViewModuleIcon from '@material-ui/icons/ViewModule';
+import CloseIcon from "@material-ui/icons/Close";
 
 import MemoryIcon from '@material-ui/icons/Memory';
 
@@ -53,6 +57,8 @@ import TabContent from '../components/TabContent';
 
 import InstanceInfo from '../components/InstanceInfo';
 import State from '../components/State';
+import TabHeader from '../components/TabHeader';
+import { InputAdornment, TextField } from '@material-ui/core';
 
 const styles = theme => ({
     table: {
@@ -132,6 +138,18 @@ const styles = theme => ({
     error: {
         backgroundColor: red[700]
     },
+    grow: {
+        flexGrow: 1
+    },
+    tableRender: {
+        tableLayout: 'fixed',
+        minWidth: 960,
+        '& td': {
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+        }
+    },
 });
 
 // every tab should get their data itself from server
@@ -148,10 +166,14 @@ class Instances extends Component {
             instances: null,
             dialogProp: null,
             states: null,
+            playArrow: false,
+            importantDevices: false,
+            viewMode: false,
+            hostData: null
         };
 
         this.columns = {
-            instance: { onlyExpert: false},
+            instance: { onlyExpert: false },
             actions: { onlyExpert: false },
             title: { onlyExpert: false },
             schedule: { onlyExpert: false },
@@ -161,7 +183,7 @@ class Instances extends Component {
             events: { onlyExpert: true },
             ram: { onlyExpert: false }
         };
-        
+
         this.promises = {};
         this.objects = null;
         this.states = {};
@@ -177,6 +199,7 @@ class Instances extends Component {
 
     componentDidMount() {
         this.getData();
+        this.getHostsData()
     }
 
     getStates(update) {
@@ -190,16 +213,16 @@ class Instances extends Component {
 
     static getDerivedStateFromProps(props, state) {
         const location = Router.getLocation();
-        
+
         const newState = {
             dialog: location.dialog,
             dialogProp: location.id
         };
-        
+
         if (props.expertMode !== state.expertMode) {
             newState.expertMode = props.expertMode;
         }
-        
+
         return newState;
     }
 
@@ -227,21 +250,21 @@ class Instances extends Component {
                     objectsProm
                 ]
             );
-            
+
             instances = _instances;
             this.states = states || [];
             this.objects = objects || [];
 
-        } catch(error) {
+        } catch (error) {
             console.log(error)
         }
 
-        if(!instances || !this.states || !this.objects) {
+        if (!instances || !this.states || !this.objects) {
             return;
         }
 
         const formatted = {};
-        
+
         instances.forEach(obj => this.objects[obj._id] = obj);
 
         instances.sort((a, b) => {
@@ -286,19 +309,19 @@ class Instances extends Component {
 
             const instance = {};
 
-            instance.id    = obj._id.replace('system.adapter.', '');
-            instance.name  = common.titleLang ? common.titleLang[this.props.lang] : common.title;
+            instance.id = obj._id.replace('system.adapter.', '');
+            instance.name = common.titleLang ? common.titleLang[this.props.lang] : common.title;
             instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
             let links = /*(ws && ws.link) ? ws.link :*/ common.localLinks || common.localLink || '';
             if (typeof links === 'string') {
-                links = {_default: links};
+                links = { _default: links };
             }
 
             Object.keys(links).forEach(linkName => {
                 instance.link = instance.link || [];
                 const link = links[linkName];
                 instance.link.push(Utils.replaceLink(link, common.name, instanceId, {
-                    objects:  this.objects,
+                    objects: this.objects,
                     hostname: this.props.hostname,
                     protocol: this.props.protocol
                 }));
@@ -316,7 +339,13 @@ class Instances extends Component {
             formatted[obj._id] = instance;
         });
 
+        const importantDevices = JSON.parse(window.localStorage.getItem('Instances.importantDevices'));
+        const playArrow = JSON.parse(window.localStorage.getItem('Instances.playArrow'));
+        const viewMode = JSON.parse(window.localStorage.getItem('Instances.viewMode'));
         this.setState({
+            importantDevices,
+            playArrow,
+            viewMode,
             instances: formatted
         });
 
@@ -328,7 +357,7 @@ class Instances extends Component {
     }
 
     onStateChange(id, state) {
-        
+
         const oldState = this.states[id];
 
         this.states[id] = state;
@@ -344,7 +373,7 @@ class Instances extends Component {
     }
 
     onObjectChange(id, obj) {
-        
+
         if (this.objects[id]) {
             if (obj) {
                 this.objects[id] = obj;
@@ -391,7 +420,7 @@ class Instances extends Component {
         this.props.socket.extendObject(id, data, error =>
             error && window.alert(error));
     }
-    
+
     openConfig(instance) {
         Router.doNavigate('tab-instances', 'config', instance);
     }
@@ -402,9 +431,9 @@ class Instances extends Component {
         const instance = this.state.instances[id];
         const common = obj ? obj.common : null;
         const mode = common.mode || '';
-        
+
         let state = mode === 'daemon' ? 'green' : 'blue';
-        
+
         if (common && common.enabled && (!common.webExtension || !obj.native.webInstance || mode === 'daemon')) {
 
             const alive = this.states[id + '.alive'];
@@ -472,7 +501,7 @@ class Instances extends Component {
     isConnected(id) {
 
         const instance = this.state.instances[id];
-        
+
         return this.states[instance.id + '.info.connection'] ? !!this.states[instance.id + '.info.connection'].val : null;
     }
 
@@ -486,7 +515,7 @@ class Instances extends Component {
 
             if (!column.onlyExpert || column.onlyExpert === this.state.expertMode) {
                 headers.push(
-                    <TableCell key={ index }>{ index }</TableCell>
+                    <TableCell key={index}>{index}</TableCell>
                 );
             }
         }
@@ -499,60 +528,60 @@ class Instances extends Component {
         const rows = this.state.instances.map(instance => {
 
             return (
-                <TableRow key={ instance.id } className={ classes.tableRow }>
+                <TableRow key={instance.id} className={classes.tableRow}>
                     <TableCell>
-                        <Grid container  spacing={ 1 } alignItems="center">
+                        <Grid container spacing={1} alignItems="center">
                             <Grid item>
                                 <div
-                                    className={ classes.state + ' ' + classes[instance.state] }
+                                    className={classes.state + ' ' + classes[instance.state]}
                                 />
                             </Grid>
                             <Grid item>
-                                <Avatar alt={ instance.id } src={ instance.image } className={ classes.smallAvatar }/>
+                                <Avatar alt={instance.id} src={instance.image} className={classes.smallAvatar} />
                             </Grid>
                             <Grid item>
-                                { instance.id }
+                                {instance.id}
                             </Grid>
                         </Grid>
                     </TableCell>
-                    <TableCell style={{padding: 0}}>
+                    <TableCell style={{ padding: 0 }}>
                         <IconButton
                             size="small"
-                            onClick={ () => this.extendObject('system.adapter.' + instance.id, {common: {enabled: !instance.isRun}}) }
-                            className={ classes.button + ' ' + (instance.canStart ? instance.isRun ? classes.enabled : classes.disabled : classes.hide) }
+                            onClick={() => this.extendObject('system.adapter.' + instance.id, { common: { enabled: !instance.isRun } })}
+                            className={classes.button + ' ' + (instance.canStart ? instance.isRun ? classes.enabled : classes.disabled : classes.hide)}
                         >
-                            { instance.isRun ? <PauseIcon /> : <PlayArrowIcon /> }
+                            {instance.isRun ? <PauseIcon /> : <PlayArrowIcon />}
                         </IconButton>
                         <IconButton
                             size="small"
-                            className={ classes.button }
+                            className={classes.button}
                         >
                             <BuildIcon />
                         </IconButton>
                         <IconButton
                             size="small"
-                            onClick={ () => this.extendObject('system.adapter.' + instance.id, {}) }
-                            className={ classes.button + ' ' + (instance.canStart ? '' : classes.hide) }
-                            disabled={ !instance.isRun }
+                            onClick={() => this.extendObject('system.adapter.' + instance.id, {})}
+                            className={classes.button + ' ' + (instance.canStart ? '' : classes.hide)}
+                            disabled={!instance.isRun}
                         >
                             <RefreshIcon />
                         </IconButton>
                         <IconButton
                             size="small"
-                            className={ classes.button }
+                            className={classes.button}
                         >
                             <DeleteIcon />
                         </IconButton>
                         <IconButton
                             size="small"
-                            className={ classes.button + ' ' + (instance.links && instance.links.length ? '' : classes.hide) }
-                            disabled={ !instance.isRun }
-                            onClick={ ()=> window.open(instance.links[0], '_blank') }
+                            className={classes.button + ' ' + (instance.links && instance.links.length ? '' : classes.hide)}
+                            disabled={!instance.isRun}
+                            onClick={() => window.open(instance.links[0], '_blank')}
                         >
                             <InputIcon />
                         </IconButton>
                     </TableCell>
-                    <TableCell>{ instance.name }</TableCell>
+                    <TableCell>{instance.name}</TableCell>
                     <TableCell />
                     <TableCell />
                 </TableRow>
@@ -567,7 +596,7 @@ class Instances extends Component {
         if (mode === 'daemon') {
             return <SettingsIcon />;
         } else if (mode === 'schedule') {
-           return <ScheduleIcon />
+            return <ScheduleIcon />
         }
 
         return null;
@@ -576,20 +605,20 @@ class Instances extends Component {
     getLogLevelIcon(level) {
 
         if (level === 'debug') {
-            return <BugReportIcon/>;
+            return <BugReportIcon />;
         } else if (level === 'info') {
-            return <InfoIcon/>;
+            return <InfoIcon />;
         } else if (level === 'warn') {
-            return <WarningIcon/>;
+            return <WarningIcon />;
         } else if (level === 'error') {
-            return <ErrorIcon/>;
+            return <ErrorIcon />;
         }
 
         return null;
     }
 
     getPanels(classes) {
-        return Object.keys(this.state.instances).map(id => {
+        let array = Object.keys(this.state.instances).map(id => {
 
             const instance = this.state.instances[id];
             const running = this.isRunning(id);
@@ -599,101 +628,101 @@ class Instances extends Component {
 
             const loglevelIcon = this.getLogLevelIcon(instance.loglevel);
 
-            return (
-                <Accordion key={ instance.id } square expanded={ this.state.expanded === instance.id } onChange={ () => this.handleChange(instance.id ) }>
+            return ({
+                render: <Accordion key={instance.id} square expanded={this.state.expanded === instance.id} onChange={() => this.handleChange(instance.id)}>
                     <AccordionSummary
-                        expandIcon={ <ExpandMoreIcon /> }
+                        expandIcon={<ExpandMoreIcon />}
                     >
-                        <Grid container spacing={ 1 } alignItems="center" direction="row" wrap="nowrap">
+                        <Grid container spacing={1} alignItems="center" direction="row" wrap="nowrap">
                             <Grid
                                 item
                                 container
-                                md={ 2 }
-                                spacing={ 1 }
+                                md={2}
+                                spacing={1}
                                 alignItems="center"
                                 direction="row"
                                 wrap="nowrap"
                             >
                                 <Grid item>
-                                    <Avatar className={ classes.smallAvatar + ' ' +
+                                    <Avatar className={classes.smallAvatar + ' ' +
                                         (instance.mode === 'daemon' || instance.mode === 'schedule' ?
-                                        classes[this.getInstanceState(id)] : classes.transparent) }
+                                            classes[this.getInstanceState(id)] : classes.transparent)}
                                     >
-                                        { this.getModeIcon(instance.mode) }
+                                        {this.getModeIcon(instance.mode)}
                                     </Avatar>
                                 </Grid>
-                                { this.props.expertMode &&
+                                {this.props.expertMode &&
                                     <Grid item>
-                                        <Tooltip title={ this.t('loglevel') + ' ' + instance.loglevel }>
-                                            <Avatar className={ classes.smallAvatar + ' ' + classes[instance.loglevel] }>
-                                                { loglevelIcon }
+                                        <Tooltip title={this.t('loglevel') + ' ' + instance.loglevel}>
+                                            <Avatar className={classes.smallAvatar + ' ' + classes[instance.loglevel]}>
+                                                {loglevelIcon}
                                             </Avatar>
                                         </Tooltip>
                                     </Grid>
                                 }
                                 <Grid item>
-                                    <Badge color="secondary" variant="dot" invisible={ !instance.compactMode }>
+                                    <Badge color="secondary" variant="dot" invisible={!instance.compactMode}>
                                         <Avatar
                                             variant="square"
-                                            alt={ instance.id }
-                                            src={ instance.image }
-                                            className={ classes.smallAvatar }
+                                            alt={instance.id}
+                                            src={instance.image}
+                                            className={classes.smallAvatar}
                                         />
                                     </Badge>
                                 </Grid>
                                 <Grid item>
-                                    { instance.id }
+                                    {instance.id}
                                 </Grid>
                             </Grid>
                             <Hidden smDown>
-                                <Grid item sm={ 4 } lg={ 3 }>
-                                    <Typography className={classes.secondaryHeading}>{ instance.name }</Typography>
+                                <Grid item sm={4} lg={3}>
+                                    <Typography className={classes.secondaryHeading}>{instance.name}</Typography>
                                 </Grid>
                             </Hidden>
                         </Grid>
                         <IconButton
                             size="small"
-                            onClick={ event => {
-                                this.extendObject('system.adapter.' + instance.id, {common: {enabled: !running}});
+                            onClick={event => {
+                                this.extendObject('system.adapter.' + instance.id, { common: { enabled: !running } });
                                 event.stopPropagation();
-                            } }
-                            onFocus={ event => event.stopPropagation() }
-                            className={ classes.button + ' ' + (instance.canStart ?
+                            }}
+                            onFocus={event => event.stopPropagation()}
+                            className={classes.button + ' ' + (instance.canStart ?
                                 running ? classes.enabled : classes.disabled : classes.hide)
                             }
                         >
-                            { running ? <PauseIcon /> : <PlayArrowIcon /> }
+                            {running ? <PauseIcon /> : <PlayArrowIcon />}
                         </IconButton>
                         <Hidden xsDown>
                             <IconButton
                                 size="small"
-                                className={ classes.button }
-                                onClick={ () => this.openConfig(id) }
+                                className={classes.button}
+                                onClick={() => this.openConfig(id)}
                             >
                                 <BuildIcon />
                             </IconButton>
                         </Hidden>
                         <IconButton
                             size="small"
-                            onClick={ event => {
+                            onClick={event => {
                                 this.extendObject('system.adapter.' + instance.id, {});
                                 event.stopPropagation();
-                            } }
-                            onFocus={ event => event.stopPropagation() }
-                            className={ classes.button + ' ' + (instance.canStart ? '' : classes.hide) }
-                            disabled={ !running }
+                            }}
+                            onFocus={event => event.stopPropagation()}
+                            className={classes.button + ' ' + (instance.canStart ? '' : classes.hide)}
+                            disabled={!running}
                         >
                             <RefreshIcon />
                         </IconButton>
                         <IconButton
                             size="small"
-                            className={ classes.button + ' ' + (instance.link ? '' : classes.hide) }
-                            disabled={ !running }
-                            onClick={ event => {
+                            className={classes.button + ' ' + (instance.link ? '' : classes.hide)}
+                            disabled={!running}
+                            onClick={event => {
                                 window.open(instance.link, "_blank")
                                 event.stopPropagation();
-                            } }
-                            onFocus={ event => event.stopPropagation() }
+                            }}
+                            onFocus={event => event.stopPropagation()}
                         >
                             <InputIcon />
                         </IconButton>
@@ -707,25 +736,25 @@ class Instances extends Component {
                                 item
                                 container
                                 direction="row"
-                                xs={ 10 }
+                                xs={10}
                             >
                                 <Grid
                                     item
                                     container
                                     direction="column"
-                                    xs={ 12 }
-                                    sm={ 6 }
-                                    md={ 4 }
+                                    xs={12}
+                                    sm={6}
+                                    md={4}
                                 >
-                                    <State state={ connectedToHost } >
-                                        { this.t('Connected to host') }
+                                    <State state={connectedToHost} >
+                                        {this.t('Connected to host')}
                                     </State>
-                                    <State state={ alive } >
-                                        { this.t('Heartbeat') }
+                                    <State state={alive} >
+                                        {this.t('Heartbeat')}
                                     </State>
-                                    { connected !== null &&
-                                        <State state={ connected }>
-                                            { this.t('Connected to %s', instance.adapter) }
+                                    {connected !== null &&
+                                        <State state={connected}>
+                                            {this.t('Connected to %s', instance.adapter)}
                                         </State>
                                     }
                                 </Grid>
@@ -733,49 +762,49 @@ class Instances extends Component {
                                     item
                                     container
                                     direction="column"
-                                    xs={ 12 }
-                                    sm={ 6 }
-                                    md={ 4 }
+                                    xs={12}
+                                    sm={6}
+                                    md={4}
                                 >
                                     <InstanceInfo
-                                        icon={ <InfoIcon /> }
-                                        tooltip={ this.t('Installed') }
+                                        icon={<InfoIcon />}
+                                        tooltip={this.t('Installed')}
                                     >
-                                        { instance.version }
+                                        {instance.version}
                                     </InstanceInfo>
                                     <InstanceInfo
-                                        icon={ <MemoryIcon /> }
-                                        tooltip={ this.t('RAM usage') }
+                                        icon={<MemoryIcon />}
+                                        tooltip={this.t('RAM usage')}
                                     >
-                                        { (instance.mode === 'daemon' && running ? this.getMemory(id) : '-.--') + ' MB' }
+                                        {(instance.mode === 'daemon' && running ? this.getMemory(id) : '-.--') + ' MB'}
                                     </InstanceInfo>
                                 </Grid>
                                 <Grid
                                     item
                                     container
                                     direction="column"
-                                    xs={ 12 }
-                                    sm={ 6 }
-                                    md={ 4 }
+                                    xs={12}
+                                    sm={6}
+                                    md={4}
                                 >
                                     <InstanceInfo
-                                        icon={ loglevelIcon }
-                                        tooltip={ this.t('loglevel') }
+                                        icon={loglevelIcon}
+                                        tooltip={this.t('loglevel')}
                                     >
-                                        { instance.loglevel }
+                                        {instance.loglevel}
                                     </InstanceInfo>
                                     <InstanceInfo
-                                        icon={ <ScheduleIcon /> }
-                                        tooltip={ this.t('schedule_group') }
+                                        icon={<ScheduleIcon />}
+                                        tooltip={this.t('schedule_group')}
                                     >
-                                        { this.getSchedule(id) || '-' }
+                                        {this.getSchedule(id) || '-'}
                                     </InstanceInfo>
-                                    { this.props.expertMode &&
+                                    {this.props.expertMode &&
                                         <InstanceInfo
-                                            icon={ <ScheduleIcon /> }
-                                            tooltip={ this.t('restart') }
+                                            icon={<ScheduleIcon />}
+                                            tooltip={this.t('restart')}
                                         >
-                                            { this.getRestartSchedule(id) || '-' }
+                                            {this.getRestartSchedule(id) || '-'}
                                         </InstanceInfo>
                                     }
                                 </Grid>
@@ -784,21 +813,21 @@ class Instances extends Component {
                                 item
                                 container
                                 direction="row"
-                                xs={ 2 }
+                                xs={2}
                             >
                                 <Grid item>
                                     <Hidden smUp>
                                         <IconButton
                                             size="small"
-                                            className={ classes.button }
-                                            onClick={ () => this.openConfig(id) }
+                                            className={classes.button}
+                                            onClick={() => this.openConfig(id)}
                                         >
                                             <BuildIcon />
                                         </IconButton>
                                     </Hidden>
                                     <IconButton
                                         size="small"
-                                        className={ classes.button }
+                                        className={classes.button}
                                     >
                                         <DeleteIcon />
                                     </IconButton>
@@ -806,9 +835,17 @@ class Instances extends Component {
                             </Grid>
                         </Grid>
                     </AccordionDetails>
-                </Accordion>
+                </Accordion>,
+                running
+            }
             );
         });
+
+        if (this.state.playArrow) {
+            array = array.filter(({ running }) => running)
+        }
+
+        return array.map(({ render }) => render);
     }
 
     handleChange(panel) {
@@ -816,6 +853,20 @@ class Instances extends Component {
             expanded: prevState.expanded !== panel ? panel : null
         }));
     }
+    getHostsData() {
+        this.props.socket.getHostInfo(this.props.idHost)
+            .catch(error => {
+                console.error(error);
+                return error;
+            })
+            .then(hostData => this.setState({ hostData }))
+    }
+
+    changeSetStateBool = (value) =>
+        this.setState((state) => {
+            window.localStorage.setItem(`Instances.${value}`, JSON.stringify(!state[value]));
+            return ({ [value]: !state[value] });
+        })
 
     render() {
         if (!this.state.instances) {
@@ -823,7 +874,8 @@ class Instances extends Component {
                 <LinearProgress />
             );
         }
-
+        // console.log(this.props.socket.getHostInfo('MacBook-Pro-Igor.local'))
+        // console.log(this)
         const { classes } = this.props;
 
         if (this.state.dialog === 'config' && this.state.dialogProp) {
@@ -832,15 +884,15 @@ class Instances extends Component {
 
             if (instance) {
                 return (
-                    <Paper className={ classes.paper }>
+                    <Paper className={classes.paper}>
                         <Config
-                            className={ classes.iframe }
-                            adapter={ instance.id.split('.')[0] }
-                            instance={ parseInt(instance.id.split('.')[1]) }
-                            materialize={ instance.materialize }
-                            themeName={ this.props.themeName }
-                            t={ this.props.t }
-                            configStored={ this.props.configStored }
+                            className={classes.iframe}
+                            adapter={instance.id.split('.')[0]}
+                            instance={parseInt(instance.id.split('.')[1])}
+                            materialize={instance.materialize}
+                            themeName={this.props.themeName}
+                            t={this.props.t}
+                            configStored={this.props.configStored}
                         />
                     </Paper>
                 );
@@ -848,13 +900,62 @@ class Instances extends Component {
         }
 
         //if (this.props.width === 'xs' || this.props.width === 'sm') {
-            return (
-                <TabContainer>
-                    <TabContent overflow="auto">
-                        { this.getPanels(classes) }
-                    </TabContent>
-                </TabContainer>
-            );
+        return (
+            <TabContainer>
+                <TabHeader>
+                    <Tooltip title={this.t('Show / hide List')}>
+                        <IconButton onClick={() => this.changeSetStateBool('viewMode')}>
+                            {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title={this.t('Reload')}>
+                        <IconButton onClick={() => this.getData(true)}>
+                            <RefreshIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title={this.t('Show instances only for current host')}>
+                        <IconButton onClick={() => this.changeSetStateBool('importantDevices')}>
+                            <DevicesIcon color={this.state.importantDevices ? 'primary' : 'inherit'} />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title={this.t('Show only running instances')}>
+                        <IconButton onClick={() => this.changeSetStateBool('playArrow')}>
+                            <PlayArrowIcon color={this.state.playArrow ? 'primary' : 'inherit'} />
+                        </IconButton>
+                    </Tooltip>
+
+                    <div className={classes.grow} />
+                    <TextField
+                        inputRef={this.inputRef}
+                        label={this.t('Filter')}
+                        style={{ margin: '5px 0' }}
+                        defaultValue=""
+                        onChange={event => this.handleFilterChange(event)}
+                        InputProps={{
+                            endAdornment: (
+                                this.state.search ? <InputAdornment position="end">
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => {
+                                            this.inputRef.current.value = '';
+                                            this.setState({ search: '', filteredList: null });
+                                        }}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </InputAdornment> : null
+                            ),
+                        }}
+                    />
+                    <div className={classes.grow} />
+                    {this.state.hostData && `Disk free: ${Math.round(this.state.hostData['Disk free'] / (this.state.hostData['Disk size'] / 100))}%, Total RAM usage: 648 Mb / Free: 0% = 25 Mb [Host: MacBook-Pro-Igor.local - 21 processes]`}
+                    {/* <div className={classes.grow} /> */}
+                </TabHeader>
+                <TabContent overflow="auto">
+                    {this.getPanels(classes)}
+                </TabContent>
+            </TabContainer>
+        );
         //}
 
         /*return (

@@ -181,8 +181,15 @@ const CardAdapters = ({
 
     return <Card className={clsx(classes.root, hidden ? classes.hidden : '')}>
         <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
-            <CardContent>
-                <div className={classes.close} onClick={() => setCollapse((bool) => !bool)} />
+            <CardContent style={{ overflow: 'auto' }}>
+                <div style={{
+                    position: 'sticky',
+                    right: 0,
+                    top: 0,
+                    background: 'silver'
+                }}>
+                    <div className={classes.close} onClick={() => setCollapse((bool) => !bool)} />
+                </div>
                 <Typography gutterBottom component={'span'} variant={'body2'}>
                     {description}
                 </Typography>

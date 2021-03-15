@@ -321,8 +321,9 @@ class ConfirmDialog extends Component {
                     >
                         <Grid item>
                             <LinearProgress
-                                variant={this.state.max ? 'determinate' : 'indeterminate'}
-                                value={this.state.max && this.state.value ? 100 - Math.round((this.state.value / this.state.max) * 100) : 0}
+                                style={this.props.commandError ? { backgroundColor: '#f44336' } : null}
+                                variant={this.props.inBackground ? 'determinate' : 'indeterminate'}
+                                value={this.state.max && this.state.value ? 100 - Math.round((this.state.value / this.state.max) * 100) : this.props.commandError ? 0 : 100}
                             />
                         </Grid>
                         <div style={{

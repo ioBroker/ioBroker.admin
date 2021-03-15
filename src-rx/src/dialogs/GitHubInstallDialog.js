@@ -96,8 +96,6 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
                     <Tabs
                         value={value}
                         onChange={handleChange}
-                        indicatorColor="primary"
-                        textColor="primary"
                         variant="fullWidth"
                         aria-label="full width tabs example"
                     >
@@ -109,7 +107,6 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
                     marginTop: 10,
                     padding: 7,
                     fontSize: 18,
-                    background: theme.palette.primary.main
                 }}>{value === 0 ?
                     I18n.t('Install or update the adapter from Github') :
                     I18n.t('Install or update the adapter from URL')}

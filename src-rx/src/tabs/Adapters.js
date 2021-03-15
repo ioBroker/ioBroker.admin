@@ -53,6 +53,7 @@ import CardAdapters from '../components/CardAdapters';
 import CloseIcon from "@material-ui/icons/Close";
 import CustomSelectButton from '../components/CustomSelectButton';
 import GitHubInstallDialog from '../dialogs/GitHubInstallDialog';
+import { licenseDialogFunc } from '../dialogs/licenseDialog';
 
 const styles = theme => ({
     container: {
@@ -202,7 +203,7 @@ class Adapters extends Component {
         // Do not update too often
         if (new Date().getTime() - this.state.lastUpdate > 1000) {
 
-            !this.state.update && this.setState({update: true});
+            !this.state.update && this.setState({ update: true });
 
             const currentHost = this.props.currentHost;
 
@@ -820,12 +821,12 @@ class Adapters extends Component {
                             keywords={adapter.keywords}
                             name={title}
                             license={adapter.license}
-                            onAddInstance={() => this.addInstance(value)}
+                            onAddInstance={() => licenseDialogFunc(adapter.license === 'MIT', () => this.addInstance(value), adapter.extIcon.split('/master')[0] + '/master/LICENSE')}//
                             onDeletion={() => this.openAdapterDeletionDialog(value)}
                             onInfo={() => this.openInfoDialog(value)}
                             onRebuild={() => this.rebuild(value)}
                             onUpdate={() => this.openUpdateDialog(value)}
-                            onUpload={() => this.upload(value)}
+                            onUpload={() => licenseDialogFunc(adapter.license === 'MIT', () => this.upload(value), adapter.extIcon.split('/master')[0] + '/master/LICENSE')}//
                             updateAvailable={updateAvailable}
                             version={adapter.version}
                             hidden={!show}
@@ -840,7 +841,7 @@ class Adapters extends Component {
         });
 
         if (!count) {
-            return <div style={{margin: 10, fontSize: 14}}>{this.props.t('all items are filtered out')}</div>;
+            return <div style={{ margin: 10, fontSize: 14 }}>{this.props.t('all items are filtered out')}</div>;
         } else {
             return rows;
         }
@@ -892,12 +893,12 @@ class Adapters extends Component {
                             installedVersion={installed && installed.version}
                             keywords={adapter.keywords}
                             license={adapter.license}
-                            onAddInstance={() => this.addInstance(value)}
+                            onAddInstance={() => licenseDialogFunc(adapter.license === 'MIT', () => this.addInstance(value), adapter.extIcon.split('/master')[0] + '/master/LICENSE')}//
                             onDeletion={() => this.openAdapterDeletionDialog(value)}
                             onInfo={() => this.openInfoDialog(value)}
                             onRebuild={() => this.rebuild(value)}
                             onUpdate={() => this.openUpdateDialog(value)}
-                            onUpload={() => this.upload(value)}
+                            onUpload={() => licenseDialogFunc(adapter.license === 'MIT', () => this.upload(value), adapter.extIcon.split('/master')[0] + '/master/LICENSE')}//
                             updateAvailable={updateAvailable}
                             version={adapter.version}
                             hidden={!show}
@@ -927,23 +928,23 @@ class Adapters extends Component {
                     if (nameA < nameB) {
                         return -1;
                     } else
-                    if (nameA > nameB) {
-                        return 1;
-                    } else {
-                        return 0;
-                    }
+                        if (nameA > nameB) {
+                            return 1;
+                        } else {
+                            return 0;
+                        }
                 } else
-                if (this.state.filterTiles === 'Popular first') {
-                    return b.stat - stat;
-                } else
-                if (this.state.filterTiles === 'Recently updated') {
-                    let dateFunc = (value) => Math.round((Date.parse(new Date()) - Date.parse(value)) / 86400000)
-                    if (versionDate && !b.versionDate) return -1;
-                    if (!versionDate && b.versionDate) return 1;
-                    if (dateFunc(versionDate) > dateFunc(b.versionDate)) return 1;
-                    if (dateFunc(versionDate) < dateFunc(b.versionDate)) return -1;
-                    return 0;
-                }
+                    if (this.state.filterTiles === 'Popular first') {
+                        return b.stat - stat;
+                    } else
+                        if (this.state.filterTiles === 'Recently updated') {
+                            let dateFunc = (value) => Math.round((Date.parse(new Date()) - Date.parse(value)) / 86400000)
+                            if (versionDate && !b.versionDate) return -1;
+                            if (!versionDate && b.versionDate) return 1;
+                            if (dateFunc(versionDate) > dateFunc(b.versionDate)) return 1;
+                            if (dateFunc(versionDate) < dateFunc(b.versionDate)) return -1;
+                            return 0;
+                        }
             }).map(({ render }) => render);
         }
     }
@@ -1048,8 +1049,20 @@ class Adapters extends Component {
                     }}
                 />
 
-                {!this.state.viewMode && <CustomSelectButton contained={this.state.categoriesTiles !== 'All'} arrayItem={[{ name: 'All' }, ...this.state.categories]} onClick={value => this.changeCategoriesTiles(value)} value={this.state.categoriesTiles} />}
-                {!this.state.viewMode && <CustomSelectButton arrayItem={this.state.arrayFilter} onClick={value => this.changeFilterTiles(value)} value={this.state.filterTiles} />}
+                {!this.state.viewMode &&
+                    <CustomSelectButton
+                        icons
+                        contained={this.state.categoriesTiles !== 'All'}
+                        arrayItem={[{ name: 'All' }, ...this.state.categories]}
+                        onClick={value => this.changeCategoriesTiles(value)}
+                        value={this.state.categoriesTiles} />
+                }
+                {!this.state.viewMode &&
+                    <CustomSelectButton
+                        arrayItem={this.state.arrayFilter}
+                        onClick={value => this.changeFilterTiles(value)}
+                        value={this.state.filterTiles} />
+                }
                 <div className={classes.grow} />
             </TabHeader>
             {this.state.viewMode && <TabContent>

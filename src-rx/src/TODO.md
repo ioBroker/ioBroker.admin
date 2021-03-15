@@ -1,12 +1,13 @@
 # Todo
-- Adapters - install dialog - stop progress if finshed or error
-- Adapters - if filter enabled (by category) => show background as primary color, remove icons for A-Z/Popular/Recently  
+- Adapters - install dialog - stop progress if finshed or error//
+- Adapters - if filter enabled (by category) => show background as primary color, remove icons for A-Z/Popular/Recently  //
+- Adapters - github modal (color background, tabs color auto)//
 - Adapters - update all adapters and allow to select from list (BF)
-- Adapters - show accept license dialog for non MIT licenses (common.license !== "MIT" => common.extIcon.split('/master')[0] + '/master/LICENSE'). Only if no instances yet.
+- Adapters - show accept license dialog for non MIT licenses (common.license !== "MIT" => common.extIcon.split('/master')[0] + '/master/LICENSE'). Only if no instances yet.//
 - Adapters - if language <> 'en' => https://www.iobroker.net/<ru>/adapterref/iobroker.<ADAPTERNAME>/README.md (BF) Use readme renderer from www.iobroker.net
 - Instances - Open in new window must be shown only for instances with localLink (BF)
 - Instances - Fix layout on narrow screens (text is overlapped)
-- Instances - add filter
+- Instances - add filter // (in developing)
 - Instances - add "Disk free: 97 %, Total RAM usage: 270 Mb / Free: 2% = 314 Mb [Host: MacBook-Pro-Igor.local - 5 p"
 - Instances - allow set of compact groups (only in compact mode)
 - Instances - allow to enable/disable sentry settings

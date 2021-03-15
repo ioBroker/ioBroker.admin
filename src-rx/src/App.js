@@ -645,6 +645,7 @@ class App extends Router {
                                 hostname={this.state.hostname}
                                 themeName={this.state.themeName}
                                 expertMode={this.state.expertMode}
+                                idHost={this.state.hosts.find(({common:{name}})=>name===this.state.currentHostName)._id}
                                 t={I18n.t}
                                 configStored={value => this.allStored(value)}
                             />
@@ -913,6 +914,7 @@ class App extends Router {
                 errorFunc={() => this.setState({ commandError: true })}
                 performed={() => this.setState({ performed: true })}
                 inBackground={this.state.commandError || this.state.performed}
+                commandError={this.state.commandError}
                 // confirmText={i18n.t('Ok') /* Test command */}
                 socket={this.socket}
                 currentHost={this.state.currentHost}
@@ -952,7 +954,6 @@ class App extends Router {
 
         const { classes } = this.props;
         const small = this.props.width === 'xs' || this.props.width === 'sm';
-
         return (
             <ThemeProvider theme={this.state.theme}>
                 <Paper elevation={0} className={classes.root}>
