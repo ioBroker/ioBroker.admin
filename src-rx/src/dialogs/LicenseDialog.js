@@ -60,8 +60,9 @@ const LicenseDialog = ({ url, func }) => {
                 {I18n.t('Close')}
             </Button>
         </DialogActions>
-    </Dialog>
+    </Dialog>;
 }
+
 export const licenseDialogFunc = (license, func, url) => {
     if (license) {
         return func()

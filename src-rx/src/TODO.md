@@ -4,8 +4,8 @@
     - provide the current theme for dialog
 - Adapters - if language <> 'en' => https://www.iobroker.net/<ru>/adapterref/iobroker.<ADAPTERNAME>/README.md (BF) Use readme renderer from www.iobroker.net
 
-- Adapters - Switch of hosts (if host only one, do not show the switcher)//
-- Instances - Switch of hosts (if host only one, do not show the switcher)//
+- Adapters - Switch of hosts (if host only one, do not show the switcher)// (!only if more than one host)
+- Instances - Switch of hosts (if host only one, do not show the switcher)//(!only if more than one host)
 
 - Instances - Open in new window must be shown only for instances with localLink (BF)
 - Instances - add filter // 

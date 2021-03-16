@@ -204,15 +204,17 @@ class Instances extends Component {
 
         this.t = props.t;
 
-        this.onObjectChangeBound = this.onObjectChange.bind(this);
-        this.onStateChangeBound = this.onStateChange.bind(this);
-
         this.inputRef = createRef();
     }
 
     async componentDidMount() {
         await this.getData();
         await this.getHostsData();
+    }
+
+    async componentWillUnmount() {
+        this.subscribeObjects(true);
+        this.subscribeStates(true);
     }
 
     getStates(update) {
@@ -248,7 +250,6 @@ class Instances extends Component {
     }
 
     async getData(update) {
-
         let instances;
 
         try {
@@ -275,30 +276,36 @@ class Instances extends Component {
             return;
         }
 
-        var host = this.states['system.host.' + this.props.currentHostName + '.memRss'];
+        let memRssId = `system.host.${this.props.currentHostName}.memRss`;
+        this.states[memRssId] = this.states[memRssId] || (await this.props.socket.getState(memRssId));
+
+        const host = this.states[memRssId];
         let processes = 1;
         let mem = host ? host.val : 0;
-        Object.keys(instances).forEach(id => {
-            let inst = instances[id]
-            if (!inst || !inst.common) {
-                return
+        for (let id in instances) {
+            if (instances.hasOwnProperty(id)) {
+                let inst = instances[id];
+                if (!inst || !inst.common) {
+                    return
+                }
+                if (inst.common.host !== this.props.currentHostName) {
+                    return
+                }
+                if (inst.common.enabled && inst.common.mode === 'daemon') {
+                    memRssId = inst._id + '.memRss';
+                    this.states[memRssId] = this.states[memRssId] || (await this.props.socket.getState(memRssId));
+                    const m = this.states[memRssId];
+                    mem += m ? m.val : 0;
+                    processes++;
+                }
             }
-            if (inst.common.host !== this.props.currentHostName) {
-                return
-            }
-            if (inst.common.enabled && inst.common.mode === 'daemon') {
-                var m = this.states[inst._id + '.memRss'];
-                mem += m ? m.val : 0;
-                processes++;
-            }
-        })
+        }
 
         const formatted = {};
 
         instances.forEach(obj => this.objects[obj._id] = obj);
 
         instances.sort((a, b) => {
-
             a = a && a.common;
             b = b && b.common;
             a = a || {};
@@ -385,12 +392,11 @@ class Instances extends Component {
         this.subscribeStates();
         this.subscribeObjects();
 
-        console.log(this.states);
-        console.log(this.objects);
+        //console.log(this.states);
+        //console.log(this.objects);
     }
 
-    onStateChange(id, state) {
-
+    onStateChange = (id, state) => {
         const oldState = this.states[id];
 
         this.states[id] = state;
@@ -403,10 +409,9 @@ class Instances extends Component {
                 }, 300);
             }
         }
-    }
+    };
 
-    onObjectChange(id, obj) {
-
+    onObjectChange = (id, obj) => {
         if (this.objects[id]) {
             if (obj) {
                 this.objects[id] = obj;
@@ -423,30 +428,30 @@ class Instances extends Component {
                 this.forceUpdate();
             }, 300);
         }
+    };
+
+    subscribeStates(isUnsubscribe) {
+        const func = isUnsubscribe ? this.props.socket.unsubscribeState : this.props.socket.subscribeState;
+        //func('system.adapter.*', this.onStateChange);
+        func.call(this.props.socket, 'system.adapter.*.alive', this.onStateChange);
+        func.call(this.props.socket, 'system.adapter.*.connected', this.onStateChange);
+        func.call(this.props.socket, 'system.adapter.*.inputCount', this.onStateChange);
+        func.call(this.props.socket, 'system.adapter.*.memRss', this.onStateChange);
+        func.call(this.props.socket, 'system.adapter.*.outputCount', this.onStateChange);
+
+        //func('system.host.*', this.onStateChange);
+        func.call(this.props.socket, 'system.host.*.diskFree', this.onStateChange);
+        func.call(this.props.socket, 'system.host.*.diskSize', this.onStateChange);
+        func.call(this.props.socket, 'system.host.*.diskWarning', this.onStateChange);
+        func.call(this.props.socket, 'system.host.*.freemem', this.onStateChange);
+
+        func.call(this.props.socket, '*.info.connection', this.onStateChange);
     }
 
-    subscribeStates() {
-        //this.props.socket.subscribeState('system.adapter.*', this.onStateChangeBound);
-        this.props.socket.subscribeState('system.adapter.*.alive', this.onStateChangeBound);
-        this.props.socket.subscribeState('system.adapter.*.connected', this.onStateChangeBound);
-        this.props.socket.subscribeState('system.adapter.*.inputCount', this.onStateChangeBound);
-        this.props.socket.subscribeState('system.adapter.*.memRss', this.onStateChangeBound);
-        this.props.socket.subscribeState('system.adapter.*.outputCount', this.onStateChangeBound);
-
-        //this.props.socket.subscribeState('system.host.*', this.onStateChangeBound);
-        this.props.socket.subscribeState('system.host.*.diskFree', this.onStateChangeBound);
-        this.props.socket.subscribeState('system.host.*.diskSize', this.onStateChangeBound);
-        this.props.socket.subscribeState('system.host.*.diskWarning', this.onStateChangeBound);
-        this.props.socket.subscribeState('system.host.*.freemem', this.onStateChangeBound);
-
-        this.props.socket.subscribeState('*.info.connection', this.onStateChangeBound);
-
-    }
-
-    subscribeObjects() {
-        this.props.socket.subscribeObject('system.adapter.*', this.onObjectChangeBound);
-        this.props.socket.subscribeObject('system.host.*', this.onObjectChangeBound);
-
+    subscribeObjects(isUnsubscribe) {
+        const func = isUnsubscribe ? this.props.socket.subscribeObject : this.props.socket.unsubscribeObject;
+        func.call(this.props.socket, 'system.adapter.*', this.onObjectChange);
+        func.call(this.props.socket, 'system.host.*', this.onObjectChange);
     }
 
     extendObject = (id, data) => {
@@ -930,23 +935,24 @@ class Instances extends Component {
                 console.error(error);
                 return error;
             })
-            .then(hostData => this.setState({ hostData }))
+            .then(hostData => this.setState({ hostData }));
+
         let memState;
-        let memAvailable = await this.props.socket.getState('system.host.' + this.props.currentHostName + '.memAvailable')
-        let freemem = await this.props.socket.getState('system.host.' + this.props.currentHostName + '.freemem')
-        let object = await this.props.socket.getObject('system.host.' + this.props.currentHostName)
+        let memAvailable = await this.props.socket.getState(`system.host.${this.props.currentHostName}.memAvailable`)
+        let freemem = await this.props.socket.getState(`system.host.${this.props.currentHostName}.freemem`)
+        let object = await this.props.socket.getObject(`system.host.${this.props.currentHostName}`)
         if (memAvailable) {
             memState = memAvailable;
         } else if (freemem) {
             memState = freemem;
         }
         if (memState) {
-            let totalmem = (object?.native.hardware.totalmem / (1024 * 1024));
-            var percent = Math.round((memState.val / totalmem) * 100);
+            const totalmem = (object?.native.hardware.totalmem / (1024 * 1024));
+            const percent = Math.round((memState.val / totalmem) * 100);
             this.setState({
                 percent,
                 memFree: memState.val
-            })
+            });
         }
     }
 
@@ -954,7 +960,7 @@ class Instances extends Component {
         this.setState((state) => {
             window.localStorage.setItem(`Instances.${value}`, JSON.stringify(!state[value]));
             return ({ [value]: !state[value] });
-        })
+        });
 
     handleFilterChange(event) {
         this.typingTimer && clearTimeout(this.typingTimer);
