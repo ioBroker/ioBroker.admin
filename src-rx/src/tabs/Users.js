@@ -3,7 +3,7 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-import FileBrowser from '../components/FileBrowser';
+import UsersList from '../components/Users/UsersList';
 
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
@@ -21,14 +21,16 @@ class Users extends Component {
     render() {
 
         if (!this.props.ready) {
-            return (
-                <LinearProgress />
-            );
+            // return (
+            //     <LinearProgress />
+            // );
         }
 
         return <TabContainer>
             <TabContent overflow="auto">
-                Users
+                <div>
+                    <UsersList {...this.props} />
+                </div>
             </TabContent>
         </TabContainer>;
     }
