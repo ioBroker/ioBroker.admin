@@ -65,6 +65,7 @@ const Intro = React.lazy(() => import('./tabs/Intro'));
 const Logs = React.lazy(() => import('./tabs/Logs'));
 const Files = React.lazy(() => import('./tabs/Files'));
 const Objects = React.lazy(() => import('./tabs/Objects'));
+const Users = React.lazy(() => import('./tabs/Users'));
 const CustomTab = React.lazy(() => import('./tabs/CustomTab'));
 
 const query = {};
@@ -707,6 +708,20 @@ class App extends Router {
                                     <Suspense fallback={<Connecting />}>
                                         <Files
                                             key="files"
+                                            ready={this.state.ready}
+                                            t={I18n.t}
+                                            expertMode={this.state.expertMode}
+                                            lang={I18n.getLanguage()}
+                                            socket={this.socket}
+                                        />
+                                    </Suspense>
+                                );
+                            } else
+                            if (this.state.currentTab.tab === 'tab-users') {
+                                return (
+                                    <Suspense fallback={<Connecting />}>
+                                        <Users
+                                            key="users"
                                             ready={this.state.ready}
                                             t={I18n.t}
                                             expertMode={this.state.expertMode}
