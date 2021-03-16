@@ -4,8 +4,8 @@
     - provide the current theme for dialog
 - Adapters - if language <> 'en' => https://www.iobroker.net/<ru>/adapterref/iobroker.<ADAPTERNAME>/README.md (BF) Use readme renderer from www.iobroker.net
 
-- Adapters - Switch of hosts (if host only one, do not show the switcher)
-- Instances - Switch of hosts (if host only one, do not show the switcher)
+- Adapters - Switch of hosts (if host only one, do not show the switcher)//
+- Instances - Switch of hosts (if host only one, do not show the switcher)//
 
 - Instances - Open in new window must be shown only for instances with localLink (BF)
 - Instances - add filter // 
@@ -20,7 +20,7 @@
 - Objects - export/import and creation of new state
 - Objects - edit of access control (similar to files)
 - Files - bulk edit of access rights
-- Hosts tab
+- Hosts tab//
 - Easy admin mode
 
 ## After all is done

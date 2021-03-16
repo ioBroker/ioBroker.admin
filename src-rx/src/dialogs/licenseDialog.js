@@ -73,4 +73,3 @@ export const licenseDialogFunc = (license, func, url) => {
     }
     return ReactDOM.render(<LicenseDialog url={url} func={func} />, node);
 }
-export default LicenseDialog;
