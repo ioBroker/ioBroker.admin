@@ -8,8 +8,8 @@
 - Instances - Switch of hosts (if host only one, do not show the switcher)
 
 - Instances - Open in new window must be shown only for instances with localLink (BF)
-- Instances - add filter // (in developing)
-- Instances - add "Disk free: 97 %, Total RAM usage: 270 Mb / Free: 2% = 314 Mb [Host: MacBook-Pro-Igor.local - 5 p"
+- Instances - add filter // 
+- Instances - add "Disk free: 97 %, Total RAM usage: 270 Mb / Free: 2% = 314 Mb [Host: MacBook-Pro-Igor.local - 5 p"//
 - Instances - allow set of compact groups (only in compact mode) (new) socket.readBaseSettings => compact = true
  - only for instances with common.compact == true, read group from common.compactGroup (default, 1, add)
 - Instances - allow to enable/disable sentry settings (new) common.plugin.sentry.enabled => false
