@@ -58,6 +58,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { ContextWrapper } from './components/ContextWrapper';
+import HostSelectors from './components/HostSelectors';
 // Tabs
 const Adapters = React.lazy(() => import('./tabs/Adapters'));
 const Instances = React.lazy(() => import('./tabs/Instances'));
@@ -664,7 +665,8 @@ class App extends Router {
                                 hostname={this.state.hostname}
                                 themeName={this.state.themeName}
                                 expertMode={this.state.expertMode}
-                                idHost={this.state.hosts.find(({common:{name}})=>name===this.state.currentHostName)._id}
+                                idHost={this.state.hosts.find(({ common: { name } }) => name === this.state.currentHostName)._id}
+                                currentHostName={this.state.currentHostName}
                                 t={I18n.t}
                                 configStored={value => this.allStored(value)}
                             />
@@ -1052,11 +1054,20 @@ class App extends Router {
                                     <BuildIcon className={classes.baseSettingsButton} />
                                 </IconButton>
                             }
+                            <HostSelectors
+                                socket={this.socket}
+                                currentHostName={this.state.currentHostName}
+                                disabled={
+                                    this.state.currentTab.tab !== 'tab-instances' &&
+                                    this.state.currentTab.tab !== 'tab-adapters'
+                                }
+                            />
                             <Typography variant="h6" className={classes.title} style={{ flexGrow: 1 }} />
                             {this.state.cmd && !this.state.cmdDialog && <IconButton onClick={() => this.setState({ cmdDialog: true })}>
                                 <PictureInPictureAltIcon className={this.state.commandError ? classes.errorCmd : this.state.performed ? classes.performed : classes.cmd} />
                             </IconButton>}
                             {/* Show host selector */}
+
                             <Grid container className={clsx(this.state.drawerState !== 0 && classes.avatarVisible, classes.avatarNotVisible)} spacing={1} alignItems="center" style={{ width: 'initial' }}>
                                 <Grid item>
                                     <Typography>admin</Typography>

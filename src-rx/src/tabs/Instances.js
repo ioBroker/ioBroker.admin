@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { Component, createRef } from 'react';
 import PropTypes from "prop-types";
 
 import withWidth from '@material-ui/core/withWidth';
@@ -59,6 +59,7 @@ import InstanceInfo from '../components/InstanceInfo';
 import State from '../components/State';
 import TabHeader from '../components/TabHeader';
 import { InputAdornment, TextField } from '@material-ui/core';
+import CardInstances from '../components/CardInstances';
 
 const styles = theme => ({
     table: {
@@ -150,6 +151,11 @@ const styles = theme => ({
             textOverflow: 'ellipsis'
         }
     },
+    cards: {
+        display: 'flex',
+        flexFlow: 'wrap',
+        justifyContent: 'center',
+    }
 });
 
 // every tab should get their data itself from server
@@ -169,7 +175,12 @@ class Instances extends Component {
             playArrow: false,
             importantDevices: false,
             viewMode: false,
-            hostData: null
+            hostData: null,
+            processes: null,
+            mem: null,
+            percent: null,
+            memFree: null,
+            filterText: ''
         };
 
         this.columns = {
@@ -193,13 +204,17 @@ class Instances extends Component {
 
         this.t = props.t;
 
-        this.onObjectChangeBound = this.onObjectChange.bind(this);
-        this.onStateChangeBound = this.onStateChange.bind(this);
+        this.inputRef = createRef();
     }
 
-    componentDidMount() {
-        this.getData();
-        this.getHostsData()
+    async componentDidMount() {
+        await this.getData();
+        await this.getHostsData();
+    }
+
+    async componentWillUnmount() {
+        this.subscribeObjects(true);
+        this.subscribeStates(true);
     }
 
     getStates(update) {
@@ -235,7 +250,6 @@ class Instances extends Component {
     }
 
     async getData(update) {
-
         let instances;
 
         try {
@@ -250,7 +264,6 @@ class Instances extends Component {
                     objectsProm
                 ]
             );
-
             instances = _instances;
             this.states = states || [];
             this.objects = objects || [];
@@ -263,12 +276,36 @@ class Instances extends Component {
             return;
         }
 
+        let memRssId = `system.host.${this.props.currentHostName}.memRss`;
+        this.states[memRssId] = this.states[memRssId] || (await this.props.socket.getState(memRssId));
+
+        const host = this.states[memRssId];
+        let processes = 1;
+        let mem = host ? host.val : 0;
+        for (let id in instances) {
+            if (instances.hasOwnProperty(id)) {
+                let inst = instances[id];
+                if (!inst || !inst.common) {
+                    return
+                }
+                if (inst.common.host !== this.props.currentHostName) {
+                    return
+                }
+                if (inst.common.enabled && inst.common.mode === 'daemon') {
+                    memRssId = inst._id + '.memRss';
+                    this.states[memRssId] = this.states[memRssId] || (await this.props.socket.getState(memRssId));
+                    const m = this.states[memRssId];
+                    mem += m ? m.val : 0;
+                    processes++;
+                }
+            }
+        }
+
         const formatted = {};
 
         instances.forEach(obj => this.objects[obj._id] = obj);
 
         instances.sort((a, b) => {
-
             a = a && a.common;
             b = b && b.common;
             a = a || {};
@@ -310,6 +347,7 @@ class Instances extends Component {
             const instance = {};
 
             instance.id = obj._id.replace('system.adapter.', '');
+            instance.host = common.host;
             instance.name = common.titleLang ? common.titleLang[this.props.lang] : common.title;
             instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
             let links = /*(ws && ws.link) ? ws.link :*/ common.localLinks || common.localLink || '';
@@ -343,6 +381,8 @@ class Instances extends Component {
         const playArrow = JSON.parse(window.localStorage.getItem('Instances.playArrow'));
         const viewMode = JSON.parse(window.localStorage.getItem('Instances.viewMode'));
         this.setState({
+            processes,
+            mem: Math.round(mem),
             importantDevices,
             playArrow,
             viewMode,
@@ -352,12 +392,11 @@ class Instances extends Component {
         this.subscribeStates();
         this.subscribeObjects();
 
-        console.log(this.states);
-        console.log(this.objects);
+        //console.log(this.states);
+        //console.log(this.objects);
     }
 
-    onStateChange(id, state) {
-
+    onStateChange = (id, state) => {
         const oldState = this.states[id];
 
         this.states[id] = state;
@@ -370,10 +409,9 @@ class Instances extends Component {
                 }, 300);
             }
         }
-    }
+    };
 
-    onObjectChange(id, obj) {
-
+    onObjectChange = (id, obj) => {
         if (this.objects[id]) {
             if (obj) {
                 this.objects[id] = obj;
@@ -390,38 +428,38 @@ class Instances extends Component {
                 this.forceUpdate();
             }, 300);
         }
+    };
+
+    subscribeStates(isUnsubscribe) {
+        const func = isUnsubscribe ? this.props.socket.unsubscribeState : this.props.socket.subscribeState;
+        //func('system.adapter.*', this.onStateChange);
+        func.call(this.props.socket, 'system.adapter.*.alive', this.onStateChange);
+        func.call(this.props.socket, 'system.adapter.*.connected', this.onStateChange);
+        func.call(this.props.socket, 'system.adapter.*.inputCount', this.onStateChange);
+        func.call(this.props.socket, 'system.adapter.*.memRss', this.onStateChange);
+        func.call(this.props.socket, 'system.adapter.*.outputCount', this.onStateChange);
+
+        //func('system.host.*', this.onStateChange);
+        func.call(this.props.socket, 'system.host.*.diskFree', this.onStateChange);
+        func.call(this.props.socket, 'system.host.*.diskSize', this.onStateChange);
+        func.call(this.props.socket, 'system.host.*.diskWarning', this.onStateChange);
+        func.call(this.props.socket, 'system.host.*.freemem', this.onStateChange);
+
+        func.call(this.props.socket, '*.info.connection', this.onStateChange);
     }
 
-    subscribeStates() {
-        //this.props.socket.subscribeState('system.adapter.*', this.onStateChangeBound);
-        this.props.socket.subscribeState('system.adapter.*.alive', this.onStateChangeBound);
-        this.props.socket.subscribeState('system.adapter.*.connected', this.onStateChangeBound);
-        this.props.socket.subscribeState('system.adapter.*.inputCount', this.onStateChangeBound);
-        this.props.socket.subscribeState('system.adapter.*.memRss', this.onStateChangeBound);
-        this.props.socket.subscribeState('system.adapter.*.outputCount', this.onStateChangeBound);
-
-        //this.props.socket.subscribeState('system.host.*', this.onStateChangeBound);
-        this.props.socket.subscribeState('system.host.*.diskFree', this.onStateChangeBound);
-        this.props.socket.subscribeState('system.host.*.diskSize', this.onStateChangeBound);
-        this.props.socket.subscribeState('system.host.*.diskWarning', this.onStateChangeBound);
-        this.props.socket.subscribeState('system.host.*.freemem', this.onStateChangeBound);
-
-        this.props.socket.subscribeState('*.info.connection', this.onStateChangeBound);
-
+    subscribeObjects(isUnsubscribe) {
+        const func = isUnsubscribe ? this.props.socket.subscribeObject : this.props.socket.unsubscribeObject;
+        func.call(this.props.socket, 'system.adapter.*', this.onObjectChange);
+        func.call(this.props.socket, 'system.host.*', this.onObjectChange);
     }
 
-    subscribeObjects() {
-        this.props.socket.subscribeObject('system.adapter.*', this.onObjectChangeBound);
-        this.props.socket.subscribeObject('system.host.*', this.onObjectChangeBound);
-
-    }
-
-    extendObject(id, data) {
+    extendObject = (id, data) => {
         this.props.socket.extendObject(id, data, error =>
             error && window.alert(error));
     }
 
-    openConfig(instance) {
+    openConfig = (instance) => {
         Router.doNavigate('tab-instances', 'config', instance);
     }
 
@@ -462,14 +500,14 @@ class Instances extends Component {
         return (common.onlyWWW || common.enabled) ? true : false;
     }
 
-    getSchedule(id) {
+    getSchedule = (id) => {
         const obj = this.objects[id];
         const common = obj ? obj.common : null;
 
         return common.schedule ? common.schedule : '';
     }
 
-    getRestartSchedule(id) {
+    getRestartSchedule = (id) => {
 
         const obj = this.objects[id];
         const common = obj ? obj.common : null;
@@ -477,7 +515,7 @@ class Instances extends Component {
         return common.restartSchedule ? common.restartSchedule : '';
     }
 
-    getMemory(id) {
+    getMemory = (id) => {
 
         const state = this.states[id + '.memRss'];
 
@@ -625,8 +663,32 @@ class Instances extends Component {
             const alive = this.isAlive(id);
             const connectedToHost = this.isConnectedToHost(id);
             const connected = this.isConnected(id);
-
             const loglevelIcon = this.getLogLevelIcon(instance.loglevel);
+            if (this.state.viewMode) {
+                return ({
+                    render: <CardInstances
+                        key={instance.id}
+                        name={instance.name}
+                        image={instance.image}
+                        instance={instance}
+                        running={running}
+                        id={id}
+                        extendObject={this.extendObject}
+                        openConfig={this.openConfig}
+                        connectedToHost={connectedToHost}
+                        alive={alive}
+                        connected={connected}
+                        getMemory={this.getMemory}
+                        loglevelIcon={loglevelIcon}
+                        getRestartSchedule={this.getRestartSchedule}
+                        expertMode={this.props.expertMode}
+                        getSchedule={this.getSchedule}
+                    />,
+                    running,
+                    host: instance.host,
+                    name: instance.name
+                })
+            }
 
             return ({
                 render: <Accordion key={instance.id} square expanded={this.state.expanded === instance.id} onChange={() => this.handleChange(instance.id)}>
@@ -836,7 +898,9 @@ class Instances extends Component {
                         </Grid>
                     </AccordionDetails>
                 </Accordion>,
-                running
+                running,
+                host: instance.host,
+                name: instance.name
             }
             );
         });
@@ -844,7 +908,19 @@ class Instances extends Component {
         if (this.state.playArrow) {
             array = array.filter(({ running }) => running)
         }
-
+        if (this.state.importantDevices) {
+            array = array.filter(({ host }) => host === this.props.currentHostName)
+        }
+        if (this.state.filterText) {
+            array = array.filter(({ name }) => name.toLowerCase().indexOf(this.state.filterText.toLowerCase()) !== -1)
+        }
+        if (!array.length) {
+            return <div style={{
+                margin: 20,
+                fontSize: 26,
+                textAlign: 'center'
+            }}>{this.props.t('all items are filtered out')}</div>
+        }
         return array.map(({ render }) => render);
     }
 
@@ -853,20 +929,47 @@ class Instances extends Component {
             expanded: prevState.expanded !== panel ? panel : null
         }));
     }
-    getHostsData() {
+    async getHostsData() {
         this.props.socket.getHostInfo(this.props.idHost)
             .catch(error => {
                 console.error(error);
                 return error;
             })
-            .then(hostData => this.setState({ hostData }))
+            .then(hostData => this.setState({ hostData }));
+
+        let memState;
+        let memAvailable = await this.props.socket.getState(`system.host.${this.props.currentHostName}.memAvailable`)
+        let freemem = await this.props.socket.getState(`system.host.${this.props.currentHostName}.freemem`)
+        let object = await this.props.socket.getObject(`system.host.${this.props.currentHostName}`)
+        if (memAvailable) {
+            memState = memAvailable;
+        } else if (freemem) {
+            memState = freemem;
+        }
+        if (memState) {
+            const totalmem = (object?.native.hardware.totalmem / (1024 * 1024));
+            const percent = Math.round((memState.val / totalmem) * 100);
+            this.setState({
+                percent,
+                memFree: memState.val
+            });
+        }
     }
 
     changeSetStateBool = (value) =>
         this.setState((state) => {
             window.localStorage.setItem(`Instances.${value}`, JSON.stringify(!state[value]));
             return ({ [value]: !state[value] });
-        })
+        });
+
+    handleFilterChange(event) {
+        this.typingTimer && clearTimeout(this.typingTimer);
+
+        this.typingTimer = setTimeout(value => {
+            this.typingTimer = null;
+            this.setState({ filterText: value })
+        }, 300, event.target.value);
+    }
 
     render() {
         if (!this.state.instances) {
@@ -933,12 +1036,12 @@ class Instances extends Component {
                         onChange={event => this.handleFilterChange(event)}
                         InputProps={{
                             endAdornment: (
-                                this.state.search ? <InputAdornment position="end">
+                                this.state.filterText ? <InputAdornment position="end">
                                     <IconButton
                                         size="small"
                                         onClick={() => {
                                             this.inputRef.current.value = '';
-                                            this.setState({ search: '', filteredList: null });
+                                            this.setState({ filterText: '' });
                                         }}
                                     >
                                         <CloseIcon />
@@ -948,10 +1051,11 @@ class Instances extends Component {
                         }}
                     />
                     <div className={classes.grow} />
-                    {this.state.hostData && `Disk free: ${Math.round(this.state.hostData['Disk free'] / (this.state.hostData['Disk size'] / 100))}%, Total RAM usage: 648 Mb / Free: 0% = 25 Mb [Host: MacBook-Pro-Igor.local - 21 processes]`}
+                    {this.state.hostData &&
+                        `${this.props.t('Disk free')}: ${Math.round(this.state.hostData['Disk free'] / (this.state.hostData['Disk size'] / 100))}%, ${this.props.t('Total RAM usage')}: ${this.state.mem} Mb / ${this.props.t('Free')}: ${this.state.percent}% = ${this.state.memFree} Mb [${this.props.t('Host')}: ${this.props.currentHostName} - ${this.state.processes} ${this.props.t('processes')}]`}
                     {/* <div className={classes.grow} /> */}
                 </TabHeader>
-                <TabContent overflow="auto">
+                <TabContent classes={{ root: this.state.viewMode ? classes.cards : '' }} overflow="auto">
                     {this.getPanels(classes)}
                 </TabContent>
             </TabContainer>

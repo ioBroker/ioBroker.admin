@@ -60,8 +60,9 @@ const LicenseDialog = ({ url, func }) => {
                 {I18n.t('Close')}
             </Button>
         </DialogActions>
-    </Dialog>
+    </Dialog>;
 }
+
 export const licenseDialogFunc = (license, func, url) => {
     if (license) {
         return func()
@@ -73,4 +74,3 @@ export const licenseDialogFunc = (license, func, url) => {
     }
     return ReactDOM.render(<LicenseDialog url={url} func={func} />, node);
 }
-export default LicenseDialog;

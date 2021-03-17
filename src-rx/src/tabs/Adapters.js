@@ -53,7 +53,7 @@ import CardAdapters from '../components/CardAdapters';
 import CloseIcon from "@material-ui/icons/Close";
 import CustomSelectButton from '../components/CustomSelectButton';
 import GitHubInstallDialog from '../dialogs/GitHubInstallDialog';
-import { licenseDialogFunc } from '../dialogs/licenseDialog';
+import { licenseDialogFunc } from '../dialogs/LicenseDialog';
 
 const styles = theme => ({
     container: {
