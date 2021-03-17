@@ -397,6 +397,8 @@ class App extends Router {
                     newState.hosts = await this.socket.getHosts();
 
                     if (!this.state.currentHost) {
+                        //TODO:  try to load current host from localStorage and check if it exists in the list of hosts
+                        // if not do ..
                         newState.currentHost = newState.hosts[0]._id;
                         newState.currentHostName = newState.hosts[0].common.name;
                     }
@@ -1092,7 +1094,6 @@ class App extends Router {
                             t={I18n.t}
                             lang={I18n.getLanguage()}
                             socket={this.socket}
-                            currentHost={this.state.currentHost}
                             expertMode={this.state.expertMode}
                             ready={this.state.ready}
                             themeName={this.state.themeName}
