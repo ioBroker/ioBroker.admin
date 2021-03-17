@@ -24,8 +24,8 @@ const CustomSelectButton = ({ arrayItem, onClick, value, contained, icons }) => 
             {arrayItem.map(({ name }, idx) => {
                 return <MenuItem
                     key={name}
-                    selected={value ? name === value : idx === 0}
-                    disabled={value ? name === value : idx === 0}
+                    selected={value ? name === value : value === 0 ? name === value : idx === 0}
+                    disabled={value ? name === value : value === 0 ? name === value : idx === 0}
                     className={'tag-card-' + name}
                     style={{ placeContent: 'space-between' }}
                     value={name}
@@ -33,7 +33,7 @@ const CustomSelectButton = ({ arrayItem, onClick, value, contained, icons }) => 
                         onClick(name);
                         setAnchorEl(null);
                     }}>
-                    {icons && <MaterialDynamicIcon objIconBool iconName={name} style={{ marginRight: 5 }} />}{I18n.t(name)}
+                    {icons && <MaterialDynamicIcon objIconBool iconName={name} style={{ marginRight: 5 }} />}{typeof name === 'number' ? name : I18n.t(name)}
                 </MenuItem>
             })}
         </Menu>

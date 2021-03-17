@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import I18n from '@iobroker/adapter-react/i18n';
 
 export default function HostSelectors({ disabled, socket, currentHostName }) {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -26,7 +27,7 @@ export default function HostSelectors({ disabled, socket, currentHostName }) {
 
     return (
         <div>
-            <Button disabled={disabled} aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+            <Button title={I18n.t("Host selection")} variant={disabled || hosts.length < 2 ? "text" : "outlined"} disabled={disabled || hosts.length < 2} aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
                 {currentHostName}
             </Button>
             <Menu
