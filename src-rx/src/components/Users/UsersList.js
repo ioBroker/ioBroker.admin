@@ -1,19 +1,22 @@
 import { Component } from 'react';
 
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
+import Fab from '@material-ui/core/Fab';
 
 import {withStyles} from '@material-ui/core/styles';
 
-import ClearIcon from '@material-ui/icons/Clear';
-import GroupIcon from '@material-ui/icons/Group';
-import PersonIcon from '@material-ui/icons/Person';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
+import UserBlock from './UserBlock';
+import GroupBlock from './GroupBlock';
+import UserEditDialog from './UserEditDialog';
+import GroupEditDialog from './GroupEditDialog';
+
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import GroupAddIcon from '@material-ui/icons/GroupAdd';
 
 const styles = theme => ({
     userGroupCard: {
@@ -27,58 +30,26 @@ const styles = theme => ({
         display: 'inline-flex',
         margin: 4,
         padding: 4,
-        backgroundColor: 'lightgray',
+        backgroundColor: theme.palette.grey[200],
+        color: 'black',
         alignItems: 'center',
     },
     icon: {
         maxHeight: 42,
         maxWidth: 42,
     },
+    right: {
+        float: 'right',
+    },
+    left: {
+        float: 'left',
+    },
+    dialog: {
+        padding: 10,
+        display: 'flex',
+        flexDirection: 'column',
+    }
 });
-
-function UserBlock(props) {
-    return <Card raised className={props.classes.userGroupCard}>
-        <IconButton size="small"><EditIcon/></IconButton>
-        <IconButton size="small"><DeleteIcon/></IconButton>
-        <CardContent>
-            <Typography gutterBottom variant="h5" component="h5" className={props.classes.userGroupTitle}>
-                {props.user.common.icon ? <img class={props.classes.icon} src={props.user.common.icon}/> : <PersonIcon/>} 
-                <span>{typeof(props.user.common.name) === 'object' ? props.user.common.name.en : props.user.common.name}</span>
-            </Typography>
-            <div>
-                {props.groups.map(group => 
-                    group.common.members && group.common.members.includes(props.user._id) ? 
-                    <Card className={props.classes.userGroupMember}>
-                        {group._id} 
-                        <IconButton size="small"><ClearIcon/></IconButton>
-                    </Card> : 
-                    null
-                )}
-            </div>
-        </CardContent>
-    </Card>
-}
-
-function GroupBlock(props) {
-    return <Card raised className={props.classes.userGroupCard}>
-        <IconButton size="small"><EditIcon/></IconButton>
-        <IconButton size="small"><DeleteIcon/></IconButton>
-        <CardContent>
-            <Typography gutterBottom variant="h5" component="h5" className={props.classes.userGroupTitle}>
-                {props.group.common.icon ? <img class={props.classes.icon} src={props.group.common.icon}/> : <GroupIcon/>} 
-                <span>{typeof(props.group.common.name) === 'object' ? props.group.common.name.en : props.group.common.name}</span>
-            </Typography>
-            <div>
-                {props.group.common.members.map(member => 
-                    <Card className={props.classes.userGroupMember}>
-                        {member} 
-                        <IconButton size="small"><ClearIcon/></IconButton>
-                    </Card>
-                )}
-            </div>
-        </CardContent>
-    </Card>
-}
 
 class UsersList extends Component {
 
@@ -88,16 +59,147 @@ class UsersList extends Component {
         this.state = {
             users: null,
             groups: null,
+            userEditDialog: false,
+            groupEditDialog: false,
         };
     }
 
+    userTemplate = {
+        "type": "user",
+        "common": {
+          "name": "",
+          "password": "",
+          "dontDelete": true,
+          "enabled": true,
+          "color": false,
+          "desc": ""
+        },
+        "native": {},
+        "_id": "",
+        "enums": {}
+      };
+    
+    groupTemplate = {
+        "_id": "",
+        "type": "group",
+        "common": {
+          "name": "",
+          "description": "",
+          "members": [
+            
+          ],
+          "dontDelete": true,
+          "acl": {
+            "object": {
+              "list": true,
+              "read": true,
+              "write": true,
+              "delete": true
+            },
+            "state": {
+              "list": true,
+              "read": true,
+              "write": true,
+              "create": true,
+              "delete": true
+            },
+            "users": {
+              "list": true,
+              "read": true,
+              "write": true,
+              "create": true,
+              "delete": true
+            },
+            "other": {
+              "execute": true,
+              "http": true,
+              "sendto": true
+            },
+            "file": {
+              "list": true,
+              "read": true,
+              "write": true,
+              "create": true,
+              "delete": true
+            }
+          },
+          "icon": "",
+          "color": false,
+          "desc": ""
+        }
+      };
+
     componentDidMount() {
-        this.props.socket.getForeignObjects('system.user.*', 'user').then(users => 
-            this.setState({users: Object.values(users).sort((o1, o2) => o1._id > o2._id ? 1 : -1)})
-        );
-        this.props.socket.getForeignObjects('system.group.*', 'group').then(groups => 
-            this.setState({groups: Object.values(groups).sort((o1, o2) => o1._id > o2._id ? 1 : -1)})
-        );
+        this.updateData();
+    }
+
+    showUserEditDialog = (user) => {
+        user = JSON.parse(JSON.stringify(user));
+        user.common.password = '';
+        user.common.passwordRepeat = '';
+        this.setState({userEditDialog: user});
+    }
+
+    showGroupEditDialog = (group) => {
+        group = JSON.parse(JSON.stringify(group));
+        this.setState({groupEditDialog: group});
+    }
+
+    updateData = () => {
+        this.props.socket.getForeignObjects('system.user.*', 'user').then(users => {
+            users = Object.values(users).sort((o1, o2) => o1._id > o2._id ? 1 : -1);
+            this.setState({users: users})
+        });
+        this.props.socket.getForeignObjects('system.group.*', 'group').then(groups => {
+            groups = Object.values(groups).sort((o1, o2) => o1._id > o2._id ? 1 : -1);
+            this.setState({groups: groups})
+        });
+    }
+
+    changeUserFormData = (user) => {
+        this.setState({userEditDialog: user})
+    }
+
+    changeGroupFormData = (group) => {
+        this.setState({groupEditDialog: group})
+    }
+
+    saveUser = () => {
+        let user = JSON.parse(JSON.stringify(this.state.userEditDialog));
+        delete user.common.passwordRepeat;
+        this.props.socket.setObject(user._id, user).then(()=>{
+            this.updateData();
+            this.setState({userEditDialog: false});
+        });
+    }
+
+    saveGroup = () => {
+        this.props.socket.setObject(this.state.groupEditDialog._id, this.state.groupEditDialog).then(()=>{
+            this.updateData();
+            this.setState({groupEditDialog: false});
+        });
+    }
+
+    addUserToGroup = (user_id, group_id) => {
+        let group = this.state.groups.find(group => group._id == group_id);
+        let members = group.common.members;
+        if (!members.includes(user_id)) {
+            members.push(user_id);
+            this.props.socket.setObject(group._id, group).then(() => {
+                this.updateData();
+            });
+        }
+    }
+
+    removeUserFromGroup = (user_id, group_id) => {
+        let group = this.state.groups.find(group => group._id == group_id);
+        let members = group.common.members;
+        if (members.includes(user_id)) {
+            members.splice(members.indexOf(user_id), 1);
+            this.props.socket.setObject(group._id, group).then(() => {
+                this.updateData();
+            });
+        }
     }
 
     render() {
@@ -105,21 +207,61 @@ class UsersList extends Component {
             return 'loading';
         }
         return <>
-            <Grid container spacing={2}>
-                <Grid item xs={12} lg={6}>
-                    <Typography gutterBottom variant="h4" component="h4">{this.props.t('Groups')}</Typography>
-                    {
-                        this.state.groups.map(group => <GroupBlock group={group} users={this.state.users} {...this.props}/>)
-                    }
+            <DndProvider backend={HTML5Backend}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12} lg={6}>
+                        <Fab size="small" className={this.props.classes.left} onClick={()=>this.showGroupEditDialog(this.groupTemplate)}>
+                            <GroupAddIcon/>
+                        </Fab>
+                        <Typography gutterBottom variant="h4" component="h4">{this.props.t('Groups')}</Typography>
+                        {
+                            this.state.groups.map(group => <GroupBlock 
+                                group={group} 
+                                users={this.state.users} 
+                                showGroupEditDialog={this.showGroupEditDialog}
+                                removeUserFromGroup={this.removeUserFromGroup}
+                                {...this.props}
+                            />)
+                        }
+                    </Grid>
+                    <Grid item xs={12} lg={6}>
+                    <Fab size="small" className={this.props.classes.left} onClick={()=>this.showUserEditDialog(this.userTemplate)}>
+                            <PersonAddIcon/>
+                        </Fab>
+                        <Typography gutterBottom variant="h4" component="h4">{this.props.t('Users')}</Typography>
+                        {
+                            this.state.users.map(user => <UserBlock 
+                                user={user} 
+                                groups={this.state.groups} 
+                                showUserEditDialog={this.showUserEditDialog}
+                                updateData={this.updateData}
+                                addUserToGroup={this.addUserToGroup}
+                                removeUserFromGroup={this.removeUserFromGroup}
+                                {...this.props}
+                            />)
+                        }
+                    </Grid>
                 </Grid>
-                <Grid item xs={12} lg={6}>
-                    <Typography gutterBottom variant="h4" component="h4">{this.props.t('Users')}</Typography>
-                    {
-                        this.state.users.map(user => <UserBlock user={user} groups={this.state.groups} {...this.props}/>)
-                    }
-                </Grid>
-            </Grid>
-            <pre>{JSON.stringify(this.state, null, 2)}</pre>
+                <UserEditDialog 
+                    open={this.state.userEditDialog} 
+                    onClose={()=>this.setState({userEditDialog: false})}
+                    user={this.state.userEditDialog}
+                    t={this.props.t}
+                    classes={this.props.classes}
+                    change={this.changeUserFormData}
+                    saveData={this.saveUser}
+                />
+                <GroupEditDialog 
+                    open={this.state.groupEditDialog} 
+                    onClose={()=>this.setState({groupEditDialog: false})}
+                    group={this.state.groupEditDialog}
+                    t={this.props.t}
+                    classes={this.props.classes}
+                    change={this.changeGroupFormData}
+                    saveData={this.saveGroup}
+                />
+                <pre>{JSON.stringify(this.state, null, 2)}</pre>
+            </DndProvider>
         </>;
     }
 }
