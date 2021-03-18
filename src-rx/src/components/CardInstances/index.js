@@ -18,6 +18,12 @@ import I18n from '@iobroker/adapter-react/i18n';
 import { green, red } from '@material-ui/core/colors';
 import InstanceInfo from '../InstanceInfo';
 import State from '../State';
+import sentry from '../../assets/sentry.svg'
+import CustomModal from '../CustomModal';
+import ComplexCron from '../../dialogs/ComplexCron';
+import EditIcon from '@material-ui/icons/Edit';
+import ImportExportIcon from '@material-ui/icons/ImportExport';
+import Schedule from '../../dialogs/Schedule';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -182,6 +188,12 @@ const styles = theme => ({
     cardContent: {
         marginTop: 16,
         paddingTop: 0
+    },
+    sentry: {
+        width: 24,
+        height: 24,
+        objectFit: 'fill',
+        filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)'
     }
 });
 const CardInstances = ({
@@ -203,14 +215,101 @@ const CardInstances = ({
     getRestartSchedule,
     getSchedule,
     key,
-    compact,
+    checkCompact,
     compactGroup,
     setCompactGroup,
-    compactGroupCount
+    compactGroupCount,
+    setCompact,
+    compact,
+    checkSentry,
+    currentSentry,
+    setSentry,
+    setRestartSchedule,
+    setName,
+    logLevel,
+    setLogLevel,
+    inputOutput
 }) => {
     const [openCollapse, setCollapse] = useState(false);
     const [openSelect, setOpenSelect] = useState(false);
+    const [openDialogCron, setOpenDialogCron] = useState(false);
+    const [openDialogSchedule, setOpenDialogSchedule] = useState(false);
+    const [openDialogText, setOpenDialogText] = useState(false);
+    const [openDialogSelect, setOpenDialogSelect] = useState(false);
+    const [cron, setCron] = useState(getRestartSchedule(id));
+    const [select, setSelect] = useState(logLevel);
+    const arrayLogLevel = [
+        'silly', 'debug', 'info', 'warn', 'error'
+    ]
     return <Card key={key} className={clsx(classes.root, hidden ? classes.hidden : '')}>
+        <CustomModal
+            open={openDialogCron}
+            onApply={() => {
+                setRestartSchedule(cron);
+                setOpenDialogCron(!openDialogCron);
+            }}
+            onClose={() => {
+                setCron(getRestartSchedule(id));
+                setOpenDialogCron(!openDialogCron);
+            }}>
+            <ComplexCron
+                language={I18n.getLanguage()}
+                cronExpression={getRestartSchedule(id)}
+                onChange={el => setCron(el)}
+            />
+        </CustomModal>
+        <CustomModal
+            open={openDialogSchedule}
+            onApply={() => {
+                // setRestartSchedule(cron);
+                setOpenDialogSchedule(!openDialogSchedule);
+            }}
+            onClose={() => {
+                // setCron(getRestartSchedule(id));
+                setOpenDialogSchedule(!openDialogSchedule);
+            }}>
+            <Schedule
+                // language={I18n.getLanguage()}
+                // cronExpression={getRestartSchedule(id)}
+                onChange={el => console.log(el)}
+            />
+        </CustomModal>
+        <CustomModal
+            open={openDialogSelect}
+            onApply={() => {
+                setLogLevel(select)
+                setOpenDialogSelect(!openDialogSelect);
+            }}
+            onClose={() => {
+                setSelect(logLevel);
+                setOpenDialogSelect(!openDialogSelect);
+            }}>
+            <FormControl style={{ width: '100%', marginBottom: 5 }} variant="outlined" >
+                <InputLabel htmlFor="outlined-age-native-simple">{I18n.t('log level')}</InputLabel>
+                <Select
+                    variant="standard"
+                    value={select}
+                    fullWidth
+                    onChange={el => setSelect(el.target.value)}
+                >
+                    {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
+                        {I18n.t(el)}
+                    </MenuItem>)}
+                </Select>
+            </FormControl>
+        </CustomModal>
+        <CustomModal
+            textInput
+            defaultValue={name}
+            open={openDialogText}
+            onApply={(value) => {
+                setName(value);
+                setOpenDialogText(!openDialogText);
+            }}
+            onClose={() => {
+                setOpenDialogText(!openDialogText);
+            }}
+        />
         <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
             <CardContent classes={{
                 root: classes.cardContent
@@ -225,12 +324,9 @@ const CardInstances = ({
                     <div className={classes.close} onClick={() => setCollapse((bool) => !bool)} />
                 </div>
                 <Typography gutterBottom component={'span'} variant={'body2'}>
-                    {compact && <div style={{ display: 'flex' }}>
-                        <Tooltip title={I18n.t('compact groups')}>
-                            <ViewCompactIcon color="secondary" style={{ margin: 10, marginLeft: 0, marginBottom: 2 }} />
-                        </Tooltip>
+                    {expertMode && checkCompact && compact && <div style={{ display: 'flex' }}>
                         <FormControl style={{ width: '100%', marginBottom: 5 }} variant="outlined" >
-                            <InputLabel htmlFor="outlined-age-native-simple">{'compact'}</InputLabel>
+                            <InputLabel htmlFor="outlined-age-native-simple">{I18n.t('compact groups')}</InputLabel>
                             <Select
                                 variant="standard"
                                 onClose={() => setOpenSelect(false)}
@@ -247,10 +343,6 @@ const CardInstances = ({
                                             e.stopPropagation();
                                         }}>
                                         <div style={{ display: 'flex', margin: 5, justifyContent: 'space-around' }}>
-                                            <div style={{
-                                                display: 'flex',
-                                                alignItems: 'center'
-                                            }}>{compactGroupCount + 1}</div>
                                             <Button onClick={() => {
                                                 setOpenSelect(false);
                                                 setCompactGroup(compactGroupCount + 1);
@@ -266,7 +358,6 @@ const CardInstances = ({
                                 </MenuItem>)}
                             </Select>
                         </FormControl>
-
                     </div>}
                     <State state={connectedToHost} >
                         {I18n.t('Connected to host')}
@@ -291,25 +382,62 @@ const CardInstances = ({
                     >
                         {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
                     </InstanceInfo>
-                    <InstanceInfo
-                        icon={loglevelIcon}
-                        tooltip={I18n.t('loglevel')}
-                    >
-                        {instance.loglevel}
-                    </InstanceInfo>
-                    <InstanceInfo
-                        icon={<ScheduleIcon />}
-                        tooltip={I18n.t('schedule_group')}
-                    >
-                        {getSchedule(id) || '-'}
-                    </InstanceInfo>
-                    {expertMode &&
+                    {expertMode && <div style={{ display: 'flex' }}>
+                        <InstanceInfo
+                            icon={loglevelIcon}
+                            tooltip={I18n.t('loglevel')}
+                        >
+                            {logLevel}
+                        </InstanceInfo>
+                        <IconButton
+                            size="small"
+                            className={classes.button}
+                            onClick={() => setOpenDialogSelect(true)}
+                        >
+                            <EditIcon />
+                        </IconButton>
+                    </div>}
+                    <div style={{ display: 'flex' }}>
                         <InstanceInfo
                             icon={<ScheduleIcon />}
-                            tooltip={I18n.t('restart')}
+                            tooltip={I18n.t('schedule_group')}
                         >
-                            {getRestartSchedule(id) || '-'}
+                            {getSchedule(id) || '-'}
                         </InstanceInfo>
+                            <IconButton
+                                size="small"
+                                className={classes.button}
+                                onClick={() => setOpenDialogSchedule(true)}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                    </div>
+                    {expertMode &&
+                        <div style={{ display: 'flex' }}>
+                            <InstanceInfo
+                                icon={<ScheduleIcon />}
+                                tooltip={I18n.t('restart')}
+                            >
+                                {getRestartSchedule(id) || '-'}
+                            </InstanceInfo>
+                            <IconButton
+                                size="small"
+                                className={classes.button}
+                                onClick={() => setOpenDialogCron(true)}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        </div>
+                    }
+                    {expertMode &&
+                        <div style={{ display: 'flex' }}>
+                            <InstanceInfo
+                                icon={<ImportExportIcon />}
+                                tooltip={I18n.t('restart')}
+                            >
+                                {`⇥${inputOutput.stateInput} / ↦${inputOutput.stateOutput}`}
+                            </InstanceInfo>
+                        </div>
                     }
                     <Hidden smUp>
                         <IconButton
@@ -332,6 +460,35 @@ const CardInstances = ({
                     </IconButton>
 
                 </div>
+                {checkSentry && <div style={{ display: 'flex' }}>
+                    <Tooltip title={I18n.t('sentry')}>
+                        <IconButton
+                            size="small"
+                            className={classes.button}
+                            onClick={setSentry}
+                        >
+                            <CardMedia
+                                style={currentSentry ? null : { filter: 'contrast(0%)' }}
+                                className={classes.sentry}
+                                component="img"
+                                image={sentry}
+                            />
+                        </IconButton>
+                    </Tooltip>
+                </div>
+                }
+                {expertMode && checkCompact && <div style={{ display: 'flex' }}>
+                    <Tooltip title={I18n.t('compact groups')}>
+                        <IconButton
+                            size="small"
+                            className={classes.button}
+                            onClick={setCompact}
+                        >
+                            <ViewCompactIcon color={compact ? "primary" : ""} />
+                        </IconButton>
+                    </Tooltip>
+                </div>
+                }
             </div>
         </div>
         <div className={clsx(classes.imageBlock,
@@ -343,7 +500,7 @@ const CardInstances = ({
             />
             <div className={classes.adapter}>{instance.id}</div>
             <div className={classes.versionDate}>
-                {expertMode && compact && <Tooltip title={I18n.t('compact groups')}>
+                {expertMode && checkCompact && <Tooltip title={I18n.t('compact groups')}>
                     <ViewCompactIcon color="action" style={{ margin: 10 }} />
                 </Tooltip>}
             </div>
@@ -358,7 +515,15 @@ const CardInstances = ({
             justifyContent: 'space-between'
         }}>
             <Typography gutterBottom variant="h5" component="h5">
-                {name}
+                <div style={{ display: 'flex' }}>
+                    {name}
+                    <IconButton
+                        size="small"
+                        className={classes.button}
+                        onClick={() => setOpenDialogText(true)}
+                    >
+                        <EditIcon />
+                    </IconButton></div>
             </Typography>
             <div style={{
                 marginTop: 10,

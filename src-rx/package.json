@@ -37,8 +37,9 @@
     "react-leaflet": "^3.0.5",
     "react-markdown": "^5.0.3",
     "react-scripts": "4.0.1",
-    "semver": "^7.3.4",
-    "react-showdown": "^2.1.0"
+    "react-showdown": "^2.1.0",
+    "react-text-mask": "^5.4.3",
+    "semver": "^7.3.4"
   },
   "homepage": ".",
   "scripts": {

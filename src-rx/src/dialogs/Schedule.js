@@ -1407,3 +1407,4 @@ Schedule.propTypes = {
 };
 
 export default withStyles(styles)(Schedule);
+
