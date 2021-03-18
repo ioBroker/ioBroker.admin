@@ -509,7 +509,7 @@ class Instances extends Component {
     isRunning(id) {
         const obj = this.objects[id];
         const common = obj ? obj.common : null;
-        return (common.onlyWWW || common.enabled) ? true : false;
+        return (common?.onlyWWW || common?.enabled) ? true : false;
     }
 
     isCompactGroup(id) {
@@ -521,31 +521,29 @@ class Instances extends Component {
     isCompact(id) {
         const obj = this.objects[id];
         const common = obj ? obj.common : null;
-        return common.compact || null;
+        return common?.compact || null;
     }
 
     isCompactGroupCheck = (id) => {
         const obj = this.adapters.find(({ _id }) => _id === `system.adapter.${id}`);
         const common = obj ? obj.common : null;
-        return common.compact || false;
+        return common?.compact || false;
     }
 
     isSentryCheck = (id) => {
         const obj = this.adapters.find(({ _id }) => _id === `system.adapter.${id}`);
         const common = obj ? obj.common : null;
-        return common?.plugins?.sentry || false;
+        return common?.plugins?.sentry || null;
     }
 
     isSentry(id) {
         const obj = this.objects[id];
-        const common = obj ? obj.common : null;
-        return !!common?.plugins?.sentry || false;
+        return !!obj?.common?.plugins?.sentry || false;
     }
 
     getSchedule = (id) => {
         const obj = this.objects[id];
-        const common = obj ? obj.common : null;
-        return common.schedule ? common.schedule : '';
+        return obj?.common?.schedule ? obj.common.schedule : '';
     }
 
     isName = (id) => {
@@ -674,7 +672,7 @@ class Instances extends Component {
             const currentSentry = this.isSentry(id);
 
             const setSentry = () => {
-                this.extendObject('system.adapter.' + instance.id, { common: { plugins: currentSentry ? {} : checkSentry } });
+                this.extendObject('system.adapter.' + instance.id, { common: { plugins: {sentry: currentSentry ? null : checkSentry }}});
             }
             const setName = (value) => {
                 this.extendObject('system.adapter.' + instance.id, { common: { title: value } });
