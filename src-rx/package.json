@@ -28,6 +28,7 @@
     "prop-types": "^15.7.2",
     "react": "^17.0.1",
     "react-ace": "^9.2.1",
+    "react-color": "^2.19.3",
     "react-dnd": "^13.1.1",
     "react-dnd-html5-backend": "^12.1.1",
     "react-dnd-touch-backend": "^12.0.0",
@@ -39,6 +40,7 @@
     "react-scripts": "4.0.1",
     "react-showdown": "^2.1.0",
     "react-text-mask": "^5.4.3",
+    "recompose": "^0.30.0",
     "semver": "^7.3.4"
   },
   "homepage": ".",

@@ -1,10 +1,12 @@
 import { useDrag } from 'react-dnd'
+
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
 import CheckBox from '@material-ui/core/CheckBox';
 import PersonIcon from '@material-ui/icons/Person';
+import GroupIcon from '@material-ui/icons/Group';
 import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -22,29 +24,28 @@ function UserBlock(props) {
         }
     )
         
-    return <Card raised className={props.classes.userGroupCard} ref={dragRef}>
+    return <Card raised style={{backgroundColor: props.user.common.color, cursor: 'grab'}} className={props.classes.userGroupCard} ref={dragRef}>
         <div class={props.classes.right}>
-            <CheckBox checked={props.user.common.enabled} onChange={e => {
-                if (props.user._id == 'system.user.admin') {
-                    return;
-                }
+            <CheckBox checked={props.user.common.enabled} disabled={props.user.common.dontDelete} onChange={e => {
                 props.socket.extendObject(props.user._id, { common: { enabled: !props.user.common.enabled } }).then(()=>
                     props.updateData()
                 );
             }}/>
             <IconButton size="small" onClick={()=>{props.showUserEditDialog(props.user)}}><EditIcon/></IconButton>
-            <IconButton size="small"><DeleteIcon/></IconButton>
+            <IconButton size="small" disabled={props.user.common.dontDelete}><DeleteIcon/></IconButton>
         </div>
         <CardContent>
             <Typography gutterBottom variant="h5" component="h5" className={props.classes.userGroupTitle}>
-                {props.user.common.icon ? <img class={props.classes.icon} src={props.user.common.icon}/> : <PersonIcon/>} 
-                <span>{typeof(props.user.common.name) === 'object' ? props.user.common.name.en : props.user.common.name}</span>
+                {props.user.common.icon ? <img alt="" class={props.classes.icon} src={props.user.common.icon}/> : <PersonIcon/>} 
+                <span>{props.getName(props.user.common.name)}</span>
+                {props.user.common.desc !== '' ? <span>&nbsp;({props.user.common.desc})</span> : null}
             </Typography>
             <div>
                 {props.groups.map(group => 
                     group.common.members && group.common.members.includes(props.user._id) ? 
                     <Card className={props.classes.userGroupMember}>
-                        {group._id} 
+                        {group.common.icon ? <img alt="" class={props.classes.icon} src={group.common.icon}/> : <GroupIcon/>}
+                        {props.getName(group.common.name)} 
                         <IconButton 
                             size="small"
                             onClick={() => props.removeUserFromGroup(props.user._id, group._id)}
