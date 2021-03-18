@@ -9,6 +9,15 @@
 - Instances - make delete button work.
   - executeCommand(`del ADAPTER_NAME.x`)
 - Instances - Open in new window must be shown only for instances with localLink (BF)
+<<<<<<< HEAD
+=======
+- Instances - allow set of compact groups (only in compact mode) (new) socket.readBaseSettings => compact = true//
+    - show only if system.adapter.NAME => common.compact==true and "base settings compact" === true, compactGroup = null, 0, ...
+
+ - only for instances with common.compact == true, read group from common.compactGroup (default, 1, add)//
+    - make it possible to enabled /disable compact mode
+- Base settings => after changes are saved and dialog closed => make reload (no matter with restart or without)
+>>>>>>> 9e7b79cdd001a917b364d1b4df76873dd4633c37
 - Instances - allow to enable/disable sentry settings (new) common.plugin.sentry.enabled => false
   - Fix it
 - Instances - allow to edit CRON/LogLevel/Restart/Name of instance
