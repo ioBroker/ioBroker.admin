@@ -2,10 +2,10 @@ import Dialog from '@material-ui/core/Dialog';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 
-import {UsersTextField} from './Fields';
+import {UsersTextField, UsersColorPicker, UsersFileInput} from './Fields';
 
 function UserEditDialog(props) {
-    return props.open ? <Dialog open={props.open} onClose={props.onClose}>
+    return props.open ? <Dialog PaperProps={{className: props.classes.dialogPaper}} open={props.open} onClose={props.onClose}>
         <Box className={props.classes.dialog}>
             <UsersTextField 
                 label="Name" 
@@ -21,7 +21,7 @@ function UserEditDialog(props) {
             <UsersTextField 
                 label="ID" 
                 t={props.t} 
-                value={ props.user.common._id }
+                value={ props.user._id }
                 classes={props.classes}
             />
             <UsersTextField 
@@ -59,29 +59,30 @@ function UserEditDialog(props) {
                 type="password"
                 classes={props.classes}
             />
-            <UsersTextField 
+            <UsersFileInput 
                 label="Icon" 
                 t={props.t} 
                 value={ props.user.common.icon }
-                onChange={e=>{
+                onChange={fileblob=>{
                     let newData = props.user;
-                    newData.common.icon = e.target.value;
+                    newData.common.icon = fileblob;
                     props.change(newData);
                 }}
-                classes={props.classes}
+                previewClassName={props.classes.iconPreview}
             />
-            <UsersTextField 
+            <UsersColorPicker 
                 label="Color" 
                 t={props.t} 
                 value={ props.user.common.color }
-                onChange={e=>{
+                previewClassName={props.classes.iconPreview}
+                onChange={color=>{
                     let newData = props.user;
-                    newData.common.color = e.target.value;
+                    newData.common.color = color;
                     props.change(newData);
                 }}
-                classes={props.classes}
+                className={props.classes.colorPicker}
             />
-            <Button onClick={props.saveData} disabled={props.user.common.password != props.user.common.passwordRepeat}>Save</Button>
+            <Button onClick={props.saveData} disabled={props.user.common.password !== props.user.common.passwordRepeat}>Save</Button>
         </Box>
     </Dialog> : null;
 }

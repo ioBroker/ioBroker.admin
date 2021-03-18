@@ -21,6 +21,7 @@ import GroupAddIcon from '@material-ui/icons/GroupAdd';
 const styles = theme => ({
     userGroupCard: {
         margin:    10,
+        height: 140,
     },
     userGroupTitle: {
         display: 'inline-flex',
@@ -48,6 +49,21 @@ const styles = theme => ({
         padding: 10,
         display: 'flex',
         flexDirection: 'column',
+        height: 600,
+        width: 400,
+        maxWidth: '100vw',
+        maxHeight: '100vh',
+        overflow: 'auto',
+    },
+    dialogPaper: {
+        overflowY: 'initial'
+    },
+    colorPicker: {
+        
+    }, 
+    iconPreview: {
+        maxHeight: 40,
+        maxWidth: 40,
     }
 });
 
@@ -88,39 +104,39 @@ class UsersList extends Component {
           "members": [
             
           ],
-          "dontDelete": true,
+          "dontDelete": false,
           "acl": {
             "object": {
-              "list": true,
-              "read": true,
-              "write": true,
-              "delete": true
+              "list": false,
+              "read": false,
+              "write": false,
+              "delete": false
             },
             "state": {
-              "list": true,
-              "read": true,
-              "write": true,
-              "create": true,
-              "delete": true
+              "list": false,
+              "read": false,
+              "write": false,
+              "create": false,
+              "delete": false
             },
             "users": {
-              "list": true,
-              "read": true,
-              "write": true,
-              "create": true,
-              "delete": true
+              "list": false,
+              "read": false,
+              "write": false,
+              "create": false,
+              "delete": false
             },
             "other": {
-              "execute": true,
-              "http": true,
-              "sendto": true
+              "execute": false,
+              "http": false,
+              "sendto": false
             },
             "file": {
-              "list": true,
-              "read": true,
-              "write": true,
-              "create": true,
-              "delete": true
+              "list": false,
+              "read": false,
+              "write": false,
+              "create": false,
+              "delete": false
             }
           },
           "icon": "",
@@ -131,6 +147,10 @@ class UsersList extends Component {
 
     componentDidMount() {
         this.updateData();
+    }
+
+    getName(name) {
+        return typeof(name) === 'object' ? name.en : name;
     }
 
     showUserEditDialog = (user) => {
@@ -181,7 +201,7 @@ class UsersList extends Component {
     }
 
     addUserToGroup = (user_id, group_id) => {
-        let group = this.state.groups.find(group => group._id == group_id);
+        let group = this.state.groups.find(group => group._id === group_id);
         let members = group.common.members;
         if (!members.includes(user_id)) {
             members.push(user_id);
@@ -192,7 +212,7 @@ class UsersList extends Component {
     }
 
     removeUserFromGroup = (user_id, group_id) => {
-        let group = this.state.groups.find(group => group._id == group_id);
+        let group = this.state.groups.find(group => group._id === group_id);
         let members = group.common.members;
         if (members.includes(user_id)) {
             members.splice(members.indexOf(user_id), 1);
@@ -209,7 +229,7 @@ class UsersList extends Component {
         return <>
             <DndProvider backend={HTML5Backend}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} lg={6}>
+                    <Grid item xs={12} md={6}>
                         <Fab size="small" className={this.props.classes.left} onClick={()=>this.showGroupEditDialog(this.groupTemplate)}>
                             <GroupAddIcon/>
                         </Fab>
@@ -220,11 +240,12 @@ class UsersList extends Component {
                                 users={this.state.users} 
                                 showGroupEditDialog={this.showGroupEditDialog}
                                 removeUserFromGroup={this.removeUserFromGroup}
+                                getName={this.getName}
                                 {...this.props}
                             />)
                         }
                     </Grid>
-                    <Grid item xs={12} lg={6}>
+                    <Grid item xs={12} md={6}>
                     <Fab size="small" className={this.props.classes.left} onClick={()=>this.showUserEditDialog(this.userTemplate)}>
                             <PersonAddIcon/>
                         </Fab>
@@ -237,6 +258,7 @@ class UsersList extends Component {
                                 updateData={this.updateData}
                                 addUserToGroup={this.addUserToGroup}
                                 removeUserFromGroup={this.removeUserFromGroup}
+                                getName={this.getName}
                                 {...this.props}
                             />)
                         }
