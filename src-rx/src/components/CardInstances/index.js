@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardMedia, Fab, Hidden, IconButton, Typography } from "@material-ui/core";
+import { Button, Card, CardContent, CardMedia, Fab, FormControl, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -10,6 +10,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import InfoIcon from '@material-ui/icons/Info';
 import MemoryIcon from '@material-ui/icons/Memory';
 import ScheduleIcon from '@material-ui/icons/Schedule';
+import ViewCompactIcon from '@material-ui/icons/ViewCompact';
 
 import PauseIcon from '@material-ui/icons/Pause';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
@@ -187,13 +188,8 @@ const CardInstances = ({
     name,
     classes,
     image,
-    version,
-    installedVersion,
-    updateAvailable,
     expertMode,
     hidden,
-    stat,
-    versionDate,
     instance,
     running,
     id,
@@ -206,10 +202,14 @@ const CardInstances = ({
     loglevelIcon,
     getRestartSchedule,
     getSchedule,
-    key
+    key,
+    compact,
+    compactGroup,
+    setCompactGroup,
+    compactGroupCount
 }) => {
     const [openCollapse, setCollapse] = useState(false);
-
+    const [openSelect, setOpenSelect] = useState(false);
     return <Card key={key} className={clsx(classes.root, hidden ? classes.hidden : '')}>
         <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
             <CardContent classes={{
@@ -219,11 +219,55 @@ const CardInstances = ({
                     position: 'sticky',
                     right: 0,
                     top: 0,
-                    background: 'silver'
+                    background: 'silver',
+                    zIndex: 2
                 }}>
                     <div className={classes.close} onClick={() => setCollapse((bool) => !bool)} />
                 </div>
                 <Typography gutterBottom component={'span'} variant={'body2'}>
+                    {compact && <div style={{ display: 'flex' }}>
+                        <Tooltip title={I18n.t('compact groups')}>
+                            <ViewCompactIcon color="secondary" style={{ margin: 10, marginLeft: 0, marginBottom: 2 }} />
+                        </Tooltip>
+                        <FormControl style={{ width: '100%', marginBottom: 5 }} variant="outlined" >
+                            <InputLabel htmlFor="outlined-age-native-simple">{'compact'}</InputLabel>
+                            <Select
+                                variant="standard"
+                                onClose={() => setOpenSelect(false)}
+                                onOpen={() => setOpenSelect(true)}
+                                open={openSelect}
+                                value={compactGroup || 'default'}
+                                fullWidth
+                                onChange={el => setCompactGroup(el.target.value)}
+                            >
+                                {<div disabled >
+                                    <div
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                        }}>
+                                        <div style={{ display: 'flex', margin: 5, justifyContent: 'space-around' }}>
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'center'
+                                            }}>{compactGroupCount + 1}</div>
+                                            <Button onClick={() => {
+                                                setOpenSelect(false);
+                                                setCompactGroup(compactGroupCount + 1);
+                                            }} variant="outlined" stylevariable='outlined'>{I18n.t('Add compact group')}</Button>
+                                        </div>
+                                    </div>
+                                </div>}
+                                <MenuItem value="default">
+                                    {I18n.t('default group')}
+                                </MenuItem>
+                                {Array(compactGroupCount + 1).fill().map((_, idx) => <MenuItem key={idx} value={idx}>
+                                    {idx}
+                                </MenuItem>)}
+                            </Select>
+                        </FormControl>
+
+                    </div>}
                     <State state={connectedToHost} >
                         {I18n.t('Connected to host')}
                     </State>
@@ -298,7 +342,11 @@ const CardInstances = ({
                 image={image || 'img/no-image.png'}
             />
             <div className={classes.adapter}>{instance.id}</div>
-            <div className={classes.versionDate}>{stat || versionDate}</div>
+            <div className={classes.versionDate}>
+                {expertMode && compact && <Tooltip title={I18n.t('compact groups')}>
+                    <ViewCompactIcon color="action" style={{ margin: 10 }} />
+                </Tooltip>}
+            </div>
             <Fab onClick={() => setCollapse((bool) => !bool)} className={classes.fab} color="primary" aria-label="add">
                 <MoreVertIcon />
             </Fab>

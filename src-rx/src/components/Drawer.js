@@ -464,7 +464,6 @@ Drawer.propTypes = {
     isSecure: PropTypes.bool,
     currentTab: PropTypes.string,
     socket: PropTypes.object,
-    currentHost: PropTypes.string,
     ready: PropTypes.bool,
     expertMode: PropTypes.bool,
     handleNavigation: PropTypes.func,

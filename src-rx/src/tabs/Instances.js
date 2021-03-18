@@ -35,6 +35,7 @@ import DevicesIcon from '@material-ui/icons/Devices';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import CloseIcon from "@material-ui/icons/Close";
+import ViewCompactIcon from '@material-ui/icons/ViewCompact';
 
 import MemoryIcon from '@material-ui/icons/Memory';
 
@@ -60,6 +61,7 @@ import State from '../components/State';
 import TabHeader from '../components/TabHeader';
 import { InputAdornment, TextField } from '@material-ui/core';
 import CardInstances from '../components/CardInstances';
+import CustomSelectButton from '../components/CustomSelectButton';
 
 const styles = theme => ({
     table: {
@@ -180,7 +182,10 @@ class Instances extends Component {
             mem: null,
             percent: null,
             memFree: null,
-            filterText: ''
+            filterText: '',
+            compact: false,
+            compactGroupCount: 0,
+            filterCompactGroup: 'All'
         };
 
         this.columns = {
@@ -338,15 +343,18 @@ class Instances extends Component {
             }
             return 0;
         });
-
+        let compactGroupCount = 0;
         instances.forEach(obj => {
             const common = obj ? obj.common : null;
             const objId = obj._id.split('.');
             const instanceId = objId[objId.length - 1];
-
+            if (common.compactGroup && typeof common.compactGroup === 'number' && compactGroupCount < common.compactGroup) {
+                compactGroupCount = common.compactGroup;
+            }
             const instance = {};
-
             instance.id = obj._id.replace('system.adapter.', '');
+            instance.obj = obj;
+            instance.compact = common.compact ? true : false;
             instance.host = common.host;
             instance.name = common.titleLang ? common.titleLang[this.props.lang] : common.title;
             instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
@@ -377,10 +385,19 @@ class Instances extends Component {
             formatted[obj._id] = instance;
         });
 
+        const compact = await this.props.socket.readBaseSettings(this.props.currentHostName)
+            .then(e => e.config.system.compact)
         const importantDevices = JSON.parse(window.localStorage.getItem('Instances.importantDevices'));
         const playArrow = JSON.parse(window.localStorage.getItem('Instances.playArrow'));
         const viewMode = JSON.parse(window.localStorage.getItem('Instances.viewMode'));
+        let filterCompactGroup = JSON.parse(window.localStorage.getItem('Instances.filterCompactGroup'));
+        if (!filterCompactGroup && filterCompactGroup !== 0) {
+            filterCompactGroup = 'All';
+        }
         this.setState({
+            filterCompactGroup,
+            compactGroupCount,
+            compact,
             processes,
             mem: Math.round(mem),
             importantDevices,
@@ -449,7 +466,7 @@ class Instances extends Component {
     }
 
     subscribeObjects(isUnsubscribe) {
-        const func = isUnsubscribe ? this.props.socket.subscribeObject : this.props.socket.unsubscribeObject;
+        const func = !isUnsubscribe ? this.props.socket.subscribeObject : this.props.socket.unsubscribeObject;
         func.call(this.props.socket, 'system.adapter.*', this.onObjectChange);
         func.call(this.props.socket, 'system.host.*', this.onObjectChange);
     }
@@ -498,6 +515,14 @@ class Instances extends Component {
         const common = obj ? obj.common : null;
 
         return (common.onlyWWW || common.enabled) ? true : false;
+    }
+
+    isCompactGroup(id) {
+
+        const obj = this.objects[id];
+        const common = obj ? obj.common : null;
+
+        return common.compactGroup || null;
     }
 
     getSchedule = (id) => {
@@ -657,10 +682,10 @@ class Instances extends Component {
 
     getPanels(classes) {
         let array = Object.keys(this.state.instances).map(id => {
-
             const instance = this.state.instances[id];
             const running = this.isRunning(id);
             const alive = this.isAlive(id);
+            const compactGroup = this.isCompactGroup(id);
             const connectedToHost = this.isConnectedToHost(id);
             const connected = this.isConnected(id);
             const loglevelIcon = this.getLogLevelIcon(instance.loglevel);
@@ -672,6 +697,15 @@ class Instances extends Component {
                         image={instance.image}
                         instance={instance}
                         running={running}
+                        compactGroupCount={this.state.compactGroupCount}
+                        compactGroup={compactGroup}
+                        setCompactGroup={(value) => {
+                            this.extendObject('system.adapter.' + instance.id, { common: { compactGroup: value === 0 ? '0' : value } });
+                            if (this.state.compactGroupCount < value) {
+                                this.setState({ compactGroupCount: value });
+                            }
+                        }}
+                        compact={instance.compact && this.state.compact}
                         id={id}
                         extendObject={this.extendObject}
                         openConfig={this.openConfig}
@@ -686,7 +720,8 @@ class Instances extends Component {
                     />,
                     running,
                     host: instance.host,
-                    name: instance.name
+                    name: instance.name,
+                    compactGroup,
                 })
             }
 
@@ -914,6 +949,12 @@ class Instances extends Component {
         if (this.state.filterText) {
             array = array.filter(({ name }) => name.toLowerCase().indexOf(this.state.filterText.toLowerCase()) !== -1)
         }
+        if ((this.state.filterCompactGroup || this.state.filterCompactGroup === 0) && this.state.compact) {
+            array = array.filter(({ compactGroup }) => compactGroup === this.state.filterCompactGroup ||
+                this.state.filterCompactGroup === 'All' ||
+                (this.state.filterCompactGroup === 'default' && compactGroup === null) ||
+                (this.state.filterCompactGroup === 0 && compactGroup === '0'))
+        }
         if (!array.length) {
             return <div style={{
                 margin: 20,
@@ -962,6 +1003,12 @@ class Instances extends Component {
             return ({ [value]: !state[value] });
         });
 
+    changeCompactGroup = (value) =>
+        this.setState((state) => {
+            window.localStorage.setItem(`Instances.filterCompactGroup`, JSON.stringify(value));
+            return ({ filterCompactGroup: value });
+        });
+
     handleFilterChange(event) {
         this.typingTimer && clearTimeout(this.typingTimer);
 
@@ -977,8 +1024,6 @@ class Instances extends Component {
                 <LinearProgress />
             );
         }
-        // console.log(this.props.socket.getHostInfo('MacBook-Pro-Igor.local'))
-        // console.log(this)
         const { classes } = this.props;
 
         if (this.state.dialog === 'config' && this.state.dialogProp) {
@@ -1026,7 +1071,15 @@ class Instances extends Component {
                             <PlayArrowIcon color={this.state.playArrow ? 'primary' : 'inherit'} />
                         </IconButton>
                     </Tooltip>
-
+                    {this.props.expertMode && <Tooltip title={this.t('allow set of compact groups')}>
+                        <ViewCompactIcon style={{ margin: 10 }} color={this.state.compact ? 'primary' : 'disabled'} />
+                    </Tooltip>}
+                    {this.props.expertMode &&
+                        this.state.compact &&
+                        <CustomSelectButton
+                            arrayItem={[{ name: 'All' }, { name: 'default' }, ...Array(this.state.compactGroupCount + 1).fill().map((_, idx) => ({ name: idx }))]}
+                            onClick={value => this.changeCompactGroup(value)}
+                            value={this.state.filterCompactGroup} />}
                     <div className={classes.grow} />
                     <TextField
                         inputRef={this.inputRef}
@@ -1055,8 +1108,10 @@ class Instances extends Component {
                         `${this.props.t('Disk free')}: ${Math.round(this.state.hostData['Disk free'] / (this.state.hostData['Disk size'] / 100))}%, ${this.props.t('Total RAM usage')}: ${this.state.mem} Mb / ${this.props.t('Free')}: ${this.state.percent}% = ${this.state.memFree} Mb [${this.props.t('Host')}: ${this.props.currentHostName} - ${this.state.processes} ${this.props.t('processes')}]`}
                     {/* <div className={classes.grow} /> */}
                 </TabHeader>
-                <TabContent classes={{ root: this.state.viewMode ? classes.cards : '' }} overflow="auto">
-                    {this.getPanels(classes)}
+                <TabContent overflow="auto">
+                    <div className={this.state.viewMode ? classes.cards : ''}>
+                        {this.getPanels(classes)}
+                    </div>
                 </TabContent>
             </TabContainer>
         );
