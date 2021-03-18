@@ -8,11 +8,11 @@
 - Instances - make delete button work.
 - Instances - Open in new window must be shown only for instances with localLink (BF)
 - Instances - allow set of compact groups (only in compact mode) (new) socket.readBaseSettings => compact = true//
-    - show only if system.adapter.NAME => common.compact==true and "base settings compact" === true, compactGroup = null, 0, ...//
+    - show only if system.adapter.NAME => common.compact==true and "base settings compact" === true, compactGroup = null, 0, ...
 
  - only for instances with common.compact == true, read group from common.compactGroup (default, 1, add)//
-    - make it possible to enabled /disable compact mode//
-- Base settings => after changes are saved and dialog closed => make reload (no matter with restart or without)//
+    - make it possible to enabled /disable compact mode
+- Base settings => after changes are saved and dialog closed => make reload (no matter with restart or without)
 - Instances - allow to enable/disable sentry settings (new) common.plugin.sentry.enabled => false
 - Instances - allow to edit CRON/LogLevel/Restart/Name of instance
 - Instances - show in/out events and RAM not only by opened items (only in the expert mode)//

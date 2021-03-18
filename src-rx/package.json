@@ -6,7 +6,7 @@
     "@date-io/core": "^2.10.6",
     "@date-io/date-fns": "^2.10.6",
     "@fnando/sparkline": "^0.3.10",
-    "@iobroker/adapter-react": "^1.6.3",
+    "@iobroker/adapter-react": "^1.6.4",
     "@material-ui/core": "^4.11.2",
     "@material-ui/data-grid": "^4.0.0-alpha.17",
     "@material-ui/icons": "^4.11.2",
