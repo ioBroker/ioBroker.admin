@@ -85,18 +85,18 @@ class UsersList extends Component {
         "common": {
           "name": "",
           "password": "",
-          "dontDelete": true,
+          "dontDelete": false,
           "enabled": true,
           "color": false,
           "desc": ""
         },
         "native": {},
-        "_id": "",
+        "_id": "system.user.new",
         "enums": {}
       };
     
     groupTemplate = {
-        "_id": "",
+        "_id": "system.group.new",
         "type": "group",
         "common": {
           "name": "",
@@ -184,17 +184,29 @@ class UsersList extends Component {
         this.setState({groupEditDialog: group})
     }
 
-    saveUser = () => {
+    saveUser = (originalId) => {
         let user = JSON.parse(JSON.stringify(this.state.userEditDialog));
         delete user.common.passwordRepeat;
-        this.props.socket.setObject(user._id, user).then(()=>{
+        this.props.socket.setObject(user._id, user)
+        .then(()=>{
+            if (originalId && originalId !== this.state.userEditDialog._id) {
+                return this.props.socket.delObject(originalId);
+            }
+        })
+        .then(()=>{
             this.updateData();
             this.setState({userEditDialog: false});
         });
     }
 
-    saveGroup = () => {
-        this.props.socket.setObject(this.state.groupEditDialog._id, this.state.groupEditDialog).then(()=>{
+    saveGroup = (originalId) => {
+        this.props.socket.setObject(this.state.groupEditDialog._id, this.state.groupEditDialog)
+        .then(()=>{
+            if (originalId && originalId !== this.state.groupEditDialog._id) {
+                return this.props.socket.delObject(originalId);
+            }
+        })
+        .then(()=>{
             this.updateData();
             this.setState({groupEditDialog: false});
         });
@@ -237,6 +249,7 @@ class UsersList extends Component {
                         {
                             this.state.groups.map(group => <GroupBlock 
                                 group={group} 
+                                key={group._id}
                                 users={this.state.users} 
                                 showGroupEditDialog={this.showGroupEditDialog}
                                 removeUserFromGroup={this.removeUserFromGroup}
@@ -253,6 +266,7 @@ class UsersList extends Component {
                         {
                             this.state.users.map(user => <UserBlock 
                                 user={user} 
+                                key={user._id}
                                 groups={this.state.groups} 
                                 showUserEditDialog={this.showUserEditDialog}
                                 updateData={this.updateData}
@@ -265,8 +279,9 @@ class UsersList extends Component {
                     </Grid>
                 </Grid>
                 <UserEditDialog 
-                    open={this.state.userEditDialog} 
+                    open={!!this.state.userEditDialog} 
                     onClose={()=>this.setState({userEditDialog: false})}
+                    users={this.state.users}
                     user={this.state.userEditDialog}
                     t={this.props.t}
                     classes={this.props.classes}
@@ -274,15 +289,16 @@ class UsersList extends Component {
                     saveData={this.saveUser}
                 />
                 <GroupEditDialog 
-                    open={this.state.groupEditDialog} 
+                    open={!!this.state.groupEditDialog} 
                     onClose={()=>this.setState({groupEditDialog: false})}
+                    groups={this.state.groups}
                     group={this.state.groupEditDialog}
                     t={this.props.t}
                     classes={this.props.classes}
                     change={this.changeGroupFormData}
                     saveData={this.saveGroup}
                 />
-                <pre>{JSON.stringify(this.state, null, 2)}</pre>
+                {/* <pre>{JSON.stringify(this.state, null, 2)}</pre> */}
             </DndProvider>
         </>;
     }

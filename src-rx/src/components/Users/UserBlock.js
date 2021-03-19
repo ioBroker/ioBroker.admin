@@ -1,5 +1,5 @@
-import { useDrag } from 'react-dnd'
-
+import { useDrag } from 'react-dnd';
+import Color from 'color';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -23,9 +23,9 @@ function UserBlock(props) {
             },
         }
     )
-        
-    return <Card raised style={{backgroundColor: props.user.common.color, cursor: 'grab'}} className={props.classes.userGroupCard} ref={dragRef}>
-        <div class={props.classes.right}>
+    let textColor = !props.user.common.color || Color(props.user.common.color).hsl().object().l > 50 ? 'black' : 'white';
+    return <Card raised style={{backgroundColor: props.user.common.color, color: textColor, cursor: 'grab'}} className={props.classes.userGroupCard} ref={dragRef}>
+        <div className={props.classes.right}>
             <CheckBox checked={props.user.common.enabled} disabled={props.user.common.dontDelete} onChange={e => {
                 props.socket.extendObject(props.user._id, { common: { enabled: !props.user.common.enabled } }).then(()=>
                     props.updateData()
@@ -36,15 +36,18 @@ function UserBlock(props) {
         </div>
         <CardContent>
             <Typography gutterBottom variant="h5" component="h5" className={props.classes.userGroupTitle}>
-                {props.user.common.icon ? <img alt="" class={props.classes.icon} src={props.user.common.icon}/> : <PersonIcon/>} 
+                {props.user.common.icon ? <img alt="" className={props.classes.icon} src={props.user.common.icon}/> : <PersonIcon/>} 
                 <span>{props.getName(props.user.common.name)}</span>
                 {props.user.common.desc !== '' ? <span>&nbsp;({props.user.common.desc})</span> : null}
             </Typography>
+            {props.groups.find(group => group.common.members && group.common.members.includes(props.user._id)) ? 
+                <div>{props.t('In groups')}:</div> : 
+            null}
             <div>
                 {props.groups.map(group => 
                     group.common.members && group.common.members.includes(props.user._id) ? 
-                    <Card className={props.classes.userGroupMember}>
-                        {group.common.icon ? <img alt="" class={props.classes.icon} src={group.common.icon}/> : <GroupIcon/>}
+                    <Card key={group._id} className={props.classes.userGroupMember}>
+                        {group.common.icon ? <img alt="" className={props.classes.icon} src={group.common.icon}/> : <GroupIcon/>}
                         {props.getName(group.common.name)} 
                         <IconButton 
                             size="small"
