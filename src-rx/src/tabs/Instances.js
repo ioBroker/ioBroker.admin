@@ -176,7 +176,8 @@ class Instances extends Component {
             compact: false,
             compactGroupCount: 0,
             filterCompactGroup: 'All',
-            sentry: false
+            sentry: false,
+            delete: false
         };
 
         this.columns = {
@@ -208,7 +209,11 @@ class Instances extends Component {
         await this.getData();
         await this.getHostsData();
     }
-
+    async componentDidUpdate() {
+        if (this.props.inBackgroundCommand && this.state.delete) {
+            await this.getData(true);
+        }
+    }
     async componentWillUnmount() {
         this.subscribeObjects(true);
         this.subscribeStates(true);
@@ -403,18 +408,19 @@ class Instances extends Component {
             instances: formatted
         });
 
-        this.subscribeStates();
-        this.subscribeObjects();
-
+        if (!this.subscribed) {
+            this.subscribed = true;
+            this.subscribeStates();
+            this.subscribeObjects();
+        }
+        
         //console.log(this.states);
         // console.log(this.objects);
     }
 
     onStateChange = (id, state) => {
         const oldState = this.states[id];
-
         this.states[id] = state;
-
         if ((!oldState && state) || (oldState && !state) || (oldState && state && oldState.val !== state.val)) {
             if (!this.statesUpdateTimer) {
                 this.statesUpdateTimer = setTimeout(() => {
@@ -435,7 +441,6 @@ class Instances extends Component {
         } else if (this.objects[id]) {
             delete this.objects[id];
         }
-
         if (!this.objectsUpdateTimer) {
             this.objectsUpdateTimer = setTimeout(() => {
                 this.objectsUpdateTimer = null;
@@ -452,13 +457,11 @@ class Instances extends Component {
         func.call(this.props.socket, 'system.adapter.*.inputCount', this.onStateChange);
         func.call(this.props.socket, 'system.adapter.*.memRss', this.onStateChange);
         func.call(this.props.socket, 'system.adapter.*.outputCount', this.onStateChange);
-
         //func('system.host.*', this.onStateChange);
         func.call(this.props.socket, 'system.host.*.diskFree', this.onStateChange);
         func.call(this.props.socket, 'system.host.*.diskSize', this.onStateChange);
         func.call(this.props.socket, 'system.host.*.diskWarning', this.onStateChange);
         func.call(this.props.socket, 'system.host.*.freemem', this.onStateChange);
-
         func.call(this.props.socket, '*.info.connection', this.onStateChange);
     }
 
@@ -478,62 +481,50 @@ class Instances extends Component {
     }
 
     getInstanceState = (id) => {
-
         const obj = this.objects[id];
         const instance = this.state.instances[id];
         const common = obj ? obj.common : null;
-        const mode = common.mode || '';
-
+        const mode = common?.mode || '';
         let state = mode === 'daemon' ? 'green' : 'blue';
-
         if (common && common.enabled && (!common.webExtension || !obj.native.webInstance || mode === 'daemon')) {
-
             const alive = this.states[id + '.alive'];
             const connected = this.states[id + '.connected'];
             const connection = this.states[instance.id + '.info.connection'];
-
             if (!connected || !connected.val || !alive || !alive.val) {
                 state = mode === 'daemon' ? 'red' : 'blue';
             }
-
             if (connection && !connection.val) {
                 state = state === 'red' ? 'red' : 'orange';
             }
         } else {
             state = mode === 'daemon' ? 'grey' : 'blue';
         }
-
         return state;
     }
 
     isRunning(id) {
         const obj = this.objects[id];
-        const common = obj ? obj.common : null;
-        return (common?.onlyWWW || common?.enabled) ? true : false;
+        return (obj?.common?.onlyWWW || obj?.common?.enabled) ? true : false;
     }
 
     isCompactGroup(id) {
         const obj = this.objects[id];
-        const common = obj ? obj.common : null;
-        return common.compactGroup || null;
+        return obj?.common?.compactGroup || null;
     }
 
     isCompact(id) {
         const obj = this.objects[id];
-        const common = obj ? obj.common : null;
-        return common?.compact || null;
+        return obj?.common?.compact || null;
     }
 
     isCompactGroupCheck = (id) => {
         const obj = this.adapters.find(({ _id }) => _id === `system.adapter.${id}`);
-        const common = obj ? obj.common : null;
-        return common?.compact || false;
+        return obj?.common?.compact || false;
     }
 
     isSentryCheck = (id) => {
         const obj = this.adapters.find(({ _id }) => _id === `system.adapter.${id}`);
-        const common = obj ? obj.common : null;
-        return common?.plugins?.sentry || null;
+        return obj?.common?.plugins?.sentry || null;
     }
 
     isSentry(id) {
@@ -548,24 +539,30 @@ class Instances extends Component {
 
     isName = (id) => {
         const obj = this.objects[id];
-        const common = obj ? obj.common : null;
-        return common.titleLang && common.titleLang['en'] === common.title ? common.titleLang[this.props.lang] : common.title;
+        return obj?.common?.titleLang && obj?.common?.titleLang['en'] === obj?.common?.title ? obj?.common?.titleLang[this.props.lang] : obj?.common?.title;
     }
-
+    isModeSchedule = (id) => {
+        const obj = this.objects[id];
+        return (obj?.common?.mode && obj?.common?.mode === 'schedule') || false;
+    }
     isLogLevel = (id) => {
         const obj = this.objects[id];
-        return obj.common.loglevel;
+        return obj?.common?.loglevel;
+    }
+
+    isMemoryLimitMB = (id) => {
+        const obj = this.objects[id];
+        return obj?.common?.memoryLimitMB;
     }
 
     getRestartSchedule = (id) => {
         const obj = this.objects[id];
-        const common = obj ? obj.common : null;
-        return common.restartSchedule ? common.restartSchedule : '';
+        return obj?.common?.restartSchedule ? obj.common.restartSchedule : '';
     }
 
     getMemory = (id) => {
         const state = this.states[id + '.memRss'];
-        return state ? state.val : 0;
+        return state ? state?.val : 0;
     }
 
     getInputOutput = (id) => {
@@ -593,36 +590,28 @@ class Instances extends Component {
     }
 
     getHeaders() {
-
         const headers = [];
-
         for (const index in this.columns) {
-
             const column = this.columns[index];
-
             if (!column.onlyExpert || column.onlyExpert === this.state.expertMode) {
                 headers.push(
                     <TableCell key={index}>{index}</TableCell>
                 );
             }
         }
-
         return headers;
     }
 
     getModeIcon(mode) {
-
         if (mode === 'daemon') {
             return <SettingsIcon />;
         } else if (mode === 'schedule') {
             return <ScheduleIcon />
         }
-
         return null;
     }
 
     getLogLevelIcon(level) {
-
         if (level === 'debug') {
             return <BugReportIcon />;
         } else if (level === 'info') {
@@ -632,7 +621,6 @@ class Instances extends Component {
         } else if (level === 'error') {
             return <ErrorIcon />;
         }
-
         return null;
     }
 
@@ -650,7 +638,7 @@ class Instances extends Component {
             const loglevelIcon = this.getLogLevelIcon(instance.loglevel);
             const checkCompact = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
             const inputOutput = this.getInputOutput(id);
-            // console.log(inputOutput)
+            const mode = this.isModeSchedule(id);
             const setCompact = () => {
                 this.extendObject('system.adapter.' + instance.id, { common: { compact: !compact } });
             }
@@ -670,15 +658,25 @@ class Instances extends Component {
             }
             const checkSentry = this.isSentryCheck(instance.adapter);
             const currentSentry = this.isSentry(id);
-
+            const memoryLimitMB = this.isMemoryLimitMB(id);
             const setSentry = () => {
-                this.extendObject('system.adapter.' + instance.id, { common: { plugins: {sentry: currentSentry ? null : checkSentry }}});
+                this.extendObject('system.adapter.' + instance.id, { common: { plugins: { sentry: currentSentry ? null : checkSentry } } });
             }
             const setName = (value) => {
                 this.extendObject('system.adapter.' + instance.id, { common: { title: value } });
             }
             const setLogLevel = (value) => {
                 this.extendObject('system.adapter.' + instance.id, { common: { loglevel: value } });
+            }
+            const setSchedule = (value) => {
+                this.extendObject('system.adapter.' + instance.id, { common: { schedule: value } });
+            }
+            const setMemoryLimitMB = (value) => {
+                this.extendObject('system.adapter.' + instance.id, { common: { memoryLimitMB: value } });
+            }
+            const deletedInstances = () => {
+                this.setState({ delete: true })
+                this.props.executeCommand('del ' + instance.id);
             }
             return ({
                 render: this.state.viewMode ?
@@ -713,6 +711,11 @@ class Instances extends Component {
                         logLevel={logLevel}
                         setLogLevel={setLogLevel}
                         inputOutput={inputOutput}
+                        mode={mode}
+                        setSchedule={setSchedule}
+                        deletedInstances={deletedInstances}
+                        memoryLimitMB={memoryLimitMB}
+                        setMemoryLimitMB={setMemoryLimitMB}
                     /> :
                     <RowInstances
                         key={instance.id}
@@ -749,6 +752,11 @@ class Instances extends Component {
                         logLevel={logLevel}
                         setLogLevel={setLogLevel}
                         inputOutput={inputOutput}
+                        mode={mode}
+                        setSchedule={setSchedule}
+                        deletedInstances={deletedInstances}
+                        memoryLimitMB={memoryLimitMB}
+                        setMemoryLimitMB={setMemoryLimitMB}
                     />,
                 running,
                 host: instance.host,
@@ -767,13 +775,13 @@ class Instances extends Component {
         if (this.state.filterText) {
             array = array.filter(({ name }) => name.toLowerCase().indexOf(this.state.filterText.toLowerCase()) !== -1)
         }
-        if ((this.state.filterCompactGroup || this.state.filterCompactGroup === 0) && this.state.compact) {
+        if (this.props.expertMode && (this.state.filterCompactGroup || this.state.filterCompactGroup === 0) && this.state.compact) {
             array = array.filter(({ compactGroup }) => compactGroup === this.state.filterCompactGroup ||
                 this.state.filterCompactGroup === 'All' ||
                 (this.state.filterCompactGroup === 'default' && compactGroup === null) ||
                 (this.state.filterCompactGroup === 0 && compactGroup === '0'))
         }
-        if (this.state.sentry) {
+        if (this.props.expertMode && this.state.sentry) {
             array = array.filter(({ sentry }) => sentry);
         }
         if (!array.length) {
@@ -891,7 +899,7 @@ class Instances extends Component {
                             <PlayArrowIcon color={this.state.playArrow ? 'primary' : 'inherit'} />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title={this.t('sentry')}>
+                    {this.props.expertMode && <Tooltip title={this.t('sentry')}>
                         <IconButton
                             size="small"
                             className={classes.button}
@@ -904,7 +912,7 @@ class Instances extends Component {
                                 image={sentry}
                             />
                         </IconButton>
-                    </Tooltip>
+                    </Tooltip>}
                     {this.props.expertMode && <Tooltip title={this.t('allow set of compact groups')}>
                         <ViewCompactIcon style={{ margin: 10 }} color={this.state.compact ? 'primary' : 'disabled'} />
                     </Tooltip>}

@@ -18,12 +18,11 @@ import I18n from '@iobroker/adapter-react/i18n';
 import { green, red } from '@material-ui/core/colors';
 import InstanceInfo from '../InstanceInfo';
 import State from '../State';
-import sentry from '../../assets/sentry.svg'
+import sentry from '../../assets/sentry.svg';
 import CustomModal from '../CustomModal';
-import ComplexCron from '../../dialogs/ComplexCron';
 import EditIcon from '@material-ui/icons/Edit';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
-import Schedule from '../../dialogs/Schedule';
+import SimpleCron from '@iobroker/adapter-react/Components/SimpleCron';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -228,7 +227,12 @@ const CardInstances = ({
     setName,
     logLevel,
     setLogLevel,
-    inputOutput
+    inputOutput,
+    mode,
+    setSchedule,
+    deletedInstances,
+    memoryLimitMB,
+    setMemoryLimitMB
 }) => {
     const [openCollapse, setCollapse] = useState(false);
     const [openSelect, setOpenSelect] = useState(false);
@@ -236,55 +240,85 @@ const CardInstances = ({
     const [openDialogSchedule, setOpenDialogSchedule] = useState(false);
     const [openDialogText, setOpenDialogText] = useState(false);
     const [openDialogSelect, setOpenDialogSelect] = useState(false);
+    const [openDialogDelete, setOpenDialogDelete] = useState(false);
+    const [openDialogMemoryLimit, setOpenDialogMemoryLimit] = useState(false);
     const [cron, setCron] = useState(getRestartSchedule(id));
+    const [scheduleState, setScheduleState] = useState(getSchedule(id));
     const [select, setSelect] = useState(logLevel);
     const arrayLogLevel = [
         'silly', 'debug', 'info', 'warn', 'error'
     ]
     return <Card key={key} className={clsx(classes.root, hidden ? classes.hidden : '')}>
         <CustomModal
-            open={openDialogCron}
-            onApply={() => {
-                setRestartSchedule(cron);
-                setOpenDialogCron(!openDialogCron);
+            title={
+                (openDialogText && I18n.t("Enter title for %s", instance.id)) ||
+                (openDialogCron && I18n.t("Edit restart rule for %s", instance.id)) ||
+                (openDialogSchedule && I18n.t("Edit schedule rule for %s", instance.id)) ||
+                (openDialogSelect && I18n.t("Edit log level rule for %s", instance.id)) ||
+                (openDialogDelete && I18n.t("Please confirm")) ||
+                (openDialogMemoryLimit && I18n.t("Edit memory limit rule for %s", instance.id))
+            }
+            open={
+                openDialogCron ||
+                openDialogSchedule ||
+                openDialogSelect ||
+                openDialogText ||
+                openDialogDelete ||
+                openDialogMemoryLimit
+            }
+            textInput={openDialogText || openDialogMemoryLimit}
+            defaultValue={openDialogText ? name : openDialogMemoryLimit ? memoryLimitMB : ''}
+            onApply={(value) => {
+                if (openDialogCron) {
+                    setRestartSchedule(cron);
+                    setOpenDialogCron(false);
+                } else if (openDialogSchedule) {
+                    setSchedule(scheduleState);
+                    setOpenDialogSchedule(false);
+                } else if (openDialogSelect) {
+                    setLogLevel(select)
+                    setOpenDialogSelect(false);
+                } else if (openDialogText) {
+                    setName(value);
+                    setOpenDialogText(false);
+                } else if (openDialogDelete) {
+                    setOpenDialogDelete(false);
+                    deletedInstances();
+                } else if (openDialogMemoryLimit) {
+                    setMemoryLimitMB(value)
+                    setOpenDialogMemoryLimit(false);
+                }
             }}
             onClose={() => {
-                setCron(getRestartSchedule(id));
-                setOpenDialogCron(!openDialogCron);
+                if (openDialogCron) {
+                    setCron(getRestartSchedule(id));
+                    setOpenDialogCron(false);
+                } else if (openDialogSchedule) {
+                    setScheduleState(getSchedule(id));
+                    setOpenDialogSchedule(false);
+                } else if (openDialogSelect) {
+                    setSelect(logLevel);
+                    setOpenDialogSelect(false);
+                } else if (openDialogText) {
+                    setOpenDialogText(false);
+                } else if (openDialogDelete) {
+                    setOpenDialogDelete(false);
+                } else if (openDialogMemoryLimit) {
+                    setOpenDialogMemoryLimit(false);
+                }
             }}>
-            <ComplexCron
+            {(openDialogCron || openDialogSchedule) && <SimpleCron
                 language={I18n.getLanguage()}
-                cronExpression={getRestartSchedule(id)}
-                onChange={el => setCron(el)}
-            />
-        </CustomModal>
-        <CustomModal
-            open={openDialogSchedule}
-            onApply={() => {
-                // setRestartSchedule(cron);
-                setOpenDialogSchedule(!openDialogSchedule);
-            }}
-            onClose={() => {
-                // setCron(getRestartSchedule(id));
-                setOpenDialogSchedule(!openDialogSchedule);
-            }}>
-            <Schedule
-                // language={I18n.getLanguage()}
-                // cronExpression={getRestartSchedule(id)}
-                onChange={el => console.log(el)}
-            />
-        </CustomModal>
-        <CustomModal
-            open={openDialogSelect}
-            onApply={() => {
-                setLogLevel(select)
-                setOpenDialogSelect(!openDialogSelect);
-            }}
-            onClose={() => {
-                setSelect(logLevel);
-                setOpenDialogSelect(!openDialogSelect);
-            }}>
-            <FormControl style={{ width: '100%', marginBottom: 5 }} variant="outlined" >
+                cronExpression={openDialogCron ? getRestartSchedule(id) : getSchedule(id)}
+                onChange={el => {
+                    if (openDialogCron) {
+                        setCron(el);
+                    } else if (openDialogSchedule) {
+                        setScheduleState(el)
+                    }
+                }}
+            />}
+            {openDialogSelect && <FormControl style={{ width: '100%', marginBottom: 5 }} variant="outlined" >
                 <InputLabel htmlFor="outlined-age-native-simple">{I18n.t('log level')}</InputLabel>
                 <Select
                     variant="standard"
@@ -296,20 +330,9 @@ const CardInstances = ({
                         {I18n.t(el)}
                     </MenuItem>)}
                 </Select>
-            </FormControl>
+            </FormControl>}
+            {openDialogDelete && I18n.t("Are you sure you want to delete the instance %s?", instance.id)}
         </CustomModal>
-        <CustomModal
-            textInput
-            defaultValue={name}
-            open={openDialogText}
-            onApply={(value) => {
-                setName(value);
-                setOpenDialogText(!openDialogText);
-            }}
-            onClose={() => {
-                setOpenDialogText(!openDialogText);
-            }}
-        />
         <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
             <CardContent classes={{
                 root: classes.cardContent
@@ -384,6 +407,22 @@ const CardInstances = ({
                     </InstanceInfo>
                     {expertMode && <div style={{ display: 'flex' }}>
                         <InstanceInfo
+                            icon={<MemoryIcon style={{ color: '#dc8e00' }} />}
+                            tooltip={I18n.t('RAM limit')}
+                        >
+                            {(memoryLimitMB ? memoryLimitMB : '-.--') + ' MB'}
+                        </InstanceInfo>
+                        <IconButton
+                            size="small"
+                            className={classes.button}
+                            onClick={() => setOpenDialogMemoryLimit(true)}
+                        >
+                            <EditIcon />
+                        </IconButton>
+                    </div>
+                    }
+                    {expertMode && <div style={{ display: 'flex' }}>
+                        <InstanceInfo
                             icon={loglevelIcon}
                             tooltip={I18n.t('loglevel')}
                         >
@@ -397,25 +436,25 @@ const CardInstances = ({
                             <EditIcon />
                         </IconButton>
                     </div>}
-                    <div style={{ display: 'flex' }}>
+                    {mode && <div style={{ display: 'flex' }}>
                         <InstanceInfo
                             icon={<ScheduleIcon />}
                             tooltip={I18n.t('schedule_group')}
                         >
                             {getSchedule(id) || '-'}
                         </InstanceInfo>
-                            <IconButton
-                                size="small"
-                                className={classes.button}
-                                onClick={() => setOpenDialogSchedule(true)}
-                            >
-                                <EditIcon />
-                            </IconButton>
-                    </div>
+                        <IconButton
+                            size="small"
+                            className={classes.button}
+                            onClick={() => setOpenDialogSchedule(true)}
+                        >
+                            <EditIcon />
+                        </IconButton>
+                    </div>}
                     {expertMode &&
                         <div style={{ display: 'flex' }}>
                             <InstanceInfo
-                                icon={<ScheduleIcon />}
+                                icon={<ScheduleIcon style={{ color: '#dc8e00' }} />}
                                 tooltip={I18n.t('restart')}
                             >
                                 {getRestartSchedule(id) || '-'}
@@ -433,9 +472,17 @@ const CardInstances = ({
                         <div style={{ display: 'flex' }}>
                             <InstanceInfo
                                 icon={<ImportExportIcon />}
-                                tooltip={I18n.t('restart')}
+                                tooltip={I18n.t('events')}
                             >
-                                {`⇥${inputOutput.stateInput} / ↦${inputOutput.stateOutput}`}
+                                <div style={{ display: 'flex' }}>
+                                    <Tooltip title={I18n.t('input events')}>
+                                        <div style={{ marginRight: 5 }}>⇥${inputOutput.stateInput}</div>
+                                    </Tooltip>
+                                    /
+                                <Tooltip title={I18n.t('output events')}>
+                                        <div style={{ marginLeft: 5 }}>↦${inputOutput.stateOutput}</div>
+                                    </Tooltip>
+                                </div>
                             </InstanceInfo>
                         </div>
                     }
@@ -455,12 +502,13 @@ const CardInstances = ({
                     <IconButton
                         size="small"
                         className={classes.button}
+                        onClick={() => setOpenDialogDelete(true)}
                     >
                         <DeleteIcon />
                     </IconButton>
 
                 </div>
-                {checkSentry && <div style={{ display: 'flex' }}>
+                {expertMode && checkSentry && <div style={{ display: 'flex' }}>
                     <Tooltip title={I18n.t('sentry')}>
                         <IconButton
                             size="small"
@@ -500,9 +548,9 @@ const CardInstances = ({
             />
             <div className={classes.adapter}>{instance.id}</div>
             <div className={classes.versionDate}>
-                {expertMode && checkCompact && <Tooltip title={I18n.t('compact groups')}>
+                {/* {expertMode && checkCompact && <Tooltip title={I18n.t('compact groups')}>
                     <ViewCompactIcon color="action" style={{ margin: 10 }} />
-                </Tooltip>}
+                </Tooltip>} */}
             </div>
             <Fab onClick={() => setCollapse((bool) => !bool)} className={classes.fab} color="primary" aria-label="add">
                 <MoreVertIcon />

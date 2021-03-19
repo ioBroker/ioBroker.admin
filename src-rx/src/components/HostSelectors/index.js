@@ -3,8 +3,32 @@ import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import I18n from '@iobroker/adapter-react/i18n';
+import { withStyles } from '@material-ui/core';
+import Icon from '@iobroker/adapter-react/Components/Icon';
 
-export default function HostSelectors({ disabled, socket, currentHostName, currentHost, setCurrentHost }) {
+const styles = theme => ({
+    img: {
+        width: 30,
+        height: 30,
+        margin: 'auto 0',
+        position: 'relative',
+        marginRight: 10,
+        '&:after': {
+            content: '""',
+            position: 'absolute',
+            zIndex: 2,
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'url("img/no-image.png") 100% 100% no-repeat',
+            backgroundSize: 'cover',
+            backgroundColor: '#fff',
+        }
+    },
+})
+
+export default withStyles(styles)(function HostSelectors({ classes, disabled, socket, currentHostName, currentHost, setCurrentHost }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const [hosts, setHosts] = useState([]);
     const [alive, setAlive] = useState({})
@@ -34,7 +58,17 @@ export default function HostSelectors({ disabled, socket, currentHostName, curre
     return (
         <div>
             <Button title={I18n.t("Host selection")} variant={disabled || hosts.length < 2 ? "text" : "outlined"} disabled={disabled || hosts.length < 2} aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-                {currentHostName}
+                {hosts.filter(el => el._id === currentHost).map(({ common: { name, icon, color } }) => <div style={{
+                    display: 'flex',
+                    color: color || 'none',
+                    alignItems: 'center',
+                }}>
+                    <Icon
+                        className={classes.img}
+                        src={icon || 'img/no-image.png'}
+                    />
+                    {name}
+                </div>)}
             </Button>
             <Menu
                 id="simple-menu"
@@ -43,8 +77,26 @@ export default function HostSelectors({ disabled, socket, currentHostName, curre
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                {hosts.map(({ _id, common: { name } }, idx) => <MenuItem key={_id} disabled={!alive[_id]} selected={_id === currentHost} onClick={(el) => handleCloseItem(el, idx)}>{name}</MenuItem>)}
+                {hosts.map(({ _id, common: { name, icon, color } }, idx) =>
+                    <MenuItem
+                        key={_id}
+                        disabled={!alive[_id]}
+                        selected={_id === currentHost}
+                        onClick={(el) => handleCloseItem(el, idx)}>
+                        <div style={{
+                            display: 'flex',
+                            color: color || 'none',
+                            alignItems: 'center',
+                        }}>
+                            <Icon
+                                className={classes.img}
+                                src={icon || 'img/no-image.png'}
+                            />
+                            {name}
+                        </div>
+                    </MenuItem>
+                )}
             </Menu>
         </div>
     );
-}
+})

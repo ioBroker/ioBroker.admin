@@ -12,6 +12,9 @@ import MemoryIcon from '@material-ui/icons/Memory';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import ViewCompactIcon from '@material-ui/icons/ViewCompact';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import sentry from '../../assets/sentry.svg';
+import EditIcon from '@material-ui/icons/Edit';
+import ImportExportIcon from '@material-ui/icons/ImportExport';
 
 import PauseIcon from '@material-ui/icons/Pause';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
@@ -19,6 +22,8 @@ import I18n from '@iobroker/adapter-react/i18n';
 import { amber, blue, green, grey, red } from '@material-ui/core/colors';
 import InstanceInfo from '../InstanceInfo';
 import State from '../State';
+import CustomModal from '../CustomModal';
+import SimpleCron from '@iobroker/adapter-react/Components/SimpleCron';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -259,6 +264,12 @@ const styles = theme => ({
         display: 'flex',
         flexFlow: 'wrap',
         justifyContent: 'center',
+    },
+    sentry: {
+        width: 24,
+        height: 24,
+        objectFit: 'fill',
+        filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)'
     }
 });
 const RowInstances = ({
@@ -289,17 +300,135 @@ const RowInstances = ({
     getInstanceState,
     getModeIcon,
     expanded,
-    handleChange
+    handleChange,
+    checkSentry,
+    currentSentry,
+    setSentry,
+    setRestartSchedule,
+    setName,
+    logLevel,
+    setLogLevel,
+    inputOutput,
+    mode,
+    setSchedule,
+    deletedInstances,
+    memoryLimitMB,
+    setMemoryLimitMB
 }) => {
-    const [openCollapse, setCollapse] = useState(false);
     const [openSelect, setOpenSelect] = useState(false);
+    const [openDialogCron, setOpenDialogCron] = useState(false);
+    const [openDialogSchedule, setOpenDialogSchedule] = useState(false);
+    const [openDialogText, setOpenDialogText] = useState(false);
+    const [openDialogSelect, setOpenDialogSelect] = useState(false);
+    const [openDialogDelete, setOpenDialogDelete] = useState(false);
+    const [openDialogMemoryLimit, setOpenDialogMemoryLimit] = useState(false);
+    const [cron, setCron] = useState(getRestartSchedule(id));
+    const [scheduleState, setScheduleState] = useState(getSchedule(id));
+    const [select, setSelect] = useState(logLevel);
+    const arrayLogLevel = [
+        'silly', 'debug', 'info', 'warn', 'error'
+    ]
     return <Accordion key={key} square
         expanded={expanded === instance.id}
-        onChange={() =>
-            handleChange(instance.id)}>
+        onChange={() => {
+            if (
+                openDialogCron ||
+                openDialogSchedule ||
+                openDialogSelect ||
+                openDialogText ||
+                openDialogDelete ||
+                openDialogMemoryLimit) {
+                return
+            }
+            handleChange(instance.id);
+        }}>
         <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
         >
+            <CustomModal
+                title={
+                    (openDialogText && I18n.t("Enter title for %s", instance.id)) ||
+                    (openDialogCron && I18n.t("Edit restart rule for %s", instance.id)) ||
+                    (openDialogSchedule && I18n.t("Edit schedule rule for %s", instance.id)) ||
+                    (openDialogSelect && I18n.t("Edit log level rule for %s", instance.id)) ||
+                    (openDialogDelete && I18n.t("Please confirm")) ||
+                    (openDialogMemoryLimit && I18n.t("Edit memory limit rule for %s", instance.id))
+                }
+                open={
+                    openDialogCron ||
+                    openDialogSchedule ||
+                    openDialogSelect ||
+                    openDialogText ||
+                    openDialogDelete ||
+                    openDialogMemoryLimit
+                }
+                textInput={openDialogText || openDialogMemoryLimit}
+                defaultValue={openDialogText ? name : openDialogMemoryLimit ? memoryLimitMB : ''}
+                onApply={(value) => {
+                    if (openDialogCron) {
+                        setRestartSchedule(cron);
+                        setOpenDialogCron(false);
+                    } else if (openDialogSchedule) {
+                        setSchedule(scheduleState);
+                        setOpenDialogSchedule(false);
+                    } else if (openDialogSelect) {
+                        setLogLevel(select)
+                        setOpenDialogSelect(false);
+                    } else if (openDialogText) {
+                        setName(value);
+                        setOpenDialogText(false);
+                    } else if (openDialogDelete) {
+                        setOpenDialogDelete(false);
+                        deletedInstances();
+                    } else if (openDialogMemoryLimit) {
+                        setMemoryLimitMB(value)
+                        setOpenDialogMemoryLimit(false);
+                    }
+                }}
+                onClose={() => {
+                    if (openDialogCron) {
+                        setCron(getRestartSchedule(id));
+                        setOpenDialogCron(false);
+                    } else if (openDialogSchedule) {
+                        setScheduleState(getSchedule(id));
+                        setOpenDialogSchedule(false);
+                    } else if (openDialogSelect) {
+                        setSelect(logLevel);
+                        setOpenDialogSelect(false);
+                    } else if (openDialogText) {
+                        setOpenDialogText(false);
+                    } else if (openDialogDelete) {
+                        setOpenDialogDelete(false);
+                    } else if (openDialogMemoryLimit) {
+                        setOpenDialogMemoryLimit(false);
+                    }
+                }}>
+                {(openDialogCron || openDialogSchedule) && <SimpleCron
+                    language={I18n.getLanguage()}
+                    cronExpression={openDialogCron ? getRestartSchedule(id) : getSchedule(id)}
+                    onChange={el => {
+                        if (openDialogCron) {
+                            setCron(el);
+                        } else if (openDialogSchedule) {
+                            setScheduleState(el)
+                        }
+                    }}
+                />}
+                {openDialogSelect && <FormControl style={{ width: '100%', marginBottom: 5 }} variant="outlined" >
+                    <InputLabel htmlFor="outlined-age-native-simple">{I18n.t('log level')}</InputLabel>
+                    <Select
+                        variant="standard"
+                        value={select}
+                        fullWidth
+                        onChange={el => setSelect(el.target.value)}
+                    >
+                        {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
+                            {I18n.t(el)}
+                        </MenuItem>)}
+                    </Select>
+                </FormControl>}
+                {openDialogDelete && I18n.t("Are you sure you want to delete the instance %s?", instance.id)}
+            </CustomModal>
             <Grid container spacing={1} alignItems="center" direction="row" wrap="nowrap">
                 <Grid
                     item
@@ -343,13 +472,82 @@ const RowInstances = ({
                 </Grid>
                 <Hidden smDown>
                     <Grid item sm={4} lg={3}>
-                        <Typography className={classes.secondaryHeading}>{instance.name}</Typography>
+                        <Typography className={classes.secondaryHeading}>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                {name}
+                                <IconButton
+                                    size="small"
+                                    className={classes.button}
+                                    onClick={(event) => {
+                                        setOpenDialogText(true);
+                                        event.stopPropagation();
+                                    }}
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                            </div>
+                        </Typography>
                     </Grid>
                 </Hidden>
+                {expertMode &&
+                    <div style={{ display: 'flex', minWidth: 200 }}>
+                        <InstanceInfo
+                            icon={<ImportExportIcon />}
+                            tooltip={I18n.t('events')}
+                        >
+                            <div style={{ display: 'flex' }}>
+                                <Tooltip title={I18n.t('input events')}>
+                                    <div style={{ marginRight: 5 }}>⇥{inputOutput.stateInput}</div>
+                                </Tooltip>
+                                    /
+                                <Tooltip title={I18n.t('output events')}>
+                                    <div style={{ marginLeft: 5 }}>↦{inputOutput.stateOutput}</div>
+                                </Tooltip>
+                            </div>
+                        </InstanceInfo>
+                    </div>
+                }
+                <Grid item>
+                    <InstanceInfo
+                        icon={<MemoryIcon />}
+                        tooltip={I18n.t('RAM usage')}
+                    >
+                        {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
+                    </InstanceInfo>
+                </Grid>
             </Grid>
-            {expertMode && checkCompact && <Tooltip title={I18n.t('compact groups')}>
-                <ViewCompactIcon color="action" style={{ margin: 10 }} />
-            </Tooltip>}
+            <div style={{ display: 'flex' }}>
+                <Tooltip title={I18n.t('sentry')}>
+                    <IconButton
+                        size="small"
+                        className={clsx(classes.button, expertMode && checkSentry ? null : classes.hide)}
+                        onClick={(event) => {
+                            setSentry();
+                            event.stopPropagation();
+                        }}
+                    >
+                        <CardMedia
+                            style={currentSentry ? null : { filter: 'contrast(0%)' }}
+                            className={classes.sentry}
+                            component="img"
+                            image={sentry}
+                        />
+                    </IconButton>
+                </Tooltip>
+            </div>
+            <Tooltip title={I18n.t('compact groups')}>
+                <IconButton
+                    size="small"
+                    className={clsx(classes.button, expertMode && checkCompact ? null : classes.hide)}
+                    onClick={(event) => {
+                        setCompact();
+                        event.stopPropagation();
+                    }}
+                >
+                    <ViewCompactIcon color={compact ? "primary" : "inherit"} />
+                </IconButton>
+            </Tooltip>
+
             <IconButton
                 size="small"
                 onClick={event => {
@@ -442,12 +640,6 @@ const RowInstances = ({
                         >
                             {instance.version}
                         </InstanceInfo>
-                        <InstanceInfo
-                            icon={<MemoryIcon />}
-                            tooltip={I18n.t('RAM usage')}
-                        >
-                            {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
-                        </InstanceInfo>
                     </Grid>
                     <Grid
                         item
@@ -456,76 +648,93 @@ const RowInstances = ({
                         xs={12}
                         sm={6}
                         md={4}
+                        style={{ paddingRight: 200 }}
                     >
-                        <InstanceInfo
-                            icon={loglevelIcon}
-                            tooltip={I18n.t('loglevel')}
-                        >
-                            {instance.loglevel}
-                        </InstanceInfo>
-                        <InstanceInfo
-                            icon={<ScheduleIcon />}
-                            tooltip={I18n.t('schedule_group')}
-                        >
-                            {getSchedule(id) || '-'}
-                        </InstanceInfo>
-                        {expertMode &&
+                        {expertMode && <div style={{ display: 'flex' }}>
                             <InstanceInfo
-                                icon={<ScheduleIcon />}
-                                tooltip={I18n.t('restart')}
+                                icon={loglevelIcon}
+                                tooltip={I18n.t('loglevel')}
                             >
-                                {getRestartSchedule(id) || '-'}
+                                {logLevel}
                             </InstanceInfo>
-                        }
-                    </Grid>
-                </Grid>
-                <Grid
-                    item
-                    container
-                    direction="column"
-                    xs={2}
-                >
-                    <Grid item>
-                        <Hidden smUp>
                             <IconButton
                                 size="small"
                                 className={classes.button}
-                                onClick={() => openConfig(id)}
+                                onClick={(event) => {
+                                    setOpenDialogSelect(true);
+                                    event.stopPropagation();
+                                }}
                             >
-                                <BuildIcon />
+                                <EditIcon />
                             </IconButton>
-                        </Hidden>
-                        <IconButton
-                            size="small"
-                            className={classes.button}
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </Grid>
-                    <Grid item>
-                        {expertMode && checkCompact &&
-                            <Tooltip title={I18n.t('compact groups')}>
+                        </div>}
+                        {mode && <div style={{ display: 'flex' }}>
+                            <InstanceInfo
+                                icon={<ScheduleIcon />}
+                                tooltip={I18n.t('schedule_group')}
+                            >
+                                {getSchedule(id) || '-'}
+                            </InstanceInfo>
+                            <IconButton
+                                size="small"
+                                className={classes.button}
+                                onClick={(event) => {
+                                    setOpenDialogSchedule(true);
+                                    event.stopPropagation();
+                                }}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        </div>}
+                        {expertMode &&
+                            <div style={{ display: 'flex' }}>
+                                <InstanceInfo
+                                    icon={<ScheduleIcon style={{ color: '#dc8e00' }} />}
+                                    tooltip={I18n.t('restart')}
+                                >
+                                    {getRestartSchedule(id) || '-'}
+                                </InstanceInfo>
                                 <IconButton
                                     size="small"
                                     className={classes.button}
-                                    onClick={setCompact}
+                                    onClick={(event) => {
+                                        setOpenDialogCron(true);
+                                        event.stopPropagation();
+                                    }}
                                 >
-                                    <ViewCompactIcon color={compact ? "primary" : "inherit"} />
+                                    <EditIcon />
                                 </IconButton>
-                            </Tooltip>
+                            </div>
                         }
-                    </Grid>
-                    <Grid item>
+                        {expertMode && <div style={{ display: 'flex' }}>
+                            <InstanceInfo
+                                icon={<MemoryIcon style={{ color: '#dc8e00' }} />}
+                                tooltip={I18n.t('RAM limit')}
+                            >
+                                {(memoryLimitMB ? memoryLimitMB : '-.--') + ' MB'}
+                            </InstanceInfo>
+                            <IconButton
+                                size="small"
+                                className={classes.button}
+                                onClick={(event) => {
+                                    setOpenDialogMemoryLimit(true);
+                                    event.stopPropagation();
+                                }}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        </div>
+                        }
                         {expertMode && checkCompact && compact && <div style={{ display: 'flex' }}>
-                            <FormControl style={{ width: '100%', marginBottom: 5 }} variant="outlined" >
+                            <FormControl style={{ marginBottom: 5, marginTop: 5, width: 120 }} variant="outlined" >
                                 <InputLabel htmlFor="outlined-age-native-simple">{I18n.t('compact groups')}</InputLabel>
                                 <Select
                                     variant="standard"
+                                    autoWidth
                                     onClose={() => setOpenSelect(false)}
                                     onOpen={() => setOpenSelect(true)}
                                     open={openSelect}
                                     value={compactGroup || 'default'}
-                                    fullWidth
                                     onChange={el => setCompactGroup(el.target.value)}
                                 >
                                     {<div disabled >
@@ -551,6 +760,34 @@ const RowInstances = ({
                                 </Select>
                             </FormControl>
                         </div>}
+                    </Grid>
+                </Grid>
+                <Grid
+                    item
+                    container
+                    direction="column"
+                    xs={2}
+                >
+                    <Grid item>
+                        <Hidden smUp>
+                            <IconButton
+                                size="small"
+                                className={classes.button}
+                                onClick={() => openConfig(id)}
+                            >
+                                <BuildIcon />
+                            </IconButton>
+                        </Hidden>
+                        <IconButton
+                            size="small"
+                            className={classes.button}
+                            onClick={(event) => {
+                                setOpenDialogDelete(true);
+                                event.stopPropagation();
+                            }}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
                     </Grid>
                 </Grid>
             </Grid>
