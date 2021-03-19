@@ -32,7 +32,7 @@ function UserBlock(props) {
                 );
             }}/>
             <IconButton size="small" onClick={()=>{props.showUserEditDialog(props.user)}}><EditIcon/></IconButton>
-            <IconButton size="small" disabled={props.user.common.dontDelete}><DeleteIcon/></IconButton>
+            <IconButton size="small" onClick={()=>{props.showUserDeleteDialog(props.user)}} disabled={props.user.common.dontDelete}><DeleteIcon/></IconButton>
         </div>
         <CardContent>
             <Typography gutterBottom variant="h5" component="h5" className={props.classes.userGroupTitle}>

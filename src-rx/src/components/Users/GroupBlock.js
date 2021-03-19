@@ -23,7 +23,7 @@ function GroupBlock(props) {
     return <Card style={{backgroundColor: props.group.common.color, color: textColor}} ref={drop} raised className={props.classes.userGroupCard}>
         <div className={props.classes.right} style={{color: textColor}}>
             <IconButton size="small" onClick={()=>{props.showGroupEditDialog(props.group)}}><EditIcon/></IconButton>
-            <IconButton size="small" disabled={props.group.common.dontDelete}><DeleteIcon/></IconButton>
+            <IconButton size="small" onClick={()=>{props.showGroupDeleteDialog(props.group)}} disabled={props.group.common.dontDelete}><DeleteIcon/></IconButton>
         </div>
         <CardContent>
             <Typography gutterBottom variant="h5" component="h5" className={props.classes.userGroupTitle}>

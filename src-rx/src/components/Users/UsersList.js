@@ -14,6 +14,8 @@ import UserBlock from './UserBlock';
 import GroupBlock from './GroupBlock';
 import UserEditDialog from './UserEditDialog';
 import GroupEditDialog from './GroupEditDialog';
+import UserDeleteDialog from './UserDeleteDialog';
+import GroupDeleteDialog from './GroupDeleteDialog';
 
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
@@ -77,6 +79,8 @@ class UsersList extends Component {
             groups: null,
             userEditDialog: false,
             groupEditDialog: false,
+            userDeleteDialog: false,
+            groupDeleteDialog: false,
         };
     }
 
@@ -212,6 +216,28 @@ class UsersList extends Component {
         });
     }
 
+    showUserDeleteDialog = (user) => {
+        this.setState({userDeleteDialog: user})
+    }
+
+    showGroupDeleteDialog = (group) => {
+        this.setState({groupDeleteDialog: group})
+    }
+
+    deleteUser = (userId) => {
+        this.props.socket.delObject(userId).then(()=>{
+            this.updateData();
+            this.setState({userDeleteDialog: false});
+        });
+    }
+
+    deleteGroup = (groupId) => {
+        this.props.socket.delObject(groupId).then(()=>{
+            this.updateData();
+            this.setState({groupDeleteDialog: false});
+        });
+    }
+
     addUserToGroup = (user_id, group_id) => {
         let group = this.state.groups.find(group => group._id === group_id);
         let members = group.common.members;
@@ -252,6 +278,7 @@ class UsersList extends Component {
                                 key={group._id}
                                 users={this.state.users} 
                                 showGroupEditDialog={this.showGroupEditDialog}
+                                showGroupDeleteDialog={this.showGroupDeleteDialog}
                                 removeUserFromGroup={this.removeUserFromGroup}
                                 getName={this.getName}
                                 {...this.props}
@@ -269,6 +296,7 @@ class UsersList extends Component {
                                 key={user._id}
                                 groups={this.state.groups} 
                                 showUserEditDialog={this.showUserEditDialog}
+                                showUserDeleteDialog={this.showUserDeleteDialog}
                                 updateData={this.updateData}
                                 addUserToGroup={this.addUserToGroup}
                                 removeUserFromGroup={this.removeUserFromGroup}
@@ -297,6 +325,22 @@ class UsersList extends Component {
                     classes={this.props.classes}
                     change={this.changeGroupFormData}
                     saveData={this.saveGroup}
+                />
+                <UserDeleteDialog 
+                    open={!!this.state.userDeleteDialog} 
+                    onClose={()=>this.setState({userDeleteDialog: false})}
+                    user={this.state.userDeleteDialog}
+                    t={this.props.t}
+                    classes={this.props.classes}
+                    deleteUser={this.deleteUser}
+                />
+                <GroupDeleteDialog 
+                    open={!!this.state.groupDeleteDialog} 
+                    onClose={()=>this.setState({groupDeleteDialog: false})}
+                    group={this.state.groupDeleteDialog}
+                    t={this.props.t}
+                    classes={this.props.classes}
+                    deleteGroup={this.deleteGroup}
                 />
                 {/* <pre>{JSON.stringify(this.state, null, 2)}</pre> */}
             </DndProvider>
