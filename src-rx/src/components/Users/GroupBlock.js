@@ -1,4 +1,5 @@
-import { useDrop } from 'react-dnd'
+import { useDrop } from 'react-dnd';
+import Color from 'color';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -18,22 +19,24 @@ function GroupBlock(props) {
             canDrop: monitor.canDrop(),
         }),
     }));
-    return <Card style={{backgroundColor: props.group.common.color}} ref={drop} raised className={props.classes.userGroupCard}>
-        <div class={props.classes.right}>
-        <IconButton size="small" onClick={()=>{props.showGroupEditDialog(props.group)}}><EditIcon/></IconButton>
+    let textColor = !props.group.common.color || Color(props.group.common.color).hsl().object().l > 50 ? 'black' : 'white';
+    return <Card style={{backgroundColor: props.group.common.color, color: textColor}} ref={drop} raised className={props.classes.userGroupCard}>
+        <div className={props.classes.right} style={{color: textColor}}>
+            <IconButton size="small" onClick={()=>{props.showGroupEditDialog(props.group)}}><EditIcon/></IconButton>
             <IconButton size="small" disabled={props.group.common.dontDelete}><DeleteIcon/></IconButton>
         </div>
         <CardContent>
             <Typography gutterBottom variant="h5" component="h5" className={props.classes.userGroupTitle}>
-                {props.group.common.icon ? <img alt="" class={props.classes.icon} src={props.group.common.icon}/> : <GroupIcon/>} 
+                {props.group.common.icon ? <img alt="" className={props.classes.icon} src={props.group.common.icon}/> : <GroupIcon/>} 
                 <span>{props.getName(props.group.common.name)}</span>
                 {props.group.common.desc !== '' ? <span>&nbsp;({props.group.common.desc})</span> : null}
             </Typography>
+            {props.group.common.members.length ? <div>{props.t('Group members')}:</div> : null}
             <div>
                 {props.group.common.members.map(member => {
                     let user = props.users.find(user => user._id === member);
-                    return <Card className={props.classes.userGroupMember}>
-                        {user.common.icon ? <img alt="" class={props.classes.icon} src={user.common.icon}/> : <PersonIcon/>}
+                    return user ? <Card key={member} className={props.classes.userGroupMember}>
+                        {user.common.icon ? <img alt="" className={props.classes.icon} src={user.common.icon}/> : <PersonIcon/>}
                         {props.getName(user.common.name)} 
                         <IconButton 
                             size="small"
@@ -41,7 +44,7 @@ function GroupBlock(props) {
                         >
                             <ClearIcon/>
                         </IconButton>
-                    </Card>
+                    </Card> : null;
                 })}
             </div>
         </CardContent>

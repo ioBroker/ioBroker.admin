@@ -1,3 +1,5 @@
+import {useState, useEffect} from 'react';
+
 import Dialog from '@material-ui/core/Dialog';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -5,7 +7,20 @@ import Button from '@material-ui/core/Button';
 import {UsersTextField, UsersColorPicker, UsersFileInput} from './Fields';
 
 function UserEditDialog(props) {
-    return props.open ? <Dialog PaperProps={{className: props.classes.dialogPaper}} open={props.open} onClose={props.onClose}>
+    let [originalId, setOriginalId] = useState(null);
+    useEffect(()=>{
+        setOriginalId(props.user._id);
+    }, [props.open]);
+
+    if (!props.open) {
+        return null;
+    }
+
+    let canSave = (props.user._id == originalId || !props.users.find(user => user._id == props.user._id)) && 
+        props.user._id !== 'system.user.' &&
+        props.user.common.password === props.user.common.passwordRepeat;
+
+    return <Dialog PaperProps={{className: props.classes.dialogPaper}} open={props.open} onClose={props.onClose}>
         <Box className={props.classes.dialog}>
             <UsersTextField 
                 label="Name" 
@@ -19,8 +34,23 @@ function UserEditDialog(props) {
                 classes={props.classes}
             />
             <UsersTextField 
-                label="ID" 
+                label="ID edit" 
                 t={props.t} 
+                disabled={props.user.common.dontDelete}
+                value={ props.user._id.split('.')[props.user._id.split('.').length-1] }
+                onChange={e=>{
+                    let newData = props.user;
+                    let idArray = props.user._id.split('.');
+                    idArray[idArray.length-1] = e.target.value.replaceAll('.', '_');
+                    newData._id = idArray.join('.');
+                    props.change(newData);
+                }}
+                classes={props.classes}
+            />
+            <UsersTextField 
+                label="ID preview" 
+                t={props.t} 
+                disabled
                 value={ props.user._id }
                 classes={props.classes}
             />
@@ -69,6 +99,7 @@ function UserEditDialog(props) {
                     props.change(newData);
                 }}
                 previewClassName={props.classes.iconPreview}
+                classes={props.classes}
             />
             <UsersColorPicker 
                 label="Color" 
@@ -82,9 +113,12 @@ function UserEditDialog(props) {
                 }}
                 className={props.classes.colorPicker}
             />
-            <Button onClick={props.saveData} disabled={props.user.common.password !== props.user.common.passwordRepeat}>Save</Button>
+            <div>
+                <Button onClick={()=>props.saveData(originalId)} disabled={!canSave}>Save</Button>
+                <Button onClick={props.onClose}>Cancel</Button>
+            </div>
         </Box>
-    </Dialog> : null;
+    </Dialog>;
 }
 
 export default UserEditDialog;

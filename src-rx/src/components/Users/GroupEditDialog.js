@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect, Fragment } from 'react'
 
 import Dialog from '@material-ui/core/Dialog';
 import Box from '@material-ui/core/Box';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
 import CheckBox from '@material-ui/core/CheckBox';
 import Tabs from '@material-ui/core/Tabs';
@@ -17,34 +18,47 @@ function PermsTab(props) {
         });
     }
 
-    return <>
+    return <div key="PermsTab">
         {mapObject(props.group.common.acl, (block, blockKey) => 
-            <>
+            <Fragment key={blockKey}>
                 <h4>{props.t(blockKey)}</h4>
                 {mapObject(block, (perm, permKey) => 
-                    <>{props.t(permKey)}: <CheckBox 
-                        disabled={props.group.common.dontDelete} 
-                        checked={perm}
-                        onChange={e=>{
-                            let newData = props.group;
-                            newData.common.acl[blockKey][permKey] = e.target.checked;
-                            props.change(newData);
-                        }}
-                    /></>
+                    <FormControlLabel
+                        key={permKey}
+                        control={<CheckBox 
+                            disabled={props.group.common.dontDelete} 
+                            checked={perm}
+                            onChange={e=>{
+                                let newData = props.group;
+                                newData.common.acl[blockKey][permKey] = e.target.checked;
+                                props.change(newData);
+                            }}
+                        />}
+                        label={props.t(permKey)}
+                        labelPlacement="top"
+                    />
                 )}
-            </>
+            </Fragment>
         )}
-    </>
+    </div>
 }
 
 function GroupEditDialog(props) {
     const [tab, setTab] = useState(0);
 
+    let [originalId, setOriginalId] = useState(null);
+    useEffect(()=>{
+        setOriginalId(props.group._id);
+    }, [props.open]);
+
     if (!props.open) {
         return null;
     }
 
-    let MainTab = () => <div>
+    let canSave = (props.group._id == originalId || !props.groups.find(group => group._id == props.group._id)) && 
+        props.group._id !== 'system.group.';
+
+    let mainTab = <div key="MainTab">
         <UsersTextField 
             label="Name" 
             t={props.t} 
@@ -57,8 +71,23 @@ function GroupEditDialog(props) {
             classes={props.classes}
         />
         <UsersTextField 
-            label="ID" 
+            label="ID edit" 
             t={props.t} 
+            disabled={props.group.common.dontDelete}
+            value={ props.group._id.split('.')[props.group._id.split('.').length-1] }
+            onChange={e=>{
+                let newData = props.group;
+                let idArray = props.group._id.split('.');
+                idArray[idArray.length-1] = e.target.value.replaceAll('.', '_');
+                newData._id = idArray.join('.');
+                props.change(newData);
+            }}
+            classes={props.classes}
+        />
+        <UsersTextField 
+            label="ID preview" 
+            t={props.t} 
+            disabled
             value={ props.group._id }
             classes={props.classes}
         />
@@ -83,6 +112,7 @@ function GroupEditDialog(props) {
                 props.change(newData);
             }}
             previewClassName={props.classes.iconPreview}
+            classes={props.classes}
         />
         <UsersColorPicker 
             label="Color" 
@@ -98,7 +128,7 @@ function GroupEditDialog(props) {
         />
     </div>;
 
-    let SelectedTab = [MainTab, PermsTab][tab];
+    let selectedTab = [mainTab, PermsTab(props)][tab];
 
     return <Dialog PaperProps={{className: props.classes.dialogPaper}} open={props.open} onClose={props.onClose}>
         <Box className={props.classes.dialog}>
@@ -106,8 +136,11 @@ function GroupEditDialog(props) {
                 <Tab label={props.t('Main')} value={0} />
                 <Tab label={props.t('Permissions')} value={1} />
             </Tabs>
-            <SelectedTab {...props}/>
-            <Button onClick={props.saveData}>Save</Button>
+            {selectedTab}
+            <div>
+                <Button onClick={()=>props.saveData(originalId)} disabled={!canSave}>Save</Button>
+                <Button onClick={props.onClose}>Cancel</Button>
+            </div>
         </Box>
     </Dialog>;
 }

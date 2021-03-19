@@ -19,6 +19,7 @@ export function UsersTextField(props) {
             label={ props.t(props.label)}
             value={props.value}
             onChange={props.onChange}
+            disabled={props.disabled}
             InputLabelProps={{
                 readOnly: false,
                 shrink: true,
@@ -63,29 +64,34 @@ let UsersFileInput = function (props) {
       }, []); // eslint-disable-line react-hooks/exhaustive-deps
       const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
     
-      return <div>
-        {props.value ? 
-            <>
-                <img alt="" className={props.previewClassName} src={props.value}/>
-                <IconButton 
-                    size="small"
-                    onClick={() => props.onChange('')}
-                >
-                    <ClearIcon/>
-                </IconButton>
-            </>
-        : 
-            null
-        }
-        <div {...getRootProps()} style={{display: 'inline-block'}}>
-          <input {...getInputProps()} />
-          {
-            isDragActive ?
-              <p>Drop the files here ...</p> :
-              <p>Drag 'n' drop some files here, or click to select files</p>
-          }
+      return <FormControl className={props.classes.formControl}>
+        <InputLabel shrink>
+            { props.t(props.label)}
+        </InputLabel>
+        <div>
+            {props.value ? 
+                <>
+                    <img alt="" className={props.previewClassName} src={props.value}/>
+                    <IconButton 
+                        size="small"
+                        onClick={() => props.onChange('')}
+                    >
+                        <ClearIcon/>
+                    </IconButton>
+                </>
+            : 
+                null
+            }
+            <div {...getRootProps()} style={{display: 'inline-block'}}>
+            <input {...getInputProps()} />
+            {
+                isDragActive ?
+                <p>Drop the files here ...</p> :
+                <p>Drag 'n' drop some files here, or click to select files</p>
+            }
+            </div>
         </div>
-      </div>
+    </FormControl>
 };
 
 export {UsersFileInput};
