@@ -411,7 +411,7 @@ class App extends Router {
                     this.setState(newState, () => this.setCurrentTabTitle());
 
                     this.logsWorkerChanged(this.state.currentHost);
-                    
+
                     if (!this.logsHandlerRegistered) {
                         this.logsHandlerRegistered = true;
                         const { setStateContext } = this.context;
@@ -421,7 +421,7 @@ class App extends Router {
                         this.logsWorker.registerWarningCountHandler(logWarnings => setStateContext({
                             logWarnings
                         }));
-                    }                    
+                    }
                 },
                 //onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
                 onError: error => {
@@ -683,6 +683,8 @@ class App extends Router {
                                 currentHostName={this.state.currentHostName}
                                 t={I18n.t}
                                 configStored={value => this.allStored(value)}
+                                executeCommand={cmd => this.executeCommand(cmd)}
+                                inBackgroundCommand={this.state.commandError || this.state.performed}
                             />
                         </Suspense>
                     );

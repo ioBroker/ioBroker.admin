@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
-import { Dialog, DialogActions, DialogContent, TextField, withStyles } from '@material-ui/core';
+import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, withStyles } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import i18n from '@iobroker/adapter-react/i18n';
 
@@ -15,8 +15,11 @@ const styles = theme => ({
         minWidth: 400
     }
 });
-const CustomModal = ({ classes, open, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue }) => {
+const CustomModal = ({ title, classes, open, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue }) => {
     const [value, setValue] = useState(defaultValue);
+    useEffect(()=>{
+        setValue(defaultValue);
+    },[defaultValue]);
     return <Dialog
         open={open}
         maxWidth="md"
@@ -25,6 +28,7 @@ const CustomModal = ({ classes, open, onClose, children, titleButtonApply, title
         classes={{ paper: classes.modalDialog, /*paper: classes.background*/ }}
         className={classes.modalWrapper}
     >
+        {title && <DialogTitle>{title}</DialogTitle>}
         <DialogContent>
             {textInput && <TextField
                 // className={className}
@@ -32,10 +36,10 @@ const CustomModal = ({ classes, open, onClose, children, titleButtonApply, title
                 fullWidth
                 variant="outlined"
                 size="medium"
-                rows={10}
+                // rows={10}
                 multiline
                 value={value}
-                onChange={(e)=>setValue(e.target.value)}
+                onChange={(e) => setValue(e.target.value)}
                 customValue
             />}
             {children}

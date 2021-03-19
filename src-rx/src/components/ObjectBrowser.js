@@ -67,7 +67,7 @@ import IconColumns from '@material-ui/icons/ViewColumn';
 import IconClose from '@material-ui/icons/Close';
 import IconCheck from '@material-ui/icons/Check';
 
-import IconExpert from  '@iobroker/adapter-react/icons/IconExpert';
+import IconExpert from '@iobroker/adapter-react/icons/IconExpert';
 import IconAdapter from '@iobroker/adapter-react/icons/IconAdapter';
 import IconAlias from '@iobroker/adapter-react/icons/IconAlias';
 import IconChannel from '@iobroker/adapter-react/icons/IconChannel';
@@ -79,6 +79,7 @@ import IconState from '@iobroker/adapter-react/icons/IconState';
 import IconClosed from '@iobroker/adapter-react/icons/IconClosed';
 import IconOpen from '@iobroker/adapter-react/icons/IconOpen';
 import IconClearFilter from '@iobroker/adapter-react/icons/IconClearFilter';
+import { Close } from '@material-ui/icons';
 
 const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
@@ -90,7 +91,7 @@ const COLOR_NAME_SYSTEM_ADAPTER = '#5773ff';
 const styles = theme => ({
     toolbar: {
         minHeight: 38,//Theme.toolbar.height,
-//        boxShadow: '0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12)'
+        //        boxShadow: '0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12)'
     },
     toolbarButtons: {
         padding: 4,
@@ -217,7 +218,7 @@ const styles = theme => ({
         },
         '& .iconOwn': {
             display: 'block',
-            width:  ROW_HEIGHT - 4,
+            width: ROW_HEIGHT - 4,
             height: ROW_HEIGHT - 4,
             marginTop: 2,
             float: 'right',
@@ -238,7 +239,7 @@ const styles = theme => ({
     },
     cellIdIconFolder: {
         marginRight: theme.spacing(1),
-        width:  ROW_HEIGHT - 4,
+        width: ROW_HEIGHT - 4,
         height: ROW_HEIGHT - 4,
         cursor: 'pointer',
         color: theme.palette.secondary.main || '#fbff7d',
@@ -247,7 +248,7 @@ const styles = theme => ({
         verticalAlign: 'middle',
         marginLeft: (ROW_HEIGHT - SMALL_BUTTON_SIZE) / 2,
         marginRight: theme.spacing(1),
-        width:  SMALL_BUTTON_SIZE,
+        width: SMALL_BUTTON_SIZE,
         height: SMALL_BUTTON_SIZE,
     },
     cellIdIconOwn: {
@@ -277,7 +278,7 @@ const styles = theme => ({
             opacity: 1,
         },
     },
-    cellName : {
+    cellName: {
         display: 'inline-block',
         verticalAlign: 'top',
         fontSize: 14,
@@ -295,23 +296,23 @@ const styles = theme => ({
             display: 'inline-block',
         },
     },
-    cellRole : {
+    cellRole: {
         display: 'inline-block',
         verticalAlign: 'top',
     },
-    cellRoom : {
+    cellRoom: {
         display: 'inline-block',
         verticalAlign: 'top',
     },
-    cellFunc : {
+    cellFunc: {
         display: 'inline-block',
         verticalAlign: 'top',
     },
-    cellValue : {
+    cellValue: {
         display: 'inline-block',
         verticalAlign: 'top'
     },
-    cellAdapter : {
+    cellAdapter: {
         display: 'inline-block',
         verticalAlign: 'top'
     },
@@ -373,7 +374,7 @@ const styles = theme => ({
     cellButtonsButton: {
         display: 'inline-block',
         opacity: 0.7,
-        width:  SMALL_BUTTON_SIZE + 4,
+        width: SMALL_BUTTON_SIZE + 4,
         height: SMALL_BUTTON_SIZE + 4,
         '&:hover': {
             opacity: 1,
@@ -558,11 +559,11 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
             if (customFilter.type && customFilter.type !== data.obj.type) {
                 filteredOut = true;
             } else
-            if (customFilter.common && customFilter.common.custom) {
-                if (!common || !common.custom || (customFilter.common.custom !== true && !common.custom[customFilter.common.custom])) {
-                    filteredOut = true;
+                if (customFilter.common && customFilter.common.custom) {
+                    if (!common || !common.custom || (customFilter.common.custom !== true && !common.custom[customFilter.common.custom])) {
+                        filteredOut = true;
+                    }
                 }
-            }
         }
 
         if (!filteredOut && !filters.expertMode) {
@@ -686,11 +687,11 @@ function buildTree(objects, options) {
     let info = {
         funcEnums: [],
         roomEnums: [],
-        roles:     [],
-        ids:       [],
-        types:     [],
+        roles: [],
+        ids: [],
+        types: [],
         objects,
-        customs:   [],
+        customs: [],
         hasSomeCustoms: false,
     };
 
@@ -743,12 +744,12 @@ function buildTree(objects, options) {
                         if (!binarySearch(info.ids, curPath)) {
                             const _croot = {
                                 data: {
-                                    name:   parts[k],
+                                    name: parts[k],
                                     parent: croot,
-                                    id:     curPath,
-                                    obj:    objects[curPath],
-                                    level:  k,
-                                    icon:   getSystemIcon(objects, curPath, k, imagePrefix),
+                                    id: curPath,
+                                    obj: objects[curPath],
+                                    level: k,
+                                    icon: getSystemIcon(objects, curPath, k, imagePrefix),
                                     generated: true,
                                 }
                             };
@@ -765,14 +766,14 @@ function buildTree(objects, options) {
 
                 const _croot = {
                     data: {
-                        name:   parts[parts.length - 1],
-                        title:  getName(obj && obj.common && obj.common.name, options.lang),
+                        name: parts[parts.length - 1],
+                        title: getName(obj && obj.common && obj.common.name, options.lang),
                         obj,
                         parent: croot,
-                        icon:   getSelectIdIcon(objects, id, imagePrefix) || getSystemIcon(objects, id, 0, imagePrefix),
+                        icon: getSelectIdIcon(objects, id, imagePrefix) || getSystemIcon(objects, id, 0, imagePrefix),
                         id,
                         hasCustoms: obj.common && obj.common.custom && Object.keys(obj.common.custom).length,
-                        level:  parts.length - 1,
+                        level: parts.length - 1,
                         generated: false,
                     }
                 };
@@ -783,7 +784,7 @@ function buildTree(objects, options) {
 
                 currentPathLen = parts.length;
                 currentPathArr = parts;
-                currentPath    = id;
+                currentPath = id;
             } else {
                 let u = 0;
 
@@ -803,7 +804,7 @@ function buildTree(objects, options) {
                 } else {
                     croot = root;
                     currentPathArr = [];
-                    currentPath    = '';
+                    currentPath = '';
                     currentPathLen = 0;
                 }
                 repeat = true;
@@ -816,7 +817,7 @@ function buildTree(objects, options) {
     info.roles.sort();
     info.types.sort();
 
-    return {info, root};
+    return { info, root };
 }
 
 function findNode(root, id, _parts, _path, _level) {
@@ -838,7 +839,7 @@ function findNode(root, id, _parts, _path, _level) {
                 found = root.children[i];
                 break;
             } else
-            if (_id < _path) continue;
+                if (_id < _path) continue;
             if (_id > _path) break;
         }
         if (found) {
@@ -913,7 +914,7 @@ function findFunctionsForObject(data, id, lang, withParentInfo, funcs) {
             if (!withParentInfo) {
                 funcs.push(name);
             } else {
-                funcs.push({name: name, origin: id});
+                funcs.push({ name: name, origin: id });
             }
         }
     }
@@ -944,14 +945,14 @@ function getStates(obj) {
             }
         } else
             // if old format val1:text1;val2:text2
-        if (typeof states === 'string') {
-            const parts = states.split(';');
-            states = {};
-            for (let p = 0; p < parts.length; p++) {
-                const s = parts[p].split(':');
-                states[s[0]] = s[1];
+            if (typeof states === 'string') {
+                const parts = states.split(';');
+                states = {};
+                for (let p = 0; p < parts.length; p++) {
+                    const s = parts[p].split(':');
+                    states[s[0]] = s[1];
+                }
             }
-        }
     }
     return states;
 }
@@ -1056,29 +1057,29 @@ function formatValue(id, state, obj, texts) {
     if (isCommon && isCommon.unit) {
         valText.u = isCommon.unit;
     }
-    valFull = [{t: texts.value, v}];
+    valFull = [{ t: texts.value, v }];
 
     if (state) {
         if (state.ack !== undefined) {
-            valFull.push({t: texts.ack, v: state.ack.toString()});
+            valFull.push({ t: texts.ack, v: state.ack.toString() });
         }
         if (state.ts) {
-            valFull.push({t: texts.ts, v: state.ts ? formatDate(new Date(state.ts)) : ''});
+            valFull.push({ t: texts.ts, v: state.ts ? formatDate(new Date(state.ts)) : '' });
         }
         if (state.lc) {
-            valFull.push({t: texts.lc, v: state.lc ? formatDate(new Date(state.lc)) : ''});
+            valFull.push({ t: texts.lc, v: state.lc ? formatDate(new Date(state.lc)) : '' });
         }
         if (state.from) {
-            valFull.push({t: texts.from, v: state.from || ''});
+            valFull.push({ t: texts.from, v: state.from || '' });
         }
         if (state.user) {
-            valFull.push({t: texts.user, v: state.user || ''});
+            valFull.push({ t: texts.user, v: state.user || '' });
         }
-        valFull.push({t: texts.quality, v: quality2text(state.q || 0), nbr: true});
+        valFull.push({ t: texts.quality, v: quality2text(state.q || 0), nbr: true });
     }
 
     if (typeof v === 'string' && v) {
-        v = v.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        v = v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
     valText.v = v;
@@ -1167,19 +1168,19 @@ function prepareSparkData(values, from) {
             // assume the value was always null
             v.push(0);
         } else
-        if (i < values.length) {
-            if (typeof values[i].val === 'boolean' || typeof values[i - 1].val === 'boolean') {
-                v.push(values[i].val ? 1 : 0);
-            } else {
-                // remove nulls
-                values[i - 1].val = values[i - 1].val || 0;
-                values[i].val = values[i].val || 0;
-                // interpolate
-                let val = values[i - 1].val + (values[i].val - values[i - 1].val) * (time - values[i - 1].ts) / (values[i].ts - values[i - 1].ts);
+            if (i < values.length) {
+                if (typeof values[i].val === 'boolean' || typeof values[i - 1].val === 'boolean') {
+                    v.push(values[i].val ? 1 : 0);
+                } else {
+                    // remove nulls
+                    values[i - 1].val = values[i - 1].val || 0;
+                    values[i].val = values[i].val || 0;
+                    // interpolate
+                    let val = values[i - 1].val + (values[i].val - values[i - 1].val) * (time - values[i - 1].ts) / (values[i].ts - values[i - 1].ts);
 
-                v.push(val);
+                    v.push(val);
+                }
             }
-        }
 
         time += 3600000;
     }
@@ -1191,11 +1192,11 @@ function prepareSparkData(values, from) {
  * @type {import('./types').ObjectBrowserTableFilter}
  */
 const DEFAULT_FILTER = {
-    id:     '',
-    name:   '',
-    room:   '',
-    func:   '',
-    role:   '',
+    id: '',
+    name: '',
+    room: '',
+    func: '',
+    role: '',
     expertMode: false
 };
 
@@ -1205,7 +1206,7 @@ const ITEM_IMAGES = {
     device: <IconDevice className="itemIcon" />,
     adapter: <IconAdapter className="itemIcon" />,
     meta: <IconMeta className="itemIcon" />,
-    instance: <IconInstance className="itemIcon" style={{color: '#7da7ff'}}/>,
+    instance: <IconInstance className="itemIcon" style={{ color: '#7da7ff' }} />,
     enum: <IconEnum className="itemIcon" />,
     chart: <IconChart className="itemIcon" />,
     config: <IconConfig className="itemIcon" />,
@@ -1227,13 +1228,14 @@ const StyledBadge = withStyles(theme => ({
 
 const SCREEN_WIDTHS = {
     // extra-small: 0px
-    xs: {idWidth: 300, fields: ['room'], widths: {name: 200, room: 200}},
+    xs: { idWidth: 300, fields: ['room'], widths: { name: 200, room: 200 } },
     // small: 600px
-    sm: {idWidth: 300, fields: ['room', 'func', 'buttons'], widths: {name: 200,room: 180, func: 180, buttons: 76}},
+    sm: { idWidth: 300, fields: ['room', 'func', 'buttons'], widths: { name: 200, room: 180, func: 180, buttons: 76 } },
     // medium: 960px
-    md: {idWidth: 300, fields: ['room', 'func', 'val', 'buttons'], widths: {name: 200,room: 150, func: 150, val: 120, buttons: 76}},
+    md: { idWidth: 300, fields: ['room', 'func', 'val', 'buttons'], widths: { name: 200, room: 150, func: 150, val: 120, buttons: 76 } },
     // large: 1280px
-    lg: {idWidth: 300, fields: ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'],
+    lg: {
+        idWidth: 300, fields: ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'],
         widths: {
             name: 300,
             type: 80,
@@ -1246,7 +1248,8 @@ const SCREEN_WIDTHS = {
     },
 
     // extra-large: 1920px
-    xl: {idWidth: 650, fields: ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'],
+    xl: {
+        idWidth: 650, fields: ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'],
         widths: {
             name: 400,
             type: 80,
@@ -1301,7 +1304,7 @@ class ObjectBrowser extends Component {
         }
 
         filter.expertMode = props.expertMode !== undefined ? props.expertMode : (window.localStorage.getItem('App.expertMode') === 'true');
-        this.tableRef  = createRef();
+        this.tableRef = createRef();
         this.filterRefs = {};
 
         Object.keys(DEFAULT_FILTER).forEach(name =>
@@ -1398,25 +1401,25 @@ class ObjectBrowser extends Component {
         this.edit = {};
 
         this.texts = {
-            value:          props.t('ra_tooltip_value'),
-            ack:            props.t('ra_tooltip_ack'),
-            ts:             props.t('ra_tooltip_ts'),
-            lc:             props.t('ra_tooltip_lc'),
-            from:           props.t('ra_tooltip_from'),
-            user:           props.t('ra_tooltip_user'),
-            quality:        props.t('ra_tooltip_quality'),
-            editObject:     props.t('ra_tooltip_editObject'),
-            deleteObject:   props.t('ra_tooltip_deleteObject'),
-            customConfig:   props.t('ra_tooltip_customConfig'),
-            copyState:      props.t('ra_tooltip_copyState'),
-            editState:      props.t('ra_tooltip_editState'),
-            close:          props.t('ra_Close'),
-            filter_id:      props.t('ra_filter_id'),
-            filter_name:    props.t('ra_filter_name'),
-            filter_type:    props.t('ra_filter_type'),
-            filter_role:    props.t('ra_filter_role'),
-            filter_room:    props.t('ra_filter_room'),
-            filter_func:    props.t('ra_filter_func'),
+            value: props.t('ra_tooltip_value'),
+            ack: props.t('ra_tooltip_ack'),
+            ts: props.t('ra_tooltip_ts'),
+            lc: props.t('ra_tooltip_lc'),
+            from: props.t('ra_tooltip_from'),
+            user: props.t('ra_tooltip_user'),
+            quality: props.t('ra_tooltip_quality'),
+            editObject: props.t('ra_tooltip_editObject'),
+            deleteObject: props.t('ra_tooltip_deleteObject'),
+            customConfig: props.t('ra_tooltip_customConfig'),
+            copyState: props.t('ra_tooltip_copyState'),
+            editState: props.t('ra_tooltip_editState'),
+            close: props.t('ra_Close'),
+            filter_id: props.t('ra_filter_id'),
+            filter_name: props.t('ra_filter_name'),
+            filter_type: props.t('ra_filter_type'),
+            filter_role: props.t('ra_filter_role'),
+            filter_room: props.t('ra_filter_room'),
+            filter_func: props.t('ra_filter_func'),
             filter_customs: props.t('ra_filter_customs'),
         };
 
@@ -1431,11 +1434,11 @@ class ObjectBrowser extends Component {
                     Object.keys(objects).forEach(id => {
                         const type = objects[id] && objects[id].type;
                         if (type && (
-                            type === 'channel'  ||
-                            type === 'device'   ||
-                            type === 'enum'     ||
-                            type === 'folder'   ||
-                            type === 'adapter'  ||
+                            type === 'channel' ||
+                            type === 'device' ||
+                            type === 'enum' ||
+                            type === 'folder' ||
+                            type === 'adapter' ||
                             type === 'instance' ||
                             props.types.includes(type))) {
                             this.objects[id] = objects[id];
@@ -1445,7 +1448,7 @@ class ObjectBrowser extends Component {
                     this.objects = objects;
                 }
 
-                const {info, root} = buildTree(this.objects, this.props);
+                const { info, root } = buildTree(this.objects, this.props);
                 this.root = root;
                 this.info = info;
 
@@ -1483,7 +1486,7 @@ class ObjectBrowser extends Component {
             .then(() => this.getAdditionalColumns())
             .then(columnsForAdmin => {
                 this.calculateColumnsVisibility(null, null, columnsForAdmin);
-                this.setState({columnsForAdmin});
+                this.setState({ columnsForAdmin });
             })
             .catch(e => this.showError(e));
     }
@@ -1509,7 +1512,7 @@ class ObjectBrowser extends Component {
         if (changed) {
             expanded.sort();
             window.localStorage.setItem((this.props.dialogName || 'App') + '.objectExpanded', JSON.stringify(expanded));
-            this.setState({expanded}, cb)
+            this.setState({ expanded }, cb)
         } else {
             cb && cb();
         }
@@ -1528,7 +1531,7 @@ class ObjectBrowser extends Component {
             this.props.onSelect && this.props.onSelect(this.lastSelectedItems, name, isDouble);
         } else {
             window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', '');
-            this.setState({selected: []}, () => this.props.onSelect && this.props.onSelect([], ''));
+            this.setState({ selected: [] }, () => this.props.onSelect && this.props.onSelect([], ''));
         }
     }
 
@@ -1579,18 +1582,18 @@ class ObjectBrowser extends Component {
             open={true}
             maxWidth="sm"
             fullWidth={true}
-            onClose={ () => this.setState({error: ''}) }
+            onClose={() => this.setState({ error: '' })}
             aria-labelledby="error-dialog-title"
             aria-describedby="error-dialog-description"
         >
             <DialogTitle id="alert-dialog-title">{this.props.title || this.props.t('ra_Error')}</DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
-                    { this.state.error }
+                    {this.state.error}
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={ () => this.setState({error: ''}) } color="primary" autoFocus><IconCheck className={this.props.classes.buttonIcon}/>{ this.props.t('ra_Ok') }</Button>
+                <Button onClick={() => this.setState({ error: '' })} color="primary" autoFocus><IconCheck className={this.props.classes.buttonIcon} />{this.props.t('ra_Ok')}</Button>
             </DialogActions>
         </Dialog> : null;
     }
@@ -1600,7 +1603,7 @@ class ObjectBrowser extends Component {
      * @param {any} error
      */
     showError(error) {
-        this.setState({error: typeof error === 'object' ? (error && typeof error.toString === 'function' ? error.toString() : JSON.stringify(error)) : error});
+        this.setState({ error: typeof error === 'object' ? (error && typeof error.toString === 'function' ? error.toString() : JSON.stringify(error)) : error });
     }
 
     /**
@@ -1618,7 +1621,7 @@ class ObjectBrowser extends Component {
                     this.onAfterSelect(isDouble);
                 }
             } else {
-                this.setState({selected: []}, () => this.onAfterSelect());
+                this.setState({ selected: [] }, () => this.onAfterSelect());
             }
         } else {
             if (this.objects[toggleItem] && (!this.props.types || this.props.types.includes(this.objects[toggleItem].type))) {
@@ -1631,7 +1634,7 @@ class ObjectBrowser extends Component {
                     selected.splice(pos, 1);
                 }
 
-                this.setState({selected}, () =>
+                this.setState({ selected }, () =>
                     this.onAfterSelect(isDouble));
             }
         }
@@ -1665,30 +1668,30 @@ class ObjectBrowser extends Component {
                         }
                         window.localStorage.setItem((this.props.dialogName || 'App') + '.columns', JSON.stringify(columns));
                         this.calculateColumnsVisibility(null, columns);
-                        this.setState({columns});
+                        this.setState({ columns });
                     }
                 }} key={id}>
                     <ListItemIcon>
                         <Checkbox
                             edge="start"
                             disabled={id === 'id' || this.state.columnsAuto}
-                            checked={ id === 'id' || (this.state.columnsAuto ? this.visibleCols.includes(id) : (this.state.columns && this.state.columns.includes(id)))}
+                            checked={id === 'id' || (this.state.columnsAuto ? this.visibleCols.includes(id) : (this.state.columns && this.state.columns.includes(id)))}
                             disableRipple
                         />
                     </ListItemIcon>
-                    <ListItemText primary={this.texts['filter_' + id] || this.props.t('ra_'  + id)} />
+                    <ListItemText primary={this.texts['filter_' + id] || this.props.t('ra_' + id)} />
                     <ListItemSecondaryAction>
-                        <FormControl className={ this.props.classes.columnsDialogInputWidth } style={{ marginTop: 0, marginBottom: 0 }} margin="dense">
+                        <FormControl className={this.props.classes.columnsDialogInputWidth} style={{ marginTop: 0, marginBottom: 0 }} margin="dense">
                             <Input
                                 classes={{ underline: 'no-underline' }}
-                                placeholder={ this.props.t('ra_Width') }
-                                value={ this.state.columnsWidths[id] || '' }
+                                placeholder={this.props.t('ra_Width')}
+                                value={this.state.columnsWidths[id] || ''}
                                 onChange={e => {
                                     const columnsWidths = JSON.parse(JSON.stringify(this.state.columnsWidths));
                                     columnsWidths[id] = e.target.value;
                                     window.localStorage.setItem((this.props.dialogName || 'App') + '.columnsWidths', JSON.stringify(columnsWidths));
                                     this.calculateColumnsVisibility(null, null, null, columnsWidths);
-                                    this.setState({columnsWidths});
+                                    this.setState({ columnsWidths });
                                 }}
                                 autoComplete="off"
                             />
@@ -1707,9 +1710,9 @@ class ObjectBrowser extends Component {
             return null;
         } else {
             return <Dialog
-                onClose={() => this.setState({columnsSelectorShow: false})}
+                onClose={() => this.setState({ columnsSelectorShow: false })}
                 open={true}
-                classes={{root: Utils.clsx(this.props.classes.dialogColumns, this.props.classes['transparent_' + this.state.columnsDialogTransparent])}}
+                classes={{ root: Utils.clsx(this.props.classes.dialogColumns, this.props.classes['transparent_' + this.state.columnsDialogTransparent]) }}
             >
                 <DialogTitle>{this.props.t('ra_Configure visible columns')}</DialogTitle>
                 <DialogContent>
@@ -1719,14 +1722,14 @@ class ObjectBrowser extends Component {
                             window.localStorage.setItem((this.props.dialogName || 'App') + '.columnsAuto', this.state.columnsAuto ? 'false' : 'true');
                             if (!this.state.columnsAuto) {
                                 this.calculateColumnsVisibility(true);
-                                this.setState({columnsAuto: true});
+                                this.setState({ columnsAuto: true });
                             } else {
                                 if (!this.state.columns) {
                                     this.calculateColumnsVisibility(false, [...this.visibleCols]);
-                                    this.setState({columnsAuto: false, columns: [...this.visibleCols]});
+                                    this.setState({ columnsAuto: false, columns: [...this.visibleCols] });
                                 } else {
                                     this.calculateColumnsVisibility(false);
-                                    this.setState({columnsAuto: false});
+                                    this.setState({ columnsAuto: false });
                                 }
                             }
                         }} />}
@@ -1736,13 +1739,13 @@ class ObjectBrowser extends Component {
                         className={this.props.classes.switchColumnAuto}
                         control={<Switch checked={this.state.foldersFirst} onChange={() => {
                             window.localStorage.setItem((this.props.dialogName || 'App') + '.foldersFirst', this.state.foldersFirst ? 'false' : 'true');
-                            this.setState({foldersFirst: !this.state.foldersFirst});
+                            this.setState({ foldersFirst: !this.state.foldersFirst });
                         }} />}
                         label={this.props.t('ra_Folders always first')}
                     />
-                    <Typography classes={{root: this.props.classes.dialogColumnsLabel}}>{this.props.t('ra_Transparent dialog')}</Typography>
-                    <Slider classes={{root: this.props.classes.width100}} value={this.state.columnsDialogTransparent} min={20} max={100} step={10} onChange={(event, newValue) =>
-                        this.setState({columnsDialogTransparent: newValue})
+                    <Typography classes={{ root: this.props.classes.dialogColumnsLabel }}>{this.props.t('ra_Transparent dialog')}</Typography>
+                    <Slider classes={{ root: this.props.classes.width100 }} value={this.state.columnsDialogTransparent} min={20} max={100} step={10} onChange={(event, newValue) =>
+                        this.setState({ columnsDialogTransparent: newValue })
                     } />
                     <List>
                         {this._renderDefinedList(false)}
@@ -1762,7 +1765,7 @@ class ObjectBrowser extends Component {
                                         }
                                         this.calculateColumnsVisibility(null, columns);
                                         window.localStorage.setItem((this.props.dialogName || 'App') + '.columns', JSON.stringify(columns));
-                                        this.setState({columns});
+                                        this.setState({ columns });
                                     }
                                 }} key={adapter + '_' + column.name}>
                                     <ListItemIcon>
@@ -1775,17 +1778,17 @@ class ObjectBrowser extends Component {
                                     </ListItemIcon>
                                     <ListItemText primary={column.name + ' (' + adapter + ')'} />
                                     <ListItemSecondaryAction>
-                                        <FormControl className={ this.props.classes.columnsDialogInputWidth } style={{ marginTop: 0, marginBottom: 0 }} margin="dense">
+                                        <FormControl className={this.props.classes.columnsDialogInputWidth} style={{ marginTop: 0, marginBottom: 0 }} margin="dense">
                                             <Input
                                                 classes={{ underline: 'no-underline' }}
-                                                placeholder={ this.props.t('ra_Width') }
-                                                value={ this.state.columnsWidths['_' + adapter + '_' + column.path] || '' }
+                                                placeholder={this.props.t('ra_Width')}
+                                                value={this.state.columnsWidths['_' + adapter + '_' + column.path] || ''}
                                                 onChange={e => {
                                                     const columnsWidths = JSON.parse(JSON.stringify(this.state.columnsWidths));
                                                     columnsWidths['_' + adapter + '_' + column.path] = e.target.value;
                                                     window.localStorage.setItem((this.props.dialogName || 'App') + '.columnsWidths', JSON.stringify(columnsWidths));
                                                     this.calculateColumnsVisibility(null, null, null, columnsWidths);
-                                                    this.setState({columnsWidths});
+                                                    this.setState({ columnsWidths });
                                                 }}
                                                 autoComplete="off"
                                             />
@@ -1798,8 +1801,8 @@ class ObjectBrowser extends Component {
                     </List>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.setState({columnsSelectorShow: false})} color="primary">
-                        <IconClose className={this.props.classes.buttonIcon}/>{this.texts['close']}
+                    <Button onClick={() => this.setState({ columnsSelectorShow: false })} color="primary">
+                        <IconClose className={this.props.classes.buttonIcon} />{this.texts['close']}
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -1828,7 +1831,7 @@ class ObjectBrowser extends Component {
         // Remove unused subscribed
         for (let i = this.subscribes.length - 1; i >= 0; i--) {
             !this.recordStates.includes(this.subscribes[i]) &&
-            this.unsubscribe(this.subscribes[i]);
+                this.unsubscribe(this.subscribes[i]);
         }
         this.recordStates = [];
     }
@@ -1909,7 +1912,7 @@ class ObjectBrowser extends Component {
             }
             columns = columns.map(item => {
                 if (typeof item !== 'object') {
-                    return {path: item, name: item.split('.').pop()};
+                    return { path: item, name: item.split('.').pop() };
                 }
 
                 // string => array
@@ -1920,16 +1923,16 @@ class ObjectBrowser extends Component {
                 }
 
                 if (!item.name && item.path) {
-                    return {path: item.path, name: item.path.split('.').pop(), width: item.width, edit: !!item.edit, type: item.type, objTypes: item.objTypes};
+                    return { path: item.path, name: item.path.split('.').pop(), width: item.width, edit: !!item.edit, type: item.type, objTypes: item.objTypes };
                 }
                 if (typeof item.name !== 'object' && item.path) {
-                    return {path: item.path, name: item.name, width: item.width, edit: !!item.edit, type: item.type, objTypes: item.objTypes};
+                    return { path: item.path, name: item.name, width: item.width, edit: !!item.edit, type: item.type, objTypes: item.objTypes };
                 }
                 if (!item.path) {
                     console.warn(`Admin columns for ${obj._id} ignored, because path not found`);
                     return null;
                 } else {
-                    return {path: item.path, name: item.name[this.props.lang] || item.name.en, width: item.width, edit: !!item.edit, type: item.type, objTypes: item.objTypes};
+                    return { path: item.path, name: item.name[this.props.lang] || item.name.en, width: item.width, edit: !!item.edit, type: item.type, objTypes: item.objTypes };
                 }
             }).filter(item => item);
 
@@ -1957,7 +1960,7 @@ class ObjectBrowser extends Component {
             let columnsForAdmin = JSON.parse(JSON.stringify(this.state.columnsForAdmin));
             this.parseObjectForAdmins(columnsForAdmin, obj);
             if (JSON.stringify(this.state.columnsForAdmin) !== JSON.stringify(columnsForAdmin)) {
-                this.setState({columnsForAdmin});
+                this.setState({ columnsForAdmin });
             }
         }
 
@@ -2091,7 +2094,7 @@ class ObjectBrowser extends Component {
 
         if (JSON.stringify(this.state.filter) !== JSON.stringify(filter)) {
             window.localStorage.setItem((this.props.dialogName || 'App') + '.objectFilter', JSON.stringify(filter));
-            this.setState({ filter, filterKey: this.state.filterKey + 1}, () =>
+            this.setState({ filter, filterKey: this.state.filterKey + 1 }, () =>
                 this.props.onFilterChanged && this.props.onFilterChanged(filter));
         }
     }
@@ -2107,24 +2110,40 @@ class ObjectBrowser extends Component {
      * @param {string} name
      */
     getFilterInput(name) {
+        console.log(this.filterRefs[name], this.filterRefs[name]?.current?.firstChild.value)
         return <FormControl
-            className={ Utils.clsx(this.props.classes.headerCellInput, this.props.classes.filterInput) }
+            className={Utils.clsx(this.props.classes.headerCellInput, this.props.classes.filterInput)}
             key={name + '_' + this.state.filterKey}
             //style={{ marginTop: 0, marginBottom: 0 }}
             margin="dense"
         >
             <Input
-                ref={ this.filterRefs[name] }
+                ref={this.filterRefs[name]}
                 classes={{ underline: 'no-underline' }}
-                id={ name }
-                placeholder={ this.texts['filter_' + name] }
-                defaultValue={ this.state.filter[name] }
+                id={name}
+                placeholder={this.texts['filter_' + name]}
+                defaultValue={this.state.filter[name]}
                 onChange={e => {
                     this.filterTimer && clearTimeout(this.filterTimer);
                     this.filterTimer = setTimeout(() => this.onFilter(), 400);
                 }}
                 autoComplete="off"
             />
+            {this.filterRefs[name]?.current?.firstChild.value ?
+                <div style={{
+                    position: 'absolute',
+                    right: 0
+                }}>
+                    <IconButton
+                        size="small"
+                        onClick={() => {
+                            this.filterRefs[name].current.firstChild.value = '';
+                            this.onFilter(name, '');
+                        }}
+                    >
+                        <Close />
+                    </IconButton>
+                </div> : null}
         </FormControl>;
     }
 
@@ -2138,35 +2157,35 @@ class ObjectBrowser extends Component {
 
         return <Select
             key={name + '_' + this.state.filterKey}
-            ref={ this.filterRefs[name] }
-            className={ this.props.classes.headerCellInput + ' no-underline' }
+            ref={this.filterRefs[name]}
+            className={this.props.classes.headerCellInput + ' no-underline'}
             onChange={e => {
                 this.filterTimer && clearTimeout(this.filterTimer);
                 this.filterTimer = setTimeout(() => this.onFilter(), 400);
             }}
-            defaultValue={ this.state.filter[name] || '' }
+            defaultValue={this.state.filter[name] || ''}
             inputProps={{ name, id: name }}
-            displayEmpty={ true }
+            displayEmpty={true}
         >
-            <MenuItem key="empty" value=""><span className={ this.props.classes.selectNone }>{ this.texts['filter_' + name] }</span></MenuItem>
-            { values.map(item => {
+            <MenuItem key="empty" value=""><span className={this.props.classes.selectNone}>{this.texts['filter_' + name]}</span></MenuItem>
+            {values.map(item => {
                 let id;
                 let name;
                 let icon;
                 if (typeof item === 'object') {
-                    id   = item.value;
+                    id = item.value;
                     name = item.name;
                     icon = item.icon;
                 } else {
-                    id   = item;
+                    id = item;
                     name = item;
                 }
 
-                return <MenuItem className={ this.props.classes.headerCellSelectItem } key={ id } value={ id }>
-                    { icon ? icon : (hasIcons ? <div className="itemIcon"/> : null)}
-                    { name }
+                return <MenuItem className={this.props.classes.headerCellSelectItem} key={id} value={id}>
+                    {icon ? icon : (hasIcons ? <div className="itemIcon" /> : null)}
+                    {name}
                 </MenuItem>;
-            }) }
+            })}
         </Select>;
     }
 
@@ -2182,10 +2201,10 @@ class ObjectBrowser extends Component {
      */
     getFilterSelectRoom() {
         const rooms = this.info.roomEnums.map(id =>
-            ({
-                name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop()),
-                value: id,
-            }));
+        ({
+            name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop()),
+            value: id,
+        }));
 
         return this.getFilterSelect('room', rooms);
     }
@@ -2195,7 +2214,7 @@ class ObjectBrowser extends Component {
      */
     getFilterSelectFunction() {
         const func = this.info.funcEnums.map(id =>
-            ({name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop()), value: id}));
+            ({ name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop()), value: id }));
         return this.getFilterSelect('func', func);
 
     }
@@ -2205,7 +2224,7 @@ class ObjectBrowser extends Component {
      */
     getFilterSelectType() {
         const types = this.info.types.map(type =>
-            ({name: type, value: type, icon: ITEM_IMAGES[type]}));
+            ({ name: type, value: type, icon: ITEM_IMAGES[type] }));
 
         return this.getFilterSelect('type', types);
     }
@@ -2319,51 +2338,51 @@ class ObjectBrowser extends Component {
     getToolbar() {
         return <>
             { this.props.showExpertButton &&
-            <IconButton
-                key="expertMode"
-                color={ this.state.filter.expertMode ? 'secondary' : 'default' }
-                onClick={ () => this.onFilter('expertMode', !this.state.filter.expertMode) }
-            >
-                <IconExpert />
-            </IconButton>
+                <IconButton
+                    key="expertMode"
+                    color={this.state.filter.expertMode ? 'secondary' : 'default'}
+                    onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
+                >
+                    <IconExpert />
+                </IconButton>
             }
             { !this.props.disableColumnSelector &&
-            <IconButton
-                key="columnSelector"
-                onClick={ () => this.setState({columnsSelectorShow: true}) }
-            >
-                <IconColumns />
-            </IconButton>
+                <IconButton
+                    key="columnSelector"
+                    onClick={() => this.setState({ columnsSelectorShow: true })}
+                >
+                    <IconColumns />
+                </IconButton>
             }
             { this.state.expandAllVisible &&
-            <IconButton
-                key="expandAll"
-                onClick={ () => this.onExpandAll() }
-            >
-                <IconOpen />
-            </IconButton>
+                <IconButton
+                    key="expandAll"
+                    onClick={() => this.onExpandAll()}
+                >
+                    <IconOpen />
+                </IconButton>
             }
             <IconButton
                 key="collapseAll"
-                onClick={ () => this.onCollapseAll() }
+                onClick={() => this.onCollapseAll()}
             >
-                <IconClosed/>
+                <IconClosed />
             </IconButton>
             <IconButton
                 key="expandVisible"
                 color="primary"
-                onClick={ () => this.onExpandVisible() }
+                onClick={() => this.onExpandVisible()}
             >
-                <StyledBadge badgeContent={ this.state.depth } color="secondary">
+                <StyledBadge badgeContent={this.state.depth} color="secondary">
                     <IconOpen />
                 </StyledBadge>
             </IconButton>
             <IconButton
                 key="collapseVisible"
                 color="primary"
-                onClick={ () => this.onCollapseVisible() }
+                onClick={() => this.onCollapseVisible()}
             >
-                <StyledBadge badgeContent={ this.state.depth } color="secondary">
+                <StyledBadge badgeContent={this.state.depth} color="secondary">
                     <IconClosed />
                 </StyledBadge>
             </IconButton>
@@ -2413,55 +2432,55 @@ class ObjectBrowser extends Component {
     renderColumnButtons(id, item, classes) {
         if (!item.data.obj) {
             return this.props.onObjectDelete ? <IconButton
-                className={ Utils.clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone) }
+                className={Utils.clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone)}
                 size="small"
                 aria-label="delete"
-                title={ this.texts.deleteObject }
-                onClick={ () => this.props.onObjectDelete(id, !!(item.children && item.children.length), false)}
+                title={this.texts.deleteObject}
+                onClick={() => this.props.onObjectDelete(id, !!(item.children && item.children.length), false)}
             >
-                <IconDelete className={ classes.cellButtonsButtonIcon } />
+                <IconDelete className={classes.cellButtonsButtonIcon} />
             </IconButton> : null;
         }
 
         return [
             <IconButton
                 key="edit"
-                className={ classes.cellButtonsButton }
+                className={classes.cellButtonsButton}
                 size="small"
                 aria-label="edit"
-                title={ this.texts.editObject }
-                onClick={ () => {
+                title={this.texts.editObject}
+                onClick={() => {
                     window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', id);
-                    this.setState({ editObjectDialog: id});
+                    this.setState({ editObjectDialog: id });
                 }}
             >
-                <IconEdit className={ classes.cellButtonsButtonIcon } />
+                <IconEdit className={classes.cellButtonsButtonIcon} />
             </IconButton>,
             this.props.onObjectDelete ? <IconButton
                 key="delete"
-                className={ classes.cellButtonsButton }
+                className={classes.cellButtonsButton}
                 size="small"
                 aria-label="delete"
-                onClick={ () => this.props.onObjectDelete(id, !!(item.children && item.children.length), true)}
-                title={ this.texts.deleteObject }
+                onClick={() => this.props.onObjectDelete(id, !!(item.children && item.children.length), true)}
+                title={this.texts.deleteObject}
             >
-                <IconDelete className={ classes.cellButtonsButtonIcon } />
+                <IconDelete className={classes.cellButtonsButtonIcon} />
             </IconButton> : null,
             this.props.objectCustomDialog && this.info.hasSomeCustoms && item.data.obj.type === 'state' ? <IconButton
-                className={ Utils.clsx(classes.cellButtonsButton, item.data.hasCustoms && classes.cellButtonsButtonWithCustoms)}
+                className={Utils.clsx(classes.cellButtonsButton, item.data.hasCustoms && classes.cellButtonsButtonWithCustoms)}
                 key="custom"
                 size="small"
                 aria-label="config"
-                title={ this.texts.customConfig }
-                onClick={ () => {
+                title={this.texts.customConfig}
+                onClick={() => {
                     window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', id);
 
                     this.pauseSubscribe(true);
                     this.props.router && this.props.router.doNavigate(null, 'custom', id);
-                    this.setState({ customDialog: [id]});
+                    this.setState({ customDialog: [id] });
                 }}
             >
-                <IconConfig className={ classes.cellButtonsButtonIcon }  />
+                <IconConfig className={classes.cellButtonsButtonIcon} />
             </IconButton> : null,
         ];
     }
@@ -2556,33 +2575,33 @@ class ObjectBrowser extends Component {
             info = item.data.state = item.data.state || formatValue(id, state, item.data.obj, this.texts);
 
             info.valFull = info.valFull.map(item => [
-                <div className={ classes.cellValueTooltipTitle } key={ item.t }>{ item.t }:</div>,
-                <div className={ classes.cellValueTooltipValue } key={ item.t + '_v' }>{ item.v }</div>,
-                !item.nbr ? <br key={ item.t + '_br' }/> : null]);
+                <div className={classes.cellValueTooltipTitle} key={item.t}>{item.t}:</div>,
+                <div className={classes.cellValueTooltipValue} key={item.t + '_v'}>{item.v}</div>,
+                !item.nbr ? <br key={item.t + '_br'} /> : null]);
 
             if (this.defaultHistory && this.objects[id] && this.objects[id].common && this.objects[id].common.custom && this.objects[id].common.custom[this.defaultHistory]) {
-                info.valFull.push(<svg key="sparkline" className="sparkline" data-id={ id } style={ {fill: '#3d85de'} } width="200" height="30" strokeWidth="3"/>);
+                info.valFull.push(<svg key="sparkline" className="sparkline" data-id={id} style={{ fill: '#3d85de' }} width="200" height="30" strokeWidth="3" />);
             }
 
             const copyText = info.valText.v || '';
             info.val = copyText;
 
             info.valText = [
-                <span key="valText">{ info.valText.v.toString() }</span>,
-                info.valText.u ? <span className={ classes.cellValueTextUnit } key="unit">{ info.valText.u }</span> : null,
-                info.valText.s !== undefined ? <span  className={ classes.cellValueTextState } key="states">({ info.valText.s })</span> : null,
-                <IconCopy className={ Utils.clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonCopy) } onClick={(e) => this.onCopy(e, copyText) } key="cc" />,
+                <span key="valText">{info.valText.v.toString()}</span>,
+                info.valText.u ? <span className={classes.cellValueTextUnit} key="unit">{info.valText.u}</span> : null,
+                info.valText.s !== undefined ? <span className={classes.cellValueTextState} key="states">({info.valText.s})</span> : null,
+                <IconCopy className={Utils.clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonCopy)} onClick={(e) => this.onCopy(e, copyText)} key="cc" />,
                 //<IconEdit className={ Utils.clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonEdit) } key="ce" />
             ];
         }
 
         return <Tooltip
-            title={ info.valFull }
-            classes={ {tooltip: this.props.classes.cellValueTooltip, popper: this.props.classes.cellValueTooltipBox} }
-            onOpen={ () => this.readHistory(id) }
+            title={info.valFull}
+            classes={{ tooltip: this.props.classes.cellValueTooltip, popper: this.props.classes.cellValueTooltipBox }}
+            onOpen={() => this.readHistory(id)}
         >
-            <div style={ info.style } className={ classes.cellValueText } >
-                { info.valText }
+            <div style={info.style} className={classes.cellValueText} >
+                {info.valText}
             </div>
         </Tooltip>;
     }
@@ -2657,25 +2676,25 @@ class ObjectBrowser extends Component {
             const enumsOriginal = this.state.enumDialog.enumsOriginal;
 
             const enums = (type === 'room' ? this.info.roomEnums : this.info.funcEnums).map(id =>
-                ({
-                    name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop(), this.props.lang),
-                    value: id,
-                    icon: getSelectIdIcon(this.objects, id, this.imagePrefix)
-                }));
+            ({
+                name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop(), this.props.lang),
+                value: id,
+                icon: getSelectIdIcon(this.objects, id, this.imagePrefix)
+            }));
 
             enums.forEach(item => {
                 if (item.icon) {
-                    item.icon = <div className={ this.props.classes.enumIconDiv }>
-                        <img src={ item.icon } className={ this.props.classes.enumIcon } alt={ item.name }/>
+                    item.icon = <div className={this.props.classes.enumIconDiv}>
+                        <img src={item.icon} className={this.props.classes.enumIcon} alt={item.name} />
                     </div>;
                 }
             });
 
             // const hasIcons = !!enums.find(item => item.icon);
 
-            return <Dialog className={this.props.classes.enumDialog} onClose={() => this.setState({enumDialog: null})} aria-labelledby="enum-dialog-title" open={ true }>
+            return <Dialog className={this.props.classes.enumDialog} onClose={() => this.setState({ enumDialog: null })} aria-labelledby="enum-dialog-title" open={true}>
                 <DialogTitle id="enum-dialog-title">
-                    { type === 'func' ? this.props.t('ra_Define functions') : this.props.t('ra_Define rooms') }
+                    {type === 'func' ? this.props.t('ra_Define functions') : this.props.t('ra_Define rooms')}
                     <Fab
                         className={this.props.classes.enumButton}
                         color="primary"
@@ -2683,9 +2702,9 @@ class ObjectBrowser extends Component {
                         size="small"
                         onClick={() =>
                             this.syncEnum(item.data.id, type, itemEnums)
-                                .then(() => this.setState({enumDialog: null, enumDialogEnums: null}))}
+                                .then(() => this.setState({ enumDialog: null, enumDialogEnums: null }))}
                     >
-                        <IconCheck/>
+                        <IconCheck />
                     </Fab>
                 </DialogTitle>
                 <List classes={{ root: this.props.classes.enumList }}>
@@ -2696,18 +2715,18 @@ class ObjectBrowser extends Component {
                             let icon;
 
                             if (typeof item === 'object') {
-                                id   = item.value;
+                                id = item.value;
                                 name = item.name;
                                 icon = item.icon;
                             } else {
-                                id   = item;
+                                id = item;
                                 name = item;
                             }
                             const labelId = `checkbox-list-label-${id}`;
 
                             return <ListItem
-                                className={ this.props.classes.headerCellSelectItem }
-                                key={ id }
+                                className={this.props.classes.headerCellSelectItem}
+                                key={id}
                                 onClick={() => {
                                     const pos = itemEnums.indexOf(id);
                                     const enumDialogEnums = JSON.parse(JSON.stringify(this.state.enumDialogEnums));
@@ -2717,20 +2736,20 @@ class ObjectBrowser extends Component {
                                     } else {
                                         enumDialogEnums.splice(pos, 1);
                                     }
-                                    this.setState({enumDialogEnums});
+                                    this.setState({ enumDialogEnums });
                                 }}
                             >
                                 <ListItemIcon classes={{ root: this.props.classes.enumCheckbox }}>
                                     <Checkbox
                                         edge="start"
-                                        checked={ itemEnums.includes(id) }
-                                        tabIndex={ -1 }
+                                        checked={itemEnums.includes(id)}
+                                        tabIndex={-1}
                                         disableRipple
                                         inputProps={{ 'aria-labelledby': labelId }}
                                     />
                                 </ListItemIcon>
-                                <ListItemText id={ labelId }>{ name }</ListItemText>
-                                { icon ? <ListItemSecondaryAction>{ icon }</ListItemSecondaryAction> : null }
+                                <ListItemText id={labelId}>{name}</ListItemText>
+                                {icon ? <ListItemSecondaryAction>{icon}</ListItemSecondaryAction> : null}
                             </ListItem>;
                         })
                     }
@@ -2756,7 +2775,7 @@ class ObjectBrowser extends Component {
                 roles={this.info.roles}
                 onClose={obj => {
                     this.info.objects[this.state.roleDialog] = obj;
-                    this.setState({roleDialog: null});
+                    this.setState({ roleDialog: null });
                 }}
             />;
         } else {
@@ -2785,11 +2804,11 @@ class ObjectBrowser extends Component {
                         throw new Error(this.props.t('ra_Cannot update attribute, because not found in the object'))
                     }
                 })
-                .then(() => this.setState({columnsEditCustomDialog: null}))
+                .then(() => this.setState({ columnsEditCustomDialog: null }))
                 .catch(e => this.showError(e));
         } else {
             this.customColumnDialog = null;
-            this.setState({columnsEditCustomDialog: null});
+            this.setState({ columnsEditCustomDialog: null });
         }
     }
 
@@ -2808,10 +2827,10 @@ class ObjectBrowser extends Component {
             }
 
             return <Dialog
-                onClose={() => this.setState({columnsEditCustomDialog: null})}
+                onClose={() => this.setState({ columnsEditCustomDialog: null })}
                 maxWidth="md"
-                aria-labelledby="custom-dialog-title" open={ true }>
-                <DialogTitle id="custom-dialog-title">{ this.props.t('ra_Edit object field') + ': ' + this.state.columnsEditCustomDialog.obj._id }</DialogTitle>
+                aria-labelledby="custom-dialog-title" open={true}>
+                <DialogTitle id="custom-dialog-title">{this.props.t('ra_Edit object field') + ': ' + this.state.columnsEditCustomDialog.obj._id}</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
                         {this.customColumnDialog.type === 'boolean' ?
@@ -2823,7 +2842,7 @@ class ObjectBrowser extends Component {
                                         this.customColumnDialog.value = e.target.checked.toString();
                                         const changed = this.customColumnDialog.value !== this.customColumnDialog.initValue;
                                         if (changed === !this.state.customColumnDialogValueChanged) {
-                                            this.setState({customColumnDialogValueChanged: changed});
+                                            this.setState({ customColumnDialogValueChanged: changed });
                                         }
                                     }}
                                 />}
@@ -2839,7 +2858,7 @@ class ObjectBrowser extends Component {
                                     this.customColumnDialog.value = e.target.value;
                                     const changed = this.customColumnDialog.value !== this.customColumnDialog.initValue;
                                     if (changed === !this.state.customColumnDialogValueChanged) {
-                                        this.setState({customColumnDialogValueChanged: changed});
+                                        this.setState({ customColumnDialogValueChanged: changed });
                                     }
                                 }}
                                 autoFocus
@@ -2849,11 +2868,11 @@ class ObjectBrowser extends Component {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.onColumnsEditCustomDialogClose()}><IconClose className={this.props.classes.buttonIcon}/>{this.props.t('Cancel')}</Button>
+                    <Button onClick={() => this.onColumnsEditCustomDialogClose()}><IconClose className={this.props.classes.buttonIcon} />{this.props.t('Cancel')}</Button>
                     <Button onClick={() => this.onColumnsEditCustomDialogClose(true)}
-                            disabled={!this.state.customColumnDialogValueChanged}
-                            color="primary">
-                        <IconCheck className={this.props.classes.buttonIcon}/> {this.props.t('ra_Update')}
+                        disabled={!this.state.customColumnDialogValueChanged}
+                        color="primary">
+                        <IconCheck className={this.props.classes.buttonIcon} /> {this.props.t('ra_Update')}
                     </Button>
                 </DialogActions>
             </Dialog>;
@@ -2881,7 +2900,7 @@ class ObjectBrowser extends Component {
                 } else if (p.length === 5) {
                     value = obj[p[0]][p[1]] && typeof obj[p[0]][p[1]] === 'object' && obj[p[0]][p[1]][p[2]] && obj[p[0]][p[1]][p[2]][p[3]] ? obj[p[0]][p[1]][p[2]][p[3]][p[4]] : null;
                 } else if (p.length === 6) {
-                    value = obj[p[0]][p[1]] && typeof obj[p[0]][p[1]] === 'object' && obj[p[0]][p[1]][p[2]] && obj[p[0]][p[1]][p[2]][p[3]] && obj[p[0]][p[1]][p[2]][p[3]][p[4]] ? obj[p[0]][p[1]][p[2]][p[3]][p[4]][p[5]]  : null;
+                    value = obj[p[0]][p[1]] && typeof obj[p[0]][p[1]] === 'object' && obj[p[0]][p[1]][p[2]] && obj[p[0]][p[1]][p[2]][p[3]] && obj[p[0]][p[1]][p[2]][p[3]][p[4]] ? obj[p[0]][p[1]][p[2]][p[3]][p[4]][p[5]] : null;
                 }
                 if (value === undefined || value === null) {
                     return null;
@@ -2946,7 +2965,7 @@ class ObjectBrowser extends Component {
             if (it.edit && !this.props.notEditable && (!it.objTypes || it.objTypes.includes(obj.type))) {
                 return <div
                     className={Utils.clsx(this.props.classes.columnCustom, this.props.classes.columnCustomEditable, this.props.classes['columnCustom_' + it.align])}
-                    onClick={() => this.setState({columnsEditCustomDialog: {item, it, obj}, customColumnDialogValueChanged: false})}>{text}</div>;
+                    onClick={() => this.setState({ columnsEditCustomDialog: { item, it, obj }, customColumnDialogValueChanged: false })}>{text}</div>;
             } else {
                 return <div
                     className={Utils.clsx(this.props.classes.columnCustom, this.props.classes['columnCustom_' + it.align])}>{text}</div>;
@@ -2973,23 +2992,23 @@ class ObjectBrowser extends Component {
         let iconFolder;
         if (item.children) {
             iconFolder = isExpanded ? <IconOpen
-                className={ classes.cellIdIconFolder }
-                onClick={ () => this.toggleExpanded(id) }
+                className={classes.cellIdIconFolder}
+                onClick={() => this.toggleExpanded(id)}
             /> : <IconClosed
-                className={ classes.cellIdIconFolder }
-                onClick={ () => this.toggleExpanded(id) }
+                className={classes.cellIdIconFolder}
+                onClick={() => this.toggleExpanded(id)}
             />;
         } else {
-            iconFolder = <IconDocument className={ classes.cellIdIconDocument } />;
+            iconFolder = <IconDocument className={classes.cellIdIconDocument} />;
         }
 
         let iconItem = null;
         if (item.data.icon) {
             if (typeof item.data.icon === 'string') {
                 if (item.data.icon.length < 3) {
-                    iconItem = <span className={ Utils.clsx(classes.cellIdIconOwn, 'iconOwn') }>{item.data.icon}</span>; // utf-8 char
+                    iconItem = <span className={Utils.clsx(classes.cellIdIconOwn, 'iconOwn')}>{item.data.icon}</span>; // utf-8 char
                 } else {
-                    iconItem = <img className={ Utils.clsx(classes.cellIdIconOwn, 'iconOwn') } src={ item.data.icon } alt="" />;
+                    iconItem = <img className={Utils.clsx(classes.cellIdIconOwn, 'iconOwn')} src={item.data.icon} alt="" />;
                 }
             } else {
                 iconItem = item.data.icon;
@@ -3005,15 +3024,15 @@ class ObjectBrowser extends Component {
         if (item.data.lang !== this.state.lang) {
             item.data.rooms = findRoomsForObject(this.info, id, this.state.lang).join(', ');
             item.data.funcs = findFunctionsForObject(this.info, id, this.state.lang).join(', ');
-            item.data.lang  = this.state.lang;
+            item.data.lang = this.state.lang;
         }
 
         const checkbox =
             this.props.multiSelect &&
-            this.objects[id] && (!this.props.types || this.props.types.includes(this.objects[id].type)) ?
+                this.objects[id] && (!this.props.types || this.props.types.includes(this.objects[id].type)) ?
                 <Checkbox
-                    className={ classes.checkBox }
-                    checked={ this.state.selected.includes(id) }
+                    className={classes.checkBox}
+                    checked={this.state.selected.includes(id)}
                 /> :
                 null;
 
@@ -3028,23 +3047,23 @@ class ObjectBrowser extends Component {
             container
             direction="row"
             wrap="nowrap"
-            className={ Utils.clsx(classes.tableRow, !item.data.visible && classes.filteredOut, this.state.selected.includes(id) && classes.itemSelected) }
-            key={ id }
-            id={ id }
-            onClick={ () => this.onSelect(id) }
-            onDoubleClick={ () => {
+            className={Utils.clsx(classes.tableRow, !item.data.visible && classes.filteredOut, this.state.selected.includes(id) && classes.itemSelected)}
+            key={id}
+            id={id}
+            onClick={() => this.onSelect(id)}
+            onDoubleClick={() => {
                 if (!item.children) {
                     this.onSelect(id, true);
                 } else {
                     this.toggleExpanded(id);
                 }
-            } }
+            }}
         >
             <Grid
                 container
                 wrap="nowrap"
                 direction="row"
-                className={ classes.cellId }
+                className={classes.cellId}
                 style={{ width: this.columnsVisibility.id, paddingLeft }}
             >
                 <Grid
@@ -3052,45 +3071,45 @@ class ObjectBrowser extends Component {
                     container
                     alignItems="center"
                 >
-                    { checkbox }
-                    { iconFolder }
+                    {checkbox}
+                    {iconFolder}
                 </Grid>
                 <Grid
                     item
-                    className={ classes.cellIdSpan }
-                    style={ {color: id === 'system' ? COLOR_NAME_SYSTEM : (id === 'system.adapter' ? COLOR_NAME_SYSTEM_ADAPTER : 'inherit')} }
+                    className={classes.cellIdSpan}
+                    style={{ color: id === 'system' ? COLOR_NAME_SYSTEM : (id === 'system.adapter' ? COLOR_NAME_SYSTEM_ADAPTER : 'inherit') }}
                 >
-                    { item.data.name }
+                    {item.data.name}
                 </Grid>
-                <div className={ classes.grow } />
+                <div className={classes.grow} />
                 <Grid
                     item
                     container
                     alignItems="center"
                 >
-                    { iconItem }
+                    {iconItem}
                 </Grid>
-                <IconCopy className={ Utils.clsx(classes.cellCopyButton, 'copyButton') } onClick={(e) => this.onCopy(e, id) } />
+                <IconCopy className={Utils.clsx(classes.cellCopyButton, 'copyButton')} onClick={(e) => this.onCopy(e, id)} />
             </Grid>
-            {this.columnsVisibility.name    ? <div className={ classes.cellName }    style={{ width: this.columnsVisibility.name }}>{ (item.data && item.data.title) || '' }</div> : null }
-            {this.columnsVisibility.type    ? <div className={ classes.cellType }    style={{ width: this.columnsVisibility.type }}>{ typeImg } { obj && obj.type }</div> : null }
-            {this.columnsVisibility.role    ? <div className={ classes.cellRole }    style={{ width: this.columnsVisibility.role, cursor: enumEditable && this.props.objectBrowserEditRole ? 'text' : 'default'}} onClick={ enumEditable && this.props.objectBrowserEditRole ? () => this.setState({roleDialog: item.data.id}) : undefined}>{ obj && obj.common && obj.common.role }</div> : null }
-            {this.columnsVisibility.room    ? <div className={ classes.cellRoom }    style={{ width: this.columnsVisibility.room, cursor: enumEditable ? 'text' : 'default'}} onClick={ enumEditable ? () => {const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'roomEnums'); this.setState({enumDialogEnums: enums, enumDialog: {item, type: 'room', enumsOriginal: JSON.parse(JSON.stringify(enums))}});} : undefined }>{ item.data.rooms }</div> : null }
-            {this.columnsVisibility.func    ? <div className={ classes.cellFunc }    style={{ width: this.columnsVisibility.func, cursor: enumEditable ? 'text' : 'default'}} onClick={ enumEditable ? () => {const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'funcEnums'); this.setState({enumDialogEnums: enums, enumDialog: {item, type: 'func', enumsOriginal: JSON.parse(JSON.stringify(enums))}});} : undefined }>{ item.data.funcs }</div> : null }
-            {this.adapterColumns.map(it =>    <div className={ classes.cellAdapter } style={{ width: this.columnsVisibility[it.id] }} key={it.id} title={it.adapter + ' => ' + it.pathText}>{ this.renderCustomValue(obj, it, item) }</div>)}
-            {this.columnsVisibility.val     ? <div className={ classes.cellValue }   style={{ width: this.columnsVisibility.val, cursor: valueEditable ? 'text' : 'default'}} onClick={ valueEditable ? () => {
+            {this.columnsVisibility.name ? <div className={classes.cellName} style={{ width: this.columnsVisibility.name }}>{(item.data && item.data.title) || ''}</div> : null}
+            {this.columnsVisibility.type ? <div className={classes.cellType} style={{ width: this.columnsVisibility.type }}>{typeImg} {obj && obj.type}</div> : null}
+            {this.columnsVisibility.role ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.role, cursor: enumEditable && this.props.objectBrowserEditRole ? 'text' : 'default' }} onClick={enumEditable && this.props.objectBrowserEditRole ? () => this.setState({ roleDialog: item.data.id }) : undefined}>{obj && obj.common && obj.common.role}</div> : null}
+            {this.columnsVisibility.room ? <div className={classes.cellRoom} style={{ width: this.columnsVisibility.room, cursor: enumEditable ? 'text' : 'default' }} onClick={enumEditable ? () => { const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'roomEnums'); this.setState({ enumDialogEnums: enums, enumDialog: { item, type: 'room', enumsOriginal: JSON.parse(JSON.stringify(enums)) } }); } : undefined}>{item.data.rooms}</div> : null}
+            {this.columnsVisibility.func ? <div className={classes.cellFunc} style={{ width: this.columnsVisibility.func, cursor: enumEditable ? 'text' : 'default' }} onClick={enumEditable ? () => { const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'funcEnums'); this.setState({ enumDialogEnums: enums, enumDialog: { item, type: 'func', enumsOriginal: JSON.parse(JSON.stringify(enums)) } }); } : undefined}>{item.data.funcs}</div> : null}
+            {this.adapterColumns.map(it => <div className={classes.cellAdapter} style={{ width: this.columnsVisibility[it.id] }} key={it.id} title={it.adapter + ' => ' + it.pathText}>{this.renderCustomValue(obj, it, item)}</div>)}
+            {this.columnsVisibility.val ? <div className={classes.cellValue} style={{ width: this.columnsVisibility.val, cursor: valueEditable ? 'text' : 'default' }} onClick={valueEditable ? () => {
                 if (!item.data.obj || !this.states) {
                     return null;
                 }
                 this.edit = {
-                    val:    this.states[id] ? this.states[id].val : '',
-                    q:      0,
-                    ack:    false,
+                    val: this.states[id] ? this.states[id].val : '',
+                    q: 0,
+                    ack: false,
                     id,
                 };
                 this.setState({ updateOpened: true });
-            } : undefined}>{ this.renderColumnValue(id, item, classes) }</div> : null }
-            {this.columnsVisibility.buttons ? <div className={ classes.cellButtons } style={{ width: this.columnsVisibility.buttons }}>{ this.renderColumnButtons(id, item, classes) }</div> : null }
+            } : undefined}>{this.renderColumnValue(id, item, classes)}</div> : null}
+            {this.columnsVisibility.buttons ? <div className={classes.cellButtons} style={{ width: this.columnsVisibility.buttons }}>{this.renderColumnButtons(id, item, classes)}</div> : null}
         </Grid>;
     }
 
@@ -3104,7 +3123,7 @@ class ObjectBrowser extends Component {
      */
     renderItem(root, isExpanded, classes, counter) {
         const items = [];
-        counter = counter || {count: 0};
+        counter = counter || { count: 0 };
 
         root.data.id && items.push(this.renderLeaf(root, isExpanded, classes, counter));
 
@@ -3161,10 +3180,10 @@ class ObjectBrowser extends Component {
      * @param {Record<string, number>} [columnsWidths]
      */
     calculateColumnsVisibility(columnsAuto, columns, columnsForAdmin, columnsWidths) {
-        columnsWidths   = columnsWidths   || this.state.columnsWidths;
+        columnsWidths = columnsWidths || this.state.columnsWidths;
         columnsForAdmin = columnsForAdmin || this.state.columnsForAdmin;
-        columns         = columns         || this.state.columns || [];
-        columnsAuto     = typeof columnsAuto !== 'boolean' ? this.state.columnsAuto : columnsAuto;
+        columns = columns || this.state.columns || [];
+        columnsAuto = typeof columnsAuto !== 'boolean' ? this.state.columnsAuto : columnsAuto;
 
         columnsWidths = JSON.parse(JSON.stringify(columnsWidths));
         Object.keys(columnsWidths).forEach(name => {
@@ -3174,17 +3193,17 @@ class ObjectBrowser extends Component {
         });
 
         this.adapterColumns = [];
-        const WIDTHS  = SCREEN_WIDTHS[this.props.width].widths;
+        const WIDTHS = SCREEN_WIDTHS[this.props.width].widths;
 
         if (columnsAuto) {
             this.columnsVisibility = {
-                id:      SCREEN_WIDTHS[this.props.width].idWidth,
-                name:    this.visibleCols.includes('name')    ? WIDTHS.name    : 0,
-                type:    this.visibleCols.includes('type')    ? WIDTHS.type    : 0,
-                role:    this.visibleCols.includes('role')    ? WIDTHS.role    : 0,
-                room:    this.visibleCols.includes('room')    ? WIDTHS.room    : 0,
-                func:    this.visibleCols.includes('func')    ? WIDTHS.func    : 0,
-                val:     this.visibleCols.includes('val')     ? WIDTHS.val     : 0,
+                id: SCREEN_WIDTHS[this.props.width].idWidth,
+                name: this.visibleCols.includes('name') ? WIDTHS.name : 0,
+                type: this.visibleCols.includes('type') ? WIDTHS.type : 0,
+                role: this.visibleCols.includes('role') ? WIDTHS.role : 0,
+                room: this.visibleCols.includes('room') ? WIDTHS.room : 0,
+                func: this.visibleCols.includes('func') ? WIDTHS.func : 0,
+                val: this.visibleCols.includes('val') ? WIDTHS.val : 0,
                 buttons: this.visibleCols.includes('buttons') ? WIDTHS.buttons : 0,
             };
 
@@ -3201,7 +3220,7 @@ class ObjectBrowser extends Component {
             }
         } else {
             this.columnsVisibility = {
-                id:   columnsWidths.id || SCREEN_WIDTHS[this.props.width].idWidth,
+                id: columnsWidths.id || SCREEN_WIDTHS[this.props.width].idWidth,
                 name: columns.includes('name') ? columnsWidths.name || WIDTHS.name || SCREEN_WIDTHS.xl.widths.name : 0,
                 type: columns.includes('type') ? columnsWidths.type || WIDTHS.type || SCREEN_WIDTHS.xl.widths.type : 0,
                 role: columns.includes('role') ? columnsWidths.role || WIDTHS.role || SCREEN_WIDTHS.xl.widths.role : 0,
@@ -3224,9 +3243,9 @@ class ObjectBrowser extends Component {
                         if (columns.includes(id)) {
                             const item = {
                                 adapter,
-                                id:      '_' + adapter + '_' + column.path,
-                                name:     column.name,
-                                path:     column.path.split('.'),
+                                id: '_' + adapter + '_' + column.path,
+                                name: column.name,
+                                path: column.path.split('.'),
                                 pathText: column.path
                             };
                             if (column.edit) {
@@ -3247,7 +3266,7 @@ class ObjectBrowser extends Component {
                         }
                     }));
             }
-            this.adapterColumns.sort((a, b) => a.id > b.id ? -1 : (a.id < b.id ? 1: 0));
+            this.adapterColumns.sort((a, b) => a.id > b.id ? -1 : (a.id < b.id ? 1 : 0));
             this.columnsVisibility.val = columns.includes('val') ? columnsWidths.val || WIDTHS.val || SCREEN_WIDTHS.xl.widths.val : 0;
 
             // do not show buttons if not desired
@@ -3275,20 +3294,20 @@ class ObjectBrowser extends Component {
         if (!this.columnsVisibility.buttons && !this.isFilterEmpty()) {
             filterClearInValue = <IconButton onClick={() => this.clearFilter()} className={classes.buttonClearFilter} title={this.props.t('ra_Clear filter')}>
                 <IconClearFilter />
-                <IconClose className={classes.buttonClearFilterIcon}/>
+                <IconClose className={classes.buttonClearFilterIcon} />
             </IconButton>;
         }
 
-        return <div className={ classes.headerRow } >
-            <div className={ classes.headerCell } style={{ width: this.columnsVisibility.id }}>{ this.getFilterInput('id') }</div>
-            {this.columnsVisibility.name    ? <div className={ classes.headerCell } style={{ width: this.columnsVisibility.nameHeader }}>{ this.getFilterInput('name') }</div> : null }
-            {this.columnsVisibility.type    ? <div className={ classes.headerCell } style={{ width: this.columnsVisibility.type }}>{ this.getFilterSelectType() }</div> : null }
-            {this.columnsVisibility.role    ? <div className={ classes.headerCell } style={{ width: this.columnsVisibility.role }}>{ this.getFilterSelectRole() }</div> : null }
-            {this.columnsVisibility.room    ? <div className={ classes.headerCell } style={{ width: this.columnsVisibility.room }}>{ this.getFilterSelectRoom() }</div> : null }
-            {this.columnsVisibility.func    ? <div className={ classes.headerCell } style={{ width: this.columnsVisibility.func }}>{ this.getFilterSelectFunction() }</div> : null }
-            {this.adapterColumns.map(item =>  <div className={ Utils.clsx(classes.headerCell, classes.headerCellValue) } style={{ width: this.columnsVisibility[item.id] }} title={item.adapter} key={item.id}>{ item.name }</div>)}
-            {this.columnsVisibility.val     ? <div className={ Utils.clsx(classes.headerCell, classes.headerCellValue) } style={{ width: this.columnsVisibility.val}}>{ this.props.t('ra_Value') }{filterClearInValue}</div> : null }
-            {this.columnsVisibility.buttons ? <div className={ classes.headerCell } style={{ width: this.columnsVisibility.buttons }}> { this.getFilterSelectCustoms() }</div> : null }
+        return <div className={classes.headerRow} >
+            <div className={classes.headerCell} style={{ width: this.columnsVisibility.id }}>{this.getFilterInput('id')}</div>
+            {this.columnsVisibility.name ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.nameHeader }}>{this.getFilterInput('name')}</div> : null}
+            {this.columnsVisibility.type ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.type }}>{this.getFilterSelectType()}</div> : null}
+            {this.columnsVisibility.role ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.role }}>{this.getFilterSelectRole()}</div> : null}
+            {this.columnsVisibility.room ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.room }}>{this.getFilterSelectRoom()}</div> : null}
+            {this.columnsVisibility.func ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.func }}>{this.getFilterSelectFunction()}</div> : null}
+            {this.adapterColumns.map(item => <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility[item.id] }} title={item.adapter} key={item.id}>{item.name}</div>)}
+            {this.columnsVisibility.val ? <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.val }}>{this.props.t('ra_Value')}{filterClearInValue}</div> : null}
+            {this.columnsVisibility.buttons ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.buttons }}> {this.getFilterSelectCustoms()}</div> : null}
         </div>;
     }
 
@@ -3298,14 +3317,14 @@ class ObjectBrowser extends Component {
      */
     renderToast() {
         return <Snackbar
-            open={ !!this.state.toast }
-            autoHideDuration={ 3000 }
-            onClick={ () => this.setState({ toast: '' }) }
-            onClose={ () => this.setState({ toast: '' }) }
+            open={!!this.state.toast}
+            autoHideDuration={3000}
+            onClick={() => this.setState({ toast: '' })}
+            onClose={() => this.setState({ toast: '' })}
             message={this.state.toast}
             action={
                 <React.Fragment>
-                    <IconButton size="small" aria-label="close" color="inherit" onClick={() => this.setState({toast: ''})}>
+                    <IconButton size="small" aria-label="close" color="inherit" onClick={() => this.setState({ toast: '' })}>
                         <IconClose fontSize="small" />
                     </IconButton>
                 </React.Fragment>
@@ -3340,15 +3359,15 @@ class ObjectBrowser extends Component {
             const ObjectCustomDialog = this.props.objectCustomDialog;
 
             return <ObjectCustomDialog
-                objectIDs={ this.state.customDialog }
-                expertMode={ this.state.filter.expertMode }
-                t={ this.props.t }
-                lang={ this.props.lang }
-                socket={ this.props.socket }
-                themeName={ this.props.themeName }
-                objects={ this.objects }
-                customsInstances={ this.info.customs }
-                onClose={ () => {
+                objectIDs={this.state.customDialog}
+                expertMode={this.state.filter.expertMode}
+                t={this.props.t}
+                lang={this.props.lang}
+                socket={this.props.socket}
+                themeName={this.props.themeName}
+                objects={this.objects}
+                customsInstances={this.info.customs}
+                onClose={() => {
                     this.pauseSubscribe(false);
                     this.setState({ customDialog: null });
                     this.props.router && this.props.router.doNavigate('tab-objects');
@@ -3364,7 +3383,7 @@ class ObjectBrowser extends Component {
      * @param {Partial<ioBroker.State>} valAck
      */
     onUpdate(valAck) {
-        this.props.socket.setState(this.edit.id, {val: valAck.val, ack: valAck.ack, q: valAck.q || 0})
+        this.props.socket.setState(this.edit.id, { val: valAck.val, ack: valAck.ack, q: valAck.q || 0 })
             .catch(e => this.showError('Cannot write value: ' + e));
     }
 
@@ -3379,12 +3398,12 @@ class ObjectBrowser extends Component {
         const ObjectBrowserEditObject = this.props.objectBrowserEditObject;
 
         return <ObjectBrowserEditObject
-            obj={ this.objects[this.state.editObjectDialog] }
-            themeName={ this.props.themeName }
-            t={ this.props.t }
-            expertMode={ this.state.filter.expertMode }
-            onClose={ obj => {
-                this.setState({editObjectDialog: ''});
+            obj={this.objects[this.state.editObjectDialog]}
+            themeName={this.props.themeName}
+            t={this.props.t}
+            expertMode={this.state.filter.expertMode}
+            onClose={obj => {
+                this.setState({ editObjectDialog: '' });
                 if (obj) {
                     this.props.socket.setObject(obj._id, obj)
                         .catch(e => this.showError('Cannot write object: ' + e));
@@ -3408,11 +3427,11 @@ class ObjectBrowser extends Component {
         const ObjectBrowserValue = this.props.objectBrowserValue;
 
         return <ObjectBrowserValue
-            t={ this.props.t }
-            type={ type }
-            expertMode={ this.state.filter.expertMode }
-            value={ this.edit.val }
-            onClose={ res => {
+            t={this.props.t}
+            type={type}
+            expertMode={this.state.filter.expertMode}
+            value={this.edit.val}
+            onClose={res => {
                 this.setState({ updateOpened: false });
                 res && this.onUpdate(res)
             }}
@@ -3430,7 +3449,7 @@ class ObjectBrowser extends Component {
         // apply filter if changed
         const jsonFilter = JSON.stringify(this.state.filter);
         if (this.lastAppliedFilter !== jsonFilter && this.objects && this.root) {
-            const counter = {count: 0};
+            const counter = { count: 0 };
 
             applyFilter(this.root, this.state.filter, this.state.lang, this.objects, null, counter, this.props.customFilter);
 
@@ -3449,30 +3468,30 @@ class ObjectBrowser extends Component {
         }, 200);
 
         if (!this.state.loaded) {
-            return <CircularProgress key={this.props.dialogName + '_c'}/>;
+            return <CircularProgress key={this.props.dialogName + '_c'} />;
         } else {
             const classes = this.props.classes;
             const items = this.renderItem(this.root, undefined, classes);
 
             return <TabContainer key={this.props.dialogName}>
                 <TabHeader>
-                    { this.getToolbar() }
+                    {this.getToolbar()}
                 </TabHeader>
                 <TabContent>
-                    { this.renderHeader() }
-                    <div className={ this.props.classes.tableDiv } ref={ this.tableRef }>
-                        { items }
+                    {this.renderHeader()}
+                    <div className={this.props.classes.tableDiv} ref={this.tableRef}>
+                        {items}
                     </div>
                 </TabContent>
-                { this.renderToast() }
-                { this.renderColumnsEditCustomDialog() }
-                { this.renderColumnsSelectorDialog() }
-                { this.renderCustomDialog() }
-                { this.renderEditValueDialog() }
-                { this.renderEditObjectDialog() }
-                { this.renderEditRoleDialog() }
-                { this.renderEnumDialog() }
-                { this.renderErrorDialog() }
+                {this.renderToast()}
+                {this.renderColumnsEditCustomDialog()}
+                {this.renderColumnsSelectorDialog()}
+                {this.renderCustomDialog()}
+                {this.renderEditValueDialog()}
+                {this.renderEditObjectDialog()}
+                {this.renderEditRoleDialog()}
+                {this.renderEnumDialog()}
+                {this.renderErrorDialog()}
             </TabContainer>;
         }
     }
