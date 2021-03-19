@@ -25,6 +25,7 @@ const styles = theme => ({
         width:      '100%',
         height:     '100% ',
         overflow:   'auto',
+        overflowX:   'hidden',
         padding:    15,
         //backgroundColor: blueGrey[ 50 ]
     },
@@ -50,7 +51,9 @@ const styles = theme => ({
     tableCell:
     {
         textAlign:"center",
-        border: "1px solid #AAA"
+        border: "1px solid #AAA",
+		paddingLeft:0,
+		paddingRight:0
     }
 });
 
@@ -84,7 +87,7 @@ class ACLDialog extends Component
                 {this.props.t("Access control list")}
             </Typography>
             <Grid container spacing={3}>
-                <Grid item xs={3}>
+                <Grid item lg={3} md={6} xs={12}>
                     <FormControl className={classes.formControl}>
                         <InputLabel shrink id={"owner" + "-label"}>
                             { this.props.t("Owner user")}
@@ -101,7 +104,7 @@ class ACLDialog extends Component
                         </Select> 
                     </FormControl> 
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item lg={3} md={6} xs={12}>
                     <FormControl className={classes.formControl}>
                         <InputLabel shrink id={"ownergroup" + "-label"}>
                             { this.props.t("Owner group")}
@@ -120,29 +123,29 @@ class ACLDialog extends Component
                 </Grid>
             </Grid> 
             <Grid container spacing={3}>
-                <Grid item xs={4}>
+                <Grid item lg={4} xs={12} md={6}>
                     <Typography variant="h6" component="div">
                         {this.props.t("Object rights")}
                     </Typography>
-                    { this.getTable() }
+                    { this.getTable( 0 ) }
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item lg={4} xs={12} md={6}>
                     <Typography variant="h6" component="div">
                         {this.props.t("States rights")}
                     </Typography>
-                    { this.getTable() }
+                    { this.getTable( 1 ) }
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item lg={4} xs={12} md={6}>
                     <Typography variant="h6" component="div">
                         {this.props.t("File rights")}
                     </Typography>
-                    { this.getTable() }
+                    { this.getTable( 2 ) }
                 </Grid>
             </Grid> 
         </div>
 
     }
-    getTable()
+    getTable( n )
     {
         const {classes} = this.props;
         return <TableContainer>

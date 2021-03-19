@@ -23,6 +23,7 @@
     "echarts": "^4.9.0",
     "echarts-for-react": "^2.0.16",
     "leaflet": "^1.7.1",
+    "leaflet-geosearch": "^3.2.2",
     "ol": "^6.4.3",
     "prop-types": "^15.7.2",
     "react": "^17.0.1",

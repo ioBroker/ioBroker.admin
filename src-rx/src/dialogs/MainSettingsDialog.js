@@ -1,6 +1,7 @@
 import { Component } from 'react';
 
 import { MapContainer as LeafletMap, TileLayer, Marker, Popup } from 'react-leaflet';
+import { OpenStreetMapProvider } from 'leaflet-geosearch';
 
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
@@ -25,8 +26,8 @@ const styles = theme => ({
     {
         width:      '100%',
         height:     '100% ',
-        overflow:   'auto',
-        overflowX   : "hidden",
+        overflow:   'auto', 
+        overflowX:   'hidden',
         padding:    15,
         //backgroundColor: blueGrey[ 50 ]
     } ,
@@ -57,7 +58,8 @@ class MainSettingsDialog extends Component
         super(props);
         this.state={
             values:[],
-            ...props
+            ...props,
+            zoom: 14
         }
 
     }
@@ -207,8 +209,7 @@ class MainSettingsDialog extends Component
         ]
     }
     render()
-    {
-        //console.log(this.state)
+    { 
         const {classes} = this.props;        
         const selectors = this.getSettings().map((e,i) =>
         {
@@ -218,9 +219,10 @@ class MainSettingsDialog extends Component
             this.state.latitude   ? this.state.latitude : 50,
             this.state.longitude  ? this.state.longitude : 10
         ]
+        const { zoom } = this.state;
         return <div className={ classes.tabPanel }>
             <Grid container spacing={6}>
-                <Grid item xs={6}> 
+                <Grid item lg={6} md={12}> 
                     <Paper variant="outlined" className={ classes.descrPanel }>
                         { this.props.t( "cert_path_note" ) }
                     </Paper>
@@ -228,10 +230,10 @@ class MainSettingsDialog extends Component
                         {selectors}
                     </Grid>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item lg={6} md={12} style={{width:"100%"}}>
                     <LeafletMap
                         center={center}
-                        zoom={14}
+                        zoom={ zoom }
                         maxZoom={18}
                         attributionControl={true}
                         zoomControl={true}
@@ -251,34 +253,34 @@ class MainSettingsDialog extends Component
                 
             </Grid>
             <Grid container spacing={6}>
-                <Grid item xs={3}>
+                <Grid item  md={3} sm={6} xs={12}>
                     {this.getCounters()}
                 </Grid>
-                <Grid item xs={3}> 
+                <Grid item md={3} sm={6} xs={12}> 
                     <FormControl className={classes.formControl}>
                         <InputLabel shrink id={ "city-label"}>
-                            { this.props.t("City")}
+                            { this.props.t("City:")}
                         </InputLabel>
                         <TextField
                             id="city"
-                            label="City"
+                            label={ this.props.t("City:")}
                             value={ this.state.city }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
                             }}
-                            onChange={evt => this.onChangeText(evt, "city") }
+                            onChange={evt => this.onChangeCity( evt ) }
                         />
                     </FormControl>
                 </Grid>
-                <Grid item xs={3}> 
+                <Grid item md={3} sm={6} xs={12}> 
                     <FormControl className={classes.formControl}>
                         <InputLabel shrink id={ "latitude-label"}>
-                            { this.props.t("Latitude")}
+                            { this.props.t("Latitude:")}
                         </InputLabel>
                         <TextField
                             id="latitude"
-                            label="Latitude"
+                            label= { this.props.t("Latitude:")}
                             value={ this.state.latitude }
                             InputLabelProps={{
                                 readOnly: false,
@@ -288,14 +290,14 @@ class MainSettingsDialog extends Component
                         />
                     </FormControl>
                 </Grid>
-                <Grid item xs={3}> 
+                <Grid item md={3} sm={6} xs={12}> 
                     <FormControl className={classes.formControl}>
                         <InputLabel shrink id={ "longitude-label"}>
-                            { this.props.t("Longitude")}
+                            { this.props.t("Longitude:")}
                         </InputLabel>
                         <TextField
-                            id="longitude"
-                            label="Longitude"
+                            id="longitude" 
+                            label={ this.props.t("Longitude:")}
                             value={ this.state.longitude }
                             InputLabelProps={{
                                 readOnly: false,
@@ -311,6 +313,7 @@ class MainSettingsDialog extends Component
     }
     onMap = map =>
     {
+        this.map = map;
         //console.log(map);
         //console.log(window.L);
         const center = [
@@ -331,14 +334,8 @@ class MainSettingsDialog extends Component
                     .on({
                          dragend: evt => this.onMarkerDragend(evt)
                     });
-
+        this.marker = marker;                
         map.on({  click: evt => console.log(evt.latlng.lat)  }); 
-        /*
-        var elements = document.getElementsByClassName("leaflet-marker-icon");
-        while(elements.length > 0){
-           // elements[0].parentNode.removeChild(elements[0]);
-        }
-        */
     }
     getSelect( e, i )
     {
@@ -351,7 +348,7 @@ class MainSettingsDialog extends Component
                  { this.props.t(elem.title) }
              </MenuItem>   
         } )
-        return  <Grid item xs={6} key={i} >
+        return  <Grid item sm={6} xs={12} key={i} >
              <FormControl className={classes.formControl}>
                 <InputLabel shrink id={e.id + "-label"}>
                     { this.props.t(this.getSettings()[i].title)}
@@ -376,12 +373,12 @@ class MainSettingsDialog extends Component
         const items = countries.map((elem, index) =>
         {
             return <MenuItem value={elem.name} key={index}>
-                { this.props.t(elem.name) }
+                { /* this.props.t*/(elem.name)  }
             </MenuItem> 
         })
         return <FormControl className={classes.formControl}>
             <InputLabel shrink id={"country-label"}>
-                { this.props.t("Country")}
+                { this.props.t("Country:")}
             </InputLabel>
             <Select
                 className={classes.formControl}
@@ -400,22 +397,48 @@ class MainSettingsDialog extends Component
         const value = evt.target.value; 
         const id = "country";
         this.props.onChange( id, value);
-        console.log( id, value );
         let state = {...this.state};
         state[id] = value;
         this.setState(state);
     }
-    onChangeText = (evt, id) =>
-    {
+
+    onChangeText = (evt, id) => {
         const value = evt.target.value; 
+        this.onChangeInput(value, id);     
+    }
+    onChangeInput = (value, id) =>
+    {
         this.props.onChange( id, value);
-        console.log( id, value );
         let state = {...this.state};
         state[id] = value;
-        this.setState(state);        
+        this.setState(state); 
     }
-    handleChange = (evt, selectId) =>
-    {
+
+    onChangeCity = (evt) => { 
+        this.onChangeText(evt, "city");
+        console.log (evt.target.value );
+        const provider = new OpenStreetMapProvider();
+        provider.search({ query: evt.target.value })
+            .then( results => {
+                console.log (results[0] );
+                if( results[0] )
+                {
+                    setTimeout( () => {
+                        this.onChangeInput(results[0].y, "latitude");
+                        this.onChangeInput(results[0].x, "longitude"); 
+                        this.onChangeInput(23, "zoom"); 
+                        this.map.flyTo(
+                            [results[0].y, results[0].x] 
+                        );
+                        this. marker.setLatLng([results[0].y, results[0].x]);
+                    }, 1200);
+                    
+                }
+                
+            });       
+    }
+
+    handleChange = (evt, selectId) => {
         const value = evt.target.value; 
         const id = this.getSettings()[selectId].id;
         this.props.onChange( id, value);
@@ -424,8 +447,8 @@ class MainSettingsDialog extends Component
         state[id] = value;
         this.setState(state);
     }
-    onMarkerDragend = evt =>
-    {
+
+    onMarkerDragend = evt => {
         const ll = evt.target._latlng;
         //console.log(ll)
         this.props.onChange( "latitude",  ll.lat);

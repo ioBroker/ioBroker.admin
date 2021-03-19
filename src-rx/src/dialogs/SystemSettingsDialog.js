@@ -9,8 +9,11 @@ import DialogActions from "@material-ui/core/DialogActions";
 import AppBar from "@material-ui/core/AppBar";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import IconButton from '@material-ui/core/IconButton';
 
 import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 import Router from '@iobroker/adapter-react/Components/Router';
@@ -42,6 +45,20 @@ const styles = theme => ({
     tab: {
         // backgroundColor:"#FFF",
         // color:lightBlue[500]
+    },
+    dialogTitle : {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding:'0 0 0 20px',
+    },
+    dialog : {
+        width:'100%',
+        height:'100%',
+        maxWidth:'100%' 
+    },
+    content : {
+        padding:'0!important'
     }
 });
 
@@ -178,69 +195,7 @@ class SystemSettingsDialog extends Component
                     })
                         .catch(e => window.alert('Cannot save system configuration: ' + e));
     }
-
-    render() 
-    {
-        //console.log(this.props)
-        const changed = JSON.stringify(this.state.systemSettings)       !== this.originalSettings ||
-                        JSON.stringify(this.state.systemRepositories)   !== this.originalRepositories ||
-                        JSON.stringify(this.state.systemcCertificates)  !== this.originalCertificates;
-        const tabs = this. getTabs().map((e,i) =>
-        {
-            return  <Tab
-                label={ this.props.t( e.title ) } 
-                id={ (e.id).toString() } 
-                aria-controls={ 'simple-tabpanel-' +  e.id } 
-                key={i}
-            />;
-        })
-        return <Dialog
-            className={ this.props.classes.dialog }
-            open={ true }
-            onClose={ () => {} }
-            fullWidth={ true }
-            fullScreen={ true }
-            aria-labelledby="system-settings-dialog-title"
-        >
-            <DialogTitle id="system-settings-dialog-title">
-                { this.props.t('Base settings') }
-            </DialogTitle>
-            <DialogContent className={ this.props.classes.content }>
-                <AppBar position="static" color="default">
-                    <Tabs
-                        className={ this.props.classes.tab }
-                        variant="fullWidth"
-                        indicatorColor="primary"
-                        textColor="primary"
-                        value={ parseInt(this.props.currentTab.id, 10) || 0 }
-                        onChange={ this.onTab }
-                    >
-                        { tabs }
-                    </Tabs>
-                </AppBar>
-                { this.getDialogContent()  }
-                { this.renderConfirmDialog() }
-            </DialogContent>
-            <DialogActions>
-                <Button 
-                    variant="contained"
-                    disabled={ !changed } 
-                    onClick={ () => this.onSave() } 
-                    color="primary"
-                >
-                    <CheckIcon />
-                    { this.props.t('Save') }
-                </Button>
-                <Button 
-                    variant="contained" 
-                    onClick={ () => changed ? this.setState({confirmExit: true}) : this.props.onClose() }
-                >
-                    <CloseIcon />
-                    { changed ? this.props.t('Cancel') : this.props.t('Close') }
-                </Button>
-            </DialogActions>
-        </Dialog>
-    }
+    
     getTabs()
     {
         return [
@@ -287,8 +242,7 @@ class SystemSettingsDialog extends Component
             }
         ]
     }
-    getDialogContent() 
-    { 
+    getDialogContent() { 
        if(this.state.loading)
             return  <LinearProgress/> ;
        const _t =  this. getTabs().filter((e, i) => {
@@ -308,16 +262,97 @@ class SystemSettingsDialog extends Component
            />
        </div>
     }
-    onTab = (event, newTab) =>
-    { 
+    onTab = (event, newTab) => { 
         Router.doNavigate(null, 'system', newTab)
     }
-    onChangedTab(id, data, param)
-    {
+    onChangedTab(id, data, param)  {
         let state = {...this.state};
         state[param][id] = data;
         this.setState(state);  
         // console.log( id, data, param, state );
+    }
+    render() {
+        //console.log(this.props)
+        const changed = JSON.stringify(this.state.systemSettings)       !== this.originalSettings ||
+                        JSON.stringify(this.state.systemRepositories)   !== this.originalRepositories ||
+                        JSON.stringify(this.state.systemcCertificates)  !== this.originalCertificates;
+        const tabs = this. getTabs().map((e,i) =>
+        {
+            return  <Tab
+                label={ this.props.t( e.title ) } 
+                id={ (e.id).toString() } 
+                aria-controls={ 'simple-tabpanel-' +  e.id } 
+                key={i}
+            />;
+        })
+        const curTab = parseInt(this.props.currentTab.id, 10) || 0;
+        return <Dialog
+            className={ this.props.classes.dialog }
+            classes={{
+                root: this.props.classes.dialog,
+                paper: "dialog-setting"
+            }}
+            open={ true }
+            onClose={ () => {} }
+            fullWidth={ false }
+            fullScreen={ false }
+            aria-labelledby="system-settings-dialog-title"
+        >
+           { /*
+            <DialogTitle id="system-settings-dialog-title">
+                { this.props.t('Base settings') }
+            </DialogTitle>
+            */}
+            <DialogContent className={ this.props.classes.content }>
+                <AppBar position="static" color="default">
+                    <div className={this.props.classes.dialogTitle}>
+                        <Typography className="dialogName">
+                            { this.props.t('Base settings') }
+                        </Typography>
+                        <Tabs
+                            className={ this.props.classes.tab } 
+                            indicatorColor="primary"
+                            value={ curTab }
+                            onChange={ this.onTab }
+                            variant="scrollable"
+                            scrollButtons="auto" 
+                            centered
+                        >
+                            { tabs }
+                        </Tabs>
+                        <IconButton 
+                            edge="start" 
+                            color="inherit" 
+                            onClick={ () => changed ? this.setState({confirmExit: true}) : this.props.onClose() }
+                            aria-label="close"
+                        >
+                            <CloseIcon />
+                        </IconButton>   
+                    </div> 
+              
+                </AppBar>
+                { this.getDialogContent()  }
+                { this.renderConfirmDialog() }
+            </DialogContent>
+            <DialogActions>
+                <Button 
+                    variant="contained"
+                    disabled={ !changed } 
+                    onClick={ () => this.onSave() } 
+                    color="primary"
+                >
+                    <CheckIcon />
+                    { this.props.t('Save') }
+                </Button>
+                <Button 
+                    variant="contained" 
+                    onClick={ () => changed ? this.setState({confirmExit: true}) : this.props.onClose() }
+                >
+                    <CloseIcon />
+                    { changed ? this.props.t('Cancel') : this.props.t('Close') }
+                </Button>
+            </DialogActions>
+        </Dialog>
     }
 }
 
@@ -331,3 +366,29 @@ SystemSettingsDialog.propTypes = {
 };
 
 export default withWidth()(withStyles(styles)(SystemSettingsDialog));
+
+function TabPanel(props) {
+    const { children, value, index, ...other } = props;
+  
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`nav-tabpanel-${index}`}
+        aria-labelledby={`nav-tab-${index}`}
+        {...other}
+      >
+        {value === index && (
+          <Box p={3}>
+            <Typography>{children}</Typography>
+          </Box>
+        )}
+      </div>
+    );
+  }
+  
+  TabPanel.propTypes = {
+    children: PropTypes.node,
+    index: PropTypes.any.isRequired,
+    value: PropTypes.any.isRequired,
+  };

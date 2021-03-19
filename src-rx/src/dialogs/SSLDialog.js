@@ -22,6 +22,7 @@ const styles = theme => ({
         width:      '100%',
         height:     '100% ',
         overflow:   'auto',
+        overflowX:   'hidden',
         padding:    15,
         //backgroundColor: blueGrey[ 50 ]
     },
@@ -68,6 +69,7 @@ class SSLDialog extends Component
                     color="primary" 
                     aria-label="add"
                     onClick={this.onAdd}
+                    className="small_size"
                 >
                     <AddIcon />
                 </Fab>
@@ -78,7 +80,7 @@ class SSLDialog extends Component
                 />
             </div>
             <Grid container spacing={6}> 
-                <Grid item xs={3}> 
+                <Grid item md={3} xs={12}> 
                     <FormControl className={classes.formControl}> 
                         <TextField
                             id="email"
@@ -92,7 +94,7 @@ class SSLDialog extends Component
                         />
                     </FormControl>
                 </Grid> 
-                <Grid item xs={3}> 
+                <Grid item md={3} xs={12}> 
                     <FormControl className={classes.formControl}> 
                         <TextField
                             id="domains"
@@ -106,7 +108,7 @@ class SSLDialog extends Component
                         />
                     </FormControl>
                 </Grid>
-                <Grid item xs={3}> 
+                <Grid item md={3} xs={12}> 
                     <FormControl className={classes.formControl}> 
                         <TextField
                             id="path" 

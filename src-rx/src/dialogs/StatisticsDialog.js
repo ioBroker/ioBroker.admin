@@ -15,7 +15,6 @@ import Grid from '@material-ui/core/Grid';
 import blueGrey from '@material-ui/core/colors/blueGrey'
 import { Paper, Card, Typography, MenuItem, FormControl, Select, InputLabel  } from '@material-ui/core'; 
 
-
 // icons
 
 const styles = theme => ({
@@ -62,9 +61,9 @@ class StatisticsDialog extends Component
         //console.log(this.state)
         const {common} = this.props;
         const {classes} = this.props;
-        return <div className={ classes.tabPanel }>
+        return <div className={ classes.tabPanel } style={{height:100}}>
             <Grid container spacing={3}  className="sendData-grid">
-                <Grid item xs={4}>
+                <Grid item lg={4}>
                     <Card  className={classes.note} >
                         <Typography gutterBottom variant="h6" component="div">
                             {this.props.t("Note:")} 
@@ -78,7 +77,7 @@ class StatisticsDialog extends Component
                      </Card >
                     { this.getTypesSelector() }
                 </Grid>
-                <Grid item xs={8} className="sendData-grid">
+                <Grid item lg={8} className="sendData-grid" style={{height:100}}>
                     <Paper className={classes.statis} >
                         <Typography gutterBottom variant="h6" component="div">
                             {this.props.t("Sent data:")}
@@ -131,6 +130,7 @@ class StatisticsDialog extends Component
             }
         ]
     }
+	
     getTypesSelector = () =>
     {
         const {classes} = this.props;
@@ -157,6 +157,7 @@ class StatisticsDialog extends Component
             </Select> 
         </FormControl> 
     }
+	
     handleChangeStatistics = evt =>
     {
         console.log( evt.target.value );
@@ -165,6 +166,7 @@ class StatisticsDialog extends Component
         })
         
     }
+	
 }
 
 
