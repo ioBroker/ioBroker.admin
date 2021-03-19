@@ -3,7 +3,8 @@ import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import I18n from '@iobroker/adapter-react/i18n';
-import { CardMedia, withStyles } from '@material-ui/core';
+import { withStyles } from '@material-ui/core';
+import Icon from '@iobroker/adapter-react/Components/Icon';
 
 const styles = theme => ({
     img: {
@@ -62,10 +63,9 @@ export default withStyles(styles)(function HostSelectors({ classes, disabled, so
                     color: color || 'none',
                     alignItems: 'center',
                 }}>
-                    <CardMedia
+                    <Icon
                         className={classes.img}
-                        component="img"
-                        image={icon || 'img/no-image.png'}
+                        src={icon || 'img/no-image.png'}
                     />
                     {name}
                 </div>)}
@@ -88,10 +88,9 @@ export default withStyles(styles)(function HostSelectors({ classes, disabled, so
                             color: color || 'none',
                             alignItems: 'center',
                         }}>
-                            <CardMedia
+                            <Icon
                                 className={classes.img}
-                                component="img"
-                                image={icon || 'img/no-image.png'}
+                                src={icon || 'img/no-image.png'}
                             />
                             {name}
                         </div>

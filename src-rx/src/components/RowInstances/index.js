@@ -497,11 +497,11 @@ const RowInstances = ({
                         >
                             <div style={{ display: 'flex' }}>
                                 <Tooltip title={I18n.t('input events')}>
-                                    <div style={{ marginRight: 5 }}>⇥${inputOutput.stateInput}</div>
+                                    <div style={{ marginRight: 5 }}>⇥{inputOutput.stateInput}</div>
                                 </Tooltip>
                                     /
                                 <Tooltip title={I18n.t('output events')}>
-                                    <div style={{ marginLeft: 5 }}>↦${inputOutput.stateOutput}</div>
+                                    <div style={{ marginLeft: 5 }}>↦{inputOutput.stateOutput}</div>
                                 </Tooltip>
                             </div>
                         </InstanceInfo>

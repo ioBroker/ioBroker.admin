@@ -408,9 +408,12 @@ class Instances extends Component {
             instances: formatted
         });
 
-        this.subscribeStates();
-        this.subscribeObjects();
-
+        if (!this.subscribed) {
+            this.subscribed = true;
+            this.subscribeStates();
+            this.subscribeObjects();
+        }
+        
         //console.log(this.states);
         // console.log(this.objects);
     }
