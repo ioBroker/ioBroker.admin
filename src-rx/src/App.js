@@ -375,7 +375,6 @@ class App extends Router {
                 },
                 onReady: async (objects, scripts) => {
                     I18n.setLanguage(this.socket.systemLang);
-                    const { setStateContext } = this.context;
                     // create Workers
                     this.logsWorker = this.logsWorker || new LogsWorker(this.socket, 1000);
                     this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
@@ -397,23 +396,32 @@ class App extends Router {
                     newState.hosts = await this.socket.getHosts();
 
                     if (!this.state.currentHost) {
-                        //TODO:  try to load current host from localStorage and check if it exists in the list of hosts
-                        // if not do ..
-                        newState.currentHost = newState.hosts[0]._id;
-                        newState.currentHostName = newState.hosts[0].common.name;
+                        const currentHost = window.localStorage.getItem('App.currentHost');
+                        if (currentHost && newState.hosts.find(({ _id }) => _id === currentHost)) {
+                            newState.currentHost = newState.hosts.find(({ _id }) => _id === currentHost)._id;
+                            newState.currentHostName = newState.hosts.find(({ _id }) => _id === currentHost).common.name;
+                        } else {
+                            newState.currentHost = newState.hosts[0]._id;
+                            newState.currentHostName = newState.hosts[0].common.name;
+                        }
                     }
 
                     this.subscribeOnHostsStatus();
 
                     this.setState(newState, () => this.setCurrentTabTitle());
 
-                    this.logsWorker && this.logsWorker.setCurrentHost(this.state.currentHost);
-                    this.logsWorker.registerErrorCountHandler(logErrors => setStateContext({
-                        logErrors
-                    }));
-                    this.logsWorker.registerWarningCountHandler(logWarnings => setStateContext({
-                        logWarnings
-                    }));
+                    this.logsWorkerChanged(this.state.currentHost);
+                    
+                    if (!this.logsHandlerRegistered) {
+                        this.logsHandlerRegistered = true;
+                        const { setStateContext } = this.context;
+                        this.logsWorker.registerErrorCountHandler(logErrors => setStateContext({
+                            logErrors
+                        }));
+                        this.logsWorker.registerWarningCountHandler(logWarnings => setStateContext({
+                            logWarnings
+                        }));
+                    }                    
                 },
                 //onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
                 onError: error => {
@@ -422,6 +430,10 @@ class App extends Router {
                 }
             });
         }
+    }
+
+    logsWorkerChanged = (currentHost) => {
+        this.logsWorker && this.logsWorker.setCurrentHost(currentHost);
     }
 
     onHostStatusChanged = (id, state) => {
@@ -721,62 +733,62 @@ class App extends Router {
                                     </Suspense>
                                 );
                             } else
-                            if (this.state.currentTab.tab === 'tab-users') {
-                                return (
-                                    <Suspense fallback={<Connecting />}>
-                                        <Users
-                                            key="users"
-                                            ready={this.state.ready}
-                                            t={I18n.t}
-                                            expertMode={this.state.expertMode}
-                                            lang={I18n.getLanguage()}
-                                            socket={this.socket}
-                                        />
-                                    </Suspense>
-                                );
-                            } else
-                                if (this.state.currentTab.tab === 'tab-objects') {
+                                if (this.state.currentTab.tab === 'tab-users') {
                                     return (
                                         <Suspense fallback={<Connecting />}>
-                                            <Objects
-                                                key="objects"
+                                            <Users
+                                                key="users"
+                                                ready={this.state.ready}
                                                 t={I18n.t}
-                                                themeName={this.state.themeName}
                                                 expertMode={this.state.expertMode}
                                                 lang={I18n.getLanguage()}
                                                 socket={this.socket}
                                             />
                                         </Suspense>
                                     );
-                                } else {
-                                    const m = this.state.currentTab.tab.match(/^tab-([-\w\d]+)(-\d+)?$/);
-                                    if (m) {
-                                        /*const adapter  = m[1];
-                                        const instance = m[2] ? parseInt(m[2], 10) : null;
-
-                                        let link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab.html';
-                                        if (tab.common.materializeTab) {
-                                            link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab_m.html';
-                                        }*/
-
-                                        // /adapter/javascript/tab.html
+                                } else
+                                    if (this.state.currentTab.tab === 'tab-objects') {
                                         return (
                                             <Suspense fallback={<Connecting />}>
-                                                <CustomTab
-                                                    key={this.state.currentTab.tab}
+                                                <Objects
+                                                    key="objects"
                                                     t={I18n.t}
-                                                    protocol={this.state.protocol}
-                                                    hostname={this.state.hostname}
-                                                    instancesWorker={this.instancesWorker}
-                                                    tab={this.state.currentTab.tab}
                                                     themeName={this.state.themeName}
                                                     expertMode={this.state.expertMode}
                                                     lang={I18n.getLanguage()}
+                                                    socket={this.socket}
                                                 />
                                             </Suspense>
                                         );
+                                    } else {
+                                        const m = this.state.currentTab.tab.match(/^tab-([-\w\d]+)(-\d+)?$/);
+                                        if (m) {
+                                            /*const adapter  = m[1];
+                                            const instance = m[2] ? parseInt(m[2], 10) : null;
+    
+                                            let link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab.html';
+                                            if (tab.common.materializeTab) {
+                                                link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab_m.html';
+                                            }*/
+
+                                            // /adapter/javascript/tab.html
+                                            return (
+                                                <Suspense fallback={<Connecting />}>
+                                                    <CustomTab
+                                                        key={this.state.currentTab.tab}
+                                                        t={I18n.t}
+                                                        protocol={this.state.protocol}
+                                                        hostname={this.state.hostname}
+                                                        instancesWorker={this.instancesWorker}
+                                                        tab={this.state.currentTab.tab}
+                                                        themeName={this.state.themeName}
+                                                        expertMode={this.state.expertMode}
+                                                        lang={I18n.getLanguage()}
+                                                    />
+                                                </Suspense>
+                                            );
+                                        }
                                     }
-                                }
         }
 
         return null;
@@ -1059,9 +1071,20 @@ class App extends Router {
                             <HostSelectors
                                 socket={this.socket}
                                 currentHostName={this.state.currentHostName}
+                                currentHost={this.state.currentHost}
+                                setCurrentHost={(hostName, host) => {
+                                    this.setState({
+                                        currentHostName: hostName,
+                                        currentHost: host
+                                    }, () => {
+                                        this.logsWorkerChanged(host);
+                                        window.localStorage.setItem('App.currentHost', host);
+                                    });
+                                }}
                                 disabled={
                                     this.state.currentTab.tab !== 'tab-instances' &&
-                                    this.state.currentTab.tab !== 'tab-adapters'
+                                    this.state.currentTab.tab !== 'tab-adapters' &&
+                                    this.state.currentTab.tab !== 'tab-logs'
                                 }
                             />
                             <Typography variant="h6" className={classes.title} style={{ flexGrow: 1 }} />
