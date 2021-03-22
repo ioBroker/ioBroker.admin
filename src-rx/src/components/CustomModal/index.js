@@ -15,11 +15,11 @@ const styles = theme => ({
         minWidth: 400
     }
 });
-const CustomModal = ({ title, classes, open, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue }) => {
+const CustomModal = ({ title, applyDisabled, applyButton, classes, open, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue }) => {
     const [value, setValue] = useState(defaultValue);
-    useEffect(()=>{
+    useEffect(() => {
         setValue(defaultValue);
-    },[defaultValue]);
+    }, [defaultValue]);
     return <Dialog
         open={open}
         maxWidth="md"
@@ -45,9 +45,9 @@ const CustomModal = ({ title, classes, open, onClose, children, titleButtonApply
             {children}
         </DialogContent>
         <DialogActions>
-            <Button onClick={() => onApply(textInput ? value : '')} variant="contained" color="primary">
+            {applyButton && <Button disabled={applyDisabled && defaultValue === value} onClick={() => onApply(textInput ? value : '')} variant="contained" color="primary">
                 {i18n.t(titleButtonApply)}
-            </Button>
+            </Button>}
             <Button onClick={onClose} variant="contained">
                 {i18n.t(titleButtonClose)}
             </Button>
@@ -59,6 +59,8 @@ CustomModal.defaultProps = {
     open: false,
     onApply: () => { },
     onClose: () => { },
+    applyButton: true,
+    applyDisabled: false,
     titleButtonClose: 'Cancel',
     titleButtonApply: 'Ok'
 };

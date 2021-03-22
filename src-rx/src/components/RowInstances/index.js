@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Accordion, AccordionDetails, AccordionSummary, Avatar, Badge, Button, Card, CardContent, CardMedia, Fab, FormControl, Grid, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from "@material-ui/core";
+import { Accordion, AccordionDetails, AccordionSummary, Avatar, Badge, Button, CardMedia, Divider, FormControl, Grid, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import clsx from 'clsx';
 import BuildIcon from '@material-ui/icons/Build';
@@ -23,7 +22,7 @@ import { amber, blue, green, grey, red } from '@material-ui/core/colors';
 import InstanceInfo from '../InstanceInfo';
 import State from '../State';
 import CustomModal from '../CustomModal';
-import SimpleCron from '@iobroker/adapter-react/Components/SimpleCron';
+import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -270,14 +269,40 @@ const styles = theme => ({
         height: 24,
         objectFit: 'fill',
         filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)'
+    },
+    hidden1250: {
+        display: 'flex'
+    },
+    visible1250: {
+        display: 'none'
+    },
+    visible1050: {
+        display: 'none'
+    },
+    hidden1050: {
+        display: 'flex'
+    },
+    '@media screen and (max-width: 1250px)': {
+        hidden1250: {
+            display: 'none !important'
+        },
+        visible1250: {
+            display: 'flex !important'
+        },
+    },
+    '@media screen and (max-width: 1050px)': {
+        hidden1050: {
+            display: 'none !important'
+        },
+        visible1050: {
+            display: 'flex !important'
+        },
     }
 });
 const RowInstances = ({
     name,
     classes,
-    image,
     expertMode,
-    hidden,
     instance,
     running,
     id,
@@ -322,8 +347,6 @@ const RowInstances = ({
     const [openDialogSelect, setOpenDialogSelect] = useState(false);
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
     const [openDialogMemoryLimit, setOpenDialogMemoryLimit] = useState(false);
-    const [cron, setCron] = useState(getRestartSchedule(id));
-    const [scheduleState, setScheduleState] = useState(getSchedule(id));
     const [select, setSelect] = useState(logLevel);
     const arrayLogLevel = [
         'silly', 'debug', 'info', 'warn', 'error'
@@ -348,30 +371,21 @@ const RowInstances = ({
             <CustomModal
                 title={
                     (openDialogText && I18n.t("Enter title for %s", instance.id)) ||
-                    (openDialogCron && I18n.t("Edit restart rule for %s", instance.id)) ||
-                    (openDialogSchedule && I18n.t("Edit schedule rule for %s", instance.id)) ||
                     (openDialogSelect && I18n.t("Edit log level rule for %s", instance.id)) ||
                     (openDialogDelete && I18n.t("Please confirm")) ||
                     (openDialogMemoryLimit && I18n.t("Edit memory limit rule for %s", instance.id))
                 }
                 open={
-                    openDialogCron ||
-                    openDialogSchedule ||
                     openDialogSelect ||
                     openDialogText ||
                     openDialogDelete ||
                     openDialogMemoryLimit
                 }
+                applyDisabled={openDialogText || openDialogMemoryLimit}
                 textInput={openDialogText || openDialogMemoryLimit}
                 defaultValue={openDialogText ? name : openDialogMemoryLimit ? memoryLimitMB : ''}
                 onApply={(value) => {
-                    if (openDialogCron) {
-                        setRestartSchedule(cron);
-                        setOpenDialogCron(false);
-                    } else if (openDialogSchedule) {
-                        setSchedule(scheduleState);
-                        setOpenDialogSchedule(false);
-                    } else if (openDialogSelect) {
+                    if (openDialogSelect) {
                         setLogLevel(select)
                         setOpenDialogSelect(false);
                     } else if (openDialogText) {
@@ -386,13 +400,7 @@ const RowInstances = ({
                     }
                 }}
                 onClose={() => {
-                    if (openDialogCron) {
-                        setCron(getRestartSchedule(id));
-                        setOpenDialogCron(false);
-                    } else if (openDialogSchedule) {
-                        setScheduleState(getSchedule(id));
-                        setOpenDialogSchedule(false);
-                    } else if (openDialogSelect) {
+                    if (openDialogSelect) {
                         setSelect(logLevel);
                         setOpenDialogSelect(false);
                     } else if (openDialogText) {
@@ -403,17 +411,6 @@ const RowInstances = ({
                         setOpenDialogMemoryLimit(false);
                     }
                 }}>
-                {(openDialogCron || openDialogSchedule) && <SimpleCron
-                    language={I18n.getLanguage()}
-                    cronExpression={openDialogCron ? getRestartSchedule(id) : getSchedule(id)}
-                    onChange={el => {
-                        if (openDialogCron) {
-                            setCron(el);
-                        } else if (openDialogSchedule) {
-                            setScheduleState(el)
-                        }
-                    }}
-                />}
                 {openDialogSelect && <FormControl style={{ width: '100%', marginBottom: 5 }} variant="outlined" >
                     <InputLabel htmlFor="outlined-age-native-simple">{I18n.t('log level')}</InputLabel>
                     <Select
@@ -429,34 +426,55 @@ const RowInstances = ({
                 </FormControl>}
                 {openDialogDelete && I18n.t("Are you sure you want to delete the instance %s?", instance.id)}
             </CustomModal>
+            {(openDialogCron || openDialogSchedule) && <ComplexCron
+                title={
+                    (openDialogCron && I18n.t("Edit restart rule for %s", instance.id)) ||
+                    (openDialogSchedule && I18n.t("Edit schedule rule for %s", instance.id))
+                }
+                cron={openDialogCron ? getRestartSchedule(id) : getSchedule(id)}
+                language={I18n.getLanguage()}
+                onOk={(cron) => {
+                    if (openDialogCron) {
+                        setRestartSchedule(cron);
+                    } else if (openDialogSchedule) {
+                        setSchedule(cron);
+                    }
+                }}
+                onClose={() => {
+                    if (openDialogCron) {
+                        setOpenDialogCron(false);
+                    } else if (openDialogSchedule) {
+                        setOpenDialogSchedule(false);
+                    }
+
+                }}
+            />}
             <Grid container spacing={1} alignItems="center" direction="row" wrap="nowrap">
-                <Grid
-                    item
-                    container
-                    md={2}
-                    spacing={1}
-                    alignItems="center"
-                    direction="row"
-                    wrap="nowrap"
+                <div
+                    style={{
+                        display: 'flex',
+                        minWidth: 200,
+                        justifyContent: 'space-around'
+                    }}
                 >
-                    <Grid item>
+                    <div>
                         <Avatar className={classes.smallAvatar + ' ' +
                             (instance.mode === 'daemon' || instance.mode === 'schedule' ?
                                 classes[getInstanceState(id)] : classes.transparent)}
                         >
                             {getModeIcon(instance.mode)}
                         </Avatar>
-                    </Grid>
+                    </div>
                     {expertMode &&
-                        <Grid item>
+                        <div>
                             <Tooltip title={I18n.t('loglevel') + ' ' + instance.loglevel}>
                                 <Avatar className={classes.smallAvatar + ' ' + classes[instance.loglevel]}>
                                     {loglevelIcon}
                                 </Avatar>
                             </Tooltip>
-                        </Grid>
+                        </div>
                     }
-                    <Grid item>
+                    <div style={{ display: 'flex' }}>
                         <Badge color="secondary" variant="dot" invisible={!instance.compactMode}>
                             <Avatar
                                 variant="square"
@@ -465,32 +483,40 @@ const RowInstances = ({
                                 className={classes.smallAvatar}
                             />
                         </Badge>
-                    </Grid>
-                    <Grid item>
-                        {instance.id}
-                    </Grid>
-                </Grid>
-                <Hidden smDown>
-                    <Grid item sm={4} lg={3}>
-                        <Typography className={classes.secondaryHeading}>
-                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                                {name}
-                                <IconButton
-                                    size="small"
-                                    className={classes.button}
-                                    onClick={(event) => {
-                                        setOpenDialogText(true);
-                                        event.stopPropagation();
-                                    }}
-                                >
-                                    <EditIcon />
-                                </IconButton>
-                            </div>
-                        </Typography>
-                    </Grid>
-                </Hidden>
+                        <div style={{ minWidth: 100, marginLeft: 5, alignSelf: 'center' }}>
+                            {instance.id}
+                        </div>
+                    </div>
+                </div>
+                <Typography style={{
+                    maxWidth: 250
+                }} className={classes.secondaryHeading}>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        minWidth: 250
+                    }}>
+                        <div style={{
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            padding: 5,
+                            textOverflow: 'ellipsis',
+                            maxWidth: 200
+                        }}>{name}</div>
+                        <IconButton
+                            size="small"
+                            className={classes.button}
+                            onClick={(event) => {
+                                setOpenDialogText(true);
+                                event.stopPropagation();
+                            }}
+                        >
+                            <EditIcon />
+                        </IconButton>
+                    </div>
+                </Typography>
                 {expertMode &&
-                    <div style={{ display: 'flex', minWidth: 200 }}>
+                    <div className={classes.hidden1250} style={{ display: 'flex', minWidth: 200 }}>
                         <InstanceInfo
                             icon={<ImportExportIcon />}
                             tooltip={I18n.t('events')}
@@ -507,7 +533,7 @@ const RowInstances = ({
                         </InstanceInfo>
                     </div>
                 }
-                <Grid item>
+                <Grid item className={classes.hidden1050}>
                     <InstanceInfo
                         icon={<MemoryIcon />}
                         tooltip={I18n.t('RAM usage')}
@@ -668,6 +694,32 @@ const RowInstances = ({
                                 <EditIcon />
                             </IconButton>
                         </div>}
+                        {expertMode &&
+                            <div className={classes.visible1250} style={{ minWidth: 200 }}>
+                                <InstanceInfo
+                                    icon={<ImportExportIcon />}
+                                    tooltip={I18n.t('events')}
+                                >
+                                    <div style={{ display: 'flex' }}>
+                                        <Tooltip title={I18n.t('input events')}>
+                                            <div style={{ marginRight: 5 }}>⇥{inputOutput.stateInput}</div>
+                                        </Tooltip>
+                                    /
+                                <Tooltip title={I18n.t('output events')}>
+                                            <div style={{ marginLeft: 5 }}>↦{inputOutput.stateOutput}</div>
+                                        </Tooltip>
+                                    </div>
+                                </InstanceInfo>
+                            </div>
+                        }
+                        <Grid item className={classes.visible1050}>
+                            <InstanceInfo
+                                icon={<MemoryIcon />}
+                                tooltip={I18n.t('RAM usage')}
+                            >
+                                {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
+                            </InstanceInfo>
+                        </Grid>
                         {mode && <div style={{ display: 'flex' }}>
                             <InstanceInfo
                                 icon={<ScheduleIcon />}
@@ -725,7 +777,14 @@ const RowInstances = ({
                             </IconButton>
                         </div>
                         }
-                        {expertMode && checkCompact && compact && <div style={{ display: 'flex' }}>
+                        {expertMode && checkCompact && compact && <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                            <IconButton
+                                size="small"
+                                className={classes.button}
+                                style={{ marginRight: 5 }}
+                            >
+                                <ViewCompactIcon color="inherit" />
+                            </IconButton>
                             <FormControl style={{ marginBottom: 5, marginTop: 5, width: 120 }} variant="outlined" >
                                 <InputLabel htmlFor="outlined-age-native-simple">{I18n.t('compact groups')}</InputLabel>
                                 <Select

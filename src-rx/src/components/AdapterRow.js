@@ -134,7 +134,8 @@ class AdapterRow extends Component {
             rightDependencies,
             rightOs,
             sentry,
-            categoryName
+            categoryName,
+            openInstallVersionDialog
         } = this.props;
 
         return (
@@ -258,7 +259,11 @@ class AdapterRow extends Component {
                             <DeleteForeverIcon />
                         </IconButton>
                         {this.props.expertMode &&
-                            <IconButton size="small" className={!installedVersion ? classes.hidden : ''}>
+                            <IconButton
+                                size="small"
+                                className={!installedVersion ? classes.hidden : ''}
+                                onClick={openInstallVersionDialog}
+                            >
                                 <AddToPhotosIcon />
                             </IconButton>
                         }

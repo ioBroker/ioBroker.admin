@@ -22,7 +22,7 @@ import sentry from '../../assets/sentry.svg';
 import CustomModal from '../CustomModal';
 import EditIcon from '@material-ui/icons/Edit';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
-import SimpleCron from '@iobroker/adapter-react/Components/SimpleCron';
+import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -242,8 +242,6 @@ const CardInstances = ({
     const [openDialogSelect, setOpenDialogSelect] = useState(false);
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
     const [openDialogMemoryLimit, setOpenDialogMemoryLimit] = useState(false);
-    const [cron, setCron] = useState(getRestartSchedule(id));
-    const [scheduleState, setScheduleState] = useState(getSchedule(id));
     const [select, setSelect] = useState(logLevel);
     const arrayLogLevel = [
         'silly', 'debug', 'info', 'warn', 'error'
@@ -252,30 +250,21 @@ const CardInstances = ({
         <CustomModal
             title={
                 (openDialogText && I18n.t("Enter title for %s", instance.id)) ||
-                (openDialogCron && I18n.t("Edit restart rule for %s", instance.id)) ||
-                (openDialogSchedule && I18n.t("Edit schedule rule for %s", instance.id)) ||
                 (openDialogSelect && I18n.t("Edit log level rule for %s", instance.id)) ||
                 (openDialogDelete && I18n.t("Please confirm")) ||
                 (openDialogMemoryLimit && I18n.t("Edit memory limit rule for %s", instance.id))
             }
             open={
-                openDialogCron ||
-                openDialogSchedule ||
                 openDialogSelect ||
                 openDialogText ||
                 openDialogDelete ||
                 openDialogMemoryLimit
             }
+            applyDisabled={openDialogText || openDialogMemoryLimit}
             textInput={openDialogText || openDialogMemoryLimit}
             defaultValue={openDialogText ? name : openDialogMemoryLimit ? memoryLimitMB : ''}
             onApply={(value) => {
-                if (openDialogCron) {
-                    setRestartSchedule(cron);
-                    setOpenDialogCron(false);
-                } else if (openDialogSchedule) {
-                    setSchedule(scheduleState);
-                    setOpenDialogSchedule(false);
-                } else if (openDialogSelect) {
+                if (openDialogSelect) {
                     setLogLevel(select)
                     setOpenDialogSelect(false);
                 } else if (openDialogText) {
@@ -290,13 +279,7 @@ const CardInstances = ({
                 }
             }}
             onClose={() => {
-                if (openDialogCron) {
-                    setCron(getRestartSchedule(id));
-                    setOpenDialogCron(false);
-                } else if (openDialogSchedule) {
-                    setScheduleState(getSchedule(id));
-                    setOpenDialogSchedule(false);
-                } else if (openDialogSelect) {
+                if (openDialogSelect) {
                     setSelect(logLevel);
                     setOpenDialogSelect(false);
                 } else if (openDialogText) {
@@ -307,17 +290,6 @@ const CardInstances = ({
                     setOpenDialogMemoryLimit(false);
                 }
             }}>
-            {(openDialogCron || openDialogSchedule) && <SimpleCron
-                language={I18n.getLanguage()}
-                cronExpression={openDialogCron ? getRestartSchedule(id) : getSchedule(id)}
-                onChange={el => {
-                    if (openDialogCron) {
-                        setCron(el);
-                    } else if (openDialogSchedule) {
-                        setScheduleState(el)
-                    }
-                }}
-            />}
             {openDialogSelect && <FormControl style={{ width: '100%', marginBottom: 5 }} variant="outlined" >
                 <InputLabel htmlFor="outlined-age-native-simple">{I18n.t('log level')}</InputLabel>
                 <Select
@@ -333,6 +305,29 @@ const CardInstances = ({
             </FormControl>}
             {openDialogDelete && I18n.t("Are you sure you want to delete the instance %s?", instance.id)}
         </CustomModal>
+        {(openDialogCron || openDialogSchedule) && <ComplexCron
+            title={
+                (openDialogCron && I18n.t("Edit restart rule for %s", instance.id)) ||
+                (openDialogSchedule && I18n.t("Edit schedule rule for %s", instance.id))
+            }
+            cron={openDialogCron ? getRestartSchedule(id) : getSchedule(id)}
+            language={I18n.getLanguage()}
+            onOk={(cron) => {
+                if (openDialogCron) {
+                    setRestartSchedule(cron);
+                } else if (openDialogSchedule) {
+                    setSchedule(cron);
+                }
+            }}
+            onClose={() => {
+                if (openDialogCron) {
+                    setOpenDialogCron(false);
+                } else if (openDialogSchedule) {
+                    setOpenDialogSchedule(false);
+                }
+
+            }}
+        />}
         <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
             <CardContent classes={{
                 root: classes.cardContent

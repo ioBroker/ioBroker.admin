@@ -54,6 +54,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import CustomSelectButton from '../components/CustomSelectButton';
 import GitHubInstallDialog from '../dialogs/GitHubInstallDialog';
 import { licenseDialogFunc } from '../dialogs/LicenseDialog';
+import CustomModal from '../components/CustomModal';
 
 const styles = theme => ({
     container: {
@@ -126,6 +127,21 @@ const styles = theme => ({
     },
     tabContainer: {
         overflow: 'auto'
+    },
+    containerVersion: {
+        border: '1px solid',
+        borderBottom: 0
+    },
+    currentVersion: {
+        display: 'flex',
+        padding: 20,
+        fontSize: 15,
+        borderBottom: '1px solid',
+        transition: 'background 0.5s',
+        cursor: 'pointer',
+        '&:hover': {
+            background: 'silver',
+        }
     }
 });
 
@@ -605,6 +621,13 @@ class Adapters extends Component {
         });
     }
 
+    openInstallVersionDialog(adapter) {
+        this.setState({
+            adapterInstallVersionDialog: true,
+            adapterInstallVersion: adapter
+        });
+    }
+
     closeAdapterUpdateDialog() {
         this.setState({
             adapterUpdateDialog: false,
@@ -612,7 +635,7 @@ class Adapters extends Component {
         });
     }
 
-    getNews(value) {
+    getNews(value, all = false) {
 
         const adapter = this.state.repository[value];
         const installed = this.state.installed[value];
@@ -622,8 +645,8 @@ class Adapters extends Component {
 
             Object.keys(adapter.news).forEach(version => {
                 try {
-                    console.log(Semver.gt(version, installed.version));
-                    if (Semver.gt(version, installed.version)) {
+                    console.log(22222, Semver.gt(version, installed.version));
+                    if (Semver.gt(version, installed.version) || all) {
                         news.push({
                             version: version,
                             news: adapter.news[version][this.props.lang] || adapter.news[version].en
@@ -826,6 +849,7 @@ class Adapters extends Component {
                             onInfo={() => this.openInfoDialog(value)}
                             onRebuild={() => this.rebuild(value)}
                             onUpdate={() => this.openUpdateDialog(value)}
+                            openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
                             onUpload={() => licenseDialogFunc(adapter.license === 'MIT', () => this.upload(value), adapter.extIcon.split('/master')[0] + '/master/LICENSE')}//
                             updateAvailable={updateAvailable}
                             version={adapter.version}
@@ -898,6 +922,7 @@ class Adapters extends Component {
                             onInfo={() => this.openInfoDialog(value)}
                             onRebuild={() => this.rebuild(value)}
                             onUpdate={() => this.openUpdateDialog(value)}
+                            openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
                             onUpload={() => licenseDialogFunc(adapter.license === 'MIT', () => this.upload(value), adapter.extIcon.split('/master')[0] + '/master/LICENSE')}//
                             updateAvailable={updateAvailable}
                             version={adapter.version}
@@ -1150,6 +1175,32 @@ class Adapters extends Component {
                     onClick={() => this.update(this.state.adapterUpdateAdapter)}
                     onClose={() => this.closeAdapterUpdateDialog()}
                 />
+            }
+            {this.state.adapterInstallVersionDialog &&
+                <CustomModal
+                    open={this.state.adapterInstallVersionDialog}
+                    title={this.t('Versions of %s', this.state.adapterInstallVersion)}
+                    applyButton={false}
+                    onClose={() => this.setState({
+                        adapterInstallVersionDialog: false,
+                        adapterInstallVersion: null
+                    })}
+                >
+                    <div className={classes.containerVersion}>
+                        {this.getNews(this.state.adapterInstallVersion, true).map(({ version, news }) => {
+                            return <div className={classes.currentVersion} onClick={() => {
+                                this.update(`${this.state.adapterInstallVersion}@${version}`);
+                                this.setState({
+                                    adapterInstallVersionDialog: false,
+                                    adapterInstallVersion: null
+                                });
+                            }}>
+                                <div style={{ color: '#000046', marginRight: 7 }}>{version} -</div>
+                                <div>{news}</div>
+                            </div>
+                        })}
+                    </div>
+                </CustomModal>
             }
         </TabContainer>;
     }

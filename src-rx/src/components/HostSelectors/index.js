@@ -5,6 +5,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import I18n from '@iobroker/adapter-react/i18n';
 import { withStyles } from '@material-ui/core';
 import Icon from '@iobroker/adapter-react/Components/Icon';
+import Utils from '@iobroker/adapter-react/Components/Utils';
 
 const styles = theme => ({
     img: {
@@ -28,10 +29,11 @@ const styles = theme => ({
     },
 })
 
-export default withStyles(styles)(function HostSelectors({ classes, disabled, socket, currentHostName, currentHost, setCurrentHost }) {
+export default withStyles(styles)(function HostSelectors({ classes, disabled, socket, currentHost, setCurrentHost }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const [hosts, setHosts] = useState([]);
-    const [alive, setAlive] = useState({})
+    const [alive, setAlive] = useState({});
+    const [hostSelect, setHostSelect] = useState({});
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -54,21 +56,30 @@ export default withStyles(styles)(function HostSelectors({ classes, disabled, so
         setHosts(hostsArray);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-
+    useEffect(() => {
+        if (hosts.length) {
+            const newObj = hosts.find(({ _id }) => _id === currentHost);
+            setHostSelect(newObj);
+        }
+    }, [currentHost, hosts])
     return (
         <div>
-            <Button title={I18n.t("Host selection")} variant={disabled || hosts.length < 2 ? "text" : "outlined"} disabled={disabled || hosts.length < 2} aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-                {hosts.filter(el => el._id === currentHost).map(({ common: { name, icon, color } }) => <div style={{
-                    display: 'flex',
-                    color: color || 'none',
-                    alignItems: 'center',
-                }}>
+            <Button style={{
+                background: hostSelect?.common?.color || 'none',
+                borderColor: hostSelect?.common?.color ? Utils.invertColor(hostSelect.common.color) : 'none'
+            }} title={I18n.t("Host selection")} variant={disabled || hosts.length < 2 ? "text" : "outlined"} disabled={disabled || hosts.length < 2} aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+                <div
+                    style={{
+                        display: 'flex',
+                        color: hostSelect?.common?.color ? Utils.invertColor(hostSelect.common.color) : 'none',
+                        alignItems: 'center',
+                    }}>
                     <Icon
                         className={classes.img}
-                        src={icon || 'img/no-image.png'}
+                        src={hostSelect?.common?.icon || 'img/no-image.png'}
                     />
-                    {name}
-                </div>)}
+                    {hostSelect?.common?.name}
+                </div>
             </Button>
             <Menu
                 id="simple-menu"
@@ -82,10 +93,11 @@ export default withStyles(styles)(function HostSelectors({ classes, disabled, so
                         key={_id}
                         disabled={!alive[_id]}
                         selected={_id === currentHost}
+                        style={{ background: color || 'none' }}
                         onClick={(el) => handleCloseItem(el, idx)}>
                         <div style={{
                             display: 'flex',
-                            color: color || 'none',
+                            color: Utils.invertColor(color) || 'none',
                             alignItems: 'center',
                         }}>
                             <Icon

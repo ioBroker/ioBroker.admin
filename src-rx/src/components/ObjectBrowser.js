@@ -66,6 +66,10 @@ import IconEnum from '@material-ui/icons/ListAlt';
 import IconColumns from '@material-ui/icons/ViewColumn';
 import IconClose from '@material-ui/icons/Close';
 import IconCheck from '@material-ui/icons/Check';
+import BuildIcon from '@material-ui/icons/Build';
+import PublishIcon from '@material-ui/icons/Publish';
+import AddIcon from '@material-ui/icons/Add';
+import ListIcon from '@material-ui/icons/List';
 
 import IconExpert from '@iobroker/adapter-react/icons/IconExpert';
 import IconAdapter from '@iobroker/adapter-react/icons/IconAdapter';
@@ -2336,57 +2340,90 @@ class ObjectBrowser extends Component {
      * @returns {JSX.Element}
      */
     getToolbar() {
-        return <>
-            { this.props.showExpertButton &&
-                <IconButton
-                    key="expertMode"
-                    color={this.state.filter.expertMode ? 'secondary' : 'default'}
-                    onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
-                >
-                    <IconExpert />
+        return <div style={{
+            display: 'flex',
+            width: '100%',
+            alignItems: 'center'
+        }}>
+            <div style={{
+                display: 'flex',
+                width: '100%',
+                alignItems: 'center'
+            }}>
+                <IconButton>
+                    <ListIcon />
                 </IconButton>
-            }
-            { !this.props.disableColumnSelector &&
+                {this.props.showExpertButton &&
+                    <IconButton
+                        key="expertMode"
+                        color={this.state.filter.expertMode ? 'secondary' : 'default'}
+                        onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
+                    >
+                        <IconExpert />
+                    </IconButton>
+                }
+                {!this.props.disableColumnSelector &&
+                    <IconButton
+                        key="columnSelector"
+                        onClick={() => this.setState({ columnsSelectorShow: true })}
+                    >
+                        <IconColumns />
+                    </IconButton>
+                }
+                {this.state.expandAllVisible &&
+                    <IconButton
+                        key="expandAll"
+                        onClick={() => this.onExpandAll()}
+                    >
+                        <IconOpen />
+                    </IconButton>
+                }
                 <IconButton
-                    key="columnSelector"
-                    onClick={() => this.setState({ columnsSelectorShow: true })}
+                    key="collapseAll"
+                    onClick={() => this.onCollapseAll()}
                 >
-                    <IconColumns />
-                </IconButton>
-            }
-            { this.state.expandAllVisible &&
-                <IconButton
-                    key="expandAll"
-                    onClick={() => this.onExpandAll()}
-                >
-                    <IconOpen />
-                </IconButton>
-            }
-            <IconButton
-                key="collapseAll"
-                onClick={() => this.onCollapseAll()}
-            >
-                <IconClosed />
-            </IconButton>
-            <IconButton
-                key="expandVisible"
-                color="primary"
-                onClick={() => this.onExpandVisible()}
-            >
-                <StyledBadge badgeContent={this.state.depth} color="secondary">
-                    <IconOpen />
-                </StyledBadge>
-            </IconButton>
-            <IconButton
-                key="collapseVisible"
-                color="primary"
-                onClick={() => this.onCollapseVisible()}
-            >
-                <StyledBadge badgeContent={this.state.depth} color="secondary">
                     <IconClosed />
-                </StyledBadge>
+                </IconButton>
+                <IconButton
+                    key="expandVisible"
+                    color="primary"
+                    onClick={() => this.onExpandVisible()}
+                >
+                    <StyledBadge badgeContent={this.state.depth} color="secondary">
+                        <IconOpen />
+                    </StyledBadge>
+                </IconButton>
+                <IconButton
+                    key="collapseVisible"
+                    color="primary"
+                    onClick={() => this.onCollapseVisible()}
+                >
+                    <StyledBadge badgeContent={this.state.depth} color="secondary">
+                        <IconClosed />
+                    </StyledBadge>
+                </IconButton>
+                <IconButton>
+                    <AddIcon />
+                </IconButton>
+                <IconButton>
+                    <PublishIcon style={{
+                        transform: 'rotate(180deg)'
+                    }} />
+                </IconButton>
+                <IconButton>
+                    <PublishIcon />
+                </IconButton>
+            </div>
+            <div style={{
+                display: 'flex',
+                whiteSpace: 'nowrap'
+            }}>
+                {`${this.props.t('Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t('States')}: ${Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length}`}
+            </div>
+            <IconButton >
+                <BuildIcon />
             </IconButton>
-        </>;
+        </div>;
     }
 
     /**
@@ -3124,7 +3161,7 @@ class ObjectBrowser extends Component {
     renderItem(root, isExpanded, classes, counter) {
         const items = [];
         counter = counter || { count: 0 };
-
+        console.log(root.data.id, root.data)
         root.data.id && items.push(this.renderLeaf(root, isExpanded, classes, counter));
 
         isExpanded = isExpanded === undefined ? binarySearch(this.state.expanded, root.data.id) : isExpanded;
@@ -3132,6 +3169,8 @@ class ObjectBrowser extends Component {
         if (!root.data.id || isExpanded) {
             if (!this.state.foldersFirst) {
                 root.children && items.push(root.children.map(item => {
+                    console.log(1)
+
                     // do not render too many items in column editor mode
                     if (!this.state.columnsSelectorShow || counter.count < 15) {
                         if (item.data.visible || item.data.hasVisibleChildren) {
@@ -3143,6 +3182,7 @@ class ObjectBrowser extends Component {
             } else {
                 // first only folder
                 root.children && items.push(root.children.map(item => {
+                    console.log(2, item)
                     if (item.children) {
                         // do not render too many items in column editor mode
                         if (!this.state.columnsSelectorShow || counter.count < 15) {
@@ -3156,6 +3196,8 @@ class ObjectBrowser extends Component {
                 }));
                 // then items
                 root.children && items.push(root.children.map(item => {
+                    console.log(3)
+
                     if (!item.children) {
                         // do not render too many items in column editor mode
                         if (!this.state.columnsSelectorShow || counter.count < 15) {
@@ -3168,7 +3210,6 @@ class ObjectBrowser extends Component {
                 }));
             }
         }
-
         return items;
     }
 

@@ -1072,7 +1072,6 @@ class App extends Router {
                             }
                             <HostSelectors
                                 socket={this.socket}
-                                currentHostName={this.state.currentHostName}
                                 currentHost={this.state.currentHost}
                                 setCurrentHost={(hostName, host) => {
                                     this.setState({

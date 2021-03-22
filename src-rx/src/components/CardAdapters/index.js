@@ -11,6 +11,8 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import HelpIcon from '@material-ui/icons/Help';
 import PublishIcon from '@material-ui/icons/Publish';
 import I18n from '@iobroker/adapter-react/i18n';
+import CloudIcon from '@material-ui/icons/Cloud';
+import CloudOffIcon from '@material-ui/icons/CloudOff';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -175,7 +177,10 @@ const CardAdapters = ({
     hidden,
     stat,
     versionDate,
-    adapter
+    adapter,
+    isCategory,
+    connectionType,
+    openInstallVersionDialog
 }) => {
     const [openCollapse, setCollapse] = useState(false);
 
@@ -226,7 +231,11 @@ const CardAdapters = ({
                         <DeleteForeverIcon />
                     </IconButton>
                     {expertMode &&
-                        <IconButton size="small" className={!installedVersion ? classes.hidden : ''}>
+                        <IconButton
+                            size="small"
+                            className={!installedVersion ? classes.hidden : ''}
+                            onClick={openInstallVersionDialog}
+                        >
                             <AddToPhotosIcon />
                         </IconButton>
                     }
@@ -265,6 +274,10 @@ const CardAdapters = ({
             <Typography gutterBottom variant="h5" component="h5">
                 {name}
             </Typography>
+            {!isCategory &&
+                (connectionType === 'cloud' ? <CloudIcon /> :
+                    connectionType === 'local' ? <CloudOffIcon /> : '')
+            }
             <div style={{
                 marginTop: 10,
             }}>

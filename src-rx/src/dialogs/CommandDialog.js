@@ -75,6 +75,10 @@ class ConfirmDialog extends Component {
         if (this.props.ready && this.props.cmd) {
             this.executeCommand();
         }
+        const closeOnReady = JSON.parse(window.localStorage.getItem('ConfirmDialog.closeOnReady')) || false;
+        this.setState({
+            closeOnReady
+        })
     }
 
     componentDidUpdate() {
@@ -363,7 +367,10 @@ class ConfirmDialog extends Component {
                             <Checkbox
                                 disabled={this.props.inBackground}
                                 checked={this.state.closeOnReady}
-                                onChange={(e) => this.setState({ closeOnReady: e.target.checked })} />}
+                                onChange={(e) => {
+                                    this.setState({ closeOnReady: e.target.checked });
+                                    window.localStorage.setItem('ConfirmDialog.closeOnReady', e.target.checked);
+                                }} />}
                         label={this.props.t('close on ready')}
                     />
                     <div>
