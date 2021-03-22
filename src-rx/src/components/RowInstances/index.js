@@ -778,13 +778,7 @@ const RowInstances = ({
                         </div>
                         }
                         {expertMode && checkCompact && compact && <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                            <IconButton
-                                size="small"
-                                className={classes.button}
-                                style={{ marginRight: 5 }}
-                            >
-                                <ViewCompactIcon color="inherit" />
-                            </IconButton>
+                            <ViewCompactIcon style={{ marginRight: 5 }} color="inherit" />
                             <FormControl style={{ marginBottom: 5, marginTop: 5, width: 120 }} variant="outlined" >
                                 <InputLabel htmlFor="outlined-age-native-simple">{I18n.t('compact groups')}</InputLabel>
                                 <Select
