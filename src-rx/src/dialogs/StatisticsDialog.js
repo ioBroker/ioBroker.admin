@@ -46,23 +46,87 @@ const styles = theme => ({
     },
 });
 
-class StatisticsDialog extends Component 
-{
-    constructor(props)
-    {
+class StatisticsDialog extends Component {
+    constructor(props) {
         super(props); 
+        //console.log(props); 
         this.state={
             ...props 
         }
 
     }
-    render()
+    componentWillUpdate(nextProps, nextState)
     {
-        //console.log(this.state)
-        const {common} = this.props;
+        if(nextProps.common !== this.state.common)
+        {
+            this.setState({common: nextProps.common});
+        }
+        if(nextProps.data2 !== this.state.data2)
+        {
+            this.setState({data2: nextProps.data2});
+        }
+    }
+    getTypes()  {
+        return [
+            {
+                id: "none",
+                title: "none"
+            },
+            {
+                id: "normal",
+                title: "normal"
+            },
+            {
+                id: "no-city",
+                title: "no-city"
+            },
+            {
+                id: "extended",
+                title: "extended"
+            }
+        ]
+    }
+	
+    getTypesSelector = () => {
         const {classes} = this.props;
-        return <div className={ classes.tabPanel } style={{height:100}}>
-            <Grid container spacing={3}  className="sendData-grid">
+        const {common} = this.state;
+        const items = this.getTypes().map((elem, index) =>
+        {
+            return <MenuItem value={elem.title} key={index} >
+                { this.props.t(elem.title) }
+            </MenuItem> 
+        })
+        return <FormControl className={classes.formControl}>
+            <InputLabel shrink id={"statistics-label"}>
+                { this.props.t("Statistics")}
+            </InputLabel>
+            <Select
+                className={classes.formControl}
+                id={"statistics"}
+                value={ this.state.common.diag }
+                displayEmpty 
+                inputProps={{ 'aria-label': 'Without label' }}
+                onChange={this.handleChangeType}
+            > 
+                {items}
+            </Select> 
+        </FormControl> 
+    }
+	handleChangeType = evt => {
+        //console.log( evt.target.value, this.props.handle );
+        this.setState({
+            common: {...this.state.common, diag : evt.target.value }
+        })
+        if(this.props.handle)    
+        {
+            this.props.handle( evt.target.value );
+        }
+    }
+    render() {
+       // console.log(this.state.data2) 
+        const {classes} = this.props;
+        return <div className={ classes.tabPanel } style={{ height: 'calc(100% - 0px)' }}>
+            <Grid container spacing={3}  className="sendData-grid" style={{ height: '100%', overflow: "hidden" }}>
                 <Grid item lg={4}>
                     <Card  className={classes.note} >
                         <Typography gutterBottom variant="h6" component="div">
@@ -77,7 +141,7 @@ class StatisticsDialog extends Component
                      </Card >
                     { this.getTypesSelector() }
                 </Grid>
-                <Grid item lg={8} className="sendData-grid" style={{height:100}}>
+                <Grid item lg={8} className="sendData-grid" style={{ height:'100%', display: "flex", flexDirection: "column" }}>
                     <Paper className={classes.statis} >
                         <Typography gutterBottom variant="h6" component="div">
                             {this.props.t("Sent data:")}
@@ -108,63 +172,6 @@ class StatisticsDialog extends Component
             </Grid>
         </div>
 
-    }
-    getTypes()
-    {
-        return [
-            {
-                id: "none",
-                title: "none"
-            },
-            {
-                id: "standart",
-                title: "standart"
-            },
-            {
-                id: "without_city",
-                title: "without city"
-            },
-            {
-                id: "extended",
-                title: "extended"
-            }
-        ]
-    }
-	
-    getTypesSelector = () =>
-    {
-        const {classes} = this.props;
-        const {common} = this.state;
-        const items = this.getTypes().map((elem, index) =>
-        {
-            return <MenuItem value={elem.title} key={index}>
-                { this.props.t(elem.title) }
-            </MenuItem> 
-        })
-        return <FormControl className={classes.formControl}>
-            <InputLabel shrink id={"statistics-label"}>
-                { this.props.t("Statistics")}
-            </InputLabel>
-            <Select
-                className={classes.formControl}
-                id={"statistics"}
-                value={ this.state.common.diag }
-                onChange={ this.handleChangeStatistics }
-                displayEmpty 
-                inputProps={{ 'aria-label': 'Without label' }}
-            > 
-                {items}
-            </Select> 
-        </FormControl> 
-    }
-	
-    handleChangeStatistics = evt =>
-    {
-        console.log( evt.target.value );
-        this.setState({
-            common: {...this.state.common, diag:evt.target.value }
-        })
-        
     }
 	
 }

@@ -108,7 +108,8 @@ class SystemSettingsDialog extends Component
                 })
                 
                     .then(systemcConfig => {
-                        //console.log(systemcConfig);
+                        console.log(systemcConfig);
+                        this.originalConfig = JSON.stringify( systemcConfig );
                         newState.systemcConfig = systemcConfig;
                         // return this.props.socket.getObject('system.certificates');
                         return this.props.socket.getRawSocket().emit(
@@ -117,7 +118,7 @@ class SystemSettingsDialog extends Component
                             'getDiagData', 
                             systemcConfig.common.diag, 
                             diagData => {
-                                //console.log(diagData)
+                                //console.log(diagData);
                                 newState.diagData = diagData;    
                             });
                     })
@@ -136,7 +137,7 @@ class SystemSettingsDialog extends Component
                                     return this.props.socket.getObject('system.certificates');
                                 })                        
                                     .then(systemcCertificates => {
-                                        console.log(systemcCertificates);
+                                        //console.log(systemcCertificates);
                                         this.originalCertificates = JSON.stringify( systemcCertificates );
                                         newState.systemcCertificates = systemcCertificates;
                                         this.setState(newState);                            
@@ -161,9 +162,14 @@ class SystemSettingsDialog extends Component
 
     onSave()
     {
+        if(this.originalConfig !== JSON.stringify( this.state.systemcConfig ))
+        {
+            alert("CHANGE SYSTEM CONFIG NEED");
+        }
         return this.props.socket.getSystemConfig(true)
             .then(systemSettings => {
                 systemSettings = systemSettings || {};
+                console.log( systemSettings );
                 if (JSON.stringify(systemSettings.common) !== JSON.stringify(this.state.systemSettings)) 
                 {
                     systemSettings.common = this.state.systemSettings;
@@ -174,28 +180,29 @@ class SystemSettingsDialog extends Component
                     return Promise.resolve();
                 }
             })
-                .then(() => this.props.socket.getObject('system.repositories'))
-                    .then(systemRepositories => {
-                        systemRepositories = systemRepositories || {};
-                        systemRepositories.native = systemRepositories.native || {};
-                        systemRepositories.native.repositories = systemRepositories.native.repositories || {};
-                        const newRepo = JSON.parse(JSON.stringify(this.state.systemRepositories));
+                .then(() => this.props.socket.setObject( 'system.config', this.state.systemcConfig ))
+                    .then(() => this.props.socket.getObject('system.repositories'))
+                        .then(systemRepositories => {
+                            systemRepositories = systemRepositories || {};
+                            systemRepositories.native = systemRepositories.native || {};
+                            systemRepositories.native.repositories = systemRepositories.native.repositories || {};
+                            const newRepo = JSON.parse(JSON.stringify(this.state.systemRepositories));
 
-                        // merge new and existing info
-                        Object.keys(newRepo).forEach(repo => {
-                            if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].json) {
-                                newRepo[repo].json = systemRepositories.native.repositories[repo].json;
-                            }
-                            if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].hash) {
-                                newRepo[repo].hash = systemRepositories.native.repositories[repo].hash;
-                            }
-                        });
-                        systemRepositories.native.repositories = newRepo;
-                        return this.props.socket.setObject('system.repositories', systemRepositories);
-                    })
-                        .catch(e => window.alert('Cannot save system configuration: ' + e));
+                            // merge new and existing info
+                            Object.keys(newRepo).forEach(repo => {
+                                if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].json) {
+                                    newRepo[repo].json = systemRepositories.native.repositories[repo].json;
+                                }
+                                if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].hash) {
+                                    newRepo[repo].hash = systemRepositories.native.repositories[repo].hash;
+                                }
+                            });
+                            systemRepositories.native.repositories = newRepo;
+                            this.getSettings()
+                            return this.props.socket.setObject('system.repositories', systemRepositories);
+                        })
+                            .catch(e => window.alert('Cannot save system configuration: ' + e));
     }
-    
     getTabs()
     {
         return [
@@ -203,44 +210,73 @@ class SystemSettingsDialog extends Component
                 id : 0,
                 title: 'System settings',
                 component: MainSettingsDialog,
-                data: "systemSettings"
+                data: "systemSettings",
+                data2:{},
+                handle: null
             },
             {
                 id : 1,
                 title: 'Repositories',
                 component: RepositoriesDialog,
                 data: "systemRepositories",
-                data2:{}
+                data2:{},
+                handle: null
             },
             {
                 id : 2,
                 title: 'Certificates',
                 component: SertificatsDialog,
                 data: "systemcCertificates",
-                data2:{}
+                data2:{},
+                handle: null
             },
             {
                 id : 3,
                 title: "Let's encrypt SSL",
                 component: SSLDialog,
                 data: "systemcCertificates",
-                data2:{}
+                data2:{},
+                handle: null
             },
             {
                 id : 4,
                 title: "Default ACL",
                 component: ACLDialog,
                 data: "systemcConfig",
-                data2:{}
+                data2:{},
+                handle: null
             },
             {
                 id : 5,
                 title: "Statistics",
                 component: StatisticsDialog,
                 data: "systemcConfig",
-                data2: "diagData"
+                data2: "diagData",
+                handle: type => this.onChangeStaticType(type)
             }
         ]
+    }
+    onChangeStaticType = type =>
+    {
+        console.log(type);
+        this.props.socket.getRawSocket().emit(
+            'sendToHost', 
+            this.props.currentHost, 
+            'getDiagData', 
+            type, 
+            diagData => {
+               // console.log(diagData)
+                this.setState({ 
+                    diagData, 
+                    systemcConfig: { 
+                        ...this.state.systemcConfig,
+                        common: {
+                            ...this.state.systemcConfig.common,
+                            diag: type
+                        }
+                    } 
+                });
+            });
     }
     getDialogContent() { 
        if(this.state.loading)
@@ -250,14 +286,16 @@ class SystemSettingsDialog extends Component
        }) [0] || this. getTabs()[0];
        const _Component =  _t.component;
        const {groups, users} = this.state;
+       console.log( this.state );
        return <div className={ this.props.classes.tabPanel }> 
            <_Component
                 onChange={(id, data) => this.onChangedTab(id, data, _t.data) }
                 { ...this.state[_t.data] }
                 data2= { this.state[_t.data2] } 
+                handle={ _t.handle } 
                 users={users}
-                themeName={this.props.themeName}
                 groups={groups}
+                themeName={this.props.themeName}
                 t={this.props.t}
            />
        </div>
@@ -265,16 +303,28 @@ class SystemSettingsDialog extends Component
     onTab = (event, newTab) => { 
         Router.doNavigate(null, 'system', newTab)
     }
-    onChangedTab(id, data, param)  {
+    onChangedTab (id, data, param )  {
         let state = {...this.state};
-        state[param][id] = data;
-        this.setState(state);  
+        state[ param ][ id ] = data;
+        this.setState( state );  
         // console.log( id, data, param, state );
     }
+    
+    restoreState()
+    {
+        this.originalRepositories   = JSON.stringify( this.state.systemRepositories );
+        this.originalSettings       = JSON.stringify( this.state.systemSettings );
+        this.originalCertificates   = JSON.stringify( this.state.systemcCertificates );  
+        this.originalConfig         = JSON.stringify( this.state.systemcConfig );
+        this.render();
+        alert("Success update settings")
+    }
+
     render() {
         //console.log(this.props)
         const changed = JSON.stringify(this.state.systemSettings)       !== this.originalSettings ||
                         JSON.stringify(this.state.systemRepositories)   !== this.originalRepositories ||
+                        JSON.stringify(this.state.systemcConfig)        !== this.originalConfig ||
                         JSON.stringify(this.state.systemcCertificates)  !== this.originalCertificates;
         const tabs = this. getTabs().map((e,i) =>
         {
@@ -298,11 +348,6 @@ class SystemSettingsDialog extends Component
             fullScreen={ false }
             aria-labelledby="system-settings-dialog-title"
         >
-           { /*
-            <DialogTitle id="system-settings-dialog-title">
-                { this.props.t('Base settings') }
-            </DialogTitle>
-            */}
             <DialogContent className={ this.props.classes.content }>
                 <AppBar position="static" color="default">
                     <div className={this.props.classes.dialogTitle}>
@@ -315,8 +360,7 @@ class SystemSettingsDialog extends Component
                             value={ curTab }
                             onChange={ this.onTab }
                             variant="scrollable"
-                            scrollButtons="auto" 
-                            centered
+                            scrollButtons="auto"
                         >
                             { tabs }
                         </Tabs>
