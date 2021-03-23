@@ -78,7 +78,9 @@ class UsersList extends Component {
             users: null,
             groups: null,
             userEditDialog: false,
+            userEditDialogNew: null,
             groupEditDialog: false,
+            groupEditDialogNew: null,
             userDeleteDialog: false,
             groupDeleteDialog: false,
         };
@@ -157,16 +159,16 @@ class UsersList extends Component {
         return typeof(name) === 'object' ? name.en : name;
     }
 
-    showUserEditDialog = (user) => {
+    showUserEditDialog = (user, isNew) => {
         user = JSON.parse(JSON.stringify(user));
         user.common.password = '';
         user.common.passwordRepeat = '';
-        this.setState({userEditDialog: user});
+        this.setState({userEditDialog: user, userEditDialogNew: isNew});
     }
 
-    showGroupEditDialog = (group) => {
+    showGroupEditDialog = (group, isNew) => {
         group = JSON.parse(JSON.stringify(group));
-        this.setState({groupEditDialog: group});
+        this.setState({groupEditDialog: group, groupEditDialogNew: isNew});
     }
 
     updateData = () => {
@@ -190,11 +192,23 @@ class UsersList extends Component {
 
     saveUser = (originalId) => {
         let user = JSON.parse(JSON.stringify(this.state.userEditDialog));
+        let originalUser = this.state.users.find(element => element._id == user._id);
+        let newPassword = user.common.password;
+        if (originalUser) {
+            user.common.password = originalUser.common.password;
+        } else {
+            user.common.password = '';
+        }
         delete user.common.passwordRepeat;
         this.props.socket.setObject(user._id, user)
         .then(()=>{
             if (originalId && originalId !== this.state.userEditDialog._id) {
                 return this.props.socket.delObject(originalId);
+            }
+        })
+        .then(()=>{
+            if (newPassword !== '') {
+                return this.props.socket.changePassword(user._id, newPassword);
             }
         })
         .then(()=>{
@@ -268,7 +282,7 @@ class UsersList extends Component {
             <DndProvider backend={HTML5Backend}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
-                        <Fab size="small" className={this.props.classes.left} onClick={()=>this.showGroupEditDialog(this.groupTemplate)}>
+                        <Fab size="small" className={this.props.classes.left} onClick={()=>this.showGroupEditDialog(this.groupTemplate, true)}>
                             <GroupAddIcon/>
                         </Fab>
                         <Typography gutterBottom variant="h4" component="h4">{this.props.t('Groups')}</Typography>
@@ -286,7 +300,7 @@ class UsersList extends Component {
                         }
                     </Grid>
                     <Grid item xs={12} md={6}>
-                    <Fab size="small" className={this.props.classes.left} onClick={()=>this.showUserEditDialog(this.userTemplate)}>
+                    <Fab size="small" className={this.props.classes.left} onClick={()=>this.showUserEditDialog(this.userTemplate, true)}>
                             <PersonAddIcon/>
                         </Fab>
                         <Typography gutterBottom variant="h4" component="h4">{this.props.t('Users')}</Typography>
@@ -311,6 +325,7 @@ class UsersList extends Component {
                     onClose={()=>this.setState({userEditDialog: false})}
                     users={this.state.users}
                     user={this.state.userEditDialog}
+                    isNew={this.state.userEditDialogNew}
                     t={this.props.t}
                     classes={this.props.classes}
                     change={this.changeUserFormData}
@@ -321,6 +336,7 @@ class UsersList extends Component {
                     onClose={()=>this.setState({groupEditDialog: false})}
                     groups={this.state.groups}
                     group={this.state.groupEditDialog}
+                    isNew={this.state.groupEditDialogNew}
                     t={this.props.t}
                     classes={this.props.classes}
                     change={this.changeGroupFormData}

@@ -19,10 +19,11 @@ import AddIcon from '@material-ui/icons/Add';
 
 const styles = theme => ({
     tabPanel: {
-        width: '100%',
-        height: '100% ',
-        overflow: 'auto',
-        padding: 15,
+        width:      '100%',
+        height:     '100% ',
+        overflow:   'auto',
+        overflowX:   'hidden',
+        padding:    15,
         //backgroundColor: blueGrey[ 50 ]
     },
     buttonPanel: {
@@ -63,6 +64,7 @@ class SSLDialog extends Component {
                     color="primary"
                     aria-label="add"
                     onClick={this.onAdd}
+                    className="small_size"
                 >
                     <AddIcon/>
                 </Fab>
@@ -72,9 +74,9 @@ class SSLDialog extends Component {
                     dangerouslySetInnerHTML={{__html: this.props.t("letsnecrypt_help")}}
                 />
             </div>
-            <Grid container spacing={6}>
-                <Grid item xs={3}>
-                    <FormControl className={classes.formControl}>
+            <Grid container spacing={6}> 
+                <Grid item md={3} xs={12}> 
+                    <FormControl className={classes.formControl}> 
                         <TextField
                             id="email"
                             label={this.props.t("Email for account:")}
@@ -86,9 +88,9 @@ class SSLDialog extends Component {
                             onChange={evt => this.onChangeText(evt, "email")}
                         />
                     </FormControl>
-                </Grid>
-                <Grid item xs={3}>
-                    <FormControl className={classes.formControl}>
+                </Grid> 
+                <Grid item md={3} xs={12}> 
+                    <FormControl className={classes.formControl}> 
                         <TextField
                             id="domains"
                             label={this.props.t("Domains:")}
@@ -101,8 +103,8 @@ class SSLDialog extends Component {
                         />
                     </FormControl>
                 </Grid>
-                <Grid item xs={3}>
-                    <FormControl className={classes.formControl}>
+                <Grid item md={3} xs={12}> 
+                    <FormControl className={classes.formControl}> 
                         <TextField
                             id="path"
                             label={this.props.t("Path to storage:")}

@@ -16,9 +16,21 @@ function UserEditDialog(props) {
         return null;
     }
 
-    let canSave = (props.user._id == originalId || !props.users.find(user => user._id == props.user._id)) && 
-        props.user._id !== 'system.user.' &&
+    let idExists = props.users.find(user => user._id == props.user._id);
+    let idChanged = props.user.id != originalId;
+
+    let canSave = props.user._id !== 'system.user.' &&
         props.user.common.password === props.user.common.passwordRepeat;
+
+    if (props.isNew) {
+        if (idExists) {
+            canSave = false;
+        }
+    } else {
+        if (idExists && idChanged) {
+            canSave = false;
+        }
+    }
 
     return <Dialog PaperProps={{className: props.classes.dialogPaper}} open={props.open} onClose={props.onClose}>
         <Box className={props.classes.dialog}>
@@ -114,7 +126,7 @@ function UserEditDialog(props) {
                 className={props.classes.colorPicker}
             />
             <div>
-                <Button onClick={()=>props.saveData(originalId)} disabled={!canSave}>Save</Button>
+                <Button onClick={()=>props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>Save</Button>
                 <Button onClick={props.onClose}>Cancel</Button>
             </div>
         </Box>

@@ -194,6 +194,7 @@ const theme = type => {
             }
         });
     }
+
 }
 
 export default theme;

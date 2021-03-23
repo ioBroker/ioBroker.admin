@@ -3,13 +3,14 @@
  */
 
 /**
- * Copyright 2020, bluefox <dogafox@gmail.com>
+ * Copyright 2020-2021, bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
  **/
 import PropTypes from 'prop-types';
 
+/** Possible progress states. */
 export const PROGRESS = {
     /** The socket is connecting. */
     CONNECTING: 0,
@@ -797,15 +798,15 @@ class Connection {
         }
         adapter = adapter || '';
 
-        if (!update && this._promises['instances' + adapter]) {
-            return this._promises['instances' + adapter];
+        if (!update && this._promises['instances_' + adapter]) {
+            return this._promises['instances_' + adapter];
         }
 
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
 
-        this._promises['instances' + adapter] = this._promises['instances' + adapter] || new Promise((resolve, reject) => {
+        this._promises['instances_' + adapter] = new Promise((resolve, reject) => {
             this._socket.emit(
                 'getObjectView',
                 'system',
@@ -820,7 +821,7 @@ class Connection {
                 });
         });
 
-        return this._promises['instances' + adapter];
+        return this._promises['instances_' + adapter];
     }
 
     /**
@@ -848,7 +849,7 @@ class Connection {
             return Promise.reject(NOT_CONNECTED);
         }
 
-        this._promises['adapter_' + adapter] = this._promises['adapter_' + adapter] || new Promise((resolve, reject) => {
+        this._promises['adapter_' + adapter] = new Promise((resolve, reject) => {
             this._socket.emit(
                 'getObjectView',
                 'system',
@@ -1654,6 +1655,19 @@ class Connection {
     }
 
     /**
+     * Send command to restart the iobroker on host
+     * @param {string} host
+     * @returns {Promise<any>}
+     */
+    restartController(host) {
+        return new Promise((resolve, reject) => {
+            this._socket.emit('sendToHost', host, 'restartController', null, error => {
+                error ? reject(error) : resolve(true);
+            });
+        });
+    }
+
+    /**
      * Read all states (which might not belong to this adapter) which match the given pattern.
      * @param {string} pattern
      * @returns {ioBroker.GetStatesPromise}
@@ -1787,28 +1801,6 @@ class Connection {
 
         return this._promises['IPs_' + host];
 
-    }
-
-    /**
-     * Decrypt a phrase
-     * @param {string} encryptedPhrase
-     * @returns {Promise<string>}
-     */
-    decryptPhrase(encryptedPhrase) {
-        return new Promise((resolve, reject) =>
-            this._socket.emit('decryptPhrase', encryptedPhrase, (err, text) =>
-                err ? reject(err) : resolve(text)));
-    }
-
-    /**
-     * Encrypt a phrase
-     * @param {string} phrasePlainText
-     * @returns {Promise<string>}
-     */
-    encryptPhrase(phrasePlainText) {
-        return new Promise((resolve, reject) =>
-            this._socket.emit('encryptPhrase', phrasePlainText, (err, text) =>
-                err ? reject(err) : resolve(text)));
     }
 
     /**

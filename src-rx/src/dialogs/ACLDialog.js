@@ -1,6 +1,6 @@
 //ACLDialog.js
 
-import { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles'; 
@@ -17,8 +17,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 
-// import blueGrey from '@material-ui/core/colors/blueGrey'
-
+import blueGrey from '@material-ui/core/colors/blueGrey';
 
 // icons
 
@@ -27,6 +26,7 @@ const styles = theme => ({
         width:      '100%',
         height:     '100% ',
         overflow:   'auto',
+        overflowX:   'hidden',
         padding:    15,
         //backgroundColor: blueGrey[ 50 ]
     },
@@ -52,7 +52,9 @@ const styles = theme => ({
     tableCell:
     {
         textAlign:"center",
-        border: "1px solid #AAA"
+        border: "1px solid #AAA",
+		paddingLeft:0,
+		paddingRight:0
     }
 });
 
@@ -66,87 +68,59 @@ class ACLDialog extends Component
         }
 
     }
-    render()
+    
+    permBits = [[0x400, 0x200], [0x40, 0x20], [0x4, 0x2]];
+    
+    getTypes( )
     {
-        const {classes} = this.props;
-        const users = this.props.users.map((elem, index)=>
-        {
-             return <MenuItem value={elem.ts} key={index}>
-                 { this.props.t(elem.common.name) }
-             </MenuItem>   
-        } );
-        const groups = this.props.groups.map((elem, index)=>
-        {
-             return <MenuItem value={elem._id} key={index}>
-                { this.props.t(elem.common.name['ru']) }
-             </MenuItem>   
-        } );
-        return <div className={ classes.tabPanel }>
-            <Typography variant="h5" component="div">
-                {this.props.t("Access control list")}
-            </Typography>
-            <Grid container spacing={3}>
-                <Grid item xs={3}>
-                    <FormControl className={classes.formControl}>
-                        <InputLabel shrink id={"owner-label"}>
-                            { this.props.t("Owner user")}
-                        </InputLabel>
-                        <Select
-                            className={classes.formControl}
-                            id={"owner"}
-                            value={ this.state.owner }
-                            onChange={ evt => this.handleChange(evt, "owner") }
-                            displayEmpty 
-                            inputProps={{ 'aria-label': 'users' }}
-                        > 
-                            {users}
-                        </Select> 
-                    </FormControl> 
-                </Grid>
-                <Grid item xs={3}>
-                    <FormControl className={classes.formControl}>
-                        <InputLabel shrink id={"ownergroup-label"}>
-                            { this.props.t("Owner group")}
-                        </InputLabel>
-                        <Select
-                            className={classes.formControl}
-                            id={"ownergroup"}
-                            value={ this.state.ownergroup }
-                            onChange={ evt => this.handleChange(evt, "ownergroup")  }
-                            displayEmpty 
-                            inputProps={{ 'aria-label': 'ownergroup' }}
-                        > 
-                            {groups}
-                        </Select> 
-                    </FormControl> 
-                </Grid>
-            </Grid> 
-            <Grid container spacing={3}>
-                <Grid item xs={4}>
-                    <Typography variant="h6" component="div">
-                        {this.props.t("Object rights")}
-                    </Typography>
-                    { this.getTable() }
-                </Grid>
-                <Grid item xs={4}>
-                    <Typography variant="h6" component="div">
-                        {this.props.t("States rights")}
-                    </Typography>
-                    { this.getTable() }
-                </Grid>
-                <Grid item xs={4}>
-                    <Typography variant="h6" component="div">
-                        {this.props.t("File rights")}
-                    </Typography>
-                    { this.getTable() }
-                </Grid>
-            </Grid> 
-        </div>
-
+        return [
+            {
+                type:"object",
+                title:"Object rights"
+            },
+            {
+                type:"state",
+                title:"States rights"
+            },
+            {
+                type:"file",
+                title:"File rights"
+            }
+        ]
     }
-    getTable()
+    getRights( type )
     {
+        let rts = this.state.common.defaultNewAcl[ type ]
+        let rights = this.permBits.map(bitGroup => bitGroup.map(bit => rts & bit));
+        return rights;
+    }
+    
+    getTable( owner )
+    {
+        const checks = this.getRights( owner );
+        // console.log(owner, checks);
         const {classes} = this.props;
+        const checkboxes = checks.map((elem, index) =>
+        {
+            return <Fragment key={index}> 
+               <TableCell className={classes.tableCell}>
+                   <Checkbox
+                       checked={ elem[0] }
+                       color="primary"
+                       inputProps={{ 'aria-label': 'secondary checkbox' }}
+                       onChange={ evt  => this.handleCheck(evt, owner, index, 0)}
+                   />
+               </TableCell>
+               <TableCell className={classes.tableCell}>
+                   <Checkbox
+                       checked={ elem[1] }
+                       color="primary"
+                       inputProps={{ 'aria-label': 'secondary checkbox' }}
+                       onChange={ evt => this.handleCheck(evt, owner, index, 1)}
+                   />
+               </TableCell>
+           </Fragment>
+        });
         return <TableContainer>
             <Table className={classes.table} aria-label="customized table">
                 <TableHead>
@@ -184,62 +158,104 @@ class ACLDialog extends Component
                         </TableCell>
                     </TableRow>
                     <TableRow>
-                        <TableCell className={classes.tableCell}>
-                            <Checkbox
-                                defaultChecked
-                                color="primary"
-                                inputProps={{ 'aria-label': 'secondary checkbox' }}
-                            />
-                        </TableCell>
-                        <TableCell className={classes.tableCell}>
-                            <Checkbox
-                                defaultChecked
-                                color="primary"
-                                inputProps={{ 'aria-label': 'secondary checkbox' }}
-                            />
-                        </TableCell>
-                        <TableCell className={classes.tableCell}>
-                            <Checkbox
-                                defaultChecked
-                                color="primary"
-                                inputProps={{ 'aria-label': 'secondary checkbox' }}
-                            />
-                        </TableCell>
-                        <TableCell className={classes.tableCell}>
-                            <Checkbox
-                                defaultChecked
-                                color="primary"
-                                inputProps={{ 'aria-label': 'secondary checkbox' }}
-                            />
-                        </TableCell>
-                        <TableCell className={classes.tableCell}>
-                            <Checkbox
-                                defaultChecked
-                                color="primary"
-                                inputProps={{ 'aria-label': 'secondary checkbox' }}
-                            />
-                        </TableCell>
-                        <TableCell className={classes.tableCell}>
-                            <Checkbox
-                                defaultChecked
-                                color="primary"
-                                inputProps={{ 'aria-label': 'secondary checkbox' }}
-                            />
-                        </TableCell>
+                        { checkboxes }
                     </TableRow>
                                          
                 </TableBody>
             </Table>
         </TableContainer>
     }
+    handleCheck = ( evt, ownerType, elemNum, num ) =>
+    {
+        console.log( ownerType, elemNum, num, evt.target.checked );
+
+        let state = this.state;
+        state.common.defaultNewAcl[ownerType] ^= this.permBits[elemNum][num];
+        console.log(state.common.defaultNewAcl[ownerType]);
+        this.setState(state);
+    }
     handleChange = (evt, id) =>
     {
         const value = evt.target.value; 
-        console.log( evt, id, value );
+        //console.log( evt, id, value );
         this.props.onChange( id, value);
         let state = {...this.state};
         state[id] = value;
         this.setState(state);        
+    }
+    render()
+    {
+        const {classes} = this.props;
+        const users = this.props.users.map((elem, index)=>
+        {
+             return <MenuItem value={ elem._id } key={ index }>
+                 { this.props.t(elem.common.name) }
+             </MenuItem>   
+        } );
+        
+        const groups = this.props.groups.map((elem, index)=>
+        {
+             return <MenuItem value={elem._id} key={index}>
+                { this.props.t(elem.common.name['ru']) }
+             </MenuItem>   
+        } );
+
+        const objectRights = this.getTypes( ).map((ee, ii) =>
+        {
+            return <Grid item lg={4} xs={12} md={6} key={ii}>
+                <Typography variant="h6" component="div">
+                    {this.props.t( ee.title )}
+                </Typography>
+                { this.getTable( ee.type ) }
+            </Grid>
+        })
+
+        return <div className={ classes.tabPanel }>
+            <Typography variant="h5" component="div">
+                {this.props.t("Access control list")}
+            </Typography>
+            <Grid container spacing={3}>
+                <Grid item lg={3} md={6} xs={12}>
+                    <FormControl className={classes.formControl}>
+                        <InputLabel shrink id={"owner" + "-label"}>
+                            { this.props.t("Owner user")}
+                        </InputLabel>
+                        <Select
+                            className={classes.formControl}
+                            id={"owner"}
+                            value={ this.state.common.defaultNewAcl.owner }
+                            onChange={ evt => this.handleChange(evt, "owner") }
+                            displayEmpty 
+                            inputProps={{ 'aria-label': 'users' }}
+                        > 
+                            {users}
+                        </Select> 
+                    </FormControl>  
+                </Grid>
+                <Grid item lg={3} md={6} xs={12}>
+                    <FormControl className={classes.formControl}>
+                        <InputLabel shrink id={"ownergroup" + "-label"}>
+                            { this.props.t("Owner group")}
+                        </InputLabel>
+                        <Select
+                            className={classes.formControl}
+                            id={"ownergroup"}
+                            value={  this.state.common.defaultNewAcl.ownerGroup }
+                            onChange={ evt => this.handleChange(evt, "ownergroup")  }
+                            displayEmpty 
+                            inputProps={{ 'aria-label': 'ownergroup' }}
+                        > 
+                            {groups}
+                        </Select> 
+                    </FormControl>  
+                </Grid>
+            </Grid> 
+            <Grid container spacing={3}>
+                { objectRights }
+               
+            </Grid> 
+        </div>
+
     }
 }
 

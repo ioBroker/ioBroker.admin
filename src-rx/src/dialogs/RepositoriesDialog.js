@@ -27,12 +27,15 @@ const styles = theme => ({
         width:      '100%',
         height:     '100% ',
         overflow:   'auto',
+        overflowX:   'hidden',
         padding:    15,
         //backgroundColor: blueGrey[ 50 ]
     },
     table: 
-    {
-        minWidth: 650,
+    { 
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%'
     },
     buttonPanel :
     {
@@ -50,11 +53,11 @@ const styles = theme => ({
     },
     littleRow : 
     {
-        width: 110
+        width: 110 
     },
     nameRow : 
     {
-        width: 220
+        width: 220 
     },
     input : 
     {
@@ -83,21 +86,21 @@ class RepositoriesDialog extends Component
         console.log( this.state );
         const rows = this.state.arr.map((e, i) =>
         {
-            return <TableRow key={e.title + e.link} >
-                <TableCell className={this.props.classes.littleRow}>
+            return <TableRow key={e.title + e.link} className="float_row">
+                <TableCell className={this.props.classes.littleRow  + " float_cell "}>
                     {i + 1}
                 </TableCell>
-                <TableCell className={this.props.classes.nameRow}>                               
+                <TableCell className={this.props.classes.nameRow  + " float_cell"}>                               
                     <TextField 
                         defaultValue={e.title}
                         InputLabelProps={{
                             readOnly: false,
                             shrink: true,
                         }} 
-                        className={this.props.classes.input}
+                        className={this.props.classes.input + " xs-centered"}
                     />
                 </TableCell>
-                <TableCell>
+                <TableCell className= "grow_cell float_cell">
                     <TextField
                         id="default" 
                         defaultValue={ e.link }
@@ -105,11 +108,11 @@ class RepositoriesDialog extends Component
                             readOnly: false,
                             shrink: true,
                         }}
-                        className={this.props.classes.input}
+                        className={this.props.classes.input + " xs-centered"}
                         onChange={evt => this.onChangeText(evt, e.title) }
                     />
                 </TableCell>
-                <TableCell className={this.props.classes.littleRow}>
+                <TableCell className={this.props.classes.littleRow  + " float_cell"}>
                     <Fab
                         size="small"  
                         color="secondary" 
@@ -128,8 +131,9 @@ class RepositoriesDialog extends Component
                     color="primary" 
                     aria-label="add"
                     onClick={this.onAdd}
+                    className="small_size" 
                 >
-                    <AddIcon />
+                    <AddIcon/>
                 </Fab>
                 <Paper variant="outlined" className={ classes.descrPanel }>
                     { this.props.t( "cert_path_note" ) }
@@ -138,13 +142,15 @@ class RepositoriesDialog extends Component
             <TableContainer>
                 <Table className={classes.table} aria-label="customized table">
                     <TableHead>
-                        <TableRow>
-                            <TableCell className={this.props.classes.littleRow}> </TableCell>
-                            <TableCell className={this.props.classes.nameRow}>
+                        <TableRow className="float_row">
+                            <TableCell className={this.props.classes.littleRow  + " float_cell"}> </TableCell>
+                            <TableCell className={this.props.classes.nameRow  + " float_cell" }>
                                 {this.props.t("name")}
                             </TableCell>
-                            <TableCell>{this.props.t("link")}</TableCell>
-                            <TableCell className={this.props.classes.littleRow}> </TableCell>
+                            <TableCell className= "grow_cell float_cell">
+                                {this.props.t("link")}
+                            </TableCell>
+                            <TableCell className={this.props.classes.littleRow  + " float_cell"}> </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
