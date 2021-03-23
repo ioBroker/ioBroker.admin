@@ -55,8 +55,21 @@ function GroupEditDialog(props) {
         return null;
     }
 
-    let canSave = (props.group._id == originalId || !props.groups.find(group => group._id == props.group._id)) && 
-        props.group._id !== 'system.group.';
+    let idExists = props.groups.find(group => group._id == props.group._id);
+    let idChanged = props.group.id != originalId;
+
+    let canSave = props.group._id !== 'system.group.' &&
+        props.group.common.password === props.group.common.passwordRepeat;
+
+    if (props.isNew) {
+        if (idExists) {
+            canSave = false;
+        }
+    } else {
+        if (idExists && idChanged) {
+            canSave = false;
+        }
+    }
 
     let mainTab = <div key="MainTab">
         <UsersTextField 
@@ -138,7 +151,7 @@ function GroupEditDialog(props) {
             </Tabs>
             {selectedTab}
             <div>
-                <Button onClick={()=>props.saveData(originalId)} disabled={!canSave}>Save</Button>
+                <Button onClick={()=>props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>Save</Button>
                 <Button onClick={props.onClose}>Cancel</Button>
             </div>
         </Box>

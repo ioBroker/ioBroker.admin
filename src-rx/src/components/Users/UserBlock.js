@@ -31,7 +31,7 @@ function UserBlock(props) {
                     props.updateData()
                 );
             }}/>
-            <IconButton size="small" onClick={()=>{props.showUserEditDialog(props.user)}}><EditIcon/></IconButton>
+            <IconButton size="small" onClick={()=>{props.showUserEditDialog(props.user, false)}}><EditIcon/></IconButton>
             <IconButton size="small" onClick={()=>{props.showUserDeleteDialog(props.user)}} disabled={props.user.common.dontDelete}><DeleteIcon/></IconButton>
         </div>
         <CardContent>
