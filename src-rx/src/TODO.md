@@ -20,24 +20,24 @@
 ## Adapters
 - Adapters - update all adapters and allow to select from list (BF)
 - Adapters - Use readme renderer from www.iobroker.net (BF)
-- Adapters - add dialog Instal specific version (all entries in news) on "++"
-  - Changedialog title: "Please select specific version of %s"
-- Adapters in Tile mode show "connectionType": "local/cloud"
-  - Add tooltip: "Adapter does not use the cloud for these devices/service" / "Adaper requires the specific cloud access for these devices/service"
-- Adapter dataSource (How to show poll/push/assumption). Near the connection type: poll => arrow up, push => arrow down, assumption => | (with title)
-- Show unmet dependencies: 
-  - function checkDependencies(dependencies) {
+<!-- - Adapters - add dialog Instal specific version (all entries in news) on "++"
+  - Changedialog title: "Please select specific version of %s" -->
+<!-- - Adapters in Tile mode show "connectionType": "local/cloud"
+  - Add tooltip: "Adapter does not use the cloud for these devices/service" / "Adaper requires the specific cloud access for these devices/service" -->
+<!-- - Adapter dataSource (How to show poll/push/assumption). Near the connection type: poll => arrow up, push => arrow down, assumption => | (with title) -->
+<!-- - Show unmet dependencies: 
+  - function checkDependencies(dependencies) { -->
 
 ## Instances  
 - Instances - Open in new window must be shown only for instances with localLink (BF)
-- Instances - allow to edit CRON/LogLevel/Restart/Name of instance
-   - Show schedule and restart only for adapters with mode 'schedule' or 'daemon'
+<!-- - Instances - allow to edit CRON/LogLevel/Restart/Name of instance
+   - Show schedule and restart only for adapters with mode 'schedule' or 'daemon' -->
 
 ## Objects
-- Objects - allow to filter only of states/channels/devices => another view (ack, ts, lc, etc)
+<!-- - Objects - allow to filter only of states/channels/devices => another view (ack, ts, lc, etc) -->
 - Objects - export/import and creation of new state
 - Objects - edit of access control (similar to files)
-- Objects - Add clear button by all text (and maybe select) filter fields
+- Objects - Add clear button by all text (and maybe select) filter fields//
 
 ## Others
 - Files - bulk edit of access rights

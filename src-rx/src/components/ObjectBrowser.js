@@ -69,7 +69,7 @@ import IconCheck from '@material-ui/icons/Check';
 import BuildIcon from '@material-ui/icons/Build';
 import PublishIcon from '@material-ui/icons/Publish';
 import AddIcon from '@material-ui/icons/Add';
-import ListIcon from '@material-ui/icons/List';
+import RefreshIcon from '@material-ui/icons/Refresh';
 
 import IconExpert from '@iobroker/adapter-react/icons/IconExpert';
 import IconAdapter from '@iobroker/adapter-react/icons/IconAdapter';
@@ -84,6 +84,7 @@ import IconClosed from '@iobroker/adapter-react/icons/IconClosed';
 import IconOpen from '@iobroker/adapter-react/icons/IconOpen';
 import IconClearFilter from '@iobroker/adapter-react/icons/IconClearFilter';
 import { Close } from '@material-ui/icons';
+import ObjectAddNewContent from '../dialogs/ObjectAddNewContent';
 
 const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
@@ -500,6 +501,9 @@ const styles = theme => ({
     },
     buttonIcon: {
         marginRight: theme.spacing(1),
+    },
+    background_def:{
+        backgroundColor: theme.palette.background.default
     }
 });
 
@@ -603,7 +607,7 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
             filteredOut = !context.func.find(id => id === data.id || data.id.startsWith(id + '.'));
         }
         if (!filteredOut && context.type) {
-            filteredOut = !(data.obj && data.obj.type && data.obj.type === context.role);
+            filteredOut = !(data.obj && data.obj.type && data.obj.type === context.type);
         }
         if (!filteredOut && context.customs && common) {
             filteredOut = !common.customs || !common.customs[context.customs];
@@ -1201,6 +1205,7 @@ const DEFAULT_FILTER = {
     room: '',
     func: '',
     role: '',
+    type: '',
     expertMode: false
 };
 
@@ -2114,7 +2119,6 @@ class ObjectBrowser extends Component {
      * @param {string} name
      */
     getFilterInput(name) {
-        console.log(this.filterRefs[name], this.filterRefs[name]?.current?.firstChild.value)
         return <FormControl
             className={Utils.clsx(this.props.classes.headerCellInput, this.props.classes.filterInput)}
             key={name + '_' + this.state.filterKey}
@@ -2158,39 +2162,56 @@ class ObjectBrowser extends Component {
      */
     getFilterSelect(name, values) {
         const hasIcons = !!values.find(item => item.icon);
-
-        return <Select
-            key={name + '_' + this.state.filterKey}
-            ref={this.filterRefs[name]}
-            className={this.props.classes.headerCellInput + ' no-underline'}
-            onChange={e => {
-                this.filterTimer && clearTimeout(this.filterTimer);
-                this.filterTimer = setTimeout(() => this.onFilter(), 400);
-            }}
-            defaultValue={this.state.filter[name] || ''}
-            inputProps={{ name, id: name }}
-            displayEmpty={true}
-        >
-            <MenuItem key="empty" value=""><span className={this.props.classes.selectNone}>{this.texts['filter_' + name]}</span></MenuItem>
-            {values.map(item => {
-                let id;
-                let name;
-                let icon;
-                if (typeof item === 'object') {
-                    id = item.value;
-                    name = item.name;
-                    icon = item.icon;
-                } else {
-                    id = item;
-                    name = item;
-                }
-
-                return <MenuItem className={this.props.classes.headerCellSelectItem} key={id} value={id}>
-                    {icon ? icon : (hasIcons ? <div className="itemIcon" /> : null)}
-                    {name}
-                </MenuItem>;
-            })}
-        </Select>;
+        return <div style={{ position: 'relative' }}>
+            <Select
+                key={name + '_' + this.state.filterKey}
+                ref={this.filterRefs[name]}
+                className={this.props.classes.headerCellInput + ' no-underline'}
+                onChange={e => {
+                    this.filterTimer && clearTimeout(this.filterTimer);
+                    this.filterTimer = setTimeout(() => this.onFilter(), 400);
+                }}
+                defaultValue={this.state.filter[name] || ''}
+                inputProps={{ name, id: name }}
+                displayEmpty={true}
+            >
+                <MenuItem key="empty" value=""><span className={this.props.classes.selectNone}>{this.texts['filter_' + name]}</span></MenuItem>
+                {values.map(item => {
+                    let id;
+                    let name;
+                    let icon;
+                    if (typeof item === 'object') {
+                        id = item.value;
+                        name = item.name;
+                        icon = item.icon;
+                    } else {
+                        id = item;
+                        name = item;
+                    }
+                    return <MenuItem className={this.props.classes.headerCellSelectItem} key={id} value={id}>
+                        {icon ? icon : (hasIcons ? <div className="itemIcon" /> : null)}
+                        {name}
+                    </MenuItem>;
+                })}
+            </Select>
+            {this.filterRefs[name]?.current?.childNodes[1]?.value ?
+                <div className={this.props.classes.background_def} style={{
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                    borderRadius:20
+                }}>
+                    <IconButton
+                        size="small"
+                        onClick={() => {
+                            this.filterRefs[name].current.childNodes[1].value = '';
+                            this.onFilter(name, '');
+                        }}
+                    >
+                        <Close />
+                    </IconButton>
+                </div> : null}
+        </div>;
     }
 
     /**
@@ -2351,7 +2372,7 @@ class ObjectBrowser extends Component {
                 alignItems: 'center'
             }}>
                 <IconButton>
-                    <ListIcon />
+                    <RefreshIcon />
                 </IconButton>
                 {this.props.showExpertButton &&
                     <IconButton
@@ -2402,7 +2423,7 @@ class ObjectBrowser extends Component {
                         <IconClosed />
                     </StyledBadge>
                 </IconButton>
-                <IconButton>
+                <IconButton onClick={() => this.state.selected.length && this.setState({ modalNewObj: true })}>
                     <AddIcon />
                 </IconButton>
                 <IconButton>
@@ -2420,7 +2441,16 @@ class ObjectBrowser extends Component {
             }}>
                 {`${this.props.t('Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t('States')}: ${Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length}`}
             </div>
-            <IconButton >
+            <IconButton onClick={() => {
+                if (this.state.selected.length) {
+                    window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', this.state.selected[0]);
+
+                    this.pauseSubscribe(true);
+                    this.props.router && this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
+                    this.setState({ customDialog: [this.state.selected[0]] });
+
+                }
+            }}>
                 <BuildIcon />
             </IconButton>
         </div>;
@@ -3161,7 +3191,6 @@ class ObjectBrowser extends Component {
     renderItem(root, isExpanded, classes, counter) {
         const items = [];
         counter = counter || { count: 0 };
-        console.log(root.data.id, root.data)
         root.data.id && items.push(this.renderLeaf(root, isExpanded, classes, counter));
 
         isExpanded = isExpanded === undefined ? binarySearch(this.state.expanded, root.data.id) : isExpanded;
@@ -3169,7 +3198,6 @@ class ObjectBrowser extends Component {
         if (!root.data.id || isExpanded) {
             if (!this.state.foldersFirst) {
                 root.children && items.push(root.children.map(item => {
-                    console.log(1)
 
                     // do not render too many items in column editor mode
                     if (!this.state.columnsSelectorShow || counter.count < 15) {
@@ -3182,7 +3210,6 @@ class ObjectBrowser extends Component {
             } else {
                 // first only folder
                 root.children && items.push(root.children.map(item => {
-                    console.log(2, item)
                     if (item.children) {
                         // do not render too many items in column editor mode
                         if (!this.state.columnsSelectorShow || counter.count < 15) {
@@ -3196,7 +3223,6 @@ class ObjectBrowser extends Component {
                 }));
                 // then items
                 root.children && items.push(root.children.map(item => {
-                    console.log(3)
 
                     if (!item.children) {
                         // do not render too many items in column editor mode
@@ -3478,7 +3504,10 @@ class ObjectBrowser extends Component {
             }}
         />;
     }
-
+    extendObject = (id, data) => {
+        this.props.socket.extendObject(id, data, error =>
+            error && window.alert(error));
+    }
     /**
      * The rendering method of this component.
      * @returns {JSX.Element}
@@ -3486,7 +3515,6 @@ class ObjectBrowser extends Component {
     render() {
         this.recordStates = [];
         this.unsubscribeTimer && clearTimeout(this.unsubscribeTimer);
-
         // apply filter if changed
         const jsonFilter = JSON.stringify(this.state.filter);
         if (this.lastAppliedFilter !== jsonFilter && this.objects && this.root) {
@@ -3513,7 +3541,6 @@ class ObjectBrowser extends Component {
         } else {
             const classes = this.props.classes;
             const items = this.renderItem(this.root, undefined, classes);
-
             return <TabContainer key={this.props.dialogName}>
                 <TabHeader>
                     {this.getToolbar()}
@@ -3533,6 +3560,13 @@ class ObjectBrowser extends Component {
                 {this.renderEditRoleDialog()}
                 {this.renderEnumDialog()}
                 {this.renderErrorDialog()}
+                {this.state.modalNewObj && <ObjectAddNewContent
+                    open={this.state.modalNewObj}
+                    extendObject={(id, data) => this.extendObject(id, data)}
+                    selected={this.state.selected[0]}
+                    onClose={() => this.setState({ modalNewObj: false })}
+                    onApply={() => this.setState({ modalNewObj: false })} />
+                }
             </TabContainer>;
         }
     }

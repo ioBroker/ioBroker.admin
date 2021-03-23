@@ -738,7 +738,7 @@ const RowInstances = ({
                                 <EditIcon />
                             </IconButton>
                         </div>}
-                        {expertMode &&
+                        {expertMode && (instance.mode === 'daemon' || instance.mode === 'schedule') &&
                             <div style={{ display: 'flex' }}>
                                 <InstanceInfo
                                     icon={<ScheduleIcon style={{ color: '#dc8e00' }} />}

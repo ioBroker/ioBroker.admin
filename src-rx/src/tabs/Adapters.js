@@ -85,13 +85,13 @@ const styles = theme => ({
         width: 50
     },
     description: {
-        width: 600
+        width: 570
     },
     keywords: {
 
     },
     connectionType: {
-        width: 40
+        width: 65
     },
     installed: {
         width: 120
@@ -105,7 +105,7 @@ const styles = theme => ({
         padding: 0
     },
     license: {
-        width: 150
+        width: 80
     },
     install: {
         width: 220
@@ -229,17 +229,19 @@ class Adapters extends Component {
                 const installedProm = this.props.socket.getInstalled(currentHost, updateRepo);
                 const instancesProm = this.props.socket.getAdapterInstances(updateRepo);
                 const rebuildProm = this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD');
+                const objectsProm = this.props.socket.getForeignObjects('system.adapter.*');
 
-                const [hostData, repository, installed, instances, rebuild] = await Promise.all(
+                const [hostData, repository, installed, instances, rebuild, objects] = await Promise.all(
                     [
                         hostDataProm,
                         repositoryProm,
                         installedProm,
                         instancesProm,
-                        rebuildProm
+                        rebuildProm,
+                        objectsProm
                     ]
                 );
-
+                console.log('objects', hostData, instancesProm)
                 this.rebuildSupported = rebuild || false;
 
                 const nodeJsVersion = hostData['Node.js'].replace('v', '');
@@ -486,7 +488,7 @@ class Adapters extends Component {
         }
     }
 
-    getDependencies(value) {
+    getDependencies = (value) => {
 
         const adapter = this.state.repository[value];
         let result = [];
@@ -496,7 +498,7 @@ class Adapters extends Component {
             const dependencies = adapter.dependencies;
             const nodeVersion = adapter.node;
 
-            dependencies && dependencies.forEach(dependency => {
+            dependencies && dependencies.length && dependencies.forEach(dependency => {
 
                 const entry = {
                     name: '',
@@ -834,6 +836,7 @@ class Adapters extends Component {
                         return expanded && <AdapterRow
                             key={'adapter-' + value}
                             connectionType={connectionType}
+                            dataSource={adapter.dataSource}
                             description={desc}
                             enabledCount={installed && installed.enabled}
                             expertMode={this.props.expertMode}
@@ -905,6 +908,7 @@ class Adapters extends Component {
                             key={'adapter-' + value}
                             image={image}
                             name={title}
+                            dataSource={adapter.dataSource}
                             adapter={value}
                             stat={this.state.filterTiles === 'Popular first' && adapter.stat}
                             versionDate={this.state.filterTiles === 'Recently updated' && daysAgo ? `${daysAgo} ${this.props.t('days ago')}` : ''}
@@ -1139,6 +1143,8 @@ class Adapters extends Component {
                     adapter={this.state.addInstanceAdapter}
                     hosts={this.props.hosts}
                     instances={this.state.instances}
+                    repository={this.state.repository}
+                    dependencies={this.getDependencies(this.state.addInstanceAdapter)}
                     currentHost={this.state.addInstanceHost}
                     currentInstance={this.state.addInstanceId}
                     t={this.t}
@@ -1179,7 +1185,7 @@ class Adapters extends Component {
             {this.state.adapterInstallVersionDialog &&
                 <CustomModal
                     open={this.state.adapterInstallVersionDialog}
-                    title={this.t('Versions of %s', this.state.adapterInstallVersion)}
+                    title={this.t('Please select specific version of %s', this.state.adapterInstallVersion)}
                     applyButton={false}
                     onClose={() => this.setState({
                         adapterInstallVersionDialog: false,
