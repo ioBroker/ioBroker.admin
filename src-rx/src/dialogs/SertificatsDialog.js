@@ -131,11 +131,9 @@ class SertificatsDialog extends Component
         return <div className={ classes.tabPanel }>
             <Dropzone 
                 noClick 
-                accept="text/plain,application/json"
             >
             {({ getRootProps, getInputProps, acceptedFiles, fileRejections }) => (
-                <div {...getRootProps({ 
-                    accept:  "text/plain",
+                <div {...getRootProps({  
                     className   : clsx( this.state.chclass ? "drop-container drop-dop" : 'drop-container'),
                     onDragEnter : evt => {
                         //console.log( getRootProps(), evt );
@@ -181,17 +179,7 @@ class SertificatsDialog extends Component
                                         title:  name.join(".")
                                     });
                                     this.setState({arr});
-                                    let dat = {};
-                                    arr.forEach(ar =>
-                                    {
-                                        dat[ar.title] = ar.data;
-                                    })
-                                    this.props.onChange( 
-                                        "native", 
-                                        {
-                                            certificates : dat
-                                        }
-                                    );
+                                    this.updateList(arr);
                                 };
                                 reader.readAsText(file);
                             })
@@ -262,6 +250,7 @@ class SertificatsDialog extends Component
         arr.splice(i, 1);
         console.log(arr, i )
         this.setState({arr});
+        this.updateList(arr);
     }
     onAdd = () =>
     {
@@ -270,7 +259,22 @@ class SertificatsDialog extends Component
             link: "",
             title: ""  
         });
-        this.setState({arr});
+        this.setState({arr}); 
+    }
+    updateList( arr )
+    {
+        let dat = {};
+        arr.forEach(ar =>
+        {
+            dat[ar.title] = ar.data;
+        })
+        this.props.onChange( 
+            "native", 
+            {
+                ...this.props.native,
+                certificates : dat
+            }
+        );
     }
 }
 

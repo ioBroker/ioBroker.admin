@@ -162,10 +162,6 @@ class SystemSettingsDialog extends Component
 
     onSave()
     {
-        if(this.originalConfig !== JSON.stringify( this.state.systemcConfig ))
-        {
-            alert("CHANGE SYSTEM CONFIG NEED");
-        }
         return this.props.socket.getSystemConfig(true)
             .then(systemSettings => {
                 systemSettings = systemSettings || {};
@@ -181,27 +177,29 @@ class SystemSettingsDialog extends Component
                 }
             })
                 .then(() => this.props.socket.setObject( 'system.config', this.state.systemcConfig ))
-                    .then(() => this.props.socket.getObject('system.repositories'))
-                        .then(systemRepositories => {
-                            systemRepositories = systemRepositories || {};
-                            systemRepositories.native = systemRepositories.native || {};
-                            systemRepositories.native.repositories = systemRepositories.native.repositories || {};
-                            const newRepo = JSON.parse(JSON.stringify(this.state.systemRepositories));
+                    .then(() => this.props.socket.setObject( 'system.certificates', this.state.systemcCertificates ))
+                        .then(() => this.props.socket.getObject('system.repositories'))
+                            .then(systemRepositories => {
+                                systemRepositories = systemRepositories || {};
+                                systemRepositories.native = systemRepositories.native || {};
+                                systemRepositories.native.repositories = systemRepositories.native.repositories || {};
+                                const newRepo = JSON.parse(JSON.stringify(this.state.systemRepositories));
 
-                            // merge new and existing info
-                            Object.keys(newRepo).forEach(repo => {
-                                if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].json) {
-                                    newRepo[repo].json = systemRepositories.native.repositories[repo].json;
-                                }
-                                if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].hash) {
-                                    newRepo[repo].hash = systemRepositories.native.repositories[repo].hash;
-                                }
-                            });
-                            systemRepositories.native.repositories = newRepo;
-                            this.getSettings()
-                            return this.props.socket.setObject('system.repositories', systemRepositories);
-                        })
-                            .catch(e => window.alert('Cannot save system configuration: ' + e));
+                                // merge new and existing info
+                                Object.keys(newRepo).forEach(repo => {
+                                    if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].json) {
+                                        newRepo[repo].json = systemRepositories.native.repositories[repo].json;
+                                    }
+                                    if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].hash) {
+                                        newRepo[repo].hash = systemRepositories.native.repositories[repo].hash;
+                                    }
+                                });
+                                systemRepositories.native.repositories = newRepo;
+                                this.getSettings();
+                                alert("CHANGE SYSTEM CONFIG NEED");
+                                return this.props.socket.setObject('system.repositories', systemRepositories);
+                            })
+                                .catch(e => window.alert('Cannot save system configuration: ' + e));
     }
     getTabs()
     {
@@ -307,7 +305,7 @@ class SystemSettingsDialog extends Component
         let state = {...this.state};
         state[ param ][ id ] = data;
         this.setState( state );  
-        // console.log( id, data, param, state );
+        console.log( id, data, param, state );
     }
     
     restoreState()

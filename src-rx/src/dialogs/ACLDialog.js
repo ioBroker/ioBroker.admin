@@ -185,8 +185,7 @@ class ACLDialog extends Component
         let str = this.state.common.defaultNewAcl[ ownerType ].toString( 16 );
         let s   = str.substr(elemNum, 1);
         console.log( ownerType, elemNum, num, chk );
-        console.log( str, parseInt( ("0x"+str) ),  this.state.common.defaultNewAcl[ ownerType ] );
-    
+        console.log( str, parseInt( ("0x"+str) ),  this.state.common.defaultNewAcl[ ownerType ] );    
         console.log( s );    
         if( s == 0 )
         {
@@ -238,10 +237,11 @@ class ACLDialog extends Component
         arr.splice( elemNum, 1, s );
         const res = parseInt( "0x"+ arr.join("") ); 
         console.log( arr.join(""), res );
-        let state = this.state;
+        let state = {...this.state};
         //this.state.common.defaultNewAcl
         state.common.defaultNewAcl[ownerType] = res;
         this.setState(state);
+        this.props.onChange( ownerType, res);
     }
     handleChange = (evt, id) =>
     {

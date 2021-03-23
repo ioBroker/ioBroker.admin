@@ -136,7 +136,7 @@ class RepositoriesDialog extends Component
                     <AddIcon/>
                 </Fab>
                 <Paper variant="outlined" className={ classes.descrPanel }>
-                    { this.props.t( "cert_path_note" ) }
+                    
                 </Paper>
             </div>
             <TableContainer>

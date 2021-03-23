@@ -39,7 +39,16 @@ const styles = theme => ({
     {
         margin: theme.spacing(1),
         minWidth: "100%",
-     },
+    },
+    descrPanel:
+    {
+        width:"100%",
+        backgroundColor:"transparent",
+        marginLeft:40,
+        border:"none",
+        display:'flex',
+        alignItems:"center"
+    },
     selectEmpty: 
     {
         marginTop: theme.spacing(2),
@@ -127,7 +136,7 @@ class StatisticsDialog extends Component {
         const {classes} = this.props;
         return <div className={ classes.tabPanel } style={{ height: 'calc(100% - 0px)' }}>
             <Grid container spacing={3}  className="sendData-grid" style={{ height: '100%', overflow: "hidden" }}>
-                <Grid item lg={4}>
+                <Grid item lg={4} md={4} xs={12}>
                     <Card  className={classes.note} >
                         <Typography gutterBottom variant="h6" component="div">
                             {this.props.t("Note:")} 
@@ -140,8 +149,14 @@ class StatisticsDialog extends Component {
                         />     
                      </Card >
                     { this.getTypesSelector() }
+                    <Paper 
+                        variant="outlined" 
+                        className={ classes.descrPanel } 
+                        dangerouslySetInnerHTML={{__html: this.props.t("diag-type-note-" + this.state.common.diag)}}
+                    />  
+                      
                 </Grid>
-                <Grid item lg={8} className="sendData-grid" style={{ height:'100%', display: "flex", flexDirection: "column" }}>
+                <Grid item lg={8} md={4} xs={12} className="sendData-grid" style={{ height:'100%', display: "flex", flexDirection: "column" }}>
                     <Paper className={classes.statis} >
                         <Typography gutterBottom variant="h6" component="div">
                             {this.props.t("Sent data:")}

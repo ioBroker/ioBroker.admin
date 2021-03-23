@@ -59,9 +59,9 @@ class SSLDialog extends Component
     }
     render()
     {
-        console.log( this.props.native.letsEncrypt );
         const { classes, native } = this.state; 
         const {letsEncrypt} = native || {};
+        console.log( letsEncrypt );
         return <div className={ classes.tabPanel }>
             <div className={ classes.buttonPanel }>
                 <Fab 
@@ -85,7 +85,7 @@ class SSLDialog extends Component
                         <TextField
                             id="email"
                             label={ this.props.t("Email for account:")}
-                            value={ letsEncrypt.email }
+                            value={ letsEncrypt ? letsEncrypt.email : '' }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
@@ -99,7 +99,7 @@ class SSLDialog extends Component
                         <TextField
                             id="domains"
                             label={ this.props.t("Domains:")}
-                            value={ letsEncrypt.domains }
+                            value={ letsEncrypt ? letsEncrypt.domains : '' }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
@@ -113,7 +113,7 @@ class SSLDialog extends Component
                         <TextField
                             id="path" 
                             label={ this.props.t("Path to storage:")}
-                            value={ letsEncrypt.path }
+                            value={ letsEncrypt ? letsEncrypt.path : "" }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
@@ -131,7 +131,8 @@ class SSLDialog extends Component
         this.props.onChange( id, value);
         console.log( id, value );
         let state = {...this.state};
-        state[id] = value;
+        state.native.letsEncrypt = state.native.letsEncrypt ? state.native.letsEncrypt : {};
+        state.native.letsEncrypt[id] = value;
         this.setState(state);        
     }
 }
