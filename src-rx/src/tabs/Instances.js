@@ -413,7 +413,7 @@ class Instances extends Component {
             this.subscribeStates();
             this.subscribeObjects();
         }
-        
+
         //console.log(this.states);
         // console.log(this.objects);
     }
@@ -539,7 +539,7 @@ class Instances extends Component {
 
     isName = (id) => {
         const obj = this.objects[id];
-        return obj?.common?.titleLang && obj?.common?.titleLang['en'] === obj?.common?.title ? obj?.common?.titleLang[this.props.lang] : obj?.common?.title;
+        return !obj?.common?.title || (obj?.common?.titleLang && obj?.common?.titleLang.en === obj?.common?.title) ? obj?.common?.titleLang[this.props.lang] || obj?.common?.titleLang.en : obj?.common?.title;
     }
     isModeSchedule = (id) => {
         const obj = this.objects[id];

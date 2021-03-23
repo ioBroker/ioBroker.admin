@@ -21,26 +21,25 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 // import blueGrey from '@material-ui/core/colors/blueGrey' 
 
-
 // icons
-
-
 
 const styles = theme => ({
     tabPanel: {
         width:      '100%',
         height:     '100% ',
         overflow:   'auto',
+        overflowX:   'hidden',
         padding:    15,
-        position:   "relative",
-        //backgroundColor: blueGrey[ 50 ]
+        position:   "relative" 
     },
     tableContainer:{
         zIndex:100
     },
     table: 
     {
-        minWidth: 650,
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%'
     },
     buttonPanel :
     {
@@ -67,7 +66,7 @@ const styles = theme => ({
     input : 
     {
         width: "100%"
-    }
+    } 
 });
 
 class SertificatsDialog extends Component 
@@ -91,21 +90,21 @@ class SertificatsDialog extends Component
         const { classes } = this.props; 
         const rows = this.state.arr.map((e, i) =>
         {
-            return <TableRow key={e.title + e.data} >
-                <TableCell className={this.props.classes.littleRow}>
+            return <TableRow key={e.title + e.data}  className="float_row">
+                <TableCell className={this.props.classes.littleRow  + " float_cell"}>
                     {i + 1}
                 </TableCell>
-                <TableCell className={this.props.classes.nameRow}>                               
+                <TableCell className={this.props.classes.nameRow  + " float_cell"}>                               
                     <TextField 
                         defaultValue={e.title}
                         InputLabelProps={{
                             readOnly: false,
                             shrink: true,
                         }} 
-                        className={this.props.classes.input}
+                        className={this.props.classes.input + " xs-centered"}
                     />
                 </TableCell>
-                <TableCell>
+                <TableCell className= "grow_cell float_cell">
                     <TextField
                         id="default" 
                         defaultValue={ e.data }
@@ -113,11 +112,11 @@ class SertificatsDialog extends Component
                             readOnly: false,
                             shrink: true,
                         }}
-                        className={this.props.classes.input}
+                        className={this.props.classes.input + " xs-centered"}
                         onChange={evt => this.onChangeText(evt, e.title) }
                     />
                 </TableCell>
-                <TableCell className={this.props.classes.littleRow}>
+                <TableCell className={this.props.classes.littleRow  + " float_cell"}>
                     <Fab
                         size="small"  
                         color="secondary" 
@@ -214,11 +213,12 @@ class SertificatsDialog extends Component
             <div className={ classes.buttonPanel }>
                 <Fab 
                     size="small"  
+                    className="small_size"
                     color="primary" 
                     aria-label="add"
                     onClick={this.onAdd}
                 >
-                    <AddIcon />
+                    <AddIcon/>
                 </Fab>
                 <Paper variant="outlined" className={ classes.descrPanel }>
                     {
@@ -231,13 +231,15 @@ class SertificatsDialog extends Component
             <TableContainer className={classes.tableContainer}>
                 <Table className={classes.table} aria-label="customized table">
                     <TableHead>
-                        <TableRow>
-                            <TableCell className={this.props.classes.littleRow}> </TableCell>
-                            <TableCell className={this.props.classes.nameRow}>
+                        <TableRow className="float_row">
+                            <TableCell className={this.props.classes.littleRow  + " float_cell"}> </TableCell>
+                            <TableCell className={this.props.classes.nameRow  + " float_cell"}>
                                 {this.props.t("name")}
                             </TableCell>
-                            <TableCell>{this.props.t("Sertificate")}</TableCell>
-                            <TableCell className={this.props.classes.littleRow}> </TableCell>
+                            <TableCell className= "grow_cell float_cell">
+                                {this.props.t("Sertificate")}
+                            </TableCell>
+                            <TableCell className={this.props.classes.littleRow  + " float_cell"}> </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
