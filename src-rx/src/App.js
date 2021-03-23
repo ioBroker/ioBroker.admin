@@ -767,7 +767,7 @@ class App extends Router {
                                         if (m) {
                                             /*const adapter  = m[1];
                                             const instance = m[2] ? parseInt(m[2], 10) : null;
-    
+
                                             let link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab.html';
                                             if (tab.common.materializeTab) {
                                                 link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab_m.html';
@@ -1055,7 +1055,8 @@ class App extends Router {
                                     window.localStorage.setItem('App.expertMode', !this.state.expertMode);
                                     this.setState({ expertMode: !this.state.expertMode });
                                 }}
-                                color={this.state.expertMode ? 'secondary' : 'default'}
+                                style={{color: this.state.expertMode ? '#BB0000' : 'inherit'}}
+                                color="default"
                             >
                                 <ExpertIcon
                                     title={I18n.t('Toggle expert mode')}
@@ -1071,6 +1072,7 @@ class App extends Router {
                                 </IconButton>
                             }
                             <HostSelectors
+                                expertMode={this.state.expertMode}
                                 socket={this.socket}
                                 currentHost={this.state.currentHost}
                                 setCurrentHost={(hostName, host) => {

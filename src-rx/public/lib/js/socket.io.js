@@ -348,7 +348,7 @@ function SocketClient () {
                 this.connect(url, options);
             }, connectionCount * 1000);
         } else {
-            this.log.debug('Reconnect is yet running ' + connectionCount);
+            this.log.debug('Reconnect is already running ' + connectionCount);
         }
     };
 
