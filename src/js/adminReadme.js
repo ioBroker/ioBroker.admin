@@ -59,7 +59,7 @@ function Readme(main) {
         html = html.replace(/id="/g, 'id="mdid-');
         html = html.replace(/src="(?!http)/g, 'class="responsive-img" src="' + link);
         html = html.replace(/href="#/g, 'href="" class="goto-link" data-goto="#mdid-');
-        html = html.replace(/href="(\S*).md/g, function (match) {
+        html = html.replace(/href="(\S*)\.md/g, function (match) {
             return 'href="" class="md-link" data-url="' + that.mainUrl + match.replace('href="', '');
         });
         html = html.replace(/<!--[^>]*-->/g, '\n');
