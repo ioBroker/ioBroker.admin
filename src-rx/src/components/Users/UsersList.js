@@ -66,6 +66,9 @@ const styles = theme => ({
     iconPreview: {
         maxHeight: 40,
         maxWidth: 40,
+    },
+    mainDescription: {
+        fontSize: '200%'
     }
 });
 
@@ -203,7 +206,15 @@ class UsersList extends Component {
         this.props.socket.setObject(user._id, user)
         .then(()=>{
             if (originalId && originalId !== this.state.userEditDialog._id) {
-                return this.props.socket.delObject(originalId);
+                return this.props.socket.delObject(originalId).then(()=>{
+                    return Promise.all(this.state.groups.map(group => {
+                        if (group.common.members.includes(originalId)) {
+                            let groupChanged = JSON.parse(JSON.stringify(group));
+                            groupChanged.common.members[groupChanged.common.members.indexOf(originalId)] = user._id;
+                            return this.props.socket.setObject(groupChanged._id, groupChanged)
+                        }
+                    }));
+                })
             }
         })
         .then(()=>{
@@ -240,6 +251,14 @@ class UsersList extends Component {
 
     deleteUser = (userId) => {
         this.props.socket.delObject(userId).then(()=>{
+            return Promise.all(this.state.groups.map(group => {
+                if (group.common.members.includes(userId)) {
+                    let groupChanged = JSON.parse(JSON.stringify(group));
+                    groupChanged.common.members.splice(groupChanged.common.members.indexOf(userId), 1);
+                    return this.props.socket.setObject(groupChanged._id, groupChanged)
+                }
+            }));
+        }).then(()=>{
             this.updateData();
             this.setState({userDeleteDialog: false});
         });
@@ -252,22 +271,22 @@ class UsersList extends Component {
         });
     }
 
-    addUserToGroup = (user_id, group_id) => {
-        let group = this.state.groups.find(group => group._id === group_id);
+    addUserToGroup = (userId, groupId) => {
+        let group = this.state.groups.find(group => group._id === groupId);
         let members = group.common.members;
-        if (!members.includes(user_id)) {
-            members.push(user_id);
+        if (!members.includes(userId)) {
+            members.push(userId);
             this.props.socket.setObject(group._id, group).then(() => {
                 this.updateData();
             });
         }
     }
 
-    removeUserFromGroup = (user_id, group_id) => {
-        let group = this.state.groups.find(group => group._id === group_id);
+    removeUserFromGroup = (userId, groupId) => {
+        let group = this.state.groups.find(group => group._id === groupId);
         let members = group.common.members;
-        if (members.includes(user_id)) {
-            members.splice(members.indexOf(user_id), 1);
+        if (members.includes(userId)) {
+            members.splice(members.indexOf(userId), 1);
             this.props.socket.setObject(group._id, group).then(() => {
                 this.updateData();
             });
@@ -280,6 +299,7 @@ class UsersList extends Component {
         }
         return <>
             <DndProvider backend={HTML5Backend}>
+                <div className={this.props.classes.mainDescription}>{this.props.t('You can drag users to groups.')}</div>
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
                         <Fab size="small" className={this.props.classes.left} onClick={()=>this.showGroupEditDialog(this.groupTemplate, true)}>

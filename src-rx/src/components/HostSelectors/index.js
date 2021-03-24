@@ -16,6 +16,9 @@ const styles = theme => ({
         margin: 'auto 0',
         position: 'relative',
         marginRight: 10,
+        borderRadius: 3,
+        background: '#FFFFFF',
+        padding: 2,
         '&:after': {
             content: '""',
             position: 'absolute',
@@ -31,7 +34,7 @@ const styles = theme => ({
     },
 })
 
-export default withStyles(styles)(function HostSelectors({ classes, disabled, socket, currentHost, setCurrentHost }) {
+export default withStyles(styles)(function HostSelectors({ classes, disabled, socket, currentHost, setCurrentHost , expertMode}) {
     const [anchorEl, setAnchorEl] = useState(null);
     const [hosts, setHosts] = useState([]);
     const [alive, setAlive] = useState({});
@@ -65,6 +68,10 @@ export default withStyles(styles)(function HostSelectors({ classes, disabled, so
             setHostSelect(newObj);
         }
     }, [currentHost, hosts]);
+
+    if (!expertMode && hosts.length < 2) {
+        return null;
+    }
 
     return <div>
         <Button style={{

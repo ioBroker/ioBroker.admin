@@ -29,6 +29,7 @@ function GroupBlock(props) {
             <Typography gutterBottom variant="h5" component="h5" className={props.classes.userGroupTitle}>
                 {props.group.common.icon ? <img alt="" className={props.classes.icon} src={props.group.common.icon}/> : <GroupIcon/>} 
                 <span>{props.getName(props.group.common.name)}</span>
+                <span>&nbsp;{props.getName(props.group._id)}</span>
                 {props.group.common.desc !== '' ? <span>&nbsp;({props.group.common.desc})</span> : null}
             </Typography>
             {props.group.common.members.length ? <div>{props.t('Group members')}:</div> : null}

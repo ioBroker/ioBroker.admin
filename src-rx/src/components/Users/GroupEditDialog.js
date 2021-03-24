@@ -56,7 +56,7 @@ function GroupEditDialog(props) {
     }
 
     let idExists = props.groups.find(group => group._id == props.group._id);
-    let idChanged = props.group.id != originalId;
+    let idChanged = props.group._id !== originalId;
 
     let canSave = props.group._id !== 'system.group.' &&
         props.group.common.password === props.group.common.passwordRepeat;
@@ -81,6 +81,7 @@ function GroupEditDialog(props) {
                 newData.common.name = e.target.value;
                 props.change(newData);
             }}
+            autoComplete="off"
             classes={props.classes}
         />
         <UsersTextField 
