@@ -17,7 +17,6 @@ import InputLabel from '@material-ui/core/InputLabel';
 
 import blueGrey from '@material-ui/core/colors/blueGrey';
 
-
 // icons
 
 const styles = theme => ({
@@ -67,6 +66,9 @@ class ACLDialog extends Component
         }
 
     }
+    
+    permBits = [[0x400, 0x200], [0x40, 0x20], [0x4, 0x2]];
+    
     getTypes( )
     {
         return [
@@ -86,26 +88,8 @@ class ACLDialog extends Component
     }
     getRights( type )
     {
-        let rts = this.state.common.defaultNewAcl[ type ].toString( 16 );
-        let rights = [];
-        for (var i = 0; i < rts.length; i++) { 
-            if( parseInt(rts[i]) == 0 )
-            {
-                rights.push([false, false]);
-            }
-            else if( parseInt(rts[i]) == 2 )
-            {
-                rights.push([false, true]);   
-            }
-            else if( parseInt(rts[i]) == 4 )
-            {
-                rights.push([true, false]); 
-            }
-            else if( parseInt(rts[i]) == 6 )
-            {
-                rights.push([true, true]); 
-            }
-        }
+        let rts = this.state.common.defaultNewAcl[ type ]
+        let rights = this.permBits.map(bitGroup => bitGroup.map(bit => rts & bit));
         return rights;
     }
     
@@ -181,67 +165,11 @@ class ACLDialog extends Component
     }
     handleCheck = ( evt, ownerType, elemNum, num ) =>
     {
-        let chk = evt.target.checked ? 1 : 0;
-        let str = this.state.common.defaultNewAcl[ ownerType ].toString( 16 );
-        let s   = str.substr(elemNum, 1);
-        console.log( ownerType, elemNum, num, chk );
-        console.log( str, parseInt( ("0x"+str) ),  this.state.common.defaultNewAcl[ ownerType ] );    
-        console.log( s );    
-        if( s == 0 )
-        {
-            if(chk)
-            {
-                s = num == 0 ? 2 : 4;
-            }
-            else
-            {
-                s = num == 0 ? 0 : 0;
-            }
-        }
-        else if(s == 2 )
-        {
-            if(chk)
-            {
-                s = num == 0 ? 2 : 4; 
-            }
-            else
-            {
-                s = num == 0 ? 0 : 0; 
-            } 
-        }
-        else if( s == 4 )
-        {
-            if(chk)
-            {
-                s = num == 0 ? 6 : 6; 
-            }
-            else
-            {
-                s = num == 0 ? 0 : 0; 
-            }
-        }
-        else if( s == 6 )
-        {
-            if(chk)
-            {
-                s = num == 0 ? 6 : 6; 
-            }
-            else
-            {
-                s = num == 0 ? 2 : 4; 
-            }
-        } 
-        console.log( s );
-        console.log( elemNum );
-        let arr = str.split( "" );
-        arr.splice( elemNum, 1, s );
-        const res = parseInt( "0x"+ arr.join("") ); 
-        console.log( arr.join(""), res );
+        console.log( ownerType, elemNum, num, evt.target.checked );
         let state = {...this.state};
-        //this.state.common.defaultNewAcl
-        state.common.defaultNewAcl[ownerType] = res;
+        state.common.defaultNewAcl[ownerType] ^= this.permBits[elemNum][num];
+        console.log(state.common.defaultNewAcl[ownerType]);
         this.setState(state);
-        this.props.onChange( ownerType, res);
     }
     handleChange = (evt, id) =>
     {
