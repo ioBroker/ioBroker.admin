@@ -17,7 +17,7 @@ function UserEditDialog(props) {
     }
 
     let idExists = props.users.find(user => user._id == props.user._id);
-    let idChanged = props.user.id != originalId;
+    let idChanged = props.user._id !== originalId;
 
     let canSave = props.user._id !== 'system.user.' &&
         props.user.common.password === props.user.common.passwordRepeat;
@@ -43,6 +43,7 @@ function UserEditDialog(props) {
                     newData.common.name = e.target.value;
                     props.change(newData);
                 }}
+                autoComplete="off"
                 classes={props.classes}
             />
             <UsersTextField 
@@ -87,6 +88,7 @@ function UserEditDialog(props) {
                     props.change(newData);
                 }}
                 type="password"
+                autoComplete="off"
                 classes={props.classes}
             />
             <UsersTextField 
@@ -99,6 +101,7 @@ function UserEditDialog(props) {
                     props.change(newData);
                 }}
                 type="password"
+                autoComplete="off"
                 classes={props.classes}
             />
             <UsersFileInput 

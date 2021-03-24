@@ -16,6 +16,7 @@ export function UsersTextField(props) {
             { props.t(props.label)}
         </InputLabel>
         <TextField
+            autoComplete={props.autoComplete}
             label={ props.t(props.label)}
             value={props.value}
             onChange={props.onChange}

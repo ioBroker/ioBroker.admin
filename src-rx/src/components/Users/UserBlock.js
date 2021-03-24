@@ -38,7 +38,8 @@ function UserBlock(props) {
             <Typography gutterBottom variant="h5" component="h5" className={props.classes.userGroupTitle}>
                 {props.user.common.icon ? <img alt="" className={props.classes.icon} src={props.user.common.icon}/> : <PersonIcon/>} 
                 <span>{props.getName(props.user.common.name)}</span>
-                {props.user.common.desc !== '' ? <span>&nbsp;({props.user.common.desc})</span> : null}
+                <span>&nbsp;{props.getName(props.user._id)}</span>
+                <span>{props.user.common.desc !== '' ? <span>&nbsp;({props.user.common.desc})</span> : null}</span>
             </Typography>
             {props.groups.find(group => group.common.members && group.common.members.includes(props.user._id)) ? 
                 <div>{props.t('In groups')}:</div> : 
