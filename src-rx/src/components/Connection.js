@@ -762,6 +762,23 @@ class Connection {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
+
+        if (!obj) {
+            return Promise.reject('Null object is not allowed');
+        }
+
+        obj = JSON.parse(JSON.stringify(obj));
+
+        if (obj.hasOwnProperty('from')) {
+            delete obj.from;
+        }
+        if (obj.hasOwnProperty('user')) {
+            delete obj.user;
+        }
+        if (obj.hasOwnProperty('ts')) {
+            delete obj.ts;
+        }
+
         return new Promise((resolve, reject) =>
             this._socket.emit('setObject', id, obj, err =>
                 err ? reject(err) : resolve()));
@@ -948,6 +965,19 @@ class Connection {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
+
+        obj = JSON.parse(JSON.stringify(obj));
+
+        if (obj.hasOwnProperty('from')) {
+            delete obj.from;
+        }
+        if (obj.hasOwnProperty('user')) {
+            delete obj.user;
+        }
+        if (obj.hasOwnProperty('ts')) {
+            delete obj.ts;
+        }
+
         return new Promise((resolve, reject) =>
             this._socket.emit('extendObject', id, obj, err => err ? reject(err) : resolve()));
     }

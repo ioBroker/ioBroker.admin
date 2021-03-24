@@ -415,12 +415,10 @@ class App extends Router {
                     if (!this.logsHandlerRegistered) {
                         this.logsHandlerRegistered = true;
                         const { setStateContext } = this.context;
-                        this.logsWorker.registerErrorCountHandler(logErrors => setStateContext({
-                            logErrors
-                        }));
-                        this.logsWorker.registerWarningCountHandler(logWarnings => setStateContext({
-                            logWarnings
-                        }));
+                        this.logsWorker.registerErrorCountHandler(logErrors =>
+                            (this.state.currentTab.tab !== 'tab-logs' || (this.state.currentTab.tab === 'tab-logs' && this.context.stateContext.logErrors)) && setStateContext({logErrors}));
+                        this.logsWorker.registerWarningCountHandler(logWarnings =>
+                            (this.state.currentTab.tab !== 'tab-logs' || (this.state.currentTab.tab === 'tab-logs' && this.context.stateContext.logWarnings)) && setStateContext({logWarnings}));
                     }
                 },
                 //onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
@@ -797,11 +795,13 @@ class App extends Router {
     }
 
     clearLogErrors = async () => {
-        const { setStateContext } = this.context;
+        /*const { setStateContext } = this.context;
         setStateContext({
             logErrors: 0,
             logWarnings: 0
-        });
+        });*/
+        this.logsWorker.resetErrors();
+        this.logsWorker.resetWarnings();
     }
 
     getCurrentDialog() {
@@ -992,167 +992,153 @@ class App extends Router {
 
     render() {
         if (this.state.login) {
-            return (
-                <ThemeProvider theme={this.state.theme}>
-                    <Login t={I18n.t} />
-                </ThemeProvider>
-            );
+            return <ThemeProvider theme={this.state.theme}>
+                <Login t={I18n.t} />
+            </ThemeProvider>;
         }
 
         if (!this.state.ready) {
-            return (
-                <ThemeProvider theme={this.state.theme}>
-                    <Loader theme={this.state.themeType} />
-                </ThemeProvider>
-            );
+            return <ThemeProvider theme={this.state.theme}>
+                <Loader theme={this.state.themeType} />
+            </ThemeProvider>;
         }
 
         const { classes } = this.props;
         const small = this.props.width === 'xs' || this.props.width === 'sm';
-        return (
-            <ThemeProvider theme={this.state.theme}>
-                <Paper elevation={0} className={classes.root}>
-                    <AppBar
-                        color="default"
-                        position="fixed"
-                        className={clsx(
-                            classes.appBar,
-                            { [classes.appBarShift]: !small && this.state.drawerState === DrawerStates.opened },
-                            { [classes.appBarShiftCompact]: !small && this.state.drawerState === DrawerStates.compact }
-                        )}
-                    >
-                        <Toolbar>
-                            <IconButton
-                                edge="start"
-                                className={clsx(classes.menuButton, !small && this.state.drawerState !== DrawerStates.closed && classes.hide)}
-                                onClick={() => this.handleDrawerState(DrawerStates.opened)}
-                            >
-                                <MenuIcon />
-                            </IconButton>
-                            <IconButton>
-                                <VisibilityIcon />
-                            </IconButton>
-                            <IconButton onClick={() => Router.doNavigate(null, 'system')}>
-                                <BuildIcon />
-                            </IconButton>
-                            <IconButton onClick={() => this.toggleTheme()}>
-                                {this.state.themeName === 'dark' &&
-                                    <Brightness4Icon />
-                                }
-                                {this.state.themeName === 'blue' &&
-                                    <Brightness5Icon />
-                                }
-                                {this.state.themeName === 'colored' &&
-                                    <Brightness6Icon />
-                                }
-                                {this.state.themeName === 'light' &&
-                                    <Brightness7Icon />
-                                }
-                            </IconButton>
-                            {/*This will be removed later to settings, to not allow so easy to enable it*/}
-                            <IconButton
-                                onClick={() => {
-                                    window.localStorage.setItem('App.expertMode', !this.state.expertMode);
-                                    this.setState({ expertMode: !this.state.expertMode });
-                                }}
-                                style={{color: this.state.expertMode ? '#BB0000' : 'inherit'}}
-                                color="default"
-                            >
-                                <ExpertIcon
-                                    title={I18n.t('Toggle expert mode')}
-                                    glowColor={this.state.theme.palette.secondary.main}
-                                    active={this.state.expertMode}
-                                    className={clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
-                                />
-                            </IconButton>
-                            {/*This will be removed later to settings, to not allow so easy to edit it*/}
-                            {this.state.expertMode &&
-                                <IconButton onClick={() => Router.doNavigate(null, 'base')}>
-                                    <BuildIcon className={classes.baseSettingsButton} />
-                                </IconButton>
-                            }
-                            <HostSelectors
-                                expertMode={this.state.expertMode}
-                                socket={this.socket}
-                                currentHost={this.state.currentHost}
-                                setCurrentHost={(hostName, host) => {
-                                    this.setState({
-                                        currentHostName: hostName,
-                                        currentHost: host
-                                    }, () => {
-                                        this.logsWorkerChanged(host);
-                                        window.localStorage.setItem('App.currentHost', host);
-                                    });
-                                }}
-                                disabled={
-                                    this.state.currentTab.tab !== 'tab-instances' &&
-                                    this.state.currentTab.tab !== 'tab-adapters' &&
-                                    this.state.currentTab.tab !== 'tab-logs'
-                                }
+        return <ThemeProvider theme={this.state.theme}>
+            <Paper elevation={0} className={classes.root}>
+                <AppBar
+                    color="default"
+                    position="fixed"
+                    className={clsx(
+                        classes.appBar,
+                        { [classes.appBarShift]: !small && this.state.drawerState === DrawerStates.opened },
+                        { [classes.appBarShiftCompact]: !small && this.state.drawerState === DrawerStates.compact }
+                    )}
+                >
+                    <Toolbar>
+                        <IconButton
+                            edge="start"
+                            className={clsx(classes.menuButton, !small && this.state.drawerState !== DrawerStates.closed && classes.hide)}
+                            onClick={() => this.handleDrawerState(DrawerStates.opened)}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <IconButton>
+                            <VisibilityIcon />
+                        </IconButton>
+                        <IconButton onClick={() => Router.doNavigate(null, 'system')}>
+                            <BuildIcon />
+                        </IconButton>
+                        <IconButton onClick={() => this.toggleTheme()}>
+                            {this.state.themeName === 'dark' && <Brightness4Icon />}
+                            {this.state.themeName === 'blue' && <Brightness5Icon />}
+                            {this.state.themeName === 'colored' && <Brightness6Icon />}
+                            {this.state.themeName === 'light' && <Brightness7Icon />}
+                        </IconButton>
+                        {/*This will be removed later to settings, to not allow so easy to enable it*/}
+                        <IconButton
+                            onClick={() => {
+                                window.localStorage.setItem('App.expertMode', !this.state.expertMode);
+                                this.setState({ expertMode: !this.state.expertMode });
+                            }}
+                            style={{color: this.state.expertMode ? '#BB0000' : 'inherit'}}
+                            color="default"
+                        >
+                            <ExpertIcon
+                                title={I18n.t('Toggle expert mode')}
+                                glowColor={this.state.theme.palette.secondary.main}
+                                active={this.state.expertMode}
+                                className={clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
                             />
-                            <Typography variant="h6" className={classes.title} style={{ flexGrow: 1 }} />
-                            {this.state.cmd && !this.state.cmdDialog && <IconButton onClick={() => this.setState({ cmdDialog: true })}>
-                                <PictureInPictureAltIcon className={this.state.commandError ? classes.errorCmd : this.state.performed ? classes.performed : classes.cmd} />
-                            </IconButton>}
-                            {/* Show host selector */}
-
-                            <Grid container className={clsx(this.state.drawerState !== 0 && classes.avatarVisible, classes.avatarNotVisible)} spacing={1} alignItems="center" style={{ width: 'initial' }}>
-                                <Grid item>
-                                    <Typography>admin</Typography>
-                                </Grid>
-                                <Grid item>
-                                    <Avatar className={clsx((this.state.themeName === 'colored' || this.state.themeName === 'blue') && classes.logoWhite)} alt="ioBroker" src="img/no-image.png" />
-                                </Grid>
-                            </Grid>
-                        </Toolbar>
-                    </AppBar>
-                    <DndProvider backend={!small ? HTML5Backend : TouchBackend}>
-                        <Drawer
-                            state={this.state.drawerState}
-                            systemConfig={this.state.systemConfig}
-                            handleNavigation={name => this.handleNavigation(name)}
-                            onStateChange={state => this.handleDrawerState(state)}
-                            onLogout={() => this.logout()}
-                            currentTab={this.state.currentTab && this.state.currentTab.tab}
-                            instancesWorker={this.instancesWorker}
-                            logoutTitle={I18n.t('Logout')}
-                            isSecure={this.socket.isSecure}
-                            t={I18n.t}
-                            lang={I18n.getLanguage()}
-                            socket={this.socket}
-                            expertMode={this.state.expertMode}
-                            ready={this.state.ready}
-                            themeName={this.state.themeName}
-                        />
-                    </DndProvider>
-                    <Paper
-                        elevation={0}
-                        square
-                        className={
-                            clsx(classes.content, {
-                                [classes.contentMargin]: !small && this.state.drawerState !== DrawerStates.compact,
-                                [classes.contentMarginCompact]: !small && this.state.drawerState !== DrawerStates.opened,
-                                [classes.contentShift]: !small && this.state.drawerState !== DrawerStates.closed
-                            })
+                        </IconButton>
+                        {/*This will be removed later to settings, to not allow so easy to edit it*/}
+                        {this.state.expertMode &&
+                            <IconButton onClick={() => Router.doNavigate(null, 'base')}>
+                                <BuildIcon className={classes.baseSettingsButton} />
+                            </IconButton>
                         }
-                    >
-                        {this.getCurrentTab()}
-                    </Paper>
-                    <Snackbar
-                        className={this.props.classes['alert_' + this.state.alertType]}
-                        open={this.state.alert}
-                        autoHideDuration={6000}
-                        onClose={() => this.handleAlertClose()}
-                        message={this.state.alertMessage}
+                        <HostSelectors
+                            expertMode={this.state.expertMode}
+                            socket={this.socket}
+                            currentHost={this.state.currentHost}
+                            setCurrentHost={(hostName, host) => {
+                                this.setState({
+                                    currentHostName: hostName,
+                                    currentHost: host
+                                }, () => {
+                                    this.logsWorkerChanged(host);
+                                    window.localStorage.setItem('App.currentHost', host);
+                                });
+                            }}
+                            disabled={
+                                this.state.currentTab.tab !== 'tab-instances' &&
+                                this.state.currentTab.tab !== 'tab-adapters' &&
+                                this.state.currentTab.tab !== 'tab-logs'
+                            }
+                        />
+                        <Typography variant="h6" className={classes.title} style={{ flexGrow: 1 }} />
+                        {this.state.cmd && !this.state.cmdDialog && <IconButton onClick={() => this.setState({ cmdDialog: true })}>
+                            <PictureInPictureAltIcon className={this.state.commandError ? classes.errorCmd : this.state.performed ? classes.performed : classes.cmd} />
+                        </IconButton>}
+                        {/* Show host selector */}
+
+                        <Grid container className={clsx(this.state.drawerState !== 0 && classes.avatarVisible, classes.avatarNotVisible)} spacing={1} alignItems="center" style={{ width: 'initial' }}>
+                            <Grid item>
+                                <Typography>admin</Typography>
+                            </Grid>
+                            <Grid item>
+                                <Avatar className={clsx((this.state.themeName === 'colored' || this.state.themeName === 'blue') && classes.logoWhite)} alt="ioBroker" src="img/no-image.png" />
+                            </Grid>
+                        </Grid>
+                    </Toolbar>
+                </AppBar>
+                <DndProvider backend={!small ? HTML5Backend : TouchBackend}>
+                    <Drawer
+                        state={this.state.drawerState}
+                        systemConfig={this.state.systemConfig}
+                        handleNavigation={name => this.handleNavigation(name)}
+                        onStateChange={state => this.handleDrawerState(state)}
+                        onLogout={() => this.logout()}
+                        currentTab={this.state.currentTab && this.state.currentTab.tab}
+                        instancesWorker={this.instancesWorker}
+                        logoutTitle={I18n.t('Logout')}
+                        isSecure={this.socket.isSecure}
+                        t={I18n.t}
+                        lang={I18n.getLanguage()}
+                        socket={this.socket}
+                        expertMode={this.state.expertMode}
+                        ready={this.state.ready}
+                        themeName={this.state.themeName}
                     />
+                </DndProvider>
+                <Paper
+                    elevation={0}
+                    square
+                    className={
+                        clsx(classes.content, {
+                            [classes.contentMargin]: !small && this.state.drawerState !== DrawerStates.compact,
+                            [classes.contentMarginCompact]: !small && this.state.drawerState !== DrawerStates.opened,
+                            [classes.contentShift]: !small && this.state.drawerState !== DrawerStates.closed
+                        })
+                    }
+                >
+                    {this.getCurrentTab()}
                 </Paper>
-                {this.getCurrentDialog()}
-                {this.renderConfirmDialog()}
-                {this.renderCommandDialog()}
-                {this.renderWizardDialog()}
-                {!this.state.connected && <Connecting />}
-            </ThemeProvider>
-        );
+                <Snackbar
+                    className={this.props.classes['alert_' + this.state.alertType]}
+                    open={this.state.alert}
+                    autoHideDuration={6000}
+                    onClose={() => this.handleAlertClose()}
+                    message={this.state.alertMessage}
+                />
+            </Paper>
+            {this.getCurrentDialog()}
+            {this.renderConfirmDialog()}
+            {this.renderCommandDialog()}
+            {this.renderWizardDialog()}
+            {!this.state.connected && <Connecting />}
+        </ThemeProvider>;
     }
 }
 App.contextType = ContextWrapper;

@@ -35,9 +35,7 @@ class LogsWorker {
             if (!this.countErrors) {
                 const errors = this.errors;
                 this.error = 0;
-                if (errors) {
-                    this.errorCountHandlers.forEach(handler => handler && handler(errors));
-                }
+                errors && this.errorCountHandlers.forEach(handler => handler && handler(errors));
             }
         }
     }
@@ -54,7 +52,21 @@ class LogsWorker {
             }
         }
     }
-    
+
+    resetErrors() {
+        if (this.errors) {
+            this.errors = 0;
+            this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
+        }
+    }
+
+    resetWarnings() {
+        if (this.warnings) {
+            this.warnings = 0;
+            this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
+        }
+    }
+
     logHandler(line) {
         const errors = this.errors;
         const warnings = this.warnings;
@@ -79,7 +91,7 @@ class LogsWorker {
             this.connected = false;
         }
     }
-    
+
     registerHandler(cb) {
         if (!this.handlers.includes(cb)) {
             this.handlers.push(cb);
@@ -201,7 +213,7 @@ class LogsWorker {
             if (length + 1 === this.maxLogs) {
                 this.logs.shift();
             }
-            
+
             if (isNew && obj.severity === 'error' && this.countErrors) {
                 this.errors++;
             }

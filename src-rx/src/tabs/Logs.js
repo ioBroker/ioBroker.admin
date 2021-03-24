@@ -245,11 +245,13 @@ class Logs extends Component {
     componentDidMount() {
         this.props.logsWorker && this.props.logsWorker.enableCountErrors(false);
         this.props.logsWorker.registerHandler(this.logHandlerBound);
+        this.props.clearErrors();
     }
 
     componentWillUnmount() {
         this.props.logsWorker && this.props.logsWorker.enableCountErrors(true);
         this.props.logsWorker.unregisterHandler(this.logHandlerBound);
+        this.props.clearErrors();
     }
 
     logHandler(newLogs) {

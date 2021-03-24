@@ -86,75 +86,67 @@ class AdapterUpdateDialog extends Component {
 
         const { classes } = this.props;
 
-        return (
-            <Dialog
-                onClose={this.props.onClose}
-                open={this.props.open}
-            >
-                <DialogTitle disableTypography={true}>
-                    <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
-                        {this.t('Please confirm')}
-                        <IconButton className={classes.closeButton} onClick={this.props.onClose}>
-                            <CloseIcon />
-                        </IconButton>
-                    </Typography>
-                </DialogTitle>
-                <DialogContent dividers>
-                    <Grid
-                        container
-                        direction="column"
-                        spacing={2}
-                        wrap="nowrap"
-                    >
-                        {this.props.dependencies && this.props.dependencies.length > 0 &&
-                            <Grid item>
-                                <Typography variant="h6" gutterBottom>
-                                    {this.t('Dependencies')}
-                                </Typography>
-                                {this.getDependencies()}
-                            </Grid>
-                        }
+        return <Dialog
+            onClose={this.props.onClose}
+            open={this.props.open}
+        >
+            <DialogTitle disableTypography={true}>
+                <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
+                    {this.t('Please confirm')}
+                    <IconButton className={classes.closeButton} onClick={this.props.onClose}>
+                        <CloseIcon />
+                    </IconButton>
+                </Typography>
+            </DialogTitle>
+            <DialogContent dividers>
+                <Grid
+                    container
+                    direction="column"
+                    spacing={2}
+                    wrap="nowrap"
+                >
+                    {this.props.dependencies && this.props.dependencies.length > 0 &&
                         <Grid item>
-                            <Typography variant="h6" gutterBottom>
-                                {this.t('News')}
-                            </Typography>
-                            <Grid
-                                container
-                                spacing={2}
-                                direction="column"
-                                wrap="nowrap"
-                            >
-                                {this.getNews()}
-                            </Grid>
+                            <Typography variant="h6" gutterBottom>{this.t('Dependencies')}</Typography>
+                            {this.getDependencies()}
+                        </Grid>
+                    }
+                    <Grid item>
+                        <Typography variant="h6" gutterBottom>{this.t('News')}</Typography>
+                        <Grid
+                            container
+                            spacing={2}
+                            direction="column"
+                            wrap="nowrap"
+                        >
+                            {this.getNews()}
                         </Grid>
                     </Grid>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        variant="contained"
-                        autoFocus
-                        disabled={!this.props.rightDependencies}
-                        onClick={() => {
-                            this.props.onClick();
-                            this.props.onClose();
-                        }}
-                        color="primary"
-                    >
-                        {this.t('Update')}
-                    </Button>
-                    <Button
-                        variant="contained"
-                        autoFocus
-                        onClick={() => {
-                            this.props.onClose();
-                        }}
-                        color="default"
-                    >
-                        {this.t('Close')}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        );
+                </Grid>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    variant="contained"
+                    autoFocus
+                    disabled={!this.props.rightDependencies}
+                    onClick={() => {
+                        this.props.onClick();
+                        this.props.onClose();
+                    }}
+                    color="primary"
+                >
+                    {this.t('Update')}
+                </Button>
+                <Button
+                    variant="contained"
+                    autoFocus
+                    onClick={() => this.props.onClose()}
+                    color="default"
+                >
+                    {this.t('Close')}
+                </Button>
+            </DialogActions>
+        </Dialog>;
     }
 }
 

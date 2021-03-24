@@ -1,5 +1,6 @@
 /* eslint-disable array-callback-return */
 import { Component, Fragment, createRef } from 'react';
+import Semver from 'semver';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -29,6 +30,7 @@ import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import UpdateIcon from '@material-ui/icons/Update';
 import StarIcon from '@material-ui/icons/Star';
+import CloseIcon from '@material-ui/icons/Close';
 
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 
@@ -47,15 +49,14 @@ import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
 
-import Router from '@iobroker/adapter-react/Components/Router';
-
-import Semver from 'semver';
 import CardAdapters from '../components/CardAdapters';
-import CloseIcon from "@material-ui/icons/Close";
 import CustomSelectButton from '../components/CustomSelectButton';
 import GitHubInstallDialog from '../dialogs/GitHubInstallDialog';
 import { licenseDialogFunc } from '../dialogs/LicenseDialog';
 import CustomModal from '../components/CustomModal';
+
+import Router from '@iobroker/adapter-react/Components/Router';
+import AdaptersUpdaterDialog from "../dialogs/AdaptersUpdaterDialog";
 
 const styles = theme => ({
     container: {
@@ -142,6 +143,15 @@ const styles = theme => ({
         '&:hover': {
             background: '#c0c0c045',
         }
+    },
+    updateAllButton: {
+        position: 'relative'
+    },
+    updateAllIcon: {
+        position: 'absolute',
+        top: 3,
+        left: 3,
+        opacity: 0.2
     }
 });
 
@@ -183,6 +193,7 @@ class Adapters extends Component {
             gitHubInstallDialog: false,
             updateAvailable: [],
             filteredList: null,
+            showUpdater: false,
         };
 
         this.rebuildSupported = false;
@@ -242,19 +253,19 @@ class Adapters extends Component {
                 const installedProm = this.props.socket.getInstalled(currentHost, updateRepo);
                 const instancesProm = this.props.socket.getAdapterInstances(updateRepo);
                 const rebuildProm = this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD');
-                const objectsProm = this.props.socket.getForeignObjects('system.adapter.*');
+                //const objectsProm = this.props.socket.getForeignObjects('system.adapter.*');
 
-                const [hostData, repository, installed, instances, rebuild, objects] = await Promise.all(
+                const [hostData, repository, installed, instances, rebuild/*, objects*/] = await Promise.all(
                     [
                         hostDataProm,
                         repositoryProm,
                         installedProm,
                         instancesProm,
                         rebuildProm,
-                        objectsProm
+                        //objectsProm
                     ]
                 );
-                console.log('objects', hostData, instancesProm)
+                // console.log('objects', hostData, instancesProm)
                 this.rebuildSupported = rebuild || false;
 
                 const nodeJsVersion = hostData['Node.js'].replace('v', '');
@@ -284,7 +295,7 @@ class Adapters extends Component {
                         adapter.keywords = adapter.keywords.map(word => word.toLowerCase());
                     }
                     const _installed = installed[value];
-                    if (_installed && this.updateAvailable(_installed.version, adapter.version)) {
+                    if (_installed && Adapters.updateAvailable(_installed.version, adapter.version)) {
                         updateAvailable.push(value);
                     }
 
@@ -345,12 +356,10 @@ class Adapters extends Component {
                     }
                 });
 
-                Object.keys(categories).forEach(value => {
-                    categoriesSorted.push(categories[value]);
-                });
+                Object.keys(categories).forEach(value =>
+                    categoriesSorted.push(categories[value]));
 
                 categoriesSorted.sort((a, b) => {
-
                     const result = b.installed - a.installed;
 
                     return result !== 0 ? result : a.translation < b.translation ? -1 :
@@ -491,7 +500,7 @@ class Adapters extends Component {
         });
     }
 
-    updateAvailable(oldVersion, newVersion) {
+    static updateAvailable(oldVersion, newVersion) {
 
         try {
             return Semver.gt(newVersion, oldVersion) === true;
@@ -993,6 +1002,22 @@ class Adapters extends Component {
         }
     }
 
+    getUpdater() {
+        if (!this.state.showUpdater) {
+            return null;
+        } else {
+            return <AdaptersUpdaterDialog
+                t={this.props.t}
+                currentHost={this.props.currentHost}
+                lang={this.props.lang}
+                installed={this.state.installed}
+                repository={this.state.repository}
+                onClose={() => this.setState({showUpdater: false})}
+                socket={this.props.socket}
+            />;
+        }
+    }
+
     render() {
 
         if (!this.state.init) {
@@ -1064,6 +1089,12 @@ class Adapters extends Component {
                         <UpdateIcon color={this.state.updateList ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip>
+                {!!this.props.ready && !!this.state.updateList && this.state.updateAvailable.length > 1 && <Tooltip title={this.t('Update all adapters')}>
+                    <IconButton onClick={() => this.setState({showUpdater: true})} classes={{label: this.props.classes.updateAllButton}}>
+                        <UpdateIcon/>
+                        <UpdateIcon  className={this.props.classes.updateAllIcon}/>
+                    </IconButton>
+                </Tooltip>}
 
                 {this.props.expertMode &&
                     <IconButton onClick={() => this.setState({ gitHubInstallDialog: true })}>
@@ -1146,12 +1177,16 @@ class Adapters extends Component {
                     </Table>
                 </TableContainer>
             </TabContent>}
+
+            {this.getUpdater()}
+
             {!this.state.viewMode && <div style={{
                 display: 'flex',
                 flexFlow: 'wrap',
                 overflow: 'auto',
                 justifyContent: 'center'
             }}>{this.getTiles()}</div>}
+
             {this.state.addInstanceDialog &&
                 <AddInstanceDialog
                     open={this.state.addInstanceDialog}

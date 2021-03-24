@@ -18,8 +18,7 @@
 ## Adapters
 - Adapters - update all adapters and allow to select from list (BF)
 - Adapters - Use readme renderer from www.iobroker.net (BF)
-<!-- - Show unmet dependencies: 
-  - check only rightVersion for every entry in deps array -->
+- Show number of possible updates on "Adapters" in menu on the left
 
 ## Instances  
 - Instances - Open in new window must be shown only for instances with localLink (BF)
