@@ -29,6 +29,9 @@ import GitHubIcon from '@material-ui/icons/GitHub';
 import HelpIcon from '@material-ui/icons/Help';
 import PublishIcon from '@material-ui/icons/Publish';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import RemoveIcon from '@material-ui/icons/Remove';
 
 import {
     amber,
@@ -37,6 +40,7 @@ import {
     red
 } from '@material-ui/core/colors';
 import MaterialDynamicIcon from '../helpers/MaterialDynamicIcon';
+import I18n from '@iobroker/adapter-react/i18n';
 
 const styles = theme => ({
     smallAvatar: {
@@ -135,7 +139,8 @@ class AdapterRow extends Component {
             rightOs,
             sentry,
             categoryName,
-            openInstallVersionDialog
+            openInstallVersionDialog,
+            dataSource
         } = this.props;
 
         return (
@@ -194,10 +199,24 @@ class AdapterRow extends Component {
                     {!isCategory && this.props.keywords && this.props.keywords.join(' ')}
                 </TableCell>
                 <TableCell>
-                    {!isCategory &&
-                        (connectionType === 'cloud' ? <CloudIcon /> :
-                            connectionType === 'local' ? <CloudOffIcon /> : connectionType)
+                    <div style={{display:'flex'}}>
+                        {!isCategory &&
+                        (connectionType === 'cloud' ? <Tooltip title={I18n.t('Adapter does not use the cloud for these devices/service')}><CloudIcon /></Tooltip> :
+                            connectionType === 'local' ? <Tooltip title={I18n.t('Adaper requires the specific cloud access for these devices/service')}><CloudOffIcon /></Tooltip> : connectionType)
                     }
+                    {
+                    dataSource && <div style={{ marginLeft: 5 }}>{(
+                        dataSource === 'poll' ?
+                            <Tooltip title={I18n.t('poll')}><ArrowUpwardIcon /></Tooltip> :
+                            dataSource === 'push' ?
+                                <Tooltip title={I18n.t('push')}><ArrowDownwardIcon /></Tooltip> :
+                                dataSource === 'assumption' ?
+                                    <Tooltip title={I18n.t('assumption')}><RemoveIcon style={{
+                                        transform: 'rotate(90deg)'
+                                    }} /></Tooltip> : null
+                    )}</div>
+                }
+                </div>
                 </TableCell>
                 <TableCell>
                     {!isCategory && installedVersion && this.renderVersion()}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardMedia, Fab, IconButton, Typography } from "@material-ui/core";
+import { Card, CardContent, CardMedia, Fab, IconButton, Tooltip, Typography } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -13,6 +13,9 @@ import PublishIcon from '@material-ui/icons/Publish';
 import I18n from '@iobroker/adapter-react/i18n';
 import CloudIcon from '@material-ui/icons/Cloud';
 import CloudOffIcon from '@material-ui/icons/CloudOff';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import RemoveIcon from '@material-ui/icons/Remove';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -180,7 +183,8 @@ const CardAdapters = ({
     adapter,
     isCategory,
     connectionType,
-    openInstallVersionDialog
+    openInstallVersionDialog,
+    dataSource
 }) => {
     const [openCollapse, setCollapse] = useState(false);
 
@@ -274,10 +278,26 @@ const CardAdapters = ({
             <Typography gutterBottom variant="h5" component="h5">
                 {name}
             </Typography>
-            {!isCategory &&
-                (connectionType === 'cloud' ? <CloudIcon /> :
-                    connectionType === 'local' ? <CloudOffIcon /> : '')
-            }
+            <div style={{ display: 'flex' }}>
+                {!isCategory &&
+                    (connectionType === 'cloud' ?
+                        <Tooltip title={I18n.t('Adapter does not use the cloud for these devices/service')}><CloudIcon /></Tooltip> :
+                        connectionType === 'local' ?
+                            <Tooltip title={I18n.t('Adaper requires the specific cloud access for these devices/service')}><CloudOffIcon /></Tooltip> : '')
+                }
+                {
+                    dataSource && <div style={{ marginLeft: 5 }}>{(
+                        dataSource === 'poll' ?
+                            <Tooltip title={I18n.t('poll')}><ArrowUpwardIcon /></Tooltip> :
+                            dataSource === 'push' ?
+                                <Tooltip title={I18n.t('push')}><ArrowDownwardIcon /></Tooltip> :
+                                dataSource === 'assumption' ?
+                                    <Tooltip title={I18n.t('assumption')}><RemoveIcon style={{
+                                        transform: 'rotate(90deg)'
+                                    }} /></Tooltip> : null
+                    )}</div>
+                }
+            </div>
             <div style={{
                 marginTop: 10,
             }}>
