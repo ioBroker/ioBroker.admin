@@ -16,7 +16,8 @@ import {
     TextField,
     Tooltip,
     Typography,
-    InputAdornment
+    InputAdornment,
+    ListItemText
 } from '@material-ui/core';
 
 import CloudOffIcon from '@material-ui/icons/CloudOff';
@@ -129,18 +130,17 @@ const styles = theme => ({
         overflow: 'auto'
     },
     containerVersion: {
-        border: '1px solid',
         borderBottom: 0
     },
     currentVersion: {
         display: 'flex',
         padding: 20,
         fontSize: 15,
-        borderBottom: '1px solid',
-        transition: 'background 0.5s',
+        borderBottom: '1px solid silver',
+        transition: 'background 0.2s',
         cursor: 'pointer',
         '&:hover': {
-            background: 'silver',
+            background: '#c0c0c045',
         }
     }
 });
@@ -187,7 +187,20 @@ class Adapters extends Component {
 
         this.rebuildSupported = false;
         this.inputRef = createRef();
-        this.t = props.t;
+        this.t = this.translate;
+        this.wordCache = {};
+    }
+
+    translate = (word, arg1, arg2) => {
+        if (arg1 !== undefined) {
+            return this.props.t(word, arg1, arg2);
+        }
+
+        if (!this.wordCache[word]) {
+            this.wordCache[word] = this.props.t(word);
+        }
+
+        return this.wordCache[word];
     }
 
     componentDidMount() {
@@ -506,7 +519,7 @@ class Adapters extends Component {
                     installed: false,
                     installedVersion: null,
                     rightVersion: false
-                }
+                };
 
                 const checkVersion = typeof dependency !== 'string';
                 const keys = Object.keys(dependency);
@@ -834,6 +847,7 @@ class Adapters extends Component {
                         }
                         show && count++;
                         return expanded && <AdapterRow
+                            t={this.t}
                             key={'adapter-' + value}
                             connectionType={connectionType}
                             dataSource={adapter.dataSource}
@@ -905,6 +919,7 @@ class Adapters extends Component {
                     let daysAgo = Math.round((Date.parse(new Date()) - Date.parse(adapter.versionDate)) / 86400000)
                     return ({
                         render: <CardAdapters
+                            t={this.t}
                             key={'adapter-' + value}
                             image={image}
                             name={title}
@@ -1164,6 +1179,7 @@ class Adapters extends Component {
                 />
             }
             <GitHubInstallDialog
+                t={this.t}
                 open={this.state.gitHubInstallDialog}
                 categories={this.state.categories}
                 addInstance={(value, debug, customUrl) => this.addInstance(value, this.state.addInstanceId, debug, customUrl)}
@@ -1201,8 +1217,10 @@ class Adapters extends Component {
                                     adapterInstallVersion: null
                                 });
                             }}>
-                                <div style={{ color: '#000046', marginRight: 7 }}>{version} -</div>
-                                <div>{news}</div>
+                                <ListItemText
+                                    primary={version}
+                                    secondary={news}
+                                />
                             </div>
                         })}
                     </div>

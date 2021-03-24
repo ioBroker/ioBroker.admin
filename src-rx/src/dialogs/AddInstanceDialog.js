@@ -16,7 +16,6 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
-
 import CloseIcon from '@material-ui/icons/Close';
 
 const styles = theme => ({
@@ -83,38 +82,20 @@ class AddInstanceDialog extends Component {
     }
 
     checkDependencies = (dependencies = this.props.dependencies) => {
-        if (!dependencies) return '';
-        // like [{"js-controller": ">=0.10.1"}]
-        let adapters;
-        if (dependencies instanceof Array) {
-            adapters = {};
-            for (let a = 0; a < dependencies.length; a++) {
-                if (typeof dependencies[a] === 'string') continue;
-                for (const b in dependencies[a]) {
-                    if (dependencies[a].hasOwnProperty(b)) {
-                        adapters[b] = dependencies[a][b];
-                    }
-                }
-            }
-        } else {
-            adapters = dependencies;
+        if (!dependencies) {
+            return '';
         }
-
-        for (const adapter in adapters) {
-            const instance = this.props.instances.find((el) => el.common.name === this.props.adapter);
-            const host = this.props.hosts.find((el) => el.common.name === this.props.currentHost);
-            if (adapters.hasOwnProperty(adapter)) {
-                if (adapter === 'js-controller') {
-                    if (!(host.common.installedVersion && adapters[adapter])) {
-                        return this.props.t('Invalid version of %s. Required %s', adapter, adapters[adapter]);
-                    }
-                } else {
-                    if (!instance || !instance.common || !instance.common.installedVersion) {
-                        return this.props.t('No version of %s', adapter);
-                    }
-                    if (!(instance.common.installedVersion && adapters[adapter])) {
-                        return this.props.t('Invalid version of %s', adapter);
-                    }
+        for (let adapter of dependencies) {
+            if (adapter.name === 'js-controller') {
+                if (!adapter.rightVersion) {
+                    return this.props.t('Invalid version of %s. Required %s', adapter.name, adapter.version);
+                }
+            } else {
+                if (!adapter.installedVersion) {
+                    return this.props.t('No version of %s', adapter.name);
+                }
+                if (!adapter.rightVersion) {
+                    return this.props.t('Invalid version of %s', adapter.name);
                 }
             }
         }
@@ -124,6 +105,8 @@ class AddInstanceDialog extends Component {
     render() {
 
         const { classes } = this.props;
+
+        const checkDeps = this.checkDependencies();
 
         return (
             <Dialog
@@ -140,7 +123,7 @@ class AddInstanceDialog extends Component {
                     </Typography>
                 </DialogTitle>
                 <DialogContent dividers>
-                    <Grid
+                    {!checkDeps ? <Grid
                         container
                         direction="column"
                     >
@@ -168,18 +151,18 @@ class AddInstanceDialog extends Component {
                                 {this.getAvailableInstances()}
                             </Select>
                         </FormControl>
-                    </Grid>
+                    </Grid> : null}
                     <div style={{
                         margin: 10,
                         fontSize: 16,
                         color: '#840101'
-                    }}>{this.checkDependencies()}</div>
+                    }}>{checkDeps}</div>
                 </DialogContent>
                 <DialogActions>
                     <Button
                         variant="contained"
                         autoFocus
-                        disabled={!!this.checkDependencies()}
+                        disabled={!!checkDeps}
                         onClick={() => {
                             this.props.onClick();
                             this.props.onClose();

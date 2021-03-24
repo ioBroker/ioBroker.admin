@@ -3,7 +3,7 @@ import withWidth from '@material-ui/core/withWidth';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -53,25 +53,39 @@ class Objects extends Component {
             this.filters = {};
         }
 
-        this.state =  {
+        this.state = {
             selected: this.props.selected || '',
-            name:     '',
-            toast:    '',
+            name: '',
+            toast: '',
             deleteObjectShow: null,
             //suppressDeleteConfirm: false,
         };
+        this.t = this.translate;
+        this.wordCache = {};
+    }
+
+    translate = (word, arg1, arg2) => {
+        if (arg1 !== undefined) {
+            return this.props.t(word, arg1, arg2);
+        }
+
+        if (!this.wordCache[word]) {
+            this.wordCache[word] = this.props.t(word);
+        }
+
+        return this.wordCache[word];
     }
 
     onDelete(withChildren) {
         const id = this.state.deleteObjectShow.id;
         if (withChildren) {
             this.props.socket.delObjects(id)
-                .then(() => this.setState({toast: this.props.t('All deleted')}));
+                .then(() => this.setState({ toast: this.t('All deleted') }));
 
-            this.setState({deleteObjectShow: null});
+            this.setState({ deleteObjectShow: null });
         } else {
             this.props.socket.delObject(id)
-                .then(() => this.setState({deleteObjectShow: null}));
+                .then(() => this.setState({ deleteObjectShow: null }));
         }
     }
 
@@ -83,11 +97,11 @@ class Objects extends Component {
             }}
             open={!!this.state.toast}
             autoHideDuration={3000}
-            onClose={() => this.setState({toast: ''})}
+            onClose={() => this.setState({ toast: '' })}
             message={this.state.toast}
             action={
                 <React.Fragment>
-                    <IconButton size="small" aria-label="close" color="inherit" onClick={() => this.setState({toast: ''})}>
+                    <IconButton size="small" aria-label="close" color="inherit" onClick={() => this.setState({ toast: '' })}>
                         <IconCancel fontSize="small" />
                     </IconButton>
                 </React.Fragment>
@@ -101,15 +115,15 @@ class Objects extends Component {
         } else {
             return <Dialog
                 key="delete"
-                open={ true }
-                onClose={ () => this.setState({deleteObjectShow: null}) }
+                open={true}
+                onClose={() => this.setState({ deleteObjectShow: null })}
                 aria-labelledby="delete-object-dialog-title"
                 aria-describedby="delete-object-dialog-description"
             >
-                <DialogTitle id="delete-object-dialog-title">{ this.state.deleteObjectShow.hasChildren ? this.props.t('Delete object(s): ') : this.props.t('Delete object: ') } <span className={ this.props.classes.id }>{ this.state.deleteObjectShow.id }</span></DialogTitle>
+                <DialogTitle id="delete-object-dialog-title">{this.state.deleteObjectShow.hasChildren ? this.t('Delete object(s): ') : this.t('Delete object: ')} <span className={this.props.classes.id}>{this.state.deleteObjectShow.id}</span></DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        {this.props.t('Are you sure?')}
+                        {this.t('Are you sure?')}
                         {/*<FormControlLabel
                             control={<Checkbox
                                 checked={this.state.suppressDeleteConfirm}
@@ -124,9 +138,9 @@ class Objects extends Component {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.setState({deleteObjectShow: null})}><IconCancel className={this.props.classes.buttonIcon}/>{this.props.t('ra_Cancel')}</Button>
-                    {this.state.deleteObjectShow.hasChildren ? <Button onClick={() => this.onDelete(true)}><IconDeleteAll className={clsx(this.props.classes.buttonAll, this.props.classes.buttonIcon)}/>{this.props.t('Delete with children')}</Button> : null}
-                    {this.state.deleteObjectShow.exists      ? <Button onClick={() => this.onDelete(false)} color="primary"><IconDeleteOne className={this.props.classes.buttonIcon}/>{this.props.t('Delete one item')}</Button> : null}
+                    <Button onClick={() => this.setState({ deleteObjectShow: null })}><IconCancel className={this.props.classes.buttonIcon} />{this.t('ra_Cancel')}</Button>
+                    {this.state.deleteObjectShow.hasChildren ? <Button onClick={() => this.onDelete(true)}><IconDeleteAll className={clsx(this.props.classes.buttonAll, this.props.classes.buttonIcon)} />{this.t('Delete with children')}</Button> : null}
+                    {this.state.deleteObjectShow.exists ? <Button onClick={() => this.onDelete(false)} color="primary"><IconDeleteOne className={this.props.classes.buttonIcon} />{this.t('Delete one item')}</Button> : null}
                 </DialogActions>
             </Dialog>
         }
@@ -136,28 +150,32 @@ class Objects extends Component {
         return [
             <ObjectBrowser
                 key="browser"
-                prefix={ this.props.prefix }
-                defaultFilters={ this.filters }
-                statesOnly={ this.props.statesOnly }
-                style={ {width: '100%', height: '100%'} }
-                socket={ this.props.socket }
-                selected={ this.state.selected }
-                name={ this.state.name }
-                expertMode={ this.props.expertMode }
-                t={ this.props.t }
-                lang={ this.props.lang }
-                themeName={ this.props.themeName }
-                objectCustomDialog={ ObjectCustomDialog }
-                objectBrowserValue={ ObjectBrowserValue }
-                objectBrowserEditObject={ ObjectBrowserEditObject }
-                objectBrowserEditRole={ ObjectBrowserEditRole }
+                prefix={this.props.prefix}
+                defaultFilters={this.filters}
+                statesOnly={this.props.statesOnly}
+                style={{ width: '100%', height: '100%' }}
+                socket={this.props.socket}
+                selected={this.state.selected}
+                name={this.state.name}
+                expertMode={this.props.expertMode}
+                t={this.t}
+                lang={this.props.lang}
+                themeName={this.props.themeName}
+                objectCustomDialog={ObjectCustomDialog}
+                objectBrowserValue={ObjectBrowserValue}
+                objectBrowserEditObject={ObjectBrowserEditObject}
+                objectBrowserEditRole={ObjectBrowserEditRole}
                 enableStateValueEdit={true}
-                onObjectDelete={(id, hasChildren, exists) => this.setState({deleteObjectShow: {id, hasChildren, exists}})}
-                router={ Router }
-                onFilterChanged={ filterConfig => {
+                onObjectDelete={(id, hasChildren, exists) => this.setState({ deleteObjectShow: { id, hasChildren, exists } })}
+                router={Router}
+                onFilterChanged={filterConfig => {
                     this.filters = filterConfig;
                     window.localStorage.setItem(this.dialogName, JSON.stringify(filterConfig));
                 }}
+                objectEditeBoolean
+                objectAddBoolean
+                objectStatesView
+                objectImportExport
             />,
             this.renderDeleteDialog()
         ];

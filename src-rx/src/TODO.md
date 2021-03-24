@@ -1,7 +1,5 @@
 # Todo
 
-- Change color of expert icon on red(ON)
-
 ## Settings
 - Add warning dialog when the user switches from default to beta repository:
   - The "Latest" repository contains adapter versions that have not been fully tested. Please report problems with these versions to the developer or in the relevant forum threads. Use at your own risk. (Do not implement it yet)
@@ -20,28 +18,44 @@
 ## Adapters
 - Adapters - update all adapters and allow to select from list (BF)
 - Adapters - Use readme renderer from www.iobroker.net (BF)
-<!-- - Adapters - add dialog Instal specific version (all entries in news) on "++"
-  - Changedialog title: "Please select specific version of %s" -->
-<!-- - Adapters in Tile mode show "connectionType": "local/cloud"
-  - Add tooltip: "Adapter does not use the cloud for these devices/service" / "Adaper requires the specific cloud access for these devices/service" -->
-<!-- - Adapter dataSource (How to show poll/push/assumption). Near the connection type: poll => arrow up, push => arrow down, assumption => | (with title) -->
 <!-- - Show unmet dependencies: 
-  - function checkDependencies(dependencies) { -->
+  - check only rightVersion for every entry in deps array -->
 
 ## Instances  
 - Instances - Open in new window must be shown only for instances with localLink (BF)
-<!-- - Instances - allow to edit CRON/LogLevel/Restart/Name of instance
-   - Show schedule and restart only for adapters with mode 'schedule' or 'daemon' -->
+- Sentry disabled => common.disableDataReporting = true common.plugins.senty
+- compactGroup => 
+  - with controller (0)
+  - default (1) (if null of undefined)
+  - 2
 
 ## Objects
-<!-- - Objects - allow to filter only of states/channels/devices => another view (ack, ts, lc, etc) -->
 - Objects - export/import and creation of new state
 - Objects - edit of access control (similar to files)
-- Objects - Add clear button by all text (and maybe select) filter fields//
+  - obj.acl.object 
+    - 0x2 => write everyone, 
+    - 0x4 => read everyone
+    - 0x20 => write group
+    - 0x40 => read group
+    - 0x200 => read owner
+    - 0x400 => read owner
+  - if (obj.acl.object & 0x40) => read group possible 
+  - Set flag => obj.acl.object | 0x40
+  - Clear flag => obj.acl.object & (~0x40)
 
-## Others
+  - obj.acl.state
+- Objects - Add clear button by all text (and maybe select) filter fields//
+- Decode quality code to text (BF)
+- Replace all this.props.t() with this.texts.my_text... for often translations
+
+
+## Files
 - Files - bulk edit of access rights
+  - file.acl.permissions
+## Hosts  
 - Hosts tab => show all hosts in a list with settings
+
+## Easy mode
 - Easy admin mode
 
 ## After all is done

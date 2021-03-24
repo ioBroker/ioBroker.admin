@@ -57,7 +57,10 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 1000
     }
 }));
-const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstance }) => {
+const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstance, t }) => {
+    if (!t) {
+        t = I18n.t
+    }
     const classes = useStyles();
     const theme = useTheme();
     const [autocompleteValue, setAutocompleteValue] = useState(null);
@@ -108,8 +111,8 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
                     padding: 7,
                     fontSize: 18,
                 }}>{value === 0 ?
-                    I18n.t('Install or update the adapter from Github') :
-                    I18n.t('Install or update the adapter from URL')}
+                    t('Install or update the adapter from Github') :
+                    t('Install or update the adapter from URL')}
                 </div>
                 <TabPanel value={value} index={0} dir={theme.direction}>
                     <div style={{
@@ -121,7 +124,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
                                 <Checkbox
                                     checked={debug}
                                     onChange={(e) => setDebug(e.target.checked)} />}
-                            label={I18n.t('Debug outputs')}
+                            label={t('Debug outputs')}
                         />
                     </div>
                     <div style={{
@@ -142,17 +145,17 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
                     <div style={{
                         fontSize: 40,
                         fontWeight: 'bold'
-                    }}>{I18n.t('Warning!')}</div>
+                    }}>{t('Warning!')}</div>
                     <div style={{ color: '#f53939' }}>
-                        {I18n.t(`Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!`)}
+                        {t(`Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!`)}
                     </div>
                 </TabPanel>
                 <TabPanel value={value} index={1} dir={theme.direction}>
                     <div>
                         <TextField
                             fullWidth
-                            label={I18n.t('URL')}
-                            helperText={I18n.t('URL or file path')}
+                            label={t('URL')}
+                            helperText={t('URL or file path')}
                             value={url}
                             onChange={event => setUrl(event.target.value)}
                             InputProps={{
@@ -178,15 +181,15 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
                                 <Checkbox
                                     checked={debug}
                                     onChange={(e) => setDebug(e.target.checked)} />}
-                            label={I18n.t('Debug outputs')}
+                            label={t('Debug outputs')}
                         />
                     </div>
                     <div style={{
                         fontSize: 40,
                         fontWeight: 'bold'
-                    }}>{I18n.t('Warning!')}</div>
+                    }}>{t('Warning!')}</div>
                     <div style={{ color: '#f53939' }}>
-                        {I18n.t(`Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!`)}
+                        {t(`Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!`)}
                     </div>
                 </TabPanel>
             </div>
@@ -207,7 +210,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
                     closeInit();
                 }}
                 color="primary">
-                {I18n.t('Install')}
+                {t('Install')}
             </Button>
             <Button
                 variant="contained"
@@ -217,7 +220,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
                     closeInit();
                 }}
                 color="default">
-                {I18n.t('Close')}
+                {t('Close')}
             </Button>
         </DialogActions>
     </Dialog>

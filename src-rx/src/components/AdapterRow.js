@@ -40,7 +40,6 @@ import {
     red
 } from '@material-ui/core/colors';
 import MaterialDynamicIcon from '../helpers/MaterialDynamicIcon';
-import I18n from '@iobroker/adapter-react/i18n';
 
 const styles = theme => ({
     smallAvatar: {
@@ -201,19 +200,25 @@ class AdapterRow extends Component {
                 <TableCell>
                     <div style={{display:'flex'}}>
                         {!isCategory &&
-                        (connectionType === 'cloud' ? <Tooltip title={I18n.t('Adapter does not use the cloud for these devices/service')}><CloudIcon /></Tooltip> :
-                            connectionType === 'local' ? <Tooltip title={I18n.t('Adaper requires the specific cloud access for these devices/service')}><CloudOffIcon /></Tooltip> : connectionType)
+                        (connectionType === 'cloud' ? <Tooltip title={this.props.t('Adapter does not use the cloud for these devices/service')}><CloudIcon /></Tooltip> :
+                            connectionType === 'local' ? <Tooltip title={this.props.t('Adaper requires the specific cloud access for these devices/service')}><CloudOffIcon /></Tooltip> : connectionType)
                     }
                     {
                     dataSource && <div style={{ marginLeft: 5 }}>{(
                         dataSource === 'poll' ?
-                            <Tooltip title={I18n.t('poll')}><ArrowUpwardIcon /></Tooltip> :
+                            <Tooltip title={this.props.t('The device or service will be periodically asked')}>
+                                <ArrowUpwardIcon style={{color:'orange'}} />
+                            </Tooltip> :
                             dataSource === 'push' ?
-                                <Tooltip title={I18n.t('push')}><ArrowDownwardIcon /></Tooltip> :
+                                <Tooltip title={this.props.t('The device or service delivers the new state actively')}>
+                                    <ArrowDownwardIcon style={{color:'green'}}/>
+                                </Tooltip> :
                                 dataSource === 'assumption' ?
-                                    <Tooltip title={I18n.t('assumption')}><RemoveIcon style={{
-                                        transform: 'rotate(90deg)'
-                                    }} /></Tooltip> : null
+                                    <Tooltip title={this.props.t('Adapter cannot request the exactly device status and the status will be guessed on the last sent command')}>
+                                        <RemoveIcon style={{
+                                            color:'red',
+                                            transform: 'rotate(90deg)'
+                                        }} /></Tooltip> : null
                     )}</div>
                 }
                 </div>

@@ -10,7 +10,6 @@ import BuildIcon from '@material-ui/icons/Build';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import HelpIcon from '@material-ui/icons/Help';
 import PublishIcon from '@material-ui/icons/Publish';
-import I18n from '@iobroker/adapter-react/i18n';
 import CloudIcon from '@material-ui/icons/Cloud';
 import CloudOffIcon from '@material-ui/icons/CloudOff';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
@@ -184,7 +183,8 @@ const CardAdapters = ({
     isCategory,
     connectionType,
     openInstallVersionDialog,
-    dataSource
+    dataSource,
+    t
 }) => {
     const [openCollapse, setCollapse] = useState(false);
 
@@ -281,20 +281,26 @@ const CardAdapters = ({
             <div style={{ display: 'flex' }}>
                 {!isCategory &&
                     (connectionType === 'cloud' ?
-                        <Tooltip title={I18n.t('Adapter does not use the cloud for these devices/service')}><CloudIcon /></Tooltip> :
+                        <Tooltip title={t('Adapter does not use the cloud for these devices/service')}><CloudIcon /></Tooltip> :
                         connectionType === 'local' ?
-                            <Tooltip title={I18n.t('Adaper requires the specific cloud access for these devices/service')}><CloudOffIcon /></Tooltip> : '')
+                            <Tooltip title={t('Adaper requires the specific cloud access for these devices/service')}><CloudOffIcon /></Tooltip> : '')
                 }
                 {
                     dataSource && <div style={{ marginLeft: 5 }}>{(
                         dataSource === 'poll' ?
-                            <Tooltip title={I18n.t('poll')}><ArrowUpwardIcon /></Tooltip> :
+                            <Tooltip title={t('The device or service will be periodically asked')}>
+                                <ArrowUpwardIcon style={{color:'orange'}} />
+                            </Tooltip> :
                             dataSource === 'push' ?
-                                <Tooltip title={I18n.t('push')}><ArrowDownwardIcon /></Tooltip> :
+                                <Tooltip title={t('The device or service delivers the new state actively')}>
+                                    <ArrowDownwardIcon style={{color:'green'}}/>
+                                </Tooltip> :
                                 dataSource === 'assumption' ?
-                                    <Tooltip title={I18n.t('assumption')}><RemoveIcon style={{
-                                        transform: 'rotate(90deg)'
-                                    }} /></Tooltip> : null
+                                    <Tooltip title={t('Adapter cannot request the exactly device status and the status will be guessed on the last sent command')}>
+                                        <RemoveIcon style={{
+                                            color:'red',
+                                            transform: 'rotate(90deg)'
+                                        }} /></Tooltip> : null
                     )}</div>
                 }
             </div>
@@ -305,7 +311,7 @@ const CardAdapters = ({
                     display: 'flex',
                     justifyContent: 'space-between'
                 }}>
-                    <div>{I18n.t('Available version:')}</div>
+                    <div>{t('Available version:')}</div>
                     <div className={updateAvailable ? classes.greenText : ''} style={{
                         display: 'flex',
                         alignItems: 'center'
@@ -328,14 +334,14 @@ const CardAdapters = ({
                     display: 'flex',
                     justifyContent: 'space-between'
                 }}>
-                    <div>{I18n.t('Installed version')}:</div>
+                    <div>{t('Installed version')}:</div>
                     <div>{installedVersion}</div>
                 </Typography>}
                 {installedCount && <Typography component={'span'} style={{
                     display: 'flex',
                     justifyContent: 'space-between'
                 }}>
-                    <div>{I18n.t('Installed instances')}:</div>
+                    <div>{t('Installed instances')}:</div>
                     <div>{installedCount}</div>
                 </Typography>}
             </div>

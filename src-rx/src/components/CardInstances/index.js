@@ -446,7 +446,7 @@ const CardInstances = ({
                             <EditIcon />
                         </IconButton>
                     </div>}
-                    {expertMode && (instance.mode === 'daemon' || instance.mode === 'schedule') &&
+                    {expertMode && (instance.mode === 'daemon') &&
                         <div style={{ display: 'flex' }}>
                             <InstanceInfo
                                 icon={<ScheduleIcon style={{ color: '#dc8e00' }} />}
