@@ -170,6 +170,15 @@ class ACLDialog extends Component
         state.common.defaultNewAcl[ownerType] ^= this.permBits[elemNum][num];
         console.log(state.common.defaultNewAcl[ownerType]);
         this.setState(state);
+        this.props.onChange( 
+            "common", 
+            {
+                defaultNewAcl: 
+                {
+                    ...state.common.defaultNewAcl,
+                    ownerType : state.common.defaultNewAcl[ownerType]
+                }
+            });
     }
     handleChange = (evt, id) =>
     {
