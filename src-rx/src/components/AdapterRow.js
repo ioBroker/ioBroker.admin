@@ -102,7 +102,6 @@ const styles = theme => ({
 });
 
 class AdapterRow extends Component {
-
     renderVersion() {
         const {
             classes,
@@ -156,43 +155,31 @@ class AdapterRow extends Component {
             descHidden
         } = this.props;
 
-        return <TableRow
-            hover={!isCategory}
-            className={clsx({ [classes.category]: isCategory, [classes.displayNone]: this.props.hidden })}
-        >
-            {!isCategory && <TableCell />}
-            <TableCell>
-                <Grid container spacing={1} alignItems="center" className={classes.name}>
-                    <Grid item>
-                        {isCategory ?
+        if (isCategory) {
+            return <TableRow
+                hover={false}
+                className={clsx(classes.category, this.props.hidden && classes.displayNone)}
+            >
+                <TableCell>
+                    <Grid container spacing={1} alignItems="center" className={classes.name}>
+                        <Grid item>
                             <IconButton
                                 size="small"
                                 onClick={this.props.onToggle}
                             >
                                 {this.props.expanded ? <ExpandMoreIcon /> : <ChevronRightIcon />}
                             </IconButton>
-                            :
-                            <Badge badgeContent={sentry && <BugReportIcon classes={{ root: classes.sentryIcon }} />}>
-                                <Avatar
-                                    variant="square"
-                                    alt={name}
-                                    src={this.props.image}
-                                    className={classes.smallAvatar}
-                                />
-                            </Badge>
-                        }
+                        </Grid>
+                        {!isCategory && <Grid item>{name}</Grid>}
                     </Grid>
-                    {!isCategory && <Grid item>{name}</Grid>}
-                </Grid>
-            </TableCell>
-            {isCategory && <TableCell colSpan={1}>
-                <div className={clsx(classes.nameDiv, isCategory && classes.categoryName)}>
-                    <MaterialDynamicIcon objIconBool iconName={categoryName} style={{ marginRight: 5 }} />
-                    {name}
-                </div>
-            </TableCell>}
-            {isCategory ?
-                <TableCell colSpan={5}>
+                </TableCell>
+                <TableCell>
+                    <div className={clsx(classes.nameDiv, isCategory && classes.categoryName)}>
+                        <MaterialDynamicIcon objIconBool iconName={categoryName} style={{ marginRight: 5 }} />
+                        {name}
+                    </div>
+                </TableCell>
+                <TableCell colSpan={descHidden ? 5 : 6}>
                     <Typography component="span" variant="body2" className={classes.green}>
                         {installedCount}
                     </Typography>
@@ -202,75 +189,85 @@ class AdapterRow extends Component {
                     </Typography>
                     {` ${this.props.t('Adapters from this Group installed')}`}
                 </TableCell>
-                :
-                <TableCell>{this.props.description}</TableCell>
-            }
-            { /*!descHidden && <TableCell>
-                {!isCategory && this.props.keywords && this.props.keywords.join(' ')}
-            </TableCell>*/}
-            <TableCell>
-                <div style={{display:'flex'}}>
-                    {!isCategory &&
-                        (connectionType === 'cloud' ? <Tooltip title={this.props.t('Adapter does not use the cloud for these devices/service')}><CloudIcon /></Tooltip> :
-                            connectionType === 'local' ? <Tooltip title={this.props.t('Adapter requires the specific cloud access for these devices/service')}><CloudOffIcon /></Tooltip> : connectionType)
-                    }
-                    {dataSource && <div style={{ marginLeft: 5 }}>{(
-                        dataSource === 'poll' ?
-                            <Tooltip title={this.props.t('The device or service will be periodically asked')}>
-                                <ArrowUpwardIcon style={{color:'orange'}} />
-                            </Tooltip> :
-                            dataSource === 'push' ?
-                                <Tooltip title={this.props.t('The device or service delivers the new state actively')}>
-                                    <ArrowDownwardIcon style={{color:'green'}}/>
-                                </Tooltip> :
-                                dataSource === 'assumption' ?
-                                    <Tooltip title={this.props.t('Adapter cannot request the exactly device status and the status will be guessed on the last sent command')}>
-                                        <RemoveIcon style={{
-                                            color:'red',
-                                            transform: 'rotate(90deg)'
-                                        }} /></Tooltip> : null
-                    )}
-                </div>
-            }
-            </div>
-            </TableCell>
-            <TableCell>
-                {!isCategory && installedVersion && this.renderVersion()}
-            </TableCell>
-            <TableCell className={clsx({
-                [classes.updateAvailable]: !isCategory && updateAvailable && rightDependencies,
-                [classes.wrongDependencies]: !rightDependencies
-            })}>
-                <Grid
-                    container
-                    alignItems="center"
-                >
-                    {!isCategory && (updateAvailable ?
-                        <div
-                            onClick={this.props.onUpdate}
-                            className={classes.buttonUpdate}>
-                            <IconButton
-                                style={{
-                                    height: 20,
-                                    width: 20,
-                                    marginRight: 10
-                                }}
-                                size="small"
-                            >
-                                    <RefreshIcon />
-                            </IconButton>{this.props.version}
-                        </div>
-                        :
-                        this.props.version)
-                    }
-                </Grid>
-            </TableCell>
-            <TableCell>
-                {!isCategory && this.props.license}
-            </TableCell>
-            { isCategory ?
+            </TableRow>;
+        } else {
+            return <TableRow
+                hover={true}
+                className={this.props.hidden ? classes.displayNone : ''}
+            >
                 <TableCell />
-                :
+                <TableCell>
+                    <Grid container spacing={1} alignItems="center" className={classes.name}>
+                        <Grid item>
+                            <Badge badgeContent={sentry && <BugReportIcon classes={{ root: classes.sentryIcon }} />}>
+                                <Avatar
+                                    variant="square"
+                                    alt={name}
+                                    src={this.props.image}
+                                    className={classes.smallAvatar}
+                                />
+                            </Badge>
+                        </Grid>
+                        <Grid item>{name}</Grid>
+                    </Grid>
+                </TableCell>
+                {!descHidden && <TableCell>{this.props.description}</TableCell>}
+                <TableCell>
+                    <div style={{display:'flex'}}>
+                        {connectionType === 'cloud' ?
+                            <Tooltip title={this.props.t('Adapter does not use the cloud for these devices/service')}><CloudIcon /></Tooltip> :
+                            (connectionType === 'local' ?
+                                <Tooltip title={this.props.t('Adapter requires the specific cloud access for these devices/service')}><CloudOffIcon /></Tooltip> : connectionType)
+                        }
+                        {dataSource && <div style={{ marginLeft: 5 }}>{(
+                            dataSource === 'poll' ?
+                                <Tooltip title={this.props.t('The device or service will be periodically asked')}>
+                                    <ArrowUpwardIcon style={{color:'orange'}} />
+                                </Tooltip> :
+                                dataSource === 'push' ?
+                                    <Tooltip title={this.props.t('The device or service delivers the new state actively')}>
+                                        <ArrowDownwardIcon style={{color:'green'}}/>
+                                    </Tooltip> :
+                                    dataSource === 'assumption' ?
+                                        <Tooltip title={this.props.t('Adapter cannot request the exactly device status and the status will be guessed on the last sent command')}>
+                                            <RemoveIcon style={{
+                                                color:'red',
+                                                transform: 'rotate(90deg)'
+                                            }} /></Tooltip> : null
+                        )}
+                        </div>}
+                    </div>
+                </TableCell>
+                <TableCell>{installedVersion && this.renderVersion()}</TableCell>
+                <TableCell className={clsx({
+                    [classes.updateAvailable]: updateAvailable && rightDependencies,
+                    [classes.wrongDependencies]: !rightDependencies
+                })}>
+                    <Grid
+                        container
+                        alignItems="center"
+                    >
+                        {updateAvailable ?
+                            <div
+                                onClick={this.props.onUpdate}
+                                className={classes.buttonUpdate}>
+                                <IconButton
+                                    style={{
+                                        height: 20,
+                                        width: 20,
+                                        marginRight: 10
+                                    }}
+                                    size="small"
+                                >
+                                    <RefreshIcon />
+                                </IconButton>{this.props.version}
+                            </div>
+                            :
+                            this.props.version
+                        }
+                    </Grid>
+                </TableCell>
+                <TableCell>{this.props.license}</TableCell>
                 <TableCell>
                     <IconButton
                         size="small"
@@ -320,8 +317,8 @@ class AdapterRow extends Component {
                         </IconButton>
                     }
                 </TableCell>
-            }
-        </TableRow>;
+            </TableRow>;
+        }
     }
 }
 

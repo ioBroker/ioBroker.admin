@@ -888,6 +888,7 @@ class Adapters extends Component {
 
                 return <Fragment key={`category-${categoryName} ${category.adapters.length}`}>
                     {!this.state.list && <AdapterRow
+                        descHidden={descHidden}
                         key={'category-' + categoryName + 1}
                         category
                         categoryName={categoryName}
@@ -1094,7 +1095,7 @@ class Adapters extends Component {
         }
 
         const { classes } = this.props;
-        const descHidden = false;
+        const descHidden = this.state.descWidth < 50;
 
         return <TabContainer>
             {this.state.update &&
@@ -1131,13 +1132,19 @@ class Adapters extends Component {
                         <CloudOffIcon color={this.state.filterConnectionType ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip>
-                <Tooltip title={this.t('installed adapters')}>
+                {this.state.updateList ?
                     <IconButton
-                        disabled={this.state.updateList}
-                        onClick={() => this.changeInstalledList()}>
-                        <StarIcon color={this.state.installedList || this.state.updateList ? 'primary' : 'inherit'} />
+                        disabled={true}>
+                        <StarIcon color="primary" style={{opacity: 0.3}}/>
                     </IconButton>
-                </Tooltip>
+                    :
+                    <Tooltip title={this.t('installed adapters')}>
+                        <IconButton
+                            onClick={() => this.changeInstalledList()}>
+                            <StarIcon color={this.state.updateList ? 'primary' : 'inherit'} />
+                        </IconButton>
+                    </Tooltip>
+                }
                 <Tooltip title={this.t('adapter with updates')}>
                     <IconButton onClick={() => this.changeUpdateList()}>
                         <UpdateIcon color={this.state.updateList ? 'primary' : 'inherit'} />
@@ -1204,12 +1211,9 @@ class Adapters extends Component {
                                 <TableCell className={classes.name}>
                                     <Typography>{this.t('Name')}</Typography>
                                 </TableCell>
-                                {<TableCell className={classes.description} style={{width: this.state.descWidth}}>
+                                {!descHidden && <TableCell className={classes.description} style={{width: this.state.descWidth}}>
                                     <Typography>{this.t('Description')}</Typography>
                                 </TableCell>}
-                                {/*!descHidden && <TableCell className={classes.keywords}>
-                                    <Typography>{this.t('Keywords')}</Typography>
-                                </TableCell>*/}
                                 <TableCell className={classes.connectionType} />
                                 <TableCell className={classes.installed}>
                                     <Typography>{this.t('Installed')}</Typography>
