@@ -67,7 +67,10 @@ class AdaptersUpdater extends Component {
         const updateAvailable = [];
         Object.keys(this.props.repository).forEach(adapter => {
             const _installed = this.props.installed[adapter];
-            if (_installed && AdaptersUpdater.isUpdateAvailable(_installed.version, this.props.repository[adapter].version)) {
+            if (_installed &&
+                _installed.ignoreVersion !== this.props.repository[adapter].version &&
+                AdaptersUpdater.isUpdateAvailable(_installed.version, this.props.repository[adapter].version)
+            ) {
                 updateAvailable.push(adapter);
             }
         });
@@ -75,10 +78,6 @@ class AdaptersUpdater extends Component {
         updateAvailable.sort();
 
         return updateAvailable;
-    }
-
-    onStartUpdate() {
-
     }
 
     getNews(value) {
@@ -153,13 +152,14 @@ class AdaptersUpdater extends Component {
                         }}
                     />
                 </ListItemSecondaryAction>}
-                {this.state.current === adapter && !this.props.stoppedOnError && <ListItemSecondaryAction>
+                {this.state.current === adapter && !this.props.stoppedOnError && !this.props.finished && <ListItemSecondaryAction>
                     <CircularProgress/>
                 </ListItemSecondaryAction>}
             </ListItem>
 
         </React.Fragment>;
     }
+
     render() {
         return <List className={this.props.classes.root}>
             {this.updateAvailable.map(adapter => this.renderOneAdapter(adapter))}

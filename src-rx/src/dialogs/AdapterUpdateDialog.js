@@ -86,6 +86,8 @@ class AdapterUpdateDialog extends Component {
 
         const { classes } = this.props;
 
+        const version = this.props.news && this.props.news[0]?.version;
+
         return <Dialog
             onClose={this.props.onClose}
             open={this.props.open}
@@ -125,14 +127,18 @@ class AdapterUpdateDialog extends Component {
                 </Grid>
             </DialogContent>
             <DialogActions>
+                {!!this.props.rightDependencies && <Button
+                    onClick={() =>
+                        this.props.onIgnore(version)}
+                    color="primary"
+                >
+                    {this.t('Ignore version %s', version)}
+                </Button>}
                 <Button
                     variant="contained"
                     autoFocus
                     disabled={!this.props.rightDependencies}
-                    onClick={() => {
-                        this.props.onClick();
-                        this.props.onClose();
-                    }}
+                    onClick={() => this.props.onUpdate()}
                     color="primary"
                 >
                     {this.t('Update')}
@@ -154,7 +160,8 @@ AdapterUpdateDialog.propTypes = {
     adapter: PropTypes.string.isRequired,
     dependencies: PropTypes.array,
     news: PropTypes.array,
-    onClick: PropTypes.func.isRequired,
+    onUpdate: PropTypes.func.isRequired,
+    onIgnore: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
     rightDependencies: PropTypes.bool,

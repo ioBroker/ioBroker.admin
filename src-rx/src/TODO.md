@@ -16,9 +16,8 @@
   - Subscribe on admin.X.info.news and test on update
 
 ## Adapters
-- Adapters - update all adapters and allow to select from list (BF)
 - Adapters - Use readme renderer from www.iobroker.net (BF)
-- Show number of possible updates on "Adapters" in menu on the left
+- Show number of possible updates on "Adapters" in menu on the left (impossible ?)
 
 ## Instances  
 - Instances - Open in new window must be shown only for instances with localLink (BF)

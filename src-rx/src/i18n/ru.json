@@ -750,7 +750,7 @@
   "install": "Установить",
   "install specific version": "Установить определённую версию",
   "installed": "Установлен",
-  "installed adapters": "Только драйвера, у которых есть инстация",
+  "installed adapters": "Только установленные драйвера",
   "instance": "Экземпляр",
   "instance number": "Номер желаемого экземпляра",
   "ioBroker Enums": "ioBroker категории",

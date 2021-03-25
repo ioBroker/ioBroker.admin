@@ -750,7 +750,7 @@
   "install": "install",
   "install specific version": "Install a specific version",
   "installed": "installed",
-  "installed adapters": "Filter adapters with existing instances",
+  "installed adapters": "Filter installed adapters",
   "instance": "instance",
   "instance number": "Desired instance number",
   "ioBroker Enums": "ioBroker enums",

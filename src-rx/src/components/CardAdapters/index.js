@@ -156,6 +156,9 @@ const styles = theme => ({
         paddingLeft: 8,
         paddingTop: 16,
         color: theme.palette.type === 'dark' ? '#333' : '#555'
+    },
+    description: {
+        color: theme.palette.type === 'dark' ? '#222' : 'inherit'
     }
 });
 const CardAdapters = ({
@@ -199,7 +202,7 @@ const CardAdapters = ({
                 }}>
                     <div className={classes.close} onClick={() => setCollapse((bool) => !bool)} />
                 </div>
-                <Typography gutterBottom component={'span'} variant={'body2'}>
+                <Typography gutterBottom component={'span'} variant={'body2'} className={classes.description}>
                     {description}
                 </Typography>
             </CardContent>
@@ -283,7 +286,7 @@ const CardAdapters = ({
                     (connectionType === 'cloud' ?
                         <Tooltip title={t('Adapter does not use the cloud for these devices/service')}><CloudIcon /></Tooltip> :
                         connectionType === 'local' ?
-                            <Tooltip title={t('Adaper requires the specific cloud access for these devices/service')}><CloudOffIcon /></Tooltip> : '')
+                            <Tooltip title={t('Adapter requires the specific cloud access for these devices/service')}><CloudOffIcon /></Tooltip> : '')
                 }
                 {
                     dataSource && <div style={{ marginLeft: 5 }}>{(
@@ -346,7 +349,7 @@ const CardAdapters = ({
                 </Typography>}
             </div>
         </CardContent>
-    </Card>
+    </Card>;
 }
 
 export default withStyles(styles)(CardAdapters);
