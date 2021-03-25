@@ -49,7 +49,7 @@ import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
 
-import CardAdapters from '../components/CardAdapters';
+import AdapterTile from '../components/AdapterTile';
 import CustomSelectButton from '../components/CustomSelectButton';
 import GitHubInstallDialog from '../dialogs/GitHubInstallDialog';
 import { licenseDialogFunc } from '../dialogs/LicenseDialog';
@@ -886,7 +886,7 @@ class Adapters extends Component {
         }
 
         if (!count) {
-            return <td colSpan={4} style={{ padding: 16, fontSize: 18 }}>{this.t('all items are filtered out')}</td>;
+            return <tr><td colSpan={4} style={{ padding: 16, fontSize: 18 }}>{this.t('all items are filtered out')}</td></tr>;
         } else {
             return rows;
         }
@@ -981,7 +981,7 @@ class Adapters extends Component {
                     console.warn(adapter);
                 }
 
-                return <CardAdapters
+                return <AdapterTile
                     t={this.t}
                     key={'adapter-' + value}
                     image={cached.image}

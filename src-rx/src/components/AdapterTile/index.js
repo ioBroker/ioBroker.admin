@@ -161,7 +161,7 @@ const styles = theme => ({
         color: theme.palette.type === 'dark' ? '#222' : 'inherit'
     }
 });
-const CardAdapters = ({
+const AdapterTile = ({
     name,
     classes,
     image,
@@ -192,7 +192,7 @@ const CardAdapters = ({
     const [openCollapse, setCollapse] = useState(false);
 
     return <Card className={clsx(classes.root, hidden ? classes.hidden : '')}>
-        <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
+        {openCollapse && <div className={/*clsx(*/classes.collapse/*, !openCollapse ? classes.collapseOff : '')*/}>
             <CardContent style={{ overflow: 'auto' }}>
                 <div style={{
                     position: 'sticky',
@@ -257,7 +257,7 @@ const CardAdapters = ({
                     }
                 </div>
             </div>
-        </div>
+        </div>}
         <div className={clsx(classes.imageBlock,
             installedVersion ? classes.installed : '',
             installedVersion && installedVersion !== version && updateAvailable ? classes.update : '')}>
@@ -278,9 +278,7 @@ const CardAdapters = ({
             flexDirection: 'column',
             justifyContent: 'space-between'
         }}>
-            <Typography gutterBottom variant="h5" component="h5">
-                {name}
-            </Typography>
+            <Typography gutterBottom variant="h5" component="h5">{name}</Typography>
             <div style={{ display: 'flex' }}>
                 {!isCategory &&
                     (connectionType === 'cloud' ?
@@ -352,4 +350,4 @@ const CardAdapters = ({
     </Card>;
 }
 
-export default withStyles(styles)(CardAdapters);
+export default withStyles(styles)(AdapterTile);

@@ -39,7 +39,16 @@ const styles = theme => ({
     {
         margin: theme.spacing(1),
         minWidth: "100%",
-     },
+    },
+    descrPanel:
+    {
+        width:"100%",
+        backgroundColor:"transparent",
+        marginLeft:40,
+        border:"none",
+        display:'flex',
+        alignItems:"center"
+    },
     selectEmpty: 
     {
         marginTop: theme.spacing(2),
@@ -50,21 +59,21 @@ class StatisticsDialog extends Component {
     constructor(props) {
         super(props); 
         //console.log(props); 
-        this.state={
-            ...props 
-        }
+        // this.state={
+        //     ...props 
+        // }
 
     }
     componentWillUpdate(nextProps, nextState)
     {
-        if(nextProps.common !== this.state.common)
-        {
-            this.setState({common: nextProps.common});
-        }
-        if(nextProps.data2 !== this.state.data2)
-        {
-            this.setState({data2: nextProps.data2});
-        }
+        // if(nextProps.common !== this.state.common)
+        // {
+        //     this.setState({common: nextProps.common});
+        // }
+        // if(nextProps.data2 !== this.state.data2)
+        // {
+        //     this.setState({data2: nextProps.data2});
+        // }
     }
     getTypes()  {
         return [
@@ -89,7 +98,7 @@ class StatisticsDialog extends Component {
 	
     getTypesSelector = () => {
         const {classes} = this.props;
-        const {common} = this.state;
+        const {common} = this.props.data;
         const items = this.getTypes().map((elem, index) =>
         {
             return <MenuItem value={elem.title} key={index} >
@@ -103,7 +112,7 @@ class StatisticsDialog extends Component {
             <Select
                 className={classes.formControl}
                 id={"statistics"}
-                value={ this.state.common.diag }
+                value={ this.props.data.common.diag }
                 displayEmpty 
                 inputProps={{ 'aria-label': 'Without label' }}
                 onChange={this.handleChangeType}
@@ -112,11 +121,14 @@ class StatisticsDialog extends Component {
             </Select> 
         </FormControl> 
     }
+    doChange = (name, value) => {
+        let newData = JSON.parse(JSON.stringify(this.props.data))
+        newData.common[name] = value;
+        this.props.onChange(newData);
+    }
 	handleChangeType = evt => {
         //console.log( evt.target.value, this.props.handle );
-        this.setState({
-            common: {...this.state.common, diag : evt.target.value }
-        })
+        this.doChange('diag', evt.target.value);
         if(this.props.handle)    
         {
             this.props.handle( evt.target.value );
@@ -127,7 +139,7 @@ class StatisticsDialog extends Component {
         const {classes} = this.props;
         return <div className={ classes.tabPanel } style={{ height: 'calc(100% - 0px)' }}>
             <Grid container spacing={3}  className="sendData-grid" style={{ height: '100%', overflow: "hidden" }}>
-                <Grid item lg={4}>
+                <Grid item lg={4} md={4} xs={12}>
                     <Card  className={classes.note} >
                         <Typography gutterBottom variant="h6" component="div">
                             {this.props.t("Note:")} 
@@ -140,8 +152,14 @@ class StatisticsDialog extends Component {
                         />     
                      </Card >
                     { this.getTypesSelector() }
+                    <Paper 
+                        variant="outlined" 
+                        className={ classes.descrPanel } 
+                        dangerouslySetInnerHTML={{__html: this.props.t("diag-type-note-" + this.props.data.common.diag)}}
+                    />  
+                      
                 </Grid>
-                <Grid item lg={8} className="sendData-grid" style={{ height:'100%', display: "flex", flexDirection: "column" }}>
+                <Grid item lg={8} md={4} xs={12} className="sendData-grid" style={{ height:'100%', display: "flex", flexDirection: "column" }}>
                     <Paper className={classes.statis} >
                         <Typography gutterBottom variant="h6" component="div">
                             {this.props.t("Sent data:")}
@@ -155,7 +173,7 @@ class StatisticsDialog extends Component {
                         showGutter={true}
                         highlightActiveLine={true}
                         theme={ this.props.themeName === 'dark' || this.props.themeName === 'blue' ? 'clouds_midnight' : 'chrome' }
-                        value={ JSON.stringify(this.state.data2, null, 2) }
+                        value={ JSON.stringify(this.props.data2, null, 2) }
                         onChange={ newValue => this.onChange(newValue) }
                         name="UNIQUE_ID_OF_DIV"
                         fontSize={14}

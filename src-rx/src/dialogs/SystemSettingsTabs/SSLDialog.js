@@ -47,27 +47,18 @@ const styles = theme => ({
 class SSLDialog extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            ...props
-        }
+        // this.state={ 
+        //     ...props
+        // }
 
     }
-
-    render() {
-        console.log(this.props.native.letsEncrypt);
-        const {classes, native} = this.state;
-        const {letsEncrypt} = native || {};
-        return <div className={classes.tabPanel}>
-            <div className={classes.buttonPanel}>
-                <Fab
-                    size="small"
-                    color="primary"
-                    aria-label="add"
-                    onClick={this.onAdd}
-                    className="small_size"
-                >
-                    <AddIcon/>
-                </Fab>
+    render()
+    {
+        const { classes, data } = this.props; 
+        const {letsEncrypt} = data.native || {};
+        // console.log( letsEncrypt );
+        return <div className={ classes.tabPanel }>
+            <div className={ classes.buttonPanel }>
                 <Paper
                     variant="outlined"
                     className={classes.descrPanel}
@@ -79,8 +70,8 @@ class SSLDialog extends Component {
                     <FormControl className={classes.formControl}> 
                         <TextField
                             id="email"
-                            label={this.props.t("Email for account:")}
-                            value={letsEncrypt.email}
+                            label={ this.props.t("Email for account:")}
+                            value={ letsEncrypt ? letsEncrypt.email : '' }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
@@ -93,8 +84,8 @@ class SSLDialog extends Component {
                     <FormControl className={classes.formControl}> 
                         <TextField
                             id="domains"
-                            label={this.props.t("Domains:")}
-                            value={letsEncrypt.domains}
+                            label={ this.props.t("Domains:")}
+                            value={ letsEncrypt ? letsEncrypt.domains : '' }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
@@ -106,9 +97,9 @@ class SSLDialog extends Component {
                 <Grid item md={3} xs={12}> 
                     <FormControl className={classes.formControl}> 
                         <TextField
-                            id="path"
-                            label={this.props.t("Path to storage:")}
-                            value={letsEncrypt.path}
+                            id="path" 
+                            label={ this.props.t("Path to storage:")}
+                            value={ letsEncrypt ? letsEncrypt.path : "" }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
@@ -120,14 +111,16 @@ class SSLDialog extends Component {
             </Grid>
         </div>
     }
+    onChangeText = (evt, id) =>
+    {
+        const value = evt.target.value; 
+        this.doChange( id, value);
+    }
 
-    onChangeText = (evt, id) => {
-        const value = evt.target.value;
-        this.props.onChange(id, value);
-        console.log(id, value);
-        let state = {...this.state};
-        state[id] = value;
-        this.setState(state);
+    doChange = (name, value) => {
+        let newData = JSON.parse(JSON.stringify(this.props.data))
+        newData.native.letsEncrypt[name] = value;
+        this.props.onChange(newData);
     }
 }
 
