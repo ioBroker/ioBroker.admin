@@ -21,6 +21,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 import blueGrey from '@material-ui/core/colors/blueGrey' 
 
+import Utils from '../../Utils';
+
 // icons
 
 const styles = theme => ({
@@ -74,46 +76,66 @@ class SertificatsDialog extends Component
     constructor(props)
     {
         super(props);
-        const arr = Object.keys(props.native.certificates)
-            .map(e => { return  {data : props.native.certificates[e], title : e} } )
+        // const arr = Object.keys(props.native.certificates)
+        //     .map(e => { return  {data : props.native.certificates[e], title : e} } )
         
         this.state = {
-            ...props,
-            arr     : arr,
+            // ...props,
+            // arr     : arr,
             chclass : false
         }
 
     }
+
+    certToArray(certs) {
+        return Utils.objectMap(certs, (cert, name) => {
+            return {
+                title: name,
+                data: cert
+            }
+        });
+    }
+    arrayToCert(array) {
+        let result = {};
+        for (let k in array) {
+            result[array[k].title] = array[k].data
+        }
+
+        return result;
+    }
+
     render()
     {
         //console.log( this.props );
         const { classes } = this.props; 
-        const rows = this.state.arr.map((e, i) =>
+        const arr = this.certToArray(this.props.data.native.certificates);
+        const rows = arr.map((e, i) =>
         {
-            return <TableRow key={e.title + e.data}  className="float_row">
+            return <TableRow key={i}  className="float_row">
                 <TableCell className={this.props.classes.littleRow  + " float_cell"}>
                     {i + 1}
                 </TableCell>
                 <TableCell className={this.props.classes.nameRow  + " float_cell"}>                               
                     <TextField 
-                        defaultValue={e.title}
+                        value={e.title}
                         InputLabelProps={{
                             readOnly: false,
                             shrink: true,
                         }} 
                         className={this.props.classes.input + " xs-centered"}
+                        onChange={evt => this.onChangeText(evt, e.title, 'title') }
                     />
                 </TableCell>
                 <TableCell className= "grow_cell float_cell">
                     <TextField
                         id="default" 
-                        defaultValue={ e.data }
+                        value={ e.data }
                         InputLabelProps={{
                             readOnly: false,
                             shrink: true,
                         }}
                         className={this.props.classes.input + " xs-centered"}
-                        onChange={evt => this.onChangeText(evt, e.title) }
+                        onChange={evt => this.onChangeText(evt, e.title, 'data') }
                     />
                 </TableCell>
                 <TableCell className={this.props.classes.littleRow  + " float_cell"}>
@@ -121,7 +143,7 @@ class SertificatsDialog extends Component
                         size="small"  
                         color="secondary" 
                         aria-label="add" 
-                        onClick={evt => this.onDelete( i )}
+                        onClick={evt => this.onDelete( e.title )}
                     >
                        <DeleteIcon />
                     </Fab>
@@ -170,16 +192,8 @@ class SertificatsDialog extends Component
                                 { 
                                     //console.log( file.name ); 
                                     //console.log( e.target.result ); 
-                                    let arr = [...this.state.arr];
                                     let name = file.name;
-                                    name =  name.split(".");   
-                                    name.splice( name.length - 1, 100 ) 
-                                    arr.push({
-                                        data: e.target.result,
-                                        title:  name.join(".")
-                                    });
-                                    this.setState({arr});
-                                    this.updateList(arr);
+                                    this.onAdd(name, e.target.result);
                                 };
                                 reader.readAsText(file);
                             })
@@ -235,46 +249,34 @@ class SertificatsDialog extends Component
             </TableContainer>
         </div>
     }
-    onChangeText = (evt, id) =>
+    onChangeText = (evt, id, name) =>
     {
         const value = evt.target.value; 
-        this.props.onChange( id, value);
-        // console.log( id, value );
-        let state = {...this.state};
-        state[id] = value;
-        this.setState(state);        
+        let newData = JSON.parse(JSON.stringify(this.props.data))
+        let array = this.certToArray(newData.native.certificates);
+        array.find(element => element.title == id)[name] = value;
+        newData.native.certificates = this.arrayToCert(array);
+        this.props.onChange(newData);
     }
-    onDelete = i =>
+    onDelete = id =>
     {
-        let arr = [...this.state.arr];
-        arr.splice(i, 1);
-        // console.log(arr, i )
-        this.setState({arr});
-        this.updateList(arr);
+        let newData = JSON.parse(JSON.stringify(this.props.data))
+        let array = this.certToArray(newData.native.certificates);
+        let index = array.findIndex(element => element.title == id);
+        delete array[index];
+        newData.native.certificates = this.arrayToCert(array);
+        this.props.onChange(newData);
     }
-    onAdd = () =>
+    onAdd = (title, data) =>
     {
-        let arr = [...this.state.arr];
-        arr.push({
-            link: "",
-            title: ""  
+        let newData = JSON.parse(JSON.stringify(this.props.data))
+        let array = this.certToArray(newData.native.certificates);
+        array.push({
+            title: title ? title : '__',
+            data: data ? data : ''
         });
-        this.setState({arr}); 
-    }
-    updateList( arr )
-    {
-        let dat = {};
-        arr.forEach(ar =>
-        {
-            dat[ar.title] = ar.data;
-        })
-        this.props.onChange( 
-            "native", 
-            {
-                ...this.props.native,
-                certificates : dat
-            }
-        );
+        newData.native.certificates = this.arrayToCert(array);
+        this.props.onChange(newData);
     }
 }
 
