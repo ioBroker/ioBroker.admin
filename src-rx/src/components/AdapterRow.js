@@ -99,6 +99,27 @@ const styles = theme => ({
             background: '#00800026'
         }
     },
+    buttonUpdateIcon: {
+        height: 20,
+        width: 20,
+        marginRight: 10
+    },
+    classPoll: {
+        color: 'orange'
+    },
+    classPush: {
+        color: 'green'
+    },
+    classAssumption: {
+        color:'red',
+        transform: 'rotate(90deg)'
+    },
+    marginLeft5: {
+        marginLeft: 5
+    },
+    flex: {
+        display: 'flex'
+    },
 });
 
 class AdapterRow extends Component {
@@ -145,6 +166,7 @@ class AdapterRow extends Component {
             installedCount,
             installedVersion,
             updateAvailable,
+            commandRunning,
             name,
             rightDependencies,
             rightOs,
@@ -175,7 +197,7 @@ class AdapterRow extends Component {
                 </TableCell>
                 <TableCell>
                     <div className={clsx(classes.nameDiv, isCategory && classes.categoryName)}>
-                        <MaterialDynamicIcon objIconBool iconName={categoryName} style={{ marginRight: 5 }} />
+                        <MaterialDynamicIcon objIconBool iconName={categoryName} className={classes.marginLeft5} />
                         {name}
                     </div>
                 </TableCell>
@@ -213,27 +235,24 @@ class AdapterRow extends Component {
                 </TableCell>
                 {!descHidden && <TableCell>{this.props.description}</TableCell>}
                 <TableCell>
-                    <div style={{display:'flex'}}>
+                    <div className={classes.flex}>
                         {connectionType === 'cloud' ?
                             <Tooltip title={this.props.t('Adapter does not use the cloud for these devices/service')}><CloudIcon /></Tooltip> :
                             (connectionType === 'local' ?
                                 <Tooltip title={this.props.t('Adapter requires the specific cloud access for these devices/service')}><CloudOffIcon /></Tooltip> : connectionType)
                         }
-                        {dataSource && <div style={{ marginLeft: 5 }}>{(
+                        {dataSource && <div  className={classes.marginLeft5}>{(
                             dataSource === 'poll' ?
                                 <Tooltip title={this.props.t('The device or service will be periodically asked')}>
-                                    <ArrowUpwardIcon style={{color:'orange'}} />
+                                    <ArrowUpwardIcon className={classes.classPoll} />
                                 </Tooltip> :
                                 dataSource === 'push' ?
                                     <Tooltip title={this.props.t('The device or service delivers the new state actively')}>
-                                        <ArrowDownwardIcon style={{color:'green'}}/>
+                                        <ArrowDownwardIcon className={classes.classPush}/>
                                     </Tooltip> :
                                     dataSource === 'assumption' ?
                                         <Tooltip title={this.props.t('Adapter cannot request the exactly device status and the status will be guessed on the last sent command')}>
-                                            <RemoveIcon style={{
-                                                color:'red',
-                                                transform: 'rotate(90deg)'
-                                            }} /></Tooltip> : null
+                                            <RemoveIcon  className={classes.classAssumption} /></Tooltip> : null
                         )}
                         </div>}
                     </div>
@@ -247,16 +266,12 @@ class AdapterRow extends Component {
                         container
                         alignItems="center"
                     >
-                        {updateAvailable ?
+                        {!commandRunning && updateAvailable ?
                             <div
                                 onClick={this.props.onUpdate}
                                 className={classes.buttonUpdate}>
                                 <IconButton
-                                    style={{
-                                        height: 20,
-                                        width: 20,
-                                        marginRight: 10
-                                    }}
+                                    className={classes.buttonUpdateIcon}
                                     size="small"
                                 >
                                     <RefreshIcon />
@@ -285,6 +300,7 @@ class AdapterRow extends Component {
                     {this.props.expertMode &&
                         <IconButton
                             size="small"
+                            disabled={commandRunning}
                             className={!installedVersion ? classes.hidden : ''}
                             onClick={this.props.onUpload}
                         >
@@ -293,6 +309,7 @@ class AdapterRow extends Component {
                     }
                     <IconButton
                         size="small"
+                        disabled={commandRunning}
                         className={!installedVersion ? classes.hidden : ''}
                         onClick={this.props.onDeletion}
                     >
@@ -301,6 +318,7 @@ class AdapterRow extends Component {
                     {this.props.expertMode &&
                         <IconButton
                             size="small"
+                            disabled={commandRunning}
                             className={!installedVersion ? classes.hidden : ''}
                             onClick={openInstallVersionDialog}
                         >
@@ -310,6 +328,7 @@ class AdapterRow extends Component {
                     {this.props.rebuild && this.props.expertMode &&
                         <IconButton
                             size="small"
+                            disabled={commandRunning}
                             className={!installedVersion ? classes.hidden : ''}
                             onClick={this.props.onRebuild}
                         >
@@ -351,7 +370,8 @@ AdapterRow.propTypes = {
     t: PropTypes.func,
     descHidden: PropTypes.bool,
     updateAvailable: PropTypes.bool,
-    version: PropTypes.string
+    version: PropTypes.string,
+    commandRunning: PropTypes.bool,
 };
 
 export default withStyles(styles)(AdapterRow);

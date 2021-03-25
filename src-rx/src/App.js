@@ -319,7 +319,8 @@ class App extends Router {
                 cmdDialog: false,
                 wizard: true,
                 commandError: false,
-                performed: false
+                performed: false,
+                commandRunning: false,
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -414,11 +415,10 @@ class App extends Router {
 
                     if (!this.logsHandlerRegistered) {
                         this.logsHandlerRegistered = true;
-                        const { setStateContext } = this.context;
                         this.logsWorker.registerErrorCountHandler(logErrors =>
-                            (this.state.currentTab.tab !== 'tab-logs' || (this.state.currentTab.tab === 'tab-logs' && this.context.stateContext.logErrors)) && setStateContext({logErrors}));
+                            (this.state.currentTab.tab !== 'tab-logs' || (this.state.currentTab.tab === 'tab-logs' && this.context.stateContext.logErrors)) && this.context.setStateContext({logErrors}));
                         this.logsWorker.registerWarningCountHandler(logWarnings =>
-                            (this.state.currentTab.tab !== 'tab-logs' || (this.state.currentTab.tab === 'tab-logs' && this.context.stateContext.logWarnings)) && setStateContext({logWarnings}));
+                            (this.state.currentTab.tab !== 'tab-logs' || (this.state.currentTab.tab === 'tab-logs' && this.context.stateContext.logWarnings)) && this.context.setStateContext({logWarnings}));
                     }
                 },
                 //onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
@@ -666,6 +666,8 @@ class App extends Router {
                         lang={I18n.getLanguage()}
                         expertMode={this.state.expertMode}
                         executeCommand={cmd => this.executeCommand(cmd)}
+                        commandRunning={this.state.commandRunning}
+                        onSetCommandRunning={commandRunning => this.setState({commandRunning})}
 
                         menuOpened={opened}
                         menuClosed={closed}
@@ -800,11 +802,6 @@ class App extends Router {
     }
 
     clearLogErrors = async () => {
-        /*const { setStateContext } = this.context;
-        setStateContext({
-            logErrors: 0,
-            logWarnings: 0
-        });*/
         this.logsWorker.resetErrors();
         this.logsWorker.resetWarnings();
     }
@@ -960,18 +957,16 @@ class App extends Router {
     renderCommandDialog() {
         return this.state.cmd ?
             <CommandDialog
+                onSetCommandRunning={commandRunning => this.setState({commandRunning})}
                 onClose={() => this.closeCmdDialog()}
-                open={this.state.cmdDialog}
-                header={i18n.t('Command') /* Placeholder */}
-                onConfirm={() => {
-                    this.setState({ cmdDialog: false })
-                } /* Test command */}
+                visible={this.state.cmdDialog}
+                header={i18n.t('Command')}
+                onInBackground={() => this.setState({ cmdDialog: false })}
                 cmd={this.state.cmd}
                 errorFunc={() => this.setState({ commandError: true })}
                 performed={() => this.setState({ performed: true })}
                 inBackground={this.state.commandError || this.state.performed}
                 commandError={this.state.commandError}
-                // confirmText={i18n.t('Ok') /* Test command */}
                 socket={this.socket}
                 currentHost={this.state.currentHost}
                 ready={this.state.ready}

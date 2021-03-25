@@ -211,7 +211,7 @@ class Adapters extends Component {
             updateAvailable: [],
             filteredList: null,
             showUpdater: false,
-            descWidth: 300
+            descWidth: 300,
         };
 
         this.rebuildSupported = false;
@@ -846,6 +846,7 @@ class Adapters extends Component {
                 rightOs={cached.rightOs}
                 sentry={cached.sentry}
                 rebuild={this.rebuildSupported}
+                commandRunning={this.props.commandRunning}
 
                 onAddInstance={() => licenseDialogFunc(adapter.license === 'MIT', () => this.addInstance(value), adapter.extIcon.split('/master')[0] + '/master/LICENSE')}//
                 onDeletion={() => this.openAdapterDeletionDialog(value)}
@@ -1008,6 +1009,7 @@ class Adapters extends Component {
 
                 return <AdapterTile
                     t={this.t}
+                    commandRunning={this.props.commandRunning}
                     key={'adapter-' + value}
                     image={cached.image}
                     name={cached.title}
@@ -1049,12 +1051,13 @@ class Adapters extends Component {
             return null;
         } else {
             return <AdaptersUpdaterDialog
+                onSetCommandRunning={commandRunning => this.props.onSetCommandRunning(commandRunning)}
                 t={this.props.t}
                 currentHost={this.props.currentHost}
                 lang={this.props.lang}
                 installed={this.state.installed}
                 repository={this.state.repository}
-                onClose={() => this.setState({showUpdater: false})}
+                onClose={reload => this.setState({showUpdater: false}, () => reload && this.getAdaptersInfo(true))}
                 socket={this.props.socket}
             />;
         }
@@ -1150,10 +1153,10 @@ class Adapters extends Component {
                         <UpdateIcon color={this.state.updateList ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip>
-                {!!this.props.ready && !!this.state.updateList && this.state.updateAvailable.length > 1 && <Tooltip title={this.t('Update all adapters')}>
+                {!this.props.commandRunning && !!this.props.ready && !!this.state.updateList && this.state.updateAvailable.length > 1 && <Tooltip title={this.t('Update all adapters')}>
                     <IconButton onClick={() => this.setState({showUpdater: true})} classes={{label: this.props.classes.updateAllButton}}>
                         <UpdateIcon/>
-                        <UpdateIcon  className={this.props.classes.updateAllIcon}/>
+                        <UpdateIcon className={this.props.classes.updateAllIcon}/>
                     </IconButton>
                 </Tooltip>}
 
@@ -1344,6 +1347,8 @@ class Adapters extends Component {
     }
 }
 Adapters.propTypes = {
+    onSetCommandRunning: PropTypes.func.isRequired,
+    commandRunning: PropTypes.bool,
     menuOpened: PropTypes.bool,
     menuClosed: PropTypes.bool,
     menuCompact: PropTypes.bool

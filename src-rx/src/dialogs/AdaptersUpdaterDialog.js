@@ -47,14 +47,17 @@ class AdaptersUpdaterDialog extends Component {
 
     onStartUpdate() {
         this.setState({inProcess: true}, () => {
+            this.props.onSetCommandRunning(true);
             this.processList = [...this.state.selected];
             this.updateAdapters(() => {
-                this.setState({inProcess: false, finished: true});
-                if (this.state.closeOnFinished) {
-                    this.props.onClose();
-                } else {
-                    // update adapters and so on
-                }
+                this.setState({inProcess: false, finished: true}, () => {
+                    this.props.onSetCommandRunning(false);
+                    if (this.state.closeOnFinished) {
+                        this.props.onClose(!!this.state.updated.length);
+                    } else {
+                        // update adapters and so on
+                    }
+                });
             });
         });
     }
@@ -78,7 +81,7 @@ class AdaptersUpdaterDialog extends Component {
             open={true}
             maxWidth="lg"
             fullWidth={!!this.state.current}
-            onClose={() => this.props.onClose()}
+            onClose={() => this.props.onClose(!!this.state.updated.length)}
             aria-labelledby="update-dialog-title"
             aria-describedby="update-dialog-description"
             classes={{paper: this.props.classes.dialogRoot}}
@@ -141,6 +144,7 @@ class AdaptersUpdaterDialog extends Component {
                                 if (this.state.stopOnError) {
                                     this.setState({stoppedOnError: true, finished: true});
                                     this.onAdapterFinished = null;
+                                    this.props.onSetCommandRunning(false);
                                 } else {
                                     this.onAdapterFinished();
                                 }
@@ -192,7 +196,7 @@ class AdaptersUpdaterDialog extends Component {
                 >
                     {this.props.t('Update')}
                 </Button>
-                <Button variant="contained" onClick={() => this.props.onClose()} disabled={this.state.inProcess}>
+                <Button variant="contained" onClick={() => this.props.onClose(!!this.state.updated.length)} disabled={this.state.inProcess}>
                     {this.props.t('Close')}
                 </Button>
             </DialogActions>
@@ -208,6 +212,7 @@ AdaptersUpdaterDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     repository: PropTypes.object.isRequired,
     installed: PropTypes.object.isRequired,
+    onSetCommandRunning: PropTypes.func.isRequired,
 }
 
 export default withStyles(styles)(AdaptersUpdaterDialog);
