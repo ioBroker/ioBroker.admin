@@ -1,6 +1,6 @@
 import { Component } from 'react';
 
-import { MapContainer as LeafletMap, TileLayer, 
+import { MapContainer as LeafletMap, TileLayer,
     // Marker, Popup
  } from 'react-leaflet';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
@@ -18,42 +18,44 @@ import Paper from '@material-ui/core/Paper';
 // colors
 // import blueGrey from '@material-ui/core/colors/blueGrey'
 
+import Utils from '../../Utils';
+
 // icons
 
 //data
 import countries from "../../assets/json/countries";
 
 const styles = theme => ({
-    tabPanel: 
+    tabPanel:
     {
         width:      '100%',
         height:     '100% ',
-        overflow:   'auto', 
+        overflow:   'auto',
         overflowX:   'hidden',
         padding:    15,
         //backgroundColor: blueGrey[ 50 ]
     } ,
-    formControl: 
+    formControl:
     {
         margin: theme.spacing(1),
-        minWidth: "100%",
+        minWidth: '100%',
      },
-    selectEmpty: 
+    selectEmpty:
     {
         marginTop: theme.spacing(2),
     },
     descrPanel:
     {
-        width:"100%",
-        // backgroundColor:"transparent",
+        width:'100%',
+        // backgroundColor:'transparent',
         padding :16,
-        // border:"none",
+        // border:'none',
         display:'flex',
-        alignItems:"center"
+        alignItems:'center'
     },
 });
 
-class MainSettingsDialog extends Component 
+class MainSettingsDialog extends Component
 {
     constructor(props)
     {
@@ -74,150 +76,146 @@ class MainSettingsDialog extends Component
     {
         return [
             {
-                id      : "language",
-                title   : "System language:",       
+                id      : 'language',
+                title   : 'System language:',
                 values  : [
                     {
-                        id:"en",
-                        title:"English"
+                        id:'en',
+                        title:'English'
                     },
                     {
-                        id:"ge",
-                        title:"Deutsch"
+                        id:'de',
+                        title:'Deutsch'
                     },
                     {
-                        id:"ru",
-                        title:"русский"
+                        id:'ru',
+                        title:'русский'
                     },
                     {
-                        id:"po",
-                        title:"Portugues"
+                        id:'pt',
+                        title:'Portugues'
                     },
                     {
-                        id:"nd",
-                        title:"Nederlands"
+                        id:'nl',
+                        title:'Nederlands'
                     },
                     {
-                        id:"fr",
-                        title:"français"
+                        id:'fr',
+                        title:'français'
                     },
                     {
-                        id:"it",
-                        title:"Italiano"
+                        id:'it',
+                        title:'Italiano'
                     },
                     {
-                        id:"sp",
-                        title:"Espanol"
+                        id:'es',
+                        title:'Espanol'
                     },
                     {
-                        id:"pl",
-                        title:"Polski"
+                        id:'pl',
+                        title:'Polski'
                     },
                     {
-                        id:"ch",
-                        title:"简体中文"
-                    }
-                ]      
-            },
-            {
-                id:"tempUnit",
-                title:"Temperature units",
-                values: [
-                    {
-                        id:"°C",
-                        title:"°C"
-                    },
-                    {
-                        id:"°F",
-                        title:"°F"
+                        id:'zh-ch',
+                        title:'简体中文'
                     }
                 ]
             },
             {
-                id:"currency",
-                title:"Currency sign",
+                id:'tempUnit',
+                title:'Temperature units',
                 values: [
                     {
-                        id:"€",
-                        title:"€"
+                        id:'°C',
+                        title:'°C'
                     },
                     {
-                        id:"$",
-                        title:"$"
-                    },
-                    {
-                        id:"₽",
-                        title:"₽"
-                    },
-                    {
-                        id:"₤",
-                        title:"₤"
+                        id:'°F',
+                        title:'°F'
                     }
                 ]
             },
             {
-                id:"dateFormat",
-                title:"Date format",
+                id:'currency',
+                title:'Currency sign',
                 values: [
                     {
-                        id:"DD.MM.YYYY",
-                        title:"DD.MM.YYYY"
+                        id:'€',
+                        title:'€'
                     },
                     {
-                        id:"DD.MM.YY",
-                        title:"DD.MM.YY"
+                        id:'$',
+                        title:'$'
                     },
                     {
-                        id:"DD/MM/YYYY",
-                        title:"DD/MM/YYYY"
+                        id:'₽',
+                        title:'₽'
+                    },
+                    {
+                        id:'₤',
+                        title:'₤'
                     }
                 ]
             },
             {
-                id:"isFloatComma",
-                title:"Date Float comma sign",
+                id:'dateFormat',
+                title:'Date format',
+                values: [
+                    {
+                        id:'DD.MM.YYYY',
+                        title:'DD.MM.YYYY'
+                    },
+                    {
+                        id:'DD.MM.YY',
+                        title:'DD.MM.YY'
+                    },
+                    {
+                        id:'DD/MM/YYYY',
+                        title:'DD/MM/YYYY'
+                    }
+                ]
+            },
+            {
+                id:'isFloatComma',
+                title:'Date Float comma sign',
                 values: [
                     {
                         id:true,
-                        title:"comma"
+                        title:'comma'
                     },
                     {
                         id:false,
-                        title:"point"
+                        title:'point'
                     }
                 ]
             },
             {
-                id:"defaultHistory",
-                title:"Default History",
+                id:'defaultHistory',
+                title:'Default History',
                 values: [
-                   
+
                 ]
             },
             {
-                id:"activeRepo",
-                title:"Default Repository",
-                values: [
-                    {
-                        id:"default",
-                        title:"Stable (default)"
-                    },
-                    {
-                        id:"latest",
-                        title:"Beta (latest)"
-                    },
-                ]
+                id:'activeRepo',
+                title:'Default Repository',
+                values: Utils.objectMap(this.props.data2.native.repositories, (repo, name) => {
+                    return {
+                        id: name,
+                        title: name
+                    }
+                })
             }
         ]
     }
     render()
-    { 
+    {
         // console.log(this.props);
-        const {classes} = this.props;        
+        const {classes} = this.props;
         const selectors = this.getSettings().map((e,i) =>
         {
             return this.getSelect( e, i )
-        }) 
+        })
         const center = [
             this.props.data.common.latitude   ? this.props.data.common.latitude : 50,
             this.props.data.common.longitude  ? this.props.data.common.longitude : 10
@@ -225,15 +223,12 @@ class MainSettingsDialog extends Component
         const { zoom } = this.props.data.common;
         return <div className={ classes.tabPanel }>
             <Grid container spacing={6}>
-                <Grid item lg={6} md={12}> 
-                    <Paper variant="outlined" className={ classes.descrPanel }>
-                        { this.props.t( "cert_path_note" ) }
-                    </Paper>
+                <Grid item lg={6} md={12}>
                     <Grid container spacing={3}>
                         {selectors}
                     </Grid>
                 </Grid>
-                <Grid item lg={6} md={12} style={{width:"100%"}}>
+                <Grid item lg={6} md={12} style={{width:'100%'}}>
                     <LeafletMap
                         center={center}
                         zoom={ zoom }
@@ -245,28 +240,28 @@ class MainSettingsDialog extends Component
                         dragging={true}
                         animate={true}
                         easeLinearity={0.35}
-                        whenCreated={this.onMap} 
+                        whenCreated={this.onMap}
                     >
                         <TileLayer
-                            url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
+                            url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
                         />
-                        
+
                     </LeafletMap>
                 </Grid>
-                
+
             </Grid>
             <Grid container spacing={6}>
                 <Grid item  md={3} sm={6} xs={12}>
                     {this.getCounters()}
                 </Grid>
-                <Grid item md={3} sm={6} xs={12}> 
+                <Grid item md={3} sm={6} xs={12}>
                     <FormControl className={classes.formControl}>
-                        <InputLabel shrink id={ "city-label"}>
-                            { this.props.t("City:")}
+                        <InputLabel shrink id={ 'city-label'}>
+                            { this.props.t('City:')}
                         </InputLabel>
                         <TextField
                             id="city"
-                            label={ this.props.t("City:")}
+                            label={ this.props.t('City:')}
                             value={ this.props.data.common.city }
                             InputLabelProps={{
                                 readOnly: false,
@@ -276,37 +271,37 @@ class MainSettingsDialog extends Component
                         />
                     </FormControl>
                 </Grid>
-                <Grid item md={3} sm={6} xs={12}> 
+                <Grid item md={3} sm={6} xs={12}>
                     <FormControl className={classes.formControl}>
                         <InputLabel shrink id={ "latitude-label"}>
-                            { this.props.t("Latitude:")}
+                            { this.props.t('Latitude:')}
                         </InputLabel>
                         <TextField
                             id="latitude"
-                            label= { this.props.t("Latitude:")}
+                            label= { this.props.t('Latitude:')}
                             value={ this.props.data.common.latitude }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
                             }}
-                            onChange={evt => this.onChangeText(evt, "latitude") }
+                            onChange={evt => this.onChangeText(evt, 'latitude') }
                         />
                     </FormControl>
                 </Grid>
-                <Grid item md={3} sm={6} xs={12}> 
+                <Grid item md={3} sm={6} xs={12}>
                     <FormControl className={classes.formControl}>
-                        <InputLabel shrink id={ "longitude-label"}>
-                            { this.props.t("Longitude:")}
+                        <InputLabel shrink id={ 'longitude-label'}>
+                            { this.props.t('Longitude:')}
                         </InputLabel>
                         <TextField
-                            id="longitude" 
-                            label={ this.props.t("Longitude:")}
+                            id="longitude"
+                            label={ this.props.t('Longitude:')}
                             value={ this.props.data.common.longitude }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
                             }}
-                            onChange={evt => this.onChangeText(evt, "longitude") }
+                            onChange={evt => this.onChangeText(evt, 'longitude') }
                         />
                     </FormControl>
                 </Grid>
@@ -325,7 +320,7 @@ class MainSettingsDialog extends Component
         ]
         // eslint-disable-next-line no-unused-vars
         var marker = window.L.marker(
-            center, 
+            center,
             {
                 draggable:true,
                 title:"Resource location",
@@ -334,12 +329,12 @@ class MainSettingsDialog extends Component
            }
         )
             .addTo(map)
-                .bindPopup(" Popup for any custom information.")
+                .bindPopup("Popup for any custom information.")
                     .on({
                          dragend: evt => this.onMarkerDragend(evt)
                     });
-        this.marker = marker;                
-        map.on({  click: evt => console.log(evt.latlng.lat)  }); 
+        this.marker = marker;
+        map.on({  click: evt => console.log(evt.latlng.lat)  });
     }
     getSelect( e, i )
     {
@@ -349,12 +344,12 @@ class MainSettingsDialog extends Component
         const items = this.getSettings()[i].values.map((elem, index)=>
         {
              return <MenuItem value={elem.id} key={index}>
-                 { this.props.t(elem.title) }
-             </MenuItem>   
+                 { this.props.t(elem.title || elem.id) }
+             </MenuItem>
         } )
         return  <Grid item sm={6} xs={12} key={i} >
              <FormControl className={classes.formControl}>
-                <InputLabel shrink id={e.id + "-label"}>
+                <InputLabel shrink id={e.id + '-label'}>
                     { this.props.t(this.getSettings()[i].title)}
                 </InputLabel>
                 <Select
@@ -362,12 +357,11 @@ class MainSettingsDialog extends Component
                     id={e.id}
                     value={ value }
                     onChange={ evt => this.handleChange(evt, i) }
-                    displayEmpty 
-                    inputProps={{ 'aria-label': 'Without label' }}
-                > 
+                    displayEmpty
+                >
                     {items}
-                </Select> 
-            </FormControl> 
+                </Select>
+            </FormControl>
         </Grid >
 
     }
@@ -377,43 +371,42 @@ class MainSettingsDialog extends Component
         const items = countries.map((elem, index) =>
         {
             return <MenuItem value={elem.name} key={index}>
-                { /* this.props.t*/(elem.name)  }
-            </MenuItem> 
+                { this.props.t(elem.name)  }
+            </MenuItem>
         })
         return <FormControl className={classes.formControl}>
-            <InputLabel shrink id={"country-label"}>
-                { this.props.t("Country:")}
+            <InputLabel shrink id={'country-label'}>
+                { this.props.t('Country:')}
             </InputLabel>
             <Select
                 className={classes.formControl}
-                id={"country"}
+                id={'country'}
                 value={ this.props.data.common.country }
                 onChange={ this.handleChangeCountry }
-                displayEmpty 
-                inputProps={{ 'aria-label': 'Without label' }}
-            > 
+                displayEmpty
+            >
                 {items}
-            </Select> 
-        </FormControl> 
+            </Select>
+        </FormControl>
     }
     handleChangeCountry = evt  =>
     {
-        const value = evt.target.value; 
-        const id = "country";
+        const value = evt.target.value;
+        const id = 'country';
         this.doChange( id, value);
     }
 
     onChangeText = (evt, id) => {
-        const value = evt.target.value; 
-        this.onChangeInput(value, id);     
+        const value = evt.target.value;
+        this.onChangeInput(value, id);
     }
     onChangeInput = (value, id) =>
     {
         this.doChange( id, value);
     }
 
-    onChangeCity = (evt) => { 
-        this.onChangeText(evt, "city");
+    onChangeCity = (evt) => {
+        this.onChangeText(evt, 'city');
         // console.log (evt.target.value );
         const provider = new OpenStreetMapProvider();
         provider.search({ query: evt.target.value })
@@ -422,22 +415,22 @@ class MainSettingsDialog extends Component
                 if( results[0] )
                 {
                     setTimeout( () => {
-                        this.onChangeInput(results[0].y, "latitude");
-                        this.onChangeInput(results[0].x, "longitude"); 
-                        this.onChangeInput(23, "zoom"); 
+                        this.onChangeInput(results[0].y, 'latitude');
+                        this.onChangeInput(results[0].x, 'longitude');
+                        this.onChangeInput(23, 'zoom');
                         this.map.flyTo(
-                            [results[0].y, results[0].x] 
+                            [results[0].y, results[0].x]
                         );
                         this. marker.setLatLng([results[0].y, results[0].x]);
                     }, 1200);
-                    
+
                 }
-                
-            });       
+
+            });
     }
 
     handleChange = (evt, selectId) => {
-        const value = evt.target.value; 
+        const value = evt.target.value;
         const id = this.getSettings()[selectId].id;
         this.doChange( id, value);
     }
@@ -451,8 +444,8 @@ class MainSettingsDialog extends Component
     onMarkerDragend = evt => {
         const ll = evt.target._latlng;
         //console.log(ll)
-        this.doChange( "latitude",  ll.lat);
-        this.doChange( "longitude", ll.lng);
+        this.doChange( 'latitude',  ll.lat);
+        this.doChange( 'longitude', ll.lng);
 
     }
 }

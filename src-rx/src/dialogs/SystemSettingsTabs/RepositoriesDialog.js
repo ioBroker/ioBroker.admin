@@ -46,12 +46,12 @@ const styles = theme => ({
     },
     descrPanel:
     {
-        width:"100%",
-        backgroundColor:"transparent",
+        width:'100%',
+        backgroundColor:'transparent',
         marginLeft:40,
-        border:"none",
+        border:'none',
         display:'flex',
-        alignItems:"center"
+        alignItems:'center'
     },
     littleRow : 
     {
@@ -63,7 +63,7 @@ const styles = theme => ({
     },
     input : 
     {
-        width: "100%"
+        width: '100%'
     }
 });
 
@@ -106,17 +106,17 @@ class RepositoriesDialog extends Component
         const rows = arr.map((e, i) =>
         {
             return <TableRow key={i} className="float_row">
-                <TableCell className={this.props.classes.littleRow  + " float_cell "}>
+                <TableCell className={this.props.classes.littleRow  + ' float_cell '}>
                     {i + 1}
                 </TableCell>
-                <TableCell className={this.props.classes.nameRow  + " float_cell"}>                               
+                <TableCell className={this.props.classes.nameRow  + ' float_cell'}>                               
                     <TextField 
                         value={e.title}
                         InputLabelProps={{
                             readOnly: false,
                             shrink: true,
                         }} 
-                        className={this.props.classes.input + " xs-centered"}
+                        className={this.props.classes.input + ' xs-centered'}
                         onChange={evt => this.onChangeText(evt, e.title, 'title') }
                     />
                 </TableCell>
@@ -163,14 +163,14 @@ class RepositoriesDialog extends Component
                 <Table className={classes.table} aria-label="customized table">
                     <TableHead>
                         <TableRow className="float_row">
-                            <TableCell className={this.props.classes.littleRow  + " float_cell"}> </TableCell>
-                            <TableCell className={this.props.classes.nameRow  + " float_cell" }>
-                                {this.props.t("name")}
+                            <TableCell className={this.props.classes.littleRow  + ' float_cell'}> </TableCell>
+                            <TableCell className={this.props.classes.nameRow  + ' float_cell' }>
+                                {this.props.t('name')}
                             </TableCell>
                             <TableCell className= "grow_cell float_cell">
-                                {this.props.t("link")}
+                                {this.props.t('link')}
                             </TableCell>
-                            <TableCell className={this.props.classes.littleRow  + " float_cell"}> </TableCell>
+                            <TableCell className={this.props.classes.littleRow  + ' float_cell'}> </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
