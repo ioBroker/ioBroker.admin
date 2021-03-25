@@ -260,14 +260,13 @@ class Command extends Component {
 
     getLog() {
         return this.state.log.map((value, index) => <Typography
-                ref={index === this.state.log.length - 1 ? this.logRef : undefined}
-                key={index}
-                component="p"
-                variant="body2"
-            >
-                { this.colorize(value) }
-            </Typography>
-        );
+            ref={index === this.state.log.length - 1 ? this.logRef : undefined}
+            key={index}
+            component="p"
+            variant="body2"
+        >
+            { this.colorize(value) }
+        </Typography>);
     }
 
     render() {
@@ -311,7 +310,6 @@ class Command extends Component {
                                 checked={this.state.moreChecked}
                                 onChange={(event) => this.setState({ moreChecked: event.target.checked })}
                                 color="primary"
-                                inputProps={{ 'aria-label': 'primary checkbox' }}
                             />
                         </Grid>
                         <Grid item>{this.props.t('more')}</Grid>
