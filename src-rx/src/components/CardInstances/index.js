@@ -363,7 +363,7 @@ const CardInstances = ({
                                         <div style={{ display: 'flex', margin: 5, justifyContent: 'space-around' }}>
                                             <Button onClick={() => {
                                                 setOpenSelect(false);
-                                                setCompactGroup(compactGroupCount + 2);
+                                                setCompactGroup(compactGroupCount + 1);
                                             }} variant="outlined" stylevariable='outlined'>{I18n.t('Add compact group')}</Button>
                                         </div>
                                     </div>
