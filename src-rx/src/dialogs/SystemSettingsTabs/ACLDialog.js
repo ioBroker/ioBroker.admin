@@ -56,15 +56,6 @@ const styles = theme => ({
 
 class ACLDialog extends Component 
 {
-    constructor(props)
-    {
-        super(props);
-        // this.state={ 
-        //     ...props
-        // }
-
-    }
-    
     permBits = [[0x400, 0x200], [0x40, 0x20], [0x4, 0x2]];
     
     getTypes( )
@@ -94,7 +85,6 @@ class ACLDialog extends Component
     getTable( owner )
     {
         const checks = this.getRights( owner );
-        // console.log(owner, checks);
         const {classes} = this.props;
         const checkboxes = checks.map((elem, index) =>
         {
@@ -168,10 +158,8 @@ class ACLDialog extends Component
     }
     handleCheck = ( evt, ownerType, elemNum, num ) =>
     {
-        // console.log( ownerType, elemNum, num, evt.target.checked );
         let newData = JSON.parse(JSON.stringify(this.props.data))
         newData.common.defaultNewAcl[ownerType] ^= this.permBits[elemNum][num];
-        // console.log(state.common.defaultNewAcl[ownerType]);
         this.props.onChange(newData);
     }
     handleChange = (evt, id) =>

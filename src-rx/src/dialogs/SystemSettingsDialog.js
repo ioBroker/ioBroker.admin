@@ -93,23 +93,19 @@ class SystemSettingsDialog extends Component
                         }
                     });
                     this.originalRepositories = JSON.stringify(systemRepositories);
-                    //console.log(systemRepositories.native.repositories);
                     newState.systemRepositories = systemRepositories;
                     return this.props.socket.getSystemConfig(true);
                 })
                 
                     .then(systemConfig => {
-                        console.log(systemConfig);
                         this.originalConfig = JSON.stringify( systemConfig );
                         newState.systemConfig = systemConfig;
-                        // return this.props.socket.getObject('system.certificates');
                         return this.props.socket.getRawSocket().emit(
                             'sendToHost', 
                             this.props.currentHost, 
                             'getDiagData', 
                             systemConfig.common.diag, 
                             diagData => {
-                                //console.log(diagData);
                                 newState.diagData = diagData;    
                             });
                     })
@@ -118,17 +114,14 @@ class SystemSettingsDialog extends Component
                             return this.props.socket.getUsers();
                         })
                             .then(users => {
-                                //console.log(users);       
                                 newState.users = users;                           
                                 return this.props.socket.getGroups();
                             })  
                                 .then(groups => {
-                                    //console.log(groups);   
                                     newState.groups = groups;                             
                                     return this.props.socket.getObject('system.certificates');
                                 })                        
                                     .then(systemCertificates => {
-                                        //console.log(systemCertificates);
                                         this.originalCertificates = JSON.stringify( systemCertificates );
                                         newState.systemCertificates = systemCertificates;
                                         this.setState(newState);                            
@@ -153,7 +146,6 @@ class SystemSettingsDialog extends Component
 
     onSave()
     {
-        // console.log(this.state);
         return this.props.socket.getSystemConfig(true)
             .then(systemConfig => {
                 systemConfig = systemConfig || {};
@@ -246,14 +238,12 @@ class SystemSettingsDialog extends Component
     }
     onChangeDiagType = type =>
     {
-        // console.log(type);
         this.props.socket.getRawSocket().emit(
             'sendToHost', 
             this.props.currentHost, 
             'getDiagData', 
             type, 
             diagData => {
-               // console.log(diagData)
                 this.setState({ 
                     diagData, 
                     systemConfig: { 
@@ -274,7 +264,6 @@ class SystemSettingsDialog extends Component
        }) [0] || this. getTabs()[0];
        const _Component =  _t.component;
        const {groups, users} = this.state;
-    //    console.log( this.state );
        return <div className={ this.props.classes.tabPanel }> 
            <_Component
                 onChange={(data) => this.onChangedTab(_t.data, data) }
@@ -292,16 +281,12 @@ class SystemSettingsDialog extends Component
         Router.doNavigate(null, 'system', newTab)
     }
     onChangedTab (id, data)  {
-        console.log(id, data);
         let state = {...this.state};
         state[ id ] = data;
-        console.log(state);
         this.setState( state );  
-        // console.log( id, data, param, state );
     }
 
     render() {
-        //console.log(this.props)
         const changed = !(JSON.stringify(this.state.systemRepositories)   === this.originalRepositories &&
                         JSON.stringify(this.state.systemConfig)        === this.originalConfig &&
                         JSON.stringify(this.state.systemCertificates)  === this.originalCertificates);

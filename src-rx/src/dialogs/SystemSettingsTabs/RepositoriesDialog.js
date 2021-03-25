@@ -17,8 +17,6 @@ import Paper from '@material-ui/core/Paper';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import blueGrey from '@material-ui/core/colors/blueGrey' 
-
 import Utils from '../../Utils';
 
 
@@ -69,16 +67,6 @@ const styles = theme => ({
 
 class RepositoriesDialog extends Component 
 {
-    constructor(props)
-    {
-        super(props);
-        
-        this.state={
-            // ...props,
-            // arr     : arr
-        }
-
-    }
     repoToArray(repos) {
         return Utils.objectMap(repos, (repo, name) => {
             return {
@@ -102,7 +90,6 @@ class RepositoriesDialog extends Component
         const { classes } = this.props; 
         const arr = this.repoToArray(this.props.data.native.repositories);
 
-        // console.log( this.state );
         const rows = arr.map((e, i) =>
         {
             return <TableRow key={i} className="float_row">

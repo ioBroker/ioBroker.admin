@@ -43,19 +43,10 @@ const styles = theme => ({
 
 class SSLDialog extends Component 
 {
-    constructor(props)
-    {
-        super(props);
-        // this.state={ 
-        //     ...props
-        // }
-
-    }
     render()
     {
         const { classes, data } = this.props; 
         const {letsEncrypt} = data.native || {};
-        // console.log( letsEncrypt );
         return <div className={ classes.tabPanel }>
             <div className={ classes.buttonPanel }>
                 <Paper 
