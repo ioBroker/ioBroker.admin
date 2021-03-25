@@ -65,7 +65,7 @@ class MainSettingsDialog extends Component
     }
     componentDidMount()
     {
-        console.log("mount")
+        // console.log("mount")
 
     }
     getSettings()
@@ -416,11 +416,11 @@ class MainSettingsDialog extends Component
 
     onChangeCity = (evt) => { 
         this.onChangeText(evt, "city");
-        console.log (evt.target.value );
+        // console.log (evt.target.value );
         const provider = new OpenStreetMapProvider();
         provider.search({ query: evt.target.value })
             .then( results => {
-                console.log (results[0] );
+                // console.log (results[0] );
                 if( results[0] )
                 {
                     setTimeout( () => {
@@ -442,7 +442,7 @@ class MainSettingsDialog extends Component
         const value = evt.target.value; 
         const id = this.getSettings()[selectId].id;
         this.props.onChange( id, value);
-        console.log( id, value );
+        // console.log( id, value );
         let state = {...this.state};
         state[id] = value;
         this.setState(state);

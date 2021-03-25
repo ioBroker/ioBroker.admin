@@ -165,10 +165,10 @@ class ACLDialog extends Component
     }
     handleCheck = ( evt, ownerType, elemNum, num ) =>
     {
-        console.log( ownerType, elemNum, num, evt.target.checked );
+        // console.log( ownerType, elemNum, num, evt.target.checked );
         let state = {...this.state};
         state.common.defaultNewAcl[ownerType] ^= this.permBits[elemNum][num];
-        console.log(state.common.defaultNewAcl[ownerType]);
+        // console.log(state.common.defaultNewAcl[ownerType]);
         this.setState(state);
         this.props.onChange( 
             "common", 

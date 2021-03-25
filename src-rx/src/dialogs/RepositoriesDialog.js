@@ -83,7 +83,7 @@ class RepositoriesDialog extends Component
     render()
     {
         const { classes } = this.props; 
-        console.log( this.state );
+        // console.log( this.state );
         const rows = this.state.arr.map((e, i) =>
         {
             return <TableRow key={e.title + e.link} className="float_row">
@@ -165,7 +165,7 @@ class RepositoriesDialog extends Component
     {
         const value = evt.target.value; 
         this.props.onChange( id, value);
-        console.log( id, value );
+        // console.log( id, value );
         let state = {...this.state};
         state[id] = value;
         this.setState(state);        
@@ -174,7 +174,7 @@ class RepositoriesDialog extends Component
     {
         let arr = [...this.state.arr];
         arr.splice(i, 1);
-        console.log(arr, i )
+        // console.log(arr, i )
         this.setState({arr});
     }
     onAdd = () =>

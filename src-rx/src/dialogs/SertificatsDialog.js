@@ -239,7 +239,7 @@ class SertificatsDialog extends Component
     {
         const value = evt.target.value; 
         this.props.onChange( id, value);
-        console.log( id, value );
+        // console.log( id, value );
         let state = {...this.state};
         state[id] = value;
         this.setState(state);        
@@ -248,7 +248,7 @@ class SertificatsDialog extends Component
     {
         let arr = [...this.state.arr];
         arr.splice(i, 1);
-        console.log(arr, i )
+        // console.log(arr, i )
         this.setState({arr});
         this.updateList(arr);
     }

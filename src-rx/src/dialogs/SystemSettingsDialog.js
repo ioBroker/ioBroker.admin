@@ -162,15 +162,15 @@ class SystemSettingsDialog extends Component
 
     onSave()
     {
-        console.log(this.state);
+        // console.log(this.state);
         return this.props.socket.getSystemConfig(true)
             .then(systemSettings => {
                 systemSettings = systemSettings || {};
-                console.log( systemSettings );
+                // console.log( systemSettings );
                 if (JSON.stringify(systemSettings.common) !== JSON.stringify(this.state.systemSettings)) 
                 {
                     systemSettings.common = this.state.systemSettings;
-                    console.log(systemSettings.common);
+                    // console.log(systemSettings.common);
                     return this.props.socket.setSystemConfig(systemSettings);
                 } 
                 else
@@ -258,7 +258,7 @@ class SystemSettingsDialog extends Component
     }
     onChangeStaticType = type =>
     {
-        console.log(type);
+        // console.log(type);
         this.props.socket.getRawSocket().emit(
             'sendToHost', 
             this.props.currentHost, 
@@ -286,7 +286,7 @@ class SystemSettingsDialog extends Component
        }) [0] || this. getTabs()[0];
        const _Component =  _t.component;
        const {groups, users} = this.state;
-       console.log( this.state );
+    //    console.log( this.state );
        return <div className={ this.props.classes.tabPanel }> 
            <_Component
                 onChange={(id, data) => this.onChangedTab(id, data, _t.data) }
@@ -307,8 +307,9 @@ class SystemSettingsDialog extends Component
         console.log(id, data, param);
         let state = {...this.state};
         state[ param ][ id ] = data;
+        console.log(state);
         this.setState( state );  
-        console.log( id, data, param, state );
+        // console.log( id, data, param, state );
     }
     
     restoreState()

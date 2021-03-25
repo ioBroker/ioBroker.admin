@@ -61,7 +61,7 @@ class SSLDialog extends Component
     {
         const { classes, native } = this.state; 
         const {letsEncrypt} = native || {};
-        console.log( letsEncrypt );
+        // console.log( letsEncrypt );
         return <div className={ classes.tabPanel }>
             <div className={ classes.buttonPanel }>
                 <Fab 
@@ -129,7 +129,7 @@ class SSLDialog extends Component
     {
         const value = evt.target.value; 
         this.props.onChange( id, value);
-        console.log( id, value );
+        // console.log( id, value );
         let state = {...this.state};
         state.native.letsEncrypt = state.native.letsEncrypt ? state.native.letsEncrypt : {};
         state.native.letsEncrypt[id] = value;
