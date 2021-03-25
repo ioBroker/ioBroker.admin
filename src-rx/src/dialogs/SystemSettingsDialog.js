@@ -162,6 +162,7 @@ class SystemSettingsDialog extends Component
 
     onSave()
     {
+        console.log(this.state);
         return this.props.socket.getSystemConfig(true)
             .then(systemSettings => {
                 systemSettings = systemSettings || {};
@@ -169,6 +170,7 @@ class SystemSettingsDialog extends Component
                 if (JSON.stringify(systemSettings.common) !== JSON.stringify(this.state.systemSettings)) 
                 {
                     systemSettings.common = this.state.systemSettings;
+                    console.log(systemSettings.common);
                     return this.props.socket.setSystemConfig(systemSettings);
                 } 
                 else
@@ -176,7 +178,7 @@ class SystemSettingsDialog extends Component
                     return Promise.resolve();
                 }
             })
-                .then(() => this.props.socket.setObject( 'system.config', this.state.systemcConfig ))
+                // .then(() => this.props.socket.setObject( 'system.config', this.state.systemcConfig ))
                     .then(() => this.props.socket.setObject( 'system.certificates', this.state.systemcCertificates ))
                         .then(() => this.props.socket.getObject('system.repositories'))
                             .then(systemRepositories => {
@@ -302,6 +304,7 @@ class SystemSettingsDialog extends Component
         Router.doNavigate(null, 'system', newTab)
     }
     onChangedTab (id, data, param )  {
+        console.log(id, data, param);
         let state = {...this.state};
         state[ param ][ id ] = data;
         this.setState( state );  
