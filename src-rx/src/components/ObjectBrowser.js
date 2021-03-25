@@ -715,9 +715,11 @@ function buildTree(objects, options) {
         objects,
         customs: [],
         hasSomeCustoms: false,
+        enums: [],
     };
 
     let croot = root;
+
     for (let i = 0; i < ids.length; i++) {
         const id = ids[i];
         const obj = objects[id];
@@ -738,8 +740,12 @@ function buildTree(objects, options) {
                 info.roles.push(role);
             } else if (id.startsWith('enum.rooms.')) {
                 info.roomEnums.push(id);
+                info.enums.push(id);
             } else if (id.startsWith('enum.functions.')) {
                 info.funcEnums.push(id);
+                info.enums.push(id);
+            } else if (obj.type === 'enum') {
+                info.enums.push(id);
             } else if (obj.type === 'instance' && common && common.supportCustoms) {
                 info.hasSomeCustoms = true;
                 info.customs.push(id.substring('system.adapter.'.length));
@@ -2416,16 +2422,15 @@ class ObjectBrowser extends Component {
  * @param {string} id
  */
     getEnumsForId = (id) => {
-        // let enums = that.main.tabs.enums.list;
-        let enums = [];
         let result = [];
-        for (let e = 0; e < enums.length; e++) {
-            let en = this.objects[enums[e]];
-            if (en.common && en.common.members && en.common.members.length && en.common.members.indexOf(id) !== -1) {
-                en = {
-                    _id: en._id,
-                    common: JSON.parse(JSON.stringify(en.common)),
-                    native: en.native
+        console.log(this.info.enums);
+        this.info.enums.forEach(_id => {
+            console.log(_id  + ' # ' + this.objects[_id]?.common?.members.join(', '))
+            if (this.objects[_id]?.common?.members?.includes(id)) {
+                const en = {
+                    _id: this.objects[_id]._id,
+                    common: JSON.parse(JSON.stringify(this.objects[_id].common)),
+                    native: this.objects[_id].native
                 };
                 if (en.common) {
                     delete en.common.members;
@@ -2434,15 +2439,15 @@ class ObjectBrowser extends Component {
                 }
                 result.push(en);
             }
-        }
+        });
+
         return result.length ? result : undefined;
     };
 
-    _createAllEnums = (enums, objId, callback) => {
-        if (!enums || !enums.length) {
-            callback && callback();
-        } else {
-            let id = enums.shift();
+    _createAllEnums = async (enums, objId) => {
+        for (let e = 0; e < enums.length; e++) {
+            console.log('create: ' + JSON.stringify(enums[e]));
+            let id = enums[e];
             let _enObj;
             if (typeof id === 'object') {
                 _enObj = id;
@@ -2462,25 +2467,14 @@ class ObjectBrowser extends Component {
                 enObj.common = enObj.common || {};
                 enObj.common.members = [objId];
 
-                this.props.socket.setObject(id, enObj).then((err) => {
-                    setTimeout(() => {
-                        this._createAllEnums(enums, objId, callback);
-                    }, 300); // give time for update of objects
-                });
-            } else if (!enObj.common || !enObj.common.members || enObj.common.members.indexOf(objId) === -1) {
+                await this.props.socket.setObject(id, enObj);
+            } else if (!enObj.common?.members?.includes(objId)) {
                 enObj.common = enObj.common || {};
                 enObj.common.members = enObj.common.members || [];
                 // add missing object
                 enObj.common.members.push(objId);
-                this.props.socket.setObject(id, enObj).then((err) => {
-                    setTimeout(() => {
-                        this._createAllEnums(enums, objId, callback);
-                    }, 300); // give time for update of objects
-                });
-            } else {
-                setTimeout(() => {
-                    this._createAllEnums(enums, objId, callback);
-                }, 0);
+                enObj.common.members.sort();
+                await this.props.socket.setObject(id, enObj);
             }
         }
     }
@@ -2666,6 +2660,7 @@ class ObjectBrowser extends Component {
                                         // add enum information
                                         if (result[key].common) {
                                             const enums = this.getEnumsForId(key);
+                                            console.log(enums);
                                             if (enums) {
                                                 result[key].common.enums = enums;
                                             }

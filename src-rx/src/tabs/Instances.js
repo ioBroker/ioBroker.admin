@@ -648,8 +648,8 @@ class Instances extends Component {
             const setCompactGroup = (value) => {
                 this.extendObject('system.adapter.' + instance.id, {
                     common: {
-                        compactGroup: value === 'controller' ? '0' :
-                            value === 'default' ? 1 : value
+                        compactGroup: value === 'controller' ? 0 :
+                            value === 'default' ? 1 : parseInt(value, 10)
                     }
                 });
                 if (this.state.compactGroupCount < value) {

@@ -16,37 +16,31 @@
   - Subscribe on admin.X.info.news and test on update
 
 ## Adapters
-- Adapters - update all adapters and allow to select from list (BF)
 - Adapters - Use readme renderer from www.iobroker.net (BF)
 - Show number of possible updates on "Adapters" in menu on the left (impossible ?)
 - disable update, install, delete button if command is running for all adapters
 
 ## Instances  
 - Instances - Open in new window must be shown only for instances with localLink (BF)
-<!-- - Sentry disabled => common.disableDataReporting = true common.plugins.senty -->
-<!-- - compactGroup => 
-  - with controller (0)
-  - default (1) (if null of undefined)
-  - 2 -->
+- compactGroup => 
+  - rows
+- Filter does not work (e.g. email)  
 
 ## Objects
-- Objects - export/import and creation of new state//
-<!-- - Objects - edit of access control (similar to files)
-  - obj.acl.object 
-    - 0x2 => write everyone, 
-    - 0x4 => read everyone
-    - 0x20 => write group
-    - 0x40 => read group
-    - 0x200 => read owner
-    - 0x400 => read owner
-  - if (obj.acl.object & 0x40) => read group possible 
-  - Set flag => obj.acl.object | 0x40
-  - Clear flag => obj.acl.object & (~0x40)
-
-  - obj.acl.state -->
-<!-- - Objects - Add clear button by all text (and maybe select) filter fields// -->
+- Objects - import fix enums (BF)
+- Hide ACL for non experts
+- Move Trash aligned with states for objects
 - Decode quality code to text (BF)
-<!-- - Replace all this.props.t() with this.texts.my_text... for often translations// -->
+- Add tooltip for ACL with full descripton: 
+  - Owner: Admin, 
+  - Group: Administrator
+  - Owner can write object, 0x200  // green
+  - Owner can read object, 0x400,
+  - Group can write, Group can read, Everyone can read
+  - Owner can write state // blue
+- By bulc ACL edit, collect different options, show them with intermediate or --different-- and by apply do not change intermediate do different attributes if not set.  
+- Replace all this.props.t() with this.texts.my_text... for often translations
+  - For select category too
 
 
 ## Files
