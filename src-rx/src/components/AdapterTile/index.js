@@ -15,6 +15,7 @@ import CloudOffIcon from '@material-ui/icons/CloudOff';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import RemoveIcon from '@material-ui/icons/Remove';
+import PropTypes from "prop-types";
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -159,6 +160,59 @@ const styles = theme => ({
     },
     description: {
         color: theme.palette.type === 'dark' ? '#222' : 'inherit'
+    },
+
+    cardContent: {
+        overflow: 'auto'
+    },
+    cardContentDiv: {
+        position: 'sticky',
+        right: 0,
+        top: 0,
+        background: 'silver'
+    },
+    cardContentFlex: {
+        display: 'flex'
+    },
+    cardContentFlexBetween: {
+        display: 'flex',
+        justifyContent: 'space-between'
+    },
+    cardContent2: {
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between'
+    },
+    cardMargin10: {
+        marginTop: 10,
+    },
+    availableVersion: {
+        display: 'flex',
+        justifyContent: 'space-between'
+    },
+    buttonUpdateIcon: {
+        height: 20,
+        width: 20,
+        marginRight: 10
+    },
+    curdContentFlexCenter: {
+        display: 'flex',
+        alignItems: 'center'
+    },
+
+    classPoll: {
+        color: 'orange'
+    },
+    classPush: {
+        color: 'green'
+    },
+    classAssumption: {
+        color: 'red',
+        transform: 'rotate(90deg)'
+    },
+    marginLeft5: {
+        marginLeft: 5
     }
 });
 const AdapterTile = ({
@@ -187,20 +241,16 @@ const AdapterTile = ({
     connectionType,
     openInstallVersionDialog,
     dataSource,
-    t
+    t,
+    commandRunning
 }) => {
     const [openCollapse, setCollapse] = useState(false);
     const [focused, setFocused] = useState(false);
 
     return <Card className={clsx(classes.root, hidden ? classes.hidden : '')}>
         {(openCollapse || focused) && <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
-            <CardContent style={{ overflow: 'auto' }}>
-                <div style={{
-                    position: 'sticky',
-                    right: 0,
-                    top: 0,
-                    background: 'silver'
-                }}>
+            <CardContent className={classes.cardContent}>
+                <div className={classes.cardContentDiv}>
                     <div className={classes.close} onClick={() => setCollapse((bool) => !bool)} />
                 </div>
                 <Typography gutterBottom component={'span'} variant={'body2'} className={classes.description}>
@@ -210,12 +260,13 @@ const AdapterTile = ({
             <div className={classes.footerBlock}>
                 <IconButton
                     size="small"
+                    disabled={commandRunning}
                     className={!rightOs ? classes.hidden : ''}
                     onClick={rightOs ? onAddInstance : null}
                 >
                     <AddIcon />
                 </IconButton>
-                <div style={{ display: 'flex' }}>
+                <div className={classes.cardContentFlex}>
                     <IconButton
                         size="small"
                         onClick={onInfo}
@@ -225,6 +276,7 @@ const AdapterTile = ({
                     {expertMode &&
                         <IconButton
                             size="small"
+                            disabled={commandRunning}
                             className={!installedVersion ? classes.hidden : ''}
                             onClick={onUpload}
                         >
@@ -233,6 +285,7 @@ const AdapterTile = ({
                     }
                     <IconButton
                         size="small"
+                        disabled={commandRunning}
                         className={!installedVersion ? classes.hidden : ''}
                         onClick={onDeletion}
                     >
@@ -240,6 +293,7 @@ const AdapterTile = ({
                     </IconButton>
                     {expertMode &&
                         <IconButton
+                            disabled={commandRunning}
                             size="small"
                             className={!installedVersion ? classes.hidden : ''}
                             onClick={openInstallVersionDialog}
@@ -249,6 +303,7 @@ const AdapterTile = ({
                     }
                     {rebuild && expertMode &&
                         <IconButton
+                            disabled={commandRunning}
                             size="small"
                             className={!installedVersion ? classes.hidden : ''}
                             onClick={onRebuild}
@@ -276,14 +331,9 @@ const AdapterTile = ({
                 <MoreVertIcon />
             </Fab>
         </div>
-        <CardContent style={{
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between'
-        }}>
+        <CardContent className={classes.cardContent2}>
             <Typography gutterBottom variant="h5" component="h5">{name}</Typography>
-            <div style={{ display: 'flex' }}>
+            <div className={classes.cardContentFlex}>
                 {!isCategory &&
                     (connectionType === 'cloud' ?
                         <Tooltip title={t('Adapter does not use the cloud for these devices/service')}><CloudIcon /></Tooltip> :
@@ -291,43 +341,28 @@ const AdapterTile = ({
                             <Tooltip title={t('Adapter requires the specific cloud access for these devices/service')}><CloudOffIcon /></Tooltip> : '')
                 }
                 {
-                    dataSource && <div style={{ marginLeft: 5 }}>{(
+                    dataSource && <div className={classes.marginLeft5}>{(
                         dataSource === 'poll' ?
                             <Tooltip title={t('The device or service will be periodically asked')}>
-                                <ArrowUpwardIcon style={{color:'orange'}} />
+                                <ArrowUpwardIcon className={classes.classPoll} />
                             </Tooltip> :
                             dataSource === 'push' ?
                                 <Tooltip title={t('The device or service delivers the new state actively')}>
-                                    <ArrowDownwardIcon style={{color:'green'}}/>
+                                    <ArrowDownwardIcon className={classes.classPush}/>
                                 </Tooltip> :
                                 dataSource === 'assumption' ?
                                     <Tooltip title={t('Adapter cannot request the exactly device status and the status will be guessed on the last sent command')}>
-                                        <RemoveIcon style={{
-                                            color:'red',
-                                            transform: 'rotate(90deg)'
-                                        }} /></Tooltip> : null
+                                        <RemoveIcon  className={classes.classAssumption} /></Tooltip> : null
                     )}</div>
                 }
             </div>
-            <div style={{
-                marginTop: 10,
-            }}>
-                <Typography component={'span'} style={{
-                    display: 'flex',
-                    justifyContent: 'space-between'
-                }}>
+            <div className={classes.cardMargin10}>
+                <Typography component={'span'} className={classes.availableVersion}>
                     <div>{t('Available version:')}</div>
-                    <div className={updateAvailable ? classes.greenText : ''} style={{
-                        display: 'flex',
-                        alignItems: 'center'
-                    }}>
-                        {updateAvailable ?
+                    <div className={clsx(updateAvailable && classes.greenText, classes.curdContentFlexCenter)} >
+                        {!commandRunning && updateAvailable ?
                             <div onClick={onUpdate} className={classes.buttonUpdate}><IconButton
-                                style={{
-                                    height: 20,
-                                    width: 20,
-                                    marginRight: 10
-                                }}
+                                className={classes.buttonUpdateIcon}
                                 size="small"
                             >
                                 <RefreshIcon />
@@ -335,17 +370,11 @@ const AdapterTile = ({
                             version
                         }</div>
                 </Typography>
-                {installedVersion && <Typography component={'span'} style={{
-                    display: 'flex',
-                    justifyContent: 'space-between'
-                }}>
+                {installedVersion && <Typography component={'span'} className={classes.cardContentFlexBetween}>
                     <div>{t('Installed version')}:</div>
                     <div>{installedVersion}</div>
                 </Typography>}
-                {installedCount && <Typography component={'span'} style={{
-                    display: 'flex',
-                    justifyContent: 'space-between'
-                }}>
+                {installedCount && <Typography component={'span'} className={classes.cardContentFlexBetween}>
                     <div>{t('Installed instances')}:</div>
                     <div>{installedCount}</div>
                 </Typography>}
@@ -353,5 +382,7 @@ const AdapterTile = ({
         </CardContent>
     </Card>;
 }
-
+AdapterTile.propTypes = {
+    commandRunning: PropTypes.bool,
+};
 export default withStyles(styles)(AdapterTile);

@@ -1,4 +1,4 @@
-import {Component} from 'react';
+import React, {Component} from 'react';
 import {Grid, LinearProgress, Paper, Switch, Typography} from '@material-ui/core';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
@@ -43,11 +43,14 @@ class Command extends Component {
             stopped: false,
         };
 
+        this.logRef = React.createRef();
+
         this.t = props.t;
     }
 
     componentDidMount() {
         if (this.props.ready && this.props.cmd) {
+            console.log('STARTED: ' + this.props.cmd);
             this.executeCommand();
         }
         const closeOnReady = JSON.parse(window.localStorage.getItem('CommandDialog.closeOnReady')) || false;
@@ -58,10 +61,11 @@ class Command extends Component {
         if (!this.state.init && this.props.ready && this.props.cmd) {
             this.executeCommand();
         }
+        this.logRef.current?.scrollIntoView();
     }
 
     executeCommand() {
-        this.setState({init: true});
+        this.setState({init: true}, () => this.props.onSetCommandRunning(true));
 
         this.props.socket.registerCmdStdoutHandler(this.cmdStdoutHandler.bind(this));
         this.props.socket.registerCmdStderrHandler(this.cmdStderrHandler.bind(this));
@@ -199,6 +203,7 @@ class Command extends Component {
             log.push(`${exitCode !== 0 ? 'ERROR: ' : ''}Process exited with code ${exitCode}`);
 
             this.setState({log, stopped: true}, () => {
+                this.props.onSetCommandRunning(false);
                 if (exitCode !== 0) {
                     this.props.errorFunc && this.props.errorFunc();
                 } else {
@@ -212,10 +217,14 @@ class Command extends Component {
         }
     }
 
-    colorize(text) {
+    colorize(text, maxLength) {
 
         const pattern = ['error', 'warn', 'info'];
         const regExp = new RegExp(pattern.join('|'), 'i');
+
+        if (maxLength !== undefined) {
+            text = text.substring(0, maxLength);
+        }
 
         if (text.search(regExp) >= 0) {
 
@@ -223,12 +232,10 @@ class Command extends Component {
             const { classes } = this.props;
 
             while (text.search(regExp) >= 0) {
-
                 const [match] = text.match(regExp);
                 const pos = text.search(regExp);
 
                 if (pos > 0) {
-
                     const part = text.substring(0, pos);
 
                     result.push(part);
@@ -253,6 +260,7 @@ class Command extends Component {
 
     getLog() {
         return this.state.log.map((value, index) => <Typography
+                ref={index === this.state.log.length - 1 ? this.logRef : undefined}
                 key={index}
                 component="p"
                 variant="body2"
@@ -284,8 +292,18 @@ class Command extends Component {
                 alignItems: 'center',
                 justifyContent: this.props.inBackground ? 'space-between' : 'flex-end'
             }}>
-                <Typography style={this.props.inBackground ? null : { display: 'none' }} component="div">{this.colorize(this.state.log[this.state.log.length - 1])}</Typography>
-                <Typography component="div">
+                <Typography
+                    style={this.props.inBackground ? {
+                        width: 'calc(100% - 180px)',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                    } : { display: 'none' }}
+                    component="div"
+                >
+                    {this.colorize(this.state.log[this.state.log.length - 1])}
+                </Typography>
+                <Typography component="div" style={{width: 180}}>
                     <Grid component="label" container alignItems="center" spacing={1}>
                         <Grid item>{this.props.t('less')}</Grid>
                         <Grid item>
@@ -321,6 +339,7 @@ Command.propTypes = {
     errorFunc: PropTypes.func,
     performed: PropTypes.func,
     cmd: PropTypes.string.isRequired,
+    onSetCommandRunning: PropTypes.func.isRequired
 };
 
 export default withStyles(styles)(Command);
