@@ -19,7 +19,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 import blueGrey from '@material-ui/core/colors/blueGrey' 
 
-import Utils from '../Utils';
+import Utils from '../../Utils';
 
 
 // icons
@@ -79,20 +79,33 @@ class RepositoriesDialog extends Component
         }
 
     }
-    render()
-    {
-        const { classes } = this.props; 
-        const arr = Utils.objectMap(this.props.data.native.repositories, (repo, name) => {
+    repoToArray(repos) {
+        return Utils.objectMap(repos, (repo, name) => {
             return {
                 title: name,
                 link: repo.link
             }
         });
+    }
+    arrayToRepo(array) {
+        let result = {};
+        for (let k in array) {
+            result[array[k].title] = {
+                link: array[k].link
+            }
+        }
+
+        return result;
+    }
+    render()
+    {
+        const { classes } = this.props; 
+        const arr = this.repoToArray(this.props.data.native.repositories);
 
         // console.log( this.state );
         const rows = arr.map((e, i) =>
         {
-            return <TableRow key={e.title + e.link} className="float_row">
+            return <TableRow key={i} className="float_row">
                 <TableCell className={this.props.classes.littleRow  + " float_cell "}>
                     {i + 1}
                 </TableCell>
@@ -172,26 +185,29 @@ class RepositoriesDialog extends Component
     {
         const value = evt.target.value; 
         let newData = JSON.parse(JSON.stringify(this.props.data))
-        if (name == 'title') {
-            newData.native.repositories[value] = newData.native.repositories[id];
-            delete newData.native.repositories[id];
-        } else {
-            newData.native.repositories[id][name] = value;
-        }
+        let array = this.repoToArray(newData.native.repositories);
+        array.find(element => element.title == id)[name] = value;
+        newData.native.repositories = this.arrayToRepo(array);
         this.props.onChange(newData);
     }
     onDelete = id =>
     {
         let newData = JSON.parse(JSON.stringify(this.props.data))
-        delete newData.native.repositories[id];
+        let array = this.repoToArray(newData.native.repositories);
+        let index = array.findIndex(element => element.title == id);
+        delete array[index];
+        newData.native.repositories = this.arrayToRepo(array);
         this.props.onChange(newData);
     }
     onAdd = () =>
     {
         let newData = JSON.parse(JSON.stringify(this.props.data))
-        newData.native.repositories[''] = {
-            title: ''
-        };
+        let array = this.repoToArray(newData.native.repositories);
+        array.push({
+            title: '__',
+            link: ''
+        });
+        newData.native.repositories = this.arrayToRepo(array);
         this.props.onChange(newData);
     }
 }

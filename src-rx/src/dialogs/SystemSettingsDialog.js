@@ -18,12 +18,12 @@ import IconButton from '@material-ui/core/IconButton';
 import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 import Router from '@iobroker/adapter-react/Components/Router';
 
-import MainSettingsDialog from "./MainSettingsDialog";
-import RepositoriesDialog from "./RepositoriesDialog";
-import SertificatsDialog from "./SertificatsDialog";
-import SSLDialog from "./SSLDialog";
-import ACLDialog from "./ACLDialog";
-import StatisticsDialog from "./StatisticsDialog";
+import MainSettingsDialog from "./SystemSettingsTabs/MainSettingsDialog";
+import RepositoriesDialog from "./SystemSettingsTabs/RepositoriesDialog";
+import SertificatsDialog from "./SystemSettingsTabs/SertificatsDialog";
+import SSLDialog from "./SystemSettingsTabs/SSLDialog";
+import ACLDialog from "./SystemSettingsTabs/ACLDialog";
+import StatisticsDialog from "./SystemSettingsTabs/StatisticsDialog";
 
 // icons
 import CheckIcon from '@material-ui/icons/Check';

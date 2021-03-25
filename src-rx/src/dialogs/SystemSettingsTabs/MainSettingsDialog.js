@@ -19,7 +19,7 @@ import blueGrey from '@material-ui/core/colors/blueGrey'
 // icons
 
 //data
-import countries from "../assets/json/countries";
+import countries from "../../assets/json/countries";
 
 const styles = theme => ({
     tabPanel: 
