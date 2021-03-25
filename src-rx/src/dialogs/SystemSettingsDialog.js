@@ -3,7 +3,6 @@ import {withStyles} from '@material-ui/core/styles';
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import AppBar from "@material-ui/core/AppBar";
@@ -29,9 +28,6 @@ import StatisticsDialog from "./SystemSettingsTabs/StatisticsDialog";
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 
-//fills
-import lightBlue from '@material-ui/core/colors/lightBlue'
-
 //style
 import "../assets/css/style.css";
 
@@ -43,7 +39,7 @@ const styles = theme => ({
         overflow: 'hidden'
     },
     tab: {
-        // backgroundColor:"#FFF",
+        // backgroundColor:'#FFF',
         // color:lightBlue[500]
     },
     dialogTitle : {
@@ -191,7 +187,7 @@ class SystemSettingsDialog extends Component
                             return this.props.socket.setObject('system.repositories', systemRepositories);
                         }).then(() => {
                             this.getSettings();
-                            alert(this.props.t("Settings saved"));
+                            alert(this.props.t('Settings saved'));
                         })
                             .catch(e => window.alert('Cannot save system configuration: ' + e));
     }
@@ -210,7 +206,7 @@ class SystemSettingsDialog extends Component
                 id : 1,
                 title: 'Repositories',
                 component: RepositoriesDialog,
-                data: "systemRepositories",
+                data: 'systemRepositories',
                 data2:{},
                 handle: null
             },
@@ -218,32 +214,32 @@ class SystemSettingsDialog extends Component
                 id : 2,
                 title: 'Certificates',
                 component: SertificatsDialog,
-                data: "systemCertificates",
+                data: 'systemCertificates',
                 data2:{},
                 handle: null
             },
             {
                 id : 3,
-                title: "Let's encrypt SSL",
+                title: 'Let\'s encrypt SSL',
                 component: SSLDialog,
-                data: "systemCertificates",
+                data: 'systemCertificates',
                 data2:{},
                 handle: null
             },
             {
                 id : 4,
-                title: "Default ACL",
+                title: 'Default ACL',
                 component: ACLDialog,
-                data: "systemConfig",
+                data: 'systemConfig',
                 data2:{},
                 handle: null
             },
             {
                 id : 5,
-                title: "Statistics",
+                title: 'Statistics',
                 component: StatisticsDialog,
-                data: "systemConfig",
-                data2: "diagData",
+                data: 'systemConfig',
+                data2: 'diagData',
                 handle: type => this.onChangeDiagType(type)
             }
         ]
@@ -323,7 +319,7 @@ class SystemSettingsDialog extends Component
             className={ this.props.classes.dialog }
             classes={{
                 root: this.props.classes.dialog,
-                paper: "dialog-setting"
+                paper: 'dialog-setting'
             }}
             open={ true }
             onClose={ () => {} }

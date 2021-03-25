@@ -36,7 +36,7 @@ const styles = theme => ({
     formControl: 
     {
         margin: theme.spacing(1),
-        minWidth: "100%",
+        minWidth: '100%',
      },
     selectEmpty: 
     {
@@ -44,12 +44,12 @@ const styles = theme => ({
     },
     descrPanel:
     {
-        width:"100%",
-        // backgroundColor:"transparent",
+        width:'100%',
+        // backgroundColor:'transparent',
         padding :16,
-        // border:"none",
+        // border:'none',
         display:'flex',
-        alignItems:"center"
+        alignItems:'center'
     },
 });
 
@@ -74,129 +74,129 @@ class MainSettingsDialog extends Component
     {
         return [
             {
-                id      : "language",
-                title   : "System language:",       
+                id      : 'language',
+                title   : 'System language:',       
                 values  : [
                     {
-                        id:"en",
-                        title:"English"
+                        id:'en',
+                        title:'English'
                     },
                     {
-                        id:"ge",
-                        title:"Deutsch"
+                        id:'ge',
+                        title:'Deutsch'
                     },
                     {
-                        id:"ru",
-                        title:"русский"
+                        id:'ru',
+                        title:'русский'
                     },
                     {
-                        id:"po",
-                        title:"Portugues"
+                        id:'po',
+                        title:'Portugues'
                     },
                     {
-                        id:"nd",
-                        title:"Nederlands"
+                        id:'nd',
+                        title:'Nederlands'
                     },
                     {
-                        id:"fr",
-                        title:"français"
+                        id:'fr',
+                        title:'français'
                     },
                     {
-                        id:"it",
-                        title:"Italiano"
+                        id:'it',
+                        title:'Italiano'
                     },
                     {
-                        id:"sp",
-                        title:"Espanol"
+                        id:'sp',
+                        title:'Espanol'
                     },
                     {
-                        id:"pl",
-                        title:"Polski"
+                        id:'pl',
+                        title:'Polski'
                     },
                     {
-                        id:"ch",
-                        title:"简体中文"
+                        id:'ch',
+                        title:'简体中文'
                     }
                 ]      
             },
             {
-                id:"tempUnit",
-                title:"Temperature units",
+                id:'tempUnit',
+                title:'Temperature units',
                 values: [
                     {
-                        id:"°C",
-                        title:"°C"
+                        id:'°C',
+                        title:'°C'
                     },
                     {
-                        id:"°F",
-                        title:"°F"
+                        id:'°F',
+                        title:'°F'
                     }
                 ]
             },
             {
-                id:"currency",
-                title:"Currency sign",
+                id:'currency',
+                title:'Currency sign',
                 values: [
                     {
-                        id:"€",
-                        title:"€"
+                        id:'€',
+                        title:'€'
                     },
                     {
-                        id:"$",
-                        title:"$"
+                        id:'$',
+                        title:'$'
                     },
                     {
-                        id:"₽",
-                        title:"₽"
+                        id:'₽',
+                        title:'₽'
                     },
                     {
-                        id:"₤",
-                        title:"₤"
+                        id:'₤',
+                        title:'₤'
                     }
                 ]
             },
             {
-                id:"dateFormat",
-                title:"Date format",
+                id:'dateFormat',
+                title:'Date format',
                 values: [
                     {
-                        id:"DD.MM.YYYY",
-                        title:"DD.MM.YYYY"
+                        id:'DD.MM.YYYY',
+                        title:'DD.MM.YYYY'
                     },
                     {
-                        id:"DD.MM.YY",
-                        title:"DD.MM.YY"
+                        id:'DD.MM.YY',
+                        title:'DD.MM.YY'
                     },
                     {
-                        id:"DD/MM/YYYY",
-                        title:"DD/MM/YYYY"
+                        id:'DD/MM/YYYY',
+                        title:'DD/MM/YYYY'
                     }
                 ]
             },
             {
-                id:"isFloatComma",
-                title:"Date Float comma sign",
+                id:'isFloatComma',
+                title:'Date Float comma sign',
                 values: [
                     {
                         id:true,
-                        title:"comma"
+                        title:'comma'
                     },
                     {
                         id:false,
-                        title:"point"
+                        title:'point'
                     }
                 ]
             },
             {
-                id:"defaultHistory",
-                title:"Default History",
+                id:'defaultHistory',
+                title:'Default History',
                 values: [
                    
                 ]
             },
             {
-                id:"activeRepo",
-                title:"Default Repository",
+                id:'activeRepo',
+                title:'Default Repository',
                 values: Utils.objectMap(this.props.data2.native.repositories, (repo, name) => {
                     return {
                         id: name,
@@ -226,7 +226,7 @@ class MainSettingsDialog extends Component
                         {selectors}
                     </Grid>
                 </Grid>
-                <Grid item lg={6} md={12} style={{width:"100%"}}>
+                <Grid item lg={6} md={12} style={{width:'100%'}}>
                     <LeafletMap
                         center={center}
                         zoom={ zoom }
@@ -241,7 +241,7 @@ class MainSettingsDialog extends Component
                         whenCreated={this.onMap} 
                     >
                         <TileLayer
-                            url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
+                            url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
                         />
                         
                     </LeafletMap>
@@ -254,12 +254,12 @@ class MainSettingsDialog extends Component
                 </Grid>
                 <Grid item md={3} sm={6} xs={12}> 
                     <FormControl className={classes.formControl}>
-                        <InputLabel shrink id={ "city-label"}>
-                            { this.props.t("City:")}
+                        <InputLabel shrink id={ 'city-label'}>
+                            { this.props.t('City:')}
                         </InputLabel>
                         <TextField
                             id="city"
-                            label={ this.props.t("City:")}
+                            label={ this.props.t('City:')}
                             value={ this.props.data.common.city }
                             InputLabelProps={{
                                 readOnly: false,
@@ -272,34 +272,34 @@ class MainSettingsDialog extends Component
                 <Grid item md={3} sm={6} xs={12}> 
                     <FormControl className={classes.formControl}>
                         <InputLabel shrink id={ "latitude-label"}>
-                            { this.props.t("Latitude:")}
+                            { this.props.t('Latitude:')}
                         </InputLabel>
                         <TextField
                             id="latitude"
-                            label= { this.props.t("Latitude:")}
+                            label= { this.props.t('Latitude:')}
                             value={ this.props.data.common.latitude }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
                             }}
-                            onChange={evt => this.onChangeText(evt, "latitude") }
+                            onChange={evt => this.onChangeText(evt, 'latitude') }
                         />
                     </FormControl>
                 </Grid>
                 <Grid item md={3} sm={6} xs={12}> 
                     <FormControl className={classes.formControl}>
-                        <InputLabel shrink id={ "longitude-label"}>
-                            { this.props.t("Longitude:")}
+                        <InputLabel shrink id={ 'longitude-label'}>
+                            { this.props.t('Longitude:')}
                         </InputLabel>
                         <TextField
                             id="longitude" 
-                            label={ this.props.t("Longitude:")}
+                            label={ this.props.t('Longitude:')}
                             value={ this.props.data.common.longitude }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
                             }}
-                            onChange={evt => this.onChangeText(evt, "longitude") }
+                            onChange={evt => this.onChangeText(evt, 'longitude') }
                         />
                     </FormControl>
                 </Grid>
@@ -346,7 +346,7 @@ class MainSettingsDialog extends Component
         } )
         return  <Grid item sm={6} xs={12} key={i} >
              <FormControl className={classes.formControl}>
-                <InputLabel shrink id={e.id + "-label"}>
+                <InputLabel shrink id={e.id + '-label'}>
                     { this.props.t(this.getSettings()[i].title)}
                 </InputLabel>
                 <Select
@@ -373,12 +373,12 @@ class MainSettingsDialog extends Component
             </MenuItem> 
         })
         return <FormControl className={classes.formControl}>
-            <InputLabel shrink id={"country-label"}>
-                { this.props.t("Country:")}
+            <InputLabel shrink id={'country-label'}>
+                { this.props.t('Country:')}
             </InputLabel>
             <Select
                 className={classes.formControl}
-                id={"country"}
+                id={'country'}
                 value={ this.props.data.common.country }
                 onChange={ this.handleChangeCountry }
                 displayEmpty 
@@ -391,7 +391,7 @@ class MainSettingsDialog extends Component
     handleChangeCountry = evt  =>
     {
         const value = evt.target.value; 
-        const id = "country";
+        const id = 'country';
         this.doChange( id, value);
     }
 
@@ -405,7 +405,7 @@ class MainSettingsDialog extends Component
     }
 
     onChangeCity = (evt) => { 
-        this.onChangeText(evt, "city");
+        this.onChangeText(evt, 'city');
         // console.log (evt.target.value );
         const provider = new OpenStreetMapProvider();
         provider.search({ query: evt.target.value })
@@ -414,9 +414,9 @@ class MainSettingsDialog extends Component
                 if( results[0] )
                 {
                     setTimeout( () => {
-                        this.onChangeInput(results[0].y, "latitude");
-                        this.onChangeInput(results[0].x, "longitude"); 
-                        this.onChangeInput(23, "zoom"); 
+                        this.onChangeInput(results[0].y, 'latitude');
+                        this.onChangeInput(results[0].x, 'longitude'); 
+                        this.onChangeInput(23, 'zoom'); 
                         this.map.flyTo(
                             [results[0].y, results[0].x] 
                         );
@@ -443,8 +443,8 @@ class MainSettingsDialog extends Component
     onMarkerDragend = evt => {
         const ll = evt.target._latlng;
         //console.log(ll)
-        this.doChange( "latitude",  ll.lat);
-        this.doChange( "longitude", ll.lng);
+        this.doChange( 'latitude',  ll.lat);
+        this.doChange( 'longitude', ll.lng);
 
     }
 }

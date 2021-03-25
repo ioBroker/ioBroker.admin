@@ -4,7 +4,7 @@ import React, { Component, Fragment } from 'react';
 
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles'; 
-import { Grid,  Typography, TextField, FormControl, Checkbox  } from '@material-ui/core';
+import { Grid,  Typography, FormControl, Checkbox  } from '@material-ui/core';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -14,8 +14,6 @@ import TableRow from '@material-ui/core/TableRow';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
-
-import blueGrey from '@material-ui/core/colors/blueGrey';
 
 // icons
 
@@ -35,22 +33,22 @@ const styles = theme => ({
     },
     descrPanel:
     {
-        width:"100%",
-        backgroundColor:"transparent",
+        width:'100%',
+        backgroundColor:'transparent',
         marginLeft:40,
-        border:"none",
+        border:'none',
         display:'flex',
-        alignItems:"center"
+        alignItems:'center'
     },
     formControl: 
     {
         margin: theme.spacing(1),
-        minWidth: "100%",
+        minWidth: '100%',
     },
     tableCell:
     {
-        textAlign:"center",
-        border: "1px solid #AAA",
+        textAlign:'center',
+        border: '1px solid #AAA',
 		paddingLeft:0,
 		paddingRight:0
     }
@@ -73,16 +71,16 @@ class ACLDialog extends Component
     {
         return [
             {
-                type:"object",
-                title:"Object rights"
+                type:'object',
+                title:'Object rights'
             },
             {
-                type:"state",
-                title:"States rights"
+                type:'state',
+                title:'States rights'
             },
             {
-                type:"file",
-                title:"File rights"
+                type:'file',
+                title:'File rights'
             }
         ]
     }
@@ -124,35 +122,35 @@ class ACLDialog extends Component
                 <TableHead>
                     <TableRow>
                         <TableCell colSpan={2} className={classes.tableCell}>
-                            {this.props.t("Owner")}
+                            {this.props.t('Owner')}
                         </TableCell>
                         <TableCell colSpan={2} className={classes.tableCell}>
-                            {this.props.t("Group")}
+                            {this.props.t('Group')}
                         </TableCell>
                         <TableCell colSpan={2} className={classes.tableCell}>
-                            {this.props.t("Everyone")}
+                            {this.props.t('Everyone')}
                         </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     <TableRow>
                         <TableCell className={classes.tableCell}>
-                            {this.props.t("read")}
+                            {this.props.t('read')}
                         </TableCell>
                         <TableCell className={classes.tableCell}>
-                            {this.props.t("write")}
+                            {this.props.t('write')}
                         </TableCell>
                         <TableCell className={classes.tableCell}>
-                            {this.props.t("read")}
+                            {this.props.t('read')}
                         </TableCell>
                         <TableCell className={classes.tableCell}>
-                            {this.props.t("write")}
+                            {this.props.t('write')}
                         </TableCell>
                         <TableCell className={classes.tableCell}>
-                            {this.props.t("read")}
+                            {this.props.t('read')}
                         </TableCell>
                         <TableCell className={classes.tableCell}>
-                            {this.props.t("write")}
+                            {this.props.t('write')}
                         </TableCell>
                     </TableRow>
                     <TableRow>
@@ -209,19 +207,19 @@ class ACLDialog extends Component
 
         return <div className={ classes.tabPanel }>
             <Typography variant="h5" component="div">
-                {this.props.t("Access control list")}
+                {this.props.t('Access control list')}
             </Typography>
             <Grid container spacing={3}>
                 <Grid item lg={3} md={6} xs={12}>
                     <FormControl className={classes.formControl}>
-                        <InputLabel shrink id={"owner" + "-label"}>
-                            { this.props.t("Owner user")}
+                        <InputLabel shrink id={'owner' + '-label'}>
+                            { this.props.t('Owner user')}
                         </InputLabel>
                         <Select
                             className={classes.formControl}
-                            id={"owner"}
+                            id={'owner'}
                             value={ this.props.data.common.defaultNewAcl.owner }
-                            onChange={ evt => this.handleChange(evt, "owner") }
+                            onChange={ evt => this.handleChange(evt, 'owner') }
                             displayEmpty 
                             inputProps={{ 'aria-label': 'users' }}
                         > 
@@ -231,14 +229,14 @@ class ACLDialog extends Component
                 </Grid>
                 <Grid item lg={3} md={6} xs={12}>
                     <FormControl className={classes.formControl}>
-                        <InputLabel shrink id={"ownerGroup" + "-label"}>
-                            { this.props.t("Owner group")}
+                        <InputLabel shrink id={'ownerGroup' + '-label'}>
+                            { this.props.t('Owner group')}
                         </InputLabel>
                         <Select
                             className={classes.formControl}
-                            id={"ownerGroup"}
+                            id={'ownerGroup'}
                             value={  this.props.data.common.defaultNewAcl.ownerGroup }
-                            onChange={ evt => this.handleChange(evt, "ownerGroup")  }
+                            onChange={ evt => this.handleChange(evt, 'ownerGroup')  }
                             displayEmpty 
                             inputProps={{ 'aria-label': 'ownerGroup' }}
                         > 

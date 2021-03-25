@@ -4,15 +4,9 @@ import { Component } from 'react';
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import Fab from '@material-ui/core/Fab';  
-import InputLabel from '@material-ui/core/InputLabel'; 
 import FormControl from '@material-ui/core/FormControl';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
-
-import AddIcon from '@material-ui/icons/Add';
-
-import blueGrey from '@material-ui/core/colors/blueGrey'
 
 
 // icons
@@ -33,17 +27,17 @@ const styles = theme => ({
     },
     descrPanel:
     {
-        width:"100%",
-        backgroundColor:"transparent",
+        width:'100%',
+        backgroundColor:'transparent',
         marginLeft:40,
-        border:"none",
+        border:'none',
         display:'flex',
-        alignItems:"center"
+        alignItems:'center'
     },
     formControl: 
     {
         margin: theme.spacing(1),
-        minWidth: "100%",
+        minWidth: '100%',
     },
 });
 
@@ -67,7 +61,7 @@ class SSLDialog extends Component
                 <Paper 
                     variant="outlined" 
                     className={ classes.descrPanel }
-                    dangerouslySetInnerHTML={{__html: this.props.t("letsnecrypt_help")}}
+                    dangerouslySetInnerHTML={{__html: this.props.t('letsnecrypt_help')}}
                 />
             </div>
             <Grid container spacing={6}> 
@@ -75,13 +69,13 @@ class SSLDialog extends Component
                     <FormControl className={classes.formControl}> 
                         <TextField
                             id="email"
-                            label={ this.props.t("Email for account:")}
+                            label={ this.props.t('Email for account:')}
                             value={ letsEncrypt ? letsEncrypt.email : '' }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
                             }}
-                            onChange={evt => this.onChangeText(evt, "email") }
+                            onChange={evt => this.onChangeText(evt, 'email') }
                         />
                     </FormControl>
                 </Grid> 
@@ -89,13 +83,13 @@ class SSLDialog extends Component
                     <FormControl className={classes.formControl}> 
                         <TextField
                             id="domains"
-                            label={ this.props.t("Domains:")}
+                            label={ this.props.t('Domains:')}
                             value={ letsEncrypt ? letsEncrypt.domains : '' }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
                             }}
-                            onChange={evt => this.onChangeText(evt, "domains") }
+                            onChange={evt => this.onChangeText(evt, 'domains') }
                         />
                     </FormControl>
                 </Grid>
@@ -103,13 +97,13 @@ class SSLDialog extends Component
                     <FormControl className={classes.formControl}> 
                         <TextField
                             id="path" 
-                            label={ this.props.t("Path to storage:")}
-                            value={ letsEncrypt ? letsEncrypt.path : "" }
+                            label={ this.props.t('Path to storage:')}
+                            value={ letsEncrypt ? letsEncrypt.path : '' }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
                             }}
-                            onChange={evt => this.onChangeText(evt, "path") }
+                            onChange={evt => this.onChangeText(evt, 'path') }
                         />
                     </FormControl>
                 </Grid>

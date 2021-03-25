@@ -29,7 +29,7 @@ const styles = theme => ({
     {
         padding:15,
         backgroundColor: blueGrey[ 500 ],
-        color:"#FFF"
+        color:'#FFF'
     },
     statis:
     {
@@ -38,16 +38,16 @@ const styles = theme => ({
     formControl: 
     {
         margin: theme.spacing(1),
-        minWidth: "100%",
+        minWidth: '100%',
     },
     descrPanel:
     {
-        width:"100%",
-        backgroundColor:"transparent",
+        width:'100%',
+        backgroundColor:'transparent',
         marginLeft:40,
-        border:"none",
+        border:'none',
         display:'flex',
-        alignItems:"center"
+        alignItems:'center'
     },
     selectEmpty: 
     {
@@ -78,20 +78,20 @@ class StatisticsDialog extends Component {
     getTypes()  {
         return [
             {
-                id: "none",
-                title: "none"
+                id: 'none',
+                title: 'none'
             },
             {
-                id: "normal",
-                title: "normal"
+                id: 'normal',
+                title: 'normal'
             },
             {
-                id: "no-city",
-                title: "no-city"
+                id: 'no-city',
+                title: 'no-city'
             },
             {
-                id: "extended",
-                title: "extended"
+                id: 'extended',
+                title: 'extended'
             }
         ]
     }
@@ -138,31 +138,31 @@ class StatisticsDialog extends Component {
        // console.log(this.state.data2) 
         const {classes} = this.props;
         return <div className={ classes.tabPanel } style={{ height: 'calc(100% - 0px)' }}>
-            <Grid container spacing={3}  className="sendData-grid" style={{ height: '100%', overflow: "hidden" }}>
+            <Grid container spacing={3}  className="sendData-grid" style={{ height: '100%', overflow: 'hidden' }}>
                 <Grid item lg={4} md={4} xs={12}>
                     <Card  className={classes.note} >
                         <Typography gutterBottom variant="h6" component="div">
-                            {this.props.t("Note:")} 
+                            {this.props.t('Note:')} 
                         </Typography> 
                         <Typography 
                             paragraph 
                             variant="body2"
                             component="div"
-                            dangerouslySetInnerHTML={{__html: this.props.t("diag-note")}}
+                            dangerouslySetInnerHTML={{__html: this.props.t('diag-note')}}
                         />     
                      </Card >
                     { this.getTypesSelector() }
                     <Paper 
                         variant="outlined" 
                         className={ classes.descrPanel } 
-                        dangerouslySetInnerHTML={{__html: this.props.t("diag-type-note-" + this.props.data.common.diag)}}
+                        dangerouslySetInnerHTML={{__html: this.props.t('diag-type-note-' + this.props.data.common.diag)}}
                     />  
                       
                 </Grid>
-                <Grid item lg={8} md={4} xs={12} className="sendData-grid" style={{ height:'100%', display: "flex", flexDirection: "column" }}>
+                <Grid item lg={8} md={4} xs={12} className="sendData-grid" style={{ height:'100%', display: 'flex', flexDirection: 'column' }}>
                     <Paper className={classes.statis} >
                         <Typography gutterBottom variant="h6" component="div">
-                            {this.props.t("Sent data:")}
+                            {this.props.t('Sent data:')}
                         </Typography>                       
                     </Paper>
                     <AceEditor
