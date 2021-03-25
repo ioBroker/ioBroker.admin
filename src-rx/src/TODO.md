@@ -16,20 +16,22 @@
   - Subscribe on admin.X.info.news and test on update
 
 ## Adapters
+- Adapters - update all adapters and allow to select from list (BF)
 - Adapters - Use readme renderer from www.iobroker.net (BF)
-- Show number of possible updates on "Adapters" in menu on the left (impossible ?)
+<!-- - Show unmet dependencies: 
+  - check only rightVersion for every entry in deps array -->
 
 ## Instances  
 - Instances - Open in new window must be shown only for instances with localLink (BF)
-- Sentry disabled => common.disableDataReporting = true common.plugins.senty
-- compactGroup => 
+<!-- - Sentry disabled => common.disableDataReporting = true common.plugins.senty -->
+<!-- - compactGroup => 
   - with controller (0)
   - default (1) (if null of undefined)
-  - 2
+  - 2 -->
 
 ## Objects
-- Objects - export/import and creation of new state
-- Objects - edit of access control (similar to files)
+- Objects - export/import and creation of new state//
+<!-- - Objects - edit of access control (similar to files)
   - obj.acl.object 
     - 0x2 => write everyone, 
     - 0x4 => read everyone
@@ -41,10 +43,10 @@
   - Set flag => obj.acl.object | 0x40
   - Clear flag => obj.acl.object & (~0x40)
 
-  - obj.acl.state
-- Objects - Add clear button by all text (and maybe select) filter fields//
+  - obj.acl.state -->
+<!-- - Objects - Add clear button by all text (and maybe select) filter fields// -->
 - Decode quality code to text (BF)
-- Replace all this.props.t() with this.texts.my_text... for often translations
+<!-- - Replace all this.props.t() with this.texts.my_text... for often translations// -->
 
 
 ## Files

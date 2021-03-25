@@ -85,7 +85,7 @@ import IconClosed from '@iobroker/adapter-react/icons/IconClosed';
 import IconOpen from '@iobroker/adapter-react/icons/IconOpen';
 import IconClearFilter from '@iobroker/adapter-react/icons/IconClearFilter';
 import { Close } from '@material-ui/icons';
-import ObjectAddNewContent from '../dialogs/ObjectAddNewContent';
+import { get } from 'echarts/lib/CoordinateSystem';
 
 const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
@@ -1253,9 +1253,9 @@ const SCREEN_WIDTHS = {
     // extra-small: 0px
     xs: { idWidth: 300, fields: ['room'], widths: { name: 200, room: 200 } },
     // small: 600px
-    sm: { idWidth: 300, fields: ['room', 'func', 'buttons'], widths: { name: 200, room: 180, func: 180, buttons: 76 } },
+    sm: { idWidth: 300, fields: ['room', 'func', 'buttons'], widths: { name: 200, room: 180, func: 180, buttons: 120 } },
     // medium: 960px
-    md: { idWidth: 300, fields: ['room', 'func', 'val', 'buttons'], widths: { name: 200, room: 150, func: 150, val: 120, buttons: 76 } },
+    md: { idWidth: 300, fields: ['room', 'func', 'val', 'buttons'], widths: { name: 200, room: 150, func: 150, val: 120, buttons: 120 } },
     // large: 1280px
     lg: {
         idWidth: 300, fields: ['name', 'type', 'role', 'room', 'func', 'val', 'buttons', 'changedFrom', 'qualityCode', 'timestamp', 'lastChange'],
@@ -1265,8 +1265,8 @@ const SCREEN_WIDTHS = {
             role: 120,
             room: 180,
             func: 180,
-            val: 120,
-            buttons: 76,
+            val: 140,
+            buttons: 120,
             changedFrom: 120,
             qualityCode: 100,
             timestamp: 160,
@@ -1283,8 +1283,8 @@ const SCREEN_WIDTHS = {
             role: 120,
             room: 180,
             func: 180,
-            val: 170,
-            buttons: 76,
+            val: 140,
+            buttons: 120,
             changedFrom: 120,
             qualityCode: 100,
             timestamp: 170,
@@ -1454,7 +1454,11 @@ class ObjectBrowser extends Component {
             filter_room: props.t('ra_filter_room'),
             filter_func: props.t('ra_filter_func'),
             filter_customs: props.t('ra_filter_customs'), //
-            state_changed_by_user: props.t('ra_state_changed_by_user') // Object last changed at
+            object_changed_by_user: props.t('ra_object_changed_by_user'), // Object last changed at
+            object_changed_by: props.t('ra_object_changed_by'), // Object changed by
+            object_changed_from: props.t('ra_state_changed_from'), // Object changed from
+            state_changed_by: props.t('ra_state_changed_by'), // State changed by
+            state_changed_from: props.t('ra_state_changed_from'), // State changed from
         };
 
         this.onStateChangeBound = this.onStateChange.bind(this);
@@ -1606,7 +1610,20 @@ class ObjectBrowser extends Component {
 
         this.subscribes = [];
     }
+    /**
+     * Called when component is mounted.
+     */
+    async refrseshComponent() {
+        await this.props.socket.unsubscribeObject('*', this.onObjectChange);
+        // remove all subscribes
+        this.subscribes.forEach(async pattern => {
+            console.log('- unsubscribe ' + pattern);
+            await this.props.socket.unsubscribeState(pattern, this.onStateChangeBound);
+        });
 
+        this.subscribes = [];
+        await this.props.socket.subscribeObject('*', this.onObjectChange);
+    }
     /**
      * Renders the error dialog.
      * @returns {JSX.Element | null}
@@ -2083,9 +2100,9 @@ class ObjectBrowser extends Component {
 
         Object.keys(this.filterRefs).forEach(name => {
             if (this.filterRefs[name] && this.filterRefs[name].current) {
-                for (let i = 0; i < this.filterRefs[name].current.childNodes.length; i++) {
-                    if (this.filterRefs[name].current.childNodes[i].tagName === 'INPUT') {
-                        filter[name] = this.filterRefs[name].current.childNodes[i].value;
+                for (let i = 0; i < this.filterRefs[name].current.children.length; i++) {
+                    if (this.filterRefs[name].current.children[i].tagName === 'INPUT') {
+                        filter[name] = this.filterRefs[name].current.children[i].value;
                         break;
                     }
                 }
@@ -2219,7 +2236,7 @@ class ObjectBrowser extends Component {
                     </MenuItem>;
                 })}
             </Select>
-            {/*this.filterRefs[name]?.current?.childNodes[1]?.value ?
+            {this.filterRefs[name]?.current?.childNodes[1]?.value ?
                 <div className={this.props.classes.background_def} style={{
                     position: 'absolute',
                     top: 0,
@@ -2229,18 +2246,17 @@ class ObjectBrowser extends Component {
                     <IconButton
                         size="small"
                         onClick={() => {
-                            console.log(this.filterRefs[name])
-                            // this.filterRefs[name].current.firstChild.value = ''
-                            console.log(this.filterRefs[name].current.childNodes[1].tagName)
-                            this.filterRefs[name].current.childNodes[0].innerHTML = "";
+                            const newFilter = { ...this.state.filter };
+                            newFilter[name] = '';
                             this.filterRefs[name].current.childNodes[1].value = "";
-                            this.filterRefs[name].current.nextSibling.remove();
-                            this.onFilter(name, '');
+                            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectFilter', JSON.stringify(newFilter));
+                            this.setState({ filter: newFilter, filterKey: this.state.filterKey + 1 }, () =>
+                                this.props.onFilterChanged && this.props.onFilterChanged(newFilter));
                         }}
                     >
                         <Close />
                     </IconButton>
-                    </div> : null*/}
+                </div> : null}
         </div>;
     }
 
@@ -2401,23 +2417,24 @@ class ObjectBrowser extends Component {
  */
     getEnumsForId = (id) => {
         // let enums = that.main.tabs.enums.list;
+        let enums = [];
         let result = [];
-        // for (let e = 0; e < enums.length; e++) {
-        //     let en = that.main.objects[enums[e]];
-        //     if (en.common && en.common.members && en.common.members.length && en.common.members.indexOf(id) !== -1) {
-        //         en = {
-        //             _id: en._id,
-        //             common: JSON.parse(JSON.stringify(en.common)),
-        //             native: en.native
-        //         };
-        //         if (en.common) {
-        //             delete en.common.members;
-        //             delete en.common.custom;
-        //             delete en.common.mobile;
-        //         }
-        //         result.push(en);
-        //     }
-        // }
+        for (let e = 0; e < enums.length; e++) {
+            let en = this.objects[enums[e]];
+            if (en.common && en.common.members && en.common.members.length && en.common.members.indexOf(id) !== -1) {
+                en = {
+                    _id: en._id,
+                    common: JSON.parse(JSON.stringify(en.common)),
+                    native: en.native
+                };
+                if (en.common) {
+                    delete en.common.members;
+                    delete en.common.custom;
+                    delete en.common.mobile;
+                }
+                result.push(en);
+            }
+        }
         return result.length ? result : undefined;
     };
 
@@ -2489,7 +2506,7 @@ class ObjectBrowser extends Component {
                 try {
                     await this.props.socket.setObject(id, obj);
                     await this._createAllEnums(enums, obj._id);
-                    if (obj.type === 'state') {                        
+                    if (obj.type === 'state') {
                         const state = await this.props.socket.getState(obj._id);
                         if (!state || state.val === null) {
                             await this.props.socket.setState(obj._id, !obj.common || obj.common.def === undefined ? null : obj.common.def, true);
@@ -2497,9 +2514,9 @@ class ObjectBrowser extends Component {
                     }
                 } catch (error) {
                     alert(error);
-                }                
+                }
             }
-        }        
+        }
     }
     /**
  * @private
@@ -2515,12 +2532,9 @@ class ObjectBrowser extends Component {
                 let len = Object.keys(json).length;
                 let id = json._id;
                 if (id === undefined && len > 1) {
-                    // console.log(json._id, json)
                     await this.loadObjects(json);
                     alert(this.props.t('%s object(s) processed', Object.keys(json).length))
-                    // that.main.showToast(that.$grid.find('.main-toolbar-table'), _('%s object(s) processed', Object.keys(json).length));
                 } else {
-                    console.log(json._id, json);
                     // TODO delete enums and place object into approtiate enums
                     try {
                         await this.props.socket.setObject(json._id, json);
@@ -2534,7 +2548,6 @@ class ObjectBrowser extends Component {
                     } catch (err) {
                         alert(err);
                     }
-                        // that.main.showToast(that.$grid.find('.main-toolbar-table'), _('%s was imported', json._id));
                 }
             };
             r.readAsText(f);
@@ -2557,7 +2570,7 @@ class ObjectBrowser extends Component {
                 width: '100%',
                 alignItems: 'center'
             }}>
-                <IconButton>
+                <IconButton onClick={() => this.refrseshComponent()}>
                     <RefreshIcon />
                 </IconButton>
                 {this.props.showExpertButton &&
@@ -2747,6 +2760,15 @@ class ObjectBrowser extends Component {
         }
 
         return [
+            this.props.objectEditOfAccessControl ? <IconButton onClick={() =>
+                this.setState({ modalEditOfAccess: true })
+            }>
+                <div style={{ fontSize: 13 }}>{Number(item.data.obj.type === 'state' ?
+                    item.data.obj.acl.state ?
+                        item.data.obj.acl.state :
+                        item.data.obj.acl.object :
+                    item.data.obj.acl.object).toString(16)}</div>
+            </IconButton> : null,
             <IconButton
                 key="edit"
                 className={classes.cellButtonsButton}
@@ -3355,17 +3377,17 @@ class ObjectBrowser extends Component {
                 newValue = '&nbsp;';
             } else {
                 newValue = newValue ? newValue.replace(/^system\.adapter\.|^system\./, '') : '';
-                newValueTitle.push(this.props.t('State changed from %s', newValue));
+                newValueTitle.push(this.texts.state_changed_from + ' ' + newValue);
             }
             if (obj.user) {
                 const user = obj.user.replace('system.user.', '');
                 newValue += `/${user}`;
-                newValueTitle.push(this.props.t('State changed by %s', user));
+                newValueTitle.push(this.texts.state_changed_by + ' ' + user);
             }
         }
-        item.data.obj?.from && newValueTitle.push(this.props.t('Object changed from', item.data.obj.from.replace(/^system\.adapter\.|^system\./, '')));
-        item.data.obj?.user && newValueTitle.push(this.props.t('Object changed by', item.data.obj.user.replace(/^system\.user\./, '')));
-        item.data.obj?.ts && newValueTitle.push(this.texts.state_changed_by_user + ' ' + formatDate(new Date(item.data.obj.ts)));
+        item.data.obj?.from && newValueTitle.push(this.texts.object_changed_from + ' ' + item.data.obj.from.replace(/^system\.adapter\.|^system\./, ''));
+        item.data.obj?.user && newValueTitle.push(this.texts.object_changed_by + ' ' + item.data.obj.user.replace(/^system\.user\./, ''));
+        item.data.obj?.ts && newValueTitle.push(this.texts.object_changed_by_user + ' ' + formatDate(new Date(item.data.obj.ts)));
 
         return <Grid
             container
@@ -3845,12 +3867,9 @@ class ObjectBrowser extends Component {
                 {this.renderEditRoleDialog()}
                 {this.renderEnumDialog()}
                 {this.renderErrorDialog()}
-                {this.state.modalNewObj && <ObjectAddNewContent
-                    open={this.state.modalNewObj}
-                    extendObject={(id, data) => this.extendObject(id, data)}
-                    selected={this.state.selected[0]}
-                    onClose={() => this.setState({ modalNewObj: false })}
-                    onApply={() => this.setState({ modalNewObj: false })} />
+                {this.state.modalNewObj && this.props.modalNewObject && this.props.modalNewObject(this)
+                }
+                {this.state.modalEditOfAccess && this.props.modalEditOfAccessControl && this.props.modalEditOfAccessControl(this)
                 }
             </TabContainer>;
         }
@@ -3860,7 +3879,10 @@ ObjectBrowser.defaultProps = {
     objectAddBoolean: false,
     objectEditeBoolean: false,
     objectStatesView: false,
-    objectImportExport: false
+    objectImportExport: false,
+    objectEditOfAccessControl: false,
+    modalNewObject: () => { },
+    modalEditOfAccessControl: () => { },
 }
 
 ObjectBrowser.propTypes = {
@@ -3895,6 +3917,9 @@ ObjectBrowser.propTypes = {
     objectEditeBoolean: PropTypes.bool, //optional toolbar button
     objectStatesView: PropTypes.bool, //optional toolbar button
     objectImportExport: PropTypes.bool, //optional toolbar button
+    objectEditOfAccessControl: PropTypes.bool, //Access Control
+    modalNewObject: PropTypes.func, //modal add object
+    modalEditOfAccessControl: PropTypes.func, //modal Edit Of Access Control
     onObjectDelete: PropTypes.func, // optional function (id, hasChildren, objectExists) {  }
     customFilter: PropTypes.object, // optional {common: {custom: true}} or {common: {custom: 'sql.0'}}
     objectBrowserValue: PropTypes.object,
