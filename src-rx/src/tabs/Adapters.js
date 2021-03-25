@@ -57,16 +57,32 @@ import CustomModal from '../components/CustomModal';
 
 import Router from '@iobroker/adapter-react/Components/Router';
 import AdaptersUpdaterDialog from "../dialogs/AdaptersUpdaterDialog";
+import PropTypes from "prop-types";
+
+const WIDTHS = {
+    emptyBlock: 50,
+    name: 300,
+    connectionType: 65,
+    installed: 120,
+    available: 120,
+    update: 40,
+    license: 80,
+    install: 220,
+};
+
+const SUM = Object.keys(WIDTHS).reduce((s, i) => s + WIDTHS[i], 0);
 
 const styles = theme => ({
     container: {
-        height: '100%'
+        height: '100%',
+        width: '100%',
     },
     smallAvatar: {
         width: theme.spacing(3),
         height: theme.spacing(3)
     },
     table: {
+        width: '100%',
         tableLayout: 'fixed',
         minWidth: 960,
         '& td': {
@@ -80,37 +96,37 @@ const styles = theme => ({
     },
     name: {
         flexWrap: 'nowrap',
-        width: 300
+        width: WIDTHS.name
     },
     emptyBlock: {
         flexWrap: 'nowrap',
-        width: 50
+        width: WIDTHS.emptyBlock
     },
     description: {
-        width: 570
+        width: `calc(100% - ${SUM}px)`
     },
     keywords: {
 
     },
     connectionType: {
-        width: 65
+        width: WIDTHS.connectionType
     },
     installed: {
-        width: 120
+        width: WIDTHS.installed
     },
     available: {
-        width: 120,
+        width: WIDTHS.available,
         paddingRight: 6
     },
     update: {
-        width: 40,
+        width: WIDTHS.update,
         padding: 0
     },
     license: {
-        width: 80
+        width: WIDTHS.license
     },
     install: {
-        width: 220
+        width: WIDTHS.install
     },
     green: {
         color: green[500]
@@ -195,6 +211,7 @@ class Adapters extends Component {
             updateAvailable: [],
             filteredList: null,
             showUpdater: false,
+            descWidth: 300
         };
 
         this.rebuildSupported = false;
@@ -225,6 +242,10 @@ class Adapters extends Component {
     componentDidUpdate() {
         if (!this.state.init && !this.state.update && this.props.ready) {
             this.getAdaptersInfo();
+        }
+        const descWidth = this.getDescWidth();
+        if (this.state.descWidth !== descWidth) {
+            this.setState({descWidth});
         }
     }
 
@@ -792,7 +813,7 @@ class Adapters extends Component {
         this.setState({ filteredList, search });
     }
 
-    getRow(value) {
+    getRow(value, descHidden) {
         const cached = this.cache.adapters[value];
         if (cached) {
             const adapter = this.state.repository[value];
@@ -804,6 +825,7 @@ class Adapters extends Component {
 
             return <AdapterRow
                 t={this.t}
+                descHidden={descHidden}
                 key={'adapter-' + value}
                 connectionType={cached.connectionType}
                 dataSource={adapter.dataSource}
@@ -837,16 +859,18 @@ class Adapters extends Component {
             return null;
         }
     }
-    getRows() {
+
+    getRows(descHidden) {
         if (!this.cache.listOfVisibleAdapter) {
             this.buildCache();
         }
 
         let count = 0;
+
         let rows;
         if (this.state.list) {
             rows = this.cache.listOfVisibleAdapter.map(value => {
-                const item = this.getRow(value);
+                const item = this.getRow(value, descHidden);
                 item && count++;
                 return item;
             });
@@ -877,7 +901,7 @@ class Adapters extends Component {
                     />}
 
                     {expanded && category.adapters.map(value => {
-                        const item = this.getRow(value);
+                        const item = this.getRow(value, descHidden);
                         item && count++;
                         return item;
                     })}
@@ -1035,6 +1059,16 @@ class Adapters extends Component {
         }
     }
 
+    getDescWidth() {
+        if (this.props.menuOpened) {
+            return document.body.scrollWidth - SUM - 180 + 15;
+        } else if (this.props.menuClosed) {
+            return document.body.scrollWidth - SUM;
+        } else if (this.props.menuCompact) {
+            return document.body.scrollWidth - SUM - 50 + 15;
+        }
+    }
+
     render() {
 
         if (!this.state.init) {
@@ -1060,6 +1094,7 @@ class Adapters extends Component {
         }
 
         const { classes } = this.props;
+        const descHidden = false;
 
         return <TabContainer>
             {this.state.update &&
@@ -1169,12 +1204,12 @@ class Adapters extends Component {
                                 <TableCell className={classes.name}>
                                     <Typography>{this.t('Name')}</Typography>
                                 </TableCell>
-                                <TableCell className={classes.description}>
+                                {<TableCell className={classes.description} style={{width: this.state.descWidth}}>
                                     <Typography>{this.t('Description')}</Typography>
-                                </TableCell>
-                                <TableCell className={classes.keywords}>
+                                </TableCell>}
+                                {/*!descHidden && <TableCell className={classes.keywords}>
                                     <Typography>{this.t('Keywords')}</Typography>
-                                </TableCell>
+                                </TableCell>*/}
                                 <TableCell className={classes.connectionType} />
                                 <TableCell className={classes.installed}>
                                     <Typography>{this.t('Installed')}</Typography>
@@ -1191,7 +1226,7 @@ class Adapters extends Component {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {this.getRows()}
+                            {this.getRows(descHidden)}
                         </TableBody>
                     </Table>
                 </TableContainer>
@@ -1304,5 +1339,9 @@ class Adapters extends Component {
         </TabContainer>;
     }
 }
-
+Adapters.propTypes = {
+    menuOpened: PropTypes.bool,
+    menuClosed: PropTypes.bool,
+    menuCompact: PropTypes.bool
+};
 export default withStyles(styles)(Adapters);

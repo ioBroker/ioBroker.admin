@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -53,6 +53,13 @@ const styles = theme => ({
         flexWrap: 'nowrap',
         width: 300
     },
+    nameDiv: {
+        display: 'flex',
+        alignItems: 'center',
+    },
+    categoryName: {
+        fontWeight: 'bold',
+    },
     green: {
         color: green[500]
     },
@@ -79,52 +86,58 @@ const styles = theme => ({
     },
     versionWarn: {
         color: amber[500]
-    }
+    },
+    buttonUpdate: {
+        border: '1px solid',
+        padding: '0px 7px',
+        borderRadius: 5,
+        display: 'flex',
+        alignItems: 'center',
+        cursor: 'pointer',
+        transition: 'background 0.5s',
+        '&:hover': {
+            background: '#00800026'
+        }
+    },
 });
 
 class AdapterRow extends Component {
 
     renderVersion() {
-
         const {
             classes,
             enabledCount,
             installedCount,
             installedFrom,
-            installedVersion
+            installedVersion,
+            t
         } = this.props;
 
-        return (
-            <Grid
-                container
-                wrap="nowrap"
-                alignItems="center"
-                spacing={1}
-            >
-                { installedFrom &&
-                    <Grid
-                        item
-                        container
-                    >
-                        <Tooltip title={'Non-NPM-Version: ' + installedFrom}>
-                            <GitHubIcon
-                                fontSize="small"
-                                className={classes.versionWarn}
-                            />
-                        </Tooltip>
-                    </Grid>
-                }
-                <Grid item>
-                    {installedVersion +
-                        (installedCount ? ` (${installedCount}${installedCount !== enabledCount ? '~' : ''})` : '')
-                    }
+        return <Grid
+            container
+            wrap="nowrap"
+            alignItems="center"
+            spacing={1}
+        >
+            { installedFrom &&
+                <Grid item container>
+                    <Tooltip title={t('Non-NPM-Version: ') + installedFrom}>
+                        <GitHubIcon
+                            fontSize="small"
+                            className={classes.versionWarn}
+                        />
+                    </Tooltip>
                 </Grid>
+            }
+            <Grid item>
+                {installedVersion +
+                    (installedCount ? ` (${installedCount}${installedCount !== enabledCount ? '~' : ''})` : '')
+                }
             </Grid>
-        )
+        </Grid>;
     }
 
     render() {
-
         const isCategory = this.props.category;
 
         const {
@@ -139,72 +152,69 @@ class AdapterRow extends Component {
             sentry,
             categoryName,
             openInstallVersionDialog,
-            dataSource
+            dataSource,
+            descHidden
         } = this.props;
 
-        return (
-            <TableRow
-                hover={!isCategory}
-                className={clsx({ [classes.category]: isCategory, [classes.displayNone]: this.props.hidden })}
-            >
-                {!isCategory && <TableCell colSpan={1}></TableCell>}
-                <TableCell>
-                    <Grid container spacing={1} alignItems="center" className={classes.name}>
-                        <Grid item>
-                            {isCategory ?
-                                <IconButton
-                                    size="small"
-                                    onClick={this.props.onToggle}
-                                >
-                                    {this.props.expanded ? <ExpandMoreIcon /> : <ChevronRightIcon />}
-                                </IconButton>
-                                :
-                                <Badge badgeContent={sentry && <BugReportIcon classes={{ root: classes.sentryIcon }} />}>
-                                    <Avatar
-                                        variant="square"
-                                        alt={name}
-                                        src={this.props.image}
-                                        className={classes.smallAvatar}
-                                    />
-                                </Badge>
-                            }
-                        </Grid>
-                        {!isCategory && <Grid item>
-                            {name}
-                        </Grid>}
+        return <TableRow
+            hover={!isCategory}
+            className={clsx({ [classes.category]: isCategory, [classes.displayNone]: this.props.hidden })}
+        >
+            {!isCategory && <TableCell />}
+            <TableCell>
+                <Grid container spacing={1} alignItems="center" className={classes.name}>
+                    <Grid item>
+                        {isCategory ?
+                            <IconButton
+                                size="small"
+                                onClick={this.props.onToggle}
+                            >
+                                {this.props.expanded ? <ExpandMoreIcon /> : <ChevronRightIcon />}
+                            </IconButton>
+                            :
+                            <Badge badgeContent={sentry && <BugReportIcon classes={{ root: classes.sentryIcon }} />}>
+                                <Avatar
+                                    variant="square"
+                                    alt={name}
+                                    src={this.props.image}
+                                    className={classes.smallAvatar}
+                                />
+                            </Badge>
+                        }
                     </Grid>
+                    {!isCategory && <Grid item>{name}</Grid>}
+                </Grid>
+            </TableCell>
+            {isCategory && <TableCell colSpan={1}>
+                <div className={clsx(classes.nameDiv, isCategory && classes.categoryName)}>
+                    <MaterialDynamicIcon objIconBool iconName={categoryName} style={{ marginRight: 5 }} />
+                    {name}
+                </div>
+            </TableCell>}
+            {isCategory ?
+                <TableCell colSpan={5}>
+                    <Typography component="span" variant="body2" className={classes.green}>
+                        {installedCount}
+                    </Typography>
+                    {` ${this.props.t('of')} `}
+                    <Typography component="span" variant="body2" className={classes.blue}>
+                        {this.props.count}
+                    </Typography>
+                    {` ${this.props.t('Adapters from this Group installed')}`}
                 </TableCell>
-                {isCategory && <TableCell colSpan={1}><div style={{
-                    display: 'flex',
-                    alignItems: 'center'
-                }}><MaterialDynamicIcon objIconBool iconName={categoryName} style={{ marginRight: 5 }} />{name}</div></TableCell>}
-                { isCategory ?
-                    <TableCell>
-                        <Typography component="span" variant="body2" className={classes.green}>
-                            {installedCount}
-                        </Typography>
-                        {` ${this.props.t('of')} `}
-                        <Typography component="span" variant="body2" className={classes.blue}>
-                            {this.props.count}
-                        </Typography>
-                        {` ${this.props.t('Adapters from this Group installed')}`}
-                    </TableCell>
-                    :
-                    <TableCell>
-                        {this.props.description}
-                    </TableCell>
-                }
-                <TableCell>
-                    {!isCategory && this.props.keywords && this.props.keywords.join(' ')}
-                </TableCell>
-                <TableCell>
-                    <div style={{display:'flex'}}>
-                        {!isCategory &&
+                :
+                <TableCell>{this.props.description}</TableCell>
+            }
+            { /*!descHidden && <TableCell>
+                {!isCategory && this.props.keywords && this.props.keywords.join(' ')}
+            </TableCell>*/}
+            <TableCell>
+                <div style={{display:'flex'}}>
+                    {!isCategory &&
                         (connectionType === 'cloud' ? <Tooltip title={this.props.t('Adapter does not use the cloud for these devices/service')}><CloudIcon /></Tooltip> :
-                            connectionType === 'local' ? <Tooltip title={this.props.t('Adaper requires the specific cloud access for these devices/service')}><CloudOffIcon /></Tooltip> : connectionType)
+                            connectionType === 'local' ? <Tooltip title={this.props.t('Adapter requires the specific cloud access for these devices/service')}><CloudOffIcon /></Tooltip> : connectionType)
                     }
-                    {
-                    dataSource && <div style={{ marginLeft: 5 }}>{(
+                    {dataSource && <div style={{ marginLeft: 5 }}>{(
                         dataSource === 'poll' ?
                             <Tooltip title={this.props.t('The device or service will be periodically asked')}>
                                 <ArrowUpwardIcon style={{color:'orange'}} />
@@ -219,91 +229,99 @@ class AdapterRow extends Component {
                                             color:'red',
                                             transform: 'rotate(90deg)'
                                         }} /></Tooltip> : null
-                    )}</div>
-                }
+                    )}
                 </div>
-                </TableCell>
+            }
+            </div>
+            </TableCell>
+            <TableCell>
+                {!isCategory && installedVersion && this.renderVersion()}
+            </TableCell>
+            <TableCell className={clsx({
+                [classes.updateAvailable]: !isCategory && updateAvailable && rightDependencies,
+                [classes.wrongDependencies]: !rightDependencies
+            })}>
+                <Grid
+                    container
+                    alignItems="center"
+                >
+                    {!isCategory && (updateAvailable ?
+                        <div
+                            onClick={this.props.onUpdate}
+                            className={classes.buttonUpdate}>
+                            <IconButton
+                                style={{
+                                    height: 20,
+                                    width: 20,
+                                    marginRight: 10
+                                }}
+                                size="small"
+                            >
+                                    <RefreshIcon />
+                            </IconButton>{this.props.version}
+                        </div>
+                        :
+                        this.props.version)
+                    }
+                </Grid>
+            </TableCell>
+            <TableCell>
+                {!isCategory && this.props.license}
+            </TableCell>
+            { isCategory ?
+                <TableCell />
+                :
                 <TableCell>
-                    {!isCategory && installedVersion && this.renderVersion()}
-                </TableCell>
-                <TableCell className={clsx({
-                    [classes.updateAvailable]: !isCategory && updateAvailable && rightDependencies,
-                    [classes.wrongDependencies]: !rightDependencies
-                })}>
-                    <Grid
-                        container
-                        alignItems="center"
+                    <IconButton
+                        size="small"
+                        className={!rightOs ? classes.hidden : ''}
+                        onClick={rightOs ? this.props.onAddInstance : null}
                     >
-                        {!isCategory && this.props.version}
-                        <div className={classes.grow} />
-                        {!isCategory && updateAvailable &&
-                            <IconButton
-                                size="small"
-                                onClick={this.props.onUpdate}
-                            >
-                                <RefreshIcon />
-                            </IconButton>
-                        }
-                    </Grid>
-                </TableCell>
-                <TableCell>
-                    {!isCategory && this.props.license}
-                </TableCell>
-                { isCategory ?
-                    <TableCell />
-                    :
-                    <TableCell>
-                        <IconButton
-                            size="small"
-                            className={!rightOs ? classes.hidden : ''}
-                            onClick={rightOs ? this.props.onAddInstance : null}
-                        >
-                            <AddIcon />
-                        </IconButton>
-                        <IconButton
-                            size="small"
-                            onClick={this.props.onInfo}
-                        >
-                            <HelpIcon />
-                        </IconButton>
-                        {this.props.expertMode &&
-                            <IconButton
-                                size="small"
-                                className={!installedVersion ? classes.hidden : ''}
-                                onClick={this.props.onUpload}
-                            >
-                                <PublishIcon />
-                            </IconButton>
-                        }
+                        <AddIcon />
+                    </IconButton>
+                    <IconButton
+                        size="small"
+                        onClick={this.props.onInfo}
+                    >
+                        <HelpIcon />
+                    </IconButton>
+                    {this.props.expertMode &&
                         <IconButton
                             size="small"
                             className={!installedVersion ? classes.hidden : ''}
-                            onClick={this.props.onDeletion}
+                            onClick={this.props.onUpload}
                         >
-                            <DeleteForeverIcon />
+                            <PublishIcon />
                         </IconButton>
-                        {this.props.expertMode &&
-                            <IconButton
-                                size="small"
-                                className={!installedVersion ? classes.hidden : ''}
-                                onClick={openInstallVersionDialog}
-                            >
-                                <AddToPhotosIcon />
-                            </IconButton>
-                        }
-                        {this.props.rebuild && this.props.expertMode &&
-                            <IconButton
-                                size="small"
-                                className={!installedVersion ? classes.hidden : ''}
-                                onClick={this.props.onRebuild}
-                            >
-                                <BuildIcon />
-                            </IconButton>
-                        }
-                    </TableCell>
-                }
-            </TableRow>
-        );
+                    }
+                    <IconButton
+                        size="small"
+                        className={!installedVersion ? classes.hidden : ''}
+                        onClick={this.props.onDeletion}
+                    >
+                        <DeleteForeverIcon />
+                    </IconButton>
+                    {this.props.expertMode &&
+                        <IconButton
+                            size="small"
+                            className={!installedVersion ? classes.hidden : ''}
+                            onClick={openInstallVersionDialog}
+                        >
+                            <AddToPhotosIcon />
+                        </IconButton>
+                    }
+                    {this.props.rebuild && this.props.expertMode &&
+                        <IconButton
+                            size="small"
+                            className={!installedVersion ? classes.hidden : ''}
+                            onClick={this.props.onRebuild}
+                        >
+                            <BuildIcon />
+                        </IconButton>
+                    }
+                </TableCell>
+            }
+        </TableRow>;
     }
 }
 
@@ -334,6 +352,7 @@ AdapterRow.propTypes = {
     rightOs: PropTypes.bool,
     sentry: PropTypes.bool,
     t: PropTypes.func,
+    descHidden: PropTypes.bool,
     updateAvailable: PropTypes.bool,
     version: PropTypes.string
 };

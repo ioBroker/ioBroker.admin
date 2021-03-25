@@ -645,47 +645,52 @@ class App extends Router {
     getCurrentTab() {
         if (this.state && this.state.currentTab && this.state.currentTab.tab) {
             if (this.state.currentTab.tab === 'tab-adapters') {
-                return (
-                    <Suspense fallback={<Connecting />}>
-                        <Adapters
-                            key="adapters"
-                            theme={this.state.theme}
-                            themeName={this.state.themeName}
-                            themeType={this.state.themeType}
-                            systemConfig={this.state.systemConfig}
-                            socket={this.socket}
-                            hosts={this.state.hosts}
-                            currentHost={this.state.currentHost}
-                            currentHostName={this.state.currentHostName}
-                            ready={this.state.ready}
-                            t={I18n.t}
-                            lang={I18n.getLanguage()}
-                            expertMode={this.state.expertMode}
-                            executeCommand={cmd => this.executeCommand(cmd)}
-                        />
-                    </Suspense>
-                );
+                const small   = this.props.width === 'xs' || this.props.width === 'sm';
+                const compact = !small && (this.state.drawerState === DrawerStates.compact);
+                const opened  = !small && (this.state.drawerState === DrawerStates.opened);
+                const closed  = small || (this.state.drawerState === DrawerStates.closed);
+
+                return <Suspense fallback={<Connecting />}>
+                    <Adapters
+                        key="adapters"
+                        theme={this.state.theme}
+                        themeName={this.state.themeName}
+                        themeType={this.state.themeType}
+                        systemConfig={this.state.systemConfig}
+                        socket={this.socket}
+                        hosts={this.state.hosts}
+                        currentHost={this.state.currentHost}
+                        currentHostName={this.state.currentHostName}
+                        ready={this.state.ready}
+                        t={I18n.t}
+                        lang={I18n.getLanguage()}
+                        expertMode={this.state.expertMode}
+                        executeCommand={cmd => this.executeCommand(cmd)}
+
+                        menuOpened={opened}
+                        menuClosed={closed}
+                        menuCompact={compact}
+                    />
+                </Suspense>;
             } else
                 if (this.state.currentTab.tab === 'tab-instances') {
-                    return (
-                        <Suspense fallback={<Connecting />}>
-                            <Instances
-                                key="instances"
-                                socket={this.socket}
-                                lang={I18n.getLanguage()}
-                                protocol={this.state.protocol}
-                                hostname={this.state.hostname}
-                                themeName={this.state.themeName}
-                                expertMode={this.state.expertMode}
-                                idHost={this.state.hosts.find(({ common: { name } }) => name === this.state.currentHostName)._id}
-                                currentHostName={this.state.currentHostName}
-                                t={I18n.t}
-                                configStored={value => this.allStored(value)}
-                                executeCommand={cmd => this.executeCommand(cmd)}
-                                inBackgroundCommand={this.state.commandError || this.state.performed}
-                            />
-                        </Suspense>
-                    );
+                    return <Suspense fallback={<Connecting />}>
+                        <Instances
+                            key="instances"
+                            socket={this.socket}
+                            lang={I18n.getLanguage()}
+                            protocol={this.state.protocol}
+                            hostname={this.state.hostname}
+                            themeName={this.state.themeName}
+                            expertMode={this.state.expertMode}
+                            idHost={this.state.hosts.find(({ common: { name } }) => name === this.state.currentHostName)._id}
+                            currentHostName={this.state.currentHostName}
+                            t={I18n.t}
+                            configStored={value => this.allStored(value)}
+                            executeCommand={cmd => this.executeCommand(cmd)}
+                            inBackgroundCommand={this.state.commandError || this.state.performed}
+                        />
+                    </Suspense>;
                 } else
                     if (this.state.currentTab.tab === 'tab-intro') {
                         return (
@@ -1117,9 +1122,9 @@ class App extends Router {
                     square
                     className={
                         clsx(classes.content, {
-                            [classes.contentMargin]: !small && this.state.drawerState !== DrawerStates.compact,
+                            [classes.contentMargin]:        !small && this.state.drawerState !== DrawerStates.compact,
                             [classes.contentMarginCompact]: !small && this.state.drawerState !== DrawerStates.opened,
-                            [classes.contentShift]: !small && this.state.drawerState !== DrawerStates.closed
+                            [classes.contentShift]:         !small && this.state.drawerState !== DrawerStates.closed
                         })
                     }
                 >
