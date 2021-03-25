@@ -70,7 +70,8 @@ class SystemSettingsDialog extends Component
         this.state =  {
             loading: true,
             confirmExit: false,
-            systemSettings: null,
+            systemConfig: null,
+            systemCertificates: null,
             systemRepositories: null,
         };
         this.getSettings(this.state.currentHost);
@@ -78,12 +79,7 @@ class SystemSettingsDialog extends Component
     getSettings() 
     {
         const newState = {loading: false};
-         return this.props.socket.getSystemConfig(true)
-            .then(systemSettings => {
-                //console.log(systemSettings); 
-                newState.systemSettings = systemSettings && systemSettings.common ? systemSettings.common : {};
-                return this.props.socket.getObject('system.repositories');
-            })
+         return this.props.socket.getObject('system.repositories')
                 .then(systemRepositories => {
                     systemRepositories = JSON.parse(JSON.stringify(systemRepositories));
                     systemRepositories = systemRepositories || {};
@@ -100,11 +96,10 @@ class SystemSettingsDialog extends Component
                             delete systemRepositories.native.repositories[repo].hash;
                         }
                     });
-                    this.originalRepositories = JSON.stringify(systemRepositories.native.repositories);
-                    this.originalSettings = JSON.stringify(newState.systemSettings);
+                    this.originalRepositories = JSON.stringify(systemRepositories);
                     //console.log(systemRepositories.native.repositories);
                     newState.systemRepositories = systemRepositories;
-                    return this.props.socket.getObject('system.config');
+                    return this.props.socket.getSystemConfig(true);
                 })
                 
                     .then(systemConfig => {
@@ -166,11 +161,8 @@ class SystemSettingsDialog extends Component
         return this.props.socket.getSystemConfig(true)
             .then(systemConfig => {
                 systemConfig = systemConfig || {};
-                // console.log( systemSettings );
-                if (JSON.stringify(systemConfig.common) !== JSON.stringify(this.state.systemConfig)) 
+                if (JSON.stringify(systemConfig.common) !== JSON.stringify(this.state.systemConfig.common)) 
                 {
-                    // systemConfig.common = this.state.systemSettings;
-                    // console.log(systemSettings.common);
                     return this.props.socket.setSystemConfig(this.state.systemConfig);
                 } 
                 else
@@ -178,30 +170,30 @@ class SystemSettingsDialog extends Component
                     return Promise.resolve();
                 }
             })
-                // .then(() => this.props.socket.setObject( 'system.config', this.state.systemConfig ))
-                    .then(() => this.props.socket.setObject( 'system.certificates', this.state.systemCertificates ))
-                        .then(() => this.props.socket.getObject('system.repositories'))
-                            .then(systemRepositories => {
-                                systemRepositories = systemRepositories || {};
-                                systemRepositories.native = systemRepositories.native || {};
-                                systemRepositories.native.repositories = systemRepositories.native.repositories || {};
-                                const newRepo = JSON.parse(JSON.stringify(this.state.systemRepositories.native.repositories));
+                .then(() => this.props.socket.setObject( 'system.certificates', this.state.systemCertificates ))
+                    .then(() => this.props.socket.getObject('system.repositories'))
+                        .then(systemRepositories => {
+                            systemRepositories = systemRepositories || {};
+                            systemRepositories.native = systemRepositories.native || {};
+                            systemRepositories.native.repositories = systemRepositories.native.repositories || {};
+                            const newRepo = JSON.parse(JSON.stringify(this.state.systemRepositories.native.repositories));
 
-                                // merge new and existing info
-                                Object.keys(newRepo).forEach(repo => {
-                                    if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].json) {
-                                        newRepo[repo].json = systemRepositories.native.repositories[repo].json;
-                                    }
-                                    if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].hash) {
-                                        newRepo[repo].hash = systemRepositories.native.repositories[repo].hash;
-                                    }
-                                });
-                                systemRepositories.native.repositories = newRepo;
-                                this.getSettings();
-                                alert("CHANGE SYSTEM CONFIG NEED");
-                                return this.props.socket.setObject('system.repositories', systemRepositories);
-                            })
-                                .catch(e => window.alert('Cannot save system configuration: ' + e));
+                            // merge new and existing info
+                            Object.keys(newRepo).forEach(repo => {
+                                if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].json) {
+                                    newRepo[repo].json = systemRepositories.native.repositories[repo].json;
+                                }
+                                if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].hash) {
+                                    newRepo[repo].hash = systemRepositories.native.repositories[repo].hash;
+                                }
+                            });
+                            systemRepositories.native.repositories = newRepo;
+                            return this.props.socket.setObject('system.repositories', systemRepositories);
+                        }).then(() => {
+                            this.getSettings();
+                            alert(this.props.t("Settings saved"));
+                        })
+                            .catch(e => window.alert('Cannot save system configuration: ' + e));
     }
     getTabs()
     {
@@ -210,8 +202,8 @@ class SystemSettingsDialog extends Component
                 id : 0,
                 title: 'System settings',
                 component: MainSettingsDialog,
-                data: "systemConfig",
-                data2:{},
+                data: 'systemConfig',
+                data2:'systemRepositories',
                 handle: null
             },
             {
@@ -311,23 +303,12 @@ class SystemSettingsDialog extends Component
         this.setState( state );  
         // console.log( id, data, param, state );
     }
-    
-    restoreState()
-    {
-        this.originalRepositories   = JSON.stringify( this.state.systemRepositories );
-        this.originalSettings       = JSON.stringify( this.state.systemSettings );
-        this.originalCertificates   = JSON.stringify( this.state.systemCertificates );  
-        this.originalConfig         = JSON.stringify( this.state.systemConfig );
-        this.render();
-        alert("Success update settings")
-    }
 
     render() {
         //console.log(this.props)
-        const changed = JSON.stringify(this.state.systemSettings)       !== this.originalSettings ||
-                        JSON.stringify(this.state.systemRepositories)   !== this.originalRepositories ||
-                        JSON.stringify(this.state.systemConfig)        !== this.originalConfig ||
-                        JSON.stringify(this.state.systemCertificates)  !== this.originalCertificates;
+        const changed = !(JSON.stringify(this.state.systemRepositories)   === this.originalRepositories &&
+                        JSON.stringify(this.state.systemConfig)        === this.originalConfig &&
+                        JSON.stringify(this.state.systemCertificates)  === this.originalCertificates);
         const tabs = this. getTabs().map((e,i) =>
         {
             return  <Tab

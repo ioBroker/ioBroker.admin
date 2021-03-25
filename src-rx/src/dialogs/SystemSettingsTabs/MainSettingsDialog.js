@@ -16,6 +16,8 @@ import Paper from '@material-ui/core/Paper';
 // colors
 import blueGrey from '@material-ui/core/colors/blueGrey'
 
+import Utils from '../../Utils';
+
 // icons
 
 //data
@@ -195,16 +197,12 @@ class MainSettingsDialog extends Component
             {
                 id:"activeRepo",
                 title:"Default Repository",
-                values: [
-                    {
-                        id:"default",
-                        title:"Stable (default)"
-                    },
-                    {
-                        id:"latest",
-                        title:"Beta (latest)"
-                    },
-                ]
+                values: Utils.objectMap(this.props.data2.native.repositories, (repo, name) => {
+                    return {
+                        id: name,
+                        title: name
+                    }
+                })
             }
         ]
     }
@@ -224,9 +222,6 @@ class MainSettingsDialog extends Component
         return <div className={ classes.tabPanel }>
             <Grid container spacing={6}>
                 <Grid item lg={6} md={12}> 
-                    <Paper variant="outlined" className={ classes.descrPanel }>
-                        { this.props.t( "cert_path_note" ) }
-                    </Paper>
                     <Grid container spacing={3}>
                         {selectors}
                     </Grid>
@@ -374,7 +369,7 @@ class MainSettingsDialog extends Component
         const items = countries.map((elem, index) =>
         {
             return <MenuItem value={elem.name} key={index}>
-                { /* this.props.t*/(elem.name)  }
+                { this.props.t(elem.name)  }
             </MenuItem> 
         })
         return <FormControl className={classes.formControl}>
