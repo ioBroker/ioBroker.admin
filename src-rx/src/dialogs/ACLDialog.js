@@ -61,9 +61,9 @@ class ACLDialog extends Component
     constructor(props)
     {
         super(props);
-        this.state={ 
-            ...props
-        }
+        // this.state={ 
+        //     ...props
+        // }
 
     }
     
@@ -88,7 +88,7 @@ class ACLDialog extends Component
     }
     getRights( type )
     {
-        let rts = this.state.common.defaultNewAcl[ type ]
+        let rts = this.props.data.common.defaultNewAcl[ type ]
         let rights = this.permBits.map(bitGroup => bitGroup.map(bit => rts & bit));
         return rights;
     }
@@ -163,31 +163,22 @@ class ACLDialog extends Component
             </Table>
         </TableContainer>
     }
+    doChange = (name, value) => {
+        let newData = JSON.parse(JSON.stringify(this.props.data))
+        newData.common.defaultNewAcl[name] = value;
+        this.props.onChange(newData);
+    }
     handleCheck = ( evt, ownerType, elemNum, num ) =>
     {
         // console.log( ownerType, elemNum, num, evt.target.checked );
-        let state = {...this.state};
-        state.common.defaultNewAcl[ownerType] ^= this.permBits[elemNum][num];
+        let newData = JSON.parse(JSON.stringify(this.props.data))
+        newData.common.defaultNewAcl[ownerType] ^= this.permBits[elemNum][num];
         // console.log(state.common.defaultNewAcl[ownerType]);
-        this.setState(state);
-        this.props.onChange( 
-            "common", 
-            {
-                defaultNewAcl: 
-                {
-                    ...state.common.defaultNewAcl,
-                    ownerType : state.common.defaultNewAcl[ownerType]
-                }
-            });
+        this.props.onChange(newData);
     }
     handleChange = (evt, id) =>
     {
-        const value = evt.target.value; 
-        //console.log( evt, id, value );
-        this.props.onChange( id, value);
-        let state = {...this.state};
-        state[id] = value;
-        this.setState(state);        
+        this.doChange(id, evt.target.value)
     }
     render()
     {
@@ -202,7 +193,7 @@ class ACLDialog extends Component
         const groups = this.props.groups.map((elem, index)=>
         {
              return <MenuItem value={elem._id} key={index}>
-                { this.props.t(elem.common.name['ru']) }
+                { this.props.t(typeof elem.common.name == 'object' ? elem.common.name['ru'] : elem.common.name) }
              </MenuItem>   
         } );
 
@@ -229,7 +220,7 @@ class ACLDialog extends Component
                         <Select
                             className={classes.formControl}
                             id={"owner"}
-                            value={ this.state.common.defaultNewAcl.owner }
+                            value={ this.props.data.common.defaultNewAcl.owner }
                             onChange={ evt => this.handleChange(evt, "owner") }
                             displayEmpty 
                             inputProps={{ 'aria-label': 'users' }}
@@ -240,16 +231,16 @@ class ACLDialog extends Component
                 </Grid>
                 <Grid item lg={3} md={6} xs={12}>
                     <FormControl className={classes.formControl}>
-                        <InputLabel shrink id={"ownergroup" + "-label"}>
+                        <InputLabel shrink id={"ownerGroup" + "-label"}>
                             { this.props.t("Owner group")}
                         </InputLabel>
                         <Select
                             className={classes.formControl}
-                            id={"ownergroup"}
-                            value={  this.state.common.defaultNewAcl.ownerGroup }
-                            onChange={ evt => this.handleChange(evt, "ownergroup")  }
+                            id={"ownerGroup"}
+                            value={  this.props.data.common.defaultNewAcl.ownerGroup }
+                            onChange={ evt => this.handleChange(evt, "ownerGroup")  }
                             displayEmpty 
-                            inputProps={{ 'aria-label': 'ownergroup' }}
+                            inputProps={{ 'aria-label': 'ownerGroup' }}
                         > 
                             {groups}
                         </Select> 

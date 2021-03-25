@@ -59,21 +59,21 @@ class StatisticsDialog extends Component {
     constructor(props) {
         super(props); 
         //console.log(props); 
-        this.state={
-            ...props 
-        }
+        // this.state={
+        //     ...props 
+        // }
 
     }
     componentWillUpdate(nextProps, nextState)
     {
-        if(nextProps.common !== this.state.common)
-        {
-            this.setState({common: nextProps.common});
-        }
-        if(nextProps.data2 !== this.state.data2)
-        {
-            this.setState({data2: nextProps.data2});
-        }
+        // if(nextProps.common !== this.state.common)
+        // {
+        //     this.setState({common: nextProps.common});
+        // }
+        // if(nextProps.data2 !== this.state.data2)
+        // {
+        //     this.setState({data2: nextProps.data2});
+        // }
     }
     getTypes()  {
         return [
@@ -98,7 +98,7 @@ class StatisticsDialog extends Component {
 	
     getTypesSelector = () => {
         const {classes} = this.props;
-        const {common} = this.state;
+        const {common} = this.props.data;
         const items = this.getTypes().map((elem, index) =>
         {
             return <MenuItem value={elem.title} key={index} >
@@ -112,7 +112,7 @@ class StatisticsDialog extends Component {
             <Select
                 className={classes.formControl}
                 id={"statistics"}
-                value={ this.state.common.diag }
+                value={ this.props.data.common.diag }
                 displayEmpty 
                 inputProps={{ 'aria-label': 'Without label' }}
                 onChange={this.handleChangeType}
@@ -121,11 +121,14 @@ class StatisticsDialog extends Component {
             </Select> 
         </FormControl> 
     }
+    doChange = (name, value) => {
+        let newData = JSON.parse(JSON.stringify(this.props.data))
+        newData.common[name] = value;
+        this.props.onChange(newData);
+    }
 	handleChangeType = evt => {
         //console.log( evt.target.value, this.props.handle );
-        this.setState({
-            common: {...this.state.common, diag : evt.target.value }
-        })
+        this.doChange('diag', evt.target.value);
         if(this.props.handle)    
         {
             this.props.handle( evt.target.value );
@@ -152,7 +155,7 @@ class StatisticsDialog extends Component {
                     <Paper 
                         variant="outlined" 
                         className={ classes.descrPanel } 
-                        dangerouslySetInnerHTML={{__html: this.props.t("diag-type-note-" + this.state.common.diag)}}
+                        dangerouslySetInnerHTML={{__html: this.props.t("diag-type-note-" + this.props.data.common.diag)}}
                     />  
                       
                 </Grid>
@@ -170,7 +173,7 @@ class StatisticsDialog extends Component {
                         showGutter={true}
                         highlightActiveLine={true}
                         theme={ this.props.themeName === 'dark' || this.props.themeName === 'blue' ? 'clouds_midnight' : 'chrome' }
-                        value={ JSON.stringify(this.state.data2, null, 2) }
+                        value={ JSON.stringify(this.props.data2, null, 2) }
                         onChange={ newValue => this.onChange(newValue) }
                         name="UNIQUE_ID_OF_DIV"
                         fontSize={14}
