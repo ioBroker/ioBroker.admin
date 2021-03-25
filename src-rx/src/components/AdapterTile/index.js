@@ -190,9 +190,10 @@ const AdapterTile = ({
     t
 }) => {
     const [openCollapse, setCollapse] = useState(false);
+    const [focused, setFocused] = useState(false);
 
     return <Card className={clsx(classes.root, hidden ? classes.hidden : '')}>
-        {openCollapse && <div className={/*clsx(*/classes.collapse/*, !openCollapse ? classes.collapseOff : '')*/}>
+        {(openCollapse || focused) && <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
             <CardContent style={{ overflow: 'auto' }}>
                 <div style={{
                     position: 'sticky',
@@ -268,7 +269,10 @@ const AdapterTile = ({
             />
             {!stat && !versionDate ? <div className={classes.adapter}>{adapter}</div> : null}
             <div className={classes.versionDate}>{stat || versionDate}</div>
-            <Fab onClick={() => setCollapse((bool) => !bool)} className={classes.fab} color="primary" aria-label="add">
+            <Fab
+                onMouseOut={() => setFocused(false)}
+                onMouseOver={() => setFocused(true)}
+                onClick={() => setCollapse((bool) => !bool)} className={classes.fab} color="primary" aria-label="add">
                 <MoreVertIcon />
             </Fab>
         </div>
