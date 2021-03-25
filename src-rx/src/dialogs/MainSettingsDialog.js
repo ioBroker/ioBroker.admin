@@ -58,7 +58,7 @@ class MainSettingsDialog extends Component
         super(props);
         this.state={
             values:[],
-            ...props,
+            data:{},
             zoom: 14
         }
 
@@ -210,16 +210,17 @@ class MainSettingsDialog extends Component
     }
     render()
     { 
+        // console.log(this.props);
         const {classes} = this.props;        
         const selectors = this.getSettings().map((e,i) =>
         {
             return this.getSelect( e, i )
         }) 
         const center = [
-            this.state.latitude   ? this.state.latitude : 50,
-            this.state.longitude  ? this.state.longitude : 10
+            this.props.data.common.latitude   ? this.props.data.common.latitude : 50,
+            this.props.data.common.longitude  ? this.props.data.common.longitude : 10
         ]
-        const { zoom } = this.state;
+        const { zoom } = this.props.data.common;
         return <div className={ classes.tabPanel }>
             <Grid container spacing={6}>
                 <Grid item lg={6} md={12}> 
@@ -264,7 +265,7 @@ class MainSettingsDialog extends Component
                         <TextField
                             id="city"
                             label={ this.props.t("City:")}
-                            value={ this.state.city }
+                            value={ this.props.data.common.city }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
@@ -281,7 +282,7 @@ class MainSettingsDialog extends Component
                         <TextField
                             id="latitude"
                             label= { this.props.t("Latitude:")}
-                            value={ this.state.latitude }
+                            value={ this.props.data.common.latitude }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
@@ -298,7 +299,7 @@ class MainSettingsDialog extends Component
                         <TextField
                             id="longitude" 
                             label={ this.props.t("Longitude:")}
-                            value={ this.state.longitude }
+                            value={ this.props.data.common.longitude }
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
@@ -317,8 +318,8 @@ class MainSettingsDialog extends Component
         //console.log(map);
         //console.log(window.L);
         const center = [
-            this.state.latitude   ? this.state.latitude : 50,
-            this.state.longitude  ? this.state.longitude : 10
+            this.props.data.common.latitude   ? this.props.data.common.latitude : 50,
+            this.props.data.common.longitude  ? this.props.data.common.longitude : 10
         ]
         var marker = window.L.marker(
             center, 
@@ -340,7 +341,7 @@ class MainSettingsDialog extends Component
     getSelect( e, i )
     {
         const {classes} = this.props;
-        const value = this.state[this.getSettings()[i].id];
+        const value = this.props.data.common[this.getSettings()[i].id];
         //console.log( this.getSettings()[i].id, value );
         const items = this.getSettings()[i].values.map((elem, index)=>
         {
@@ -383,7 +384,7 @@ class MainSettingsDialog extends Component
             <Select
                 className={classes.formControl}
                 id={"country"}
-                value={ this.state.country }
+                value={ this.props.data.common.country }
                 onChange={ this.handleChangeCountry }
                 displayEmpty 
                 inputProps={{ 'aria-label': 'Without label' }}
@@ -396,10 +397,7 @@ class MainSettingsDialog extends Component
     {
         const value = evt.target.value; 
         const id = "country";
-        this.props.onChange( id, value);
-        let state = {...this.state};
-        state[id] = value;
-        this.setState(state);
+        this.doChange( id, value);
     }
 
     onChangeText = (evt, id) => {
@@ -408,10 +406,7 @@ class MainSettingsDialog extends Component
     }
     onChangeInput = (value, id) =>
     {
-        this.props.onChange( id, value);
-        let state = {...this.state};
-        state[id] = value;
-        this.setState(state); 
+        this.doChange( id, value);
     }
 
     onChangeCity = (evt) => { 
@@ -441,22 +436,20 @@ class MainSettingsDialog extends Component
     handleChange = (evt, selectId) => {
         const value = evt.target.value; 
         const id = this.getSettings()[selectId].id;
-        this.props.onChange( id, value);
-        // console.log( id, value );
-        let state = {...this.state};
-        state[id] = value;
-        this.setState(state);
+        this.doChange( id, value);
+    }
+
+    doChange = (name, value) => {
+        let newData = JSON.parse(JSON.stringify(this.props.data))
+        newData.common[name] = value;
+        this.props.onChange(newData);
     }
 
     onMarkerDragend = evt => {
         const ll = evt.target._latlng;
         //console.log(ll)
-        this.props.onChange( "latitude",  ll.lat);
-        this.props.onChange( "longitude", ll.lng);
-        this.setState({
-           latitude  : ll.lat,
-           longitude : ll.lng
-        })
+        this.doChange( "latitude",  ll.lat);
+        this.doChange( "longitude", ll.lng);
 
     }
 }
