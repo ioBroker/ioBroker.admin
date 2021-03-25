@@ -19,6 +19,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 import blueGrey from '@material-ui/core/colors/blueGrey' 
 
+import Utils from '../Utils';
+
 
 // icons
 
@@ -70,21 +72,25 @@ class RepositoriesDialog extends Component
     constructor(props)
     {
         super(props);
-        const arr = Object.keys(props)
-            .filter((e,i) => props[e] && typeof props[e].link === "string" )
-                .map(e => { return  {...props[e], title:e} } )
         
         this.state={
-            ...props,
-            arr     : arr
+            // ...props,
+            // arr     : arr
         }
 
     }
     render()
     {
         const { classes } = this.props; 
+        const arr = Utils.objectMap(this.props.data.native.repositories, (repo, name) => {
+            return {
+                title: name,
+                link: repo.link
+            }
+        });
+
         // console.log( this.state );
-        const rows = this.state.arr.map((e, i) =>
+        const rows = arr.map((e, i) =>
         {
             return <TableRow key={e.title + e.link} className="float_row">
                 <TableCell className={this.props.classes.littleRow  + " float_cell "}>
@@ -92,24 +98,25 @@ class RepositoriesDialog extends Component
                 </TableCell>
                 <TableCell className={this.props.classes.nameRow  + " float_cell"}>                               
                     <TextField 
-                        defaultValue={e.title}
+                        value={e.title}
                         InputLabelProps={{
                             readOnly: false,
                             shrink: true,
                         }} 
                         className={this.props.classes.input + " xs-centered"}
+                        onChange={evt => this.onChangeText(evt, e.title, 'title') }
                     />
                 </TableCell>
                 <TableCell className= "grow_cell float_cell">
                     <TextField
                         id="default" 
-                        defaultValue={ e.link }
+                        value={ e.link }
                         InputLabelProps={{
                             readOnly: false,
                             shrink: true,
                         }}
                         className={this.props.classes.input + " xs-centered"}
-                        onChange={evt => this.onChangeText(evt, e.title) }
+                        onChange={evt => this.onChangeText(evt, e.title, 'link') }
                     />
                 </TableCell>
                 <TableCell className={this.props.classes.littleRow  + " float_cell"}>
@@ -117,7 +124,7 @@ class RepositoriesDialog extends Component
                         size="small"  
                         color="secondary" 
                         aria-label="add" 
-                        onClick={evt => this.onDelete( i )}
+                        onClick={evt => this.onDelete( e.title )}
                     >
                        <DeleteIcon />
                     </Fab>
@@ -161,30 +168,31 @@ class RepositoriesDialog extends Component
         </div>
 
     }
-    onChangeText = (evt, id) =>
+    onChangeText = (evt, id, name) =>
     {
         const value = evt.target.value; 
-        this.props.onChange( id, value);
-        // console.log( id, value );
-        let state = {...this.state};
-        state[id] = value;
-        this.setState(state);        
+        let newData = JSON.parse(JSON.stringify(this.props.data))
+        if (name == 'title') {
+            newData.native.repositories[value] = newData.native.repositories[id];
+            delete newData.native.repositories[id];
+        } else {
+            newData.native.repositories[id][name] = value;
+        }
+        this.props.onChange(newData);
     }
-    onDelete = i =>
+    onDelete = id =>
     {
-        let arr = [...this.state.arr];
-        arr.splice(i, 1);
-        // console.log(arr, i )
-        this.setState({arr});
+        let newData = JSON.parse(JSON.stringify(this.props.data))
+        delete newData.native.repositories[id];
+        this.props.onChange(newData);
     }
     onAdd = () =>
     {
-        let arr = [...this.state.arr];
-        arr.push({
-            link: "",
-            title: ""  
-        });
-        this.setState({arr});
+        let newData = JSON.parse(JSON.stringify(this.props.data))
+        newData.native.repositories[''] = {
+            title: ''
+        };
+        this.props.onChange(newData);
     }
 }
 

@@ -52,27 +52,18 @@ class SSLDialog extends Component
     constructor(props)
     {
         super(props);
-        this.state={ 
-            ...props
-        }
+        // this.state={ 
+        //     ...props
+        // }
 
     }
     render()
     {
-        const { classes, native } = this.state; 
-        const {letsEncrypt} = native || {};
+        const { classes, data } = this.props; 
+        const {letsEncrypt} = data.native || {};
         // console.log( letsEncrypt );
         return <div className={ classes.tabPanel }>
             <div className={ classes.buttonPanel }>
-                <Fab 
-                    size="small"  
-                    color="primary" 
-                    aria-label="add"
-                    onClick={this.onAdd}
-                    className="small_size"
-                >
-                    <AddIcon />
-                </Fab>
                 <Paper 
                     variant="outlined" 
                     className={ classes.descrPanel }
@@ -128,12 +119,13 @@ class SSLDialog extends Component
     onChangeText = (evt, id) =>
     {
         const value = evt.target.value; 
-        this.props.onChange( id, value);
-        // console.log( id, value );
-        let state = {...this.state};
-        state.native.letsEncrypt = state.native.letsEncrypt ? state.native.letsEncrypt : {};
-        state.native.letsEncrypt[id] = value;
-        this.setState(state);        
+        this.doChange( id, value);
+    }
+
+    doChange = (name, value) => {
+        let newData = JSON.parse(JSON.stringify(this.props.data))
+        newData.native.letsEncrypt[name] = value;
+        this.props.onChange(newData);
     }
 }
 

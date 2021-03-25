@@ -103,7 +103,7 @@ class SystemSettingsDialog extends Component
                     this.originalRepositories = JSON.stringify(systemRepositories.native.repositories);
                     this.originalSettings = JSON.stringify(newState.systemSettings);
                     //console.log(systemRepositories.native.repositories);
-                    newState.systemRepositories = systemRepositories.native.repositories;                    
+                    newState.systemRepositories = systemRepositories;
                     return this.props.socket.getObject('system.config');
                 })
                 
@@ -185,7 +185,7 @@ class SystemSettingsDialog extends Component
                                 systemRepositories = systemRepositories || {};
                                 systemRepositories.native = systemRepositories.native || {};
                                 systemRepositories.native.repositories = systemRepositories.native.repositories || {};
-                                const newRepo = JSON.parse(JSON.stringify(this.state.systemRepositories));
+                                const newRepo = JSON.parse(JSON.stringify(this.state.systemRepositories.native.repositories));
 
                                 // merge new and existing info
                                 Object.keys(newRepo).forEach(repo => {

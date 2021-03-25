@@ -180,6 +180,14 @@ class Utils {
         return link;
     }
 
+    static objectMap(object, callback) {
+        let result = [];
+        for (let key in object) {
+            result.push(callback(object[key], key));
+        }
+        return result;
+    }
+
 }
 
 export default Utils;
