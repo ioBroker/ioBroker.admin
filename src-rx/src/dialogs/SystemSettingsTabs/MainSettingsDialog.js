@@ -1,8 +1,6 @@
 import { Component } from 'react';
 
-import { MapContainer as LeafletMap, TileLayer,
-    // Marker, Popup
- } from 'react-leaflet';
+import { MapContainer as LeafletMap, TileLayer } from 'react-leaflet';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
 
 import withWidth from '@material-ui/core/withWidth';
@@ -13,10 +11,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
-import Paper from '@material-ui/core/Paper';
-
-// colors
-// import blueGrey from '@material-ui/core/colors/blueGrey'
 
 import Utils from '../../Utils';
 
@@ -65,11 +59,6 @@ class MainSettingsDialog extends Component
             data:{},
             zoom: 14
         }
-
-    }
-    componentDidMount()
-    {
-        // console.log("mount")
 
     }
     getSettings()
@@ -210,7 +199,6 @@ class MainSettingsDialog extends Component
     }
     render()
     {
-        // console.log(this.props);
         const {classes} = this.props;
         const selectors = this.getSettings().map((e,i) =>
         {
@@ -312,8 +300,6 @@ class MainSettingsDialog extends Component
     onMap = map =>
     {
         this.map = map;
-        //console.log(map);
-        //console.log(window.L);
         const center = [
             this.props.data.common.latitude   ? this.props.data.common.latitude : 50,
             this.props.data.common.longitude  ? this.props.data.common.longitude : 10
@@ -340,7 +326,6 @@ class MainSettingsDialog extends Component
     {
         const {classes} = this.props;
         const value = this.props.data.common[this.getSettings()[i].id];
-        //console.log( this.getSettings()[i].id, value );
         const items = this.getSettings()[i].values.map((elem, index)=>
         {
              return <MenuItem value={elem.id} key={index}>
@@ -407,11 +392,9 @@ class MainSettingsDialog extends Component
 
     onChangeCity = (evt) => {
         this.onChangeText(evt, 'city');
-        // console.log (evt.target.value );
         const provider = new OpenStreetMapProvider();
         provider.search({ query: evt.target.value })
             .then( results => {
-                // console.log (results[0] );
                 if( results[0] )
                 {
                     setTimeout( () => {
@@ -443,7 +426,6 @@ class MainSettingsDialog extends Component
 
     onMarkerDragend = evt => {
         const ll = evt.target._latlng;
-        //console.log(ll)
         this.doChange( 'latitude',  ll.lat);
         this.doChange( 'longitude', ll.lng);
 

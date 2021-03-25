@@ -56,25 +56,6 @@ const styles = theme => ({
 });
 
 class StatisticsDialog extends Component {
-    constructor(props) {
-        super(props); 
-        //console.log(props); 
-        // this.state={
-        //     ...props 
-        // }
-
-    }
-    componentWillUpdate(nextProps, nextState)
-    {
-        // if(nextProps.common !== this.state.common)
-        // {
-        //     this.setState({common: nextProps.common});
-        // }
-        // if(nextProps.data2 !== this.state.data2)
-        // {
-        //     this.setState({data2: nextProps.data2});
-        // }
-    }
     getTypes()  {
         return [
             {
@@ -127,7 +108,6 @@ class StatisticsDialog extends Component {
         this.props.onChange(newData);
     }
 	handleChangeType = evt => {
-        //console.log( evt.target.value, this.props.handle );
         this.doChange('diag', evt.target.value);
         if(this.props.handle)    
         {
@@ -135,7 +115,6 @@ class StatisticsDialog extends Component {
         }
     }
     render() {
-       // console.log(this.state.data2) 
         const {classes} = this.props;
         return <div className={ classes.tabPanel } style={{ height: 'calc(100% - 0px)' }}>
             <Grid container spacing={3}  className="sendData-grid" style={{ height: '100%', overflow: 'hidden' }}>

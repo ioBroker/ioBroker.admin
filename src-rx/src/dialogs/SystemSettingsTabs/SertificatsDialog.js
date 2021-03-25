@@ -74,12 +74,8 @@ class SertificatsDialog extends Component
     constructor(props)
     {
         super(props);
-        // const arr = Object.keys(props.native.certificates)
-        //     .map(e => { return  {data : props.native.certificates[e], title : e} } )
         
         this.state = {
-            // ...props,
-            // arr     : arr,
             chclass : false
         }
 
@@ -104,7 +100,6 @@ class SertificatsDialog extends Component
 
     render()
     {
-        //console.log( this.props );
         const { classes } = this.props; 
         const arr = this.certToArray(this.props.data.native.certificates);
         const rows = arr.map((e, i) =>
@@ -156,18 +151,14 @@ class SertificatsDialog extends Component
                 <div {...getRootProps({  
                     className   : clsx( this.state.chclass ? 'drop-container drop-dop' : 'drop-container'),
                     onDragEnter : evt => {
-                        //console.log( getRootProps(), evt );
                         this.setState({chclass : true}) 
                     },
                     onDragLeave : evt => {
-                        //console.log( "onDragLeave", evt, acceptedFiles, fileRejections ) 
                         this.setState({chclass : false}) 
                     },
                     onDrop      : evt => {
-                        //console.log( "onDrop", evt, acceptedFiles, fileRejections );
                         if( fileRejections.length > 0 ) 
                         {
-                            //console.log( "onDrop fileRejections", fileRejections);
                             let msg = [];
                             // eslint-disable-next-line array-callback-return
                             fileRejections.map((e =>
@@ -183,15 +174,12 @@ class SertificatsDialog extends Component
                         }
                         if( acceptedFiles.length > 0 )
                         {
-                            //console.log( "onDrop acceptedFiles", acceptedFiles);
                             // eslint-disable-next-line array-callback-return
                             acceptedFiles.map(file =>
                             {
                                 var reader = new FileReader();
                                 reader.onload = async (e) =>
                                 { 
-                                    //console.log( file.name ); 
-                                    //console.log( e.target.result ); 
                                     let name = file.name;
                                     this.onAdd(name, e.target.result);
                                 };
