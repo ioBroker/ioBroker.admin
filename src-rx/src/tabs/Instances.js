@@ -1,5 +1,6 @@
 import { Component, createRef } from 'react';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
+import clsx from 'clsx';
 
 import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
@@ -20,7 +21,7 @@ import ErrorIcon from '@material-ui/icons/Error';
 import DevicesIcon from '@material-ui/icons/Devices';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
-import CloseIcon from "@material-ui/icons/Close";
+import CloseIcon from '@material-ui/icons/Close';
 import ViewCompactIcon from '@material-ui/icons/ViewCompact';
 
 import ScheduleIcon from '@material-ui/icons/Schedule';
@@ -147,6 +148,9 @@ const styles = theme => ({
         height: 24,
         objectFit: 'fill',
         filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-539deg) brightness(99%) contrast(97%)'
+    },
+    contrast0: {
+        filter: 'contrast(0%)'
     }
 });
 
@@ -199,10 +203,23 @@ class Instances extends Component {
         this.adapters = [];
         this.statesUpdateTimer = null;
         this.objectsUpdateTimer = null;
+        this.wordCache = {};
 
-        this.t = props.t;
+        this.t = this.translate;
 
         this.inputRef = createRef();
+    }
+
+    translate = (word, arg1, arg2) => {
+        if (arg1 !== undefined) {
+            return this.props.t(word, arg1, arg2);
+        }
+
+        if (!this.wordCache[word]) {
+            this.wordCache[word] = this.props.t(word);
+        }
+
+        return this.wordCache[word];
     }
 
     async componentDidMount() {
@@ -352,18 +369,18 @@ class Instances extends Component {
                 compactGroupCount = common.compactGroup;
             }
             const instance = {};
-            instance.id = obj._id.replace('system.adapter.', '');
-            instance.obj = obj;
-            instance.compact = common.compact ? true : false;
-            instance.host = common.host;
-            instance.name = common.titleLang ? common.titleLang[this.props.lang] : common.title;
-            instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
-            let links = /*(ws && ws.link) ? ws.link :*/ common.localLinks || common.localLink || '';
-            if (typeof links === 'string') {
+            instance.id      = obj._id.replace('system.adapter.', '');
+            instance.obj     = obj;
+            instance.compact = !!common.compact;
+            instance.host    = common.host;
+            instance.name    = common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en || '' : common.title;
+            instance.image   = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
+            let links        = common.localLinks || common.localLink || '';
+            if (links && typeof links === 'string') {
                 links = { _default: links };
             }
 
-            Object.keys(links).forEach(linkName => {
+            links && Object.keys(links).forEach(linkName => {
                 instance.link = instance.link || [];
                 const link = links[linkName];
                 instance.link.push(Utils.replaceLink(link, common.name, instanceId, {
@@ -373,25 +390,26 @@ class Instances extends Component {
                 }));
             });
 
-            instance.canStart = !common.onlyWWW;
-            instance.config = !common.noConfig;
-            instance.materialize = common.materialize || false;
+            instance.canStart    = !common.onlyWWW;
+            instance.config      = !common.noConfig;
+            instance.materialize = common.materialize      || false;
             instance.compactMode = common.runAsCompactMode || false;
-            instance.mode = common.mode || null;
-            instance.loglevel = common.loglevel || null;
-            instance.adapter = common.name || null;
-            instance.version = common.installedVersion || null;
+            instance.mode        = common.mode             || null;
+            instance.loglevel    = common.loglevel         || null;
+            instance.adapter     = common.name             || null;
+            instance.version     = common.installedVersion || null;
 
             formatted[obj._id] = instance;
         });
 
         const compact = await this.props.socket.readBaseSettings(this.props.currentHostName)
-            .then(e => e.config.system.compact)
+            .then(e => e.config.system.compact);
+
         const importantDevices = JSON.parse(window.localStorage.getItem('Instances.importantDevices'));
-        const playArrow = JSON.parse(window.localStorage.getItem('Instances.playArrow'));
-        const viewMode = JSON.parse(window.localStorage.getItem('Instances.viewMode'));
+        const playArrow        = JSON.parse(window.localStorage.getItem('Instances.playArrow'));
+        const viewMode         = JSON.parse(window.localStorage.getItem('Instances.viewMode'));
         let filterCompactGroup = JSON.parse(window.localStorage.getItem('Instances.filterCompactGroup'));
-        const sentry = JSON.parse(window.localStorage.getItem('Instances.sentry')) || false;
+        const sentry           = JSON.parse(window.localStorage.getItem('Instances.sentry')) || false;
         if (!filterCompactGroup && filterCompactGroup !== 0) {
             filterCompactGroup = 'All';
         }
@@ -504,12 +522,12 @@ class Instances extends Component {
 
     isRunning(id) {
         const obj = this.objects[id];
-        return (obj?.common?.onlyWWW || obj?.common?.enabled) ? true : false;
+        return (obj?.common?.onlyWWW || obj?.common?.enabled);
     }
 
     isCompactGroup(id) {
         const obj = this.objects[id];
-        return obj?.common?.compactGroup;
+        return obj?.common?.compactGroup || null;
     }
 
     isCompact(id) {
@@ -594,9 +612,7 @@ class Instances extends Component {
         for (const index in this.columns) {
             const column = this.columns[index];
             if (!column.onlyExpert || column.onlyExpert === this.state.expertMode) {
-                headers.push(
-                    <TableCell key={index}>{index}</TableCell>
-                );
+                headers.push(<TableCell key={index}>{index}</TableCell>);
             }
         }
         return headers;
@@ -625,27 +641,28 @@ class Instances extends Component {
     }
 
     getPanels() {
-        let array = Object.keys(this.state.instances).map(id => {
-            const instance = this.state.instances[id];
-            const running = this.isRunning(id);
-            const alive = this.isAlive(id);
-            const compactGroup = this.isCompactGroup(id);
-            const compact = this.isCompact(id);
+        let list = Object.keys(this.state.instances).map(id => {
+            const instance        = this.state.instances[id];
+            const running         = this.isRunning(id);
+            const alive           = this.isAlive(id);
+            const compactGroup    = this.isCompactGroup(id);
+            const compact         = this.isCompact(id);
             const connectedToHost = this.isConnectedToHost(id);
-            const connected = this.isConnected(id);
-            const name = this.isName(id);
-            const logLevel = this.isLogLevel(id);
-            const loglevelIcon = this.getLogLevelIcon(instance.loglevel);
-            const checkCompact = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
-            const inputOutput = this.getInputOutput(id);
-            const mode = this.isModeSchedule(id);
-            const setCompact = () => {
+            const connected       = this.isConnected(id);
+            const name            = this.isName(id);
+            const logLevel        = this.isLogLevel(id);
+            const loglevelIcon    = this.getLogLevelIcon(instance.loglevel);
+            const checkCompact    = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
+            const inputOutput     = this.getInputOutput(id);
+            const mode            = this.isModeSchedule(id);
+
+            const setCompact = () =>
                 this.extendObject('system.adapter.' + instance.id, { common: { compact: !compact } });
-            }
-            const setRestartSchedule = (value) => {
+
+            const setRestartSchedule = value =>
                 this.extendObject('system.adapter.' + instance.id, { common: { restartSchedule: value } });
-            }
-            const setCompactGroup = (value) => {
+
+            const setCompactGroup = value => {
                 this.extendObject('system.adapter.' + instance.id, {
                     common: {
                         compactGroup: value === 'controller' ? 0 :
@@ -656,31 +673,34 @@ class Instances extends Component {
                     this.setState({ compactGroupCount: value });
                 }
             }
+
             const checkSentry = this.isSentryCheck(instance.adapter);
             const currentSentry = this.isSentry(id);
             const memoryLimitMB = this.isMemoryLimitMB(id);
-            const setSentry = () => {
-                this.extendObject('system.adapter.' + instance.id, { common: { disableDataReporting: currentSentry ? true : false } });
-            }
-            const setName = (value) => {
+
+            const setSentry = () =>
+                this.extendObject('system.adapter.' + instance.id, { common: { disableDataReporting: !!currentSentry } });
+
+            const setName = value =>
                 this.extendObject('system.adapter.' + instance.id, { common: { title: value } });
-            }
-            const setLogLevel = (value) => {
+
+            const setLogLevel = value =>
                 this.extendObject('system.adapter.' + instance.id, { common: { loglevel: value } });
-            }
-            const setSchedule = (value) => {
+
+            const setSchedule = value =>
                 this.extendObject('system.adapter.' + instance.id, { common: { schedule: value } });
-            }
-            const setMemoryLimitMB = (value) => {
+            const setMemoryLimitMB = value =>
                 this.extendObject('system.adapter.' + instance.id, { common: { memoryLimitMB: value } });
-            }
+
             const deletedInstances = () => {
                 this.setState({ delete: true })
                 this.props.executeCommand('del ' + instance.id);
             }
+
             return ({
                 render: this.state.viewMode ?
                     <CardInstances
+                        t={this.t}
                         key={instance.id}
                         name={name}
                         image={instance.image}
@@ -718,6 +738,7 @@ class Instances extends Component {
                         setMemoryLimitMB={setMemoryLimitMB}
                     /> :
                     <RowInstances
+                        t={this.t}
                         key={instance.id}
                         name={name}
                         image={instance.image}
@@ -769,32 +790,36 @@ class Instances extends Component {
         });
 
         if (this.state.playArrow) {
-            array = array.filter(({ running }) => running)
+            list = list.filter(({ running }) => running);
         }
+
         if (this.state.importantDevices) {
-            array = array.filter(({ host }) => host === this.props.currentHostName)
+            list = list.filter(({ host }) => host === this.props.currentHostName)
         }
+
         if (this.state.filterText) {
-            array = array.filter(({ name, nameId }) => name.toLowerCase().indexOf(this.state.filterText.toLowerCase()) !== -1 || nameId.toLowerCase().indexOf(this.state.filterText.toLowerCase()) !== -1)
+            const filterText = this.state.filterText.toLowerCase();
+            list = list.filter(({ name, nameId }) => name.toLowerCase().includes(filterText) || nameId.toLowerCase().includes(filterText));
         }
+
         if (this.props.expertMode && (this.state.filterCompactGroup || this.state.filterCompactGroup === 0) && this.state.compact) {
-            array = array.filter(({ compactGroup, checkCompact }) => ((compactGroup === this.state.filterCompactGroup) && checkCompact) ||
+            list = list.filter(({ compactGroup }) => compactGroup === this.state.filterCompactGroup ||
                 this.state.filterCompactGroup === 'All' ||
-                (this.state.filterCompactGroup === 'default' && checkCompact && (compactGroup === undefined || compactGroup === 1)) ||
-                (this.state.filterCompactGroup === 'controller' && checkCompact && compactGroup === 0)
-            )
+                (this.state.filterCompactGroup === 'default' && (compactGroup === null || compactGroup === 1)) ||
+                (this.state.filterCompactGroup === 'controller' && compactGroup === '0'))
         }
         if (this.props.expertMode && this.state.sentry) {
-            array = array.filter(({ sentry }) => sentry);
+            list = list.filter(({ sentry }) => sentry);
         }
-        if (!array.length) {
+        if (!list.length) {
             return <div style={{
                 margin: 20,
                 fontSize: 26,
                 textAlign: 'center'
-            }}>{this.props.t('all items are filtered out')}</div>
+            }}>{this.t('all items are filtered out')}</div>
         }
-        return array.map(({ render }) => render);
+
+        return list.map(({ render }) => render);
     }
 
     handleChange = (panel) => {
@@ -828,16 +853,16 @@ class Instances extends Component {
         }
     }
 
-    changeSetStateBool = (value) =>
-        this.setState((state) => {
+    changeSetStateBool = value =>
+        this.setState(state => {
             window.localStorage.setItem(`Instances.${value}`, JSON.stringify(!state[value]));
             return ({ [value]: !state[value] });
         });
 
-    changeCompactGroup = (value) =>
-        this.setState((state) => {
+    changeCompactGroup = value =>
+        this.setState(state => {
             window.localStorage.setItem(`Instances.filterCompactGroup`, JSON.stringify(value));
-            return ({ filterCompactGroup: value });
+            return { filterCompactGroup: value };
         });
 
     handleFilterChange(event) {
@@ -851,114 +876,109 @@ class Instances extends Component {
 
     render() {
         if (!this.state.instances) {
-            return (
-                <LinearProgress />
-            );
+            return <LinearProgress />;
         }
         const { classes } = this.props;
 
         if (this.state.dialog === 'config' && this.state.dialogProp) {
-
             const instance = this.state.instances[this.state.dialogProp] || null;
 
             if (instance) {
-                return (
-                    <Paper className={classes.paper}>
-                        <Config
-                            className={classes.iframe}
-                            adapter={instance.id.split('.')[0]}
-                            instance={parseInt(instance.id.split('.')[1])}
-                            materialize={instance.materialize}
-                            themeName={this.props.themeName}
-                            t={this.props.t}
-                            configStored={this.props.configStored}
-                        />
-                    </Paper>
-                );
+                return <Paper className={classes.paper}>
+                    <Config
+                        className={classes.iframe}
+                        adapter={instance.id.split('.')[0]}
+                        instance={parseInt(instance.id.split('.')[1])}
+                        materialize={instance.materialize}
+                        themeName={this.props.themeName}
+                        t={this.t}
+                        configStored={this.props.configStored}
+                    />
+                </Paper>;
             }
         }
 
-        return (
-            <TabContainer>
-                <TabHeader>
-                    <Tooltip title={this.t('Show / hide List')}>
-                        <IconButton onClick={() => this.changeSetStateBool('viewMode')}>
-                            {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title={this.t('Reload')}>
-                        <IconButton onClick={() => this.getData(true)}>
-                            <RefreshIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title={this.t('Show instances only for current host')}>
-                        <IconButton onClick={() => this.changeSetStateBool('importantDevices')}>
-                            <DevicesIcon color={this.state.importantDevices ? 'primary' : 'inherit'} />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title={this.t('Show only running instances')}>
-                        <IconButton onClick={() => this.changeSetStateBool('playArrow')}>
-                            <PlayArrowIcon color={this.state.playArrow ? 'primary' : 'inherit'} />
-                        </IconButton>
-                    </Tooltip>
-                    {this.props.expertMode && <Tooltip title={this.t('sentry')}>
-                        <IconButton
-                            size="small"
-                            className={classes.button}
-                            onClick={() => this.changeSetStateBool('sentry')}
-                        >
-                            <CardMedia
-                                style={this.state.sentry ? null : { filter: 'contrast(0%)' }}
-                                className={classes.sentry}
-                                component="img"
-                                image={sentry}
-                            />
-                        </IconButton>
-                    </Tooltip>}
-                    {this.props.expertMode && <Tooltip title={this.t('allow set of compact groups')}>
-                        <ViewCompactIcon style={{ margin: 10 }} color={this.state.compact ? 'primary' : 'disabled'} />
-                    </Tooltip>}
-                    {this.props.expertMode &&
-                        this.state.compact &&
-                        <CustomSelectButton
-                            t={this.t}
-                            arrayItem={[{ name: 'All' }, { name: 'controller' }, { name: 'default' }, ...Array(this.state.compactGroupCount - 1).fill().map((_, idx) => ({ name: idx + 2 }))]}
-                            onClick={value => this.changeCompactGroup(value)}
-                            value={this.state.filterCompactGroup} />}
-                    <div className={classes.grow} />
-                    <TextField
-                        inputRef={this.inputRef}
-                        label={this.t('Filter')}
-                        style={{ margin: '5px 0' }}
-                        defaultValue=""
-                        onChange={event => this.handleFilterChange(event)}
-                        InputProps={{
-                            endAdornment: (
-                                this.state.filterText ? <InputAdornment position="end">
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => {
-                                            this.inputRef.current.value = '';
-                                            this.setState({ filterText: '' });
-                                        }}
-                                    >
-                                        <CloseIcon />
-                                    </IconButton>
-                                </InputAdornment> : null
-                            ),
-                        }}
-                    />
-                    <div className={classes.grow} />
-                    {this.state.hostData &&
-                        `${this.props.t('Disk free')}: ${Math.round(this.state.hostData['Disk free'] / (this.state.hostData['Disk size'] / 100))}%, ${this.props.t('Total RAM usage')}: ${this.state.mem} Mb / ${this.props.t('Free')}: ${this.state.percent}% = ${this.state.memFree} Mb [${this.props.t('Host')}: ${this.props.currentHostName} - ${this.state.processes} ${this.props.t('processes')}]`}
-                </TabHeader>
-                <TabContent overflow="auto">
-                    <div className={this.state.viewMode ? classes.cards : ''}>
-                        {this.getPanels(classes)}
-                    </div>
-                </TabContent>
-            </TabContainer>
-        );
+        return <TabContainer>
+            <TabHeader>
+                <Tooltip title={this.t('Show / hide List')}>
+                    <IconButton onClick={() => this.changeSetStateBool('viewMode')}>
+                        {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title={this.t('Reload')}>
+                    <IconButton onClick={() => this.getData(true)}>
+                        <RefreshIcon />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title={this.t('Show instances only for current host')}>
+                    <IconButton onClick={() => this.changeSetStateBool('importantDevices')}>
+                        <DevicesIcon color={this.state.importantDevices ? 'primary' : 'inherit'} />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title={this.t('Show only running instances')}>
+                    <IconButton onClick={() => this.changeSetStateBool('playArrow')}>
+                        <PlayArrowIcon color={this.state.playArrow ? 'primary' : 'inherit'} />
+                    </IconButton>
+                </Tooltip>
+                {this.props.expertMode && <Tooltip title={this.t('sentry')}>
+                    <IconButton
+                        size="small"
+                        className={classes.button}
+                        onClick={() => this.changeSetStateBool('sentry')}
+                    >
+                        <CardMedia
+                            className={clsx(classes.sentry, !this.state.sentry && classes.contrast0)}
+                            component="img"
+                            image={sentry}
+                        />
+                    </IconButton>
+                </Tooltip>}
+                {this.props.expertMode && this.state.compact && <Tooltip title={this.t('allow set of compact groups')}>
+                    <ViewCompactIcon style={{ margin: 10 }} color="primary" />
+                </Tooltip>}
+                {this.props.expertMode && this.state.compact &&
+                    <CustomSelectButton
+                        arrayItem={[
+                            { name: 'All' },
+                            { name: 'controller' },
+                            { name: 'default' },
+                            ...Array(this.state.compactGroupCount - 1).fill().map((_, idx) => ({ name: idx + 2 }))
+                        ]}
+                        onClick={value => this.changeCompactGroup(value)}
+                        value={this.state.filterCompactGroup} />}
+                <div className={classes.grow} />
+                <TextField
+                    inputRef={this.inputRef}
+                    label={this.t('Filter')}
+                    style={{ margin: '5px 0' }}
+                    defaultValue=""
+                    onChange={event => this.handleFilterChange(event)}
+                    InputProps={{
+                        endAdornment: (
+                            this.state.filterText ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => {
+                                        this.inputRef.current.value = '';
+                                        this.setState({ filterText: '' });
+                                    }}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </InputAdornment> : null
+                        ),
+                    }}
+                />
+                <div className={classes.grow} />
+                {this.state.hostData &&
+                    `${this.t('Disk free')}: ${Math.round(this.state.hostData['Disk free'] / (this.state.hostData['Disk size'] / 100))}%, ${this.t('Total RAM usage')}: ${this.state.mem} Mb / ${this.t('Free')}: ${this.state.percent}% = ${this.state.memFree} Mb [${this.t('Host')}: ${this.props.currentHostName} - ${this.state.processes} ${this.t('processes')}]`}
+            </TabHeader>
+            <TabContent overflow="auto">
+                <div className={this.state.viewMode ? classes.cards : ''}>
+                    {this.getPanels(classes)}
+                </div>
+            </TabContent>
+        </TabContainer>;
     }
 }
 

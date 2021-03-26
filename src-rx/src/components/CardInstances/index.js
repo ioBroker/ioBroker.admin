@@ -23,6 +23,7 @@ import CustomModal from '../CustomModal';
 import EditIcon from '@material-ui/icons/Edit';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
 import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
+import PropTypes from "prop-types";
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -193,6 +194,57 @@ const styles = theme => ({
         height: 24,
         objectFit: 'fill',
         filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)'
+    },
+    cardContentH5: {
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between'
+    },
+    marginTop10: {
+        marginTop: 10
+    },
+    memoryIcon: {
+        color: '#dc8e00',
+    },
+    displayFlex: {
+        display: 'flex',
+    },
+    logLevel: {
+        width: '100%',
+        marginBottom: 5
+    },
+    overflowAuto: {
+        overflow: 'auto'
+    },
+    collapseIcon: {
+        position: 'sticky',
+        right: 0,
+        top: 0,
+        background: 'silver',
+        zIndex: 2
+    },
+    addCompact: {
+        width: '100%',
+        marginBottom: 5
+    },
+    addCompactButton: {
+        display: 'flex',
+        margin: 5,
+        justifyContent: 'space-around'
+    },
+    scheduleIcon: {
+        color: '#dc8e00'
+    },
+    marginRight5: {
+        marginRight: 5
+    },
+    marginLeft5: {
+        marginLeft: 5
+    },
+    enableButton:{
+        display: 'flex',
+        justifyContent: 'space-between'
     }
 });
 const CardInstances = ({
@@ -232,7 +284,8 @@ const CardInstances = ({
     setSchedule,
     deletedInstances,
     memoryLimitMB,
-    setMemoryLimitMB
+    setMemoryLimitMB,
+    t
 }) => {
     const [openCollapse, setCollapse] = useState(false);
     const [openSelect, setOpenSelect] = useState(false);
@@ -249,10 +302,10 @@ const CardInstances = ({
     return <Card key={key} className={clsx(classes.root, hidden ? classes.hidden : '')}>
         <CustomModal
             title={
-                (openDialogText && I18n.t("Enter title for %s", instance.id)) ||
-                (openDialogSelect && I18n.t("Edit log level rule for %s", instance.id)) ||
-                (openDialogDelete && I18n.t("Please confirm")) ||
-                (openDialogMemoryLimit && I18n.t("Edit memory limit rule for %s", instance.id))
+                (openDialogText && t('Enter title for %s', instance.id)) ||
+                (openDialogSelect && t('Edit log level rule for %s', instance.id)) ||
+                (openDialogDelete && t('Please confirm')) ||
+                (openDialogMemoryLimit && t('Edit memory limit rule for %s', instance.id))
             }
             open={
                 openDialogSelect ||
@@ -290,8 +343,8 @@ const CardInstances = ({
                     setOpenDialogMemoryLimit(false);
                 }
             }}>
-            {openDialogSelect && <FormControl style={{ width: '100%', marginBottom: 5 }} variant="outlined" >
-                <InputLabel htmlFor="outlined-age-native-simple">{I18n.t('log level')}</InputLabel>
+            {openDialogSelect && <FormControl className={classes.logLevel} variant="outlined" >
+                <InputLabel htmlFor="outlined-age-native-simple">{t('log level')}</InputLabel>
                 <Select
                     variant="standard"
                     value={select}
@@ -299,20 +352,20 @@ const CardInstances = ({
                     onChange={el => setSelect(el.target.value)}
                 >
                     {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
-                        {I18n.t(el)}
+                        {t(el)}
                     </MenuItem>)}
                 </Select>
             </FormControl>}
-            {openDialogDelete && I18n.t("Are you sure you want to delete the instance %s?", instance.id)}
+            {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
         </CustomModal>
         {(openDialogCron || openDialogSchedule) && <ComplexCron
             title={
-                (openDialogCron && I18n.t("Edit restart rule for %s", instance.id)) ||
-                (openDialogSchedule && I18n.t("Edit schedule rule for %s", instance.id))
+                (openDialogCron && t('Edit restart rule for %s', instance.id)) ||
+                (openDialogSchedule && t('Edit schedule rule for %s', instance.id))
             }
             cron={openDialogCron ? getRestartSchedule(id) : getSchedule(id)}
             language={I18n.getLanguage()}
-            onOk={(cron) => {
+            onOk={cron => {
                 if (openDialogCron) {
                     setRestartSchedule(cron);
                 } else if (openDialogSchedule) {
@@ -325,26 +378,17 @@ const CardInstances = ({
                 } else if (openDialogSchedule) {
                     setOpenDialogSchedule(false);
                 }
-
             }}
         />}
         <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
-            <CardContent classes={{
-                root: classes.cardContent
-            }} style={{ overflow: 'auto' }}>
-                <div style={{
-                    position: 'sticky',
-                    right: 0,
-                    top: 0,
-                    background: 'silver',
-                    zIndex: 2
-                }}>
+            <CardContent classes={{root: classes.cardContent}} className={classes.overflowAuto}>
+                <div className={classes.collapseIcon}>
                     <div className={classes.close} onClick={() => setCollapse((bool) => !bool)} />
                 </div>
                 <Typography gutterBottom component={'span'} variant={'body2'}>
-                    {expertMode && checkCompact && compact && <div style={{ display: 'flex' }}>
-                        <FormControl style={{ width: '100%', marginBottom: 5 }} variant="outlined" >
-                            <InputLabel htmlFor="outlined-age-native-simple">{I18n.t('compact groups')}</InputLabel>
+                    {expertMode && checkCompact && compact && <div className={classes.displayFlex}>
+                        <FormControl className={classes.addCompact} variant="outlined" >
+                            <InputLabel htmlFor="outlined-age-native-simple">{t('compact groups')}</InputLabel>
                             <Select
                                 variant="standard"
                                 onClose={() => setOpenSelect(false)}
@@ -354,25 +398,21 @@ const CardInstances = ({
                                 fullWidth
                                 onChange={el => setCompactGroup(el.target.value)}
                             >
-                                {<div disabled >
-                                    <div
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                        }}>
-                                        <div style={{ display: 'flex', margin: 5, justifyContent: 'space-around' }}>
-                                            <Button onClick={() => {
-                                                setOpenSelect(false);
-                                                setCompactGroup(compactGroupCount + 1);
-                                            }} variant="outlined" stylevariable='outlined'>{I18n.t('Add compact group')}</Button>
-                                        </div>
-                                    </div>
-                                </div>}
+                                <div className={classes.addCompactButton}
+                                     onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                }}>
+                                    <Button onClick={() => {
+                                        setOpenSelect(false);
+                                        setCompactGroup(compactGroupCount + 1);
+                                    }} variant="outlined" stylevariable='outlined'>{t('Add compact group')}</Button>
+                                </div>
                                 <MenuItem value='0'>
-                                    {I18n.t('with controller (0)')}
+                                    {t('with controller (0)')}
                                 </MenuItem>
                                 <MenuItem value={1}>
-                                    {I18n.t('default group (1)')}
+                                    {t('default group (1)')}
                                 </MenuItem>
                                 {Array(compactGroupCount - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
                                     {idx + 2}
@@ -381,32 +421,32 @@ const CardInstances = ({
                         </FormControl>
                     </div>}
                     <State state={connectedToHost} >
-                        {I18n.t('Connected to host')}
+                        {t('Connected to host')}
                     </State>
                     <State state={alive} >
-                        {I18n.t('Heartbeat')}
+                        {t('Heartbeat')}
                     </State>
                     {connected !== null &&
                         <State state={connected}>
-                            {I18n.t('Connected to %s', instance.adapter)}
+                            {t('Connected to %s', instance.adapter)}
                         </State>
                     }
                     <InstanceInfo
                         icon={<InfoIcon />}
-                        tooltip={I18n.t('Installed')}
+                        tooltip={t('Installed')}
                     >
                         {instance.version}
                     </InstanceInfo>
                     <InstanceInfo
                         icon={<MemoryIcon />}
-                        tooltip={I18n.t('RAM usage')}
+                        tooltip={t('RAM usage')}
                     >
                         {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
                     </InstanceInfo>
-                    {expertMode && <div style={{ display: 'flex' }}>
+                    {expertMode && <div className={classes.displayFlex}>
                         <InstanceInfo
-                            icon={<MemoryIcon style={{ color: '#dc8e00' }} />}
-                            tooltip={I18n.t('RAM limit')}
+                            icon={<MemoryIcon className={classes.memoryIcon} />}
+                            tooltip={t('RAM limit')}
                         >
                             {(memoryLimitMB ? memoryLimitMB : '-.--') + ' MB'}
                         </InstanceInfo>
@@ -419,10 +459,10 @@ const CardInstances = ({
                         </IconButton>
                     </div>
                     }
-                    {expertMode && <div style={{ display: 'flex' }}>
+                    {expertMode && <div className={classes.displayFlex}>
                         <InstanceInfo
                             icon={loglevelIcon}
-                            tooltip={I18n.t('loglevel')}
+                            tooltip={t('loglevel')}
                         >
                             {logLevel}
                         </InstanceInfo>
@@ -434,10 +474,10 @@ const CardInstances = ({
                             <EditIcon />
                         </IconButton>
                     </div>}
-                    {mode && <div style={{ display: 'flex' }}>
+                    {mode && <div className={classes.displayFlex}>
                         <InstanceInfo
                             icon={<ScheduleIcon />}
-                            tooltip={I18n.t('schedule_group')}
+                            tooltip={t('schedule_group')}
                         >
                             {getSchedule(id) || '-'}
                         </InstanceInfo>
@@ -450,10 +490,10 @@ const CardInstances = ({
                         </IconButton>
                     </div>}
                     {expertMode && (instance.mode === 'daemon') &&
-                        <div style={{ display: 'flex' }}>
+                        <div className={classes.displayFlex}>
                             <InstanceInfo
-                                icon={<ScheduleIcon style={{ color: '#dc8e00' }} />}
-                                tooltip={I18n.t('restart')}
+                                icon={<ScheduleIcon className={classes.scheduleIcon} />}
+                                tooltip={t('restart')}
                             >
                                 {getRestartSchedule(id) || '-'}
                             </InstanceInfo>
@@ -467,18 +507,18 @@ const CardInstances = ({
                         </div>
                     }
                     {expertMode &&
-                        <div style={{ display: 'flex' }}>
+                        <div className={classes.displayFlex}>
                             <InstanceInfo
                                 icon={<ImportExportIcon />}
-                                tooltip={I18n.t('events')}
+                                tooltip={t('events')}
                             >
-                                <div style={{ display: 'flex' }}>
-                                    <Tooltip title={I18n.t('input events')}>
-                                        <div style={{ marginRight: 5 }}>⇥${inputOutput.stateInput}</div>
+                                <div className={classes.displayFlex}>
+                                    <Tooltip title={t('input events')}>
+                                        <div className={classes.marginRight5}>⇥${inputOutput.stateInput}</div>
                                     </Tooltip>
                                     /
-                                <Tooltip title={I18n.t('output events')}>
-                                        <div style={{ marginLeft: 5 }}>↦${inputOutput.stateOutput}</div>
+                                <Tooltip title={t('output events')}>
+                                        <div className={classes.marginLeft5}>↦${inputOutput.stateOutput}</div>
                                     </Tooltip>
                                 </div>
                             </InstanceInfo>
@@ -496,7 +536,7 @@ const CardInstances = ({
                 </Typography>
             </CardContent>
             <div className={classes.footerBlock}>
-                <div style={{ display: 'flex' }}>
+                <div className={classes.displayFlex}>
                     <IconButton
                         size="small"
                         className={classes.button}
@@ -504,39 +544,36 @@ const CardInstances = ({
                     >
                         <DeleteIcon />
                     </IconButton>
-
                 </div>
-                {expertMode && checkSentry && <div style={{ display: 'flex' }}>
-                    <Tooltip title={I18n.t('sentry')}>
+                {expertMode && checkSentry && <div className={classes.displayFlex}>
+                    <Tooltip title={t('sentry')}>
                         <IconButton
                             size="small"
                             className={classes.button}
                             onClick={setSentry}
                         >
                             <CardMedia
-                                style={currentSentry ? null : { filter: 'contrast(0%)' }}
-                                className={classes.sentry}
+                                className={clsx(classes.sentry, !currentSentry && classes.contrast0)}
                                 component="img"
                                 image={sentry}
                             />
                         </IconButton>
                     </Tooltip>
-                </div>
-                }
-                {expertMode && checkCompact && <div style={{ display: 'flex' }}>
-                    <Tooltip title={I18n.t('compact groups')}>
+                </div>}
+                {expertMode && checkCompact && <div className={classes.displayFlex}>
+                    <Tooltip title={t('compact groups')}>
                         <IconButton
                             size="small"
                             className={classes.button}
                             onClick={setCompact}
                         >
-                            <ViewCompactIcon color={compact ? "primary" : ""} />
+                            <ViewCompactIcon color={compact ? 'primary' : ''} />
                         </IconButton>
                     </Tooltip>
-                </div>
-                }
+                </div>}
             </div>
         </div>
+
         <div className={clsx(classes.imageBlock,
             running ? classes.update : '')}>
             <CardMedia
@@ -546,7 +583,7 @@ const CardInstances = ({
             />
             <div className={classes.adapter}>{instance.id}</div>
             <div className={classes.versionDate}>
-                {/* {expertMode && checkCompact && <Tooltip title={I18n.t('compact groups')}>
+                {/* {expertMode && checkCompact && <Tooltip title={t('compact groups')}>
                     <ViewCompactIcon color="action" style={{ margin: 10 }} />
                 </Tooltip>} */}
             </div>
@@ -554,14 +591,10 @@ const CardInstances = ({
                 <MoreVertIcon />
             </Fab>
         </div>
-        <CardContent style={{
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between'
-        }}>
+
+        <CardContent className={classes.cardContentH5}>
             <Typography gutterBottom variant="h5" component="h5">
-                <div style={{ display: 'flex' }}>
+                <div className={classes.displayFlex}>
                     {name}
                     <IconButton
                         size="small"
@@ -571,14 +604,8 @@ const CardInstances = ({
                         <EditIcon />
                     </IconButton></div>
             </Typography>
-            <div style={{
-                marginTop: 10,
-            }}>
-                <Typography component={'span'} style={{
-                    display: 'flex',
-                    justifyContent: 'space-between'
-                }}>
-
+            <div className={classes.marginTop10}>
+                <Typography component={'span'} className={classes.enableButton}>
                     <IconButton
                         size="small"
                         onClick={event => {
@@ -586,9 +613,7 @@ const CardInstances = ({
                             event.stopPropagation();
                         }}
                         onFocus={event => event.stopPropagation()}
-                        className={classes.button + ' ' + (instance.canStart ?
-                            running ? classes.enabled : classes.disabled : classes.hide)
-                        }
+                        className={clsx(classes.button, instance.canStart ? (running ? classes.enabled : classes.disabled) : classes.hide)}
                     >
                         {running ? <PauseIcon /> : <PlayArrowIcon />}
                     </IconButton>
@@ -608,17 +633,17 @@ const CardInstances = ({
                             event.stopPropagation();
                         }}
                         onFocus={event => event.stopPropagation()}
-                        className={classes.button + ' ' + (instance.canStart ? '' : classes.hide)}
+                        className={clsx(classes.button, !instance.canStart && classes.hide)}
                         disabled={!running}
                     >
                         <RefreshIcon />
                     </IconButton>
                     <IconButton
                         size="small"
-                        className={classes.button + ' ' + (instance.link ? '' : classes.hide)}
+                        className={clsx(classes.button, (!instance.link || !instance.link[0]) && classes.hide)}
                         disabled={!running}
                         onClick={event => {
-                            window.open(instance.link, "_blank")
+                            window.open(instance.link, '_blank');
                             event.stopPropagation();
                         }}
                         onFocus={event => event.stopPropagation()}
@@ -630,5 +655,13 @@ const CardInstances = ({
         </CardContent>
     </Card>
 }
+
+CardInstances.propTypes = {
+    /**
+     * Link and text
+     * {link: 'https://example.com', text: 'example.com'}
+     */
+    t: PropTypes.func,
+};
 
 export default withStyles(styles)(CardInstances);
