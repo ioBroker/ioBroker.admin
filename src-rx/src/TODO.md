@@ -16,14 +16,14 @@
 ## Adapters
 - Adapters - Use readme renderer from www.iobroker.net (BF)
 - Show number of possible updates on "Adapters" in menu on the left (impossible ?)
+
 ## Instances
 
 ## Objects
 - Decode quality code to text (BF)
 - ACL dialog scroll only checkboxes
-<!-- - By bulc ACL edit, collect different options, show them with intermediate or --different-- and by apply do not change intermediate do different attributes if not set.   -->
 - ACL settings for non-existing objects with '---' and "apply to children" selected
-- highlight "different with (opacity: 0.5)
+- highlight "different" with (opacity: 0.5)
 
 ## Files
 - Files - bulk edit of access rights
