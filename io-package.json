@@ -293,7 +293,7 @@
             }
         },
         {
-            "_id": "info.newsfeed",
+            "_id": "info.newsFeed",
             "type": "state",
             "common": {
                 "name": "Last news feed as JSON",
@@ -307,6 +307,16 @@
             "type": "state",
             "common": {
                 "name": "Etag for news feed",
+                "type": "string",
+                "read": true,
+                "write": false
+            }
+        },
+        {
+            "_id": "info.newsLastId",
+            "type": "state",
+            "common": {
+                "name": "last seen news ID",
                 "type": "string",
                 "read": true,
                 "write": false

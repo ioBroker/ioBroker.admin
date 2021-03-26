@@ -1,14 +1,21 @@
 import { Component } from 'react';
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import TextField from "@material-ui/core/TextField";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
-import PropTypes from "prop-types";
-import {withStyles} from "@material-ui/core/styles";
+import PropTypes from 'prop-types';
+import {withStyles} from '@material-ui/core/styles';
+
+import AceEditor from 'react-ace';
+import 'ace-builds/src-noconflict/mode-json';
+import 'ace-builds/src-noconflict/theme-clouds_midnight';
+import 'ace-builds/src-noconflict/theme-chrome';
+import 'ace-builds/src-noconflict/ext-language_tools'
+
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import TextField from '@material-ui/core/TextField';
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
@@ -37,13 +44,33 @@ class ObjectBrowserValue extends Component {
     constructor(props) {
         super(props);
 
+        let type = this.props.type || typeof this.props.value;
+
+        this.value = this.props.value;
+        this.propsValue = this.value;
+
+        if (type === 'string' || type === 'json') {
+            if (this.value &&
+                ((this.value.startsWith('[') && this.value.endsWith(']')) ||
+                 (this.value.startsWith('{') && this.value.endsWith('}')))
+            ) {
+                try {
+                    this.value = JSON.parse(this.value);
+                    this.value = JSON.stringify(this.value, null, 2);
+                    this.propsValue = this.value;
+                    type = 'json';
+                } catch (e) {
+
+                }
+            }
+        }
+
         this.state = {
-            type: this.props.type || typeof this.props.value,
+            type
         };
 
         this.ack   = false;
         this.q     = 0;
-        this.value = this.props.value;
     }
 
     onUpdate() {
@@ -54,6 +81,30 @@ class ObjectBrowserValue extends Component {
         }
 
         this.props.onClose({val: this.value, ack: this.ack, q: this.q})
+    }
+
+    renderJsonEditor() {
+        return <AceEditor
+            mode="json"
+            width="100%"
+            height="200px"
+            showPrintMargin={true}
+            showGutter={true}
+            highlightActiveLine={true}
+            theme={this.props.themeType === 'dark' ? 'clouds_midnight' : 'chrome'}
+            defaultValue={this.propsValue}
+            onChange={newValue => this.value = newValue}
+            name="UNIQUE_ID_OF_DIV1"
+            fontSize={14}
+            setOptions={{
+                enableBasicAutocompletion: true,
+                enableLiveAutocompletion: true,
+                enableSnippets: true,
+                showLineNumbers: true,
+                tabSize: 2,
+            }}
+            editorProps={{$blockScrolling: true}}
+        />;
     }
 
     render() {
@@ -78,6 +129,7 @@ class ObjectBrowserValue extends Component {
                                 <MenuItem value="string">String</MenuItem>
                                 <MenuItem value="number">Number</MenuItem>
                                 <MenuItem value="boolean">Boolean</MenuItem>
+                                <MenuItem value="json">JSON</MenuItem>
                             </Select>
                         </FormControl></Grid> : null }
 
@@ -95,14 +147,17 @@ class ObjectBrowserValue extends Component {
                             />
                             :
                             (this.state.type === 'number' ?
-                                    <TextField
-                                        className={ this.props.input }
-                                        autoFocus
-                                        helperText={ this.props.t('Press ENTER to write the value, when focused')}
-                                        label={ this.props.t('Value') }
-                                        defaultValue={ parseFloat(this.props.value) || 0 }
-                                        onKeyUp={ e => e.keyCode === 13 && this.onUpdate() }
-                                        onChange={ e => this.value = e.target.value }/>
+                                <TextField
+                                    className={ this.props.input }
+                                    autoFocus
+                                    helperText={ this.props.t('Press ENTER to write the value, when focused')}
+                                    label={ this.props.t('Value') }
+                                    defaultValue={ parseFloat(this.props.value) || 0 }
+                                    onKeyUp={ e => e.keyCode === 13 && this.onUpdate() }
+                                    onChange={ e => this.value = e.target.value }/>
+                                :
+                                (this.state.type === 'json' ?
+                                    this.renderJsonEditor()
                                     :
                                     <TextField
                                         className={ this.props.input }
@@ -114,6 +169,7 @@ class ObjectBrowserValue extends Component {
                                         onKeyUp={e => e.ctrlKey && e.keyCode === 13 && this.onUpdate() }
                                         defaultValue={ this.props.value.toString() }
                                         onChange={ e => this.value = e.target.value }/>
+                                )
                             )
                         }
                         </Grid>
@@ -160,7 +216,7 @@ class ObjectBrowserValue extends Component {
             </DialogContent>
             <DialogActions>
                 <Button onClick={ () => this.onUpdate() }      color="primary">{   this.props.t('Write') }</Button>
-                <Button onClick={ () => this.props.onClose() } color="secondary">{ this.props.t('Cancel') }</Button>
+                <Button onClick={ () => this.props.onClose() }>{ this.props.t('Cancel') }</Button>
             </DialogActions>
         </Dialog>;
     }
@@ -172,6 +228,7 @@ ObjectBrowserValue.propTypes = {
     value: PropTypes.any,
     expertMode: PropTypes.bool,
     onClose: PropTypes.func.isRequired,
+    themeType: PropTypes.string,
 
     t: PropTypes.func,
 };

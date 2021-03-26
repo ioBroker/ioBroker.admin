@@ -1704,9 +1704,9 @@ class Connection {
      * @returns {Promise<any>}
      */
     getDiagData(host, typeOfDiag) {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             this._socket.emit('sendToHost', host, 'getDiagData', typeOfDiag, result =>
-                !result || result.error ? reject(result.error) : resolve(result));
+                resolve(result));
         });
     }
 

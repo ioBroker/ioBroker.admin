@@ -5,7 +5,7 @@
   - The "Latest" repository contains adapter versions that have not been fully tested. Please report problems with these versions to the developer or in the relevant forum threads. Use at your own risk. (Do not implement it yet)
 
 ## Info
-- Request info one time in a day and show new informaiton
+- Request info one time in a day and show new information
   - admin.X.info.news => JSON https://github.com/ioBroker/ioBroker.docs/blob/master/info/news.json
   - admin.X.info.lastNewsId => consists of last read news
   - IF the user presses OK => So delete acknowledged news from the list.
@@ -18,7 +18,6 @@
 ## Adapters
 - Adapters - Use readme renderer from www.iobroker.net (BF)
 - Show number of possible updates on "Adapters" in menu on the left (impossible ?)
-- disable update, install, delete button if command is running for all adapters
 
 ## Instances  
 - Instances - Open in new window must be shown only for instances with localLink (BF)
@@ -27,7 +26,6 @@
 - Filter does not work (e.g. email)  
 
 ## Objects
-- Objects - import fix enums (BF)
 - Hide ACL for non experts
 - Move Trash aligned with states for objects
 - Decode quality code to text (BF)
@@ -41,11 +39,11 @@
 - By bulc ACL edit, collect different options, show them with intermediate or --different-- and by apply do not change intermediate do different attributes if not set.  
 - Replace all this.props.t() with this.texts.my_text... for often translations
   - For select category too
-
-
+  
 ## Files
 - Files - bulk edit of access rights
   - file.acl.permissions
+  
 ## Hosts  
 - Hosts tab => show all hosts in a list with settings
 

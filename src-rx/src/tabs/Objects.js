@@ -48,7 +48,9 @@ class Objects extends Component {
 
         super(props);
 
-        this.filters = window.localStorage.getItem(this.dialogName) || '{}';
+        this.dialogName = 'AdminObjects';
+
+        this.filters = window.localStorage.getItem(`${this.dialogName || 'App'}.filters`) || '{}';
 
         try {
             this.filters = JSON.parse(this.filters);
@@ -56,8 +58,10 @@ class Objects extends Component {
             this.filters = {};
         }
 
+        let selected = window.localStorage.getItem(`${this.dialogName || 'App'}.selected`) || '';
+
         this.state = {
-            selected: this.props.selected || '',
+            selected: this.props.selected === undefined ? selected : '',
             name: '',
             toast: '',
             deleteObjectShow: null,
@@ -145,7 +149,7 @@ class Objects extends Component {
                     {this.state.deleteObjectShow.hasChildren ? <Button onClick={() => this.onDelete(true)}><IconDeleteAll className={clsx(this.props.classes.buttonAll, this.props.classes.buttonIcon)} />{this.t('Delete with children')}</Button> : null}
                     {this.state.deleteObjectShow.exists ? <Button onClick={() => this.onDelete(false)} color="primary"><IconDeleteOne className={this.props.classes.buttonIcon} />{this.t('Delete one item')}</Button> : null}
                 </DialogActions>
-            </Dialog>
+            </Dialog>;
         }
     }
 
@@ -153,6 +157,7 @@ class Objects extends Component {
         return [
             <ObjectBrowser
                 key="browser"
+                dialogName="admin"
                 prefix={this.props.prefix}
                 defaultFilters={this.filters}
                 statesOnly={this.props.statesOnly}
@@ -168,28 +173,31 @@ class Objects extends Component {
                 objectBrowserValue={ObjectBrowserValue}
                 objectBrowserEditObject={ObjectBrowserEditObject}
                 objectBrowserEditRole={ObjectBrowserEditRole}
-                enableStateValueEdit={true}
-                onObjectDelete={(id, hasChildren, exists) => this.setState({ deleteObjectShow: { id, hasChildren, exists } })}
                 router={Router}
+                enableStateValueEdit={true}
+                onObjectDelete={(id, hasChildren, exists) =>
+                    this.setState({ deleteObjectShow: { id, hasChildren, exists } })}
                 onFilterChanged={filterConfig => {
                     this.filters = filterConfig;
-                    window.localStorage.setItem(this.dialogName, JSON.stringify(filterConfig));
+                    window.localStorage.setItem(`${this.dialogName || 'App'}.filters`, JSON.stringify(filterConfig));
                 }}
-                objectEditeBoolean
+                onSelect={selected =>
+                    window.localStorage.setItem(`${this.dialogName || 'App'}.selected`, selected[0] || '')}
+                objectEditBoolean
                 objectAddBoolean
                 objectStatesView
                 objectImportExport
                 objectEditOfAccessControl
-                modalNewObject={function (context) {
-                    return <ObjectAddNewContent
+                modalNewObject={context =>
+                    <ObjectAddNewContent
                         open={context.state.modalNewObj}
                         extendObject={(id, data) => context.extendObject(id, data)}
                         selected={context.state.selected[0]}
                         onClose={() => context.setState({ modalNewObj: false })}
                         onApply={() => context.setState({ modalNewObj: false })} />
-                }}
-                modalEditOfAccessControl={function (context) {
-                    return <ObjectEditOfAccessControl
+                }
+                modalEditOfAccessControl={context =>
+                    <ObjectEditOfAccessControl
                         open={context.state.modalEditOfAccess}
                         extendObject={(id, data) => context.extendObject(id, data)}
                         selected={context.state.selected[0]}
@@ -197,8 +205,7 @@ class Objects extends Component {
                         t={this.t}
                         onClose={() => context.setState({ modalEditOfAccess: false })}
                         onApply={() => context.setState({ modalEditOfAccess: false })} />
-                }}
-
+                }
             />,
             this.renderDeleteDialog()
         ];
