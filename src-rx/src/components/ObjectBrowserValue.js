@@ -48,6 +48,11 @@ class ObjectBrowserValue extends Component {
 
         this.value = this.props.value;
         this.propsValue = this.value;
+        if (this.propsValue === null) {
+            this.propsValue = 'null';
+        } else if (this.propsValue === undefined) {
+            this.propsValue = 'undefined';
+        }
 
         if (type === 'string' || type === 'json') {
             if (this.value &&
@@ -140,7 +145,7 @@ class ObjectBrowserValue extends Component {
                                 control={<Checkbox
                                     autoFocus
                                     helperText={ this.props.t('Press ENTER to write the value, when focused')}
-                                    defaultChecked={ this.props.value }
+                                    defaultChecked={ !!this.propsValue }
                                     onKeyUp={e => e.keyCode === 13 && this.onUpdate() }
                                     onChange={e => this.value = e.target.checked}/>}
                                 label={this.props.t('Value')}
@@ -152,7 +157,7 @@ class ObjectBrowserValue extends Component {
                                     autoFocus
                                     helperText={ this.props.t('Press ENTER to write the value, when focused')}
                                     label={ this.props.t('Value') }
-                                    defaultValue={ parseFloat(this.props.value) || 0 }
+                                    defaultValue={ parseFloat(this.propsValue) || 0 }
                                     onKeyUp={ e => e.keyCode === 13 && this.onUpdate() }
                                     onChange={ e => this.value = e.target.value }/>
                                 :
@@ -167,7 +172,7 @@ class ObjectBrowserValue extends Component {
                                         fullWidth={ true }
                                         multiline
                                         onKeyUp={e => e.ctrlKey && e.keyCode === 13 && this.onUpdate() }
-                                        defaultValue={ this.props.value.toString() }
+                                        defaultValue={ this.propsValue.toString() }
                                         onChange={ e => this.value = e.target.value }/>
                                 )
                             )

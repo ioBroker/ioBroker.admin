@@ -397,14 +397,17 @@ function updateNews() {
     adapter.timerNews && clearTimeout(adapter.timerNews);
     adapter.timerNews = null;
 
-    let etagState;
+    let oldEtag;
     let newNews;
     let oldNews;
+    let originalOldNews;
+    let newEtag;
+
     return adapter.getStateAsync('info.newsETag')
         .then(state => {
-            etagState = state && state.val;
+            oldEtag = state && state.val;
             return new Promise((resolve, reject) =>
-                request('https://raw.githubusercontent.com/ioBroker/ioBroker.docs/master/info/news.json', (error, state, body) => {
+                request('https://iobroker.live/repo/news-hash.json', (error, state, body) => {
                     if (!error && body) {
                         try {
                             resolve(JSON.parse(body));
@@ -415,6 +418,25 @@ function updateNews() {
                         reject(error || 'Cannot read news URL');
                     }
                 }));
+        }).then(etag => {
+            if (etag && etag.hash !== oldEtag) {
+                newEtag = etag.hash;
+                return new Promise((resolve, reject) =>
+                    request('https://iobroker.live/repo/news.json', (error, state, body) => {
+                        if (!error && body) {
+                            try {
+                                resolve(JSON.parse(body));
+                            } catch (e) {
+                                reject('Cannot parse news');
+                            }
+                        } else {
+                            reject(error || 'Cannot read news URL');
+                        }
+                    }));
+            } else {
+                newEtag = oldEtag;
+                return Promise.resolve([]);
+            }
         })
         .then(_newNews => {
             newNews = _newNews || [];
@@ -426,6 +448,7 @@ function updateNews() {
             } catch (e) {
                 oldNews = [];
             }
+            originalOldNews = JSON.stringify(oldNews);
 
             return adapter.getStateAsync('info.newsLastId');
         })
@@ -444,17 +467,21 @@ function updateNews() {
             // delete news older than 3 months
             let i;
             for (i = oldNews.length - 1; i >= 0; i--) {
-                if (Date.now() - new Date(oldNews[i].created).getTime() < 180 * 24 * 3600000) {
-                    break;
+                if (Date.now() - new Date(oldNews[i].created).getTime() > 180 * 24 * 3600000) {
+                    oldNews.splice(i, 1);
                 }
             }
 
-            if (i >= 0) {
-                oldNews.splice(i, oldNews.length - i);
+            if (originalOldNews !== JSON.stringify(oldNews)) {
+                return adapter.setStateAsync('info.newsFeed', JSON.stringify(oldNews), true);
+            } else {
+                return Promise.resolve();
             }
-
-            return adapter.setStateAsync('info.newsFeed', JSON.stringify(oldNews), true);
         })
+        .then(() =>
+            newEtag !== oldEtag ?
+                adapter.setStateAsync('info.newsETag', newEtag, true) :
+                Promise.resolve() )
         .catch(e => adapter.log.error(`Cannot update news: ${e}`))
         .then(() =>
             adapter.timerNews = setTimeout(() => updateNews(), 24 * ONE_HOUR_MS + 1));
