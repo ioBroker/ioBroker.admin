@@ -11,7 +11,8 @@ import {useCallback} from 'react'
 import {useDropzone} from 'react-dropzone'
 
 export function UsersTextField(props) {
-    return <FormControl className={props.classes.formControl}>
+    let Icon = props.icon;
+    return <div>{Icon ? <Icon/> : null}<FormControl className={props.classes.formControl}>
         <InputLabel shrink>
             { props.t(props.label)}
         </InputLabel>
@@ -27,11 +28,12 @@ export function UsersTextField(props) {
             }}
             type={props.type}
         />
-    </FormControl>
+    </FormControl></div>
 }
 
 let UsersColorPicker = function (props) {
-    return <ColorPicker
+    let Icon = props.icon;
+    return <div>{Icon ? <Icon/> : null}<ColorPicker
         variant="standard"
         label={props.t(props.label)}
         pickerClassName={props.className}
@@ -41,7 +43,7 @@ let UsersColorPicker = function (props) {
         onChange={props.onChange}
         InputLabelProps={{shrink: true}}
         value={props.value || ''}
-    />
+    /></div>
 };
 UsersColorPicker.propTypes = {
     label: PropTypes.string,
@@ -52,6 +54,7 @@ UsersColorPicker.propTypes = {
 export {UsersColorPicker};
 
 let UsersFileInput = function (props) {
+    let Icon = props.icon;
     const onDrop = useCallback(acceptedFiles => {
         const reader = new FileReader();
 
@@ -65,7 +68,7 @@ let UsersFileInput = function (props) {
       }, []); // eslint-disable-line react-hooks/exhaustive-deps
       const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
     
-      return <FormControl className={props.classes.formControl}>
+      return <div>{Icon ? <Icon/> : null}<FormControl className={props.classes.formControl}>
         <InputLabel shrink>
             { props.t(props.label)}
         </InputLabel>
@@ -92,7 +95,7 @@ let UsersFileInput = function (props) {
             }
             </div>
         </div>
-    </FormControl>
+    </FormControl></div>
 };
 
 export {UsersFileInput};

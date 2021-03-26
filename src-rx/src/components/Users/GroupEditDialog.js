@@ -8,6 +8,13 @@ import CheckBox from '@material-ui/core/CheckBox';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
+import TextFieldsIcon from '@material-ui/icons/TextFields';
+import DescriptionIcon from '@material-ui/icons/Description';
+import LocalOfferIcon from '@material-ui/icons/LocalOffer';
+import PageviewIcon from '@material-ui/icons/Pageview';
+import ColorLensIcon from '@material-ui/icons/ColorLens';
+import ImageIcon from '@material-ui/icons/Image';
+
 import {UsersTextField, UsersFileInput, UsersColorPicker} from './Fields';
 
 function PermsTab(props) {
@@ -82,6 +89,7 @@ function GroupEditDialog(props) {
                 props.change(newData);
             }}
             autoComplete="off"
+            icon={TextFieldsIcon}
             classes={props.classes}
         />
         <UsersTextField 
@@ -96,6 +104,7 @@ function GroupEditDialog(props) {
                 newData._id = idArray.join('.');
                 props.change(newData);
             }}
+            icon={LocalOfferIcon}
             classes={props.classes}
         />
         <UsersTextField 
@@ -103,6 +112,7 @@ function GroupEditDialog(props) {
             t={props.t} 
             disabled
             value={ props.group._id }
+            icon={PageviewIcon}
             classes={props.classes}
         />
         <UsersTextField 
@@ -114,6 +124,7 @@ function GroupEditDialog(props) {
                 newData.common.desc = e.target.value;
                 props.change(newData);
             }}
+            icon={DescriptionIcon}
             classes={props.classes}
         />
         <UsersFileInput 
@@ -126,6 +137,7 @@ function GroupEditDialog(props) {
                 props.change(newData);
             }}
             previewClassName={props.classes.iconPreview}
+            icon={ImageIcon}
             classes={props.classes}
         />
         <UsersColorPicker 
@@ -138,6 +150,7 @@ function GroupEditDialog(props) {
                 newData.common.color = color;
                 props.change(newData);
             }}
+            icon={ColorLensIcon}
             className={props.classes.colorPicker}
         />
     </div>;
