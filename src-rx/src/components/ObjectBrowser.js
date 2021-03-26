@@ -84,7 +84,7 @@ import IconState from '@iobroker/adapter-react/icons/IconState';
 import IconClosed from '@iobroker/adapter-react/icons/IconClosed';
 import IconOpen from '@iobroker/adapter-react/icons/IconOpen';
 import IconClearFilter from '@iobroker/adapter-react/icons/IconClearFilter';
-import { Close } from '@material-ui/icons';
+import { Close, ContactSupportTwoTone } from '@material-ui/icons';
 import { get } from 'echarts/lib/CoordinateSystem';
 
 const ICON_SIZE = 24;
@@ -2425,7 +2425,7 @@ class ObjectBrowser extends Component {
         let result = [];
         console.log(this.info.enums);
         this.info.enums.forEach(_id => {
-            console.log(_id  + ' # ' + this.objects[_id]?.common?.members.join(', '))
+            console.log(_id + ' # ' + this.objects[_id]?.common?.members.join(', '))
             if (this.objects[_id]?.common?.members?.includes(id)) {
                 const en = {
                     _id: this.objects[_id]._id,
@@ -2735,7 +2735,37 @@ class ObjectBrowser extends Component {
             this.setState({ toast: this.props.t('ra_Copied') });
         }
     }
-
+    renerTooltipAccessControl = (acl) => {
+        // acl ={object,state,owner,ownerGroup}
+        if (!acl) {
+            return null;
+        }
+        const check = [
+            { value: '0x400', valueNum: 1024, title: 'read', group: 'Owner' },
+            { value: '0x200', valueNum: 512, title: 'write', group: 'Owner' },
+            { value: '0x40', valueNum: 64, title: 'read', group: 'Group' },
+            { value: '0x20', valueNum: 32, title: 'write', group: 'Group' },
+            { value: '0x4', valueNum: 4, title: 'read', group: 'Everyone' },
+            { value: '0x2', valueNum: 2, title: 'write', group: 'Everyone' }
+        ]
+        const arrayTooltipText = [];
+        const funcRenderStateObject = (value = 'object') => {
+            let count = acl[value];
+            check.forEach(el => {
+                if (count - el.valueNum >= 0) {
+                    count -= el.valueNum;
+                    arrayTooltipText.push(<span>{`${el.group} can ${el.title} ${value}, `}<span style={{ color: value === 'object' ? '#55ff55' : '#86b6ff' }}>{el.value}</span></span>)
+                }
+            })
+        }
+        arrayTooltipText.push(<span>{`Group: ${acl.ownerGroup.replace('system.group.', '')}`}</span>);
+        arrayTooltipText.push(<span>{`Owner: ${acl.owner.replace('system.user.', '')}`}</span>);
+        funcRenderStateObject();
+        if (acl.state) {
+            funcRenderStateObject('state');
+        }
+        return arrayTooltipText.length ? <span style={{ display: 'flex', flexDirection: 'column' }}>{arrayTooltipText.map(el => el)}</span> : ''
+    }
     /**
      * @param {string} id
      * @param {{ data: { obj: { type: string; }; hasCustoms: any; }; }} item
@@ -2743,19 +2773,23 @@ class ObjectBrowser extends Component {
      */
     renderColumnButtons(id, item, classes) {
         if (!item.data.obj) {
-            return this.props.onObjectDelete ? <IconButton
+            return this.props.onObjectDelete ? <div style={{
+                display: 'flex',
+                height: '100%',
+                alignItems: 'center'
+            }}>{this.props.expertMode && <div style={{ minWidth: 47 }} />}<IconButton
                 className={Utils.clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone)}
                 size="small"
                 aria-label="delete"
                 title={this.texts.deleteObject}
                 onClick={() => this.props.onObjectDelete(id, !!(item.children && item.children.length), false)}
             >
-                <IconDelete className={classes.cellButtonsButtonIcon} />
-            </IconButton> : null;
+                    <IconDelete className={classes.cellButtonsButtonIcon} />
+                </IconButton></div> : null;
         }
 
         return [
-            this.props.objectEditOfAccessControl ? <IconButton onClick={() =>
+            this.props.expertMode && this.props.objectEditOfAccessControl ? <Tooltip title={this.renerTooltipAccessControl(item.data.obj.acl)}><IconButton style={{ minWidth: 47 }} onClick={() =>
                 this.setState({ modalEditOfAccess: true })
             }>
                 <div style={{ fontSize: 13 }}>{Number(item.data.obj.type === 'state' ?
@@ -2763,7 +2797,7 @@ class ObjectBrowser extends Component {
                         item.data.obj.acl.state :
                         item.data.obj.acl.object :
                     item.data.obj.acl.object).toString(16)}</div>
-            </IconButton> : null,
+            </IconButton></Tooltip> : <div style={{ minWidth: 47 }} />,
             <IconButton
                 key="edit"
                 className={classes.cellButtonsButton}

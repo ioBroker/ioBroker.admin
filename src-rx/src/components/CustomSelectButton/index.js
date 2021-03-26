@@ -1,9 +1,8 @@
-import I18n from '@iobroker/adapter-react/i18n';
 import { Button, Menu, MenuItem } from '@material-ui/core';
 import React, { useState } from 'react';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 
-const CustomSelectButton = ({ arrayItem, onClick, value, contained, icons }) => {
+const CustomSelectButton = ({ arrayItem, onClick, value, contained, icons, t }) => {
     const [anchorEl, setAnchorEl] = useState(null);
 
     return <>
@@ -33,7 +32,7 @@ const CustomSelectButton = ({ arrayItem, onClick, value, contained, icons }) => 
                         onClick(name);
                         setAnchorEl(null);
                     }}>
-                    {icons && <MaterialDynamicIcon objIconBool iconName={name} style={{ marginRight: 5 }} />}{typeof name === 'number' ? name : I18n.t(name)}
+                    {icons && <MaterialDynamicIcon objIconBool iconName={name} style={{ marginRight: 5 }} />}{typeof name === 'number' ? name : t(name)}
                 </MenuItem>
             })}
         </Menu>

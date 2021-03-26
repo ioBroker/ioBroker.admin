@@ -509,7 +509,7 @@ class Instances extends Component {
 
     isCompactGroup(id) {
         const obj = this.objects[id];
-        return obj?.common?.compactGroup || null;
+        return obj?.common?.compactGroup;
     }
 
     isCompact(id) {
@@ -761,7 +761,9 @@ class Instances extends Component {
                 running,
                 host: instance.host,
                 name: instance.name,
+                nameId: instance.id,
                 compactGroup,
+                checkCompact,
                 sentry: currentSentry
             })
         });
@@ -773,13 +775,14 @@ class Instances extends Component {
             array = array.filter(({ host }) => host === this.props.currentHostName)
         }
         if (this.state.filterText) {
-            array = array.filter(({ name }) => name.toLowerCase().indexOf(this.state.filterText.toLowerCase()) !== -1)
+            array = array.filter(({ name, nameId }) => name.toLowerCase().indexOf(this.state.filterText.toLowerCase()) !== -1 || nameId.toLowerCase().indexOf(this.state.filterText.toLowerCase()) !== -1)
         }
         if (this.props.expertMode && (this.state.filterCompactGroup || this.state.filterCompactGroup === 0) && this.state.compact) {
-            array = array.filter(({ compactGroup }) => compactGroup === this.state.filterCompactGroup ||
+            array = array.filter(({ compactGroup, checkCompact }) => ((compactGroup === this.state.filterCompactGroup) && checkCompact) ||
                 this.state.filterCompactGroup === 'All' ||
-                (this.state.filterCompactGroup === 'default' && (compactGroup === null || compactGroup === 1)) ||
-                (this.state.filterCompactGroup === 'controller' && compactGroup === '0'))
+                (this.state.filterCompactGroup === 'default' && checkCompact && (compactGroup === undefined || compactGroup === 1)) ||
+                (this.state.filterCompactGroup === 'controller' && checkCompact && compactGroup === 0)
+            )
         }
         if (this.props.expertMode && this.state.sentry) {
             array = array.filter(({ sentry }) => sentry);
@@ -918,6 +921,7 @@ class Instances extends Component {
                     {this.props.expertMode &&
                         this.state.compact &&
                         <CustomSelectButton
+                            t={this.t}
                             arrayItem={[{ name: 'All' }, { name: 'controller' }, { name: 'default' }, ...Array(this.state.compactGroupCount - 1).fill().map((_, idx) => ({ name: idx + 2 }))]}
                             onClick={value => this.changeCompactGroup(value)}
                             value={this.state.filterCompactGroup} />}

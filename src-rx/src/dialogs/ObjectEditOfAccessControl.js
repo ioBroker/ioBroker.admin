@@ -5,25 +5,89 @@ import CustomModal from '../components/CustomModal';
 const readWriteArray = [
     {
         Owner: [
-            { name: 'read', value: 0x400, valueNum: 1024, title: 'read owner' },
-            { name: 'write', value: 0x200, valueNum: 512, title: 'write owner' }
+            { name: 'read', value: '0x400', valueNum: 1024, title: 'read owner' },
+            { name: 'write', value: '0x200', valueNum: 512, title: 'write owner' }
         ]
     },
     {
         Group: [
-            { name: 'read', value: 0x40, valueNum: 64, title: 'read group' },
-            { name: 'write', value: 0x20, valueNum: 32, title: 'write group' }
+            { name: 'read', value: '0x40', valueNum: 64, title: 'read group' },
+            { name: 'write', value: '0x20', valueNum: 32, title: 'write group' }
         ]
     },
     {
         Everyone: [
-            { name: 'read', value: 0x4, valueNum: 4, title: 'read everyone' },
-            { name: 'write', value: 0x2, valueNum: 2, title: 'write everyone' }
+            { name: 'read', value: '0x4', valueNum: 4, title: 'read everyone' },
+            { name: 'write', value: '0x2', valueNum: 2, title: 'write everyone' }
         ]
     },
 ]
-
-const ObjectRights = ({ value, setValue, t }) => {
+const check = [
+    { value: '0x400', valueNum: 1024 },
+    { value: '0x200', valueNum: 512 },
+    { value: '0x40', valueNum: 64 },
+    { value: '0x20', valueNum: 32 },
+    { value: '0x4', valueNum: 4 },
+    { value: '0x2', valueNum: 2 }
+];
+const defaulHex = {
+    '0x400': false,
+    '0x200': false,
+    '0x40': false,
+    '0x20': false,
+    '0x4': false,
+    '0x2': false
+}
+const newValueAccessControl = (value, newValue, objectHex) => {
+    let different = newValue;
+    let currentValue = value;
+    let result = 1638;
+    check.forEach(el => {
+        if (different - el.valueNum >= 0) {
+            different -= el.valueNum;
+            if (currentValue - el.valueNum >= 0) {
+                currentValue -= el.valueNum;
+            } else {
+                result = objectHex[el.value] ? result - el.valueNum : result;
+            }
+        } else {
+            if (currentValue - el.valueNum >= 0) {
+                currentValue -= el.valueNum;
+                result = objectHex[el.value] ? result : result - el.valueNum;
+            } else {
+                result -= el.valueNum;
+            }
+        }
+    });
+    return result;
+}
+const ObjectRights = ({ value, setValue, t, differentValue, switchBool, checkDifferent, setCheckDifferent }) => {
+    useEffect(() => {
+        if (switchBool) {
+            differentValue.forEach(el => {
+                let different = el;
+                let currentValue = value;
+                check.forEach(val => {
+                    if (different - val.valueNum >= 0) {
+                        different -= val.valueNum;
+                        if (currentValue - val.valueNum < 0) {
+                            setCheckDifferent(check => !check[val.value] ? ({ ...check, [val.value]: true }) : check)
+                        } else {
+                            currentValue -= val.valueNum;
+                        }
+                    } else {
+                        if (currentValue - val.valueNum >= 0) {
+                            currentValue -= val.valueNum;
+                            setCheckDifferent(check => !check[val.value] ? ({ ...check, [val.value]: true }) : check)
+                        }
+                    }
+                })
+            })
+        } else {
+            setCheckDifferent(defaulHex)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [differentValue, switchBool]);
     let newselected = value;
     return <div style={{
         display: 'flex',
@@ -80,7 +144,12 @@ const ObjectRights = ({ value, setValue, t }) => {
                             <div style={{ height: 50, display: 'flex' }}>
                                 <Checkbox
                                     checked={bool}
+                                    color={checkDifferent[obj.value] ? "primary" : "secondary"}
+                                    indeterminate={checkDifferent[obj.value]}
                                     onChange={(e) => {
+                                        if (checkDifferent[obj.value]) {
+                                            setCheckDifferent(check => ({ ...check, [obj.value]: false }))
+                                        }
                                         let newValue = value;
                                         if (!e.target.checked) {
                                             newValue -= obj.valueNum;
@@ -100,7 +169,7 @@ const ObjectRights = ({ value, setValue, t }) => {
 }
 
 
-const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObject, objects, t }) => {
+const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObject, objects, t, }) => {
     const [stateOwnerUser, setStateOwnerUser] = useState(objects[selected].acl.owner);
     const [stateOwnerGroup, setStateOwnerGroup] = useState(objects[selected].acl.ownerGroup);
     const [ownerUser, setOwnerUser] = useState([]);
@@ -110,34 +179,79 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
     const [count, setCount] = useState(0);
     const [valueObjectAccessControl, setValueObjectAccessControl] = useState(objects[selected].acl.object);
     const [valueStateAccessControl, setValueStateAccessControl] = useState(objects[selected].acl.state ? objects[selected].acl.state : objects['system.config'].common.defaultNewAcl.state);
+    const [differentOwner, setDifferentOwner] = useState(false);
+    const [differentGroup, setDifferentGroup] = useState(false);
+    const [differentState, setDifferentState] = useState([]);
+    const [differentObject, setDifferentObject] = useState([]);
+    const [differentHexState, setDifferentHexState] = useState(defaulHex);
+    const [differentHexObject, setDifferentHexObject] = useState(defaulHex);
     useEffect(() => {
         Object.keys(objects).forEach(key => {
             if (!key.search(selected)) {
                 setCount((el) => el + 1);
-                if (objects[key].type === 'state') {
+                if (!differentOwner && objects[selected].acl.owner !== objects[key].acl.owner) {
+                    setDifferentOwner(true);
+                }
+                if (!differentGroup && objects[selected].acl.ownerGroup !== objects[key].acl.ownerGroup) {
+                    setDifferentGroup(true);
+                }
+                if (objects[key].acl.state) {
+                    if (objects[selected].acl.state !== objects[key].acl.state) {
+                        console.log(differentState.indexOf(objects[key].acl.state))
+                        setDifferentState(el => el.indexOf(objects[key].acl.state) === -1 ? ([...el, objects[key].acl.state]) : el)
+                    }
                     if (!checkState) {
                         setCheckState(true);
                     }
                 }
+                if (objects[selected].acl.object !== objects[key].acl.object) {
+                    setDifferentObject(el => el.indexOf(objects[key].acl.object) === -1 ? ([...el, objects[key].acl.object]) : el)
+                }
+
             }
             if (!key.search('system.group')) {
                 setOwnerGroup(el => ([...el, {
                     name: key.replace('system.group.', ''),
                     value: key
                 }]))
-                console.log(1, key.replace('system.group.', ''))
             }
             if (!key.search('system.user')) {
                 setOwnerUser(el => ([...el, {
                     name: key.replace('system.user.', ''),
                     value: key
                 }]))
-                console.log(2, key.replace('system.user.', ''))
-
             }
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [objects, selected]);
+    useEffect(() => {
+        if (switchBool) {
+            if (differentGroup) {
+                setStateOwnerGroup('different');
+                setOwnerGroup(el => ([{
+                    name: 'different',
+                    value: 'different'
+                }, ...el]));
+            }
+            if (differentOwner) {
+                setStateOwnerUser('different');
+                setOwnerUser(el => ([{
+                    name: 'different',
+                    value: 'different'
+                }, ...el]));
+            }
+        } else {
+            if (stateOwnerUser === 'different') {
+                setStateOwnerUser(objects[selected].acl.owner);
+            }
+            if (stateOwnerGroup === 'different') {
+                setStateOwnerGroup(objects[selected].acl.ownerGroup);
+            }
+            setOwnerGroup(el => el.filter(({ name }) => name !== 'different'));
+            setOwnerUser(el => el.filter(({ name }) => name !== 'different'));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [switchBool])
     return (
         <CustomModal
             open={open}
@@ -150,7 +264,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                     newObj.object = valueObjectAccessControl;
                     newObj.owner = stateOwnerUser;
                     newObj.ownerGroup = stateOwnerGroup;
-                    if (objects[selected].type === 'state') {
+                    if (objects[selected].acl.state) {
                         newObj.state = valueStateAccessControl;
                     }
                     extendObject(selected, { acl: newObj });
@@ -161,11 +275,15 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                     Object.keys(objects).forEach(async key => {
                         if (!key.search(selected)) {
                             let newObj = objects[key].acl;
-                            newObj.object = valueObjectAccessControl;
-                            newObj.owner = stateOwnerUser;
-                            newObj.ownerGroup = stateOwnerGroup;
-                            if (objects[key].type === 'state') {
-                                newObj.state = valueStateAccessControl;
+                            newObj.object = newValueAccessControl(objects[key].acl.object, valueObjectAccessControl, differentHexObject);
+                            if (stateOwnerUser !== 'different') {
+                                newObj.owner = stateOwnerUser;
+                            }
+                            if (stateOwnerGroup !== 'different') {
+                                newObj.ownerGroup = stateOwnerGroup;
+                            }
+                            if (objects[key].acl.state) {
+                                newObj.state = newValueAccessControl(objects[key].acl.state, valueStateAccessControl, differentHexState);
                             }
                             await extendObject(key, { acl: newObj });
                         }
@@ -223,14 +341,13 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                     <div style={switchBool ? { color: 'green' } : null}>{t('to apply with children')}</div>
                 </div>
                 <div>
-
                     <div>
                         <h2>{t('Object rights')}</h2>
-                        <ObjectRights t={t} setValue={setValueObjectAccessControl} value={valueObjectAccessControl} />
+                        <ObjectRights checkDifferent={differentHexObject} setCheckDifferent={setDifferentHexObject} switchBool={switchBool} differentValue={differentObject} t={t} setValue={setValueObjectAccessControl} value={valueObjectAccessControl} />
                     </div>
-                    {((switchBool && checkState) || objects[selected].type === 'state') && <div>
+                    {((switchBool && checkState) || objects[selected].acl.state) && <div>
                         <h2>{t('States rights')}</h2>
-                        <ObjectRights t={t} setValue={setValueStateAccessControl} value={valueStateAccessControl} />
+                        <ObjectRights checkDifferent={differentHexState} setCheckDifferent={setDifferentHexState} switchBool={switchBool} differentValue={switchBool ? differentState : []} t={t} setValue={setValueStateAccessControl} value={valueStateAccessControl} />
                     </div>}
 
                 </div>

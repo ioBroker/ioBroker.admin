@@ -245,7 +245,7 @@ class Adapters extends Component {
         }
         const descWidth = this.getDescWidth();
         if (this.state.descWidth !== descWidth) {
-            this.setState({descWidth});
+            this.setState({ descWidth });
         }
     }
 
@@ -450,7 +450,7 @@ class Adapters extends Component {
                 }
 
                 if (cancel) {
-                    return this.setState({addInstanceError: true});
+                    return this.setState({ addInstanceError: true });
                 }
             }
             this.props.executeCommand(`${customUrl ? 'url' : 'add'} ${adapter} ${instance ? instance + ' ' : ''}--host ${this.props.currentHostName} ${debug ? '--debug' : ''}`);
@@ -978,9 +978,9 @@ class Adapters extends Component {
                 if (sortPopularFirst) {
                     return this.state.repository[b].stat - this.state.repository[a].stat;
                 } else
-                if (sortRecentlyUpdated) {
-                    return this.cache.adapters[a].daysAgo - this.cache.adapters[b].daysAgo;
-                }
+                    if (sortRecentlyUpdated) {
+                        return this.cache.adapters[a].daysAgo - this.cache.adapters[b].daysAgo;
+                    }
             });
         }
 
@@ -999,9 +999,9 @@ class Adapters extends Component {
             }}>{this.props.t('all items are filtered out')}</div>;
         } else {
             return this.cache.listOfVisibleAdapter.map(value => {
-                const adapter   = this.state.repository[value];
+                const adapter = this.state.repository[value];
                 const installed = this.state.installed[value];
-                const cached    = this.cache.adapters[value];
+                const cached = this.cache.adapters[value];
 
                 if (cached.title instanceof Object || !cached.desc) {
                     console.warn(adapter);
@@ -1057,7 +1057,7 @@ class Adapters extends Component {
                 lang={this.props.lang}
                 installed={this.state.installed}
                 repository={this.state.repository}
-                onClose={reload => this.setState({showUpdater: false}, () => reload && this.getAdaptersInfo(true))}
+                onClose={reload => this.setState({ showUpdater: false }, () => reload && this.getAdaptersInfo(true))}
                 socket={this.props.socket}
             />;
         }
@@ -1114,10 +1114,10 @@ class Adapters extends Component {
                     <RefreshIcon />
                 </IconButton>
                 {this.state.viewMode && !this.state.list && <><Tooltip title={this.t('expand all')}>
-                        <IconButton onClick={() => this.expandAll()}>
-                            <FolderOpenIcon />
-                        </IconButton>
-                    </Tooltip>
+                    <IconButton onClick={() => this.expandAll()}>
+                        <FolderOpenIcon />
+                    </IconButton>
+                </Tooltip>
                     <Tooltip title={this.t('collapse all')}>
                         <IconButton onClick={() => this.collapseAll()}>
                             <FolderIcon />
@@ -1138,7 +1138,7 @@ class Adapters extends Component {
                 {this.state.updateList ?
                     <IconButton
                         disabled={true}>
-                        <StarIcon color="primary" style={{opacity: 0.3}}/>
+                        <StarIcon color="primary" style={{ opacity: 0.3 }} />
                     </IconButton>
                     :
                     <Tooltip title={this.t('installed adapters')}>
@@ -1154,9 +1154,9 @@ class Adapters extends Component {
                     </IconButton>
                 </Tooltip>
                 {!this.props.commandRunning && !!this.props.ready && !!this.state.updateList && this.state.updateAvailable.length > 1 && <Tooltip title={this.t('Update all adapters')}>
-                    <IconButton onClick={() => this.setState({showUpdater: true})} classes={{label: this.props.classes.updateAllButton}}>
-                        <UpdateIcon/>
-                        <UpdateIcon className={this.props.classes.updateAllIcon}/>
+                    <IconButton onClick={() => this.setState({ showUpdater: true })} classes={{ label: this.props.classes.updateAllButton }}>
+                        <UpdateIcon />
+                        <UpdateIcon className={this.props.classes.updateAllIcon} />
                     </IconButton>
                 </Tooltip>}
 
@@ -1178,7 +1178,7 @@ class Adapters extends Component {
                                     size="small"
                                     onClick={() => {
                                         this.inputRef.current.value = '';
-                                        this.setState({ search: ''}, () => this.filterAdapters());
+                                        this.setState({ search: '' }, () => this.filterAdapters());
                                     }}
                                 >
                                     <CloseIcon />
@@ -1190,6 +1190,7 @@ class Adapters extends Component {
 
                 {!this.state.viewMode &&
                     <CustomSelectButton
+                        t={this.t}
                         icons
                         contained={this.state.categoriesTiles !== 'All'}
                         arrayItem={[{ name: 'All' }, ...this.state.categories]}
@@ -1198,6 +1199,7 @@ class Adapters extends Component {
                 }
                 {!this.state.viewMode &&
                     <CustomSelectButton
+                        t={this.t}
                         arrayItem={this.state.arrayFilter}
                         onClick={value => this.changeFilterTiles(value)}
                         value={this.state.filterTiles} />
@@ -1214,7 +1216,7 @@ class Adapters extends Component {
                                 <TableCell className={classes.name}>
                                     <Typography>{this.t('Name')}</Typography>
                                 </TableCell>
-                                {!descHidden && <TableCell className={classes.description} style={{width: this.state.descWidth}}>
+                                {!descHidden && <TableCell className={classes.description} style={{ width: this.state.descWidth }}>
                                     <Typography>{this.t('Description')}</Typography>
                                 </TableCell>}
                                 <TableCell className={classes.connectionType} />
@@ -1307,7 +1309,7 @@ class Adapters extends Component {
                                     const pos = updateAvailable.indexOf(adapter);
                                     if (pos !== -1) {
                                         updateAvailable.splice(pos, 1);
-                                        this.setState({updateAvailable});
+                                        this.setState({ updateAvailable });
                                     }
                                 })
                         })

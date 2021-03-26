@@ -22,25 +22,25 @@
 
 ## Instances  
 - Instances - Open in new window must be shown only for instances with localLink (BF)
-- compactGroup => 
-  - rows
-- Filter does not work (e.g. email)  
+<!-- - compactGroup => 
+  - rows -->
+<!-- - Filter does not work (e.g. email)   -->
 
 ## Objects
 - Objects - import fix enums (BF)
-- Hide ACL for non experts
-- Move Trash aligned with states for objects
+<!-- - Hide ACL for non experts -->
+<!-- - Move Trash aligned with states for objects -->
 - Decode quality code to text (BF)
-- Add tooltip for ACL with full descripton: 
+<!-- - Add tooltip for ACL with full descripton: 
   - Owner: Admin, 
   - Group: Administrator
   - Owner can write object, 0x200  // green
   - Owner can read object, 0x400,
   - Group can write, Group can read, Everyone can read
-  - Owner can write state // blue
-- By bulc ACL edit, collect different options, show them with intermediate or --different-- and by apply do not change intermediate do different attributes if not set.  
-- Replace all this.props.t() with this.texts.my_text... for often translations
-  - For select category too
+  - Owner can write state // blue -->
+<!-- - By bulc ACL edit, collect different options, show them with intermediate or --different-- and by apply do not change intermediate do different attributes if not set.   -->
+<!-- - Replace all this.props.t() with this.texts.my_text... for often translations -->
+  <!-- - For select category too -->
 
 
 ## Files

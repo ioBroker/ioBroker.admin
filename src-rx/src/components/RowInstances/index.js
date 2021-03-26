@@ -787,7 +787,7 @@ const RowInstances = ({
                                     onClose={() => setOpenSelect(false)}
                                     onOpen={() => setOpenSelect(true)}
                                     open={openSelect}
-                                    value={compactGroup === 1 ? 'default' : compactGroup === '0' ? "controller" : !compactGroup ? 'default' : compactGroup || 'default'}
+                                    value={compactGroup === undefined ? 1 : compactGroup || '0'}
                                     onChange={el => setCompactGroup(el.target.value)}
                                 >
                                     {<div disabled >
@@ -804,11 +804,11 @@ const RowInstances = ({
                                             </div>
                                         </div>
                                     </div>}
-                                    <MenuItem value="controller">
-                                        {I18n.t('with controller')}
+                                    <MenuItem value='0'>
+                                        {I18n.t('with controller (0)')}
                                     </MenuItem>
-                                    <MenuItem value="default">
-                                        {I18n.t('default group')}
+                                    <MenuItem value={1}>
+                                        {I18n.t('default group (1)')}
                                     </MenuItem>
                                     {Array(compactGroupCount - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
                                         {idx + 2}
