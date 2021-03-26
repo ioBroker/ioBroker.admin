@@ -4,6 +4,14 @@ import Dialog from '@material-ui/core/Dialog';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 
+import TextFieldsIcon from '@material-ui/icons/TextFields';
+import DescriptionIcon from '@material-ui/icons/Description';
+import LocalOfferIcon from '@material-ui/icons/LocalOffer';
+import PageviewIcon from '@material-ui/icons/Pageview';
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
+import ColorLensIcon from '@material-ui/icons/ColorLens';
+import ImageIcon from '@material-ui/icons/Image';
+
 import {UsersTextField, UsersColorPicker, UsersFileInput} from './Fields';
 
 function UserEditDialog(props) {
@@ -44,6 +52,7 @@ function UserEditDialog(props) {
                     props.change(newData);
                 }}
                 autoComplete="off"
+                icon={TextFieldsIcon}
                 classes={props.classes}
             />
             <UsersTextField 
@@ -58,6 +67,7 @@ function UserEditDialog(props) {
                     newData._id = idArray.join('.');
                     props.change(newData);
                 }}
+                icon={LocalOfferIcon}
                 classes={props.classes}
             />
             <UsersTextField 
@@ -65,6 +75,7 @@ function UserEditDialog(props) {
                 t={props.t} 
                 disabled
                 value={ props.user._id }
+                icon={PageviewIcon}
                 classes={props.classes}
             />
             <UsersTextField 
@@ -76,6 +87,7 @@ function UserEditDialog(props) {
                     newData.common.desc = e.target.value;
                     props.change(newData);
                 }}
+                icon={DescriptionIcon}
                 classes={props.classes}
             />
             <UsersTextField 
@@ -89,6 +101,7 @@ function UserEditDialog(props) {
                 }}
                 type="password"
                 autoComplete="off"
+                icon={VpnKeyIcon}
                 classes={props.classes}
             />
             <UsersTextField 
@@ -102,6 +115,7 @@ function UserEditDialog(props) {
                 }}
                 type="password"
                 autoComplete="off"
+                icon={VpnKeyIcon}
                 classes={props.classes}
             />
             <UsersFileInput 
@@ -114,6 +128,7 @@ function UserEditDialog(props) {
                     props.change(newData);
                 }}
                 previewClassName={props.classes.iconPreview}
+                icon={ImageIcon}
                 classes={props.classes}
             />
             <UsersColorPicker 
@@ -126,6 +141,7 @@ function UserEditDialog(props) {
                     newData.common.color = color;
                     props.change(newData);
                 }}
+                icon={ColorLensIcon}
                 className={props.classes.colorPicker}
             />
             <div>
