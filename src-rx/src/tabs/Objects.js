@@ -27,6 +27,9 @@ import Router from '@iobroker/adapter-react/Components/Router';
 import ObjectBrowserValue from '../components/ObjectBrowserValue';
 import ObjectBrowserEditObject from '../components/ObjectBrowserEditObject';
 import ObjectBrowserEditRole from '../components/ObjectBrowserEditRole';
+import ObjectAddNewContent from '../dialogs/ObjectAddNewContent';
+import ObjectEditOfAccessControl from '../dialogs/ObjectEditOfAccessControl';
+
 
 const styles = theme => ({
     buttonIcon: {
@@ -176,6 +179,26 @@ class Objects extends Component {
                 objectAddBoolean
                 objectStatesView
                 objectImportExport
+                objectEditOfAccessControl
+                modalNewObject={function (context) {
+                    return <ObjectAddNewContent
+                        open={context.state.modalNewObj}
+                        extendObject={(id, data) => context.extendObject(id, data)}
+                        selected={context.state.selected[0]}
+                        onClose={() => context.setState({ modalNewObj: false })}
+                        onApply={() => context.setState({ modalNewObj: false })} />
+                }}
+                modalEditOfAccessControl={function (context) {
+                    return <ObjectEditOfAccessControl
+                        open={context.state.modalEditOfAccess}
+                        extendObject={(id, data) => context.extendObject(id, data)}
+                        selected={context.state.selected[0]}
+                        objects={context.objects}
+                        t={this.t}
+                        onClose={() => context.setState({ modalEditOfAccess: false })}
+                        onApply={() => context.setState({ modalEditOfAccess: false })} />
+                }}
+
             />,
             this.renderDeleteDialog()
         ];

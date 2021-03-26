@@ -1894,6 +1894,40 @@ class Connection {
         console.log('Deprecated: use getVersion');
         return this.getVersion();
     }
+
+    /**
+     * Change access rights for file
+     * @param {string} [adapter] adapter name
+     * @param {string} [filename] file name with full path. it could be like vis.0/*
+     * @param {object} [options] like {mode: 0x644}
+     * @returns {Promise<{entries: array}>}
+     */
+    chmodFile(adapter, filename, options) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        return new Promise((resolve, reject) =>
+            this._socket.emit('chmodFile', adapter, filename, options, (err, entries, id) =>
+                err ? reject(err) : resolve({entries, id})));
+    }
+
+    /**
+     * Change owner or/and owner group for file
+     * @param {string} [adapter] adapter name
+     * @param {string} [filename] file name with full path. it could be like vis.0/*
+     * @param {object} [options] like {owner: 'newOwner', ownerGroup: 'newGroup'}
+     * @returns {Promise<{entries: array}>}
+     */
+    chownFile(adapter, filename, options) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        return new Promise((resolve, reject) =>
+            this._socket.emit('chownFile', adapter, filename, options, (err, entries, id) =>
+                err ? reject(err) : resolve({entries, id})));
+    }
 }
 
 Connection.Connection = {

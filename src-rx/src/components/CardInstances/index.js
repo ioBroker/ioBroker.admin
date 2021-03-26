@@ -350,7 +350,7 @@ const CardInstances = ({
                                 onClose={() => setOpenSelect(false)}
                                 onOpen={() => setOpenSelect(true)}
                                 open={openSelect}
-                                value={compactGroup || 'default'}
+                                value={compactGroup === undefined ? 1 : compactGroup || '0'}
                                 fullWidth
                                 onChange={el => setCompactGroup(el.target.value)}
                             >
@@ -368,11 +368,14 @@ const CardInstances = ({
                                         </div>
                                     </div>
                                 </div>}
-                                <MenuItem value="default">
-                                    {I18n.t('default group')}
+                                <MenuItem value='0'>
+                                    {I18n.t('with controller (0)')}
                                 </MenuItem>
-                                {Array(compactGroupCount + 1).fill().map((_, idx) => <MenuItem key={idx} value={idx}>
-                                    {idx}
+                                <MenuItem value={1}>
+                                    {I18n.t('default group (1)')}
+                                </MenuItem>
+                                {Array(compactGroupCount - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
+                                    {idx + 2}
                                 </MenuItem>)}
                             </Select>
                         </FormControl>

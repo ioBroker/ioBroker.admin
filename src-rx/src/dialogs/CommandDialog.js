@@ -26,10 +26,15 @@ const styles = theme => ({
         top: theme.spacing(1),
         color: theme.palette.grey[500],
     },
+    hiddenDialog: {
+        display: 'none',
+    },
+    dialogRoot: {
+        height: 'calc(100% - 64px)',
+    }
 });
 
 class CommandDialog extends Component {
-
     constructor(props) {
 
         super(props);
@@ -48,18 +53,26 @@ class CommandDialog extends Component {
     }
 
     render() {
-
         const { classes } = this.props;
 
-        return <Dialog onClose={this.props.inBackground ? this.props.onClose : this.props.onConfirm} open={this.props.open} maxWidth="lg">
+        return <Dialog
+            scroll="paper"
+            fullWidth={true}
+            classes={{root: !this.props.visible ? classes.hiddenDialog : '', paper: classes.dialogRoot}}
+            onClose={this.props.inBackground ? this.props.onClose : this.props.onInBackground}
+            open={true}
+            maxWidth="md"
+        >
             <DialogTitle>
-                {this.state.progressText || 'Run Command'}
+                {this.state.progressText || this.props.t('Run Command')}
                 <IconButton className={classes.closeButton} onClick={this.props.onClose}>
                     <CloseIcon />
                 </IconButton>
             </DialogTitle>
-            <DialogContent dividers>
+            <DialogContent dividers style={{height: '100%'}}>
                 <Command
+                    noSpacing={true}
+                    key="command"
                     ready={this.props.ready}
                     currentHost={this.props.currentHost}
                     socket={this.props.socket}
@@ -70,6 +83,7 @@ class CommandDialog extends Component {
                     performed={this.props.performed}
                     cmd={this.props.cmd}
                     onFinished={() => this.state.closeOnReady && this.props.onClose()}
+                    onSetCommandRunning={running => this.props.onSetCommandRunning(running)}
                 />
             </DialogContent>
             <DialogActions style={{ justifyContent: 'space-between' }}>
@@ -90,7 +104,7 @@ class CommandDialog extends Component {
                         autoFocus
                         disabled={this.props.inBackground}
                         style={{ marginRight: 8 }}
-                        onClick={this.props.onConfirm}
+                        onClick={this.props.onInBackground}
                         color="primary">
                         {this.props.confirmText || this.props.t('In background')}
                     </Button>
@@ -108,12 +122,14 @@ class CommandDialog extends Component {
 }
 
 CommandDialog.propTypes = {
+    t: PropTypes.func,
     confirmText: PropTypes.string,
     header: PropTypes.string,
     onClose: PropTypes.func.isRequired,
-    onConfirm: PropTypes.func.isRequired,
-    open: PropTypes.bool.isRequired,
-    ready: PropTypes.bool.isRequired
+    onInBackground: PropTypes.func.isRequired,
+    visible: PropTypes.bool.isRequired,
+    ready: PropTypes.bool.isRequired,
+    onSetCommandRunning: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(CommandDialog);

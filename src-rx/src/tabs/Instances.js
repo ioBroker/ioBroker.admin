@@ -529,7 +529,7 @@ class Instances extends Component {
 
     isSentry(id) {
         const obj = this.objects[id];
-        return !!obj?.common?.plugins?.sentry || false;
+        return (!!obj?.common?.plugins?.sentry && !obj?.common?.disableDataReporting) || false;
     }
 
     getSchedule = (id) => {
@@ -648,8 +648,8 @@ class Instances extends Component {
             const setCompactGroup = (value) => {
                 this.extendObject('system.adapter.' + instance.id, {
                     common: {
-                        compactGroup: value === 0 ? '0' :
-                            value === 'default' ? null : value
+                        compactGroup: value === 'controller' ? 0 :
+                            value === 'default' ? 1 : parseInt(value, 10)
                     }
                 });
                 if (this.state.compactGroupCount < value) {
@@ -660,7 +660,7 @@ class Instances extends Component {
             const currentSentry = this.isSentry(id);
             const memoryLimitMB = this.isMemoryLimitMB(id);
             const setSentry = () => {
-                this.extendObject('system.adapter.' + instance.id, { common: { plugins: { sentry: currentSentry ? null : checkSentry } } });
+                this.extendObject('system.adapter.' + instance.id, { common: { disableDataReporting: currentSentry ? true : false } });
             }
             const setName = (value) => {
                 this.extendObject('system.adapter.' + instance.id, { common: { title: value } });
@@ -778,8 +778,8 @@ class Instances extends Component {
         if (this.props.expertMode && (this.state.filterCompactGroup || this.state.filterCompactGroup === 0) && this.state.compact) {
             array = array.filter(({ compactGroup }) => compactGroup === this.state.filterCompactGroup ||
                 this.state.filterCompactGroup === 'All' ||
-                (this.state.filterCompactGroup === 'default' && compactGroup === null) ||
-                (this.state.filterCompactGroup === 0 && compactGroup === '0'))
+                (this.state.filterCompactGroup === 'default' && (compactGroup === null || compactGroup === 1)) ||
+                (this.state.filterCompactGroup === 'controller' && compactGroup === '0'))
         }
         if (this.props.expertMode && this.state.sentry) {
             array = array.filter(({ sentry }) => sentry);
@@ -802,7 +802,6 @@ class Instances extends Component {
     async getHostsData() {
         this.props.socket.getHostInfo(this.props.idHost)
             .catch(error => {
-                console.error(error);
                 return error;
             })
             .then(hostData => this.setState({ hostData }));
@@ -919,7 +918,7 @@ class Instances extends Component {
                     {this.props.expertMode &&
                         this.state.compact &&
                         <CustomSelectButton
-                            arrayItem={[{ name: 'All' }, { name: 'default' }, ...Array(this.state.compactGroupCount + 1).fill().map((_, idx) => ({ name: idx }))]}
+                            arrayItem={[{ name: 'All' }, { name: 'controller' }, { name: 'default' }, ...Array(this.state.compactGroupCount - 1).fill().map((_, idx) => ({ name: idx + 2 }))]}
                             onClick={value => this.changeCompactGroup(value)}
                             value={this.state.filterCompactGroup} />}
                     <div className={classes.grow} />
