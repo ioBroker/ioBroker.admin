@@ -172,14 +172,14 @@ class ACLDialog extends Component
         const users = this.props.users.map((elem, index)=>
         {
              return <MenuItem value={ elem._id } key={ index }>
-                 { this.props.t(elem.common.name) }
+                 { this.props.t(typeof elem.common.name == 'object' ? elem.common.name['en'] : elem.common.name) }
              </MenuItem>   
         } );
         
         const groups = this.props.groups.map((elem, index)=>
         {
              return <MenuItem value={elem._id} key={index}>
-                { this.props.t(typeof elem.common.name == 'object' ? elem.common.name['ru'] : elem.common.name) }
+                { this.props.t(typeof elem.common.name == 'object' ? elem.common.name['en'] : elem.common.name) }
              </MenuItem>   
         } );
 

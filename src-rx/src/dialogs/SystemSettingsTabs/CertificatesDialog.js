@@ -1,4 +1,4 @@
-// SertificatsDialog.js
+// CertificatesDialog.js
 import { Component } from 'react';
 import clsx from 'clsx';
 import Dropzone from 'react-dropzone'
@@ -69,7 +69,7 @@ const styles = theme => ({
     } 
 });
 
-class SertificatsDialog extends Component 
+class CertificatesDialog extends Component 
 {
     constructor(props)
     {
@@ -211,7 +211,7 @@ class SertificatsDialog extends Component
                 <Paper variant="outlined" className={ classes.descrPanel }>
                     {
                         this.props.t(
-                            'вы можете использовать абсолютный путь к сертификату, например \'/opt/certs/cert.pem\', или просто перетащить файл сюда'
+                            'You can use absolute path of certificate, \'/opt/certs/cert.pem\' for example, or you can and drop files here'
                         )
                     }
                 </Paper>
@@ -225,7 +225,7 @@ class SertificatsDialog extends Component
                                 {this.props.t('name')}
                             </TableCell>
                             <TableCell className= "grow_cell float_cell">
-                                {this.props.t('Sertificate')}
+                                {this.props.t('Certificate')}
                             </TableCell>
                             <TableCell className={this.props.classes.littleRow  + ' float_cell'}> </TableCell>
                         </TableRow>
@@ -272,7 +272,7 @@ class SertificatsDialog extends Component
 export default withWidth()
 (
     withStyles(styles)(
-        SertificatsDialog
+        CertificatesDialog
     )
 );
 

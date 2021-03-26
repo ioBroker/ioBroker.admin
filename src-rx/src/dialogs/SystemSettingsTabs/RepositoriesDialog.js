@@ -176,6 +176,11 @@ class RepositoriesDialog extends Component
         array.find(element => element.title == id)[name] = value;
         newData.native.repositories = this.arrayToRepo(array);
         this.props.onChange(newData);
+        if (this.props.dataAux.common.activeRepo == id && name == 'title') {
+            this.props.onChange(newData, this.getUpdateDefaultRepo(value));
+        } else {
+            this.props.onChange(newData);
+        }
     }
     onDelete = id =>
     {
@@ -184,7 +189,15 @@ class RepositoriesDialog extends Component
         let index = array.findIndex(element => element.title == id);
         delete array[index];
         newData.native.repositories = this.arrayToRepo(array);
-        this.props.onChange(newData);
+        if (this.props.dataAux.common.activeRepo == id) {
+            if (Object.keys(newData.native.repositories).length) {
+                this.props.onChange(newData, this.getUpdateDefaultRepo(Object.keys(newData.native.repositories)[0]));
+            } else {
+                this.props.onChange(newData, this.getUpdateDefaultRepo(''));
+            }
+        } else {
+            this.props.onChange(newData);
+        }
     }
     onAdd = () =>
     {
@@ -196,6 +209,11 @@ class RepositoriesDialog extends Component
         });
         newData.native.repositories = this.arrayToRepo(array);
         this.props.onChange(newData);
+    }
+    getUpdateDefaultRepo = newRepo => {
+        let newConfig = JSON.parse(JSON.stringify(this.props.dataAux));
+        newConfig.common.activeRepo = newRepo;
+        return newConfig;
     }
 }
 

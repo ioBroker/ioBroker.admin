@@ -67,6 +67,7 @@ class MainSettingsDialog extends Component
             {
                 id      : 'language',
                 title   : 'System language:',
+                translate : false,
                 values  : [
                     {
                         id:'en',
@@ -113,6 +114,7 @@ class MainSettingsDialog extends Component
             {
                 id:'tempUnit',
                 title:'Temperature units',
+                translate : false,
                 values: [
                     {
                         id:'°C',
@@ -127,6 +129,7 @@ class MainSettingsDialog extends Component
             {
                 id:'currency',
                 title:'Currency sign',
+                translate : false,
                 values: [
                     {
                         id:'€',
@@ -149,6 +152,7 @@ class MainSettingsDialog extends Component
             {
                 id:'dateFormat',
                 title:'Date format',
+                translate : true,
                 values: [
                     {
                         id:'DD.MM.YYYY',
@@ -167,6 +171,7 @@ class MainSettingsDialog extends Component
             {
                 id:'isFloatComma',
                 title:'Date Float comma sign',
+                translate : true,
                 values: [
                     {
                         id:true,
@@ -181,14 +186,18 @@ class MainSettingsDialog extends Component
             {
                 id:'defaultHistory',
                 title:'Default History',
-                values: [
-
-                ]
+                values: [{id: '', title: this.props.t('None')}, ...this.props.histories.map(history => {
+                    return {
+                        id: history,
+                        title: history
+                    }
+                })]
             },
             {
                 id:'activeRepo',
                 title:'Default Repository',
-                values: Utils.objectMap(this.props.data2.native.repositories, (repo, name) => {
+                translate : false,
+                values: Utils.objectMap(this.props.dataAux.native.repositories, (repo, name) => {
                     return {
                         id: name,
                         title: name
@@ -208,7 +217,7 @@ class MainSettingsDialog extends Component
             this.props.data.common.latitude   ? this.props.data.common.latitude : 50,
             this.props.data.common.longitude  ? this.props.data.common.longitude : 10
         ]
-        const { zoom } = this.props.data.common;
+        const { zoom } = this.state;
         return <div className={ classes.tabPanel }>
             <Grid container spacing={6}>
                 <Grid item lg={6} md={12}>
@@ -325,17 +334,17 @@ class MainSettingsDialog extends Component
     getSelect( e, i )
     {
         const {classes} = this.props;
-        const value = this.props.data.common[this.getSettings()[i].id];
-        const items = this.getSettings()[i].values.map((elem, index)=>
+        const value = this.props.data.common[e.id];
+        const items = e.values.map((elem, index)=>
         {
              return <MenuItem value={elem.id} key={index}>
-                 { this.props.t(elem.title || elem.id) }
+                 {e.translate ? this.props.t(elem.title || elem.id) : elem.title || elem.id}
              </MenuItem>
         } )
         return  <Grid item sm={6} xs={12} key={i} >
              <FormControl className={classes.formControl}>
                 <InputLabel shrink id={e.id + '-label'}>
-                    { this.props.t(this.getSettings()[i].title)}
+                    { this.props.t(e.title)}
                 </InputLabel>
                 <Select
                     className={classes.formControl}

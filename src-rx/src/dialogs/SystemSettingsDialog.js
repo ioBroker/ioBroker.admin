@@ -19,7 +19,7 @@ import Router from '@iobroker/adapter-react/Components/Router';
 
 import MainSettingsDialog from "./SystemSettingsTabs/MainSettingsDialog";
 import RepositoriesDialog from "./SystemSettingsTabs/RepositoriesDialog";
-import SertificatsDialog from "./SystemSettingsTabs/SertificatsDialog";
+import CertificatesDialog from "./SystemSettingsTabs/CertificatesDialog";
 import SSLDialog from "./SystemSettingsTabs/SSLDialog";
 import ACLDialog from "./SystemSettingsTabs/ACLDialog";
 import StatisticsDialog from "./SystemSettingsTabs/StatisticsDialog";
@@ -100,14 +100,17 @@ class SystemSettingsDialog extends Component
                     .then(systemConfig => {
                         this.originalConfig = JSON.stringify( systemConfig );
                         newState.systemConfig = systemConfig;
-                        return this.props.socket.getRawSocket().emit(
+                        return new Promise((resolve, reject) => {
+                            this.props.socket.getRawSocket().emit(
                             'sendToHost', 
                             this.props.currentHost, 
                             'getDiagData', 
                             systemConfig.common.diag, 
                             diagData => {
                                 newState.diagData = diagData;    
+                                resolve(diagData);
                             });
+                        })
                     })
                         /**/
                         .then(diagData => {
@@ -119,8 +122,17 @@ class SystemSettingsDialog extends Component
                             })  
                                 .then(groups => {
                                     newState.groups = groups;                             
-                                    return this.props.socket.getObject('system.certificates');
+                                    return this.props.socket.getAdapterInstances();
                                 })                        
+                                .then(groups => {
+                                    newState.histories = Object.values(groups)
+                                        .filter(instance => instance.common.getHistory)                     
+                                        .map(instance => {
+                                            let id = instance._id.split('.');
+                                            return id[id.length-2] + '.' + id[id.length-1];
+                                        });
+                                    return this.props.socket.getObject('system.certificates');
+                                })
                                     .then(systemCertificates => {
                                         this.originalCertificates = JSON.stringify( systemCertificates );
                                         newState.systemCertificates = systemCertificates;
@@ -178,8 +190,9 @@ class SystemSettingsDialog extends Component
                             systemRepositories.native.repositories = newRepo;
                             return this.props.socket.setObject('system.repositories', systemRepositories);
                         }).then(() => {
-                            this.getSettings();
+                            // this.getSettings();
                             alert(this.props.t('Settings saved'));
+                            this.props.onClose();
                         })
                             .catch(e => window.alert('Cannot save system configuration: ' + e));
     }
@@ -191,7 +204,7 @@ class SystemSettingsDialog extends Component
                 title: 'System settings',
                 component: MainSettingsDialog,
                 data: 'systemConfig',
-                data2:'systemRepositories',
+                dataAux:'systemRepositories',
                 handle: null
             },
             {
@@ -199,15 +212,15 @@ class SystemSettingsDialog extends Component
                 title: 'Repositories',
                 component: RepositoriesDialog,
                 data: 'systemRepositories',
-                data2:{},
+                dataAux: 'systemConfig',
                 handle: null
             },
             {
                 id : 2,
                 title: 'Certificates',
-                component: SertificatsDialog,
+                component: CertificatesDialog,
                 data: 'systemCertificates',
-                data2:{},
+                dataAux:{},
                 handle: null
             },
             {
@@ -215,7 +228,7 @@ class SystemSettingsDialog extends Component
                 title: 'Let\'s encrypt SSL',
                 component: SSLDialog,
                 data: 'systemCertificates',
-                data2:{},
+                dataAux:{},
                 handle: null
             },
             {
@@ -223,7 +236,7 @@ class SystemSettingsDialog extends Component
                 title: 'Default ACL',
                 component: ACLDialog,
                 data: 'systemConfig',
-                data2:{},
+                dataAux:{},
                 handle: null
             },
             {
@@ -231,7 +244,7 @@ class SystemSettingsDialog extends Component
                 title: 'Statistics',
                 component: StatisticsDialog,
                 data: 'systemConfig',
-                data2: 'diagData',
+                dataAux: 'diagData',
                 handle: type => this.onChangeDiagType(type)
             }
         ]
@@ -263,15 +276,16 @@ class SystemSettingsDialog extends Component
            return e.id == (this.props.currentTab.id ).toString() ||  e.id == parseInt(this.props.currentTab.id) 
        }) [0] || this. getTabs()[0];
        const _Component =  _t.component;
-       const {groups, users} = this.state;
+       const {groups, users, histories} = this.state;
        return <div className={ this.props.classes.tabPanel }> 
            <_Component
-                onChange={(data) => this.onChangedTab(_t.data, data) }
+                onChange={(data, dataAux) => this.onChangedTab(_t.data, data, _t.dataAux, dataAux) }
                 data={ this.state[_t.data] }
-                data2= { this.state[_t.data2] } 
+                dataAux= { this.state[_t.dataAux] } 
                 handle={ _t.handle } 
                 users={users}
                 groups={groups}
+                histories={histories}
                 themeName={this.props.themeName}
                 t={this.props.t}
            />
@@ -280,9 +294,14 @@ class SystemSettingsDialog extends Component
     onTab = (event, newTab) => { 
         Router.doNavigate(null, 'system', newTab)
     }
-    onChangedTab (id, data)  {
+    onChangedTab (id, data, idAux, dataAux)  {
         let state = {...this.state};
-        state[ id ] = data;
+        if (data) {
+            state[ id ] = data;
+        }
+        if (dataAux) {
+            state[ idAux ] = dataAux;
+        }
         this.setState( state );  
     }
 

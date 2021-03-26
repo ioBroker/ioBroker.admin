@@ -29,7 +29,9 @@ const styles = theme => ({
     {
         padding:15,
         backgroundColor: blueGrey[ 500 ],
-        color:'#FFF'
+        color:'#FFF',
+        overflow: 'auto',
+        flex: 'none'
     },
     statis:
     {
@@ -44,10 +46,8 @@ const styles = theme => ({
     {
         width:'100%',
         backgroundColor:'transparent',
-        marginLeft:40,
         border:'none',
-        display:'flex',
-        alignItems:'center'
+        overflow: 'auto'
     },
     selectEmpty: 
     {
@@ -117,8 +117,8 @@ class StatisticsDialog extends Component {
     render() {
         const {classes} = this.props;
         return <div className={ classes.tabPanel } style={{ height: 'calc(100% - 0px)' }}>
-            <Grid container spacing={3}  className="sendData-grid" style={{ height: '100%', overflow: 'hidden' }}>
-                <Grid item lg={4} md={4} xs={12}>
+            <Grid container spacing={3}  className="sendData-grid" style={{ height: '100%' }}>
+                <Grid item lg={4} md={4} xs={12} style={{ display: 'flex', flexDirection: 'column' }}>
                     <Card  className={classes.note} >
                         <Typography gutterBottom variant="h6" component="div">
                             {this.props.t('Note:')} 
@@ -131,11 +131,13 @@ class StatisticsDialog extends Component {
                         />     
                      </Card >
                     { this.getTypesSelector() }
-                    <Paper 
+                    {this.props.dataAux ? <Paper 
                         variant="outlined" 
-                        className={ classes.descrPanel } 
-                        dangerouslySetInnerHTML={{__html: this.props.t('diag-type-note-' + this.props.data.common.diag)}}
-                    />  
+                        className={ classes.descrPanel }>
+                        <ul>
+                            {Object.keys(this.props.dataAux).map(key => <li key={key}>{key}</li>)}
+                        </ul>
+                    </Paper> : null}
                       
                 </Grid>
                 <Grid item lg={8} md={4} xs={12} className="sendData-grid" style={{ height:'100%', display: 'flex', flexDirection: 'column' }}>
@@ -152,7 +154,7 @@ class StatisticsDialog extends Component {
                         showGutter={true}
                         highlightActiveLine={true}
                         theme={ this.props.themeName === 'dark' || this.props.themeName === 'blue' ? 'clouds_midnight' : 'chrome' }
-                        value={ JSON.stringify(this.props.data2, null, 2) }
+                        value={ JSON.stringify(this.props.dataAux, null, 2) }
                         onChange={ newValue => this.onChange(newValue) }
                         name="UNIQUE_ID_OF_DIV"
                         fontSize={14}
