@@ -78,7 +78,7 @@ class ObjectBrowserEditObject extends Component {
             aria-labelledby="edit-value-dialog-title"
             aria-describedby="edit-value-dialog-description"
         >
-            <DialogTitle id="edit-value-dialog-title">{ this.props.t('Edit object: ') } <span className={ this.props.classes.id }>{ this.props.obj._id }</span></DialogTitle>
+            <DialogTitle id="edit-value-dialog-title">{ this.props.t('Edit object:') } <span className={ this.props.classes.id }>{ this.props.obj._id }</span></DialogTitle>
             <DialogContent>
                 <div className={ clsx(this.props.classes.divWithoutTitle, this.state.error && this.props.classes.error) }>
                     <AceEditor

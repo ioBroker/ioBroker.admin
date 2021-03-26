@@ -10,10 +10,10 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import TableCell from '@material-ui/core/TableCell';
 import Tooltip from '@material-ui/core/Tooltip';
 import Paper from '@material-ui/core/Paper';
+import { CardMedia, InputAdornment, TextField } from '@material-ui/core';
 
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import RefreshIcon from '@material-ui/icons/Refresh';
-
 import BugReportIcon from '@material-ui/icons/BugReport';
 import InfoIcon from '@material-ui/icons/Info';
 import WarningIcon from '@material-ui/icons/Warning';
@@ -23,7 +23,6 @@ import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import CloseIcon from '@material-ui/icons/Close';
 import ViewCompactIcon from '@material-ui/icons/ViewCompact';
-
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import SettingsIcon from '@material-ui/icons/Settings';
 
@@ -37,12 +36,9 @@ import Router from '@iobroker/adapter-react/Components/Router';
 
 import Config from '../dialogs/Config';
 import Utils from '../Utils';
-
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
-
 import TabHeader from '../components/TabHeader';
-import { CardMedia, InputAdornment, TextField } from '@material-ui/core';
 import CardInstances from '../components/CardInstances';
 import CustomSelectButton from '../components/CustomSelectButton';
 import RowInstances from '../components/RowInstances';
@@ -920,7 +916,7 @@ class Instances extends Component {
                         <PlayArrowIcon color={this.state.playArrow ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip>
-                {this.props.expertMode && <Tooltip title={this.t('sentry')}>
+                {this.props.expertMode && <Tooltip title="sentry">
                     <IconButton
                         size="small"
                         className={classes.button}

@@ -26,6 +26,7 @@ import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
 import SubscriptionsIcon from '@material-ui/icons/Subscriptions';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
+
 // import CodeIcon from '@material-ui/icons/Code';
 // import AcUnitIcon from '@material-ui/icons/AcUnit';
 // import DeviceHubIcon from '@material-ui/icons/DeviceHub';
@@ -38,6 +39,7 @@ import DragWrapper from './DragWrapper';
 import CustomDragLayer from './CustomDragLayer';
 import { ContextWrapper } from './ContextWrapper';
 import CustomPopper from './CustomPopper';
+import CustomTab from '../tabs/CustomTab';
 
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
@@ -379,7 +381,22 @@ class Drawer extends Component {
                         visible={tab.visible}
                         editListFunc={() => this.tabsEditSystemConfig(idx)}
                         compact={!this.isSwipeable() && state !== STATES.opened}
-                        onClick={() => handleNavigation(tab.name)}
+                        onClick={e => {
+                            if (e.ctrlKey || e.shiftKey) {
+                                CustomTab.getHref(this.props.instancesWorker, tab.name, this.props.hostname, this.props.protocol)
+                                    .then(href => {
+                                        if (href) {
+                                            console.log(href);
+                                            // Open in new tab
+                                            window.open(`${window.location.protocol}//${window.location.host}/${href}`, tab.name).focus();
+                                        } else {
+                                            handleNavigation(tab.name);
+                                        }
+                                    });
+                            } else {
+                                handleNavigation(tab.name);
+                            }
+                        }}
                         icon={!!tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <img alt="" className={classes.icon} src={tab.icon} />}
                         text={tab.title}
                         selected={currentTab === tab.name}
@@ -468,6 +485,8 @@ Drawer.propTypes = {
     expertMode: PropTypes.bool,
     handleNavigation: PropTypes.func,
     instancesWorker: PropTypes.object,
+    hostname: PropTypes.string,
+    protocol: PropTypes.string,
 };
 
 Drawer.contextType = ContextWrapper;

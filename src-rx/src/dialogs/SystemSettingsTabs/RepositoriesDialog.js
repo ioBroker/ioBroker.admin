@@ -1,11 +1,10 @@
 // RepositoriesDialog
 import {Component} from 'react';
 import clsx from 'clsx';
-
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
-import Fab from '@material-ui/core/Fab';
 
+import Fab from '@material-ui/core/Fab';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -14,7 +13,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
-
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 
@@ -101,7 +99,7 @@ class RepositoriesDialog extends Component {
                 </TableCell>
                 <TableCell className={clsx('grow_cell', 'float_cell')}>
                     <TextField
-                        id="default"
+                        id={'default_' + i}
                         value={e.link}
                         InputLabelProps={{
                             readOnly: false,
@@ -165,7 +163,7 @@ class RepositoriesDialog extends Component {
         array.find(element => element.title === id)[name] = value;
         newData.native.repositories = this.arrayToRepo(array);
         this.props.onChange(newData);
-        if (this.props.dataAux.common.activeRepo == id && name === 'title') {
+        if (this.props.dataAux.common.activeRepo === id && name === 'title') {
             this.props.onChange(newData, this.getUpdateDefaultRepo(value));
         } else {
             this.props.onChange(newData);
@@ -175,10 +173,10 @@ class RepositoriesDialog extends Component {
     onDelete = id => {
         let newData = JSON.parse(JSON.stringify(this.props.data))
         let array = this.repoToArray(newData.native.repositories);
-        let index = array.findIndex(element => element.title == id);
+        let index = array.findIndex(element => element.title === id);
         delete array[index];
         newData.native.repositories = this.arrayToRepo(array);
-        if (this.props.dataAux.common.activeRepo == id) {
+        if (this.props.dataAux.common.activeRepo === id) {
             if (Object.keys(newData.native.repositories).length) {
                 this.props.onChange(newData, this.getUpdateDefaultRepo(Object.keys(newData.native.repositories)[0]));
             } else {

@@ -5,20 +5,20 @@ import CustomModal from '../components/CustomModal';
 const readWriteArray = [
     {
         Owner: [
-            { name: 'read', value: '0x400', valueNum: 1024, title: 'read owner' },
-            { name: 'write', value: '0x200', valueNum: 512, title: 'write owner' }
+            { name: 'read', value: 0x400, valueNum: 1024, title: 'read owner' },
+            { name: 'write', value: 0x200, valueNum: 512, title: 'write owner' }
         ]
     },
     {
         Group: [
-            { name: 'read', value: '0x40', valueNum: 64, title: 'read group' },
-            { name: 'write', value: '0x20', valueNum: 32, title: 'write group' }
+            { name: 'read', value: 0x40, valueNum: 64, title: 'read group' },
+            { name: 'write', value: 0x20, valueNum: 32, title: 'write group' }
         ]
     },
     {
         Everyone: [
-            { name: 'read', value: '0x4', valueNum: 4, title: 'read everyone' },
-            { name: 'write', value: '0x2', valueNum: 2, title: 'write everyone' }
+            { name: 'read', value: 0x4, valueNum: 4, title: 'read everyone' },
+            { name: 'write', value: 0x2, valueNum: 2, title: 'write everyone' }
         ]
     },
 ]

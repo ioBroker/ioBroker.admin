@@ -1,6 +1,7 @@
 // ACLDialog.js
 
 import React, {Component, Fragment} from 'react';
+import PropTypes from 'prop-types';
 
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
@@ -14,7 +15,8 @@ import TableRow from '@material-ui/core/TableRow';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
-import PropTypes from "prop-types";
+
+import I18n from '@iobroker/adapter-react/i18n';
 
 const styles = theme => ({
     tabPanel: {
@@ -81,14 +83,14 @@ class ACLDialog extends Component {
             <Fragment key={index}>
                 <TableCell className={classes.tableCell}>
                     <Checkbox
-                        checked={elem[0]}
+                        checked={!!elem[0]}
                         color="primary"
                         onChange={evt => this.handleCheck(evt, owner, index, 0)}
                     />
                 </TableCell>
                 <TableCell className={classes.tableCell}>
                     <Checkbox
-                        checked={elem[1]}
+                        checked={!!elem[1]}
                         color="primary"
                         onChange={evt => this.handleCheck(evt, owner, index, 1)}
                     />
@@ -154,15 +156,16 @@ class ACLDialog extends Component {
     handleChange = (evt, id) => this.doChange(id, evt.target.value);
 
     render() {
+        const lang = I18n.getLanguage();
         const {classes} = this.props;
         const users = this.props.users.map((elem, index) =>
             <MenuItem value={elem._id} key={index}>
-                {this.props.t(typeof elem.common.name == 'object' ? elem.common.name['en'] : elem.common.name)}
+                {typeof elem.common.name === 'object' ? elem.common.name[lang] || elem.common.name.en : elem.common.name}
             </MenuItem>);
 
         const groups = this.props.groups.map((elem, index) =>
             <MenuItem value={elem._id} key={index}>
-                {this.props.t(typeof elem.common.name == 'object' ? elem.common.name['en'] : elem.common.name)}
+                {typeof elem.common.name === 'object' ? elem.common.name[lang] || elem.common.name.en : elem.common.name}
             </MenuItem>);
 
         const objectRights = this.getTypes().map((ee, ii) =>
@@ -180,7 +183,7 @@ class ACLDialog extends Component {
             <Grid container spacing={3}>
                 <Grid item lg={3} md={6} xs={12}>
                     <FormControl className={classes.formControl}>
-                        <InputLabel shrink id={'owner' + '-label'}>
+                        <InputLabel shrink id="owner-label">
                             {this.props.t('Owner user')}
                         </InputLabel>
                         <Select
@@ -223,7 +226,7 @@ class ACLDialog extends Component {
 ACLDialog.propTypes = {
     t: PropTypes.func,
     data: PropTypes.object,
-    users: PropTypes.object,
+    users: PropTypes.array,
     onChange: PropTypes.func,
 };
 

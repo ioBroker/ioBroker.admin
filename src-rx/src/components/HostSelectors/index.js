@@ -77,7 +77,7 @@ export default withStyles(styles)(function HostSelectors({ classes, disabled, so
         <Button style={{
             background: hostSelect?.common?.color || 'none',
             borderColor: hostSelect?.common?.color ? Utils.invertColor(hostSelect.common.color) : 'none'
-        }} title={I18n.t("Host selection")} variant={disabled || hosts.length < 2 ? "text" : "outlined"} disabled={disabled || hosts.length < 2} aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+        }} title={I18n.t('Host selection')} variant={disabled || hosts.length < 2 ? 'text' : 'outlined'} disabled={disabled || hosts.length < 2} aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
             <div
                 style={{
                     display: 'flex',

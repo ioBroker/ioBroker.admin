@@ -919,7 +919,6 @@ class Adapters extends Component {
     }
 
     buildCache() {
-        const start = Date.now();
         this.cache.listOfVisibleAdapter = [];
         this.cache.adapters = {};
         const now = Date.now();
@@ -978,13 +977,11 @@ class Adapters extends Component {
                 if (sortPopularFirst) {
                     return this.state.repository[b].stat - this.state.repository[a].stat;
                 } else
-                    if (sortRecentlyUpdated) {
-                        return this.cache.adapters[a].daysAgo - this.cache.adapters[b].daysAgo;
-                    }
+                if (sortRecentlyUpdated) {
+                    return this.cache.adapters[a].daysAgo - this.cache.adapters[b].daysAgo;
+                }
             });
         }
-
-        console.log('CACHE: ' + (Date.now() - start));
     }
 
     getTiles() {
@@ -999,9 +996,9 @@ class Adapters extends Component {
             }}>{this.props.t('all items are filtered out')}</div>;
         } else {
             return this.cache.listOfVisibleAdapter.map(value => {
-                const adapter = this.state.repository[value];
+                const adapter   = this.state.repository[value];
                 const installed = this.state.installed[value];
-                const cached = this.cache.adapters[value];
+                const cached    = this.cache.adapters[value];
 
                 if (cached.title instanceof Object || !cached.desc) {
                     console.warn(adapter);
@@ -1193,6 +1190,7 @@ class Adapters extends Component {
                         t={this.t}
                         icons
                         contained={this.state.categoriesTiles !== 'All'}
+                        translateSuffix={'_group'}
                         arrayItem={[{ name: 'All' }, ...this.state.categories]}
                         onClick={value => this.changeCategoriesTiles(value)}
                         value={this.state.categoriesTiles} />

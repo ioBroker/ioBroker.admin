@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import { Accordion, AccordionDetails, AccordionSummary, Avatar, Badge, Button, CardMedia, Divider, FormControl, Grid, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from "@material-ui/core";
+import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import RefreshIcon from '@material-ui/icons/Refresh';
 import clsx from 'clsx';
+
+import { Accordion, AccordionDetails, AccordionSummary, Avatar, Badge, Button, CardMedia, FormControl, Grid, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from "@material-ui/core";
+import { amber, blue, green, grey, red } from '@material-ui/core/colors';
+
+import RefreshIcon from '@material-ui/icons/Refresh';
 import BuildIcon from '@material-ui/icons/Build';
 import InputIcon from '@material-ui/icons/Input';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -14,15 +18,15 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import sentry from '../../assets/sentry.svg';
 import EditIcon from '@material-ui/icons/Edit';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
-
 import PauseIcon from '@material-ui/icons/Pause';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+
 import I18n from '@iobroker/adapter-react/i18n';
-import { amber, blue, green, grey, red } from '@material-ui/core/colors';
+import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
+
 import InstanceInfo from '../InstanceInfo';
 import State from '../State';
 import CustomModal from '../CustomModal';
-import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -271,7 +275,8 @@ const styles = theme => ({
         filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)'
     },
     hidden1250: {
-        display: 'flex'
+        display: 'flex',
+        minWidth: 200
     },
     visible1250: {
         display: 'none'
@@ -297,7 +302,31 @@ const styles = theme => ({
         visible1050: {
             display: 'flex !important'
         },
-    }
+    },
+    displayFlex: {
+        display: 'flex',
+    },
+    secondaryHeading: {
+        maxWidth: 250,
+    },
+    secondaryHeadingDiv: {
+        display: 'flex',
+        alignItems: 'center',
+        minWidth: 250
+    },
+    secondaryHeadingDivDiv: {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        padding: 5,
+        textOverflow: 'ellipsis',
+        maxWidth: 200
+    },
+    marginRight5: {
+        marginRight: 5
+    },
+    marginLeft5: {
+        marginLeft: 5
+    },
 });
 const RowInstances = ({
     name,
@@ -338,7 +367,8 @@ const RowInstances = ({
     setSchedule,
     deletedInstances,
     memoryLimitMB,
-    setMemoryLimitMB
+    setMemoryLimitMB,
+    t
 }) => {
     const [openSelect, setOpenSelect] = useState(false);
     const [openDialogCron, setOpenDialogCron] = useState(false);
@@ -348,32 +378,29 @@ const RowInstances = ({
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
     const [openDialogMemoryLimit, setOpenDialogMemoryLimit] = useState(false);
     const [select, setSelect] = useState(logLevel);
-    const arrayLogLevel = [
-        'silly', 'debug', 'info', 'warn', 'error'
-    ]
+    const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
+
     return <Accordion key={key} square
         expanded={expanded === instance.id}
         onChange={() => {
             if (
-                openDialogCron ||
+                openDialogCron     ||
                 openDialogSchedule ||
-                openDialogSelect ||
-                openDialogText ||
-                openDialogDelete ||
+                openDialogSelect   ||
+                openDialogText     ||
+                openDialogDelete   ||
                 openDialogMemoryLimit) {
-                return
+                return;
             }
             handleChange(instance.id);
         }}>
-        <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-        >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <CustomModal
                 title={
-                    (openDialogText && I18n.t("Enter title for %s", instance.id)) ||
-                    (openDialogSelect && I18n.t("Edit log level rule for %s", instance.id)) ||
-                    (openDialogDelete && I18n.t("Please confirm")) ||
-                    (openDialogMemoryLimit && I18n.t("Edit memory limit rule for %s", instance.id))
+                    (openDialogText && t('Enter title for %s', instance.id)) ||
+                    (openDialogSelect && t('Edit log level rule for %s', instance.id)) ||
+                    (openDialogDelete && t('Please confirm')) ||
+                    (openDialogMemoryLimit && t('Edit memory limit rule for %s', instance.id))
                 }
                 open={
                     openDialogSelect ||
@@ -412,7 +439,7 @@ const RowInstances = ({
                     }
                 }}>
                 {openDialogSelect && <FormControl style={{ width: '100%', marginBottom: 5 }} variant="outlined" >
-                    <InputLabel htmlFor="outlined-age-native-simple">{I18n.t('log level')}</InputLabel>
+                    <InputLabel htmlFor="outlined-age-native-simple">{t('log level')}</InputLabel>
                     <Select
                         variant="standard"
                         value={select}
@@ -420,16 +447,16 @@ const RowInstances = ({
                         onChange={el => setSelect(el.target.value)}
                     >
                         {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
-                            {I18n.t(el)}
+                            {t(el)}
                         </MenuItem>)}
                     </Select>
                 </FormControl>}
-                {openDialogDelete && I18n.t("Are you sure you want to delete the instance %s?", instance.id)}
+                {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
             </CustomModal>
             {(openDialogCron || openDialogSchedule) && <ComplexCron
                 title={
-                    (openDialogCron && I18n.t("Edit restart rule for %s", instance.id)) ||
-                    (openDialogSchedule && I18n.t("Edit schedule rule for %s", instance.id))
+                    (openDialogCron && t('Edit restart rule for %s', instance.id)) ||
+                    (openDialogSchedule && t('Edit schedule rule for %s', instance.id))
                 }
                 cron={openDialogCron ? getRestartSchedule(id) : getSchedule(id)}
                 language={I18n.getLanguage()}
@@ -467,14 +494,14 @@ const RowInstances = ({
                     </div>
                     {expertMode &&
                         <div>
-                            <Tooltip title={I18n.t('loglevel') + ' ' + instance.loglevel}>
-                                <Avatar className={classes.smallAvatar + ' ' + classes[instance.loglevel]}>
+                            <Tooltip title={t('loglevel') + ' ' + instance.loglevel}>
+                                <Avatar className={clsx(classes.smallAvatar, classes[instance.loglevel])}>
                                     {loglevelIcon}
                                 </Avatar>
                             </Tooltip>
                         </div>
                     }
-                    <div style={{ display: 'flex' }}>
+                    <div className={classes.displayFlex}>
                         <Badge color="secondary" variant="dot" invisible={!instance.compactMode}>
                             <Avatar
                                 variant="square"
@@ -488,21 +515,9 @@ const RowInstances = ({
                         </div>
                     </div>
                 </div>
-                <Typography style={{
-                    maxWidth: 250
-                }} className={classes.secondaryHeading}>
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        minWidth: 250
-                    }}>
-                        <div style={{
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            padding: 5,
-                            textOverflow: 'ellipsis',
-                            maxWidth: 200
-                        }}>{name}</div>
+                <Typography className={classes.secondaryHeading}>
+                    <div className={classes.secondaryHeadingDiv}>
+                        <div className={classes.secondaryHeadingDivDiv}>{name}</div>
                         <IconButton
                             size="small"
                             className={classes.button}
@@ -516,17 +531,17 @@ const RowInstances = ({
                     </div>
                 </Typography>
                 {expertMode &&
-                    <div className={classes.hidden1250} style={{ display: 'flex', minWidth: 200 }}>
+                    <div className={classes.hidden1250} >
                         <InstanceInfo
                             icon={<ImportExportIcon />}
-                            tooltip={I18n.t('events')}
+                            tooltip={t('events')}
                         >
-                            <div style={{ display: 'flex' }}>
-                                <Tooltip title={I18n.t('input events')}>
+                            <div className={classes.displayFlex}>
+                                <Tooltip title={t('input events')}>
                                     <div style={{ marginRight: 5 }}>⇥{inputOutput.stateInput}</div>
                                 </Tooltip>
                                     /
-                                <Tooltip title={I18n.t('output events')}>
+                                <Tooltip title={t('output events')}>
                                     <div style={{ marginLeft: 5 }}>↦{inputOutput.stateOutput}</div>
                                 </Tooltip>
                             </div>
@@ -536,14 +551,14 @@ const RowInstances = ({
                 <Grid item className={classes.hidden1050}>
                     <InstanceInfo
                         icon={<MemoryIcon />}
-                        tooltip={I18n.t('RAM usage')}
+                        tooltip={t('RAM usage')}
                     >
                         {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
                     </InstanceInfo>
                 </Grid>
             </Grid>
-            <div style={{ display: 'flex' }}>
-                <Tooltip title={I18n.t('sentry')}>
+            <div className={classes.displayFlex}>
+                <Tooltip title="sentry">
                     <IconButton
                         size="small"
                         className={clsx(classes.button, expertMode && checkSentry ? null : classes.hide)}
@@ -561,7 +576,7 @@ const RowInstances = ({
                     </IconButton>
                 </Tooltip>
             </div>
-            <Tooltip title={I18n.t('compact groups')}>
+            <Tooltip title={t('compact groups')}>
                 <IconButton
                     size="small"
                     className={clsx(classes.button, expertMode && checkCompact ? null : classes.hide)}
@@ -570,7 +585,7 @@ const RowInstances = ({
                         event.stopPropagation();
                     }}
                 >
-                    <ViewCompactIcon color={compact ? "primary" : "inherit"} />
+                    <ViewCompactIcon color={compact ? 'primary' : 'inherit'} />
                 </IconButton>
             </Tooltip>
 
@@ -581,9 +596,8 @@ const RowInstances = ({
                     event.stopPropagation();
                 }}
                 onFocus={event => event.stopPropagation()}
-                className={classes.button + ' ' + (instance.canStart ?
-                    running ? classes.enabled : classes.disabled : classes.hide)
-                }
+                className={clsx(classes.button, instance.canStart ?
+                    (running ? classes.enabled : classes.disabled) : classes.hide)}
             >
                 {running ? <PauseIcon /> : <PlayArrowIcon />}
             </IconButton>
@@ -603,17 +617,17 @@ const RowInstances = ({
                     event.stopPropagation();
                 }}
                 onFocus={event => event.stopPropagation()}
-                className={classes.button + ' ' + (instance.canStart ? '' : classes.hide)}
+                className={clsx(classes.button, !instance.canStart && classes.hide)}
                 disabled={!running}
             >
                 <RefreshIcon />
             </IconButton>
             <IconButton
                 size="small"
-                className={classes.button + ' ' + (instance.link ? '' : classes.hide)}
+                className={clsx(classes.button, (!instance.link || !instance.link[0]) && classes.hide)}
                 disabled={!running}
                 onClick={event => {
-                    window.open(instance.link, "_blank")
+                    window.open(instance.link, '_blank');
                     event.stopPropagation();
                 }}
                 onFocus={event => event.stopPropagation()}
@@ -641,14 +655,14 @@ const RowInstances = ({
                         md={4}
                     >
                         <State state={connectedToHost} >
-                            {I18n.t('Connected to host')}
+                            {t('Connected to host')}
                         </State>
                         <State state={alive} >
-                            {I18n.t('Heartbeat')}
+                            {t('Heartbeat')}
                         </State>
                         {connected !== null &&
                             <State state={connected}>
-                                {I18n.t('Connected to %s', instance.adapter)}
+                                {t('Connected to %s', instance.adapter)}
                             </State>
                         }
                     </Grid>
@@ -662,7 +676,7 @@ const RowInstances = ({
                     >
                         <InstanceInfo
                             icon={<InfoIcon />}
-                            tooltip={I18n.t('Installed')}
+                            tooltip={t('Installed')}
                         >
                             {instance.version}
                         </InstanceInfo>
@@ -676,10 +690,10 @@ const RowInstances = ({
                         md={4}
                         style={{ paddingRight: 200 }}
                     >
-                        {expertMode && <div style={{ display: 'flex' }}>
+                        {expertMode && <div className={classes.displayFlex}>
                             <InstanceInfo
                                 icon={loglevelIcon}
-                                tooltip={I18n.t('loglevel')}
+                                tooltip={t('loglevel')}
                             >
                                 {logLevel}
                             </InstanceInfo>
@@ -698,14 +712,14 @@ const RowInstances = ({
                             <div className={classes.visible1250} style={{ minWidth: 200 }}>
                                 <InstanceInfo
                                     icon={<ImportExportIcon />}
-                                    tooltip={I18n.t('events')}
+                                    tooltip={t('events')}
                                 >
-                                    <div style={{ display: 'flex' }}>
-                                        <Tooltip title={I18n.t('input events')}>
+                                    <div className={classes.displayFlex}>
+                                        <Tooltip title={t('input events')}>
                                             <div style={{ marginRight: 5 }}>⇥{inputOutput.stateInput}</div>
                                         </Tooltip>
                                     /
-                                <Tooltip title={I18n.t('output events')}>
+                                <Tooltip title={t('output events')}>
                                             <div style={{ marginLeft: 5 }}>↦{inputOutput.stateOutput}</div>
                                         </Tooltip>
                                     </div>
@@ -715,15 +729,15 @@ const RowInstances = ({
                         <Grid item className={classes.visible1050}>
                             <InstanceInfo
                                 icon={<MemoryIcon />}
-                                tooltip={I18n.t('RAM usage')}
+                                tooltip={t('RAM usage')}
                             >
                                 {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
                             </InstanceInfo>
                         </Grid>
-                        {mode && <div style={{ display: 'flex' }}>
+                        {mode && <div className={classes.displayFlex}>
                             <InstanceInfo
                                 icon={<ScheduleIcon />}
-                                tooltip={I18n.t('schedule_group')}
+                                tooltip={t('schedule_group')}
                             >
                                 {getSchedule(id) || '-'}
                             </InstanceInfo>
@@ -739,10 +753,10 @@ const RowInstances = ({
                             </IconButton>
                         </div>}
                         {expertMode && (instance.mode === 'daemon') &&
-                            <div style={{ display: 'flex' }}>
+                            <div className={classes.displayFlex}>
                                 <InstanceInfo
                                     icon={<ScheduleIcon style={{ color: '#dc8e00' }} />}
-                                    tooltip={I18n.t('restart')}
+                                    tooltip={t('restart')}
                                 >
                                     {getRestartSchedule(id) || '-'}
                                 </InstanceInfo>
@@ -758,10 +772,10 @@ const RowInstances = ({
                                 </IconButton>
                             </div>
                         }
-                        {expertMode && <div style={{ display: 'flex' }}>
+                        {expertMode && <div className={classes.displayFlex}>
                             <InstanceInfo
                                 icon={<MemoryIcon style={{ color: '#dc8e00' }} />}
-                                tooltip={I18n.t('RAM limit')}
+                                tooltip={t('RAM limit')}
                             >
                                 {(memoryLimitMB ? memoryLimitMB : '-.--') + ' MB'}
                             </InstanceInfo>
@@ -778,37 +792,33 @@ const RowInstances = ({
                         </div>
                         }
                         {expertMode && checkCompact && compact && <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                            <ViewCompactIcon style={{ marginRight: 5 }} color="inherit" />
+                            <ViewCompactIcon className={classes.marginRight5} color="inherit" />
                             <FormControl style={{ marginBottom: 5, marginTop: 5, width: 120 }} variant="outlined" >
-                                <InputLabel htmlFor="outlined-age-native-simple">{I18n.t('compact groups')}</InputLabel>
+                                <InputLabel htmlFor="outlined-age-native-simple">{t('compact groups')}</InputLabel>
                                 <Select
                                     variant="standard"
                                     autoWidth
                                     onClose={() => setOpenSelect(false)}
                                     onOpen={() => setOpenSelect(true)}
                                     open={openSelect}
-                                    value={compactGroup === undefined ? 1 : compactGroup || '0'}
+                                    value={compactGroup === 1 ? 'default' : compactGroup === '0' ? "controller" : !compactGroup ? 'default' : compactGroup || 'default'}
                                     onChange={el => setCompactGroup(el.target.value)}
                                 >
-                                    {<div disabled >
-                                        <div
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                            }}>
-                                            <div style={{ display: 'flex', margin: 5, justifyContent: 'space-around' }}>
-                                                <Button onClick={() => {
-                                                    setOpenSelect(false);
-                                                    setCompactGroup(compactGroupCount + 1);
-                                                }} variant="outlined" stylevariable='outlined'>{I18n.t('Add compact group')}</Button>
-                                            </div>
-                                        </div>
-                                    </div>}
-                                    <MenuItem value='0'>
-                                        {I18n.t('with controller (0)')}
+                                    <div onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                        }}
+                                         style={{ display: 'flex', margin: 5, justifyContent: 'space-around' }}>
+                                        <Button onClick={() => {
+                                            setOpenSelect(false);
+                                            setCompactGroup(compactGroupCount + 1);
+                                        }} variant="outlined" stylevariable='outlined'>{t('Add compact group')}</Button>
+                                    </div>
+                                    <MenuItem value="controller">
+                                        {t('with controller')}
                                     </MenuItem>
-                                    <MenuItem value={1}>
-                                        {I18n.t('default group (1)')}
+                                    <MenuItem value="default">
+                                        {t('default group')}
                                     </MenuItem>
                                     {Array(compactGroupCount - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
                                         {idx + 2}
@@ -848,7 +858,16 @@ const RowInstances = ({
                 </Grid>
             </Grid>
         </AccordionDetails>
-    </Accordion>
+    </Accordion>;
 }
+
+RowInstances.propTypes = {
+    /**
+     * Link and text
+     * {link: 'https://example.com', text: 'example.com'}
+     */
+    t: PropTypes.func,
+};
+
 
 export default withStyles(styles)(RowInstances);

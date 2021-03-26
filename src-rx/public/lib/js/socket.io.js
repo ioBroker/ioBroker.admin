@@ -98,7 +98,13 @@ function SocketClient () {
 
             pingInterval = setInterval(() => {
                 if (Date.now() - lastPong > 5000) {
-                    socket.send(JSON.stringify([MESSAGE_TYPES.PING]));
+                    try {
+                        socket.send(JSON.stringify([MESSAGE_TYPES.PING]));
+                    } catch (e) {
+                        this.log.warn('Cannot send ping. Close connection: ' + e);
+                        this.close();
+                        return this._garbageCollect();
+                    }
                 }
                 if (Date.now() - lastPong > 15000) {
                     this.close();

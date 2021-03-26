@@ -252,15 +252,12 @@ class SystemSettingsDialog extends Component {
         if (this.state.loading)
             return <LinearProgress/>;
 
-        const tab = this.getTabs().filter(e =>
-            e.id == (this.props.currentTab.id).toString() ||
-            e.id == parseInt(this.props.currentTab.id))[0] ||
-            this.getTabs()[0];
+        const tab = this.getTabs().filter(e => e.id === parseInt(this.props.currentTab.id, 10))[0] || this.getTabs()[0];
 
-        const _Component = tab.component;
+        const MyComponent = tab.component;
         const {groups, users, histories} = this.state;
         return <div className={this.props.classes.tabPanel}>
-            <_Component
+            <MyComponent
                 onChange={(data, dataAux) => this.onChangedTab(tab.data, data, tab.dataAux, dataAux)}
                 data={this.state[tab.data]}
                 dataAux={this.state[tab.dataAux]}

@@ -69,7 +69,7 @@ class CertificatesDialog extends Component {
         super(props);
 
         this.state = {
-            chclass: false
+            chClass: false
         };
     }
 
@@ -112,7 +112,7 @@ class CertificatesDialog extends Component {
                 </TableCell>
                 <TableCell className="grow_cell float_cell">
                     <TextField
-                        id="default"
+                        id={'default_' + i}
                         value={e.data}
                         InputLabelProps={{
                             readOnly: false,
@@ -138,9 +138,9 @@ class CertificatesDialog extends Component {
             <Dropzone noClick>
                 {({getRootProps, getInputProps, acceptedFiles, fileRejections}) => (
                     <div {...getRootProps({
-                        className: this.state.chclass ? 'drop-container drop-dop' : 'drop-container',
-                        onDragEnter: evt => this.setState({chclass: true}),
-                        onDragLeave: evt => this.setState({chclass: false}),
+                        className: this.state.chClass ? 'drop-container drop-dop' : 'drop-container',
+                        onDragEnter: evt => this.setState({chClass: true}),
+                        onDragLeave: evt => this.setState({chClass: false}),
                         onDrop: evt => {
                             if (fileRejections.length > 0) {
                                 let msg = [];
@@ -167,7 +167,7 @@ class CertificatesDialog extends Component {
                             } else if (fileRejections.length === 0) {
                                 alert(this.props.t('No files exists'));
                             }
-                            this.setState({chclass: false})
+                            this.setState({chClass: false});
                         }
                     })}>
                         <input {...getInputProps()} />
@@ -185,7 +185,7 @@ class CertificatesDialog extends Component {
                     <AddIcon/>
                 </Fab>
                 <Paper variant="outlined" className={classes.descrPanel}>
-                    {this.props.t('You can use absolute path of certificate, \'/opt/certs/cert.pem\' for example, or you can and drop files here')}
+                    {this.props.t('certs_hint')}
                 </Paper>
             </div>
             <TableContainer className={classes.tableContainer}>
@@ -214,7 +214,7 @@ class CertificatesDialog extends Component {
         const value = evt.target.value;
         let newData = JSON.parse(JSON.stringify(this.props.data))
         let array = this.certToArray(newData.native.certificates);
-        array.find(element => element.title == id)[name] = value;
+        array.find(element => element.title === id)[name] = value;
         newData.native.certificates = this.arrayToCert(array);
         this.props.onChange(newData);
     }
@@ -222,7 +222,7 @@ class CertificatesDialog extends Component {
     onDelete = id => {
         let newData = JSON.parse(JSON.stringify(this.props.data))
         let array = this.certToArray(newData.native.certificates);
-        let index = array.findIndex(element => element.title == id);
+        let index = array.findIndex(element => element.title === id);
         delete array[index];
         newData.native.certificates = this.arrayToCert(array);
         this.props.onChange(newData);

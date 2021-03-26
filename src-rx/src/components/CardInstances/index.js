@@ -546,7 +546,7 @@ const CardInstances = ({
                     </IconButton>
                 </div>
                 {expertMode && checkSentry && <div className={classes.displayFlex}>
-                    <Tooltip title={t('sentry')}>
+                    <Tooltip title="sentry">
                         <IconButton
                             size="small"
                             className={classes.button}

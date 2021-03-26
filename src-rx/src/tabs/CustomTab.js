@@ -24,9 +24,15 @@ class CustomTab extends Component {
             href: '',
         };
 
-        this.props.instancesWorker.getInstances()
+        CustomTab.getHref(this.props.instancesWorker, this.props.tab, this.props.hostname, this.props.protocol)
+            .then(href =>
+                this.setState({href}));
+    }
+
+    static getHref(instancesWorker, tab, hostname, protocol) {
+        return instancesWorker.getInstances()
             .then(instances => {
-                let adapter = this.props.tab.replace(/^tab-/, '');
+                let adapter = tab.replace(/^tab-/, '');
                 let instNum;
                 const m = adapter.match(/-(\d+)$/);
                 instNum = m ? parseInt(m[1], 10) : null;
@@ -34,17 +40,19 @@ class CustomTab extends Component {
                 let instance;
                 if (instNum !== null) {
                     adapter = adapter.replace(/-(\d+)$/, '');
-                    const name = 'system.adapter.' + adapter + '.' + instNum;
+                    const name = `system.adapter.${adapter}.${instNum}`;
                     instance = Object.keys(instances).find(id => id === name);
                 } else {
-                    const name = 'system.adapter.' + adapter + '.';
+                    const name = `system.adapter.${adapter}.`;
 
                     instance = Object.keys(instances).find(id => id.startsWith(name));
                 }
                 instance = instances[instance];
 
                 if (!instance || !instance.common || !instance.common.adminTab) {
-                    return console.error('Cannot find instance ' + this.props.tab);
+                    console.error(`Cannot find instance ${tab}`);
+
+                    return '';
                 }
 
                 // calculate href
@@ -52,26 +60,26 @@ class CustomTab extends Component {
 
                 if (!href) {
                     if (instance.common.materializeTab) {
-                        href = 'adapter/' + adapter + '/tab_m.html';
+                        href = `adapter/${adapter}/tab_m.html`;
                     } else {
-                        href = 'adapter/' + adapter + '/tab.html';
+                        href = `adapter/${adapter}/tab.html`;
                     }
                 }
 
                 if (!instance.common.adminTab.singleton) {
-                    href += (href.includes('?') ? '&' : '?') + 'instance=' + instNum;
+                    href += `${href.includes('?') ? '&' : '?'}instance=${instNum}`;
                 }
 
                 if (href.includes('%')) {
                     // replace
                     href = Utils.replaceLink(href, adapter, instNum, {
-                        hostname: this.props.hostname,
-                        protocol: this.props.protocol,
+                        hostname,
+                        protocol,
                         objects: instances
-                    })
+                    });
                 }
 
-                this.setState({ href });
+                return href;
             });
     }
 

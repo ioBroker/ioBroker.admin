@@ -2,8 +2,9 @@ import { Button, Menu, MenuItem } from '@material-ui/core';
 import React, { useState } from 'react';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 
-const CustomSelectButton = ({ arrayItem, onClick, value, contained, icons, t }) => {
+const CustomSelectButton = ({ arrayItem, onClick, value, contained, icons, t, translateSuffix }) => {
     const [anchorEl, setAnchorEl] = useState(null);
+    translateSuffix = translateSuffix || '';
 
     return <>
         <Button
@@ -14,7 +15,6 @@ const CustomSelectButton = ({ arrayItem, onClick, value, contained, icons, t }) 
             {value}
         </Button>
         <Menu
-            id="simple-menu"
             anchorEl={anchorEl}
             keepMounted
             open={Boolean(anchorEl)}
@@ -32,13 +32,14 @@ const CustomSelectButton = ({ arrayItem, onClick, value, contained, icons, t }) 
                         onClick(name);
                         setAnchorEl(null);
                     }}>
-                    {icons && <MaterialDynamicIcon objIconBool iconName={name} style={{ marginRight: 5 }} />}{typeof name === 'number' ? name : t(name)}
+                    {icons && <MaterialDynamicIcon objIconBool iconName={name} style={{ marginRight: 5 }} />}{typeof name === 'number' ? name : t(name + translateSuffix)}
                 </MenuItem>
             })}
         </Menu>
     </>
 }
 CustomSelectButton.defaultProps = {
-    icons: false
+    icons: false,
+    translateSuffix: '',
 };
 export default CustomSelectButton;

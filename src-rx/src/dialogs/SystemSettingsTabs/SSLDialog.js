@@ -1,5 +1,6 @@
 // SSLDialog.js
 import {Component} from 'react';
+import PropTypes from 'prop-types';
 
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
@@ -7,7 +8,6 @@ import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
-import PropTypes from "prop-types";
 
 const styles = theme => ({
     tabPanel: {
@@ -22,13 +22,18 @@ const styles = theme => ({
         paddingBottom: 40,
         display: 'flex'
     },
-    descrPanel: {
+    descriptionPanel: {
         width: '100%',
         backgroundColor: 'transparent',
         marginLeft: 40,
         border: 'none',
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
+        '& a': {
+            paddingLeft: 3,
+            color: theme.palette.type === 'dark' ? '#EEE' : '#111',
+
+        }
     },
     formControl: {
         margin: theme.spacing(1),
@@ -44,7 +49,7 @@ class SSLDialog extends Component {
             <div className={classes.buttonPanel}>
                 <Paper
                     variant="outlined"
-                    className={classes.descrPanel}
+                    className={classes.descriptionPanel}
                     dangerouslySetInnerHTML={{__html: this.props.t('letsnecrypt_help')}}
                 />
             </div>

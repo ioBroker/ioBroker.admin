@@ -695,78 +695,68 @@ class App extends Router {
                     </Suspense>;
                 } else
                     if (this.state.currentTab.tab === 'tab-intro') {
-                        return (
-                            <Suspense fallback={<Connecting />}>
-                                <Intro
-                                    key="intro"
-                                    protocol={this.state.protocol}
-                                    hostname={this.state.hostname}
-                                    showAlert={(message, type) => this.showAlert(message, type)}
-                                    socket={this.socket}
-                                    t={I18n.t}
-                                    lang={I18n.getLanguage()}
-                                />
-                            </Suspense>
-                        );
+                        return <Suspense fallback={<Connecting />}>
+                            <Intro
+                                key="intro"
+                                protocol={this.state.protocol}
+                                hostname={this.state.hostname}
+                                showAlert={(message, type) => this.showAlert(message, type)}
+                                socket={this.socket}
+                                t={I18n.t}
+                                lang={I18n.getLanguage()}
+                            />
+                        </Suspense>;
                     } else
                         if (this.state.currentTab.tab === 'tab-logs') {
-                            return (
-                                <Suspense fallback={<Connecting />}>
-                                    <Logs
-                                        key="logs"
-                                        t={I18n.t}
-                                        lang={this.state.lang}
-                                        socket={this.socket}
-                                        ready={this.state.ready}
-                                        logsWorker={this.logsWorker}
-                                        expertMode={this.state.expertMode}
-                                        currentHost={this.state.currentHost}
-                                        clearErrors={cb => this.clearLogErrors(cb)}
-                                    />
-                                </Suspense>
-                            );
+                            return <Suspense fallback={<Connecting />}>
+                                <Logs
+                                    key="logs"
+                                    t={I18n.t}
+                                    lang={this.state.lang}
+                                    socket={this.socket}
+                                    ready={this.state.ready}
+                                    logsWorker={this.logsWorker}
+                                    expertMode={this.state.expertMode}
+                                    currentHost={this.state.currentHost}
+                                    clearErrors={cb => this.clearLogErrors(cb)}
+                                />
+                            </Suspense>;
                         } else
                             if (this.state.currentTab.tab === 'tab-files') {
-                                return (
-                                    <Suspense fallback={<Connecting />}>
-                                        <Files
-                                            key="files"
+                                return <Suspense fallback={<Connecting />}>
+                                    <Files
+                                        key="files"
+                                        ready={this.state.ready}
+                                        t={I18n.t}
+                                        expertMode={this.state.expertMode}
+                                        lang={I18n.getLanguage()}
+                                        socket={this.socket}
+                                    />
+                                </Suspense>;
+                            } else
+                                if (this.state.currentTab.tab === 'tab-users') {
+                                    return <Suspense fallback={<Connecting />}>
+                                        <Users
+                                            key="users"
                                             ready={this.state.ready}
                                             t={I18n.t}
                                             expertMode={this.state.expertMode}
                                             lang={I18n.getLanguage()}
                                             socket={this.socket}
                                         />
-                                    </Suspense>
-                                );
-                            } else
-                                if (this.state.currentTab.tab === 'tab-users') {
-                                    return (
-                                        <Suspense fallback={<Connecting />}>
-                                            <Users
-                                                key="users"
-                                                ready={this.state.ready}
+                                    </Suspense>;
+                                } else
+                                    if (this.state.currentTab.tab === 'tab-objects') {
+                                        return <Suspense fallback={<Connecting />}>
+                                            <Objects
+                                                key="objects"
                                                 t={I18n.t}
+                                                themeName={this.state.themeName}
                                                 expertMode={this.state.expertMode}
                                                 lang={I18n.getLanguage()}
                                                 socket={this.socket}
                                             />
-                                        </Suspense>
-                                    );
-                                } else
-                                    if (this.state.currentTab.tab === 'tab-objects') {
-                                        return (
-                                            <Suspense fallback={<Connecting />}>
-                                                <Objects
-                                                    key="objects"
-                                                    t={I18n.t}
-                                                    themeName={this.state.themeName}
-                                                    expertMode={this.state.expertMode}
-                                                    lang={I18n.getLanguage()}
-                                                    socket={this.socket}
-                                                />
-                                            </Suspense>
-                                        );
+                                        </Suspense>;
                                     } else {
                                         const m = this.state.currentTab.tab.match(/^tab-([-\w\d]+)(-\d+)?$/);
                                         if (m) {
@@ -779,21 +769,19 @@ class App extends Router {
                                             }*/
 
                                             // /adapter/javascript/tab.html
-                                            return (
-                                                <Suspense fallback={<Connecting />}>
-                                                    <CustomTab
-                                                        key={this.state.currentTab.tab}
-                                                        t={I18n.t}
-                                                        protocol={this.state.protocol}
-                                                        hostname={this.state.hostname}
-                                                        instancesWorker={this.instancesWorker}
-                                                        tab={this.state.currentTab.tab}
-                                                        themeName={this.state.themeName}
-                                                        expertMode={this.state.expertMode}
-                                                        lang={I18n.getLanguage()}
-                                                    />
-                                                </Suspense>
-                                            );
+                                            return <Suspense fallback={<Connecting />}>
+                                                <CustomTab
+                                                    key={this.state.currentTab.tab}
+                                                    t={I18n.t}
+                                                    protocol={this.state.protocol}
+                                                    hostname={this.state.hostname}
+                                                    instancesWorker={this.instancesWorker}
+                                                    tab={this.state.currentTab.tab}
+                                                    themeName={this.state.themeName}
+                                                    expertMode={this.state.expertMode}
+                                                    lang={I18n.getLanguage()}
+                                                />
+                                            </Suspense>;
                                         }
                                     }
         }
@@ -1111,6 +1099,8 @@ class App extends Router {
                         expertMode={this.state.expertMode}
                         ready={this.state.ready}
                         themeName={this.state.themeName}
+                        protocol={this.state.protocol}
+                        hostname={this.state.hostname}
                     />
                 </DndProvider>
                 <Paper
