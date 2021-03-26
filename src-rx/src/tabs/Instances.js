@@ -369,13 +369,13 @@ class Instances extends Component {
                 compactGroupCount = common.compactGroup;
             }
             const instance = {};
-            instance.id      = obj._id.replace('system.adapter.', '');
-            instance.obj     = obj;
+            instance.id = obj._id.replace('system.adapter.', '');
+            instance.obj = obj;
             instance.compact = !!common.compact;
-            instance.host    = common.host;
-            instance.name    = common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en || '' : common.title;
-            instance.image   = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
-            let links        = common.localLinks || common.localLink || '';
+            instance.host = common.host;
+            instance.name = common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en || '' : common.title;
+            instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
+            let links = common.localLinks || common.localLink || '';
             if (links && typeof links === 'string') {
                 links = { _default: links };
             }
@@ -390,14 +390,14 @@ class Instances extends Component {
                 }));
             });
 
-            instance.canStart    = !common.onlyWWW;
-            instance.config      = !common.noConfig;
-            instance.materialize = common.materialize      || false;
+            instance.canStart = !common.onlyWWW;
+            instance.config = !common.noConfig;
+            instance.materialize = common.materialize || false;
             instance.compactMode = common.runAsCompactMode || false;
-            instance.mode        = common.mode             || null;
-            instance.loglevel    = common.loglevel         || null;
-            instance.adapter     = common.name             || null;
-            instance.version     = common.installedVersion || null;
+            instance.mode = common.mode || null;
+            instance.loglevel = common.loglevel || null;
+            instance.adapter = common.name || null;
+            instance.version = common.installedVersion || null;
 
             formatted[obj._id] = instance;
         });
@@ -406,10 +406,10 @@ class Instances extends Component {
             .then(e => e.config.system.compact);
 
         const importantDevices = JSON.parse(window.localStorage.getItem('Instances.importantDevices'));
-        const playArrow        = JSON.parse(window.localStorage.getItem('Instances.playArrow'));
-        const viewMode         = JSON.parse(window.localStorage.getItem('Instances.viewMode'));
+        const playArrow = JSON.parse(window.localStorage.getItem('Instances.playArrow'));
+        const viewMode = JSON.parse(window.localStorage.getItem('Instances.viewMode'));
         let filterCompactGroup = JSON.parse(window.localStorage.getItem('Instances.filterCompactGroup'));
-        const sentry           = JSON.parse(window.localStorage.getItem('Instances.sentry')) || false;
+        const sentry = JSON.parse(window.localStorage.getItem('Instances.sentry')) || false;
         if (!filterCompactGroup && filterCompactGroup !== 0) {
             filterCompactGroup = 'All';
         }
@@ -642,19 +642,19 @@ class Instances extends Component {
 
     getPanels() {
         let list = Object.keys(this.state.instances).map(id => {
-            const instance        = this.state.instances[id];
-            const running         = this.isRunning(id);
-            const alive           = this.isAlive(id);
-            const compactGroup    = this.isCompactGroup(id);
-            const compact         = this.isCompact(id);
+            const instance = this.state.instances[id];
+            const running = this.isRunning(id);
+            const alive = this.isAlive(id);
+            const compactGroup = this.isCompactGroup(id);
+            const compact = this.isCompact(id);
             const connectedToHost = this.isConnectedToHost(id);
-            const connected       = this.isConnected(id);
-            const name            = this.isName(id);
-            const logLevel        = this.isLogLevel(id);
-            const loglevelIcon    = this.getLogLevelIcon(instance.loglevel);
-            const checkCompact    = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
-            const inputOutput     = this.getInputOutput(id);
-            const mode            = this.isModeSchedule(id);
+            const connected = this.isConnected(id);
+            const name = this.isName(id);
+            const logLevel = this.isLogLevel(id);
+            const loglevelIcon = this.getLogLevelIcon(instance.loglevel);
+            const checkCompact = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
+            const inputOutput = this.getInputOutput(id);
+            const mode = this.isModeSchedule(id);
 
             const setCompact = () =>
                 this.extendObject('system.adapter.' + instance.id, { common: { compact: !compact } });
@@ -938,6 +938,7 @@ class Instances extends Component {
                 </Tooltip>}
                 {this.props.expertMode && this.state.compact &&
                     <CustomSelectButton
+                        t={this.t}
                         arrayItem={[
                             { name: 'All' },
                             { name: 'controller' },

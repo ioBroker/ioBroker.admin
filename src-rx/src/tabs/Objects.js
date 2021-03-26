@@ -196,15 +196,18 @@ class Objects extends Component {
                         onClose={() => context.setState({ modalNewObj: false })}
                         onApply={() => context.setState({ modalNewObj: false })} />
                 }
-                modalEditOfAccessControl={context =>
+                modalEditOfAccessControl={(context, objData) =>
                     <ObjectEditOfAccessControl
                         open={context.state.modalEditOfAccess}
-                        extendObject={(id, data) => context.extendObject(id, data)}
+                        extendObject={(id, data) => {
+                            context.extendObject(id, data);
+                            objData.aclTooltip = null;
+                        }}
                         selected={context.state.selected[0]}
                         objects={context.objects}
                         t={this.t}
-                        onClose={() => context.setState({ modalEditOfAccess: false })}
-                        onApply={() => context.setState({ modalEditOfAccess: false })} />
+                        onClose={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null })}
+                        onApply={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null })} />
                 }
             />,
             this.renderDeleteDialog()

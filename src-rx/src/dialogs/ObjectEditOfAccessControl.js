@@ -197,7 +197,6 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                 }
                 if (objects[key].acl.state) {
                     if (objects[selected].acl.state !== objects[key].acl.state) {
-                        console.log(differentState.indexOf(objects[key].acl.state))
                         setDifferentState(el => el.indexOf(objects[key].acl.state) === -1 ? ([...el, objects[key].acl.state]) : el)
                     }
                     if (!checkState) {

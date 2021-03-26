@@ -2816,9 +2816,11 @@ class ObjectBrowser extends Component {
                 </IconButton></div> : null;
         }
 
+        item.data.aclTooltip = item.data.aclTooltip || this.renerTooltipAccessControl(item.data.obj.acl);
+
         return [
-            this.props.expertMode && this.props.objectEditOfAccessControl ? <Tooltip title={this.renerTooltipAccessControl(item.data.obj.acl)}><IconButton style={{ minWidth: 47 }} onClick={() =>
-                this.setState({ modalEditOfAccess: true })
+            this.props.expertMode && this.props.objectEditOfAccessControl ? <Tooltip title={item.data.aclTooltip}><IconButton style={{ minWidth: 47 }} onClick={() =>
+                this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data})
             }>
                 <div style={{ fontSize: 13 }}>{Number(item.data.obj.type === 'state' ?
                     item.data.obj.acl.state ?
@@ -3940,8 +3942,7 @@ class ObjectBrowser extends Component {
                 {this.renderErrorDialog()}
                 {this.state.modalNewObj && this.props.modalNewObject && this.props.modalNewObject(this)
                 }
-                {this.state.modalEditOfAccess && this.props.modalEditOfAccessControl && this.props.modalEditOfAccessControl(this)
-                }
+                {this.state.modalEditOfAccess && this.props.modalEditOfAccessControl && this.props.modalEditOfAccessControl(this, this.state.modalEditOfAccessObjData)}
             </TabContainer>;
         }
     }
