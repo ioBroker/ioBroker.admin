@@ -310,6 +310,9 @@ const styles = theme => ({
         display: 'inline-block',
         verticalAlign: 'top',
     },
+    cellEnumParent: {
+        opacity: 0.4,
+    },
     cellFunc: {
         display: 'inline-block',
         verticalAlign: 'top',
@@ -888,14 +891,14 @@ function getName(name, lang) {
 
 function findRoomsForObject(data, id, lang, withParentInfo, rooms) {
     if (!id) {
-        return [];
+        return {rooms: [], per: false};
     }
     rooms = rooms || [];
     for (let i = 0; i < data.roomEnums.length; i++) {
-        const common = data.objects[data.roomEnums[i]] && data.objects[data.roomEnums[i]].common;
+        const common = data.objects[data.roomEnums[i]]?.common;
         const name = getName(common.name, lang);
 
-        if (common.members && common.members.indexOf(id) !== -1 && rooms.indexOf(name) === -1) {
+        if (common?.members?.includes(id) && !rooms.includes(name)) {
             if (!withParentInfo) {
                 rooms.push(name);
             } else {
@@ -903,14 +906,19 @@ function findRoomsForObject(data, id, lang, withParentInfo, rooms) {
             }
         }
     }
+
+    let ownEnums;
+
+    // Check parent
     const parts = id.split('.');
     parts.pop();
     id = parts.join('.');
     if (data.objects[id]) {
+        ownEnums = rooms.length;
         findRoomsForObject(data, id, lang, withParentInfo, rooms);
     }
 
-    return rooms;
+    return {rooms, per: !ownEnums}; // pe is if the enums are from parent
 }
 
 function findEnumsForObjectAsIds(data, id, enumName, funcs) {
@@ -919,9 +927,8 @@ function findEnumsForObjectAsIds(data, id, enumName, funcs) {
     }
     funcs = funcs || [];
     for (let i = 0; i < data[enumName].length; i++) {
-        const common = data.objects[data[enumName][i]] && data.objects[data[enumName][i]].common;
-        if (common && common.members && common.members.indexOf(id) !== -1 &&
-            funcs.indexOf(data[enumName][i]) === -1) {
+        const common = data.objects[data[enumName][i]]?.common;
+        if (common?.members?.includes(id) && !funcs.includes(data[enumName][i])) {
             funcs.push(data[enumName][i]);
         }
     }
@@ -932,13 +939,13 @@ function findEnumsForObjectAsIds(data, id, enumName, funcs) {
 
 function findFunctionsForObject(data, id, lang, withParentInfo, funcs) {
     if (!id) {
-        return [];
+        return  {funcs: [], pef: false};
     }
     funcs = funcs || [];
     for (let i = 0; i < data.funcEnums.length; i++) {
-        const common = data.objects[data.funcEnums[i]] && data.objects[data.funcEnums[i]].common;
+        const common = data.objects[data.funcEnums[i]]?.common;
         const name = getName(common.name, lang);
-        if (common && common.members && common.members.indexOf(id) !== -1 && funcs.indexOf(name) === -1) {
+        if (common?.members?.includes(id) && !funcs.includes(name)) {
             if (!withParentInfo) {
                 funcs.push(name);
             } else {
@@ -946,14 +953,19 @@ function findFunctionsForObject(data, id, lang, withParentInfo, funcs) {
             }
         }
     }
+
+    let ownEnums;
+
+    // Check parent
     const parts = id.split('.');
     parts.pop();
     id = parts.join('.');
     if (data.objects[id]) {
+        ownEnums = funcs.length;
         findFunctionsForObject(data, id, lang, withParentInfo, funcs);
     }
 
-    return funcs;
+    return {funcs, pef: !ownEnums};
 }
 
 function getStates(obj) {
@@ -968,7 +980,7 @@ function getStates(obj) {
             try {
                 states = JSON.parse(states);
             } catch (ex) {
-                console.error('Cannot parse states: ' + states);
+                console.error(`Cannot parse states: ${states}`);
                 states = null;
             }
         } else
@@ -1309,7 +1321,7 @@ class ObjectBrowser extends Component {
     constructor(props) {
         super(props);
 
-        this.lastSelectedItems = window.localStorage.getItem((props.dialogName || 'App') + '.objectSelected') || '[]';
+        this.lastSelectedItems = window.localStorage.getItem(`${props.dialogName || 'App'}.objectSelected`) || '[]';
         try {
             this.lastSelectedItems = JSON.parse(this.lastSelectedItems);
             if (typeof this.lastSelectedItems !== 'object') {
@@ -1320,7 +1332,7 @@ class ObjectBrowser extends Component {
 
         }
 
-        let expanded = window.localStorage.getItem((props.dialogName || 'App') + '.objectExpanded') || '[]';
+        let expanded = window.localStorage.getItem(`${props.dialogName || 'App'}.objectExpanded`) || '[]';
         try {
             expanded = JSON.parse(expanded);
         } catch (e) {
@@ -1329,7 +1341,7 @@ class ObjectBrowser extends Component {
 
         let filter =
             props.defaultFilters ||
-            window.localStorage.getItem((props.dialogName || 'App') + '.objectFilter') ||
+            window.localStorage.getItem(`${props.dialogName || 'App'}.objectFilter`) ||
             Object.assign({}, DEFAULT_FILTER);
 
         if (typeof filter === 'string') {
@@ -1383,14 +1395,14 @@ class ObjectBrowser extends Component {
         }
         selected = selected.map(id => id.replace(/["']/g, '')).filter(id => id);
 
-        let columns = window.localStorage.getItem((props.dialogName || 'App') + '.columns');
+        let columns = window.localStorage.getItem(`${props.dialogName || 'App'}.columns`);
         try {
             columns = columns ? JSON.parse(columns) : null;
         } catch (e) {
             columns = null;
         }
 
-        let columnsWidths = window.localStorage.getItem((props.dialogName || 'App') + '.columnsWidths');
+        let columnsWidths = window.localStorage.getItem(`${props.dialogName || 'App'}.columnsWidths`);
         try {
             columnsWidths = columnsWidths ? JSON.parse(columnsWidths) : {};
         } catch (e) {
@@ -1430,7 +1442,7 @@ class ObjectBrowser extends Component {
             columns,
             columnsForAdmin: null,
             columnsSelectorShow: false,
-            columnsAuto: window.localStorage.getItem((props.dialogName || 'App') + '.columnsAuto') === 'false' ? false : true,
+            columnsAuto: window.localStorage.getItem(`${props.dialogName || 'App'}.columnsAuto`) === 'false' ? false : true,
             columnsWidths,
             columnsDialogTransparent: 100,
             columnsEditCustomDialog: null,
@@ -1555,7 +1567,7 @@ class ObjectBrowser extends Component {
         });
         if (changed) {
             expanded.sort();
-            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectExpanded', JSON.stringify(expanded));
+            window.localStorage.setItem(`${this.props.dialogName || 'App'}.objectExpanded`, JSON.stringify(expanded));
             this.setState({ expanded }, cb)
         } else {
             cb && cb();
@@ -1569,12 +1581,12 @@ class ObjectBrowser extends Component {
     onAfterSelect(isDouble) {
         this.lastSelectedItems = [...this.state.selected];
         if (this.state.selected && this.state.selected.length) {
-            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', JSON.stringify(this.lastSelectedItems));
+            window.localStorage.setItem(`${this.props.dialogName || 'App'}.objectSelected`, JSON.stringify(this.lastSelectedItems));
 
             const name = this.lastSelectedItems.length === 1 ? Utils.getObjectName(this.objects, this.lastSelectedItems[0], null, { language: this.state.lang }) : '';
             this.props.onSelect && this.props.onSelect(this.lastSelectedItems, name, isDouble);
         } else {
-            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', '');
+            window.localStorage.setItem(`${this.props.dialogName || 'App'}.objectSelected`, '');
             this.setState({ selected: [] }, () => this.props.onSelect && this.props.onSelect([], ''));
         }
     }
@@ -1616,10 +1628,11 @@ class ObjectBrowser extends Component {
 
         this.subscribes = [];
     }
+
     /**
      * Called when component is mounted.
      */
-    async refrseshComponent() {
+    async refreshComponent() {
         await this.props.socket.unsubscribeObject('*', this.onObjectChange);
         // remove all subscribes
         this.subscribes.forEach(async pattern => {
@@ -1630,6 +1643,7 @@ class ObjectBrowser extends Component {
         this.subscribes = [];
         await this.props.socket.subscribeObject('*', this.onObjectChange);
     }
+
     /**
      * Renders the error dialog.
      * @returns {JSX.Element | null}
@@ -2444,9 +2458,13 @@ class ObjectBrowser extends Component {
         return result.length ? result : undefined;
     };
 
+    /**
+     * @private
+     * @param {array} enums
+     * @param {string} objId
+     */
     _createAllEnums = async (enums, objId) => {
         for (let e = 0; e < enums.length; e++) {
-            console.log('create: ' + JSON.stringify(enums[e]));
             let id = enums[e];
             let _enObj;
             if (typeof id === 'object') {
@@ -2480,9 +2498,9 @@ class ObjectBrowser extends Component {
     }
 
     /**
- * @private
- * @param {any} callback
- */
+     * @private
+     * @param {any} callback
+     */
     loadObjects = async objs => {
         if (objs) {
             for (let id in objs) {
@@ -2507,48 +2525,62 @@ class ObjectBrowser extends Component {
                         }
                     }
                 } catch (error) {
-                    alert(error);
+                    window.alert(error);
                 }
             }
         }
     }
+
     /**
- * @private
- * @param {object} evt
- */
+     * @private
+     * @param {object} evt
+     */
     handleFileSelect = evt => {
         let f = evt.target.files[0];
         if (f) {
             let r = new FileReader();
             r.onload = async e => {
                 let contents = e.target.result;
-                let json = JSON.parse(contents);
-                let len = Object.keys(json).length;
-                let id = json._id;
-                if (id === undefined && len > 1) {
-                    await this.loadObjects(json);
-                    alert(this.props.t('%s object(s) processed', Object.keys(json).length))
-                } else {
-                    // TODO delete enums and place object into approtiate enums
-                    try {
-                        await this.props.socket.setObject(json._id, json);
-                        if (json.type === 'state') {
-                            const state = await this.props.socket.getState(json._id);
-                            if (!state || state.val === null || state.val === undefined) {
-                                await this.props.socket.getState(json._id, json.common.def === undefined ? null : json.common.def, true);
+                try {
+                    let json = JSON.parse(contents);
+                    let len = Object.keys(json).length;
+                    let id = json._id;
+                    if (id === undefined && len > 1) {
+                        await this.loadObjects(json);
+                        window.alert(this.props.t('ra_%s object(s) processed', Object.keys(json).length));
+                    } else {
+                        try {
+                            let enums;
+                            if (json.common.enums) {
+                                enums = json.common.enums;
+                                delete json.common.enums;
                             }
+                            await this.props.socket.setObject(json._id, json);
+                            if (json.type === 'state') {
+                                const state = await this.props.socket.getState(json._id);
+                                if (!state || state.val === null || state.val === undefined) {
+                                    await this.props.socket.getState(json._id, json.common.def === undefined ? null : json.common.def, true);
+                                }
+                            }
+                            if (enums) {
+                                await this._createAllEnums(enums, json._id);
+                            }
+
+                            window.alert(this.props.t('ra_%s was imported', json._id));
+                        } catch (err) {
+                            window.alert(err);
                         }
-                        alert(this.props.t('%s was imported', json._id));
-                    } catch (err) {
-                        alert(err);
                     }
+                } catch (err) {
+                    window.alert(err);
                 }
             };
             r.readAsText(f);
         } else {
-            alert('Failed to open JSON File');
+            window.alert('Failed to open JSON File');
         }
     }
+
     /**
      * Renders the toolbar.
      * @returns {JSX.Element}
@@ -2564,7 +2596,7 @@ class ObjectBrowser extends Component {
                 width: '100%',
                 alignItems: 'center'
             }}>
-                <IconButton onClick={() => this.refrseshComponent()}>
+                <IconButton onClick={() => this.refreshComponent()}>
                     <RefreshIcon />
                 </IconButton>
                 {this.props.showExpertButton &&
@@ -2616,17 +2648,17 @@ class ObjectBrowser extends Component {
                         <IconClosed />
                     </StyledBadge>
                 </IconButton>
-                {this.props.objectStatesView && <Tooltip title={this.props.t('Toggle the states view')}>
+                {this.props.objectStatesView && <Tooltip title={this.props.t('ra_Toggle the states view')}>
                     <IconButton onClick={() => this.onStatesViewVisible()}>
                         <LooksOneIcon color={this.state.statesView ? 'primary' : 'default'} />
                     </IconButton>
                 </Tooltip>}
-                {this.props.objectAddBoolean && <Tooltip title={this.props.t('Add new child object to selected parent')}>
+                {this.props.objectAddBoolean && <Tooltip title={this.props.t('ra_Add new child object to selected parent')}>
                     <IconButton onClick={() => {
                         if (this.state.selected.length) {
                             this.setState({ modalNewObj: true });
                         } else {
-                            this.setState({ toast: this.props.t('plese selected object') });
+                            this.setState({ toast: this.props.t('ra_please select object') });
                         }
                     }}>
                         <AddIcon />
@@ -2634,23 +2666,21 @@ class ObjectBrowser extends Component {
                 </Tooltip>
                 }
                 {this.props.objectImportExport &&
-                    <Tooltip title={this.props.t('Add objects tree from JSON file')}>
+                    <Tooltip title={this.props.t('ra_Add objects tree from JSON file')}>
                         <IconButton onClick={() => {
                             const input = document.createElement('input');
                             input.setAttribute('type', 'file');
                             input.setAttribute('id', 'files');
                             input.setAttribute('opacity', 0);
-                            input.addEventListener('change', (e) => {
-                                this.handleFileSelect(e, function () { });
-                            }, false);
-                            (input.click)();
+                            input.addEventListener('change', e => this.handleFileSelect(e), false);
+                            input.click();
                         }}>
                             <PublishIcon />
                         </IconButton>
                     </Tooltip>
                 }
-                {this.props.objectImportExport &&
-                    <Tooltip title={this.props.t('Save objects tree as JSON file')}>
+                {this.props.objectImportExport && !!this.state.selected.length &&
+                    <Tooltip title={this.props.t('ra_Save objects tree as JSON file')}>
                         <IconButton onClick={() => {
                             if (this.state.selected.length) {
                                 let result = {};
@@ -2669,12 +2699,10 @@ class ObjectBrowser extends Component {
                                 })
                                 generateFile(this.state.selected[0] + '.json', result);
                             } else {
-                                alert(this.props.t('Save of objects-tree is not possible'));
+                                window.alert(this.props.t('ra_Save of objects-tree is not possible'));
                             }
                         }}>
-                            <PublishIcon style={{
-                                transform: 'rotate(180deg)'
-                            }} />
+                            <PublishIcon style={{transform: 'rotate(180deg)'}} />
                         </IconButton>
                     </Tooltip>
                 }
@@ -2683,16 +2711,16 @@ class ObjectBrowser extends Component {
                 display: 'flex',
                 whiteSpace: 'nowrap'
             }}>
-                {`${this.props.t('Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t('States')}: ${Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length}`}
+                {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t('ra_States')}: ${Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length}`}
             </div>
-            {this.props.objectEditeBoolean && <IconButton onClick={() => {
+            {this.props.objectEditBoolean && <IconButton onClick={() => {
                 if (this.state.selected.length) {
                     window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', this.state.selected[0]);
                     this.pauseSubscribe(true);
                     this.props.router && this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
                     this.setState({ customDialog: [this.state.selected[0]] });
                 } else {
-                    this.setState({ toast: this.props.t('plese selected object') });
+                    this.setState({ toast: this.props.t('ra_please select object') });
                 }
             }}>
                 <BuildIcon />
@@ -3377,8 +3405,12 @@ class ObjectBrowser extends Component {
         const paddingLeft = ITEM_LEVEL * item.data.level;
 
         if (item.data.lang !== this.state.lang) {
-            item.data.rooms = findRoomsForObject(this.info, id, this.state.lang).join(', ');
-            item.data.funcs = findFunctionsForObject(this.info, id, this.state.lang).join(', ');
+            const {rooms, per} = findRoomsForObject(this.info, id, this.state.lang);
+            item.data.rooms = rooms.join(', ');
+            item.data.per = per;
+            const {funcs, pef} = findFunctionsForObject(this.info, id, this.state.lang);
+            item.data.funcs = funcs.join(', ');
+            item.data.pef = pef;
             item.data.lang = this.state.lang;
         }
 
@@ -3406,17 +3438,17 @@ class ObjectBrowser extends Component {
                 newValue = '&nbsp;';
             } else {
                 newValue = newValue ? newValue.replace(/^system\.adapter\.|^system\./, '') : '';
-                newValueTitle.push(this.texts.state_changed_from + ' ' + newValue);
+                newValueTitle.push(`${this.texts.state_changed_from} ${newValue}`);
             }
             if (obj.user) {
                 const user = obj.user.replace('system.user.', '');
                 newValue += `/${user}`;
-                newValueTitle.push(this.texts.state_changed_by + ' ' + user);
+                newValueTitle.push(`${this.texts.state_changed_by} ${user}`);
             }
         }
-        item.data.obj?.from && newValueTitle.push(this.texts.object_changed_from + ' ' + item.data.obj.from.replace(/^system\.adapter\.|^system\./, ''));
-        item.data.obj?.user && newValueTitle.push(this.texts.object_changed_by + ' ' + item.data.obj.user.replace(/^system\.user\./, ''));
-        item.data.obj?.ts && newValueTitle.push(this.texts.object_changed_by_user + ' ' + formatDate(new Date(item.data.obj.ts)));
+        item.data.obj?.from && newValueTitle.push(this.texts.object_changed_from    + ' ' + item.data.obj.from.replace(/^system\.adapter\.|^system\./, ''));
+        item.data.obj?.user && newValueTitle.push(this.texts.object_changed_by      + ' ' + item.data.obj.user.replace(/^system\.user\./, ''));
+        item.data.obj?.ts   && newValueTitle.push(this.texts.object_changed_by_user + ' ' + formatDate(new Date(item.data.obj.ts)));
 
         return <Grid
             container
@@ -3468,18 +3500,21 @@ class ObjectBrowser extends Component {
             </Grid>
             {this.columnsVisibility.name ? <div className={classes.cellName} style={{ width: this.columnsVisibility.name }}>{(item.data && item.data.title) || ''}</div> : null}
 
-            {!this.state.statesView && <>
-                {this.columnsVisibility.type ? <div className={classes.cellType} style={{ width: this.columnsVisibility.type }}>{typeImg} {obj && obj.type}</div> : null}
-                {this.columnsVisibility.role ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.role, cursor: enumEditable && this.props.objectBrowserEditRole ? 'text' : 'default' }} onClick={enumEditable && this.props.objectBrowserEditRole ? () => this.setState({ roleDialog: item.data.id }) : undefined}>{obj && obj.common && obj.common.role}</div> : null}
-                {this.columnsVisibility.room ? <div className={classes.cellRoom} style={{ width: this.columnsVisibility.room, cursor: enumEditable ? 'text' : 'default' }} onClick={enumEditable ? () => { const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'roomEnums'); this.setState({ enumDialogEnums: enums, enumDialog: { item, type: 'room', enumsOriginal: JSON.parse(JSON.stringify(enums)) } }); } : undefined}>{item.data.rooms}</div> : null}
-                {this.columnsVisibility.func ? <div className={classes.cellFunc} style={{ width: this.columnsVisibility.func, cursor: enumEditable ? 'text' : 'default' }} onClick={enumEditable ? () => { const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'funcEnums'); this.setState({ enumDialogEnums: enums, enumDialog: { item, type: 'func', enumsOriginal: JSON.parse(JSON.stringify(enums)) } }); } : undefined}>{item.data.funcs}</div> : null}
-            </>}
-            {this.state.statesView && <>
-                {this.columnsVisibility.changedFrom ? <div className={classes.cellName} style={{ width: this.columnsVisibility.changedFrom }} title={newValueTitle.join('\n')}>{checkVisibleObjectType && this.states[id]?.from ? newValue : null}</div> : null}
-                {this.columnsVisibility.qualityCode ? <div className={classes.cellName} style={{ width: this.columnsVisibility.qualityCode }}>{checkVisibleObjectType ? quality2text(this.states[id]?.q || 0) : null}</div> : null}
-                {this.columnsVisibility.timestamp ? <div className={classes.cellName} style={{ width: this.columnsVisibility.timestamp }}>{checkVisibleObjectType && this.states[id]?.ts ? formatDate(new Date(this.states[id].ts)) : null}</div> : null}
-                {this.columnsVisibility.lastChange ? <div className={classes.cellName} style={{ width: this.columnsVisibility.lastChange }}>{checkVisibleObjectType && this.states[id]?.lc ? formatDate(new Date(this.states[id].lc)) : null}</div> : null}
-            </>}
+            {!this.state.statesView ?
+                <>
+                    {this.columnsVisibility.type ? <div className={classes.cellType} style={{ width: this.columnsVisibility.type }}>{typeImg} {obj && obj.type}</div> : null}
+                    {this.columnsVisibility.role ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.role, cursor: enumEditable && this.props.objectBrowserEditRole ? 'text' : 'default' }} onClick={enumEditable && this.props.objectBrowserEditRole ? () => this.setState({ roleDialog: item.data.id }) : undefined}>{obj && obj.common && obj.common.role}</div> : null}
+                    {this.columnsVisibility.room ? <div className={`${classes.cellRoom} ${item.data.per ? classes.cellEnumParent : ''}`} style={{ width: this.columnsVisibility.room, cursor: enumEditable ? 'text' : 'default' }} onClick={enumEditable ? () => { const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'roomEnums'); this.setState({ enumDialogEnums: enums, enumDialog: { item, type: 'room', enumsOriginal: JSON.parse(JSON.stringify(enums)) } }); } : undefined}>{item.data.rooms}</div> : null}
+                    {this.columnsVisibility.func ? <div className={`${classes.cellFunc} ${item.data.pef ? classes.cellEnumParent : ''}`} style={{ width: this.columnsVisibility.func, cursor: enumEditable ? 'text' : 'default' }} onClick={enumEditable ? () => { const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'funcEnums'); this.setState({ enumDialogEnums: enums, enumDialog: { item, type: 'func', enumsOriginal: JSON.parse(JSON.stringify(enums)) } }); } : undefined}>{item.data.funcs}</div> : null}
+                </>
+                :
+                <>
+                    {this.columnsVisibility.changedFrom ? <div className={classes.cellName} style={{ width: this.columnsVisibility.changedFrom }} title={newValueTitle.join('\n')}>{checkVisibleObjectType && this.states[id]?.from ? newValue : null}</div> : null}
+                    {this.columnsVisibility.qualityCode ? <div className={classes.cellName} style={{ width: this.columnsVisibility.qualityCode }}>{checkVisibleObjectType ? quality2text(this.states[id]?.q || 0) : null}</div> : null}
+                    {this.columnsVisibility.timestamp   ? <div className={classes.cellName} style={{ width: this.columnsVisibility.timestamp }}>{checkVisibleObjectType && this.states[id]?.ts ? formatDate(new Date(this.states[id].ts)) : null}</div> : null}
+                    {this.columnsVisibility.lastChange  ? <div className={classes.cellName} style={{ width: this.columnsVisibility.lastChange }}>{checkVisibleObjectType && this.states[id]?.lc ? formatDate(new Date(this.states[id].lc)) : null}</div> : null}
+                </>
+            }
             {this.adapterColumns.map(it => <div className={classes.cellAdapter} style={{ width: this.columnsVisibility[it.id] }} key={it.id} title={it.adapter + ' => ' + it.pathText}>{this.renderCustomValue(obj, it, item)}</div>)}
             {this.columnsVisibility.val ? <div className={classes.cellValue} style={{ width: this.columnsVisibility.val, cursor: valueEditable ? 'text' : 'default' }} onClick={valueEditable ? () => {
                 if (!item.data.obj || !this.states) {
@@ -3703,10 +3738,10 @@ class ObjectBrowser extends Component {
                 {this.columnsVisibility.func ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.func }}>{this.getFilterSelectFunction()}</div> : null}
             </>}
             {this.state.statesView && <>
-                <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.changedFrom }}>{this.props.t('Changed from')}</div>
-                <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.qualityCode }}>{this.props.t('Quality code')}</div>
-                <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.timestamp }}>{this.props.t('Timestamp')}</div>
-                <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.lastChange }}>{this.props.t('Last change')}</div>
+                <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.changedFrom }}>{this.props.t('ra_Changed from')}</div>
+                <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.qualityCode }}>{this.props.t('ra_Quality code')}</div>
+                <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.timestamp }}>{this.props.t('ra_Timestamp')}</div>
+                <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.lastChange }}>{this.props.t('ra_Last change')}</div>
             </>}
             {this.adapterColumns.map(item => <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility[item.id] }} title={item.adapter} key={item.id}>{item.name}</div>)}
             {this.columnsVisibility.val ? <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.val }}>{this.props.t('ra_Value')}{filterClearInValue}</div> : null}
@@ -3746,7 +3781,11 @@ class ObjectBrowser extends Component {
             } else {
                 if (!this.selectedFound && ((this.state.selected && this.state.selected[0]) || this.lastSelectedItems)) {
                     const node = window.document.getElementById((this.state.selected && this.state.selected[0]) || this.lastSelectedItems);
-                    node && node.scrollIntoView();
+                    node && node.scrollIntoView({
+                        behavior: 'auto',
+                        block: 'center',
+                        inline: 'center'
+                    });
                     this.selectedFound = true;
                 }
             }
@@ -3832,6 +3871,7 @@ class ObjectBrowser extends Component {
         return <ObjectBrowserValue
             t={this.props.t}
             type={type}
+            themeType={this.props.themeType}
             expertMode={this.state.filter.expertMode}
             value={this.edit.val}
             onClose={res => {
@@ -3840,10 +3880,12 @@ class ObjectBrowser extends Component {
             }}
         />;
     }
+
     extendObject = (id, data) => {
         this.props.socket.extendObject(id, data, error =>
             error && window.alert(error));
     }
+
     /**
      * The rendering method of this component.
      * @returns {JSX.Element}
@@ -3904,9 +3946,10 @@ class ObjectBrowser extends Component {
         }
     }
 }
+
 ObjectBrowser.defaultProps = {
     objectAddBoolean: false,
-    objectEditeBoolean: false,
+    objectEditBoolean: false,
     objectStatesView: false,
     objectImportExport: false,
     objectEditOfAccessControl: false,
@@ -3942,15 +3985,15 @@ ObjectBrowser.propTypes = {
         PropTypes.object,
         PropTypes.func
     ]),
-    objectAddBoolean: PropTypes.bool, //optional toolbar button
-    objectEditeBoolean: PropTypes.bool, //optional toolbar button
-    objectStatesView: PropTypes.bool, //optional toolbar button
-    objectImportExport: PropTypes.bool, //optional toolbar button
+    objectAddBoolean: PropTypes.bool,   // optional toolbar button
+    objectEditBoolean: PropTypes.bool,  // optional toolbar button
+    objectStatesView: PropTypes.bool,   // optional toolbar button
+    objectImportExport: PropTypes.bool, // optional toolbar button
     objectEditOfAccessControl: PropTypes.bool, //Access Control
-    modalNewObject: PropTypes.func, //modal add object
+    modalNewObject: PropTypes.func,     // modal add object
     modalEditOfAccessControl: PropTypes.func, //modal Edit Of Access Control
-    onObjectDelete: PropTypes.func, // optional function (id, hasChildren, objectExists) {  }
-    customFilter: PropTypes.object, // optional {common: {custom: true}} or {common: {custom: 'sql.0'}}
+    onObjectDelete: PropTypes.func,     // optional function (id, hasChildren, objectExists) {  }
+    customFilter: PropTypes.object,     // optional {common: {custom: true}} or {common: {custom: 'sql.0'}}
     objectBrowserValue: PropTypes.object,
     objectBrowserEditObject: PropTypes.object,
     objectBrowserEditRole: PropTypes.object, // on Edit role

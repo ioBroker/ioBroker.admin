@@ -1,17 +1,19 @@
 import { Component } from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
+import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
+
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-noconflict/theme-chrome';
 import 'ace-builds/src-noconflict/ext-language_tools'
-import clsx from 'clsx';
+
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
 
 const styles = theme => ({
     divWithoutTitle: {
@@ -24,6 +26,9 @@ const styles = theme => ({
     },
     id: {
         fontStyle: 'italic',
+    },
+    dialog: {
+        height: 'calc(100% - 64px)'
     }
 });
 
@@ -64,9 +69,11 @@ class ObjectBrowserEditObject extends Component {
 
     render() {
         return <Dialog
+            classes={{paper: this.props.classes.dialog}}
             open={ true }
+            maxWidth="lg"
             fullWidth={ this.state.type !== 'number' && this.state.type !== 'boolean' }
-            fullScreen={ true }
+            fullScreen={ false }
             onClose={ () => this.props.onClose() }
             aria-labelledby="edit-value-dialog-title"
             aria-describedby="edit-value-dialog-description"
@@ -93,8 +100,8 @@ class ObjectBrowserEditObject extends Component {
                 </div>
             </DialogContent>
             <DialogActions>
-                <Button onClick={ () => this.props.onClose() } color="secondary">{ this.props.t('Cancel') }</Button>
-                <Button disabled={ this.state.error || !this.state.changed } onClick={ () => this.onUpdate() } color="primary">{ this.props.t('Write') }</Button>
+                <Button variant="contained" disabled={ this.state.error || !this.state.changed } onClick={ () => this.onUpdate() } color="primary">{ this.props.t('Write') }</Button>
+                <Button variant="contained" onClick={ () => this.props.onClose() }>{ this.props.t('Cancel') }</Button>
             </DialogActions>
         </Dialog>;
     }

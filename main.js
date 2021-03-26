@@ -3,7 +3,7 @@
  *
  *      Controls Adapter-Processes
  *
- *      Copyright 2014-2020 bluefox <dogafox@gmail.com>,
+ *      Copyright 2014-2021 bluefox <dogafox@gmail.com>,
  *      MIT License
  *
  */
@@ -19,6 +19,7 @@ const tools 	  = require(utils.controllerDir + '/lib/tools.js');
 const SocketIO    = require('./lib/socket');
 const Web         = require('./lib/web');
 const semver      = require('semver');
+const request     = require('request');
 
 const ONE_HOUR_MS = 3600000;
 const ERROR_PERMISSION = 'permissionError';
@@ -113,6 +114,9 @@ function startAdapter(options) {
         socket && socket.unsubscribeAll();
         adapter.timerRepo && clearTimeout(adapter.timerRepo);
         adapter.timerRepo = null;
+
+        adapter.timerNews && clearTimeout(adapter.timerNews);
+        adapter.timerNews = null;
 
         try {
             adapter.log.info('terminating http' + (adapter.config.secure ? 's' : '') + ' server on port ' + adapter.config.port);
@@ -388,6 +392,101 @@ function applyRights(adapter) {
         });
 }
 
+// read news from server
+function updateNews() {
+    adapter.timerNews && clearTimeout(adapter.timerNews);
+    adapter.timerNews = null;
+
+    let oldEtag;
+    let newNews;
+    let oldNews;
+    let originalOldNews;
+    let newEtag;
+
+    return adapter.getStateAsync('info.newsETag')
+        .then(state => {
+            oldEtag = state && state.val;
+            return new Promise((resolve, reject) =>
+                request('https://iobroker.live/repo/news-hash.json', (error, state, body) => {
+                    if (!error && body) {
+                        try {
+                            resolve(JSON.parse(body));
+                        } catch (e) {
+                            reject('Cannot parse news');
+                        }
+                    } else {
+                        reject(error || 'Cannot read news URL');
+                    }
+                }));
+        }).then(etag => {
+            if (etag && etag.hash !== oldEtag) {
+                newEtag = etag.hash;
+                return new Promise((resolve, reject) =>
+                    request('https://iobroker.live/repo/news.json', (error, state, body) => {
+                        if (!error && body) {
+                            try {
+                                resolve(JSON.parse(body));
+                            } catch (e) {
+                                reject('Cannot parse news');
+                            }
+                        } else {
+                            reject(error || 'Cannot read news URL');
+                        }
+                    }));
+            } else {
+                newEtag = oldEtag;
+                return Promise.resolve([]);
+            }
+        })
+        .then(_newNews => {
+            newNews = _newNews || [];
+            return adapter.getStateAsync('info.newsFeed');
+        })
+        .then(state => {
+            try {
+                oldNews = state && state.val ? JSON.parse(state.val) : [];
+            } catch (e) {
+                oldNews = [];
+            }
+            originalOldNews = JSON.stringify(oldNews);
+
+            return adapter.getStateAsync('info.newsLastId');
+        })
+        .then(lastState => {
+            // add all IDs newer than last seen
+            newNews.forEach(item => {
+                if (!lastState || !lastState.val || item.created > lastState.val) {
+                    if (!oldNews.find(it => it.created === item.created)) {
+                        oldNews.push(item);
+                    }
+                }
+            });
+
+            oldNews.sort((a, b) => a.created > b.created ? -1 : (a.created < b.created ? 1 : 0));
+
+            // delete news older than 3 months
+            let i;
+            for (i = oldNews.length - 1; i >= 0; i--) {
+                if (Date.now() - new Date(oldNews[i].created).getTime() > 180 * 24 * 3600000) {
+                    oldNews.splice(i, 1);
+                }
+            }
+
+            if (originalOldNews !== JSON.stringify(oldNews)) {
+                return adapter.setStateAsync('info.newsFeed', JSON.stringify(oldNews), true);
+            } else {
+                return Promise.resolve();
+            }
+        })
+        .then(() =>
+            newEtag !== oldEtag ?
+                adapter.setStateAsync('info.newsETag', newEtag, true) :
+                Promise.resolve() )
+        .catch(e => adapter.log.error(`Cannot update news: ${e}`))
+        .then(() =>
+            adapter.timerNews = setTimeout(() => updateNews(), 24 * ONE_HOUR_MS + 1));
+}
+
 function main(adapter) {
     // adapter.subscribeForeignStates('*');
     // adapter.subscribeForeignObjects('*');
@@ -422,6 +521,8 @@ function main(adapter) {
     adapter.config.autoUpdate = parseInt(adapter.config.autoUpdate, 10) || 0;
 
     adapter.config.autoUpdate && updateRegister();
+
+    updateNews();
 }
 
 function getData(adapter, callback) {
@@ -505,7 +606,7 @@ function updateRegister(isForce) {
                         // start next cycle
                         if (adapter.config.autoUpdate) {
                             adapter.timerRepo && clearTimeout(adapter.timerRepo);
-                            adapter.log.debug('Next repo update on ' + new Date(Date.now() + adapter.config.autoUpdate * ONE_HOUR_MS + 1).toLocaleString());
+                            adapter.log.debug(`Next repo update on ${new Date(Date.now() + adapter.config.autoUpdate * ONE_HOUR_MS + 1).toLocaleString()}`);
                             adapter.timerRepo = setTimeout(() => {
                                 adapter.timerRepo = null;
                                 updateRegister();
@@ -514,7 +615,7 @@ function updateRegister(isForce) {
                     });
                 } else if (adapter.config.autoUpdate) {
                     const interval = repos.ts + adapter.config.autoUpdate * ONE_HOUR_MS - Date.now() + 1;
-                    adapter.log.debug('Next repo update on ' + new Date(Date.now() + interval).toLocaleString());
+                    adapter.log.debug(`Next repo update on ${new Date(Date.now() + interval).toLocaleString()}`);
                     adapter.timerRepo && clearTimeout(adapter.timerRepo);
                     adapter.timerRepo = setTimeout(() => {
                         adapter.timerRepo = null;
