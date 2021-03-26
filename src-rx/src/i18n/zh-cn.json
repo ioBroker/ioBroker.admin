@@ -1103,5 +1103,13 @@
   "Value type": "值类型",
   "Press CTRL+ENTER to write the value, when focused": "聚焦后按CTRL + ENTER写入值",
   "Quality": "质量代码",
-  "Install or update the adapter from URL": "从URL安装或更新适配器"
+  "Install or update the adapter from URL": "从URL安装或更新适配器",
+  "compact groups": "紧凑群",
+  "Source": "来源",
+  "PID": "PID",
+  "You can drag users to groups.": "您可以将用户拖动到组中。",
+  "Group members": "小组成员",
+  "In groups": "在群组里",
+  "Copy content": "复制内容",
+  "View: %s": "查看： %s"
 }

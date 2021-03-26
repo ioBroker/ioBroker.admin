@@ -1107,5 +1107,13 @@
   "Value type": "Тип ценности",
   "Press CTRL+ENTER to write the value, when focused": "Нажмите CTRL + ENTER, чтобы записать значение, когда сфокусирован",
   "Quality": "Код качества",
-  "Install or update the adapter from URL": "Установите или обновите адаптер с URL-адреса"
+  "Install or update the adapter from URL": "Установите или обновите адаптер с URL-адреса",
+  "compact groups": "Компакт-группы",
+  "Source": "Источник",
+  "PID": "PID",
+  "You can drag users to groups.": "Вы можете перетаскивать пользователей в группы.",
+  "Group members": "Члены группы",
+  "In groups": "В группах",
+  "Copy content": "Копировать контент",
+  "View: %s": "Просмотр: %s"
 }

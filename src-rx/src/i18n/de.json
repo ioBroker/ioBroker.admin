@@ -1103,5 +1103,13 @@
   "Value type": "Werttyp",
   "Press CTRL+ENTER to write the value, when focused": "Drücken Sie STRG + EINGABETASTE, um den Wert zu schreiben, wenn er fokussiert ist",
   "Quality": "Qualitätscode",
-  "Install or update the adapter from URL": "Installieren oder aktualisieren den Adapter über die URL"
+  "Install or update the adapter from URL": "Installieren oder aktualisieren den Adapter über die URL",
+  "compact groups": "Kompak-Gruppen",
+  "Source": "Quelle",
+  "PID": "PID",
+  "You can drag users to groups.": "Sie können Benutzer in Gruppen ziehen.",
+  "Group members": "Gruppenmitglieder",
+  "In groups": "In Gruppen",
+  "Copy content": "Inhalt kopieren",
+  "View: %s": "Ansicht: %s"
 }

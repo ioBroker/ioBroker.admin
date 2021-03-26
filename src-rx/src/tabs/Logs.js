@@ -485,8 +485,11 @@ class Logs extends Component {
                 </Typography>
             </DialogContent>
             <DialogActions>
-                <Button autoFocus onClick={() => this.handleLogDelete()} color="primary">
+                <Button variant="contained" autoFocus onClick={() => this.handleLogDelete()} color="primary">
                     {this.t('Ok')}
+                </Button>
+                <Button variant="contained" autoFocus onClick={() => this.closeLogDelete()} >
+                    {this.t('Cancel')}
                 </Button>
             </DialogActions>
         </Dialog>;

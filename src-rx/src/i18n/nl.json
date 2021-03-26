@@ -1103,5 +1103,13 @@
   "Value type": "Waarde type",
   "Press CTRL+ENTER to write the value, when focused": "Druk op CTRL + ENTER om de waarde te schrijven, wanneer gefocust",
   "Quality": "Kwaliteitscode",
-  "Install or update the adapter from URL": "Installeer of update de adapter vanaf URL"
+  "Install or update the adapter from URL": "Installeer of update de adapter vanaf URL",
+  "compact groups": "Compacte groepen",
+  "Source": "Bron",
+  "PID": "PID",
+  "You can drag users to groups.": "U kunt gebruikers naar groepen slepen.",
+  "Group members": "Groepsleden",
+  "In groups": "In groepen",
+  "Copy content": "Kopieer inhoud",
+  "View: %s": "Keer bekeken %s"
 }

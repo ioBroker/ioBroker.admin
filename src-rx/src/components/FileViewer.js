@@ -1,6 +1,6 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import withWidth from "@material-ui/core/withWidth";
+import withWidth from '@material-ui/core/withWidth';
 import PropTypes from 'prop-types';
 
 import Button from '@material-ui/core/Button';
@@ -20,8 +20,9 @@ import CloseIcon from '@material-ui/icons/Close';
 const styles = theme => ({
     dialog: {
         height: '100%',
-        maxHeight: '100%',
-        maxWidth: '100%',
+    },
+    paper: {
+        height: 'calc(100% - 64px)',
     },
     content: {
         textAlign: 'center',
@@ -107,12 +108,13 @@ class FileViewer extends Component {
 
     render() {
         return <Dialog
+            classes={{scrollPaper: this.props.classes.dialog, paper: this.props.classes.paper}}
+            scroll="paper"
             key={this.props.key}
-            className={this.props.classes.dialog}
             open={this.props.href}
             onClose={() => this.props.onClose()}
             fullWidth={true}
-            fullScreen={true}
+            maxWidth="xl"
             aria-labelledby="form-dialog-title"
         >
             <DialogTitle id="form-dialog-title">{this.props.t('View: %s', this.props.href)}</DialogTitle>

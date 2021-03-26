@@ -24,7 +24,8 @@ import Input from '@material-ui/core/Input';
 import ErrorDialog from '@iobroker/adapter-react/Dialogs/Error';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import TextInputDialog from '@iobroker/adapter-react/Dialogs/TextInput';
-import FileViewer from '@iobroker/adapter-react/Components/FileViewer';
+//import FileViewer from '@iobroker/adapter-react/Components/FileViewer';
+import FileViewer from './FileViewer';
 import { EXTENSIONS } from '@iobroker/adapter-react/Components/FileViewer';
 
 // Icons
@@ -49,15 +50,18 @@ import NoImage from '@iobroker/adapter-react/assets/no_icon.svg';
 import IconClosed from '@iobroker/adapter-react/icons/IconClosed';
 import IconOpen from '@iobroker/adapter-react/icons/IconOpen';
 
-const ROW_HEIGHT = 32;
+const ROW_HEIGHT   = 32;
 const BUTTON_WIDTH = 32;
 
-const TILE_HEIGHT = 120;
-const TILE_WIDTH = 64;
+const TILE_HEIGHT  = 120;
+const TILE_WIDTH   = 64;
 
 const NOT_FOUND = 'Not found';
 
 const styles = theme => ({
+    dialog: {
+        height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
+    },
     root: {
         width: '100%',
         overflow: 'hidden',
@@ -65,21 +69,21 @@ const styles = theme => ({
         position: 'relative',
     },
     filesDiv: {
-        width: 'calc(100% - ' + theme.spacing(2) + 'px)',
+        width: `calc(100% - ${theme.spacing(2)}px)`,
         overflowX: 'hidden',
         overflowY: 'auto',
         padding: theme.spacing(1),
     },
     filesDivTable: {
-        height: 'calc(100% - ' + (48 + theme.spacing(1)) + 'px)',
+        height: `calc(100% - ${48 + theme.spacing(1)}px)`,
     },
     filesDivTile: {
-        height: 'calc(100% - ' + (48 * 2 + theme.spacing(1)) + 'px)',
+        height: `calc(100% - ${48 * 2 + theme.spacing(1)}px)`,
         display: 'flex',
         alignContent: 'flex-start',
         alignItems: 'stretch',
         flexWrap: 'wrap',
-        flex: '0 0 ' + TILE_WIDTH + 'px',
+        flex: `0 0 ${TILE_WIDTH}px`,
     },
 
     itemTile: {
@@ -290,7 +294,7 @@ const styles = theme => ({
     },
     pathDiv: {
         display: 'flex',
-        width: 'calc(100% - ' + theme.spacing(2) + 'px)',
+        width: `calc(100% - ${theme.spacing(2)}px)`,
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
         textOverflow: 'clip',
@@ -1168,12 +1172,12 @@ class FileBrowser extends Component {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.setState({deleteItem: ''})} >{this.props.t('ra_Cancel')}</Button>
-                    <Button onClick={() => {
+                    <Button variant="contained" onClick={() => {
                         this.suppressDeleteConfirm = Date.now() + 60000 * 5;
                         this.deleteItem();
                     }} >{this.props.t('ra_Delete (no confirm for 5 mins)')}</Button>
-                    <Button onClick={() => this.deleteItem()} color="primary">{this.props.t('ra_Delete')}</Button>
+                    <Button variant="contained" onClick={() => this.deleteItem()} color="primary" autoFocus>{this.props.t('ra_Delete')}</Button>
+                    <Button variant="contained" onClick={() => this.setState({deleteItem: ''})} >{this.props.t('ra_Cancel')}</Button>
                 </DialogActions>
             </Dialog>;
         } else {

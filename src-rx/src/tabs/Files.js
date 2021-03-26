@@ -19,11 +19,8 @@ class Files extends Component {
     }
 
     render() {
-
         if (!this.props.ready) {
-            return (
-                <LinearProgress />
-            );
+            return <LinearProgress />;
         }
 
         return <TabContainer>
