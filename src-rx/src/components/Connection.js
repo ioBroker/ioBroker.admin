@@ -1698,6 +1698,19 @@ class Connection {
     }
 
     /**
+     * Read statistics information from host
+     * @param {string} host
+     * @param {string} typeOfDiag one of none, normal, no-city, extended
+     * @returns {Promise<any>}
+     */
+    getDiagData(host, typeOfDiag) {
+        return new Promise((resolve, reject) => {
+            this._socket.emit('sendToHost', host, 'getDiagData', typeOfDiag, result =>
+                !result || result.error ? reject(result.error) : resolve(result));
+        });
+    }
+
+    /**
      * Read all states (which might not belong to this adapter) which match the given pattern.
      * @param {string} pattern
      * @returns {ioBroker.GetStatesPromise}

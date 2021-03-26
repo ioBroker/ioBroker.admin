@@ -1,9 +1,10 @@
 // RepositoriesDialog
-import { Component } from 'react';
+import {Component} from 'react';
+import clsx from 'clsx';
 
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
-import Fab from '@material-ui/core/Fab'; 
+import Fab from '@material-ui/core/Fab';
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -18,55 +19,46 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import Utils from '../../Utils';
-
-
-// icons
+import PropTypes from "prop-types";
 
 const styles = theme => ({
     tabPanel: {
-        width:      '100%',
-        height:     '100% ',
-        overflow:   'auto',
-        overflowX:   'hidden',
-        padding:    15,
+        width: '100%',
+        height: '100% ',
+        overflow: 'auto',
+        overflowX: 'hidden',
+        padding: 15,
         //backgroundColor: blueGrey[ 50 ]
     },
-    table: 
-    { 
+    table: {
         display: 'flex',
         flexDirection: 'column',
         width: '100%'
     },
-    buttonPanel :
-    {
+    buttonPanel: {
         paddingBottom: 40,
-        display:'flex'
+        display: 'flex'
     },
-    descrPanel:
-    {
-        width:'100%',
-        backgroundColor:'transparent',
-        marginLeft:40,
-        border:'none',
-        display:'flex',
-        alignItems:'center'
+    descrPanel: {
+        width: '100%',
+        backgroundColor: 'transparent',
+        marginLeft: 40,
+        border: 'none',
+        display: 'flex',
+        alignItems: 'center'
     },
-    littleRow : 
-    {
-        width: 110 
+    littleRow: {
+        width: 110
     },
-    nameRow : 
-    {
-        width: 220 
+    nameRow: {
+        width: 220
     },
-    input : 
-    {
+    input: {
         width: '100%'
     }
 });
 
-class RepositoriesDialog extends Component 
-{
+class RepositoriesDialog extends Component {
     repoToArray(repos) {
         return Utils.objectMap(repos, (repo, name) => {
             return {
@@ -75,6 +67,7 @@ class RepositoriesDialog extends Component
             }
         });
     }
+
     arrayToRepo(array) {
         let result = {};
         for (let k in array) {
@@ -85,105 +78,101 @@ class RepositoriesDialog extends Component
 
         return result;
     }
-    render()
-    {
-        const { classes } = this.props; 
+
+    render() {
+        const {classes} = this.props;
         const arr = this.repoToArray(this.props.data.native.repositories);
 
-        const rows = arr.map((e, i) =>
-        {
+        const rows = arr.map((e, i) => {
             return <TableRow key={i} className="float_row">
-                <TableCell className={this.props.classes.littleRow  + ' float_cell '}>
+                <TableCell className={clsx(this.props.classes.littleRow, 'float_cell')}>
                     {i + 1}
                 </TableCell>
-                <TableCell className={this.props.classes.nameRow  + ' float_cell'}>                               
-                    <TextField 
+                <TableCell className={clsx(this.props.classes.nameRow, 'float_cell')}>
+                    <TextField
                         value={e.title}
                         InputLabelProps={{
                             readOnly: false,
                             shrink: true,
-                        }} 
-                        className={this.props.classes.input + ' xs-centered'}
-                        onChange={evt => this.onChangeText(evt, e.title, 'title') }
+                        }}
+                        className={clsx(this.props.classes.input, 'xs-centered')}
+                        onChange={evt => this.onChangeText(evt, e.title, 'title')}
                     />
                 </TableCell>
-                <TableCell className= "grow_cell float_cell">
+                <TableCell className={clsx('grow_cell', 'float_cell')}>
                     <TextField
-                        id="default" 
-                        value={ e.link }
+                        id="default"
+                        value={e.link}
                         InputLabelProps={{
                             readOnly: false,
                             shrink: true,
                         }}
-                        className={this.props.classes.input + " xs-centered"}
-                        onChange={evt => this.onChangeText(evt, e.title, 'link') }
+                        className={clsx(this.props.classes.input, 'xs-centered')}
+                        onChange={evt => this.onChangeText(evt, e.title, 'link')}
                     />
                 </TableCell>
-                <TableCell className={this.props.classes.littleRow  + " float_cell"}>
+                <TableCell className={clsx(this.props.classes.littleRow, 'float_cell')}>
                     <Fab
-                        size="small"  
-                        color="secondary" 
-                        aria-label="add" 
-                        onClick={evt => this.onDelete( e.title )}
+                        size="small"
+                        color="secondary"
+                        aria-label="add"
+                        onClick={() => this.onDelete(e.title)}
                     >
-                       <DeleteIcon />
+                        <DeleteIcon/>
                     </Fab>
                 </TableCell>
             </TableRow>
         })
-        return <div className={ classes.tabPanel }>
-            <div className={ classes.buttonPanel }>
-                <Fab 
-                    size="small"  
-                    color="primary" 
+        return <div className={classes.tabPanel}>
+            <div className={classes.buttonPanel}>
+                <Fab
+                    size="small"
+                    color="primary"
                     aria-label="add"
                     onClick={this.onAdd}
-                    className="small_size" 
+                    className="small_size"
                 >
                     <AddIcon/>
                 </Fab>
-                <Paper variant="outlined" className={ classes.descrPanel }>
-                    
-                </Paper>
+                <Paper variant="outlined" className={classes.descrPanel}/>
             </div>
             <TableContainer>
                 <Table className={classes.table} aria-label="customized table">
                     <TableHead>
                         <TableRow className="float_row">
-                            <TableCell className={this.props.classes.littleRow  + ' float_cell'}> </TableCell>
-                            <TableCell className={this.props.classes.nameRow  + ' float_cell' }>
+                            <TableCell className={clsx(this.props.classes.littleRow, 'float_cell')}> </TableCell>
+                            <TableCell className={clsx(this.props.classes.nameRow, 'float_cell')}>
                                 {this.props.t('name')}
                             </TableCell>
-                            <TableCell className= "grow_cell float_cell">
+                            <TableCell className="grow_cell float_cell">
                                 {this.props.t('link')}
                             </TableCell>
-                            <TableCell className={this.props.classes.littleRow  + ' float_cell'}> </TableCell>
+                            <TableCell className={clsx(this.props.classes.littleRow, 'float_cell')}> </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        { rows }                        
+                        {rows}
                     </TableBody>
                 </Table>
             </TableContainer>
-        </div>
-
+        </div>;
     }
-    onChangeText = (evt, id, name) =>
-    {
-        const value = evt.target.value; 
+
+    onChangeText = (evt, id, name) => {
+        const value = evt.target.value;
         let newData = JSON.parse(JSON.stringify(this.props.data))
         let array = this.repoToArray(newData.native.repositories);
-        array.find(element => element.title == id)[name] = value;
+        array.find(element => element.title === id)[name] = value;
         newData.native.repositories = this.arrayToRepo(array);
         this.props.onChange(newData);
-        if (this.props.dataAux.common.activeRepo == id && name == 'title') {
+        if (this.props.dataAux.common.activeRepo == id && name === 'title') {
             this.props.onChange(newData, this.getUpdateDefaultRepo(value));
         } else {
             this.props.onChange(newData);
         }
     }
-    onDelete = id =>
-    {
+
+    onDelete = id => {
         let newData = JSON.parse(JSON.stringify(this.props.data))
         let array = this.repoToArray(newData.native.repositories);
         let index = array.findIndex(element => element.title == id);
@@ -199,8 +188,8 @@ class RepositoriesDialog extends Component
             this.props.onChange(newData);
         }
     }
-    onAdd = () =>
-    {
+
+    onAdd = () => {
         let newData = JSON.parse(JSON.stringify(this.props.data))
         let array = this.repoToArray(newData.native.repositories);
         array.push({
@@ -210,6 +199,7 @@ class RepositoriesDialog extends Component
         newData.native.repositories = this.arrayToRepo(array);
         this.props.onChange(newData);
     }
+
     getUpdateDefaultRepo = newRepo => {
         let newConfig = JSON.parse(JSON.stringify(this.props.dataAux));
         newConfig.common.activeRepo = newRepo;
@@ -217,10 +207,10 @@ class RepositoriesDialog extends Component
     }
 }
 
+RepositoriesDialog.propTypes = {
+    t: PropTypes.func,
+    data: PropTypes.object,
+    dataAux: PropTypes.object,
+};
 
-export default withWidth()
-(
-    withStyles(styles)(
-        RepositoriesDialog
-    )
-);
+export default withWidth()(withStyles(styles)(RepositoriesDialog));

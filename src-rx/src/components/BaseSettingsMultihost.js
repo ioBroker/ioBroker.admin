@@ -18,7 +18,7 @@ const styles = theme => ({
         padding:   theme.spacing(1),
     },
     controlItem: {
-        width: 'calc(100% - ' + theme.spacing(2) + 'px)',
+        width: `calc(100% - ${theme.spacing(2)}px)`,
         marginBottom: theme.spacing(2),
         marginRight: theme.spacing(1),
         marginLeft: theme.spacing(1),

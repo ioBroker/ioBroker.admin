@@ -1,7 +1,6 @@
-//StatisticsDialog.js
+// StatisticsDialog.js
 
-
-import { Component } from 'react';
+import {Component} from 'react';
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
@@ -10,53 +9,47 @@ import 'ace-builds/src-noconflict/ext-language_tools'
 
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
+
 import Grid from '@material-ui/core/Grid';
-
+import {Paper, Card, Typography, MenuItem, FormControl, Select, InputLabel} from '@material-ui/core';
 import blueGrey from '@material-ui/core/colors/blueGrey'
-import { Paper, Card, Typography, MenuItem, FormControl, Select, InputLabel  } from '@material-ui/core'; 
-
-// icons
+import PropTypes from "prop-types";
 
 const styles = theme => ({
     tabPanel: {
-        width:      '100%',
-        height:     '100% ',
-        overflow:   'auto',
-        padding:    15,
+        width: '100%',
+        height: '100% ',
+        overflow: 'auto',
+        padding: 15,
         //backgroundColor: blueGrey[ 50 ]
     },
-    note:
-    {
-        padding:15,
-        backgroundColor: blueGrey[ 500 ],
-        color:'#FFF',
+    note: {
+        padding: 15,
+        backgroundColor: blueGrey[500],
+        color: '#FFF',
         overflow: 'auto',
         flex: 'none'
     },
-    statis:
-    {
-        padding:15
-    } ,
-    formControl: 
-    {
+    statis: {
+        padding: 15
+    },
+    formControl: {
         margin: theme.spacing(1),
         minWidth: '100%',
     },
-    descrPanel:
-    {
-        width:'100%',
-        backgroundColor:'transparent',
-        border:'none',
+    descrPanel: {
+        width: '100%',
+        backgroundColor: 'transparent',
+        border: 'none',
         overflow: 'auto'
     },
-    selectEmpty: 
-    {
+    selectEmpty: {
         marginTop: theme.spacing(2),
     },
 });
 
 class StatisticsDialog extends Component {
-    getTypes()  {
+    getTypes() {
         return [
             {
                 id: 'none',
@@ -76,75 +69,76 @@ class StatisticsDialog extends Component {
             }
         ]
     }
-	
+
     getTypesSelector = () => {
         const {classes} = this.props;
         const {common} = this.props.data;
         const items = this.getTypes().map((elem, index) =>
-        {
-            return <MenuItem value={elem.title} key={index} >
-                { this.props.t(elem.title) }
-            </MenuItem> 
-        })
+            <MenuItem value={elem.title} key={index}>
+                {this.props.t(elem.title)}
+            </MenuItem>);
+
         return <FormControl className={classes.formControl}>
             <InputLabel shrink id={"statistics-label"}>
-                { this.props.t("Statistics")}
+                {this.props.t('Statistics')}
             </InputLabel>
             <Select
                 className={classes.formControl}
                 id={"statistics"}
-                value={ this.props.data.common.diag }
-                displayEmpty 
-                inputProps={{ 'aria-label': 'Without label' }}
+                value={common.diag}
+                displayEmpty
+                inputProps={{'aria-label': 'Without label'}}
                 onChange={this.handleChangeType}
-            > 
+            >
                 {items}
-            </Select> 
-        </FormControl> 
+            </Select>
+        </FormControl>;
     }
+
     doChange = (name, value) => {
         let newData = JSON.parse(JSON.stringify(this.props.data))
         newData.common[name] = value;
         this.props.onChange(newData);
     }
-	handleChangeType = evt => {
+
+    handleChangeType = evt => {
         this.doChange('diag', evt.target.value);
-        if(this.props.handle)    
-        {
-            this.props.handle( evt.target.value );
+        if (this.props.handle) {
+            this.props.handle(evt.target.value);
         }
     }
+
     render() {
         const {classes} = this.props;
-        return <div className={ classes.tabPanel } style={{ height: 'calc(100% - 0px)' }}>
-            <Grid container spacing={3}  className="sendData-grid" style={{ height: '100%' }}>
-                <Grid item lg={4} md={4} xs={12} style={{ display: 'flex', flexDirection: 'column' }}>
-                    <Card  className={classes.note} >
+        return <div className={classes.tabPanel} style={{height: '100%'}}>
+            <Grid container spacing={3} className="sendData-grid" style={{height: '100%'}}>
+                <Grid item lg={4} md={4} xs={12} style={{display: 'flex', flexDirection: 'column'}}>
+                    <Card className={classes.note}>
                         <Typography gutterBottom variant="h6" component="div">
-                            {this.props.t('Note:')} 
-                        </Typography> 
-                        <Typography 
-                            paragraph 
+                            {this.props.t('Note:')}
+                        </Typography>
+                        <Typography
+                            paragraph
                             variant="body2"
                             component="div"
                             dangerouslySetInnerHTML={{__html: this.props.t('diag-note')}}
-                        />     
-                     </Card >
-                    { this.getTypesSelector() }
-                    {this.props.dataAux ? <Paper 
-                        variant="outlined" 
-                        className={ classes.descrPanel }>
+                        />
+                    </Card>
+                    {this.getTypesSelector()}
+                    {this.props.dataAux ? <Paper
+                        variant="outlined"
+                        className={classes.descrPanel}>
                         <ul>
                             {Object.keys(this.props.dataAux).map(key => <li key={key}>{key}</li>)}
                         </ul>
                     </Paper> : null}
-                      
                 </Grid>
-                <Grid item lg={8} md={4} xs={12} className="sendData-grid" style={{ height:'100%', display: 'flex', flexDirection: 'column' }}>
-                    <Paper className={classes.statis} >
+                <Grid item lg={8} md={4} xs={12} className="sendData-grid"
+                      style={{height: '100%', display: 'flex', flexDirection: 'column'}}>
+                    <Paper className={classes.statis}>
                         <Typography gutterBottom variant="h6" component="div">
                             {this.props.t('Sent data:')}
-                        </Typography>                       
+                        </Typography>
                     </Paper>
                     <AceEditor
                         mode="json"
@@ -153,33 +147,33 @@ class StatisticsDialog extends Component {
                         showPrintMargin={true}
                         showGutter={true}
                         highlightActiveLine={true}
-                        theme={ this.props.themeName === 'dark' || this.props.themeName === 'blue' ? 'clouds_midnight' : 'chrome' }
-                        value={ JSON.stringify(this.props.dataAux, null, 2) }
-                        onChange={ newValue => this.onChange(newValue) }
+                        theme={this.props.themeType === 'dark' ? 'clouds_midnight' : 'chrome'}
+                        value={JSON.stringify(this.props.dataAux, null, 2)}
+                        onChange={newValue => this.onChange(newValue)}
                         name="UNIQUE_ID_OF_DIV"
                         fontSize={14}
-                        setOptions={{ 
+                        setOptions={{
                             enableBasicAutocompletion: true,
                             enableLiveAutocompletion: true,
                             enableSnippets: true,
                             showLineNumbers: true,
                             tabSize: 2,
                         }}
-                        editorProps={{ $blockScrolling: true }}
-                    />  
+                        editorProps={{$blockScrolling: true}}
+                    />
                 </Grid>
             </Grid>
-        </div>
-
+        </div>;
     }
-	
 }
 
+StatisticsDialog.propTypes = {
+    t: PropTypes.func,
+    data: PropTypes.object,
+    dataAux: PropTypes.object,
+    themeType: PropTypes.string,
+    handle: PropTypes.func.isRequired,
+};
 
-export default withWidth()
-(
-    withStyles(styles)(
-        StatisticsDialog
-    )
-);
+export default withWidth()(withStyles(styles)(StatisticsDialog));
 

@@ -1,18 +1,20 @@
+import React, {Component} from 'react';
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogActions from "@material-ui/core/DialogActions";
-import AppBar from "@material-ui/core/AppBar";
-import Tab from "@material-ui/core/Tab";
-import Tabs from "@material-ui/core/Tabs";
+
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import AppBar from '@material-ui/core/AppBar';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
 import Button from '@material-ui/core/Button';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
 import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
+
 import BaseSettingsSystem from '../components/BaseSettingsSystem';
 import BaseSettingsMultihost from '../components/BaseSettingsMultihost';
 import BaseSettingsObjects from '../components/BaseSettingsObjects';
@@ -30,8 +32,8 @@ const styles = theme => ({
         overflow: 'hidden',
     },
     tabPanel: {
-        width:  '100%',
-        height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
+        width: '100%',
+        height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
         overflow: 'auto',
     },
 });
@@ -41,7 +43,7 @@ class BaseSettingsDialog extends Component {
     constructor(props) {
         super(props);
 
-        this.state =  {
+        this.state = {
             currentTab: 0,
             hasChanges: [],
             currentHost: this.props.currentHost,
@@ -64,11 +66,11 @@ class BaseSettingsDialog extends Component {
     renderConfirmDialog() {
         if (this.state.confirmExit) {
             return <ConfirmDialog
-                text={ this.props.t('Discard unsaved changes?')}
+                text={this.props.t('Discard unsaved changes?')}
                 onClose={result =>
-                    this.setState({ confirmExit: false }, () =>
+                    this.setState({confirmExit: false}, () =>
                         result && this.props.onClose())}
-                />;
+            />;
         } else {
             return null;
         }
@@ -77,12 +79,12 @@ class BaseSettingsDialog extends Component {
     renderRestartDialog() {
         if (this.state.showRestart) {
             return <ConfirmDialog
-                text={ this.props.t('Restart controller?')}
+                text={this.props.t('Restart controller?')}
                 onClose={result =>
-                    this.setState({ showRestart: false }, () => {
+                    this.setState({showRestart: false}, () => {
                         if (result) {
                             this.props.socket.restartController(this.props.currentHost)
-                                .catch(e => window.alert('Cannot restart: ' + e));
+                                .catch(e => window.alert(`Cannot restart: ${e}`));
                         }
 
                         this.props.onClose();
@@ -111,198 +113,155 @@ class BaseSettingsDialog extends Component {
 
     onSave(host) {
         const settings = {
-            system:           this.state.system,
+            system: this.state.system,
             multihostService: this.state.multihostService,
-            objects:          this.state.objects,
-            states:           this.state.states,
-            log:              this.state.log,
-            plugins:          this.state.plugins,
+            objects: this.state.objects,
+            states: this.state.states,
+            log: this.state.log,
+            plugins: this.state.plugins,
         };
 
         this.props.socket.writeBaseSettings(host || this.state.currentHost, settings)
             .then(() => {
                 this.originalSettings = JSON.parse(JSON.stringify(settings));
                 // ask about restart
-                this.setState({ hasChanges: [], showRestart: true });
-
+                this.setState({hasChanges: [], showRestart: true});
             });
+    }
+
+    updateSettings(name, settings) {
+        const hasChanges = [...this.state.hasChanges];
+        const changed = JSON.stringify(this.originalSettings[name]) !== JSON.stringify(settings);
+
+        const pos = hasChanges.indexOf(name);
+        if (changed && pos === -1) {
+            hasChanges.push(name);
+        } else if (!changed && pos !== -1) {
+            hasChanges.splice(pos, 1);
+        }
+
+        this.setState({[name]: settings, hasChanges});
     }
 
     renderSystem() {
         const name = 'system';
         return <BaseSettingsSystem
-            settings={ this.state[name] }
-            t={ this.props.t }
-            currentHost={ this.props.currentHost }
-            onChange={ settings => {
-                const hasChanges = [...this.state.hasChanges];
-                const changed = JSON.stringify(this.originalSettings[name]) !== JSON.stringify(settings);
-
-                const pos = hasChanges.indexOf(name);
-                if (changed && pos === -1) {
-                    hasChanges.push(name);
-                } else if (!changed && pos !== -1) {
-                    hasChanges.splice(pos, 1);
-                }
-
-                this.setState({ [name]: settings, hasChanges});
-            }}
+            settings={this.state[name]}
+            t={this.props.t}
+            currentHost={this.props.currentHost}
+            onChange={settings =>
+                this.updateSettings(name, settings)}
         />;
     }
 
     renderMultihost() {
         const name = 'multihostService';
         return <BaseSettingsMultihost
-            settings={ this.state[name] }
-            t={ this.props.t }
-            socket={ this.props.socket }
-            currentHost={ this.props.currentHost }
-            onChange={ settings => {
-                const hasChanges = [...this.state.hasChanges];
-                const changed = JSON.stringify(this.originalSettings[name]) !== JSON.stringify(settings);
-
-                const pos = hasChanges.indexOf(name);
-                if (changed && pos === -1) {
-                    hasChanges.push(name);
-                } else if (!changed && pos !== -1) {
-                    hasChanges.splice(pos, 1);
-                }
-
-                this.setState({ [name]: settings, hasChanges});
-            }}
+            settings={this.state[name]}
+            t={this.props.t}
+            socket={this.props.socket}
+            currentHost={this.props.currentHost}
+            onChange={settings =>
+                this.updateSettings(name, settings)}
         />;
     }
 
     renderObjects() {
         const name = 'objects';
         return <BaseSettingsObjects
-            settings={ this.state[name] }
-            t={ this.props.t }
-            socket={ this.props.socket }
-            currentHost={ this.props.currentHost }
-            onChange={ settings => {
-                const hasChanges = [...this.state.hasChanges];
-                const changed = JSON.stringify(this.originalSettings[name]) !== JSON.stringify(settings);
-
-                const pos = hasChanges.indexOf(name);
-                if (changed && pos === -1) {
-                    hasChanges.push(name);
-                } else if (!changed && pos !== -1) {
-                    hasChanges.splice(pos, 1);
-                }
-
-                this.setState({ [name]: settings, hasChanges});
-            }}
+            settings={this.state[name]}
+            t={this.props.t}
+            socket={this.props.socket}
+            currentHost={this.props.currentHost}
+            onChange={settings =>
+                this.updateSettings(name, settings)}
         />;
     }
 
     renderStates() {
         const name = 'states';
         return <BaseSettingsStates
-            settings={ this.state[name] }
-            t={ this.props.t }
-            socket={ this.props.socket }
-            currentHost={ this.props.currentHost }
-            onChange={ settings => {
-                const hasChanges = [...this.state.hasChanges];
-                const changed = JSON.stringify(this.originalSettings[name]) !== JSON.stringify(settings);
-
-                const pos = hasChanges.indexOf(name);
-                if (changed && pos === -1) {
-                    hasChanges.push(name);
-                } else if (!changed && pos !== -1) {
-                    hasChanges.splice(pos, 1);
-                }
-
-                this.setState({ [name]: settings, hasChanges});
-            }}
+            settings={this.state[name]}
+            t={this.props.t}
+            socket={this.props.socket}
+            currentHost={this.props.currentHost}
+            onChange={settings =>
+                this.updateSettings(name, settings)}
         />;
     }
 
     renderLog() {
         const name = 'log';
         return <BaseSettingsLog
-            settings={ this.state[name] }
-            t={ this.props.t }
-            socket={ this.props.socket }
-            currentHost={ this.props.currentHost }
-            onChange={ settings => {
-                const hasChanges = [...this.state.hasChanges];
-                const changed = JSON.stringify(this.originalSettings[name]) !== JSON.stringify(settings);
-
-                const pos = hasChanges.indexOf(name);
-                if (changed && pos === -1) {
-                    hasChanges.push(name);
-                } else if (!changed && pos !== -1) {
-                    hasChanges.splice(pos, 1);
-                }
-
-                this.setState({ [name]: settings, hasChanges});
-            }}
+            settings={this.state[name]}
+            t={this.props.t}
+            socket={this.props.socket}
+            currentHost={this.props.currentHost}
+            onChange={settings =>
+                this.updateSettings(name, settings)}
         />;
     }
 
     renderPlugins() {
         const name = 'plugins';
         return <BaseSettingsPlugins
-            settings={ this.state[name] }
-            t={ this.props.t }
-            themeName={ this.props.themeName }
-            onChange={ settings => {
-                const hasChanges = [...this.state.hasChanges];
-                const changed = JSON.stringify(this.originalSettings[name]) !== JSON.stringify(settings);
-
-                const pos = hasChanges.indexOf(name);
-                if (changed && pos === -1) {
-                    hasChanges.push(name);
-                } else if (!changed && pos !== -1) {
-                    hasChanges.splice(pos, 1);
-                }
-
-                this.setState({ [name]: settings, hasChanges});
-            }}
+            settings={this.state[name]}
+            t={this.props.t}
+            themeName={this.props.themeName}
+            onChange={settings =>
+                this.updateSettings(name, settings)}
         />;
     }
 
     render() {
         return <Dialog
-            className={ this.props.classes.dialog }
-            open={ true }
-            onClose={ () => {} }
-            fullWidth={ true }
+            className={this.props.classes.dialog}
+            open={true}
+            disableBackdropClick={true}
+            disableEscapeKeyDown={true}
+            fullWidth={true}
             maxWidth="xl"
-            //fullScreen={ true }
             aria-labelledby="base-settings-dialog-title"
         >
-            <DialogTitle id="base-settings-dialog-title">{ this.props.t('Base settings') }</DialogTitle>
-            <DialogContent className={ this.props.classes.content }>
+            <DialogTitle id="base-settings-dialog-title">{this.props.t('Base settings')}</DialogTitle>
+            <DialogContent className={this.props.classes.content}>
                 <AppBar position="static">
                     <Tabs
-                        value={ this.state.currentTab }
-                        onChange={ (event, newTab) => this.setState({ currentTab: newTab }) }
+                        value={this.state.currentTab}
+                        onChange={(event, newTab) => this.setState({currentTab: newTab})}
                         aria-label="system tabs"
                     >
-                        <Tab label={ this.props.t('System') }     id={ 'system-tab' }    aria-controls={ 'simple-tabpanel-0' } />
-                        <Tab label={ this.props.t('Multi-host') } id={ 'multihost-tab' } aria-controls={ 'simple-tabpanel-1' } />
-                        <Tab label={ this.props.t('Objects') }    id={ 'objects-tab' }   aria-controls={ 'simple-tabpanel-3' } />
-                        <Tab label={ this.props.t('States') }     id={ 'states-tab' }    aria-controls={ 'simple-tabpanel-4' } />
-                        <Tab label={ this.props.t('Log') }        id={ 'log-tab' }       aria-controls={ 'simple-tabpanel-5' } />
-                        <Tab label={ this.props.t('Plugins') }    id={ 'plugins-tab' }   aria-controls={ 'simple-tabpanel-6' } />
+                        <Tab label={this.props.t('System')} id={'system-tab'} aria-controls={'simple-tabpanel-0'}/>
+                        <Tab label={this.props.t('Multi-host')} id={'multihost-tab'}
+                             aria-controls={'simple-tabpanel-1'}/>
+                        <Tab label={this.props.t('Objects')} id={'objects-tab'} aria-controls={'simple-tabpanel-3'}/>
+                        <Tab label={this.props.t('States')} id={'states-tab'} aria-controls={'simple-tabpanel-4'}/>
+                        <Tab label={this.props.t('Log')} id={'log-tab'} aria-controls={'simple-tabpanel-5'}/>
+                        <Tab label={this.props.t('Plugins')} id={'plugins-tab'} aria-controls={'simple-tabpanel-6'}/>
                     </Tabs>
                 </AppBar>
                 {this.state.loading ? <LinearProgress/> : null}
-                {!this.state.loading && this.state.currentTab === 0 ? <div className={ this.props.classes.tabPanel }>{ this.renderSystem()  }</div> : null }
-                {!this.state.loading && this.state.currentTab === 1 ? <div className={ this.props.classes.tabPanel }>{ this.renderMultihost() }</div> : null }
-                {!this.state.loading && this.state.currentTab === 2 ? <div className={ this.props.classes.tabPanel }>{ this.renderObjects() }</div> : null }
-                {!this.state.loading && this.state.currentTab === 3 ? <div className={ this.props.classes.tabPanel }>{ this.renderStates() }</div> : null }
-                {!this.state.loading && this.state.currentTab === 4 ? <div className={ this.props.classes.tabPanel }>{ this.renderLog() }</div> : null }
-                {!this.state.loading && this.state.currentTab === 5 ? <div className={ this.props.classes.tabPanel }>{ this.renderPlugins() }</div> : null }
-                { this.renderConfirmDialog() }
-                { this.renderRestartDialog() }
+                {!this.state.loading && this.state.currentTab === 0 ?
+                    <div className={this.props.classes.tabPanel}>{this.renderSystem()}</div> : null}
+                {!this.state.loading && this.state.currentTab === 1 ?
+                    <div className={this.props.classes.tabPanel}>{this.renderMultihost()}</div> : null}
+                {!this.state.loading && this.state.currentTab === 2 ?
+                    <div className={this.props.classes.tabPanel}>{this.renderObjects()}</div> : null}
+                {!this.state.loading && this.state.currentTab === 3 ?
+                    <div className={this.props.classes.tabPanel}>{this.renderStates()}</div> : null}
+                {!this.state.loading && this.state.currentTab === 4 ?
+                    <div className={this.props.classes.tabPanel}>{this.renderLog()}</div> : null}
+                {!this.state.loading && this.state.currentTab === 5 ?
+                    <div className={this.props.classes.tabPanel}>{this.renderPlugins()}</div> : null}
+                {this.renderConfirmDialog()}
+                {this.renderRestartDialog()}
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" disabled={ !this.state.hasChanges.length } onClick={ () => this.onSave() } color="primary"><CheckIcon />{ this.props.t('Save') }</Button>
-                <Button variant="contained" onClick={ () => this.state.hasChanges.length ? this.setState({confirmExit: true}) : this.props.onClose() }><CloseIcon />{ this.state.hasChanges.length ? this.props.t('Cancel') : this.props.t('Close') }</Button>
+                <Button variant="contained" disabled={!this.state.hasChanges.length} onClick={() => this.onSave()}
+                        color="primary"><CheckIcon/>{this.props.t('Save')}</Button>
+                <Button variant="contained"
+                        onClick={() => this.state.hasChanges.length ? this.setState({confirmExit: true}) : this.props.onClose()}><CloseIcon/>{this.state.hasChanges.length ? this.props.t('Cancel') : this.props.t('Close')}
+                </Button>
             </DialogActions>
         </Dialog>
     }

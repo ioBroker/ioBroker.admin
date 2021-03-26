@@ -837,6 +837,7 @@ class App extends Router {
         return <SystemSettingsDialog
             currentHost={this.state.currentHost}
             themeName={this.state.themeName}
+            themeType={this.state.themeType}
             theme={this.state.theme}
             key="systemSettings"
             onClose={() => Router.doNavigate(null)}

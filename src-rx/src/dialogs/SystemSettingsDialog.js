@@ -1,13 +1,14 @@
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
-import { Component } from 'react';
+import {Component} from 'react';
 import PropTypes from 'prop-types';
-import Dialog from "@material-ui/core/Dialog";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogActions from "@material-ui/core/DialogActions";
-import AppBar from "@material-ui/core/AppBar";
-import Tab from "@material-ui/core/Tab";
-import Tabs from "@material-ui/core/Tabs";
+
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import AppBar from '@material-ui/core/AppBar';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -17,53 +18,50 @@ import IconButton from '@material-ui/core/IconButton';
 import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 import Router from '@iobroker/adapter-react/Components/Router';
 
-import MainSettingsDialog from "./SystemSettingsTabs/MainSettingsDialog";
-import RepositoriesDialog from "./SystemSettingsTabs/RepositoriesDialog";
-import CertificatesDialog from "./SystemSettingsTabs/CertificatesDialog";
-import SSLDialog from "./SystemSettingsTabs/SSLDialog";
-import ACLDialog from "./SystemSettingsTabs/ACLDialog";
-import StatisticsDialog from "./SystemSettingsTabs/StatisticsDialog";
+import MainSettingsDialog from './SystemSettingsTabs/MainSettingsDialog';
+import RepositoriesDialog from './SystemSettingsTabs/RepositoriesDialog';
+import CertificatesDialog from './SystemSettingsTabs/CertificatesDialog';
+import SSLDialog from './SystemSettingsTabs/SSLDialog';
+import ACLDialog from './SystemSettingsTabs/ACLDialog';
+import StatisticsDialog from './SystemSettingsTabs/StatisticsDialog';
 
 // icons
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 
 //style
-import "../assets/css/style.css";
-
+import '../assets/css/style.css';
 
 const styles = theme => ({
     tabPanel: {
         width: '100%',
-        height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
+        height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
         overflow: 'hidden'
     },
     tab: {
         // backgroundColor:'#FFF',
         // color:lightBlue[500]
     },
-    dialogTitle : {
+    dialogTitle: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding:'0 0 0 20px',
+        padding: '0 0 0 20px',
     },
-    dialog : {
-        width:'100%',
-        height:'100%',
-        maxWidth:'100%' 
+    dialog: {
+        width: '100%',
+        height: '100%',
+        maxWidth: '100%'
     },
-    content : {
-        padding:'0!important'
+    content: {
+        padding: '0 !important'
     }
 });
 
-class SystemSettingsDialog extends Component 
-{
-    constructor(props) 
-    {
+class SystemSettingsDialog extends Component {
+    constructor(props) {
         super(props);
-        this.state =  {
+        this.state = {
             loading: true,
             confirmExit: false,
             systemConfig: null,
@@ -72,143 +70,128 @@ class SystemSettingsDialog extends Component
         };
         this.getSettings(this.state.currentHost);
     }
-    getSettings() 
-    {
-        const newState = {loading: false};
-         return this.props.socket.getObject('system.repositories')
-                .then(systemRepositories => {
-                    systemRepositories = JSON.parse(JSON.stringify(systemRepositories));
-                    systemRepositories = systemRepositories || {};
-                    systemRepositories.native = systemRepositories.native || {};
-                    systemRepositories.native.repositories = systemRepositories.native.repositories || {};
 
-                    Object.keys(systemRepositories.native.repositories).forEach(repo => {
-                        if (systemRepositories.native.repositories[repo] &&
-                            systemRepositories.native.repositories[repo].json) {
-                            delete systemRepositories.native.repositories[repo].json;
-                        }
-                        if (systemRepositories.native.repositories[repo] &&
-                            systemRepositories.native.repositories[repo].hash) {
-                            delete systemRepositories.native.repositories[repo].hash;
-                        }
+    getSettings() {
+        const newState = {loading: false};
+        return this.props.socket.getObject('system.repositories')
+            .then(systemRepositories => {
+                systemRepositories = JSON.parse(JSON.stringify(systemRepositories));
+                systemRepositories = systemRepositories || {};
+                systemRepositories.native = systemRepositories.native || {};
+                systemRepositories.native.repositories = systemRepositories.native.repositories || {};
+
+                Object.keys(systemRepositories.native.repositories).forEach(repo => {
+                    if (systemRepositories.native.repositories[repo] &&
+                        systemRepositories.native.repositories[repo].json) {
+                        delete systemRepositories.native.repositories[repo].json;
+                    }
+                    if (systemRepositories.native.repositories[repo] &&
+                        systemRepositories.native.repositories[repo].hash) {
+                        delete systemRepositories.native.repositories[repo].hash;
+                    }
+                });
+                this.originalRepositories = JSON.stringify(systemRepositories);
+                newState.systemRepositories = systemRepositories;
+                return this.props.socket.getSystemConfig(true);
+            })
+            .then(systemConfig => {
+                this.originalConfig = JSON.stringify(systemConfig);
+                newState.systemConfig = systemConfig;
+                return this.props.socket.getDiagData(this.props.currentHost, systemConfig.common.diag);
+            })
+            /**/
+            .then(diagData => {
+                newState.diagData = diagData;
+                return this.props.socket.getUsers()
+            })
+            .then(users => {
+                newState.users = users;
+                return this.props.socket.getGroups();
+            })
+            .then(groups => {
+                newState.groups = groups;
+                return this.props.socket.getAdapterInstances();
+            })
+            .then(groups => {
+                newState.histories = Object.values(groups)
+                    .filter(instance => instance.common.getHistory)
+                    .map(instance => {
+                        let id = instance._id.split('.');
+                        return id[id.length - 2] + '.' + id[id.length - 1];
                     });
-                    this.originalRepositories = JSON.stringify(systemRepositories);
-                    newState.systemRepositories = systemRepositories;
-                    return this.props.socket.getSystemConfig(true);
-                })
-                
-                    .then(systemConfig => {
-                        this.originalConfig = JSON.stringify( systemConfig );
-                        newState.systemConfig = systemConfig;
-                        return new Promise((resolve, reject) => {
-                            this.props.socket.getRawSocket().emit(
-                            'sendToHost', 
-                            this.props.currentHost, 
-                            'getDiagData', 
-                            systemConfig.common.diag, 
-                            diagData => {
-                                newState.diagData = diagData;    
-                                resolve(diagData);
-                            });
-                        })
-                    })
-                        /**/
-                        .then(diagData => {
-                            return this.props.socket.getUsers();
-                        })
-                            .then(users => {
-                                newState.users = users;                           
-                                return this.props.socket.getGroups();
-                            })  
-                                .then(groups => {
-                                    newState.groups = groups;                             
-                                    return this.props.socket.getAdapterInstances();
-                                })                        
-                                .then(groups => {
-                                    newState.histories = Object.values(groups)
-                                        .filter(instance => instance.common.getHistory)                     
-                                        .map(instance => {
-                                            let id = instance._id.split('.');
-                                            return id[id.length-2] + '.' + id[id.length-1];
-                                        });
-                                    return this.props.socket.getObject('system.certificates');
-                                })
-                                    .then(systemCertificates => {
-                                        this.originalCertificates = JSON.stringify( systemCertificates );
-                                        newState.systemCertificates = systemCertificates;
-                                        this.setState(newState);                            
-                                    });
+
+                return this.props.socket.getObject('system.certificates');
+            })
+            .then(systemCertificates => {
+                this.originalCertificates = JSON.stringify(systemCertificates);
+                newState.systemCertificates = systemCertificates;
+                this.setState(newState);
+            });
     }
-    renderConfirmDialog() 
-    {
-        if (this.state.confirmExit) 
-        {
+
+    renderConfirmDialog() {
+        if (this.state.confirmExit) {
             return <ConfirmDialog
-                text={ this.props.t('Discard unsaved changes? ')}
+                text={this.props.t('Discard unsaved changes?')}
                 onClose={result =>
-                    this.setState({ confirmExit: false }, () =>
+                    this.setState({confirmExit: false}, () =>
                         result && this.props.onClose())}
             />;
-        } 
-        else 
-        {
+        } else {
             return null;
         }
     }
 
-    onSave()
-    {
+    onSave() {
         return this.props.socket.getSystemConfig(true)
             .then(systemConfig => {
                 systemConfig = systemConfig || {};
-                if (JSON.stringify(systemConfig.common) !== JSON.stringify(this.state.systemConfig.common)) 
-                {
+                if (JSON.stringify(systemConfig.common) !== JSON.stringify(this.state.systemConfig.common)) {
                     return this.props.socket.setSystemConfig(this.state.systemConfig);
-                } 
-                else
-                {
+                } else {
                     return Promise.resolve();
                 }
             })
-                .then(() => this.props.socket.setObject( 'system.certificates', this.state.systemCertificates ))
-                    .then(() => this.props.socket.getObject('system.repositories'))
-                        .then(systemRepositories => {
-                            systemRepositories = systemRepositories || {};
-                            systemRepositories.native = systemRepositories.native || {};
-                            systemRepositories.native.repositories = systemRepositories.native.repositories || {};
-                            const newRepo = JSON.parse(JSON.stringify(this.state.systemRepositories.native.repositories));
+            .then(() => this.props.socket.setObject('system.certificates', this.state.systemCertificates))
+            .then(() => this.props.socket.getObject('system.repositories'))
+            .then(systemRepositories => {
+                systemRepositories = systemRepositories || {};
+                systemRepositories.native = systemRepositories.native || {};
+                systemRepositories.native.repositories = systemRepositories.native.repositories || {};
+                const newRepo = JSON.parse(JSON.stringify(this.state.systemRepositories.native.repositories));
 
-                            // merge new and existing info
-                            Object.keys(newRepo).forEach(repo => {
-                                if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].json) {
-                                    newRepo[repo].json = systemRepositories.native.repositories[repo].json;
-                                }
-                                if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].hash) {
-                                    newRepo[repo].hash = systemRepositories.native.repositories[repo].hash;
-                                }
-                            });
-                            systemRepositories.native.repositories = newRepo;
-                            return this.props.socket.setObject('system.repositories', systemRepositories);
-                        }).then(() => {
-                            // this.getSettings();
-                            alert(this.props.t('Settings saved'));
-                            this.props.onClose();
-                        })
-                            .catch(e => window.alert('Cannot save system configuration: ' + e));
+                // merge new and existing info
+                Object.keys(newRepo).forEach(repo => {
+                    if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].json) {
+                        newRepo[repo].json = systemRepositories.native.repositories[repo].json;
+                    }
+                    if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].hash) {
+                        newRepo[repo].hash = systemRepositories.native.repositories[repo].hash;
+                    }
+                });
+                systemRepositories.native.repositories = newRepo;
+                return this.props.socket.setObject('system.repositories', systemRepositories);
+            }).then(() => {
+                // this.getSettings();
+                alert(this.props.t('Settings saved'));
+                this.props.onClose();
+            })
+            .catch(e =>
+                window.alert(`Cannot save system configuration: ${e}`));
     }
-    getTabs()
-    {
+
+    getTabs() {
         return [
             {
-                id : 0,
+                id: 0,
                 title: 'System settings',
                 component: MainSettingsDialog,
                 data: 'systemConfig',
-                dataAux:'systemRepositories',
+                dataAux: 'systemRepositories',
                 handle: null
             },
             {
-                id : 1,
+                id: 1,
                 title: 'Repositories',
                 component: RepositoriesDialog,
                 data: 'systemRepositories',
@@ -216,31 +199,31 @@ class SystemSettingsDialog extends Component
                 handle: null
             },
             {
-                id : 2,
+                id: 2,
                 title: 'Certificates',
                 component: CertificatesDialog,
                 data: 'systemCertificates',
-                dataAux:{},
+                dataAux: {},
                 handle: null
             },
             {
-                id : 3,
+                id: 3,
                 title: 'Let\'s encrypt SSL',
                 component: SSLDialog,
                 data: 'systemCertificates',
-                dataAux:{},
+                dataAux: {},
                 handle: null
             },
             {
-                id : 4,
+                id: 4,
                 title: 'Default ACL',
                 component: ACLDialog,
                 data: 'systemConfig',
-                dataAux:{},
+                dataAux: {},
                 handle: null
             },
             {
-                id : 5,
+                id: 5,
                 title: 'Statistics',
                 component: StatisticsDialog,
                 data: 'systemConfig',
@@ -249,134 +232,137 @@ class SystemSettingsDialog extends Component
             }
         ]
     }
-    onChangeDiagType = type =>
-    {
-        this.props.socket.getRawSocket().emit(
-            'sendToHost', 
-            this.props.currentHost, 
-            'getDiagData', 
-            type, 
-            diagData => {
-                this.setState({ 
-                    diagData, 
-                    systemConfig: { 
+
+    onChangeDiagType = type => {
+        this.props.socket.getDiagData(this.props.currentHost, type)
+            .then(diagData =>
+                this.setState({
+                    diagData,
+                    systemConfig: {
                         ...this.state.systemConfig,
                         common: {
                             ...this.state.systemConfig.common,
                             diag: type
                         }
-                    } 
-                });
-            });
+                    }
+                }));
     }
-    getDialogContent() { 
-       if(this.state.loading)
-            return  <LinearProgress/> ;
-       const _t =  this. getTabs().filter((e, i) => {
-           return e.id == (this.props.currentTab.id ).toString() ||  e.id == parseInt(this.props.currentTab.id) 
-       }) [0] || this. getTabs()[0];
-       const _Component =  _t.component;
-       const {groups, users, histories} = this.state;
-       return <div className={ this.props.classes.tabPanel }> 
-           <_Component
-                onChange={(data, dataAux) => this.onChangedTab(_t.data, data, _t.dataAux, dataAux) }
-                data={ this.state[_t.data] }
-                dataAux= { this.state[_t.dataAux] } 
-                handle={ _t.handle } 
+
+    getDialogContent() {
+        if (this.state.loading)
+            return <LinearProgress/>;
+
+        const tab = this.getTabs().filter(e =>
+            e.id == (this.props.currentTab.id).toString() ||
+            e.id == parseInt(this.props.currentTab.id))[0] ||
+            this.getTabs()[0];
+
+        const _Component = tab.component;
+        const {groups, users, histories} = this.state;
+        return <div className={this.props.classes.tabPanel}>
+            <_Component
+                onChange={(data, dataAux) => this.onChangedTab(tab.data, data, tab.dataAux, dataAux)}
+                data={this.state[tab.data]}
+                dataAux={this.state[tab.dataAux]}
+                handle={tab.handle}
                 users={users}
                 groups={groups}
                 histories={histories}
                 themeName={this.props.themeName}
+                themeType={this.props.themeType}
                 t={this.props.t}
-           />
-       </div>
+            />
+        </div>
     }
-    onTab = (event, newTab) => { 
+
+    onTab = (event, newTab) => {
         Router.doNavigate(null, 'system', newTab)
     }
-    onChangedTab (id, data, idAux, dataAux)  {
+
+    onChangedTab(id, data, idAux, dataAux) {
         let state = {...this.state};
         if (data) {
-            state[ id ] = data;
+            state[id] = data;
         }
         if (dataAux) {
-            state[ idAux ] = dataAux;
+            state[idAux] = dataAux;
         }
-        this.setState( state );  
+        this.setState(state);
     }
 
     render() {
-        const changed = !(JSON.stringify(this.state.systemRepositories)   === this.originalRepositories &&
-                        JSON.stringify(this.state.systemConfig)        === this.originalConfig &&
-                        JSON.stringify(this.state.systemCertificates)  === this.originalCertificates);
-        const tabs = this. getTabs().map((e,i) =>
-        {
-            return  <Tab
-                label={ this.props.t( e.title ) } 
-                id={ (e.id).toString() } 
-                aria-controls={ 'simple-tabpanel-' +  e.id } 
+        const changed = !(JSON.stringify(this.state.systemRepositories) === this.originalRepositories &&
+            JSON.stringify(this.state.systemConfig) === this.originalConfig &&
+            JSON.stringify(this.state.systemCertificates) === this.originalCertificates);
+
+        const tabs = this.getTabs().map((e, i) => {
+            return <Tab
+                label={this.props.t(e.title)}
+                id={(e.id).toString()}
+                aria-controls={'simple-tabpanel-' + e.id}
                 key={i}
             />;
         })
         const curTab = parseInt(this.props.currentTab.id, 10) || 0;
         return <Dialog
-            className={ this.props.classes.dialog }
+            className={this.props.classes.dialog}
             classes={{
                 root: this.props.classes.dialog,
                 paper: 'dialog-setting'
             }}
-            open={ true }
-            onClose={ () => {} }
-            fullWidth={ false }
-            fullScreen={ false }
+            open={true}
+            disableEscapeKeyDown={true}
+            disableBackdropClick={true}
+            fullWidth={false}
+            fullScreen={false}
             aria-labelledby="system-settings-dialog-title"
         >
-            <DialogContent className={ this.props.classes.content }>
+            <DialogContent className={this.props.classes.content}>
                 <AppBar position="static" color="default">
                     <div className={this.props.classes.dialogTitle}>
                         <Typography className="dialogName">
-                            { this.props.t('Base settings') }
+                            {this.props.t('Base settings')}
                         </Typography>
                         <Tabs
-                            className={ this.props.classes.tab } 
+                            className={this.props.classes.tab}
                             indicatorColor="primary"
-                            value={ curTab }
-                            onChange={ this.onTab }
+                            value={curTab}
+                            onChange={this.onTab}
                             variant="scrollable"
                             scrollButtons="auto"
                         >
-                            { tabs }
+                            {tabs}
                         </Tabs>
-                        <IconButton 
-                            edge="start" 
-                            color="inherit" 
-                            onClick={ () => changed ? this.setState({confirmExit: true}) : this.props.onClose() }
+                        <IconButton
+                            edge="start"
+                            color="inherit"
+                            onClick={() => changed ? this.setState({confirmExit: true}) : this.props.onClose()}
                             aria-label="close"
                         >
-                            <CloseIcon />
-                        </IconButton>   
-                    </div> 
-              
+                            <CloseIcon/>
+                        </IconButton>
+                    </div>
+
                 </AppBar>
-                { this.getDialogContent()  }
-                { this.renderConfirmDialog() }
+                {this.getDialogContent()}
+                {this.renderConfirmDialog()}
             </DialogContent>
             <DialogActions>
-                <Button 
+                <Button
                     variant="contained"
-                    disabled={ !changed } 
-                    onClick={ () => this.onSave() } 
+                    disabled={!changed}
+                    onClick={() => this.onSave()}
                     color="primary"
                 >
-                    <CheckIcon />
-                    { this.props.t('Save') }
+                    <CheckIcon/>
+                    {this.props.t('Save')}
                 </Button>
-                <Button 
-                    variant="contained" 
-                    onClick={ () => changed ? this.setState({confirmExit: true}) : this.props.onClose() }
+                <Button
+                    variant="contained"
+                    onClick={() => changed ? this.setState({confirmExit: true}) : this.props.onClose()}
                 >
-                    <CloseIcon />
-                    { changed ? this.props.t('Cancel') : this.props.t('Close') }
+                    <CloseIcon/>
+                    {changed ? this.props.t('Cancel') : this.props.t('Close')}
                 </Button>
             </DialogActions>
         </Dialog>
@@ -388,6 +374,7 @@ SystemSettingsDialog.propTypes = {
     lang: PropTypes.string,
     socket: PropTypes.object,
     themeName: PropTypes.string,
+    themeType: PropTypes.string,
     onClose: PropTypes.func.isRequired,
     currentTab: PropTypes.object,
 };
@@ -395,27 +382,27 @@ SystemSettingsDialog.propTypes = {
 export default withWidth()(withStyles(styles)(SystemSettingsDialog));
 
 function TabPanel(props) {
-    const { children, value, index, ...other } = props;
-  
+    const {children, value, index, ...other} = props;
+
     return (
-      <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`nav-tabpanel-${index}`}
-        aria-labelledby={`nav-tab-${index}`}
-        {...other}
-      >
-        {value === index && (
-          <Box p={3}>
-            <Typography>{children}</Typography>
-          </Box>
-        )}
-      </div>
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`nav-tabpanel-${index}`}
+            aria-labelledby={`nav-tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box p={3}>
+                    <Typography>{children}</Typography>
+                </Box>
+            )}
+        </div>
     );
-  }
-  
-  TabPanel.propTypes = {
+}
+
+TabPanel.propTypes = {
     children: PropTypes.node,
     index: PropTypes.any.isRequired,
     value: PropTypes.any.isRequired,
-  };
+};

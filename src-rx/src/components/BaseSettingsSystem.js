@@ -2,11 +2,11 @@ import { createRef, Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
+
 import Grid from '@material-ui/core/Grid';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
-
 import Paper from  '@material-ui/core/Paper';
 
 const styles = theme => ({
@@ -18,7 +18,7 @@ const styles = theme => ({
         padding:   theme.spacing(1),
     },
     controlItem: {
-        width: 'calc(100% - ' + theme.spacing(2) + 'px)',
+        width: `calc(100% - ${theme.spacing(2)}px)`,
         marginBottom: theme.spacing(2),
         marginRight: theme.spacing(1),
         marginLeft: theme.spacing(1),
