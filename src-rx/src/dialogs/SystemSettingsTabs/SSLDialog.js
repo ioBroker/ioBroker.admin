@@ -92,7 +92,7 @@ class SSLDialog extends Component {
                     </FormControl>
                 </Grid>
             </Grid>
-        </div>
+        </div>;
     }
 
     onChangeText = (evt, id) => {

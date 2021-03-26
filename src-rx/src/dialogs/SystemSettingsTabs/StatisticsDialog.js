@@ -1,19 +1,18 @@
 // StatisticsDialog.js
 
 import {Component} from 'react';
+import PropTypes from 'prop-types';
+import withWidth from '@material-ui/core/withWidth';
+import {withStyles} from '@material-ui/core/styles';
+
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-noconflict/theme-chrome';
 import 'ace-builds/src-noconflict/ext-language_tools'
 
-import withWidth from '@material-ui/core/withWidth';
-import {withStyles} from '@material-ui/core/styles';
-
-import Grid from '@material-ui/core/Grid';
-import {Paper, Card, Typography, MenuItem, FormControl, Select, InputLabel} from '@material-ui/core';
+import {Grid, Paper, Card, Typography, MenuItem, FormControl, Select, InputLabel} from '@material-ui/core';
 import blueGrey from '@material-ui/core/colors/blueGrey'
-import PropTypes from "prop-types";
 
 const styles = theme => ({
     tabPanel: {
@@ -67,7 +66,7 @@ class StatisticsDialog extends Component {
                 id: 'extended',
                 title: 'extended'
             }
-        ]
+        ];
     }
 
     getTypesSelector = () => {
@@ -84,10 +83,9 @@ class StatisticsDialog extends Component {
             </InputLabel>
             <Select
                 className={classes.formControl}
-                id={"statistics"}
+                id="statistics"
                 value={common.diag}
                 displayEmpty
-                inputProps={{'aria-label': 'Without label'}}
                 onChange={this.handleChangeType}
             >
                 {items}
