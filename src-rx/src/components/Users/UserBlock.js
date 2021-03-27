@@ -14,7 +14,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 function UserBlock(props) {
     const [{ isDragging }, dragRef] = useDrag(
         {
-            item: {user_id: props.user._id, type: 'user'},
+            type: 'user',
+            item: {user_id: props.user._id},
             end: (item, monitor) => {
                 const dropResult = monitor.getDropResult();
                 if (item && dropResult) {
@@ -22,7 +23,8 @@ function UserBlock(props) {
                 }
             },
         }
-    )
+    );
+
     let textColor = !props.user.common.color || Color(props.user.common.color).hsl().object().l > 50 ? 'black' : 'white';
     return <Card raised style={{backgroundColor: props.user.common.color, color: textColor, cursor: 'grab'}} className={props.classes.userGroupCard} ref={dragRef}>
         <div className={props.classes.right}>
@@ -36,27 +38,27 @@ function UserBlock(props) {
         </div>
         <CardContent>
             <Typography gutterBottom variant="h5" component="h5" className={props.classes.userGroupTitle}>
-                {props.user.common.icon ? <img alt="" className={props.classes.icon} src={props.user.common.icon}/> : <PersonIcon/>} 
+                {props.user.common.icon ? <img alt="" className={props.classes.icon} src={props.user.common.icon}/> : <PersonIcon/>}
                 <span>{props.getName(props.user.common.name)}</span>
                 <span>&nbsp;{props.getName(props.user._id)}</span>
                 <span>{props.user.common.desc !== '' ? <span>&nbsp;({props.user.common.desc})</span> : null}</span>
             </Typography>
-            {props.groups.find(group => group.common.members && group.common.members.includes(props.user._id)) ? 
-                <div>{props.t('In groups')}:</div> : 
+            {props.groups.find(group => group.common.members && group.common.members.includes(props.user._id)) ?
+                <div>{props.t('In groups')}:</div> :
             null}
             <div>
-                {props.groups.map(group => 
-                    group.common.members && group.common.members.includes(props.user._id) ? 
+                {props.groups.map(group =>
+                    group.common.members && group.common.members.includes(props.user._id) ?
                     <Card key={group._id} className={props.classes.userGroupMember}>
                         {group.common.icon ? <img alt="" className={props.classes.icon} src={group.common.icon}/> : <GroupIcon/>}
-                        {props.getName(group.common.name)} 
-                        <IconButton 
+                        {props.getName(group.common.name)}
+                        <IconButton
                             size="small"
                             onClick={() => props.removeUserFromGroup(props.user._id, group._id)}
                         >
                             <ClearIcon/>
                         </IconButton>
-                    </Card> : 
+                    </Card> :
                     null
                 )}
             </div>

@@ -1,7 +1,9 @@
 import { createRef, Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
-import withWidth from "@material-ui/core/withWidth";
+import withWidth from '@material-ui/core/withWidth';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
+
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -13,11 +15,9 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Toolbar from '@material-ui/core/Toolbar';
-
-import clsx from 'clsx';
-
 import Button from '@material-ui/core/Button';
 import Paper from  '@material-ui/core/Paper';
+
 import '../assets/materialize.css';
 
 // Icons
@@ -267,7 +267,7 @@ function translateWord(text, lang, dictionary) {
     return text;
 }
 
-function installTemplate(el, lang, id, commonConfig, wordDifferent, onChangedBound) {
+function installTemplate(el, lang, id, commonConfig, wordDifferent, onChange) {
     const template = el.getElementsByClassName('m')[0];
     const words = template.getElementsByClassName('translate');
     const adapter = id.split('.')[0];
@@ -395,9 +395,9 @@ function installTemplate(el, lang, id, commonConfig, wordDifferent, onChangedBou
             }
 
             if (this._initialValue !== val) {
-                onChangedBound(id, field, true, val);
+                onChange(id, field, true, val);
             } else {
-                onChangedBound(id, field, false, val);
+                onChange(id, field, false, val);
             }
         });
     }
@@ -426,7 +426,6 @@ class ObjectCustomEditor extends Component {
         this.lastExpanded = window.localStorage.getItem('App.customsLastExpanded') || '';
         this.scrollDivRef = createRef();
 
-        this.onChangedBound = this.onChange.bind(this);
         this.changedItems = [];
 
         this.controls = {};
@@ -637,7 +636,7 @@ class ObjectCustomEditor extends Component {
                         id,
                         this.commonConfig.commons,
                         wordDifferent,
-                        this.onChangedBound
+                        this.onChange
                     );
 
                     // post init => add custom logic
@@ -685,7 +684,7 @@ class ObjectCustomEditor extends Component {
             </Dialog>;
     }
 
-    onChange(id, attr, isChanged, value) {
+    onChange = (id, attr, isChanged, value) => {
         const key = id + '_' + attr;
         const pos = this.changedItems.indexOf(key);
         if (isChanged) {
@@ -793,7 +792,7 @@ class ObjectCustomEditor extends Component {
             this.changedItems = [];
             this.commonConfig.newValues = {};
             this.setState({ hasChanges: false}, () =>
-                this.props.onChange(false));
+                this.props.onChange(false, true));
         });
     }
 

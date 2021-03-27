@@ -35,7 +35,6 @@ const styles = theme => ({
 });
 
 const DrawerItem = props => {
-
     const {
         badgeColor,
         badgeContent,
@@ -48,14 +47,16 @@ const DrawerItem = props => {
         editList,visible,editListFunc
     } = props;
 
-    const content = text ? text.replace('&gt;', '>') : '';
+    let content = text ? text.replace('&gt;', '>') : '';
 
-    return (<div style={{display:'flex'}}>
+    if (content === 'Text->Kommandos') {
+        content = 'Text→Cmd';
+    } else if (content === 'Text->Commands') {
+        content = 'Text→Cmd';
+    }
 
-        { !!editList && 
-            <Checkbox checked={visible} onChange={editListFunc}/>
-        
-        }
+    return <div style={{display:'flex'}}>
+        { !!editList && <Checkbox checked={visible} onChange={editListFunc}/>}
         <ListItem
             button
             className={clsx({ [classes.selected]: selected }, compact && classes.compactBadge)}
@@ -86,8 +87,8 @@ const DrawerItem = props => {
                     </Grid>
                 }
             </Grid>
-        </ListItem></div>
-    );
+        </ListItem>
+    </div>;
 }
 
 DrawerItem.propTypes = {

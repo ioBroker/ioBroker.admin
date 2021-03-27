@@ -1,9 +1,16 @@
-import { Component } from "react";
-import PropTypes from "prop-types";
-import withWidth from "@material-ui/core/withWidth";
-import {withStyles} from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import LinearProgress from "@material-ui/core/LinearProgress";
+import { Component } from 'react';
+import PropTypes from 'prop-types';
+import withWidth from '@material-ui/core/withWidth';
+import {withStyles} from '@material-ui/core/styles';
+import clsx from 'clsx';
+
+import {
+    MuiPickersUtilsProvider,
+    KeyboardTimePicker,
+    KeyboardDatePicker,
+} from '@material-ui/pickers';
+import Paper from '@material-ui/core/Paper';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
@@ -19,33 +26,26 @@ import Button from '@material-ui/core/Button';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
+import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
+import TextField from '@material-ui/core/TextField';
+import TableBody from '@material-ui/core/TableBody';
+import TableContainer from '@material-ui/core/TableContainer';
+
 import DateFnsUtils from '@date-io/date-fns';
-import frLocale from "date-fns/locale/fr";
-import ruLocale from "date-fns/locale/ru";
-import enLocale from "date-fns/locale/en-US";
-import esLocale from "date-fns/locale/es";
-import plLocale from "date-fns/locale/pl";
-import ptLocale from "date-fns/locale/pt";
-import itLocale from "date-fns/locale/it";
-import cnLocale from "date-fns/locale/zh-CN";
-import brLocale from "date-fns/locale/pt-BR";
-import deLocale from "date-fns/locale/de";
-import nlLocale from "date-fns/locale/nl";
-import {
-    MuiPickersUtilsProvider,
-    KeyboardTimePicker,
-    KeyboardDatePicker,
-} from '@material-ui/pickers';
-
-
-import clsx from 'clsx';
-import Table from "@material-ui/core/Table";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
-import TextField from "@material-ui/core/TextField";
-import TableBody from "@material-ui/core/TableBody";
-import TableContainer from "@material-ui/core/TableContainer";
+import frLocale from 'date-fns/locale/fr';
+import ruLocale from 'date-fns/locale/ru';
+import enLocale from 'date-fns/locale/en-US';
+import esLocale from 'date-fns/locale/es';
+import plLocale from 'date-fns/locale/pl';
+import ptLocale from 'date-fns/locale/pt';
+import itLocale from 'date-fns/locale/it';
+import cnLocale from 'date-fns/locale/zh-CN';
+import brLocale from 'date-fns/locale/pt-BR';
+import deLocale from 'date-fns/locale/de';
+import nlLocale from 'date-fns/locale/nl';
 
 import Utils from '@iobroker/adapter-react/Components/Utils';
 
@@ -95,7 +95,7 @@ const styles = theme => ({
         overflow: 'hidden',
     },
     tableDiv: {
-        height: 'calc(100% - ' + (theme.mixins.toolbar.minHeight + theme.spacing(1)) + 'px)',
+        height: `calc(100% - ${theme.mixins.toolbar.minHeight + theme.spacing(1)}px)`,
         overflow: 'hidden',
         width: '100%',
     },
@@ -159,19 +159,19 @@ const styles = theme => ({
         marginLeft: theme.spacing(1),
     },
     cellAckTrue: {
-
+        color: '#66ff7f',
     },
     cellAckFalse: {
         color: '#FF6666',
     },
     toolbarTime: {
         width: 100,
-        marginTop: 11,
+        marginTop: 9,
         marginLeft: theme.spacing(1),
     },
     toolbarDate: {
-        width: 150,
-        marginTop: 11,
+        width: 160,
+        marginTop: 9,
     },
     toolbarTimeGrid: {
         marginLeft: theme.spacing(1),
@@ -183,7 +183,23 @@ const styles = theme => ({
     noLoadingProgress: {
         width: '100%',
         height: 4,
-    }
+    },
+
+    colValue: {
+
+    },
+    colAck: {
+        width: 50,
+    },
+    colFrom: {
+        width: 120,
+    },
+    colLastChange: {
+        width: 200,
+    },
+    colTs: {
+        width: 200,
+    },
 });
 
 class ObjectHistoryData extends Component {
@@ -235,7 +251,6 @@ class ObjectHistoryData extends Component {
         };
         this.adminInstance = parseInt(window.location.search.slice(1), 10) || 0;
 
-        this.readTimeout = null;
         this.edit = {};
 
         this.supportedFeaturesPromises = {};
@@ -246,34 +261,32 @@ class ObjectHistoryData extends Component {
             .then(() => this.readHistoryRange())
             .then(() => {
                 if (relativeRange !== 'absolute') {
-                    this.setRelativeInterval(this.state.relativeRange, true)
+                    this.setRelativeInterval(this.state.relativeRange, true);
                 } else {
                     this.readHistory();
                 }
             });
 
         this.timeTimer = null;
-
-        this.onChangeBound = this.onChange.bind(this);
     }
 
-    readSupportedFeatures(historyInstances) {
-        historyInstances = historyInstances || this.state.historyInstances;
-        if (!historyInstances) {
+    readSupportedFeatures(historyInstance) {
+        historyInstance = historyInstance || this.state.historyInstance;
+        if (!historyInstance) {
             return Promise.resolve([]);
         } else
-        if (this.supportedFeaturesPromises[historyInstances]) {
-            return this.supportedFeaturesPromises[historyInstances];
+        if (this.supportedFeaturesPromises[historyInstance]) {
+            return this.supportedFeaturesPromises[historyInstance];
         }
 
-        this.supportedFeaturesPromises[historyInstances] = new Promise(resolve => {
+        this.supportedFeaturesPromises[historyInstance] = new Promise(resolve => {
             this.readSupportedFeaturesTimeout && clearTimeout(this.readSupportedFeaturesTimeout);
             this.readSupportedFeaturesTimeout = setTimeout(() => {
                 this.readSupportedFeaturesTimeout = null;
                 resolve([]);
             }, 2000);
 
-            this.props.socket.sendTo(historyInstances, 'features', null)
+            this.props.socket.sendTo(historyInstance, 'features', null)
                 .then(result => {
                     if (this.readSupportedFeaturesTimeout) {
                         this.readSupportedFeaturesTimeout && clearTimeout(this.readSupportedFeaturesTimeout);
@@ -284,20 +297,21 @@ class ObjectHistoryData extends Component {
                     }
                 });
         });
-        return this.supportedFeaturesPromises[historyInstances];
+        return this.supportedFeaturesPromises[historyInstance];
     }
 
     componentDidMount() {
-        this.props.socket.subscribeState(this.props.obj._id, this.onChangeBound);
+        this.props.socket.subscribeState(this.props.obj._id, this.onChange);
     }
 
     componentWillUnmount() {
-        this.readTimeout && clearTimeout(this.readTimeout);
-        this.readTimeout = null;
-        this.props.socket.unsubscribeState(this.props.obj._id, this.onChangeBound);
+        this.timeTimer && clearTimeout(this.timeTimer);
+        this.timeTimer = null;
+
+        this.props.socket.unsubscribeState(this.props.obj._id, this.onChange);
     }
 
-    onChange(id, state) {
+    onChange = (id, state) => {
         if (id === this.props.obj._id &&
             state &&
             this.state.values &&
@@ -327,20 +341,24 @@ class ObjectHistoryData extends Component {
                 }
                 if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
                     // find first alive history
-                    historyInstance = list.find(it => it.alive) || '';
+                    historyInstance = list.find(it => it.alive);
+                    if (historyInstance) {
+                        historyInstance = historyInstance.id;
+                    }
                 }
                 // get first entry
                 if (!historyInstance && list.length) {
                     historyInstance = defaultHistory;
                 }
-                this.readSupportedFeatures(historyInstance)
-                    .then(supportedFeatures =>
-                        this.setState( {
-                            historyInstances: list,
-                            defaultHistory,
-                            historyInstance,
-                            supportedFeatures,
-                        }));
+                return this.readSupportedFeatures(historyInstance)
+                    .then(supportedFeatures => new Promise(resolve =>
+                            this.setState( {
+                                historyInstances: list,
+                                defaultHistory,
+                                historyInstance,
+                                supportedFeatures,
+                            }, () => resolve()))
+                    );
             });
     }
 
@@ -352,7 +370,7 @@ class ObjectHistoryData extends Component {
             if (instObj && instObj.common && instObj.common.getHistory) {
                 let listObj = {id: instance, alive: false};
                 list.push(listObj);
-                ids.push('system.adapter.' + instance + '.alive');
+                ids.push(`system.adapter.${instance}.alive`);
             }
         });
 
@@ -391,31 +409,35 @@ class ObjectHistoryData extends Component {
         start = start || this.state.start;
         end   = end   || this.state.end;
 
+        if (!this.state.historyInstance) {
+            return null;
+        }
+
         this.setState({ loading: true });
         return this.props.socket.getHistory(this.props.obj._id, {
-            instance: this.defaultHistory,
+            instance:  this.state.historyInstance,
             start,
             end,
-            from: true,
-            ack: true,
-            q: true,
-            addID: false,
+            from:      true,
+            ack:       true,
+            q:         true,
+            addID:     false,
             aggregate: 'none'
         }).then(values => {
             // merge range and chart
-            let chart = [];
-            let range = this.rangeValues;
-            let lcVisible = false;
-            let qVisible = false;
-            let ackVisible = false;
+            let chart       = [];
+            let range       = this.rangeValues;
+            let lcVisible   = false;
+            let qVisible    = false;
+            let ackVisible  = false;
             let fromVisible = false;
-            let cVisible = false;
+            let cVisible    = false;
 
             // get the very first item
             if (range && range.length && (!values || !values.length || range[0].ts < values[0].ts)) {
                 chart.push(range[0]);
                 chart.push({ts: range[0].ts + 1, e: true});
-                console.log('add ' + new Date(range[0].ts).toISOString() + ': ' + range[0].val);
+                console.log(`add ${new Date(range[0].ts).toISOString()}: ${range[0].val}`);
                 if (!qVisible && range[0].q !== undefined) {
                     qVisible = true;
                 }
@@ -433,7 +455,7 @@ class ObjectHistoryData extends Component {
             if (values && values.length) {
                 for (let t = 0; t < values.length; t++) {
                     // if range and details are not equal
-                    if (!chart.length || chart[chart.length - 1].ts < values[t].ts) {
+                    if (values[t] && (!chart.length || chart[chart.length - 1].ts < values[t].ts)) {
                         chart.push(values[t]);
                         if (values[t].from && values[t].from.startsWith('system.adapter.')) {
                             values[t].from = values[t].from.substring(15);
@@ -450,10 +472,10 @@ class ObjectHistoryData extends Component {
                         if (!fromVisible && values[t].from) {
                             fromVisible = true;
                         }
-                        if (!cVisible && range[0].c) {
+                        if (!cVisible && values[t].c) {
                             cVisible = true;
                         }
-                        console.log('add value ' + new Date(values[t].ts).toISOString() + ': ' + values[t].val)
+                        console.log(`add value ${new Date(values[t].ts).toISOString()}: ${values[t].val}`)
                     } else if (chart[chart.length - 1].ts === values[t].ts && chart[chart.length - 1].val !== values[t].ts) {
                         console.error('Strange data!');
                     }
@@ -475,15 +497,15 @@ class ObjectHistoryData extends Component {
         const oldest = new Date(2000, 0, 1);
 
         this.setState({ loading: true });
-        this.props.socket.getHistory(this.props.obj._id, {
-            instance: this.defaultHistory,
-            start: oldest.getTime(),
-            end: now.getTime(),
-            step: 3600000 * 24 * 30, // monthly
-            from: false,
-            ack: false,
-            q: false,
-            addID: false,
+        return this.props.socket.getHistory(this.props.obj._id, {
+            instance:  this.state.historyInstance,
+            start:     oldest.getTime(),
+            end:       now.getTime(),
+            step:      3600000 * 24 * 30, // monthly
+            from:      false,
+            ack:       false,
+            q:         false,
+            addID:     false,
             aggregate: 'minmax'
         })
             .then(values => {
@@ -558,10 +580,10 @@ class ObjectHistoryData extends Component {
                     key={ ts }
                     hover
                 >
+                    <TableCell/>
                     <TableCell>...</TableCell>
-                    <TableCell/>
-                    <TableCell/>
-                    <TableCell/>
+                    {this.state.ackVisible ? <TableCell/> : null}
+                    {this.state.fromVisible ? <TableCell/> : null}
                     { this.state.lcVisible  ? <TableCell/> : null }
                 </TableRow>);
             } else
@@ -571,10 +593,10 @@ class ObjectHistoryData extends Component {
                     key={ state.noData ? 'nodata' : ''}
                     hover
                 >
+                    <TableCell/>
                     <TableCell>{ state.noData ? this.props.t('No data in history') : this.props.t('No data in history for selected period')}</TableCell>
-                    <TableCell/>
-                    <TableCell/>
-                    <TableCell/>
+                    {this.state.ackVisible ? <TableCell/> : null}
+                    {this.state.fromVisible ? <TableCell/> : null}
                     { this.state.lcVisible  ? <TableCell/> : null }
                 </TableRow>);
             } else {
@@ -587,25 +609,25 @@ class ObjectHistoryData extends Component {
                         this.state.selected.includes(ts) && classes.rowSelected) }
                     key={ ts + (state.val || '') }
                 >
+                    <TableCell onClick={ e => !interpolated && this.onToggleSelect(e, ts, 'ts') }>
+                        { new Date(state.ts).toLocaleDateString() + ' ' + new Date(state.ts).toLocaleTimeString() + '.' + padding3(state.ts % 1000) }
+                        { selected && this.state.lastSelectedColumn === 'ts' ? <div className={ classes.rowFocused } /> : ''}
+                    </TableCell>
                     <TableCell onClick={ e => !interpolated && this.onToggleSelect(e, ts, 'val') }>
                         { state.val + this.unit }
-                        { selected && this.state.lastSelectedColumn === 'val' ? <div key="focused" className={ classes.rowFocused } /> : ''}
+                        { selected && this.state.lastSelectedColumn === 'val' ? <div className={ classes.rowFocused } /> : ''}
                     </TableCell>
-                    { this.state.ackVisible ? <TableCell onClick={ e => !interpolated && this.onToggleSelect(e, ts, 'ack') } className={ clsx(state.ack ? classes.cellAckTrue : classes.cellAckFalse) }>
+                    { this.state.ackVisible ? <TableCell onClick={ e => !interpolated && this.onToggleSelect(e, ts, 'ack') } className={ state.ack ? classes.cellAckTrue : classes.cellAckFalse}>
                         { state.ack ? 'true' : 'false' }
-                        { selected && this.state.lastSelectedColumn === 'ack' ? <div key="focused" className={ classes.rowFocused } /> : ''}
+                        { selected && this.state.lastSelectedColumn === 'ack' ? <div className={ classes.rowFocused } /> : ''}
                     </TableCell> : null }
                     { this.state.fromVisible ? <TableCell onClick={ e => !interpolated && this.onToggleSelect(e, ts, 'from') }>
                         { state.from || '' }
-                        { selected && this.state.lastSelectedColumn === 'from' ? <div key="focused" className={ classes.rowFocused } /> : ''}
+                        { selected && this.state.lastSelectedColumn === 'from' ? <div className={ classes.rowFocused } /> : ''}
                     </TableCell> : null }
-                    <TableCell onClick={ e => !interpolated && this.onToggleSelect(e, ts, 'ts') }>
-                        { new Date(state.ts).toLocaleDateString() + ' ' + new Date(state.ts).toLocaleTimeString() + '.' + padding3(state.ts % 1000) }
-                        { selected && this.state.lastSelectedColumn === 'ts' ? <div key="focused" className={ classes.rowFocused } /> : ''}
-                    </TableCell>
                     { this.state.lcVisible ? <TableCell onClick={ e => !interpolated && this.onToggleSelect(e, ts, 'lc') }>
                         { state.lc ? new Date(state.lc).toLocaleDateString() + ' ' + new Date(state.lc).toLocaleTimeString() + '.' + padding3(state.ts % 1000) : '' }
-                        { selected && this.state.lastSelectedColumn === 'lc' ? <div key="focused" className={ classes.rowFocused } /> : ''}
+                        { selected && this.state.lastSelectedColumn === 'lc' ? <div className={ classes.rowFocused } /> : ''}
                     </TableCell> : null }
                 </TableRow>);
             }
@@ -679,7 +701,10 @@ class ObjectHistoryData extends Component {
 
         this.setState({ start, end });
 
-        this.timeTimer = setTimeout(() => this.shiftTime(), delay || 60000);
+        this.timeTimer = setTimeout(() => {
+            this.timeTimer = null;
+            this.shiftTime();
+        }, delay || 60000);
     }
 
     setRelativeInterval(mins, dontSave) {
@@ -689,12 +714,20 @@ class ObjectHistoryData extends Component {
             window.localStorage.setItem('App.absoluteEnd', '0');
             this.setState({ relativeRange: mins });
         }
+        if (mins === 'absolute') {
+            this.timeTimer && clearTimeout(this.timeTimer);
+            this.timeTimer = null;
+            return;
+        }
 
         const now = new Date();
 
         if (!this.timeTimer) {
             const delay = 60000 - now.getSeconds() - (1000 - now.getMilliseconds());
-            this.timeTimer = setTimeout(() => this.shiftTime(), delay || 60000);
+            this.timeTimer = setTimeout(() => {
+                this.timeTimer = null;
+                this.shiftTime();
+            }, delay || 60000);
         }
 
         if (now.getMilliseconds()) {
@@ -767,18 +800,19 @@ class ObjectHistoryData extends Component {
                 <Table stickyHeader size="small" className={ classes.table }>
                     <TableHead>
                         <TableRow>
-                            <TableCell className={ classes.colValue }>
-                                { this.props.t('Value') }
-                            </TableCell>
-                            <TableCell className={ classes.colAck }>
-                                { this.props.t('Ack') }
-                            </TableCell>
-                            <TableCell className={ classes.colFrom }>
-                                { this.props.t('From') }
-                            </TableCell>
                             <TableCell className={ classes.colTs }>
                                 { this.props.t('Timestamp') }
                             </TableCell>
+                            <TableCell className={ classes.colValue }>
+                                { this.props.t('Value') }
+                            </TableCell>
+                            {this.state.ackVisible ? <TableCell className={ classes.colAck }>
+                                { this.props.t('Ack') }
+                            </TableCell> : null}
+                            {this.state.fromVisible ? <TableCell className={ classes.colFrom }>
+                                { this.props.t('From') }
+                            </TableCell> : null}
+
                             {this.state.lcVisible ? <TableCell className={ classes.colLastChange }>
                                 { this.props.t('Last change') }
                             </TableCell> : null}
@@ -874,11 +908,11 @@ class ObjectHistoryData extends Component {
             from: 'system.adapter.admin.' + this.adminInstance,
             q:    this.edit.q || 0,
         };
-        
+
         if (!this.state.lcVisible && state.lc) {
             delete state.lc;
         }
-        
+
         Object.keys(state).forEach(attr => {
             if (state[attr] === undefined) {
                 delete state[attr];
@@ -891,12 +925,12 @@ class ObjectHistoryData extends Component {
 
     formatTime(ms) {
         const time = new Date(ms);
-        return padding2(time.getHours()) + ':' + padding2(time.getMinutes()) + ':' + padding2(time.getSeconds()) + '.' + padding3(time.getMilliseconds());
+        return `${padding2(time.getHours())}:${padding2(time.getMinutes())}:${padding2(time.getSeconds())}.${padding3(time.getMilliseconds())}`;
     }
 
     formatDate(ms) {
         const time = new Date(ms);
-        return padding2(time.getDate()) + '.' + padding2(time.getMonth() + 1) + '.' + time.getFullYear();
+        return `${padding2(time.getDate())}.${padding2(time.getMonth() + 1)}.${time.getFullYear()}`;
     }
 
     renderEditDialog() {
@@ -913,27 +947,21 @@ class ObjectHistoryData extends Component {
                         <FormControlLabel
                             control={<Checkbox
                                 defaultChecked={this.edit.val}
-                                onChange={e => {
-                                    this.edit.val = e.target.checked;
-                                }}/>}
+                                onChange={e => this.edit.val = e.target.checked}/>}
                             label={this.props.t('Value')}
                         />
                         :
                         <TextField
                             label={this.props.t('Value')}
                             defaultValue={this.edit.val}
-                            onChange={e => {
-                                this.edit.val = e.target.value;
-                            }}
+                            onChange={e => this.edit.val = e.target.value}
                         />
                     }
                     <br/>
                     <FormControlLabel
                         control={<Checkbox
                             defaultChecked={ this.edit.ack }
-                            onChange={e => {
-                                this.edit.ack = e.target.checked;
-                            } }/>}
+                            onChange={e => this.edit.ack = e.target.checked}/>}
                         label={ this.props.t('Acknowledged') }
                     />
 
@@ -953,17 +981,15 @@ class ObjectHistoryData extends Component {
                                     } }
                                     KeyboardButtonProps={{ 'aria-label': 'change date', }}
                                 />*/}
-                                {/*<TextField
+                                {<TextField
                                     label={ this.props.t('Date')}
                                     defaultValue={ this.edit.date }
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
-                                    onChange={e => {
-                                        this.edit.date = e.target.value;
-                                    } }
-                                />*/}
-                                <KeyboardTimePicker
+                                    onChange={e => this.edit.date = e.target.value}
+                                />}
+                                {/*<KeyboardTimePicker
                                     margin="normal"
                                     label="Time picker"
                                     ampm={false}
@@ -978,9 +1004,7 @@ class ObjectHistoryData extends Component {
                                     className={ this.props.classes.editorTimePicker}
                                     label={ this.props.t('Value') }
                                     defaultValue={ this.edit.time }
-                                    onChange={e => {
-                                        this.edit.time = e.target.value;
-                                    } }
+                                    onChange={e => this.edit.time = e.target.value}
                                 />
                             </Grid>
                         </MuiPickersUtilsProvider>
@@ -993,10 +1017,10 @@ class ObjectHistoryData extends Component {
                     const isUpdate = this.state.updateOpened;
                     this.setState({ updateOpened: false, insertOpened: false }, () =>
                         isUpdate ? this.onUpdate() : this.onInsert());
-                }} 
+                }}
                 color="primary" autoFocus>{ this.state.updateOpened ? this.props.t('Update') : this.props.t('Add') }</Button>
             </DialogActions>
-        </Dialog>
+        </Dialog>;
     }
 
     setStartDate(start) {
@@ -1025,16 +1049,17 @@ class ObjectHistoryData extends Component {
 
     renderToolbar() {
         const classes = this.props.classes;
-
+        console.log('Start ' + this.state.start);
         return <Toolbar>
             <FormControl className={ classes.selectHistoryControl }>
                 <InputLabel>{ this.props.t('History instance') }</InputLabel>
                 <Select
                     value={ this.state.historyInstance}
                     onChange={ e => {
-                        this.readSupportedFeatures(e.target.value)
+                        const historyInstance = e.target.value;
+                        this.readSupportedFeatures(historyInstance)
                             .then(supportedFeatures =>
-                                this.setState({ historyInstance: e.target.value, supportedFeatures }, () =>
+                                this.setState({ historyInstance, supportedFeatures }, () =>
                                     this.readHistory()));
                     }}
                 >
@@ -1069,47 +1094,47 @@ class ObjectHistoryData extends Component {
                 <div className={ classes.toolbarTimeGrid }>
                     <KeyboardDatePicker
                         className={ classes.toolbarDate }
+                        disabled={ this.state.relativeRange !== 'absolute' }
                         disableToolbar
                         variant="inline"
                         margin="normal"
+                        //format="fullDate"
                         label={ this.props.t('Start date') }
                         value={ new Date(this.state.start) }
                         onChange={date => this.setStartDate(date)}
-                        KeyboardButtonProps={{
-                            'aria-label': 'change date',
-                        }}
                     />
                     <KeyboardTimePicker
+                        disabled={ this.state.relativeRange !== 'absolute' }
                         className={ classes.toolbarTime }
                         margin="normal"
+                        //format="fullTime24h"
                         ampm={ false }
                         label={ this.props.t('Start time') }
                         value={ new Date(this.state.start) }
                         onChange={date => this.setStartDate(date)}
-                        KeyboardButtonProps={{
-                            'aria-label': 'change time',
-                        }}
                     />
                 </div>
                 <div className={ classes.toolbarTimeGrid }>
                     <KeyboardDatePicker
+                        disabled={ this.state.relativeRange !== 'absolute' }
                         className={ classes.toolbarDate }
                         disableToolbar
                         variant="inline"
+                        //format="fullDate"
                         margin="normal"
                         label={ this.props.t('End date') }
                         value={ new Date(this.state.end) }
                         onChange={date => this.setEndDate(date)}
-                        KeyboardButtonProps={{'aria-label': 'change date',}}
                     />
                     <KeyboardTimePicker
+                        disabled={ this.state.relativeRange !== 'absolute' }
                         className={ classes.toolbarTime }
                         margin="normal"
+                        //format="fullTime24h"
                         ampm={ false }
                         label={ this.props.t('End time') }
                         value={ new Date(this.state.end) }
                         onChange={date => this.setEndDate(date)}
-                        KeyboardButtonProps={{ 'aria-label': 'change time', }}
                     />
                 </div>
             </MuiPickersUtilsProvider>
@@ -1125,12 +1150,12 @@ class ObjectHistoryData extends Component {
                 const tm = padding2(time.getHours()) + ':' + padding2(time.getMinutes()) + ':' + padding2(time.getSeconds()) + '.' + padding3(time.getMilliseconds());
 
                 this.edit = {
-                    ack: this.state.values[this.state.values.length - 1].ack,
+                    ack:   this.state.values[this.state.values.length - 1].ack,
                     value: this.state.values[this.state.values.length - 1].val,
-                    ts: Date.now(),
+                    ts:    Date.now(),
                     date,
-                    time: tm,
-                    q: 0
+                    time:  tm,
+                    q:     0
                 };
 
                 this.setState( {

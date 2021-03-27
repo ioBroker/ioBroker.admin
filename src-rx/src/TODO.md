@@ -45,6 +45,9 @@
 ## Hosts  
 - Hosts tab => show all hosts in a list with settings
 
+## Users
+- Do not allow edit of user ID
+
 ## Easy mode
 - Easy admin mode
 

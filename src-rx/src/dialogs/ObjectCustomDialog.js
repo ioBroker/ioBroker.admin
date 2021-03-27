@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
@@ -23,11 +23,13 @@ import ObjectChart from '../components/ObjectChart';
 const styles = theme => ({
     dialog: {
         height: '100%',
-        maxHeight: '100%',
-        maxWidth: '100%',
+    },
+    paper: {
+        height: 'calc(100% - 64px)',
     },
     content: {
         textAlign: 'center',
+        overflow: 'hidden',
     },
     tabPanel: {
         width: '100%',
@@ -118,17 +120,28 @@ class ObjectCustomDialog extends Component {
             objectIDs={this.props.objectIDs}
             customsInstances={this.props.customsInstances}
             objects={this.props.objects}
-            onChange={haveChanges => this.setState({ allSaved: !haveChanges })}
+            onChange={(haveChanges, update) => {
+                this.setState({ allSaved: !haveChanges }, () => {
+                    if (update) {
+                        const chartAvailable = this.isChartAvailable();
+                        if (chartAvailable !== this.chartAvailable) {
+                            this.chartAvailable = chartAvailable;
+                            this.forceUpdate();
+                        }
+                    }
+                });
+            }}
         />;
     }
 
     render() {
         return <Dialog
-            className={this.props.classes.dialog}
+            classes={{scrollPaper: this.props.classes.dialog, paper: this.props.classes.paper}}
+            scroll="paper"
             open={true}
             onClose={() => this.props.onClose()}
             fullWidth={true}
-            fullScreen={true}
+            maxWidth="xl"
             aria-labelledby="form-dialog-title"
         >
             <DialogTitle id="form-dialog-title">{

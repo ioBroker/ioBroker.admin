@@ -35,12 +35,11 @@ const DragWrapper = ({ canDrag, setEndDrag, iconJSX, selected, compact, badgeCon
     });
 
     const [{ isDragging }, drag, preview] = useDrag({
-        item: { type: 'box', _id: tab.name, ...tab, iconJSX, selected, compact, badgeContent, badgeColor },
+        type: 'box',
+        item: { _id: tab.name, ...tab, iconJSX, selected, compact, badgeContent, badgeColor },
         canDrag: () => canDrag,
         end: () => setEndDrag(),
-        collect: (monitor) => ({
-            isDragging: monitor.isDragging(),
-        }),
+        collect: monitor => ({isDragging: monitor.isDragging()}),
     });
 
     useEffect(() => {
