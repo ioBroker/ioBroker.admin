@@ -157,6 +157,19 @@ const styles = theme => ({
     },
     editorTimePicker: {
         marginLeft: theme.spacing(1),
+        width: 120,
+    },
+    editorDatePicker: {
+        marginLeft: theme.spacing(1),
+        width: 150,
+    },
+    msInput: {
+        width: 50,
+        paddingTop: 16,
+        marginLeft: 5,
+        '& label': {
+            marginTop: 15
+        }
     },
     cellAckTrue: {
         color: '#66ff7f',
@@ -209,7 +222,7 @@ class ObjectHistoryData extends Component {
         let relativeRange      = window.localStorage.getItem('App.relativeRange') || 'absolute';
         let start              = parseInt(window.localStorage.getItem('App.absoluteStart'), 10) || 0;
         let end                = parseInt(window.localStorage.getItem('App.absoluteEnd'), 10)   || 0;
-        let selected           = window.localStorage.getItem('App.historySelected') || '[]';
+        let selected           = window.localStorage.getItem('App.historySelected') || '';
         let lastSelected       = parseInt(window.localStorage.getItem('App.historyLastSelected'), 10) || null;
         let lastSelectedColumn = window.localStorage.getItem('App.historyLastSelectedColumn') || null;
 
@@ -248,14 +261,16 @@ class ObjectHistoryData extends Component {
             ackVisible: true,
             fromVisible: true,
             supportedFeatures: [],
+            dateFormat: 'dd.MM.yyyy',
+            edit: {}
         };
         this.adminInstance = parseInt(window.location.search.slice(1), 10) || 0;
-
-        this.edit = {};
 
         this.supportedFeaturesPromises = {};
 
         this.unit = this.props.obj.common && this.props.obj.common.unit ? ' ' + this.props.obj.common.unit : '';
+
+        this.timeTimer = null;
 
         this.prepareData()
             .then(() => this.readHistoryRange())
@@ -266,8 +281,6 @@ class ObjectHistoryData extends Component {
                     this.readHistory();
                 }
             });
-
-        this.timeTimer = null;
     }
 
     readSupportedFeatures(historyInstance) {
@@ -351,14 +364,17 @@ class ObjectHistoryData extends Component {
                     historyInstance = defaultHistory;
                 }
                 return this.readSupportedFeatures(historyInstance)
-                    .then(supportedFeatures => new Promise(resolve =>
-                            this.setState( {
-                                historyInstances: list,
-                                defaultHistory,
-                                historyInstance,
-                                supportedFeatures,
-                            }, () => resolve()))
-                    );
+                    .then(supportedFeatures => new Promise(resolve => {
+                        // supportedFeatures = ['insert', 'update', 'delete'];
+
+                        this.setState({
+                            historyInstances: list,
+                            defaultHistory,
+                            historyInstance,
+                            supportedFeatures,
+                            dateFormat: (config.common.dateFormat || 'dd.MM.yyyy').replace(/D/g, 'd').replace(/Y/g, 'y')
+                        }, () => resolve());
+                    }));
             });
     }
 
@@ -699,7 +715,7 @@ class ObjectHistoryData extends Component {
             start = end - mins * 60000;
         }
 
-        this.setState({ start, end });
+        this.setState({ start, end }, () => this.readHistory());
 
         this.timeTimer = setTimeout(() => {
             this.timeTimer = null;
@@ -710,14 +726,15 @@ class ObjectHistoryData extends Component {
     setRelativeInterval(mins, dontSave) {
         if (!dontSave) {
             window.localStorage.setItem('App.relativeRange', mins);
-            window.localStorage.setItem('App.absoluteStart', '0');
-            window.localStorage.setItem('App.absoluteEnd', '0');
             this.setState({ relativeRange: mins });
         }
         if (mins === 'absolute') {
             this.timeTimer && clearTimeout(this.timeTimer);
             this.timeTimer = null;
             return;
+        } else {
+            window.localStorage.removeItem('App.absoluteStart');
+            window.localStorage.removeItem('App.absolute');
         }
 
         const now = new Date();
@@ -834,7 +851,7 @@ class ObjectHistoryData extends Component {
             aria-describedby="alert-dialog-description"
         >
 
-            <DialogTitle id="alert-dialog-title">{ this.props.t('') }</DialogTitle>
+            <DialogTitle id="alert-dialog-title">{ }</DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
                     { this.props.t('Are you sure?') }
@@ -845,11 +862,10 @@ class ObjectHistoryData extends Component {
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={ () => this.setState({ areYouSure: false }) } color="secondary">{ this.props.t('Cancel') }
-                </Button>
-                <Button onClick={ () =>
+                <Button variant="contained" onClick={ () =>
                     this.setState({ areYouSure: false, suppressMessage: this.state.suppressMessage && Date.now() }, () => this.onDelete())
                 } color="primary" autoFocus>{ this.props.t('Delete') }</Button>
+                <Button variant="contained" onClick={ () => this.setState({ areYouSure: false }) } color="secondary">{ this.props.t('Cancel') }</Button>
             </DialogActions>
         </Dialog>;
     }
@@ -864,20 +880,20 @@ class ObjectHistoryData extends Component {
     onUpdate() {
         if (this.props.obj.common) {
             if (this.props.obj.common.type === 'number') {
-                if (typeof this.edit.val !== 'number') {
-                    this.edit.val = parseFloat(this.edit.val.replace(',', '.'));
+                if (typeof this.state.edit.val !== 'number') {
+                    this.state.edit.val = parseFloat(this.state.edit.val.replace(',', '.'));
                 }
             } else if (this.props.obj.common.type === 'boolean') {
-                this.edit.val = this.edit.val === 'true' || this.edit.val === 'TRUE' || this.edit.val === true || this.edit.val === '1' || this.edit.val === 1;
+                this.state.edit.val = this.state.edit.val === 'true' || this.state.edit.val === 'TRUE' || this.state.edit.val === true || this.state.edit.val === '1' || this.state.edit.val === 1;
             }
         }
 
         const state = {
-            val:  this.edit.val,
-            ack:  this.edit.ack,
+            val:  this.state.edit.val,
+            ack:  this.state.edit.ack,
             ts:   this.state.selected[0],
             from: 'system.adapter.admin.' + this.adminInstance,
-            q:    this.edit.q,
+            q:    this.state.edit.q,
         };
         Object.keys(state).forEach(attr => {
             if (state[attr] === undefined) {
@@ -895,18 +911,24 @@ class ObjectHistoryData extends Component {
     onInsert() {
         if (this.props.obj.common) {
             if (this.props.obj.common.type === 'number') {
-                this.edit.val = parseFloat(this.edit.val.replace(',', '.'));
+                this.state.edit.val = parseFloat(this.state.edit.val.replace(',', '.'));
             } else if (this.props.obj.common.type === 'boolean') {
-                this.edit.val = this.edit.val === 'true' || this.edit.val === 'TRUE' || this.edit.val === true || this.edit.val === '1' || this.edit.val === 1;
+                this.state.edit.val = this.state.edit.val === 'true' || this.state.edit.val === 'TRUE' || this.state.edit.val === true || this.state.edit.val === '1' || this.state.edit.val === 1;
             }
         }
 
+        const ts = this.state.edit.date;
+        ts.setHours(this.state.edit.time.getHours());
+        ts.setMinutes(this.state.edit.time.getMinutes());
+        ts.setSeconds(this.state.edit.time.getSeconds());
+        ts.setMilliseconds(parseInt(this.state.edit.ms, 10));
+
         const state = {
-            ts:   this.edit.ts,
-            val:  this.edit.val,
-            ack:  this.edit.ack,
+            ts:   ts.getTime(),
+            val:  this.state.edit.val,
+            ack:  this.state.edit.ack,
             from: 'system.adapter.admin.' + this.adminInstance,
-            q:    this.edit.q || 0,
+            q:    this.state.edit.q || 0,
         };
 
         if (!this.state.lcVisible && state.lc) {
@@ -933,6 +955,15 @@ class ObjectHistoryData extends Component {
         return `${padding2(time.getDate())}.${padding2(time.getMonth() + 1)}.${time.getFullYear()}`;
     }
 
+    updateEdit(name, value) {
+        const edit = JSON.parse(JSON.stringify(this.state.edit));
+        edit.time = new Date(edit.time);
+        edit.date = new Date(edit.date);
+        edit[name] = value;
+
+        this.setState({edit});
+    }
+
     renderEditDialog() {
         return <Dialog
             open={ this.state.updateOpened || this.state.insertOpened }
@@ -940,71 +971,77 @@ class ObjectHistoryData extends Component {
             aria-labelledby="edit-dialog-title"
             aria-describedby="edit-dialog-description"
         >
-            <DialogTitle id="edit-dialog-title">{ this.props.t('') }</DialogTitle>
+            <DialogTitle id="edit-dialog-title">{ this.state.updateOpened ? this.props.t('Update entry') : this.props.t('Insert entry') }</DialogTitle>
             <DialogContent>
                 <form className={ this.props.classes.dialogForm } noValidate autoComplete="off">
-                    {typeof this.edit.val === 'boolean' ?
+                    {typeof this.state.edit.val === 'boolean' ?
                         <FormControlLabel
                             control={<Checkbox
-                                defaultChecked={this.edit.val}
-                                onChange={e => this.edit.val = e.target.checked}/>}
+                                checked={this.state.edit.val}
+                                onChange={e => this.updateEdit('val', e.target.checked)}
+                            />}
                             label={this.props.t('Value')}
                         />
                         :
                         <TextField
                             label={this.props.t('Value')}
-                            defaultValue={this.edit.val}
-                            onChange={e => this.edit.val = e.target.value}
+                            value={this.state.edit.val}
+                            onChange={e => this.updateEdit('val', e.target.value)}
                         />
                     }
                     <br/>
                     <FormControlLabel
                         control={<Checkbox
-                            defaultChecked={ this.edit.ack }
-                            onChange={e => this.edit.ack = e.target.checked}/>}
+                            checked={ this.state.edit.ack }
+                            onChange={e => this.updateEdit('ack', e.target.checked)}/>}
                         label={ this.props.t('Acknowledged') }
                     />
 
                     {this.state.insertOpened ?
                         <MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeMap[this.props.lang]}>
                             <Grid container justify="space-around">
-                                {/*<KeyboardDatePicker
+                                <KeyboardDatePicker
+                                    className={ this.props.classes.editorDatePicker}
                                     margin="normal"
-                                    id="date-picker-dialog"
-                                    label="Date picker dialog"
-                                    format="fullDate"
-                                    value={ time }
-                                    onChange={date => {
-                                        const edit = JSON.parse(JSON.stringify(this.state.edit));
-                                        edit.ts = date.getTime();
-                                        this.setState({ edit });
-                                    } }
-                                    KeyboardButtonProps={{ 'aria-label': 'change date', }}
-                                />*/}
-                                {<TextField
-                                    label={ this.props.t('Date')}
+                                    label={this.props.t('Date')}
+                                    //format="fullDate"
+                                    format={this.state.dateFormat}
+                                    value={ this.state.edit.date }
+                                    onChange={date =>
+                                        this.updateEdit('date', date)}
+                                />
+                                {/*<TextField
+                                    label=this.props.t('Date')
                                     defaultValue={ this.edit.date }
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
                                     onChange={e => this.edit.date = e.target.value}
-                                />}
-                                {/*<KeyboardTimePicker
-                                    margin="normal"
-                                    label="Time picker"
-                                    ampm={false}
-                                    className={ this.props.classes.editorTimePicker}
-                                    value={ new Date(this.edit.ts) }
-                                    onChange={date => {
-                                        this.edit.ts = date.getTime();
-                                    } }
-                                    KeyboardButtonProps={{ 'aria-label': 'change time', }}
                                 />*/}
-                                <TextField
+                                <KeyboardTimePicker
+                                    margin="normal"
+                                    views={['hours', 'minutes', 'seconds']}
+                                    label={this.props.t('Time')}
+                                    ampm={false}
+                                    format="HH:mm:ss"
+                                    className={ this.props.classes.editorTimePicker}
+                                    value={ this.state.edit.time }
+                                    onChange={time =>
+                                        this.updateEdit('time', time)}
+                                />
+                                {/*<TextField
                                     className={ this.props.classes.editorTimePicker}
                                     label={ this.props.t('Value') }
                                     defaultValue={ this.edit.time }
                                     onChange={e => this.edit.time = e.target.value}
+                                />*/}
+                                <TextField
+                                    classes={{root: this.props.classes.msInput}}
+                                    label={ this.props.t('ms') }
+                                    type="number"
+                                    inputProps={{max: 999, min: 0}}
+                                    value={ this.state.edit.ms }
+                                    onChange={e => this.updateEdit('ms', e.target.value) }
                                 />
                             </Grid>
                         </MuiPickersUtilsProvider>
@@ -1012,13 +1049,13 @@ class ObjectHistoryData extends Component {
                 </form>
             </DialogContent>
             <DialogActions>
-                <Button onClick={ () => this.setState({ updateOpened: false, insertOpened: false }) } color="secondary">{ this.props.t('Cancel') }</Button>
-                <Button onClick={ () => {
+                <Button variant="contained" onClick={ () => {
                     const isUpdate = this.state.updateOpened;
                     this.setState({ updateOpened: false, insertOpened: false }, () =>
                         isUpdate ? this.onUpdate() : this.onInsert());
                 }}
                 color="primary" autoFocus>{ this.state.updateOpened ? this.props.t('Update') : this.props.t('Add') }</Button>
+                <Button variant="contained" onClick={ () => this.setState({ updateOpened: false, insertOpened: false }) }>{ this.props.t('Cancel') }</Button>
             </DialogActions>
         </Dialog>;
     }
@@ -1049,7 +1086,6 @@ class ObjectHistoryData extends Component {
 
     renderToolbar() {
         const classes = this.props.classes;
-        console.log('Start ' + this.state.start);
         return <Toolbar>
             <FormControl className={ classes.selectHistoryControl }>
                 <InputLabel>{ this.props.t('History instance') }</InputLabel>
@@ -1057,6 +1093,7 @@ class ObjectHistoryData extends Component {
                     value={ this.state.historyInstance}
                     onChange={ e => {
                         const historyInstance = e.target.value;
+                        window.localStorage.setItem('App.historyInstance', historyInstance);
                         this.readSupportedFeatures(historyInstance)
                             .then(supportedFeatures =>
                                 this.setState({ historyInstance, supportedFeatures }, () =>
@@ -1098,6 +1135,7 @@ class ObjectHistoryData extends Component {
                         disableToolbar
                         variant="inline"
                         margin="normal"
+                        format={this.state.dateFormat}
                         //format="fullDate"
                         label={ this.props.t('Start date') }
                         value={ new Date(this.state.start) }
@@ -1119,6 +1157,7 @@ class ObjectHistoryData extends Component {
                         disabled={ this.state.relativeRange !== 'absolute' }
                         className={ classes.toolbarDate }
                         disableToolbar
+                        format={this.state.dateFormat}
                         variant="inline"
                         //format="fullDate"
                         margin="normal"
@@ -1146,19 +1185,21 @@ class ObjectHistoryData extends Component {
 
             { this.state.supportedFeatures.includes('insert') && this.props.expertMode ? <IconButton onClick={ () => {
                 const time = new Date();
-                const date = time.getFullYear() + '.' + padding2(time.getMonth() + 1) + '.' + padding2(time.getDate());
-                const tm = padding2(time.getHours()) + ':' + padding2(time.getMinutes()) + ':' + padding2(time.getSeconds()) + '.' + padding3(time.getMilliseconds());
+                //const date = `${time.getFullYear()}.${padding2(time.getMonth() + 1)}.${padding2(time.getDate())}`;
+                //const tm = `${padding2(time.getHours())}:${padding2(time.getMinutes())}:${padding2(time.getSeconds())}.${padding3(time.getMilliseconds())}`;
 
-                this.edit = {
+                const edit = {
                     ack:   this.state.values[this.state.values.length - 1].ack,
-                    value: this.state.values[this.state.values.length - 1].val,
-                    ts:    Date.now(),
-                    date,
-                    time:  tm,
+                    val:   this.state.values[this.state.values.length - 1].val,
+                    ts:    time,
+                    date:  new Date(time),
+                    ms:    0,
+                    time:  new Date(time),
                     q:     0
                 };
 
                 this.setState( {
+                    edit,
                     insertOpened: true })
             }}>
                 <InsertIcon />
@@ -1167,11 +1208,11 @@ class ObjectHistoryData extends Component {
                 onClick={ () => {
                     const state = JSON.parse(JSON.stringify(this.state.values.find(it => it.ts === this.state.lastSelected)));
                     const time = new Date(state.ts);
-                    state.date = time.getFullYear() + '.' + padding2(time.getMonth() + 1) + '.' + padding2(time.getDate());
-                    state.time = padding2(time.getHours()) + ':' + padding2(time.getMinutes()) + ':' + padding2(time.getSeconds()) + '.' + padding3(time.getMilliseconds());
-                    this.edit = state;
+                    state.date = new Date(time);//time.getFullYear() + '.' + padding2(time.getMonth() + 1) + '.' + padding2(time.getDate());
+                    state.time = new Date(time);//padding2(time.getHours()) + ':' + padding2(time.getMinutes()) + ':' + padding2(time.getSeconds()) + '.' + padding3(time.getMilliseconds());
 
                     this.setState( {
+                        edit: state,
                         updateOpened: true });
                 }}>
                 <EditIcon />

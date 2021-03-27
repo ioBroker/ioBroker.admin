@@ -135,6 +135,8 @@ class ObjectCustomDialog extends Component {
     }
 
     render() {
+        const varType = this.props.objects[this.props.objectIDs[0]]?.common?.type;
+
         return <Dialog
             classes={{scrollPaper: this.props.classes.dialog, paper: this.props.classes.paper}}
             scroll="paper"
@@ -154,15 +156,15 @@ class ObjectCustomDialog extends Component {
                     <Tabs value={this.state.currentTab} onChange={(event, newTab) => {
                         Router.doNavigate(null, null, null, newTab === 1 ? 'table' : (newTab === 2 ? 'chart' : 'config'));
                         this.setState({ currentTab: newTab });
-                    }} aria-label="simple tabs example">
+                    }}>
                         <Tab label={this.props.t('Custom settings')} id={'custom-settings-tab'} aria-controls={'simple-tabpanel-0'} />
-                        {this.chartAvailable ? <Tab label={this.props.t('History data')} id={'history-data-tab'} aria-controls={'simple-tabpanel-1'} /> : null}
-                        {this.chartAvailable ? <Tab label={this.props.t('Chart')} id={'chart-tab'} aria-controls={'simple-tabpanel-2'} /> : null}
+                        {this.props.objectIDs.length === 1 && this.chartAvailable ? <Tab label={this.props.t('History data')} id={'history-data-tab'} aria-controls={'simple-tabpanel-1'} /> : null}
+                        {(varType === 'number' || varType === 'boolean') && this.props.objectIDs.length === 1 && this.chartAvailable ? <Tab label={this.props.t('Chart')} id={'chart-tab'} aria-controls={'simple-tabpanel-2'} /> : null}
                     </Tabs>
                 </AppBar>
                 {this.state.currentTab === 0 ? <div className={this.props.classes.tabPanel}>{this.renderCustomEditor()}</div> : null}
-                {this.chartAvailable && this.state.currentTab === 1 ? <div className={this.props.classes.tabPanel}>{this.renderTable()}</div> : null}
-                {this.chartAvailable && this.state.currentTab === 2 ? <div className={this.props.classes.tabPanel}>{this.renderCharts()}</div> : null}
+                {this.props.objectIDs.length === 1 && this.chartAvailable && this.state.currentTab === 1 ? <div className={this.props.classes.tabPanel}>{this.renderTable()}</div> : null}
+                {(varType === 'number' || varType === 'boolean') && this.props.objectIDs.length === 1 && this.chartAvailable && this.state.currentTab === 2 ? <div className={this.props.classes.tabPanel}>{this.renderCharts()}</div> : null}
             </DialogContent>
             <DialogActions>
                 <Button
