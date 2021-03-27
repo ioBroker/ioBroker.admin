@@ -15,16 +15,20 @@
   - Buttons of the dialog: "Acknowledge"
   - Subscribe on `admin.X.info.newsFeed` and test on update
 
+- Support of notifications: https://github.com/ioBroker/ioBroker.js-controller/pull/1153 
+  - system.host.HOSTNAME.notifications
+
 ## Adapters
 - Adapters - Use readme renderer from www.iobroker.net (BF)
 - Show number of possible updates on "Adapters" in menu on the left (impossible ?)
-- Open configration dialog for just installed instance (only if )
-- Show which version is minimal required by dependencies problem
+- Open the configuration dialog for just installed instance (only if document.hidden === false) (https://github.com/ioBroker/ioBroker.admin/issues/541)
+- Show which version is minimal required by the dependencies' problem (https://github.com/ioBroker/ioBroker.admin/issues/507)
+  - https://github.com/ioBroker/ioBroker.admin/issues/557
 
 ## Instances
 - fix layout by long adapter names (see screenshot in telegram)
 - Check what happens if CRON has value like "03 0,6,13,22 *" (https://github.com/ioBroker/ioBroker.admin/issues/360)
-- Mode in which the whole title background indicates the state of instance
+- Mode in which the whole title background indicates the state of instance (https://github.com/ioBroker/ioBroker.admin/issues/652)
 
 ## Objects
 - Decode quality code to text (BF)
@@ -32,7 +36,7 @@
 - ACL settings for non-existing objects with '---' and "apply to children" selected
 - highlight "different" with (opacity: 0.5)
 - Create object of type "folder": only in "alias.0" and "0_userdata.0" (https://github.com/ioBroker/ioBroker.admin/issues/577)
-- Alias editor
+- Alias editor (https://github.com/ioBroker/ioBroker.admin/issues/558)
 
 ## Objects - Custom editor
 - edit config by JSON
@@ -55,6 +59,9 @@
 ## After all is done
 - Add encryption in frontend
 - config.json describes how configuration dialog looks like
+
+## Login and authentication
+- check and implement id needed
 
 ## Admin settings dialog (index_m.html)
 - write it with react

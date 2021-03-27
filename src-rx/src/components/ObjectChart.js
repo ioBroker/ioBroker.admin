@@ -962,7 +962,7 @@ class ObjectChart extends Component {
             'instance=' + window.encodeURIComponent(this.state.historyInstance),
             'menuOpened=false',
         ];
-        
+
         if (this.state.relativeRange === 'absolute') {
             args.push('start=' + this.chart.min);
             args.push('end=' + this.chart.max);
