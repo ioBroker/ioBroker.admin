@@ -24,6 +24,7 @@
 ## Instances
 - fix layout by long adapter names (see screenshot in telegram)
 - Check what happens if CRON has value like "03 0,6,13,22 *" (https://github.com/ioBroker/ioBroker.admin/issues/360)
+- Mode in which the whole title background indicates the state of instance
 
 ## Objects
 - Decode quality code to text (BF)
@@ -34,7 +35,7 @@
 - Alias editor
 
 ## Objects - Custom editor
-- Jump to echarts (if installed)
+- edit config by JSON
 
 ## Files
 - Files - bulk edit of access rights

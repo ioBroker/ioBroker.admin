@@ -2,6 +2,7 @@ import { createRef, Component } from 'react';
 import PropTypes from 'prop-types';
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
+import clsx from 'clsx';
 
 import {
     MuiPickersUtilsProvider,
@@ -28,7 +29,6 @@ import 'echarts/lib/component/dataZoom';
 import 'echarts/lib/component/timeline';
 import 'zrender/lib/svg/svg';
 
-
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from 'date-fns/locale/fr';
 import ruLocale from 'date-fns/locale/ru';
@@ -42,11 +42,11 @@ import brLocale from 'date-fns/locale/pt-BR';
 import deLocale from 'date-fns/locale/de';
 import nlLocale from 'date-fns/locale/nl';
 
-import clsx from 'clsx';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 
 // icons
 import {FaChartLine as SplitLineIcon} from 'react-icons/fa';
+import EchartsIcon from '../assets/echarts.png';
 
 const localeMap = {
     en: enLocale,
@@ -128,6 +128,15 @@ const styles = theme => ({
         border: '1px dotted #AAAAAA',
         borderRadius: theme.spacing(1),
     },
+    buttonIcon: {
+        width: 24,
+        height: 24
+    },
+    echartsButton: {
+        marginRight: theme.spacing(1),
+        height: 34,
+        width: 34,
+    }
 });
 
 const GRID_PADDING_LEFT = 80;
@@ -237,32 +246,40 @@ class ObjectChart extends Component {
                 return this.props.socket.getSystemConfig();
             })
             .then(config => {
-                const defaultHistory = config && config.common && config.common.defaultHistory;
+                return this.props.socket.getAdapterInstances('echarts')
+                    .then(instances => {
+                        // collect all echarts instances
+                        const echartsJump = !!instances.find(item => item._id.startsWith('system.adapter.echarts.'));
 
-                // find current history
-                // first read from localstorage
-                let historyInstance = window.localStorage.getItem('App.historyInstance') || '';
-                if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
-                    // try default history
-                    historyInstance = defaultHistory;
-                }
-                if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
-                    // find first alive history
-                    historyInstance = list.find(it => it.alive);
-                    if (historyInstance) {
-                        historyInstance = historyInstance.id;
-                    }
-                }
-                // get first entry
-                if (!historyInstance && list.length) {
-                    historyInstance = defaultHistory;
-                }
-                this.setState( {
-                    dateFormat: (config.common.dateFormat || 'dd.MM.yyyy').replace(/D/g, 'd').replace(/Y/g, 'y'),
-                    historyInstances: list,
-                    defaultHistory,
-                    historyInstance
-                });
+                        const defaultHistory = config && config.common && config.common.defaultHistory;
+
+                        // find current history
+                        // first read from localstorage
+                        let historyInstance = window.localStorage.getItem('App.historyInstance') || '';
+                        if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
+                            // try default history
+                            historyInstance = defaultHistory;
+                        }
+                        if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
+                            // find first alive history
+                            historyInstance = list.find(it => it.alive);
+                            if (historyInstance) {
+                                historyInstance = historyInstance.id;
+                            }
+                        }
+                        // get first entry
+                        if (!historyInstance && list.length) {
+                            historyInstance = defaultHistory;
+                        }
+
+                        this.setState( {
+                            dateFormat: (config.common.dateFormat || 'dd.MM.yyyy').replace(/D/g, 'd').replace(/Y/g, 'y'),
+                            historyInstances: list,
+                            defaultHistory,
+                            historyInstance,
+                            echartsJump,
+                        });
+                    });
             });
     }
 
@@ -939,13 +956,30 @@ class ObjectChart extends Component {
             this.updateChart(this.chart.min, this.chart.max, true));
     }
 
+    openEcharts() {
+        const args = [
+            'id=' + window.encodeURIComponent(this.props.obj._id),
+            'instance=' + window.encodeURIComponent(this.state.historyInstance),
+            'menuOpened=false',
+        ];
+        
+        if (this.state.relativeRange === 'absolute') {
+            args.push('start=' + this.chart.min);
+            args.push('end=' + this.chart.max);
+        } else {
+            args.push('range=' + this.state.relativeRange);
+        }
+
+        window.open(`${window.location.protocol}//${window.location.host}/adapter/echarts/tab.html#${args.join('&')}`, 'echarts');
+    }
+
     renderToolbar() {
         const classes = this.props.classes;
         return <Toolbar>
             <FormControl className={ classes.selectHistoryControl }>
                 <InputLabel>{ this.props.t('History instance') }</InputLabel>
                 <Select
-                    value={ this.state.historyInstance}
+                    value={ this.state.historyInstance }
                     onChange={ e => {
                         window.localStorage.setItem('App.historyInstance', e.target.value);
                         this.setState({ historyInstance: e.target.value });
@@ -1028,6 +1062,9 @@ class ObjectChart extends Component {
                 </div>
             </MuiPickersUtilsProvider>
             <div className={classes.grow} />
+            {this.state.echartsJump && <Fab className={classes.echartsButton} size="small" onClick={() => this.openEcharts()} title={this.props.t('Open charts in new window')}>
+                <img src={EchartsIcon} alt="echarts" className={classes.buttonIcon}/>
+            </Fab>}
             <Fab
                 variant="extended"
                 size="small"

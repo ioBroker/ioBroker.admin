@@ -202,7 +202,6 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
                 onClick={() => {
                     if (value === 0) {
                         addInstance(autocompleteValue.value, debug, false);
-
                     } else {
                         addInstance(url, debug, true);
                     }
@@ -214,7 +213,6 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
             </Button>
             <Button
                 variant="contained"
-                autoFocus
                 onClick={() => {
                     onClose();
                     closeInit();

@@ -1700,7 +1700,7 @@ class ObjectBrowser extends Component {
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => this.setState({ error: '' })} color="primary" autoFocus><IconCheck className={this.props.classes.buttonIcon} />{this.props.t('ra_Ok')}</Button>
+                <Button variant="contained" onClick={() => this.setState({ error: '' })} color="primary" autoFocus><IconCheck className={this.props.classes.buttonIcon} />{this.props.t('ra_Ok')}</Button>
             </DialogActions>
         </Dialog> : null;
     }
@@ -1908,7 +1908,7 @@ class ObjectBrowser extends Component {
                     </List>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.setState({ columnsSelectorShow: false })} color="primary">
+                    <Button variant="contained" onClick={() => this.setState({ columnsSelectorShow: false })} color="primary">
                         <IconClose className={this.props.classes.buttonIcon} />{this.texts['close']}
                     </Button>
                 </DialogActions>
@@ -3291,12 +3291,12 @@ class ObjectBrowser extends Component {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.onColumnsEditCustomDialogClose()}><IconClose className={this.props.classes.buttonIcon} />{this.props.t('Cancel')}</Button>
-                    <Button onClick={() => this.onColumnsEditCustomDialogClose(true)}
+                    <Button variant="contained" onClick={() => this.onColumnsEditCustomDialogClose(true)}
                             disabled={!this.state.customColumnDialogValueChanged}
                             color="primary">
                         <IconCheck className={this.props.classes.buttonIcon} /> {this.props.t('ra_Update')}
                     </Button>
+                    <Button variant="contained" onClick={() => this.onColumnsEditCustomDialogClose()}><IconClose className={this.props.classes.buttonIcon} />{this.props.t('Cancel')}</Button>
                 </DialogActions>
             </Dialog>;
         } else {

@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
 
@@ -220,8 +220,8 @@ class ObjectBrowserValue extends Component {
                 </form>
             </DialogContent>
             <DialogActions>
-                <Button onClick={ () => this.onUpdate() }      color="primary">{   this.props.t('Write') }</Button>
-                <Button onClick={ () => this.props.onClose() }>{ this.props.t('Cancel') }</Button>
+                <Button variant="contained" onClick={ () => this.onUpdate() }      color="primary">{   this.props.t('Write') }</Button>
+                <Button variant="contained" onClick={ () => this.props.onClose() }>{ this.props.t('Cancel') }</Button>
             </DialogActions>
         </Dialog>;
     }

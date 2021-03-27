@@ -11,6 +11,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 
 import CloseIcon from '@material-ui/icons/Close';
+import React from "react";
 
 const styles = theme => ({
     closeButton: {
@@ -36,7 +37,7 @@ function ConfirmDialog(props) {
                 </Typography>
             </DialogContent>
             <DialogActions>
-                <Button autoFocus onClick={ props.onConfirm } color="primary">
+                <Button variant="contained" autoFocus onClick={ props.onConfirm } color="primary">
                     { props.confirmText || 'OK' }
                 </Button>
             </DialogActions>

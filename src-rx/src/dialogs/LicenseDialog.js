@@ -66,7 +66,6 @@ const LicenseDialog = ({ url, func }) => {
                 </Button>
                 <Button
                     variant="contained"
-                    autoFocus
                     onClick={onClose}
                     color="default">
                     {I18n.t('Close')}

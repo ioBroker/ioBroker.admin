@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 
@@ -84,8 +84,8 @@ class ObjectBrowserEditRole extends Component {
                 />}
             </DialogContent>
             <DialogActions>
-                <Button onClick={ () => this.onUpdate() }      color="primary"><IconCheck/>{   this.props.t('Apply') }</Button>
-                <Button onClick={ () => this.props.onClose() } color="secondary"><IconCancel/>{ this.props.t('Cancel') }</Button>
+                <Button variant="contained" onClick={ () => this.onUpdate() }      color="primary"><IconCheck/>{   this.props.t('Apply') }</Button>
+                <Button variant="contained" onClick={ () => this.props.onClose() } color="default"><IconCancel/>{ this.props.t('Cancel') }</Button>
             </DialogActions>
         </Dialog>;
     }
