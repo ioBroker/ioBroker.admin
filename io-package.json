@@ -242,6 +242,7 @@
         "bind": "0.0.0.0",
         "cache": false,
         "react": false,
+        "autoUpdate": 24,
         "accessLimit": false,
         "accessApplyRights": false,
         "accessAllowedConfigs": [],

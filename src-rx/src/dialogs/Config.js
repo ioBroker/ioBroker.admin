@@ -30,7 +30,7 @@ class Config extends Component {
 
         emit(eventName, event => this.closeConfig(event), false);
     }
-    
+
     componentWillUnmount() {
 
         const eventFunc = window.removeEventListener ? 'removeEventListener' : 'detachEvent';
@@ -62,7 +62,7 @@ class Config extends Component {
                     <AppBar color="default" position="static">
                         <Toolbar variant="dense">
                             <Typography variant="h6" color="inherit">
-                                {`${this.props.t('adapterConfig')}: ${this.props.adapter}.${this.props.instance}`}
+                                {`${this.props.t('Instance settings')}: ${this.props.adapter}.${this.props.instance}`}
                             </Typography>
                         </Toolbar>
                     </AppBar>
