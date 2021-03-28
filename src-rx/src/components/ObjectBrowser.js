@@ -204,6 +204,9 @@ const styles = theme => ({
         whiteSpace: 'nowrap',
         flexWrap: 'nowrap',
     },
+    tableRowAlias: {
+        height: ROW_HEIGHT + 10,
+    },
     checkBox: {
         padding: 0,
     },
@@ -247,6 +250,7 @@ const styles = theme => ({
         height: ROW_HEIGHT - 4,
         cursor: 'pointer',
         color: theme.palette.secondary.main || '#fbff7d',
+        verticalAlign: 'top',
     },
     cellIdIconDocument: {
         verticalAlign: 'middle',
@@ -289,6 +293,15 @@ const styles = theme => ({
         marginLeft: 5,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+    },
+    cellIdAlias: {
+        fontStyle: 'italic',
+        fontSize: 12,
+        opacity: 0.7,
+        lineHeight: 0,
+        '&:hover': {
+            color: theme.palette.type === 'dark' ? '#009900' : '#007700',
+        }
     },
     cellType: {
         display: 'inline-block',
@@ -3490,11 +3503,21 @@ class ObjectBrowser extends Component {
         item.data.obj?.user && newValueTitle.push(this.texts.objectChangedBy     + ' ' + item.data.obj.user.replace(/^system\.user\./, ''));
         item.data.obj?.ts   && newValueTitle.push(this.texts.objectChangedByUser + ' ' + formatDate(new Date(item.data.obj.ts)));
 
+        const alias = id.startsWith('alias.') && item.data.obj?.common?.alias?.id ?
+            <div onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                this.onSelect(item.data.obj.common.alias.id);
+                setTimeout(() => this.scrollToItem(item.data.obj.common.alias.id), 200);
+            }}
+            className={classes.cellIdAlias}
+            >→{item.data.obj?.common?.alias?.id}</div> : null;
+
         return <Grid
             container
             direction="row"
             wrap="nowrap"
-            className={Utils.clsx(classes.tableRow, !item.data.visible && classes.filteredOut, this.state.selected.includes(id) && classes.itemSelected)}
+            className={Utils.clsx(classes.tableRow, alias && classes.tableRowAlias, !item.data.visible && classes.filteredOut, this.state.selected.includes(id) && classes.itemSelected)}
             key={id}
             id={id}
             onClick={() => this.onSelect(id)}
@@ -3527,6 +3550,7 @@ class ObjectBrowser extends Component {
                     style={{ color: id === 'system' ? COLOR_NAME_SYSTEM : (id === 'system.adapter' ? COLOR_NAME_SYSTEM_ADAPTER : 'inherit') }}
                 >
                     {item.data.name}
+                    {alias}
                 </Grid>
                 <div className={classes.grow} />
                 <Grid
@@ -3538,7 +3562,7 @@ class ObjectBrowser extends Component {
                 </Grid>
                 <IconCopy className={Utils.clsx(classes.cellCopyButton, 'copyButton')} onClick={(e) => this.onCopy(e, id)} />
             </Grid>
-            {this.columnsVisibility.name ? <div className={classes.cellName} style={{ width: this.columnsVisibility.name }}>{(item.data && item.data.title) || ''}</div> : null}
+            {this.columnsVisibility.name ? <div className={classes.cellName} style={{ width: this.columnsVisibility.name }}>{(item.data?.title) || ''}</div> : null}
 
             {!this.state.statesView ?
                 <>
@@ -3819,16 +3843,20 @@ class ObjectBrowser extends Component {
                 setTimeout(() => this.setState({ scrollBarWidth }), 100);
             } else {
                 if (!this.selectedFound && ((this.state.selected && this.state.selected[0]) || this.lastSelectedItems)) {
-                    const node = window.document.getElementById((this.state.selected && this.state.selected[0]) || this.lastSelectedItems);
-                    node && node.scrollIntoView({
-                        behavior: 'auto',
-                        block: 'center',
-                        inline: 'center'
-                    });
-                    this.selectedFound = true;
+                    this.scrollToItem((this.state.selected && this.state.selected[0]) || this.lastSelectedItems);
                 }
             }
         }
+    }
+
+    scrollToItem(id) {
+        const node = window.document.getElementById(id);
+        node && node.scrollIntoView({
+            behavior: 'auto',
+            block: 'center',
+            inline: 'center'
+        });
+        this.selectedFound = true;
     }
 
     /**
@@ -3880,7 +3908,10 @@ class ObjectBrowser extends Component {
 
         return <ObjectBrowserEditObject
             obj={this.objects[this.state.editObjectDialog]}
+            objects={this.objects}
             themeName={this.props.themeName}
+            socket={this.props.socket}
+            dialogName={this.props.dialogName}
             t={this.props.t}
             expertMode={this.state.filter.expertMode}
             onClose={obj => {

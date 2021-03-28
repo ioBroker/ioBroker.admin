@@ -1133,5 +1133,15 @@
   "Suppress for 5 minutes": "Suppress for 5 minutes",
   "Delete": "Delete",
   "Start time": "Start time",
-  "Open charts in new window": "Open charts in new window"
+  "Open charts in new window": "Open charts in new window",
+  "Object data": "Object data",
+  "Alias": "Alias",
+  "Alias state": "Alias state ID",
+  "Use convert functions": "Use convert functions",
+  "Read converter": "Read converter",
+  "JS function like": "JS function like",
+  "Write converter": "Write converter",
+  "Copy into clipboard": "Copy into clipboard",
+  "Cannot parse code!": "Cannot parse code!",
+  "Type of result is not as expected: %s": "Type of result is not as expected: %s"
 }

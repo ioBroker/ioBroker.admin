@@ -1133,5 +1133,15 @@
   "Suppress for 5 minutes": "5 Minuten lang unterdrücken",
   "Delete": "Löschen",
   "Start time": "Startzeit",
-  "Open charts in new window": "Die Diagramme in einem neuen Fenster öffnen"
+  "Open charts in new window": "Die Diagramme in einem neuen Fenster öffnen",
+  "Object data": "Objektdaten",
+  "Alias": "Alias",
+  "Alias state": "Alias-Zustand ID",
+  "Use convert functions": "Konvertierungsfunktionen",
+  "Read converter": "Konverter beim Lesen",
+  "JS function like": "JS-Funktion wie",
+  "Write converter": "Konverter beim Schreiben",
+  "Copy into clipboard": "In die Zwischenablage kopieren",
+  "Cannot parse code!": "Code kann nicht analysiert werden!",
+  "Type of result is not as expected: %s": "Der Typ des Ergebnisses ist nicht wie erwartet: %s"
 }

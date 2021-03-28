@@ -1133,5 +1133,15 @@
   "Suppress for 5 minutes": "Onderdruk gedurende 5 minuten",
   "Delete": "Verwijderen",
   "Start time": "Starttijd",
-  "Open charts in new window": "Open grafieken in een nieuw venster"
+  "Open charts in new window": "Open grafieken in een nieuw venster",
+  "Object data": "Objectgegevens",
+  "Alias": "Alias",
+  "Alias state": "Alias staat",
+  "Use convert functions": "Gebruik conversiefuncties",
+  "Read converter": "Lees converter",
+  "JS function like": "JS-functie zoals",
+  "Write converter": "Schrijf converter",
+  "Copy into clipboard": "Kopieer naar klembord",
+  "Cannot parse code!": "Kan code niet parseren!",
+  "Type of result is not as expected: %s": "Type resultaat is niet zoals verwacht: %s"
 }

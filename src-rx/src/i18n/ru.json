@@ -1137,5 +1137,15 @@
   "Suppress for 5 minutes": "Подавить на 5 минут",
   "Delete": "Удалить",
   "Start time": "Время",
-  "Open charts in new window": "Открыть графики в новом окне"
+  "Open charts in new window": "Открыть графики в новом окне",
+  "Object data": "Данные объекта",
+  "Alias": "Псевдоним",
+  "Alias state": "Связанный ID",
+  "Use convert functions": "Используйте функции преобразования",
+  "Read converter": "Конвертер при чтении",
+  "JS function like": "JS функция вида",
+  "Write converter": "Конвертер при записи",
+  "Copy into clipboard": "Скопировать в буфер обмена",
+  "Cannot parse code!": "Не могу разобрать код!",
+  "Type of result is not as expected: %s": "Тип результата не соответствует ожиданиям: %s"
 }

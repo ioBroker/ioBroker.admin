@@ -36,7 +36,6 @@
 - ACL settings for non-existing objects with '---' and "apply to children" selected
 - highlight "different" with (opacity: 0.5)
 - Create object of type "folder": only in "alias.0" and "0_userdata.0" (https://github.com/ioBroker/ioBroker.admin/issues/577)
-- Alias editor (https://github.com/ioBroker/ioBroker.admin/issues/558)
 
 ## Objects - Custom editor
 - edit config by JSON
