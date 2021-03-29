@@ -389,7 +389,7 @@ class Instances extends Component {
             instance.canStart = !common.onlyWWW;
             instance.config = !common.noConfig;
             instance.materialize = common.materialize || false;
-            instance.jsonSchema = common.jsonSchema || false;
+            instance.jsonSchema = !!common.$schema || null;
             instance.compactMode = common.runAsCompactMode || false;
             instance.mode = common.mode || null;
             instance.loglevel = common.loglevel || null;
@@ -887,6 +887,7 @@ class Instances extends Component {
             if (instance) {
                 return <Paper className={classes.paper}>
                     <Config
+                        menuPadding={this.props.menuPadding}
                         className={classes.iframe}
                         adapter={instance.id.split('.')[0]}
                         instance={parseInt(instance.id.split('.')[1])}
@@ -894,6 +895,8 @@ class Instances extends Component {
                         jsonSchema={ instance.jsonSchema }
                         socket={ this.props.socket }
                         themeName={this.props.themeName}
+                        theme={this.props.theme}
+                        width={this.props.width}
                         t={this.t}
                         configStored={this.props.configStored}
                     />
@@ -998,7 +1001,10 @@ Instances.propTypes = {
     protocol: PropTypes.string,
     socket: PropTypes.object,
     themeName: PropTypes.string,
+    theme: PropTypes.object,
     systemLang: PropTypes.string,
+    width: PropTypes.string,
+    menuPadding: PropTypes.number,
 };
 
 export default withWidth()(withStyles(styles)(Instances));

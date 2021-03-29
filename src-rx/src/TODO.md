@@ -63,4 +63,4 @@
 - check and implement id needed
 
 ## Admin settings dialog (index_m.html)
-- write it with react
+- write it with react (see [SCHEMA.md](SCHEMA.md))

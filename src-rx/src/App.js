@@ -678,15 +678,18 @@ class App extends Router {
                     return <Suspense fallback={<Connecting />}>
                         <Instances
                             key="instances"
+                            menuPadding={this.state.drawerState === DrawerStates.closed ? 0 : (this.state.drawerState === DrawerStates.opened ? DRAWER_FULL_WIDTH : DRAWER_COMPACT_WIDTH)}
                             socket={this.socket}
                             lang={I18n.getLanguage()}
                             protocol={this.state.protocol}
                             hostname={this.state.hostname}
                             themeName={this.state.themeName}
+                            theme={this.state.theme}
                             expertMode={this.state.expertMode}
                             idHost={this.state.hosts.find(({ common: { name } }) => name === this.state.currentHostName)._id}
                             currentHostName={this.state.currentHostName}
                             t={I18n.t}
+                            width={this.props.width}
                             configStored={value => this.allStored(value)}
                             executeCommand={cmd => this.executeCommand(cmd)}
                             inBackgroundCommand={this.state.commandError || this.state.performed}

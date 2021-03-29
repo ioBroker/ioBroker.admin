@@ -59,6 +59,9 @@ class Config extends Component {
     getConfigurator() {
         if (this.props.jsonSchema) {
             return <JsonSchemaConfig
+                menuPadding={this.props.menuPadding}
+                theme={this.props.theme}
+                width={this.props.width}
                 adapter={this.props.adapter}
                 instance={this.props.instance}
                 socket={this.props.socket}
@@ -95,6 +98,7 @@ class Config extends Component {
 
 
 Config.propTypes = {
+    menuPadding: PropTypes.number,
     adapter: PropTypes.string,
     instance: PropTypes.number,
     materialize: PropTypes.bool,
