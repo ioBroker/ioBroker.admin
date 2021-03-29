@@ -327,6 +327,43 @@ const styles = theme => ({
     marginLeft5: {
         marginLeft: 5
     },
+    formControl: {
+        width: '100%',
+        marginBottom: 5
+    },
+    gridStyle: {
+        display: 'flex',
+        minWidth: 200,
+        justifyContent: 'space-around'
+    },
+    wrapperAvatar: {
+        maxWidth: 130
+    },
+    instanceId: {
+        overflow: 'hidden',
+        alignSelf: 'center',
+        marginLeft: 5,
+        maxWidth: 130,
+        minWidth: 100,
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+    },
+    marginLeft: {
+        marginLeft: 5
+    },
+    marginRight: {
+        marginRight: 5
+    },
+    selectStyle: {
+        display: 'flex',
+        margin: 5,
+        justifyContent: 'space-around'
+    },
+    selectWrapper: {
+        display: 'flex',
+        alignItems: 'flex-end'
+    }
+
 });
 const RowInstances = ({
     name,
@@ -368,7 +405,8 @@ const RowInstances = ({
     deletedInstances,
     memoryLimitMB,
     setMemoryLimitMB,
-    t
+    t,
+    idx
 }) => {
     const [openSelect, setOpenSelect] = useState(false);
     const [openDialogCron, setOpenDialogCron] = useState(false);
@@ -379,22 +417,24 @@ const RowInstances = ({
     const [openDialogMemoryLimit, setOpenDialogMemoryLimit] = useState(false);
     const [select, setSelect] = useState(logLevel);
     const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
-
+    console.log('222', instance.mode)
     return <Accordion key={key} square
         expanded={expanded === instance.id}
         onChange={() => {
             if (
-                openDialogCron     ||
+                openDialogCron ||
                 openDialogSchedule ||
-                openDialogSelect   ||
-                openDialogText     ||
-                openDialogDelete   ||
+                openDialogSelect ||
+                openDialogText ||
+                openDialogDelete ||
                 openDialogMemoryLimit) {
                 return;
             }
             handleChange(instance.id);
         }}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <AccordionSummary
+            style={!connected && alive ? { background: idx % 2 === 0 ? 'rgb(255 177 0 / 10%)' : 'rgb(255 177 0  / 14%)' } : connected && alive ? { background: idx % 2 === 0 ? 'rgb(0 255 0 / 10%)' : 'rgb(0 255 0 / 14%)' } : { background: idx % 2 === 0 ? 'rgb(192 192 192 / 19%)' : 'rgb(192 192 192 / 15%)' }}
+            expandIcon={<ExpandMoreIcon />}>
             <CustomModal
                 title={
                     (openDialogText && t('Enter title for %s', instance.id)) ||
@@ -438,7 +478,7 @@ const RowInstances = ({
                         setOpenDialogMemoryLimit(false);
                     }
                 }}>
-                {openDialogSelect && <FormControl style={{ width: '100%', marginBottom: 5 }} variant="outlined" >
+                {openDialogSelect && <FormControl className={classes.formControl} variant="outlined" >
                     <InputLabel htmlFor="outlined-age-native-simple">{t('log level')}</InputLabel>
                     <Select
                         variant="standard"
@@ -478,11 +518,7 @@ const RowInstances = ({
             />}
             <Grid container spacing={1} alignItems="center" direction="row" wrap="nowrap">
                 <div
-                    style={{
-                        display: 'flex',
-                        minWidth: 200,
-                        justifyContent: 'space-around'
-                    }}
+                    className={classes.gridStyle}
                 >
                     <div>
                         <Avatar className={classes.smallAvatar + ' ' +
@@ -501,7 +537,7 @@ const RowInstances = ({
                             </Tooltip>
                         </div>
                     }
-                    <div className={classes.displayFlex}>
+                    <div className={clsx(classes.displayFlex, classes.wrapperAvatar)}>
                         <Badge color="secondary" variant="dot" invisible={!instance.compactMode}>
                             <Avatar
                                 variant="square"
@@ -510,7 +546,7 @@ const RowInstances = ({
                                 className={classes.smallAvatar}
                             />
                         </Badge>
-                        <div style={{ minWidth: 100, marginLeft: 5, alignSelf: 'center' }}>
+                        <div className={classes.instanceId}>
                             {instance.id}
                         </div>
                     </div>
@@ -538,11 +574,11 @@ const RowInstances = ({
                         >
                             <div className={classes.displayFlex}>
                                 <Tooltip title={t('input events')}>
-                                    <div style={{ marginRight: 5 }}>⇥{inputOutput.stateInput}</div>
+                                    <div className={classes.marginRight}>⇥{inputOutput.stateInput}</div>
                                 </Tooltip>
                                     /
                                 <Tooltip title={t('output events')}>
-                                    <div style={{ marginLeft: 5 }}>↦{inputOutput.stateOutput}</div>
+                                    <div className={classes.marginLeft}>↦{inputOutput.stateOutput}</div>
                                 </Tooltip>
                             </div>
                         </InstanceInfo>
@@ -716,11 +752,11 @@ const RowInstances = ({
                                 >
                                     <div className={classes.displayFlex}>
                                         <Tooltip title={t('input events')}>
-                                            <div style={{ marginRight: 5 }}>⇥{inputOutput.stateInput}</div>
+                                            <div className={classes.marginRight}>⇥{inputOutput.stateInput}</div>
                                         </Tooltip>
                                     /
                                 <Tooltip title={t('output events')}>
-                                            <div style={{ marginLeft: 5 }}>↦{inputOutput.stateOutput}</div>
+                                            <div className={classes.marginLeft}>↦{inputOutput.stateOutput}</div>
                                         </Tooltip>
                                     </div>
                                 </InstanceInfo>
@@ -791,7 +827,7 @@ const RowInstances = ({
                             </IconButton>
                         </div>
                         }
-                        {expertMode && checkCompact && compact && <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                        {expertMode && checkCompact && compact && <div className={classes.selectWrapper}>
                             <ViewCompactIcon className={classes.marginRight5} color="inherit" />
                             <FormControl style={{ marginBottom: 5, marginTop: 5, width: 120 }} variant="outlined" >
                                 <InputLabel htmlFor="outlined-age-native-simple">{t('compact groups')}</InputLabel>
@@ -805,10 +841,10 @@ const RowInstances = ({
                                     onChange={el => setCompactGroup(el.target.value)}
                                 >
                                     <div onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                        }}
-                                         style={{ display: 'flex', margin: 5, justifyContent: 'space-around' }}>
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                    }}
+                                        className={classes.selectStyle}>
                                         <Button onClick={() => {
                                             setOpenSelect(false);
                                             setCompactGroup(compactGroupCount + 1);
@@ -858,7 +894,7 @@ const RowInstances = ({
                 </Grid>
             </Grid>
         </AccordionDetails>
-    </Accordion>;
+    </Accordion >;
 }
 
 RowInstances.propTypes = {

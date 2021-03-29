@@ -84,6 +84,7 @@ const ObjectAddNewContent = ({ onClose, onApply, open, selected, extendObject })
                         onChange={(el) => setType(el.target.value)}
                     >
                         {typeArray.map(el => <MenuItem key={el} value={el.value}>{I18n.t(el.name)}</MenuItem>)}
+                        {(selected.indexOf('0_userdata') === 0 || selected.indexOf('alias.0') === 0) && <MenuItem value="folder">{I18n.t('Folder')}</MenuItem>}
                     </Select>
                 </FormControl>
                 {type === 'state' && <FormControl >

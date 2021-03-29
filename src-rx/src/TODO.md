@@ -26,16 +26,16 @@
   - https://github.com/ioBroker/ioBroker.admin/issues/557
 
 ## Instances
-- fix layout by long adapter names (see screenshot in telegram)
-- Check what happens if CRON has value like "03 0,6,13,22 *" (https://github.com/ioBroker/ioBroker.admin/issues/360)
-- Mode in which the whole title background indicates the state of instance (https://github.com/ioBroker/ioBroker.admin/issues/652)
+<!-- - fix layout by long adapter names (see screenshot in telegram) -->
+<!-- - Check what happens if CRON has value like "03 0,6,13,22 *" (https://github.com/ioBroker/ioBroker.admin/issues/360) -->
+<!-- - Mode in which the whole title background indicates the state of instance (https://github.com/ioBroker/ioBroker.admin/issues/652) -->
 
 ## Objects
 - Decode quality code to text (BF)
-- ACL dialog scroll only checkboxes
-- ACL settings for non-existing objects with '---' and "apply to children" selected
-- highlight "different" with (opacity: 0.5)
-- Create object of type "folder": only in "alias.0" and "0_userdata.0" (https://github.com/ioBroker/ioBroker.admin/issues/577)
+<!-- - ACL dialog scroll only checkboxes -->
+<!-- - ACL settings for non-existing objects with '---' and "apply to children" selected -->
+<!-- - highlight "different" with (opacity: 0.5) -->
+<!-- - Create object of type "folder": only in "alias.0" and "0_userdata.0" (https://github.com/ioBroker/ioBroker.admin/issues/577) -->
 
 ## Objects - Custom editor
 - edit config by JSON

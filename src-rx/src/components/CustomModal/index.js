@@ -3,6 +3,7 @@ import Button from '@material-ui/core/Button';
 import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, withStyles } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import i18n from '@iobroker/adapter-react/i18n';
+import clsx from 'clsx';
 
 const styles = theme => ({
     modalWrapper: {
@@ -13,9 +14,13 @@ const styles = theme => ({
     },
     modalDialog: {
         minWidth: 400
+    },
+    overflowHidden: {
+        display: 'flex',
+        overflow: 'hidden'
     }
 });
-const CustomModal = ({ title, applyDisabled, applyButton, classes, open, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue }) => {
+const CustomModal = ({ title, applyDisabled, applyButton, classes, open, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue, overflowHidden }) => {
     const [value, setValue] = useState(defaultValue);
     useEffect(() => {
         setValue(defaultValue);
@@ -29,7 +34,7 @@ const CustomModal = ({ title, applyDisabled, applyButton, classes, open, onClose
         className={classes.modalWrapper}
     >
         {title && <DialogTitle>{title}</DialogTitle>}
-        <DialogContent>
+        <DialogContent className={clsx(overflowHidden ? classes.overflowHidden : null)}>
             {textInput && <TextField
                 // className={className}
                 autoComplete="off"
@@ -62,7 +67,8 @@ CustomModal.defaultProps = {
     applyButton: true,
     applyDisabled: false,
     titleButtonClose: 'Cancel',
-    titleButtonApply: 'Ok'
+    titleButtonApply: 'Ok',
+    overflowHidden: false
 };
 
 CustomModal.propTypes = {

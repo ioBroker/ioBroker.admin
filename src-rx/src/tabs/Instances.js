@@ -637,7 +637,7 @@ class Instances extends Component {
     }
 
     getPanels() {
-        let list = Object.keys(this.state.instances).map(id => {
+        let list = Object.keys(this.state.instances).map((id, idx) => {
             const instance = this.state.instances[id];
             const running = this.isRunning(id);
             const alive = this.isAlive(id);
@@ -734,6 +734,7 @@ class Instances extends Component {
                         setMemoryLimitMB={setMemoryLimitMB}
                     /> :
                     <RowInstances
+                        idx={idx}
                         t={this.t}
                         key={instance.id}
                         name={name}
