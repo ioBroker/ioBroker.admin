@@ -11,11 +11,17 @@ import Typography from '@material-ui/core/Typography';
 
 import Router from '@iobroker/adapter-react/Components/Router';
 
+import JsonSchemaConfig from './JsonSchemaConfig';
+
 const styles = {
     root: {
         height: '100%',
         display: 'flex',
         flexDirection: 'column'
+    },
+    scroll: {
+        height: '100%',
+        overflowY: 'auto'
     }
 };
 
@@ -50,29 +56,39 @@ class Config extends Component {
         }
     }
 
-    render() {
+    getConfigurator() {
+        if (this.props.jsonSchema) {
+            return <JsonSchemaConfig
+                adapter={this.props.adapter}
+                instance={this.props.instance}
+                socket={this.props.socket}
+                themeName={this.props.themeName}
+                t={this.props.t} />;
+        } else {
+            return <iframe
+                title="config"
+                className={this.props.className}
+                src={`adapter/${this.props.adapter}/${this.props.materialize ? 'index_m.html' : ''}?${this.props.instance}&react=${this.props.themeName}`}>
+            </iframe>;
+        }
+    }
 
+    render() {
         const { classes } = this.props;
 
-        if (window.location.port === '3000') {
+        if (!this.props.jsonSchema && window.location.port === '3000') {
             return 'Test it in not development mode!';
         } else {
-            return (
-                <Paper className={classes.root}>
-                    <AppBar color="default" position="static">
-                        <Toolbar variant="dense">
-                            <Typography variant="h6" color="inherit">
-                                {`${this.props.t('Instance settings')}: ${this.props.adapter}.${this.props.instance}`}
-                            </Typography>
-                        </Toolbar>
-                    </AppBar>
-                    <iframe
-                        title="config"
-                        className={this.props.className}
-                        src={`adapter/${this.props.adapter}/${this.props.materialize ? 'index_m.html' : ''}?${this.props.instance}&react=${this.props.themeName}`}>
-                    </iframe>
-                </Paper>
-            );
+            return <Paper className={classes.root}>
+                <AppBar color="default" position="static">
+                    <Toolbar variant="dense">
+                        <Typography variant="h6" color="inherit">
+                            {`${this.props.t('Instance settings')}: ${this.props.adapter}.${this.props.instance}`}
+                        </Typography>
+                    </Toolbar>
+                </AppBar>
+                { this.getConfigurator() }
+            </Paper>;
         }
     }
 }
@@ -82,6 +98,8 @@ Config.propTypes = {
     adapter: PropTypes.string,
     instance: PropTypes.number,
     materialize: PropTypes.bool,
+    jsonSchema: PropTypes.bool,
+    socket: PropTypes.object,
     themeName: PropTypes.string,
     t: PropTypes.func
 };
