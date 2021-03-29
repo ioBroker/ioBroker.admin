@@ -1,8 +1,5 @@
 # Todo
 
-- send change of theme into iframe via messages
-  - and expert mode change
-
 ## Settings
 - Allow set the expert mode in settings
   - Save expert mode in session storage
@@ -47,7 +44,7 @@
 - Files - bulk edit of access rights
   - file.acl.permissions
 - File viewer can show: json, js, ts, md,css
-- Allow switch of background color for images: jpg, png, bmp, svg, ico, jpeg
+- Allow switch of background color for images in viewer: jpg, png, bmp, svg, ico, jpeg
   
 ## Hosts  
 - Hosts tab => show all hosts in a list with settings
@@ -59,7 +56,7 @@
 - Easy admin mode
 
 ## After all is done
-- Add encryption in frontend
+- Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io)
 - config.json describes how configuration dialog looks like
 
 ## Login and authentication

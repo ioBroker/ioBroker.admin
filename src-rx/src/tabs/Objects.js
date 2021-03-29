@@ -86,12 +86,12 @@ class Objects extends Component {
     onDelete(withChildren) {
         const id = this.state.deleteObjectShow.id;
         if (withChildren) {
-            this.props.socket.delObjects(id)
+            this.props.socket.delObjects(id, true)
                 .then(() => this.setState({ toast: this.t('All deleted') }));
 
             this.setState({ deleteObjectShow: null });
         } else {
-            this.props.socket.delObject(id)
+            this.props.socket.delObject(id, true)
                 .then(() => this.setState({ deleteObjectShow: null }));
         }
     }
@@ -145,9 +145,9 @@ class Objects extends Component {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.setState({ deleteObjectShow: null })}><IconCancel className={this.props.classes.buttonIcon} />{this.t('ra_Cancel')}</Button>
-                    {this.state.deleteObjectShow.hasChildren ? <Button onClick={() => this.onDelete(true)}><IconDeleteAll className={clsx(this.props.classes.buttonAll, this.props.classes.buttonIcon)} />{this.t('Delete with children')}</Button> : null}
-                    {this.state.deleteObjectShow.exists ? <Button onClick={() => this.onDelete(false)} color="primary"><IconDeleteOne className={this.props.classes.buttonIcon} />{this.t('Delete one item')}</Button> : null}
+                    <Button variant="contained" onClick={() => this.setState({ deleteObjectShow: null })}><IconCancel className={this.props.classes.buttonIcon} />{this.t('ra_Cancel')}</Button>
+                    {this.state.deleteObjectShow.hasChildren ? <Button variant="contained" onClick={() => this.onDelete(true)}><IconDeleteAll className={clsx(this.props.classes.buttonAll, this.props.classes.buttonIcon)} />{this.t('Delete with children')}</Button> : null}
+                    {this.state.deleteObjectShow.exists ? <Button variant="contained" onClick={() => this.onDelete(false)} color="primary"><IconDeleteOne className={this.props.classes.buttonIcon} />{this.t('Delete one item')}</Button> : null}
                 </DialogActions>
             </Dialog>;
         }
