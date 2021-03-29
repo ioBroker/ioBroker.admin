@@ -174,14 +174,14 @@ const styles = theme => ({
         animation: '1s linear infinite alternate $myEffect',
         opacity: 0.2,
     },
-    "@keyframes myEffect": {
-        "0%": {
+    '@keyframes myEffect': {
+        '0%': {
             opacity: 0.2,
-            transform: "translateY(0)"
+            transform: 'translateY(0)'
         },
-        "100%": {
+        '100%': {
             opacity: 1,
-            transform: "translateY(-10%)"
+            transform: 'translateY(-10%)'
         }
     },
     errorCmd: {
@@ -192,14 +192,14 @@ const styles = theme => ({
         color: '#388e3c',
         animation: '0.2s linear infinite alternate $myEffect2',
     },
-    "@keyframes myEffect2": {
-        "0%": {
+    '@keyframes myEffect2': {
+        '0%': {
             opacity: 1,
-            transform: "translateX(0)"
+            transform: 'translateX(0)'
         },
-        "100%": {
+        '100%': {
             opacity: 0.7,
-            transform: "translateX(-2%)"
+            transform: 'translateX(-2%)'
         }
     }
 });
@@ -250,6 +250,8 @@ class App extends Router {
         // init translations
         I18n.setTranslations(this.translations);
         I18n.setLanguage((navigator.language || navigator.userLanguage || 'en').substring(0, 2).toLowerCase());
+
+        this.refConfigIframe = null;
 
         if (!query.login) {
             let drawerState = window.localStorage.getItem('App.drawerState');
@@ -528,9 +530,10 @@ class App extends Router {
     toggleTheme() {
         const themeName = this.state.themeName;
 
+        // dark => blue => colored => light => dark
         const newThemeName = themeName === 'dark' ? 'blue' :
-            themeName === 'blue' ? 'colored' : themeName === 'colored' ? 'light' :
-                themeName === 'light' ? 'dark' : 'colored';
+            (themeName === 'blue' ? 'colored' :
+                (themeName === 'colored' ? 'light' : 'dark'));
 
         Utils.setThemeName(newThemeName);
 
@@ -540,6 +543,8 @@ class App extends Router {
             theme: theme,
             themeName: this.getThemeName(theme),
             themeType: this.getThemeType(theme)
+        }, () => {
+            this.refConfigIframe?.contentWindow?.postMessage('updateTheme', '*');
         });
     }
 
@@ -547,23 +552,17 @@ class App extends Router {
         console.log('OBJECT: ' + id);
         if (obj) {
             this.setState(prevState => {
-
                 const objects = prevState.objects;
                 objects[id] = obj;
 
-                return {
-                    objects: objects
-                };
+                return {objects};
             });
         } else {
             this.setState(prevState => {
-
                 const objects = prevState.objects;
                 delete objects[id];
 
-                return {
-                    objects: objects
-                };
+                return {objects};
             });
         }
     }
@@ -780,6 +779,8 @@ class App extends Router {
                                                     themeName={this.state.themeName}
                                                     expertMode={this.state.expertMode}
                                                     lang={I18n.getLanguage()}
+                                                    onRegisterIframeRef={ref => this.refConfigIframe = ref}
+                                                    onUnregisterIframeRef={() => this.refConfigIframe = null}
                                                 />
                                             </Suspense>;
                                         }
@@ -1030,6 +1031,7 @@ class App extends Router {
                             onClick={() => {
                                 window.localStorage.setItem('App.expertMode', !this.state.expertMode);
                                 this.setState({ expertMode: !this.state.expertMode });
+                                this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode','*');
                             }}
                             style={{color: this.state.expertMode ? '#BB0000' : 'inherit'}}
                             color="default"

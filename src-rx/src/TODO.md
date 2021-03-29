@@ -1,8 +1,5 @@
 # Todo
 
-- send change of theme into iframe via messages
-  - and expert mode change
-
 ## Settings
 - Allow set the expert mode in settings
   - Save expert mode in session storage
@@ -48,6 +45,7 @@
 - Edit file ACL for "adapter" or "instance" (All folders of the first level)
   -  acl.file ()
 
+  
 ## Hosts  
 - Hosts tab => show all hosts in a list with settings
 
@@ -58,7 +56,7 @@
 - Easy admin mode
 
 ## After all is done
-- Add encryption in frontend
+- Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io)
 - config.json describes how configuration dialog looks like
 
 ## Login and authentication

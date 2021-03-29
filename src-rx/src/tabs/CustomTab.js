@@ -1,3 +1,4 @@
+import React from 'react';
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
 import { Component } from 'react';
@@ -23,6 +24,9 @@ class CustomTab extends Component {
         this.state = {
             href: '',
         };
+
+        this.refIframe = React.createRef();
+        this.registered = false;
 
         CustomTab.getHref(this.props.instancesWorker, this.props.tab, this.props.hostname, this.props.protocol)
             .then(href =>
@@ -83,6 +87,17 @@ class CustomTab extends Component {
             });
     }
 
+    componentWillUnmount() {
+        this.props.onUnregisterIframeRef();
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (!this.registered && this.refIframe.contentWindow) {
+            this.registered = true;
+            this.props.onRegisterIframeRef(this.refIframe);
+        }
+    }
+
     render() {
         if (!this.state.href) {
             return <LinearProgress />;
@@ -92,6 +107,7 @@ class CustomTab extends Component {
             return 'Test it in not development mode!';
         } else {
             return <iframe
+                ref={el => this.refIframe = el}
                 title={ this.props.tab }
                 className={ this.props.classes.root }
                 src={ this.state.href }
@@ -113,6 +129,8 @@ CustomTab.propTypes = {
     hostname: PropTypes.string,
     protocol: PropTypes.string,
     expertMode: PropTypes.bool,
+    onRegisterIframeRef: PropTypes.func,
+    onUnregisterIframeRef: PropTypes.func,
 };
 
 export default withWidth()(withStyles(styles)(CustomTab));
