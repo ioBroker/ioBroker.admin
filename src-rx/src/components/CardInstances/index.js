@@ -73,9 +73,9 @@ const styles = theme => ({
     installed: {
         background: '#77c7ff8c'
     },
-    update: {
+    /*update: {
         background: '#10ff006b'
-    },
+    },*/
     fab: {
         position: 'absolute',
         bottom: -20,
@@ -245,7 +245,25 @@ const styles = theme => ({
     enableButton:{
         display: 'flex',
         justifyContent: 'space-between'
-    }
+    },
+    instanceStateNotAlive1: {
+        backgroundColor: 'rgba(192, 192, 192, 0.4)'
+    },
+    /*instanceStateNotAlive2: {
+        backgroundColor: 'rgb(192 192 192 / 15%)'
+    },*/
+    instanceStateAliveNotConnected1: {
+        backgroundColor: 'rgba(255, 177, 0, 0.4)'
+    },
+    /*instanceStateAliveNotConnected2: {
+        backgroundColor: 'rgb(255 177 0  / 14%)'
+    },*/
+    instanceStateAliveAndConnected1: {
+        backgroundColor: 'rgba(0, 255, 0, 0.4)'
+    },
+    /*instanceStateAliveAndConnected2: {
+        backgroundColor: 'rgb(0 255 0 / 14%)'
+    }*/
 });
 const CardInstances = ({
     name,
@@ -288,6 +306,7 @@ const CardInstances = ({
     t
 }) => {
     const [openCollapse, setCollapse] = useState(false);
+    const [mouseOver, setMouseOver] = useState(false);
     const [openSelect, setOpenSelect] = useState(false);
     const [openDialogCron, setOpenDialogCron] = useState(false);
     const [openDialogSchedule, setOpenDialogSchedule] = useState(false);
@@ -296,245 +315,203 @@ const CardInstances = ({
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
     const [openDialogMemoryLimit, setOpenDialogMemoryLimit] = useState(false);
     const [select, setSelect] = useState(logLevel);
-    const arrayLogLevel = [
-        'silly', 'debug', 'info', 'warn', 'error'
-    ]
-    return <Card key={key} className={clsx(classes.root, hidden ? classes.hidden : '')}>
-        <CustomModal
-            title={
-                (openDialogText && t('Enter title for %s', instance.id)) ||
-                (openDialogSelect && t('Edit log level rule for %s', instance.id)) ||
-                (openDialogDelete && t('Please confirm')) ||
-                (openDialogMemoryLimit && t('Edit memory limit rule for %s', instance.id))
-            }
-            open={
-                openDialogSelect ||
-                openDialogText ||
-                openDialogDelete ||
-                openDialogMemoryLimit
-            }
-            applyDisabled={openDialogText || openDialogMemoryLimit}
-            textInput={openDialogText || openDialogMemoryLimit}
-            defaultValue={openDialogText ? name : openDialogMemoryLimit ? memoryLimitMB : ''}
-            onApply={(value) => {
-                if (openDialogSelect) {
-                    setLogLevel(select)
-                    setOpenDialogSelect(false);
-                } else if (openDialogText) {
-                    setName(value);
-                    setOpenDialogText(false);
-                } else if (openDialogDelete) {
-                    setOpenDialogDelete(false);
-                    deletedInstances();
-                } else if (openDialogMemoryLimit) {
-                    setMemoryLimitMB(value)
-                    setOpenDialogMemoryLimit(false);
+    const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
+
+    const customModal =
+        openDialogSelect ||
+        openDialogText   ||
+        openDialogDelete ||
+        openDialogMemoryLimit ?
+            <CustomModal
+                title={
+                    (openDialogText && t('Enter title for %s', instance.id)) ||
+                    (openDialogSelect && t('Edit log level rule for %s', instance.id)) ||
+                    (openDialogDelete && t('Please confirm')) ||
+                    (openDialogMemoryLimit && t('Edit memory limit rule for %s', instance.id))
                 }
-            }}
-            onClose={() => {
-                if (openDialogSelect) {
-                    setSelect(logLevel);
-                    setOpenDialogSelect(false);
-                } else if (openDialogText) {
-                    setOpenDialogText(false);
-                } else if (openDialogDelete) {
-                    setOpenDialogDelete(false);
-                } else if (openDialogMemoryLimit) {
-                    setOpenDialogMemoryLimit(false);
-                }
-            }}>
-            {openDialogSelect && <FormControl className={classes.logLevel} variant="outlined" >
-                <InputLabel htmlFor="outlined-age-native-simple">{t('log level')}</InputLabel>
-                <Select
-                    variant="standard"
-                    value={select}
-                    fullWidth
-                    onChange={el => setSelect(el.target.value)}
-                >
-                    {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
-                        {t(el)}
-                    </MenuItem>)}
-                </Select>
-            </FormControl>}
-            {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
-        </CustomModal>
-        {(openDialogCron || openDialogSchedule) && <ComplexCron
-            title={
-                (openDialogCron && t('Edit restart rule for %s', instance.id)) ||
-                (openDialogSchedule && t('Edit schedule rule for %s', instance.id))
-            }
-            cron={openDialogCron ? getRestartSchedule(id) : getSchedule(id)}
-            language={I18n.getLanguage()}
-            onOk={cron => {
-                if (openDialogCron) {
-                    setRestartSchedule(cron);
-                } else if (openDialogSchedule) {
-                    setSchedule(cron);
-                }
-            }}
-            onClose={() => {
-                if (openDialogCron) {
-                    setOpenDialogCron(false);
-                } else if (openDialogSchedule) {
-                    setOpenDialogSchedule(false);
-                }
-            }}
-        />}
+                open={true}
+                applyDisabled={openDialogText || openDialogMemoryLimit}
+                textInput={openDialogText || openDialogMemoryLimit}
+                defaultValue={openDialogText ? name : openDialogMemoryLimit ? memoryLimitMB : ''}
+                onApply={(value) => {
+                    if (openDialogSelect) {
+                        setLogLevel(select)
+                        setOpenDialogSelect(false);
+                    } else if (openDialogText) {
+                        setName(value);
+                        setOpenDialogText(false);
+                    } else if (openDialogDelete) {
+                        setOpenDialogDelete(false);
+                        deletedInstances();
+                    } else if (openDialogMemoryLimit) {
+                        setMemoryLimitMB(value)
+                        setOpenDialogMemoryLimit(false);
+                    }
+                }}
+                onClose={() => {
+                    if (openDialogSelect) {
+                        setSelect(logLevel);
+                        setOpenDialogSelect(false);
+                    } else if (openDialogText) {
+                        setOpenDialogText(false);
+                    } else if (openDialogDelete) {
+                        setOpenDialogDelete(false);
+                    } else if (openDialogMemoryLimit) {
+                        setOpenDialogMemoryLimit(false);
+                    }
+                }}>
+                {openDialogSelect && <FormControl className={classes.logLevel} variant="outlined" >
+                    <InputLabel htmlFor="outlined-age-native-simple">{t('log level')}</InputLabel>
+                    <Select
+                        variant="standard"
+                        value={select}
+                        fullWidth
+                        onChange={el => setSelect(el.target.value)}
+                    >
+                        {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
+                            {t(el)}
+                        </MenuItem>)}
+                    </Select>
+                </FormControl>}
+                {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
+            </CustomModal>
+            : null;
+
+    const secondCardInfo = openCollapse || mouseOver ?
         <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
             <CardContent classes={{root: classes.cardContent}} className={classes.overflowAuto}>
-                <div className={classes.collapseIcon}>
-                    <div className={classes.close} onClick={() => setCollapse((bool) => !bool)} />
+            <div className={classes.collapseIcon}>
+                <div className={classes.close} onClick={() => setCollapse(false)} />
+            </div>
+            <Typography gutterBottom component={'span'} variant={'body2'}>
+                {expertMode && checkCompact && compact && <div className={classes.displayFlex}>
+                    <FormControl className={classes.addCompact} variant="outlined" >
+                        <InputLabel htmlFor="outlined-age-native-simple">{t('compact groups')}</InputLabel>
+                        <Select
+                            variant="standard"
+                            onClose={() => setOpenSelect(false)}
+                            onOpen={() => setOpenSelect(true)}
+                            open={openSelect}
+                            value={compactGroup === undefined ? 1 : compactGroup || '0'}
+                            fullWidth
+                            onChange={el => setCompactGroup(el.target.value)}
+                        >
+                            <div className={classes.addCompactButton}
+                                 onClick={(e) => {
+                                     e.preventDefault();
+                                     e.stopPropagation();
+                                 }}>
+                                <Button onClick={() => {
+                                    setOpenSelect(false);
+                                    setCompactGroup(compactGroupCount + 1);
+                                }} variant="outlined" stylevariable='outlined'>{t('Add compact group')}</Button>
+                            </div>
+                            <MenuItem value='0'>
+                                {t('with controller (0)')}
+                            </MenuItem>
+                            <MenuItem value={1}>
+                                {t('default group (1)')}
+                            </MenuItem>
+                            {Array(compactGroupCount - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
+                                {idx + 2}
+                            </MenuItem>)}
+                        </Select>
+                    </FormControl>
+                </div>}
+                <State state={connectedToHost} >{t('Connected to host')}</State>
+                <State state={alive} >{t('Heartbeat')}</State>
+                {connected !== null &&
+                    <State state={connected}>{t('Connected to %s', instance.adapter)}</State>
+                }
+                <InstanceInfo icon={<InfoIcon />} tooltip={t('Installed')}>
+                    {instance.version}
+                </InstanceInfo>
+                <InstanceInfo icon={<MemoryIcon />} tooltip={t('RAM usage')}>
+                    {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
+                </InstanceInfo>
+                {expertMode && <div className={classes.displayFlex}>
+                    <InstanceInfo
+                        icon={<MemoryIcon className={classes.memoryIcon} />}
+                        tooltip={t('RAM limit')}
+                    >
+                        {(memoryLimitMB ? memoryLimitMB : '-.--') + ' MB'}
+                    </InstanceInfo>
+                    <IconButton
+                        size="small"
+                        className={classes.button}
+                        onClick={() => setOpenDialogMemoryLimit(true)}
+                    >
+                        <EditIcon />
+                    </IconButton>
                 </div>
-                <Typography gutterBottom component={'span'} variant={'body2'}>
-                    {expertMode && checkCompact && compact && <div className={classes.displayFlex}>
-                        <FormControl className={classes.addCompact} variant="outlined" >
-                            <InputLabel htmlFor="outlined-age-native-simple">{t('compact groups')}</InputLabel>
-                            <Select
-                                variant="standard"
-                                onClose={() => setOpenSelect(false)}
-                                onOpen={() => setOpenSelect(true)}
-                                open={openSelect}
-                                value={compactGroup === undefined ? 1 : compactGroup || '0'}
-                                fullWidth
-                                onChange={el => setCompactGroup(el.target.value)}
-                            >
-                                <div className={classes.addCompactButton}
-                                     onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                }}>
-                                    <Button onClick={() => {
-                                        setOpenSelect(false);
-                                        setCompactGroup(compactGroupCount + 1);
-                                    }} variant="outlined" stylevariable='outlined'>{t('Add compact group')}</Button>
-                                </div>
-                                <MenuItem value='0'>
-                                    {t('with controller (0)')}
-                                </MenuItem>
-                                <MenuItem value={1}>
-                                    {t('default group (1)')}
-                                </MenuItem>
-                                {Array(compactGroupCount - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
-                                    {idx + 2}
-                                </MenuItem>)}
-                            </Select>
-                        </FormControl>
-                    </div>}
-                    <State state={connectedToHost} >
-                        {t('Connected to host')}
-                    </State>
-                    <State state={alive} >
-                        {t('Heartbeat')}
-                    </State>
-                    {connected !== null &&
-                        <State state={connected}>
-                            {t('Connected to %s', instance.adapter)}
-                        </State>
-                    }
-                    <InstanceInfo
-                        icon={<InfoIcon />}
-                        tooltip={t('Installed')}
-                    >
-                        {instance.version}
+                }
+                {expertMode && <div className={classes.displayFlex}>
+                    <InstanceInfo icon={loglevelIcon} tooltip={t('loglevel')}>
+                        {logLevel}
                     </InstanceInfo>
-                    <InstanceInfo
-                        icon={<MemoryIcon />}
-                        tooltip={t('RAM usage')}
+                    <IconButton
+                        size="small"
+                        className={classes.button}
+                        onClick={() => setOpenDialogSelect(true)}
                     >
-                        {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
+                        <EditIcon />
+                    </IconButton>
+                </div>}
+                {mode && <div className={classes.displayFlex}>
+                    <InstanceInfo icon={<ScheduleIcon />} tooltip={t('schedule_group')}>
+                        {getSchedule(id) || '-'}
                     </InstanceInfo>
-                    {expertMode && <div className={classes.displayFlex}>
-                        <InstanceInfo
-                            icon={<MemoryIcon className={classes.memoryIcon} />}
-                            tooltip={t('RAM limit')}
-                        >
-                            {(memoryLimitMB ? memoryLimitMB : '-.--') + ' MB'}
-                        </InstanceInfo>
-                        <IconButton
-                            size="small"
-                            className={classes.button}
-                            onClick={() => setOpenDialogMemoryLimit(true)}
-                        >
-                            <EditIcon />
-                        </IconButton>
-                    </div>
-                    }
-                    {expertMode && <div className={classes.displayFlex}>
-                        <InstanceInfo
-                            icon={loglevelIcon}
-                            tooltip={t('loglevel')}
-                        >
-                            {logLevel}
-                        </InstanceInfo>
-                        <IconButton
-                            size="small"
-                            className={classes.button}
-                            onClick={() => setOpenDialogSelect(true)}
-                        >
-                            <EditIcon />
-                        </IconButton>
-                    </div>}
-                    {mode && <div className={classes.displayFlex}>
-                        <InstanceInfo
-                            icon={<ScheduleIcon />}
-                            tooltip={t('schedule_group')}
-                        >
-                            {getSchedule(id) || '-'}
-                        </InstanceInfo>
-                        <IconButton
-                            size="small"
-                            className={classes.button}
-                            onClick={() => setOpenDialogSchedule(true)}
-                        >
-                            <EditIcon />
-                        </IconButton>
-                    </div>}
-                    {expertMode && (instance.mode === 'daemon') &&
-                        <div className={classes.displayFlex}>
-                            <InstanceInfo
-                                icon={<ScheduleIcon className={classes.scheduleIcon} />}
-                                tooltip={t('restart')}
-                            >
-                                {getRestartSchedule(id) || '-'}
-                            </InstanceInfo>
-                            <IconButton
-                                size="small"
-                                className={classes.button}
-                                onClick={() => setOpenDialogCron(true)}
-                            >
-                                <EditIcon />
-                            </IconButton>
-                        </div>
-                    }
-                    {expertMode &&
-                        <div className={classes.displayFlex}>
-                            <InstanceInfo
-                                icon={<ImportExportIcon />}
-                                tooltip={t('events')}
-                            >
-                                <div className={classes.displayFlex}>
-                                    <Tooltip title={t('input events')}>
-                                        <div className={classes.marginRight5}>⇥${inputOutput.stateInput}</div>
-                                    </Tooltip>
-                                    /
+                    <IconButton
+                        size="small"
+                        className={classes.button}
+                        onClick={() => setOpenDialogSchedule(true)}
+                    >
+                        <EditIcon />
+                    </IconButton>
+                </div>}
+                {expertMode && (instance.mode === 'daemon') &&
+                <div className={classes.displayFlex}>
+                    <InstanceInfo
+                        icon={<ScheduleIcon className={classes.scheduleIcon} />}
+                        tooltip={t('restart')}
+                    >
+                        {getRestartSchedule(id) || '-'}
+                    </InstanceInfo>
+                    <IconButton
+                        size="small"
+                        className={classes.button}
+                        onClick={() => setOpenDialogCron(true)}
+                    >
+                        <EditIcon />
+                    </IconButton>
+                </div>
+                }
+                {expertMode &&
+                    <div className={classes.displayFlex}>
+                        <InstanceInfo icon={<ImportExportIcon />} tooltip={t('events')}>
+                            <div className={classes.displayFlex}>
+                                <Tooltip title={t('input events')}>
+                                    <div className={classes.marginRight5}>⇥${inputOutput.stateInput}</div>
+                                </Tooltip>
+                                /
                                 <Tooltip title={t('output events')}>
-                                        <div className={classes.marginLeft5}>↦${inputOutput.stateOutput}</div>
-                                    </Tooltip>
-                                </div>
-                            </InstanceInfo>
-                        </div>
-                    }
-                    <Hidden smUp>
-                        <IconButton
-                            size="small"
-                            className={classes.button}
-                            onClick={() => openConfig(id)}
-                        >
-                            <BuildIcon />
-                        </IconButton>
-                    </Hidden>
-                </Typography>
-            </CardContent>
+                                    <div className={classes.marginLeft5}>↦${inputOutput.stateOutput}</div>
+                                </Tooltip>
+                            </div>
+                        </InstanceInfo>
+                    </div>
+                }
+                <Hidden smUp>
+                    <IconButton
+                        size="small"
+                        className={classes.button}
+                        onClick={() => openConfig(id)}
+                    >
+                        <BuildIcon />
+                    </IconButton>
+                </Hidden>
+            </Typography>
+        </CardContent>
             <div className={classes.footerBlock}>
                 <div className={classes.displayFlex}>
                     <IconButton
@@ -572,22 +549,58 @@ const CardInstances = ({
                     </Tooltip>
                 </div>}
             </div>
-        </div>
+        </div> : null;
 
-        <div className={clsx(classes.imageBlock,
-            running ? classes.update : '')}>
-            <CardMedia
-                className={classes.img}
-                component="img"
-                image={image || 'img/no-image.png'}
-            />
+    const cronDialog = (openDialogCron || openDialogSchedule) &&
+        <ComplexCron
+            title={
+                (openDialogCron && t('Edit restart rule for %s', instance.id)) ||
+                (openDialogSchedule && t('Edit schedule rule for %s', instance.id))
+            }
+            cron={openDialogCron ? getRestartSchedule(id) : getSchedule(id)}
+            language={I18n.getLanguage()}
+            onOk={cron => {
+                if (openDialogCron) {
+                    setRestartSchedule(cron);
+                } else if (openDialogSchedule) {
+                    setSchedule(cron);
+                }
+            }}
+            onClose={() => {
+                if (openDialogCron) {
+                    setOpenDialogCron(false);
+                } else if (openDialogSchedule) {
+                    setOpenDialogSchedule(false);
+                }
+            }}
+        />;
+
+    return <Card key={key} className={clsx(classes.root, hidden ? classes.hidden : '')}>
+        {customModal}
+        {cronDialog}
+        {secondCardInfo}
+
+        <div className={clsx(
+            classes.imageBlock,
+            (!connectedToHost || !alive) && classes.instanceStateNotAlive1,
+            connectedToHost && alive && connected === false && classes.instanceStateAliveNotConnected1,
+            connectedToHost && alive && connected !== false && classes.instanceStateAliveAndConnected1
+        )}>
+            <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'}/>
             <div className={classes.adapter}>{instance.id}</div>
             <div className={classes.versionDate}>
                 {/* {expertMode && checkCompact && <Tooltip title={t('compact groups')}>
                     <ViewCompactIcon color="action" style={{ margin: 10 }} />
                 </Tooltip>} */}
             </div>
-            <Fab onClick={() => setCollapse((bool) => !bool)} className={classes.fab} color="primary" aria-label="add">
+            <Fab
+                onMouseOver={() => setMouseOver(true)}
+                onMouseOut={() => setMouseOver(false)}
+                onClick={() => setCollapse(true)}
+                className={classes.fab}
+                color="primary"
+                aria-label="add"
+            >
                 <MoreVertIcon />
             </Fab>
         </div>

@@ -1,5 +1,8 @@
 # Todo
 
+- send change of theme into iframe via messages
+  - and expert mode change
+
 ## Settings
 - Allow set the expert mode in settings
   - Save expert mode in session storage

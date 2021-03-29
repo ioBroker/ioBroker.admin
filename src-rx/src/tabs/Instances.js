@@ -495,24 +495,27 @@ class Instances extends Component {
     }
 
     getInstanceState = (id) => {
-        const obj = this.objects[id];
+        const obj      = this.objects[id];
         const instance = this.state.instances[id];
-        const common = obj ? obj.common : null;
-        const mode = common?.mode || '';
-        let state = mode === 'daemon' ? 'green' : 'blue';
+        const common   = obj ? obj.common : null;
+        const mode     = common?.mode || '';
+        let state      = mode === 'daemon' ? 'green' : 'blue';
+
         if (common && common.enabled && (!common.webExtension || !obj.native.webInstance || mode === 'daemon')) {
             const alive = this.states[id + '.alive'];
             const connected = this.states[id + '.connected'];
             const connection = this.states[instance.id + '.info.connection'];
-            if (!connected || !connected.val || !alive || !alive.val) {
+
+            if (!connected?.val || !alive?.val) {
                 state = mode === 'daemon' ? 'red' : 'blue';
             }
-            if (connection && !connection.val) {
+            if (!connection?.val) {
                 state = state === 'red' ? 'red' : 'orange';
             }
         } else {
             state = mode === 'daemon' ? 'grey' : 'blue';
         }
+
         return state;
     }
 
