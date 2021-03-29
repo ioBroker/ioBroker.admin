@@ -102,6 +102,7 @@ class ObjectBrowserEditObject extends Component {
 
             let jsFunc;
             try {
+                // eslint-disable-next-line no-new-func
                 jsFunc = new Function('val', func.includes('return') ? func : 'return ' + func);
             } catch (e) {
                 return this.props.t('Cannot parse code!');

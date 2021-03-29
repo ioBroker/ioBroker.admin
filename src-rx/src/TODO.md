@@ -45,7 +45,7 @@
 
 ## Files
 - Files - bulk edit of access rights
-  - file.acl.permissions
+  - file.acl.permissions//
 - File viewer can show: json, js, ts, md,css
 - Allow switch of background color for images: jpg, png, bmp, svg, ico, jpeg
   
