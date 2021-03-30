@@ -261,7 +261,7 @@ class Drawer extends Component {
                     });
                 }
 
-                const READY_TO_USE = ['tab-intro', 'tab-adapters', 'tab-instances', 'tab-logs', 'tab-files', 'tab-objects', 'tab-users'];
+                const READY_TO_USE = ['tab-intro', 'tab-adapters', 'tab-instances', 'tab-logs', 'tab-files', 'tab-objects', 'tab-users', 'tab-enums'];
                 // DEV ONLY
                 let tabs = Object.keys(tabsInfo).filter(name => READY_TO_USE.includes(name));
 

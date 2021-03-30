@@ -67,6 +67,7 @@ const Logs = React.lazy(() => import('./tabs/Logs'));
 const Files = React.lazy(() => import('./tabs/Files'));
 const Objects = React.lazy(() => import('./tabs/Objects'));
 const Users = React.lazy(() => import('./tabs/Users'));
+const Enums = React.lazy(() => import('./tabs/Enums'));
 const CustomTab = React.lazy(() => import('./tabs/CustomTab'));
 
 const query = {};
@@ -673,8 +674,7 @@ class App extends Router {
                         menuCompact={compact}
                     />
                 </Suspense>;
-            } else
-                if (this.state.currentTab.tab === 'tab-instances') {
+            } else if (this.state.currentTab.tab === 'tab-instances') {
                     return <Suspense fallback={<Connecting />}>
                         <Instances
                             key="instances"
@@ -695,99 +695,105 @@ class App extends Router {
                             inBackgroundCommand={this.state.commandError || this.state.performed}
                         />
                     </Suspense>;
-                } else
-                    if (this.state.currentTab.tab === 'tab-intro') {
-                        return <Suspense fallback={<Connecting />}>
-                            <Intro
-                                key="intro"
-                                protocol={this.state.protocol}
-                                hostname={this.state.hostname}
-                                showAlert={(message, type) => this.showAlert(message, type)}
-                                socket={this.socket}
-                                t={I18n.t}
-                                lang={I18n.getLanguage()}
-                            />
-                        </Suspense>;
-                    } else
-                        if (this.state.currentTab.tab === 'tab-logs') {
-                            return <Suspense fallback={<Connecting />}>
-                                <Logs
-                                    key="logs"
-                                    t={I18n.t}
-                                    lang={this.state.lang}
-                                    socket={this.socket}
-                                    ready={this.state.ready}
-                                    logsWorker={this.logsWorker}
-                                    expertMode={this.state.expertMode}
-                                    currentHost={this.state.currentHost}
-                                    clearErrors={cb => this.clearLogErrors(cb)}
-                                />
-                            </Suspense>;
-                        } else
-                            if (this.state.currentTab.tab === 'tab-files') {
-                                return <Suspense fallback={<Connecting />}>
-                                    <Files
-                                        key="files"
-                                        ready={this.state.ready}
-                                        t={I18n.t}
-                                        expertMode={this.state.expertMode}
-                                        lang={I18n.getLanguage()}
-                                        socket={this.socket}
-                                    />
-                                </Suspense>;
-                            } else
-                                if (this.state.currentTab.tab === 'tab-users') {
-                                    return <Suspense fallback={<Connecting />}>
-                                        <Users
-                                            key="users"
-                                            ready={this.state.ready}
-                                            t={I18n.t}
-                                            expertMode={this.state.expertMode}
-                                            lang={I18n.getLanguage()}
-                                            socket={this.socket}
-                                        />
-                                    </Suspense>;
-                                } else
-                                    if (this.state.currentTab.tab === 'tab-objects') {
-                                        return <Suspense fallback={<Connecting />}>
-                                            <Objects
-                                                key="objects"
-                                                t={I18n.t}
-                                                themeName={this.state.themeName}
-                                                expertMode={this.state.expertMode}
-                                                lang={I18n.getLanguage()}
-                                                socket={this.socket}
-                                            />
-                                        </Suspense>;
-                                    } else {
-                                        const m = this.state.currentTab.tab.match(/^tab-([-\w\d]+)(-\d+)?$/);
-                                        if (m) {
-                                            /*const adapter  = m[1];
-                                            const instance = m[2] ? parseInt(m[2], 10) : null;
+            } else if (this.state.currentTab.tab === 'tab-intro') {
+                return <Suspense fallback={<Connecting />}>
+                    <Intro
+                        key="intro"
+                        protocol={this.state.protocol}
+                        hostname={this.state.hostname}
+                        showAlert={(message, type) => this.showAlert(message, type)}
+                        socket={this.socket}
+                        t={I18n.t}
+                        lang={I18n.getLanguage()}
+                    />
+                </Suspense>;
+            } else if (this.state.currentTab.tab === 'tab-logs') {
+                return <Suspense fallback={<Connecting />}>
+                    <Logs
+                        key="logs"
+                        t={I18n.t}
+                        lang={this.state.lang}
+                        socket={this.socket}
+                        ready={this.state.ready}
+                        logsWorker={this.logsWorker}
+                        expertMode={this.state.expertMode}
+                        currentHost={this.state.currentHost}
+                        clearErrors={cb => this.clearLogErrors(cb)}
+                    />
+                </Suspense>;
+            } else if (this.state.currentTab.tab === 'tab-files') {
+                return <Suspense fallback={<Connecting />}>
+                    <Files
+                        key="files"
+                        ready={this.state.ready}
+                        t={I18n.t}
+                        expertMode={this.state.expertMode}
+                        lang={I18n.getLanguage()}
+                        socket={this.socket}
+                    />
+                </Suspense>;
+            } else if (this.state.currentTab.tab === 'tab-users') {
+                return <Suspense fallback={<Connecting />}>
+                    <Users
+                        key="users"
+                        ready={this.state.ready}
+                        t={I18n.t}
+                        expertMode={this.state.expertMode}
+                        lang={I18n.getLanguage()}
+                        socket={this.socket}
+                    />
+                </Suspense>;
+            } else if (this.state.currentTab.tab === 'tab-enums') {
+                return <Suspense fallback={<Connecting />}>
+                    <Enums
+                        key="enums"
+                        ready={this.state.ready}
+                        t={I18n.t}
+                        expertMode={this.state.expertMode}
+                        lang={I18n.getLanguage()}
+                        socket={this.socket}
+                    />
+                </Suspense>;
+            } else if (this.state.currentTab.tab === 'tab-objects') {
+                return <Suspense fallback={<Connecting />}>
+                    <Objects
+                        key="objects"
+                        t={I18n.t}
+                        themeName={this.state.themeName}
+                        expertMode={this.state.expertMode}
+                        lang={I18n.getLanguage()}
+                        socket={this.socket}
+                    />
+                </Suspense>;
+            } else {
+                const m = this.state.currentTab.tab.match(/^tab-([-\w\d]+)(-\d+)?$/);
+                if (m) {
+                    /*const adapter  = m[1];
+                    const instance = m[2] ? parseInt(m[2], 10) : null;
 
-                                            let link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab.html';
-                                            if (tab.common.materializeTab) {
-                                                link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab_m.html';
-                                            }*/
+                    let link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab.html';
+                    if (tab.common.materializeTab) {
+                        link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab_m.html';
+                    }*/
 
-                                            // /adapter/javascript/tab.html
-                                            return <Suspense fallback={<Connecting />}>
-                                                <CustomTab
-                                                    key={this.state.currentTab.tab}
-                                                    t={I18n.t}
-                                                    protocol={this.state.protocol}
-                                                    hostname={this.state.hostname}
-                                                    instancesWorker={this.instancesWorker}
-                                                    tab={this.state.currentTab.tab}
-                                                    themeName={this.state.themeName}
-                                                    expertMode={this.state.expertMode}
-                                                    lang={I18n.getLanguage()}
-                                                    onRegisterIframeRef={ref => this.refConfigIframe = ref}
-                                                    onUnregisterIframeRef={() => this.refConfigIframe = null}
-                                                />
-                                            </Suspense>;
-                                        }
-                                    }
+                    // /adapter/javascript/tab.html
+                    return <Suspense fallback={<Connecting />}>
+                        <CustomTab
+                            key={this.state.currentTab.tab}
+                            t={I18n.t}
+                            protocol={this.state.protocol}
+                            hostname={this.state.hostname}
+                            instancesWorker={this.instancesWorker}
+                            tab={this.state.currentTab.tab}
+                            themeName={this.state.themeName}
+                            expertMode={this.state.expertMode}
+                            lang={I18n.getLanguage()}
+                            onRegisterIframeRef={ref => this.refConfigIframe = ref}
+                            onUnregisterIframeRef={() => this.refConfigIframe = null}
+                        />
+                    </Suspense>;
+                }
+            }
         }
 
         return null;
