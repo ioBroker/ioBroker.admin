@@ -20,7 +20,7 @@ class EnumsList extends Component {
     }
 }
 
-UsersList.propTypes = {
+EnumsList.propTypes = {
     t: PropTypes.func,
     lang: PropTypes.string,
     socket: PropTypes.object,

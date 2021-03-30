@@ -8,7 +8,7 @@ import Box from '@material-ui/core/Box';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
 import I18n from '@iobroker/adapter-react/i18n';
-import SaveCloseButtons from '@iobroker/adapter-react/Components/SaveCloseButtons';
+// import SaveCloseButtons from '@iobroker/adapter-react/Components/SaveCloseButtons';
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 
@@ -142,7 +142,7 @@ class JsonSchemaConfig extends Component {
                     <Fragment />
                 </Form>
             </Box>
-            <SaveCloseButtons
+            {/* <SaveCloseButtons
                 dense={true}
                 paddingLeft={this.props.menuPadding}
                 theme={this.state.theme}
@@ -150,7 +150,7 @@ class JsonSchemaConfig extends Component {
                 changed={!errors.length && this.state.hasChanges}
                 onSave={() => this.closeDialog(true)}
                 onClose={() => this.closeDialog(false)}
-            />
+            /> */}
 
             {/*<AppBar color="default" position="static">
                 <Toolbar>
