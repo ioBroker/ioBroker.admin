@@ -10,6 +10,7 @@ import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 import copy from '@iobroker/adapter-react/Components/copy-to-clipboard';
 import withStyles from '@material-ui/core/styles/withStyles';
+import { useDrag } from 'react-dnd'
 
 import IconButton from '@material-ui/core/IconButton';
 import withWidth from '@material-ui/core/withWidth';
@@ -1348,6 +1349,14 @@ const SCREEN_WIDTHS = {
         }
     },
 };
+
+const DraggableObject = (props) => {
+    let dragSettings = {...props.dragSettings};
+    dragSettings.item = props.item.data;
+    const [{ isDragging }, dragRef] = useDrag(dragSettings);
+
+    return <div ref={dragRef}>{props.children}</div>
+}
 
 /**
  * @extends {React.Component<import('./types').ObjectBrowserProps>}
@@ -3614,7 +3623,11 @@ class ObjectBrowser extends Component {
     renderItem(root, isExpanded, classes, counter) {
         const items = [];
         counter = counter || { count: 0 };
-        root.data.id && items.push(this.renderLeaf(root, isExpanded, classes, counter));
+        let leaf = this.renderLeaf(root, isExpanded, classes, counter);
+        if (this.props.dragEnabled) {
+            leaf = <DraggableObject item={root} dragSettings={this.props.dragSettings}>{leaf}</DraggableObject>;
+        }
+        root.data.id && items.push(leaf);
 
         isExpanded = isExpanded === undefined ? binarySearch(this.state.expanded, root.data.id) : isExpanded;
 
@@ -4080,6 +4093,8 @@ ObjectBrowser.propTypes = {
     ]),
     types: PropTypes.array,   // optional ['state', 'instance', 'channel']
     columns: PropTypes.array, // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
+    dragSettings: PropTypes.object,
+    dragEnabled: PropTypes.bool,
 };
 
 /** @type {typeof ObjectBrowser} */
