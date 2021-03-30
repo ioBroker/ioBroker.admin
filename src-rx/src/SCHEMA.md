@@ -46,15 +46,16 @@ const schema = {
                 //  - encrypted - is value encrypted or not 
                 //    - if encrypted, use __encrypted__ value for show and if was changed, encrypt it with sochet.encrypt 
                 //  - style - css style 
+                //  - validator - JS code: true no error, false - error
                 
                 // possible types:
-                // - text
+                // - text*
                 
-                // - number (min, max)
+                // - number* (min, max)
                 
-                // - color
+                // - color*
                 
-                // - boolean
+                // - boolean**
                 
                 // - slider               
                 //   - min (default 0)
@@ -68,7 +69,7 @@ const schema = {
                 
                 // - user
                 
-                // - select 
+                // - select* 
                 //   - options - [{title: {en: "option 1"}, value: 1}, ...]
                 
                 // - icon - base64
@@ -143,6 +144,40 @@ const schema = {
 }
 ```
 
+Types with * must support autocomplete, or flag __different__. In this case the value will be provided as array of all possible values.
+Example: 
+```
+...
+   "timeout": {
+      "type": "number",
+      "title": "Timeout"
+   }
+...
+
+data: {
+   timeout: [1000, 2000, 3000]
+}
+```
+In this case input must be text, where shown __different__, with autocomplete option with 3 possible values.
+
+Boolean must support intermediate if value is [true, false]
+
+For non changed __different__ the value different must be returned:
+
+```
+Input:
+data: {
+   timeout: [1000, 2000, 3000]
+}
+
+Output if timeout was not changed:
+newData: {
+   timeout: "__different__"
+}
+```
+
+Value "__different__" is reserved and no one text input may accept it from user.
+
 Component must look like
 ```
 <SchemaEditor
@@ -150,6 +185,7 @@ Component must look like
     className={classes.myClass}
     schema={schema}
     data={common.native}
-    onChanged={isChanged => console.log('Changed ' + isChanged)}
+    onError={(error, attribute) => error can be true/false or text. Attribute is optional}
+    onChanged={(newData, isChanged) => console.log('Changed ' + isChanged)}
 />
 ```
