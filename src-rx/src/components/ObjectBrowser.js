@@ -403,6 +403,12 @@ const styles = theme => ({
         paddingTop: 0,
         marginTop: -2,
     },
+    cellButtonsEmptyButton: {
+        fontSize: 12,
+    },
+    cellButtonMinWidth: {
+        minWidth: 47,
+    },
     cellButtonsButtonAlone: {
         marginLeft: SMALL_BUTTON_SIZE + 4,
         paddingTop: 0,
@@ -521,9 +527,6 @@ const styles = theme => ({
     backgroundDef: {
         backgroundColor: theme.palette.background.default
     },
-    emptyButton: {
-        minWidth: 47
-    },
     buttonDiv: {
         display: 'flex',
         height: '100%',
@@ -543,6 +546,10 @@ const styles = theme => ({
     textCenter: {
         padding: 12,
         textAlign: 'center'
+    },
+    tooltipAccessControl: {
+        display: 'flex',
+        flexDirection: 'column'
     }
 });
 
@@ -2858,7 +2865,7 @@ class ObjectBrowser extends Component {
         if (acl.state) {
             funcRenderStateObject('state');
         }
-        return arrayTooltipText.length ? <span style={{ display: 'flex', flexDirection: 'column' }}>{arrayTooltipText.map(el => el)}</span> : '';
+        return arrayTooltipText.length ? <span className={this.props.classes.tooltipAccessControl}>{arrayTooltipText.map(el => el)}</span> : '';
     }
 
     /**
@@ -2870,11 +2877,10 @@ class ObjectBrowser extends Component {
         if (!item.data.obj) {
             return this.props.onObjectDelete ? <div className={classes.buttonDiv}>
                 {this.props.expertMode && <IconButton
-                    style={{ minWidth: 47 }}
-                    className={Utils.clsx(classes.cellButtonsButton)}
+                    className={Utils.clsx(classes.cellButtonsButton, classes.cellButtonsEmptyButton, classes.cellButtonMinWidth)}
                     onClick={() =>
-                        this.setState({ modalEditOfAccess: true, modalEmptyId: id, modalEditOfAccessObjData: item.data })
-                    }>---</IconButton>}
+                        this.setState({ modalEditOfAccess: true, modalEmptyId: id, modalEditOfAccessObjData: item.data })}
+                >---</IconButton>}
                 <IconButton
                     className={Utils.clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone)}
                     size="small"
@@ -2889,7 +2895,7 @@ class ObjectBrowser extends Component {
         item.data.aclTooltip = item.data.aclTooltip || this.renderTooltipAccessControl(item.data.obj.acl);
 
         return [
-            this.props.expertMode && this.props.objectEditOfAccessControl ? <Tooltip key="acl" title={item.data.aclTooltip}><IconButton style={{ minWidth: 47 }} onClick={() =>
+            this.props.expertMode && this.props.objectEditOfAccessControl ? <Tooltip key="acl" title={item.data.aclTooltip}><IconButton className={classes.cellButtonMinWidth} onClick={() =>
                 this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })
             }>
                 <div className={classes.aclText}>{Number(item.data.obj.type === 'state' ?
@@ -2897,7 +2903,7 @@ class ObjectBrowser extends Component {
                         item.data.obj.acl.state :
                         item.data.obj.acl.object :
                     item.data.obj.acl.object).toString(16)}</div>
-            </IconButton></Tooltip> : <div key="aclEmpty" className={classes.emptyButton} />,
+            </IconButton></Tooltip> : <div key="aclEmpty" className={classes.cellButtonMinWidth} />,
             <IconButton
                 key="edit"
                 className={classes.cellButtonsButton}

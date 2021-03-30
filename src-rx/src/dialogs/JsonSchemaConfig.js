@@ -1,8 +1,8 @@
 import { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Form from '@rjsf/material-ui';
-import toJsonSchema from 'to-json-schema';
+//import Form from '@rjsf/material-ui';
+//import toJsonSchema from 'to-json-schema';
 
 import Box from '@material-ui/core/Box';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -38,7 +38,7 @@ class JsonSchemaConfig extends Component {
         const obj = await this.getInstanceObject();
         // Translate schema
         const lang = I18n.getLanguage();
-        const schema = obj.common['$schema'] === true ? toJsonSchema(obj.native) : obj.common['$schema'];
+        const schema = {};//obj.common['$schema'] === true ? toJsonSchema(obj.native) : obj.common['$schema'];
         const uiSchema = obj.common['$uiSchema'] || {};
 
         Object.keys(schema).forEach(name => {
@@ -132,7 +132,7 @@ class JsonSchemaConfig extends Component {
 
         return <>
             <Box p={ 3 } className={ classes.scroll }>
-                <Form
+                {/*<Form
                     schema={this.state.schema}
                     uiSchema={this.state.uiSchema}
                     formData={this.state.data}
@@ -140,7 +140,7 @@ class JsonSchemaConfig extends Component {
                     onChange={(change) => this.handleChange(change)}
                 >
                     <Fragment />
-                </Form>
+                </Form>*/}
             </Box>
             {/* <SaveCloseButtons
                 dense={true}

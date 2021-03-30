@@ -1143,5 +1143,6 @@
   "Write converter": "写转换器",
   "Copy into clipboard": "复制到剪贴板",
   "Cannot parse code!": "无法解析代码！",
-  "Type of result is not as expected: %s": "结果类型与预期不符： %s"
+  "Type of result is not as expected: %s": "结果类型与预期不符： %s",
+  "Accept": "接受"
 }

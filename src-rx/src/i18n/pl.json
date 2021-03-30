@@ -1143,5 +1143,6 @@
   "Write converter": "Napisz konwerter",
   "Copy into clipboard": "Skopiuj do schowka",
   "Cannot parse code!": "Nie można przeanalizować kodu!",
-  "Type of result is not as expected: %s": "Typ wyniku nie jest zgodny z oczekiwaniami: %s"
+  "Type of result is not as expected: %s": "Typ wyniku nie jest zgodny z oczekiwaniami: %s",
+  "Accept": "Zaakceptować"
 }

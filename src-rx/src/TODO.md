@@ -24,9 +24,6 @@
 - Open the configuration dialog for just installed instance (only if document.hidden === false) (https://github.com/ioBroker/ioBroker.admin/issues/541)
 - Show which version is minimal required by the dependencies' problem (https://github.com/ioBroker/ioBroker.admin/issues/507)
   - https://github.com/ioBroker/ioBroker.admin/issues/557
-
-<!-- - Show License better formated (no X scroll, but all info visible) 
-//Calendar schedule -->
  
 
 ## Instances

@@ -760,6 +760,7 @@ class App extends Router {
                         key="objects"
                         t={I18n.t}
                         themeName={this.state.themeName}
+                        themeType={this.state.themeType}
                         expertMode={this.state.expertMode}
                         lang={I18n.getLanguage()}
                         socket={this.socket}

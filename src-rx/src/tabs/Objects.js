@@ -30,7 +30,6 @@ import ObjectBrowserEditRole from '../components/ObjectBrowserEditRole';
 import ObjectAddNewContent from '../dialogs/ObjectAddNewContent';
 import ObjectEditOfAccessControl from '../dialogs/ObjectEditOfAccessControl';
 
-
 const styles = theme => ({
     buttonIcon: {
         marginRight: 4,
@@ -198,6 +197,7 @@ class Objects extends Component {
                 }
                 modalEditOfAccessControl={(context, objData) =>
                     <ObjectEditOfAccessControl
+                        themeType={this.props.themeType}
                         open={context.state.modalEditOfAccess}
                         extendObject={(id, data) => {
                             context.extendObject(id, data);
@@ -221,6 +221,7 @@ Objects.propTypes = {
     lang: PropTypes.string,
     socket: PropTypes.object,
     themeName: PropTypes.string,
+    themeType: PropTypes.string,
     expertMode: PropTypes.bool,
 };
 

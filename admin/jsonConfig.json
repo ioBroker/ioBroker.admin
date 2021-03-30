@@ -1,0 +1,304 @@
+{
+  "type": "tabs",
+  "i18n": true,
+  "items": {
+    "mainTab": {
+      "type": "panel",
+      "label": {
+        "en": "Main settings"
+      },
+      "items": {
+        "bind": {
+          "type": "ip",
+          "listenOnAllPorts": true,
+          "label": {
+            "en": "IP"
+          },
+          "s": 12,
+          "m": 8,
+          "l": 5
+        },
+        "port": {
+          "type": "number",
+          "min": 1,
+          "max": 65565,
+          "label": {
+            "en": "Port"
+          },
+          "s": 12,
+          "m": 4,
+          "l": 3
+        },
+        "secure": {
+          "newLine": true,
+          "type": "checkbox",
+          "label": {
+            "en": "Secure(HTTPS)"
+          },
+          "s": 12,
+          "m": 6,
+          "l": 2
+        },
+        "certPublic": {
+          "type": "certificate",
+          "hidden": "!data.secure",
+          "certType": "public",
+          "validator": "!data.secure || data.certPublic",
+          "label": {
+            "en": "Public certificate"
+          },
+          "s": 12,
+          "m": 6,
+          "l": 2
+        },
+        "certPrivate": {
+          "hidden": "!data.secure",
+          "type": "certificate",
+          "certType": "private",
+          "validator": "!data.secure || data.certPrivate",
+          "label": {
+            "en": "Private certificate"
+          },
+          "s": 12,
+          "m": 6,
+          "l": 2
+        },
+        "certChained": {
+          "hidden": "!data.secure",
+          "type": "certificate",
+          "certType": "chained",
+          "label": {
+            "en": "Chained certificate"
+          },
+          "s": 12,
+          "m": 6,
+          "l": 2
+        },
+        "auth": {
+          "newLine": true,
+          "type": "checkbox",
+          "label": {
+            "en": "Authentication"
+          },
+          "s": 12,
+          "m": 6,
+          "l": 2
+        },
+        "defaultUser": {
+          "hidden": "data.auth",
+          "type": "user",
+          "label": {
+            "en": "Run as"
+          },
+          "s": 12,
+          "m": 6,
+          "l": 2
+        },
+        "ttl": {
+          "hidden": "data.auth",
+          "type": "number",
+          "label": {
+            "en": "Login timeout"
+          },
+          "help": {
+            "en": "sec"
+          },
+          "s": 12,
+          "m": 6,
+          "l": 2
+        },
+        "autoUpdate": {
+          "type": "select",
+          "label": {
+            "en": "Auto update"
+          },
+          "options": [
+            {"label": {"en": "manually"},       "value": 0},
+            {"label": {"en": "every 12 hours"}, "value": 12},
+            {"label": {"en": "every day"},      "value": 24},
+            {"label": {"en": "every 2 days"},   "value": 48},
+            {"label": {"en": "every 3 days"},   "value": 72},
+            {"label": {"en": "every week"},     "value": 168},
+            {"label": {"en": "every 2 weeks"},  "value": 336},
+            {"label": {"en": "monthly"},        "value": 720}
+          ],
+          "s": 12,
+          "m": 6,
+          "l": 2
+        },
+        "thresholdValue": {
+          "type": "number",
+          "min": 50,
+          "label": {
+            "en": "Events threshold value"
+          },
+          "s": 12,
+          "m": 4,
+          "l": 3
+        },
+        "react": {
+          "newLine": true,
+          "type": "checkbox",
+          "label": {
+            "en": "Use react UI(experts)"
+          },
+          "s": 12,
+          "m": 6,
+          "l": 2
+        }
+      }
+    },
+    "leTab": {
+      "type": "panel",
+      "label": "Let's Encrypt SSL",
+      "disabled": "!data.secure",
+      "items": {
+        "_image": {
+          "type": "staticImage",
+          "tooltip": {
+            "en": "Read about Let's Encrypt certificates"
+          },
+          "href": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md#lets-encrypt-certificates",
+          "src": "../../img/le.png",
+          "style": {
+            "width": 200,
+            "height": 59
+          }
+        },
+        "_link": {
+          "newLine": true,
+          "type": "staticLink",
+          "href": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md#lets-encrypt-certificates",
+          "text": {
+            "en": "Read about Let's Encrypt certificates"
+          },
+          "style": {
+            "fontSize": 24
+          }
+        },
+        "leEnabled": {
+          "newLine": true,
+          "type": "checkbox",
+          "label": {
+            "en": "Use Lets Encrypt certificates"
+          }
+        },
+        "leUpdate": {
+          "newLine": true,
+          "type": "checkbox",
+          "hidden": "!data.leEnabled",
+          "label": {
+            "en": "Use this instance for automatic update"
+          }
+        },
+        "lePort": {
+          "newLine": true,
+          "s": 11,
+          "l": 4,
+          "type": "number",
+          "hidden": "!data.leEnabled",
+          "label": {
+            "en": "Port to check the domain"
+          }
+        }
+      }
+    },
+    "loginTab": {
+      "type": "panel",
+      "label": {
+        "en": "Login background"
+      },
+      "disabled": "!data.auth",
+      "items": {
+        "loginBackgroundColor": {
+          "type": "color",
+          "s": 12,
+          "m": 8,
+          "l": 4,
+          "label": {
+            "en": "Background color of the login screen"
+          }
+        },
+        "loginHideLogo": {
+          "newLine": true,
+          "s": 12,
+          "m": 8,
+          "l": 4,
+          "type": "checkbox",
+          "label": {
+            "en": "Hide logo"
+          }
+        },
+        "loginMotto": {
+          "s": 12,
+          "m": 8,
+          "l": 4,
+          "type": "text",
+          "label": {
+            "en": "Own motto"
+          }
+        },
+        "loginBackgroundImage": {
+          "s": 12,
+          "m": 8,
+          "l": 4,
+          "type": "checkbox",
+          "label": {
+            "en": "Use background image"
+          }
+        },
+        "login-bg.png": {
+          "type": "image",
+          "hidden": "!data.loginBackgroundImage",
+          "s": 12,
+          "m": 8,
+          "l": 4,
+          "accept": "image/*",
+          "label": {
+            "en": "Upload image"
+          },
+          "crop": true
+        }
+      }
+    },
+    "instancesTab": {
+      "type": "panel",
+      "label": {
+        "en": "Access to instances"
+      },
+      "items": {
+        "_text1": {
+          "type": "staticText",
+          "text": {
+            "en": "There is a option to allow access to the specific configuration pages of selected instances."
+          }
+        },
+        "accessLimit": {
+          "newLine": true,
+          "type": "checkbox",
+          "text": {
+            "en": "Allow access only to specific instances"
+          }
+        },
+        "applyRights": {
+          "s": 12,
+          "m": 8,
+          "l": 4,
+          "newLine": true,
+          "type": "checkbox",
+          "text": {
+            "en": "Apply access rights for selected instances"
+          }
+        },
+        "accessAllowedConfigs": {
+          "s": 12,
+          "m": 8,
+          "l": 4,
+          "newLine": true,
+          "type": "custom",
+          "component": "customInstancesEditor"
+        }
+      }
+    }
+  }
+}

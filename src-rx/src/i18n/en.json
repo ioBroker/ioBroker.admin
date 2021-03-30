@@ -1143,5 +1143,6 @@
   "Write converter": "Write converter",
   "Copy into clipboard": "Copy into clipboard",
   "Cannot parse code!": "Cannot parse code!",
-  "Type of result is not as expected: %s": "Type of result is not as expected: %s"
+  "Type of result is not as expected: %s": "Type of result is not as expected: %s",
+  "Accept": "Accept"
 }
