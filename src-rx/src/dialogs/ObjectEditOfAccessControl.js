@@ -222,6 +222,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                 if (_stateOwnerGroup === null && obj.acl.ownerGroup !== undefined) {
                     _stateOwnerGroup = obj.acl.ownerGroup;
                 }
+
                 if (!differentOwner && _stateOwnerUser !== obj.acl.owner && obj.acl.owner !== undefined) {
                     _differentOwner = true;
                 }
@@ -246,8 +247,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                     icon: obj.common?.icon,
                     color: obj.common?.color,
                 });
-            }
-
+            } else
             if (key.startsWith('system.user.') && obj?.type === 'user') {
                 users.push({
                     name: Utils.getObjectNameFromObj(obj, lang).replace('system.user.', ''),
