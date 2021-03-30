@@ -44,11 +44,14 @@ import IconList from '@material-ui/icons/List';
 import IconTile from '@material-ui/icons/ViewModule';
 import IconBack from '@material-ui/icons/ArrowBack';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Brightness5Icon from '@material-ui/icons/Brightness6';
 
 import ExpertIcon from '@iobroker/adapter-react/Components/ExpertIcon';
 import NoImage from '@iobroker/adapter-react/assets/no_icon.svg';
 import IconClosed from '@iobroker/adapter-react/icons/IconClosed';
 import IconOpen from '@iobroker/adapter-react/icons/IconOpen';
+import clsx from 'clsx';
+import { Tooltip } from '@material-ui/core';
 
 const ROW_HEIGHT = 32;
 const BUTTON_WIDTH = 32;
@@ -337,6 +340,15 @@ const styles = theme => ({
     pathDivBreadcrumbFile: {
         cursor: 'pointer',
         flexGrow: 1,
+    },
+    backgroundImageLight: {
+        background: 'white'
+    },
+    backgroundImageDark: {
+        background: 'black'
+    },
+    backgroundImageColored: {
+        background: 'silver'
     }
 });
 
@@ -403,6 +415,7 @@ class FileBrowser extends Component {
         } else {
             currentDir = selected;
         }
+        let backgroundImage = window.localStorage.getItem('files.backgroundImage') || null;
 
         this.state = {
             viewType,
@@ -419,7 +432,8 @@ class FileBrowser extends Component {
             path: selected,
             selected,
             errorText: '',
-            modalEditOfAccess:false
+            modalEditOfAccess: false,
+            backgroundImage
         };
 
         this.imagePrefix = this.props.imagePrefix || './files/';
@@ -734,14 +748,14 @@ class FileBrowser extends Component {
     }
 
     formatAcl(acl) {
-        let access = acl && (acl.permissions || acl.object);
+        let access = acl && (acl.permissions || acl.file);
         if (access) {
             access = access.toString(16).padStart(3, '0');
         }
 
         return <div className={this.props.classes['itemAccess' + this.state.viewType]}> <IconButton
-            onClick={()=>this.setState({ modalEditOfAccess: true })}
-            className={this.props.classes['itemAclButton' + this.state.viewType]}>{access}</IconButton></div>;
+            onClick={() => this.setState({ modalEditOfAccess: true })}
+            className={this.props.classes['itemAclButton' + this.state.viewType]}>{access || '---'}</IconButton></div>;
     }
 
     getFileIcon(ext) {
@@ -768,7 +782,33 @@ class FileBrowser extends Component {
                 return (<FileIcon className={this.props.classes['itemIcon' + this.state.viewType]} />);
         }
     }
-
+    setStateBackgroundImage = () => {
+        let array = ['light', 'dark', 'colored', 'delete'];
+        this.setState(({ backgroundImage }) => {
+            if (array.indexOf(backgroundImage) !== -1 && array.length - 1 !== array.indexOf(backgroundImage)) {
+                window.localStorage.setItem('files.backgroundImage', array[array.indexOf(backgroundImage) + 1]);
+                return { backgroundImage: array[array.indexOf(backgroundImage) + 1] }
+            } else {
+                window.localStorage.setItem('files.backgroundImage', array[0]);
+                return { backgroundImage: array[0] }
+            }
+        })
+    }
+    getClassBackgroundImage = () => {
+        //['light', 'dark', 'colored', 'delete']
+        switch (this.state.backgroundImage) {
+            case 'light':
+                return this.props.classes.backgroundImageLight;
+            case 'dark':
+                return this.props.classes.backgroundImageDark;
+            case 'colored':
+                return this.props.classes.backgroundImageColored;
+            case 'delete':
+                return null;
+            default:
+                return null;
+        }
+    }
     renderFile(item) {
         const padding = this.state.viewType === TABLE ? item.level * this.levelPadding : 0;
         const ext = Utils.getFileExtension(item.name);
@@ -798,7 +838,7 @@ class FileBrowser extends Component {
             {EXTENSIONS.images.includes(ext) ?
                 <img
                     onError={e => { e.target.onerror = null; e.target.src = NoImage }}
-                    className={this.props.classes['itemImage' + this.state.viewType]}
+                    className={clsx(this.props.classes['itemImage' + this.state.viewType], this.getClassBackgroundImage())}
                     src={this.imagePrefix + item.id} alt={item.name}
                 />
                 :
@@ -981,6 +1021,16 @@ class FileBrowser extends Component {
                     this.setState({ uploadFile: true })
                 }}
             ><UploadIcon /></IconButton> : null}
+            <Tooltip title={this.props.t('background image')}>
+                <IconButton
+                    color={'inherit'}
+                    edge="start"
+                    className={this.props.classes.menuButton}
+                    onClick={this.setStateBackgroundImage}
+                >
+                    <Brightness5Icon />
+                </IconButton>
+            </Tooltip>
         </Toolbar>;
     }
 
@@ -1202,6 +1252,8 @@ class FileBrowser extends Component {
         return this.state.viewer ? <FileViewer
             key={this.state.viewer}
             href={this.state.viewer}
+            setStateBackgroundImage={this.setStateBackgroundImage}
+            getClassBackgroundImage={this.getClassBackgroundImage}
             t={this.props.t}
             lang={this.props.lang}
             expertMode={this.state.expertMode}

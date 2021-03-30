@@ -19,10 +19,11 @@ class Files extends Component {
         };
         this.t = this.translate;
         this.wordCache = {};
+        this.objects = {};
     }
 
     componentDidMount() {
-        this.props.socket.getObjects(false,true).then(objects => {
+        this.props.socket.getObjects(true, true).then(objects => {
             this.objects = objects;
         })
     }
@@ -62,9 +63,8 @@ class Files extends Component {
                     modalEditOfAccessControl={(context, objData) =>
                         <FileEditOfAccessControl
                             open={context.state.modalEditOfAccess}
-                            extendObject={(id, data) => {
-                                context.extendObject(id, data);
-                                objData.aclTooltip = null;
+                            extendObject={(adapter, file, data) => {
+                                this.props.socket.chmodFile(adapter, file, data).then(newFiles => console.log(newFiles))
                             }}
                             selected={context.state.selected}
                             folders={context.state.folders}

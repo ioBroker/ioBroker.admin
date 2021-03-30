@@ -174,28 +174,28 @@ const ObjectRights = ({ value, setValue, t, differentValue, switchBool, checkDif
 const FileEditOfAccessControl = ({ onClose, onApply, open, selected, extendObject, folders, t, objects }) => {
     const select = selected.substring(0, selected.lastIndexOf('/')) || selected;
     const object = selected.split('/').length === 1 ? folders['/'].find(({ id }) => id === selected) : folders[select].find(({ id }) => id === selected);
-    console.log(1, selected, object,)
-    const [stateOwnerUser, setStateOwnerUser] = useState(object.acl.owner);
-    const [stateOwnerGroup, setStateOwnerGroup] = useState(object.acl.ownerGroup);
+    // console.log(1, selected, object, objects['system.config'].common.defaultNewAcl)
+    const [stateOwnerUser, setStateOwnerUser] = useState(object?.acl?.owner || objects['system.config'].common.defaultNewAcl.owner);
+    const [stateOwnerGroup, setStateOwnerGroup] = useState(object?.acl?.ownerGroup || objects['system.config'].common.defaultNewAcl.ownerGroup);
     const [ownerUser, setOwnerUser] = useState([]);
     const [ownerGroup, setOwnerGroup] = useState([]);
     const [switchBool, setSwitchBool] = useState(false);
     const [checkState, setCheckState] = useState(false);
     const [count, setCount] = useState(0);
-    const [valueObjectAccessControl, setValueObjectAccessControl] = useState(object.acl.permissions || object.acl.object);
-    const [valueStateAccessControl, setValueStateAccessControl] = useState(object.acl.permissions || object.acl.state);
+    const [valueObjectAccessControl, setValueObjectAccessControl] = useState(object?.acl?.permissions || object?.acl?.file || objects['system.config'].common.defaultNewAcl.ownerGroup.file);
+    // const [valueStateAccessControl, setValueStateAccessControl] = useState(object.acl.permissions || object.acl.state);
     const [differentOwner, setDifferentOwner] = useState(false);
     const [differentGroup, setDifferentGroup] = useState(false);
     const [differentState, setDifferentState] = useState([]);
     const [differentObject, setDifferentObject] = useState([]);
     const [differentHexState, setDifferentHexState] = useState(defaulHex);
     const [differentHexObject, setDifferentHexObject] = useState(defaulHex);
+    console.log(object)
     useEffect(() => {
-        if (selected.split('/').length === 1) {
+        if (!object.folder) {
             setCount((el) => el + 1);
-        } else {
-
         }
+        // console.log(2222,objects)
         Object.keys(objects).forEach(key => {
             //     if (!key.search(selected)) {
             //         setCount((el) => el + 1);
@@ -269,16 +269,17 @@ const FileEditOfAccessControl = ({ onClose, onApply, open, selected, extendObjec
             // applyDisabled={!name}
             onClose={onClose}
             onApply={() => {
-                // if (!switchBool) {
-                //     let newObj = objects[selected].acl;
-                //     newObj.object = valueObjectAccessControl;
-                //     newObj.owner = stateOwnerUser;
-                //     newObj.ownerGroup = stateOwnerGroup;
-                //     if (objects[selected].acl.state) {
-                //         newObj.state = valueStateAccessControl;
-                //     }
-                //     extendObject(selected, { acl: newObj });
-                // }
+                if (!switchBool) {
+                    let newObj = object.acl
+                    if (newObj.permissions) {
+                        newObj.permissions = valueObjectAccessControl;
+                    } else if (newObj.file) {
+                        newObj.file = valueObjectAccessControl;
+                    }
+                    newObj.owner = stateOwnerUser;
+                    newObj.ownerGroup = stateOwnerGroup;
+                    extendObject(null, selected, newObj)
+                }
                 // else {
                 //     let newObj = objects[selected].acl;
                 //     newObj.object = valueObjectAccessControl;
@@ -352,13 +353,13 @@ const FileEditOfAccessControl = ({ onClose, onApply, open, selected, extendObjec
                 </div>
                 <div style={{ overflowY: 'auto' }}>
                     <div>
-                        <h2>{t('Object rights')}</h2>
+                        <h2>{t('File rights')}</h2>
                         <ObjectRights checkDifferent={differentHexObject} setCheckDifferent={setDifferentHexObject} switchBool={switchBool} differentValue={differentObject} t={t} setValue={setValueObjectAccessControl} value={valueObjectAccessControl} />
                     </div>
-                    {((switchBool && checkState) || object.acl.state) && <div>
+                    {/* {((switchBool && checkState) || object.acl.state) && <div>
                         <h2>{t('States rights')}</h2>
                         <ObjectRights checkDifferent={differentHexState} setCheckDifferent={setDifferentHexState} switchBool={switchBool} differentValue={switchBool ? differentState : []} t={t} setValue={setValueStateAccessControl} value={valueStateAccessControl} />
-                    </div>}
+                    </div>} */}
 
                 </div>
             </div>

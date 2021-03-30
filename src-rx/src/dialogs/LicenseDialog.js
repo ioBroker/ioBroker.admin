@@ -17,10 +17,20 @@ const useStyles = makeStyles((theme) => ({
     root: {
         backgroundColor: theme.palette.background.paper,
         width: '100%',
-        height: '100%'
+        height: 'auto',
+        display: 'flex'
     },
     paper: {
         maxWidth: 1000
+    },
+    overflowHidden: {
+        display: 'flex',
+        overflow: 'hidden'
+    },
+    pre: {
+        overflow: 'auto',
+        whiteSpace: 'pre-wrap',
+        margin: 0
     }
 }));
 const LicenseDialog = ({ url, func }) => {
@@ -42,9 +52,9 @@ const LicenseDialog = ({ url, func }) => {
             open={open}
             classes={{ paper: classes.paper }}
         >
-            <DialogContent dividers>
+            <DialogContent className={classes.overflowHidden} dividers>
                 <div className={classes.root}>
-                    <pre style={
+                    <pre className={classes.pre} style={
                         Utils.getThemeName() === 'dark' ||
                             Utils.getThemeName() === 'blue' ?
                             { color: 'black' } :
