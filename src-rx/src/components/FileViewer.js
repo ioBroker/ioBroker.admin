@@ -15,7 +15,10 @@ import Utils from '@iobroker/adapter-react/Components/Utils';
 
 // Icons
 import { FaCopy as CopyIcon } from 'react-icons/fa';
+import Brightness5Icon from '@material-ui/icons/Brightness6';
 import CloseIcon from '@material-ui/icons/Close';
+import clsx from 'clsx';
+import { IconButton } from '@material-ui/core';
 
 const styles = theme => ({
     dialog: {
@@ -35,6 +38,10 @@ const styles = theme => ({
         width: 'auto',
         height: 'calc(100% - 5px)',
         objectFit: 'contain',
+    },
+    dialogTitle: {
+        justifyContent: 'space-between',
+        display: 'flex'
     }
 });
 
@@ -89,7 +96,7 @@ class FileViewer extends Component {
                     e.target.onerror = null;
                     e.target.src = NoImage
                 }}
-                className={this.props.classes.img}
+                className={clsx(this.props.classes.img, this.props.getClassBackgroundImage())}
                 src={this.props.href} alt={this.props.href} />;
         } else if (this.state.code !== null) {
             return <TextField
@@ -108,7 +115,7 @@ class FileViewer extends Component {
 
     render() {
         return <Dialog
-            classes={{scrollPaper: this.props.classes.dialog, paper: this.props.classes.paper}}
+            classes={{ scrollPaper: this.props.classes.dialog, paper: this.props.classes.paper }}
             scroll="paper"
             key={this.props.key}
             open={this.props.href}
@@ -117,7 +124,18 @@ class FileViewer extends Component {
             maxWidth="xl"
             aria-labelledby="form-dialog-title"
         >
-            <DialogTitle id="form-dialog-title">{this.props.t('View: %s', this.props.href)}</DialogTitle>
+            <div className={this.props.classes.dialogTitle}>
+                <DialogTitle id="form-dialog-title">{this.props.t('View: %s', this.props.href)}</DialogTitle>
+                {EXTENSIONS.images.includes(this.ext) && <div>
+                    <IconButton
+                        color={'inherit'}
+                        onClick={this.props.setStateBackgroundImage}
+                    >
+                        <Brightness5Icon />
+                    </IconButton>
+                </div>
+                }
+            </div>
             <DialogContent className={this.props.classes.content}>
                 {this.getContent()}
             </DialogContent>

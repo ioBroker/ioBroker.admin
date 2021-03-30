@@ -147,7 +147,7 @@ const ObjectRights = ({ value, setValue, t, differentValue, switchBool, checkDif
                                     color={checkDifferent[obj.value] ? "primary" : "secondary"}
                                     indeterminate={checkDifferent[obj.value]}
                                     style={checkDifferent[obj.value] ? { opacity: 0.5 } : null}
-                                    onChange={(e) => {
+                                    onChange={e => {
                                         if (checkDifferent[obj.value]) {
                                             setCheckDifferent(check => ({ ...check, [obj.value]: false }))
                                         }
@@ -170,41 +170,59 @@ const ObjectRights = ({ value, setValue, t, differentValue, switchBool, checkDif
 }
 
 
-const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObject, objects, t, }) => {
-    const [stateOwnerUser, setStateOwnerUser] = useState(objects[selected].acl.owner);
-    const [stateOwnerGroup, setStateOwnerGroup] = useState(objects[selected].acl.ownerGroup);
+const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObject, objects, t, modalEmptyId }) => {
+    const [stateOwnerUser, setStateOwnerUser] = useState(objects[selected]?.acl.owner || objects['system.config'].common.defaultNewAcl.owner);
+    const [stateOwnerGroup, setStateOwnerGroup] = useState(objects[selected]?.acl.ownerGroup || objects['system.config'].common.defaultNewAcl.ownerGroup);
     const [ownerUser, setOwnerUser] = useState([]);
     const [ownerGroup, setOwnerGroup] = useState([]);
     const [switchBool, setSwitchBool] = useState(false);
     const [checkState, setCheckState] = useState(false);
-    const [count, setCount] = useState(0);
-    const [valueObjectAccessControl, setValueObjectAccessControl] = useState(objects[selected].acl.object);
-    const [valueStateAccessControl, setValueStateAccessControl] = useState(objects[selected].acl.state ? objects[selected].acl.state : objects['system.config'].common.defaultNewAcl.state);
+    const [count, setCount] = useState(modalEmptyId ? 1 : 0);
+    const [valueObjectAccessControl, setValueObjectAccessControl] = useState(objects[selected]?.acl.object || objects['system.config'].common.defaultNewAcl.object);
+    const [valueStateAccessControl, setValueStateAccessControl] = useState(objects[selected]?.acl.state ? objects[selected].acl.state : objects['system.config'].common.defaultNewAcl.state);
     const [differentOwner, setDifferentOwner] = useState(false);
     const [differentGroup, setDifferentGroup] = useState(false);
     const [differentState, setDifferentState] = useState([]);
     const [differentObject, setDifferentObject] = useState([]);
     const [differentHexState, setDifferentHexState] = useState(defaulHex);
     const [differentHexObject, setDifferentHexObject] = useState(defaulHex);
+
+    const [disabledButton, setDisabledButton] = useState(true);
     useEffect(() => {
+        let modalEmpty = false;
         Object.keys(objects).forEach(key => {
-            if (!key.search(selected)) {
-                setCount((el) => el + 1);
-                if (!differentOwner && objects[selected].acl.owner !== objects[key].acl.owner) {
+            if (!key.search(selected || modalEmptyId)) {
+                let different = true;
+                if (!modalEmptyId) {
+                    setCount((el) => el + 1);
+                }///
+                if (!modalEmpty && modalEmptyId) {
+                    setValueObjectAccessControl(objects[key].acl.object);
+                    setStateOwnerUser(objects[key].acl.owner);
+                    setStateOwnerGroup(objects[key].acl.ownerGroup);
+                    modalEmpty = true;
+                    different = false;
+                }
+                if (modalEmptyId) {
+                    if (objects[key].acl.state) {
+                        setValueStateAccessControl(objects[key].acl.state);
+                    }
+                }///
+                if (!differentOwner && stateOwnerUser !== objects[key].acl.owner && different) {
                     setDifferentOwner(true);
                 }
-                if (!differentGroup && objects[selected].acl.ownerGroup !== objects[key].acl.ownerGroup) {
+                if (!differentGroup && stateOwnerGroup !== objects[key].acl.ownerGroup && different) {
                     setDifferentGroup(true);
                 }
                 if (objects[key].acl.state) {
-                    if (objects[selected].acl.state !== objects[key].acl.state) {
+                    if (valueStateAccessControl !== objects[key].acl.state) {
                         setDifferentState(el => el.indexOf(objects[key].acl.state) === -1 ? ([...el, objects[key].acl.state]) : el)
                     }
                     if (!checkState) {
                         setCheckState(true);
                     }
                 }
-                if (objects[selected].acl.object !== objects[key].acl.object) {
+                if (valueObjectAccessControl !== objects[key].acl.object) {
                     setDifferentObject(el => el.indexOf(objects[key].acl.object) === -1 ? ([...el, objects[key].acl.object]) : el)
                 }
 
@@ -220,6 +238,9 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                     name: key.replace('system.user.', ''),
                     value: key
                 }]))
+            }
+            if (modalEmptyId) {
+                setSwitchBool(true)
             }
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -257,7 +278,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
             open={open}
             titleButtonApply="apply"
             overflowHidden
-            // applyDisabled={!name}
+            applyDisabled={disabledButton}
             onClose={onClose}
             onApply={() => {
                 if (!switchBool) {
@@ -271,10 +292,10 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                     extendObject(selected, { acl: newObj });
                 }
                 else {
-                    let newObj = objects[selected].acl;
+                    let newObj = objects[selected]?.acl || {};
                     newObj.object = valueObjectAccessControl;
                     Object.keys(objects).forEach(async key => {
-                        if (!key.search(selected)) {
+                        if (!key.search(selected || modalEmptyId)) {
                             let newObj = objects[key].acl;
                             newObj.object = newValueAccessControl(objects[key].acl.object, valueObjectAccessControl, differentHexObject);
                             if (stateOwnerUser !== 'different') {
@@ -296,7 +317,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                 <div style={{
                     margin: 10,
                     fontSize: 20
-                }}>{t('Access control list: %s', selected)}</div>
+                }}>{t('Access control list: %s', selected || modalEmptyId)}</div>
                 <div style={{ display: 'flex' }}>
                     <FormControl fullWidth style={{ marginRight: 10 }}>
                         <InputLabel id="demo-simple-select-helper-label">{t('Owner user')}</InputLabel>
@@ -304,7 +325,11 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                             labelId="demo-simple-select-helper-label"
                             id="demo-simple-select-helper"
                             value={stateOwnerUser}
-                            onChange={(el) => setStateOwnerUser(el.target.value)}
+                            style={stateOwnerUser === 'different' ? { opacity: 0.5 } : null}
+                            onChange={el => {
+                                setStateOwnerUser(el.target.value);
+                                setDisabledButton(false);
+                            }}
                         >
                             {ownerUser.map(el => <MenuItem key={el.value} value={el.value}>{t(el.name)}</MenuItem>)}
                         </Select>
@@ -315,9 +340,13 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                             labelId="demo-simple-select-helper-label"
                             id="demo-simple-select-helper"
                             value={stateOwnerGroup}
-                            onChange={(el) => setStateOwnerGroup(el.target.value)}
+                            style={stateOwnerGroup === 'different' ? { opacity: 0.5 } : null}
+                            onChange={el => {
+                                setStateOwnerGroup(el.target.value);
+                                setDisabledButton(false);
+                            }}
                         >
-                            {ownerGroup.map(el => <MenuItem key={el.value} value={el.value}>{t(el.name)}</MenuItem>)}
+                            {ownerGroup.map(el => <MenuItem style={el.value === 'different' ? { opacity: 0.5 } : null} key={el.value} value={el.value}>{t(el.name)}</MenuItem>)}
                         </Select>
                     </FormControl>
                 </div>
@@ -334,7 +363,10 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                     <Switch
                         disabled={count === 1}
                         checked={switchBool}
-                        onChange={(e) => setSwitchBool(e.target.checked)}
+                        onChange={e => {
+                            setSwitchBool(e.target.checked);
+                            setDisabledButton(false);
+                        }}
                         color="primary"
                         name="checkedB"
                         inputProps={{ 'aria-label': 'primary checkbox' }}
@@ -344,11 +376,31 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                 <div style={{ overflowY: 'auto' }}>
                     <div>
                         <h2>{t('Object rights')}</h2>
-                        <ObjectRights checkDifferent={differentHexObject} setCheckDifferent={setDifferentHexObject} switchBool={switchBool} differentValue={differentObject} t={t} setValue={setValueObjectAccessControl} value={valueObjectAccessControl} />
+                        <ObjectRights
+                            checkDifferent={differentHexObject}
+                            setCheckDifferent={setDifferentHexObject}
+                            switchBool={switchBool}
+                            differentValue={differentObject}
+                            t={t}
+                            setValue={e => {
+                                setValueObjectAccessControl(e);
+                                setDisabledButton(false);
+                            }}
+                            value={valueObjectAccessControl} />
                     </div>
-                    {((switchBool && checkState) || objects[selected].acl.state) && <div>
+                    {((switchBool && checkState) || objects[selected]?.acl.state) && <div>
                         <h2>{t('States rights')}</h2>
-                        <ObjectRights checkDifferent={differentHexState} setCheckDifferent={setDifferentHexState} switchBool={switchBool} differentValue={switchBool ? differentState : []} t={t} setValue={setValueStateAccessControl} value={valueStateAccessControl} />
+                        <ObjectRights
+                            checkDifferent={differentHexState}
+                            setCheckDifferent={setDifferentHexState}
+                            switchBool={switchBool}
+                            differentValue={switchBool ? differentState : []}
+                            t={t}
+                            setValue={e => {
+                                setValueStateAccessControl(e);
+                                setDisabledButton(false);
+                            }}
+                            value={valueStateAccessControl} />
                     </div>}
 
                 </div>

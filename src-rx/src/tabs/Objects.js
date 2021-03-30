@@ -204,10 +204,11 @@ class Objects extends Component {
                             objData.aclTooltip = null;
                         }}
                         selected={context.state.selected[0]}
+                        modalEmptyId={context.state.modalEmptyId}
                         objects={context.objects}
                         t={this.t}
-                        onClose={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null })}
-                        onApply={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null })} />
+                        onClose={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null, modalEmptyId: null })}
+                        onApply={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null, modalEmptyId: null })} />
                 }
             />,
             this.renderDeleteDialog()
