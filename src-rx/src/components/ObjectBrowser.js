@@ -1352,7 +1352,7 @@ const SCREEN_WIDTHS = {
 
 const DraggableObject = (props) => {
     let dragSettings = {...props.dragSettings};
-    dragSettings.item = props.item.data;
+    dragSettings.item = props.item;
     const [{ isDragging }, dragRef] = useDrag(dragSettings);
 
     return <div ref={dragRef}>{props.children}</div>
