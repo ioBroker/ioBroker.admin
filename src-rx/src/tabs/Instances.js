@@ -389,7 +389,7 @@ class Instances extends Component {
             instance.canStart = !common.onlyWWW;
             instance.config = !common.noConfig;
             instance.materialize = common.materialize || false;
-            instance.jsonSchema = !!common.$schema || null;
+            instance.jsonConfig = !!common.jsonConfig;
             instance.compactMode = common.runAsCompactMode || false;
             instance.mode = common.mode || null;
             instance.loglevel = common.loglevel || null;
@@ -892,9 +892,10 @@ class Instances extends Component {
                         adapter={instance.id.split('.')[0]}
                         instance={parseInt(instance.id.split('.')[1])}
                         materialize={instance.materialize}
-                        jsonSchema={ instance.jsonSchema }
+                        jsonConfig={ instance.jsonConfig }
                         socket={ this.props.socket }
                         themeName={this.props.themeName}
+                        themeType={this.props.themeType}
                         theme={this.props.theme}
                         width={this.props.width}
                         t={this.t}

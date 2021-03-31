@@ -298,6 +298,7 @@ class Connection {
             this._socket.emit('getUserPermissions', cb);
         }
     }
+
     /**
      * Called internally.
      * @private
@@ -727,28 +728,30 @@ class Connection {
     /**
      * Deletes the given object.
      * @param {string} id The object ID.
+     * @param {boolean} maintenance Force deletion of non conform IDs.
      * @returns {Promise<void>}
      */
-    delObject(id) {
+    delObject(id, maintenance) {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
         return new Promise((resolve, reject) =>
-            this._socket.emit('delObject', id, err =>
+            this._socket.emit('delObject', id, {maintenance: !!maintenance}, err =>
                 err ? reject(err) : resolve()));
     }
 
     /**
      * Deletes the given object and all its children.
      * @param {string} id The object ID.
+     * @param {boolean} maintenance Force deletion of non conform IDs.
      * @returns {Promise<void>}
      */
-    delObjects(id) {
+    delObjects(id, maintenance) {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
         return new Promise((resolve, reject) =>
-            this._socket.emit('delObjects', id, err =>
+            this._socket.emit('delObjects', id, {maintenance: !!maintenance}, err =>
                 err ? reject(err) : resolve()));
     }
 
@@ -856,6 +859,7 @@ class Connection {
             update = adapter;
             adapter = '';
         }
+
         adapter = adapter || '';
 
         if (!update && this._promises['adapter_' + adapter]) {
@@ -1268,6 +1272,22 @@ class Connection {
         return new Promise((resolve, reject) =>
             this._socket.emit('readDir', adapter, fileName, (err, files) =>
                 err ? reject(err) : resolve(files)));
+    }
+
+    readFile(adapter, fileName, base64) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) => {
+            if (!base64) {
+                this._socket.emit('readFile', adapter, fileName, (err, data, type) => {
+                    err ? reject(err) : resolve(data, type);
+                });
+            } else {
+                this._socket.emit('readFile64', adapter, fileName, base64, (err, data) =>
+                    err ? reject(err) : resolve(data));
+            };
+        });
     }
 
     /**
@@ -1844,6 +1864,47 @@ class Connection {
 
         return this._promises['IPs_' + host];
 
+    }
+
+    /**
+     * Get the IP addresses with interface names of the given host or find host by IP.
+     * @param {string} ipOrHostName
+     * @param {boolean} [update] Force update.
+     * @returns {Promise<any[<name, address, family>]>}
+     */
+    getHostByIp(ipOrHostName, update) {
+        if (ipOrHostName.startsWith('system.host.')) {
+            ipOrHostName = ipOrHostName.replace(/^system\.host\./, '');
+        }
+
+        if (!update && this._promises['rIPs_' + ipOrHostName]) {
+            return this._promises['rIPs_' + ipOrHostName];
+        }
+        this._promises['rIPs_' + ipOrHostName] = new Promise(resolve =>
+            this._socket.emit('getHostByIp', ipOrHostName, (ip, host) => {
+                const IPs4 = [{name: '[IPv4] 0.0.0.0 - Listen on all IPs', address: '0.0.0.0', family: 'ipv4'}];
+                const IPs6 = [{name: '[IPv6] :: - Listen on all IPs',      address: '::',      family: 'ipv6'}];
+                if (host.native?.hardware?.networkInterfaces) {
+                    for (const eth in host.native.hardware.networkInterfaces) {
+                        if (!host.native.hardware.networkInterfaces.hasOwnProperty(eth)) {
+                            continue;
+                        }
+                        for (let num = 0; num < host.native.hardware.networkInterfaces[eth].length; num++) {
+                            if (host.native.hardware.networkInterfaces[eth][num].family !== 'IPv6') {
+                                IPs4.push({name: `[${host.native.hardware.networkInterfaces[eth][num].family}] ${host.native.hardware.networkInterfaces[eth][num].address} - ${eth}`, address: host.native.hardware.networkInterfaces[eth][num].address, family: 'ipv4'});
+                            } else {
+                                IPs6.push({name: `[${host.native.hardware.networkInterfaces[eth][num].family}] ${host.native.hardware.networkInterfaces[eth][num].address} - ${eth}`, address: host.native.hardware.networkInterfaces[eth][num].address, family: 'ipv6'});
+                            }
+                        }
+                    }
+                }
+                for (let i = 0; i < IPs6.length; i++) {
+                    IPs4.push(IPs6[i]);
+                }
+                resolve(IPs4);
+            }));
+
+        return this._promises['rIPs_' + ipOrHostName];
     }
 
     /**

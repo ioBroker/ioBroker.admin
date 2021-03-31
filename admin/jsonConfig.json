@@ -14,9 +14,9 @@
           "label": {
             "en": "IP"
           },
-          "s": 12,
-          "m": 8,
-          "l": 5
+          "sm": 12,
+          "md": 8,
+          "lg": 5
         },
         "port": {
           "type": "number",
@@ -25,9 +25,9 @@
           "label": {
             "en": "Port"
           },
-          "s": 12,
-          "m": 4,
-          "l": 3
+          "sm": 12,
+          "md": 4,
+          "lg": 3
         },
         "secure": {
           "newLine": true,
@@ -35,9 +35,9 @@
           "label": {
             "en": "Secure(HTTPS)"
           },
-          "s": 12,
-          "m": 6,
-          "l": 2
+          "sm": 12,
+          "md": 6,
+          "lg": 2
         },
         "certPublic": {
           "type": "certificate",
@@ -47,9 +47,9 @@
           "label": {
             "en": "Public certificate"
           },
-          "s": 12,
-          "m": 6,
-          "l": 2
+          "sm": 12,
+          "md": 6,
+          "lg": 2
         },
         "certPrivate": {
           "hidden": "!data.secure",
@@ -59,9 +59,9 @@
           "label": {
             "en": "Private certificate"
           },
-          "s": 12,
-          "m": 6,
-          "l": 2
+          "sm": 12,
+          "md": 6,
+          "lg": 2
         },
         "certChained": {
           "hidden": "!data.secure",
@@ -70,9 +70,9 @@
           "label": {
             "en": "Chained certificate"
           },
-          "s": 12,
-          "m": 6,
-          "l": 2
+          "sm": 12,
+          "md": 6,
+          "lg": 2
         },
         "auth": {
           "newLine": true,
@@ -80,9 +80,9 @@
           "label": {
             "en": "Authentication"
           },
-          "s": 12,
-          "m": 6,
-          "l": 2
+          "sm": 12,
+          "md": 6,
+          "lg": 2
         },
         "defaultUser": {
           "hidden": "data.auth",
@@ -90,9 +90,9 @@
           "label": {
             "en": "Run as"
           },
-          "s": 12,
-          "m": 6,
-          "l": 2
+          "sm": 12,
+          "md": 6,
+          "lg": 2
         },
         "ttl": {
           "hidden": "data.auth",
@@ -103,11 +103,12 @@
           "help": {
             "en": "sec"
           },
-          "s": 12,
-          "m": 6,
-          "l": 2
+          "sm": 12,
+          "md": 6,
+          "lg": 2
         },
         "autoUpdate": {
+          "newLine": true,
           "type": "select",
           "label": {
             "en": "Auto update"
@@ -122,9 +123,9 @@
             {"label": {"en": "every 2 weeks"},  "value": 336},
             {"label": {"en": "monthly"},        "value": 720}
           ],
-          "s": 12,
-          "m": 6,
-          "l": 2
+          "sm": 12,
+          "md": 6,
+          "lg": 2
         },
         "thresholdValue": {
           "type": "number",
@@ -132,9 +133,9 @@
           "label": {
             "en": "Events threshold value"
           },
-          "s": 12,
-          "m": 4,
-          "l": 3
+          "sm": 12,
+          "md": 4,
+          "lg": 3
         },
         "react": {
           "newLine": true,
@@ -142,9 +143,9 @@
           "label": {
             "en": "Use react UI(experts)"
           },
-          "s": 12,
-          "m": 6,
-          "l": 2
+          "sm": 12,
+          "md": 6,
+          "lg": 3
         }
       }
     },
@@ -173,7 +174,8 @@
             "en": "Read about Let's Encrypt certificates"
           },
           "style": {
-            "fontSize": 24
+            "fontSize": 16,
+            "marginBottom": 20
           }
         },
         "leEnabled": {
@@ -193,12 +195,16 @@
         },
         "lePort": {
           "newLine": true,
-          "s": 11,
-          "l": 4,
+          "sm": 11,
+          "lg": 4,
           "type": "number",
-          "hidden": "!data.leEnabled",
+          "hidden": "!data.leEnabled || !data.leUpdate",
           "label": {
             "en": "Port to check the domain"
+          },
+          "style": {
+            "marginTop": 15,
+            "maxWidth": 200
           }
         }
       }
@@ -212,47 +218,50 @@
       "items": {
         "loginBackgroundColor": {
           "type": "color",
-          "s": 12,
-          "m": 8,
-          "l": 4,
+          "sm": 12,
+          "md": 8,
+          "lg": 4,
           "label": {
             "en": "Background color of the login screen"
           }
         },
         "loginHideLogo": {
           "newLine": true,
-          "s": 12,
-          "m": 8,
-          "l": 4,
+          "sm": 12,
+          "md": 8,
+          "lg": 4,
           "type": "checkbox",
           "label": {
             "en": "Hide logo"
           }
         },
         "loginMotto": {
-          "s": 12,
-          "m": 8,
-          "l": 4,
+          "newLine": true,
+          "sm": 12,
+          "md": 8,
+          "lg": 4,
           "type": "text",
           "label": {
             "en": "Own motto"
           }
         },
         "loginBackgroundImage": {
-          "s": 12,
-          "m": 8,
-          "l": 4,
+          "newLine": true,
+          "sm": 12,
+          "md": 8,
+          "lg": 4,
           "type": "checkbox",
           "label": {
             "en": "Use background image"
           }
         },
         "login-bg.png": {
+          "newLine": true,
           "type": "image",
           "hidden": "!data.loginBackgroundImage",
-          "s": 12,
-          "m": 8,
-          "l": 4,
+          "sm": 12,
+          "md": 8,
+          "lg": 4,
           "accept": "image/*",
           "label": {
             "en": "Upload image"
@@ -276,24 +285,18 @@
         "accessLimit": {
           "newLine": true,
           "type": "checkbox",
-          "text": {
+          "label": {
             "en": "Allow access only to specific instances"
           }
         },
         "applyRights": {
-          "s": 12,
-          "m": 8,
-          "l": 4,
           "newLine": true,
           "type": "checkbox",
-          "text": {
+          "label": {
             "en": "Apply access rights for selected instances"
           }
         },
         "accessAllowedConfigs": {
-          "s": 12,
-          "m": 8,
-          "l": 4,
           "newLine": true,
           "type": "custom",
           "component": "customInstancesEditor"

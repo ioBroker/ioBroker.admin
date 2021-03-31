@@ -878,18 +878,20 @@ class ObjectHistoryData extends Component {
     }
 
     onUpdate() {
+        let val = this.state.edit.val;
+
         if (this.props.obj.common) {
             if (this.props.obj.common.type === 'number') {
-                if (typeof this.state.edit.val !== 'number') {
-                    this.state.edit.val = parseFloat(this.state.edit.val.replace(',', '.'));
+                if (typeof val !== 'number') {
+                    val = parseFloat(val.replace(',', '.'));
                 }
             } else if (this.props.obj.common.type === 'boolean') {
-                this.state.edit.val = this.state.edit.val === 'true' || this.state.edit.val === 'TRUE' || this.state.edit.val === true || this.state.edit.val === '1' || this.state.edit.val === 1;
+                val = val === 'true' || val === 'TRUE' || val === true || val === '1' || val === 1;
             }
         }
 
         const state = {
-            val:  this.state.edit.val,
+            val,
             ack:  this.state.edit.ack,
             ts:   this.state.selected[0],
             from: 'system.adapter.admin.' + this.adminInstance,
@@ -909,11 +911,13 @@ class ObjectHistoryData extends Component {
     }
 
     onInsert() {
+        let val = this.state.edit.val;
+
         if (this.props.obj.common) {
             if (this.props.obj.common.type === 'number') {
-                this.state.edit.val = parseFloat(this.state.edit.val.replace(',', '.'));
+                val = parseFloat(val.replace(',', '.'));
             } else if (this.props.obj.common.type === 'boolean') {
-                this.state.edit.val = this.state.edit.val === 'true' || this.state.edit.val === 'TRUE' || this.state.edit.val === true || this.state.edit.val === '1' || this.state.edit.val === 1;
+                val = val === 'true' || val === 'TRUE' || val === true || val === '1' || val === 1;
             }
         }
 
@@ -925,7 +929,7 @@ class ObjectHistoryData extends Component {
 
         const state = {
             ts:   ts.getTime(),
-            val:  this.state.edit.val,
+            val,
             ack:  this.state.edit.ack,
             from: 'system.adapter.admin.' + this.adminInstance,
             q:    this.state.edit.q || 0,
