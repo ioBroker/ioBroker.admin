@@ -308,6 +308,7 @@ class MainSettingsDialog extends Component {
     onChangeCity = (evt) => {
         this.onChangeText(evt, 'city');
         const provider = new OpenStreetMapProvider();
+
         provider.search({query: evt.target.value})
             .then(results => {
                 if (results[0]) {
@@ -320,7 +321,6 @@ class MainSettingsDialog extends Component {
                         );
                         this.marker.setLatLng([results[0].y, results[0].x]);
                     }, 1200);
-
                 }
             });
     }

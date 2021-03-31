@@ -14,6 +14,7 @@ import ConfigIP from './ConfigIP';
 import ConfigSelect from './ConfigSelect';
 import ConfigUser from './ConfigUser';
 import ConfigStaticText from './ConfigStaticText';
+import ConfigPattern from './ConfigPattern';
 
 const components = {
     text: ConfigText,
@@ -26,6 +27,7 @@ const components = {
     ip: ConfigIP,
     select: ConfigSelect,
     user: ConfigUser,
+    pattern: ConfigPattern,
 };
 
 const styles = theme => ({
@@ -47,7 +49,19 @@ class ConfigPanel extends ConfigGeneric {
             const ItemComponent = components[type] || ConfigGeneric;
 
             return <ItemComponent
-                {...this.props}
+                key={attr}
+                className={this.props.classes.panel}
+                socket={this.props.socket}
+                adapterName={this.props.adapterName}
+                instance={this.props.instance}
+                common={this.props.common}
+                alive={this.props.alive}
+                themeType={this.props.themeType}
+                themeName={this.props.themeName}
+                data={this.props.data}
+                systemConfig={this.props.systemConfig}
+                onError={this.props.onError}
+                onChange={this.props.onChange}
                 attr={attr}
                 schema={items[attr]}
             />;
@@ -72,8 +86,10 @@ ConfigPanel.propTypes = {
     className: PropTypes.string,
     data: PropTypes.object.isRequired,
     schema: PropTypes.object,
+    alive: PropTypes.bool,
+    systemConfig: PropTypes.object,
     onError: PropTypes.func,
-    onChanged: PropTypes.func,
+    onChange: PropTypes.func,
 };
 
 export default withStyles(styles)(ConfigPanel);

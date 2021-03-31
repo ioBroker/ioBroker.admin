@@ -385,7 +385,7 @@ class Instances extends Component {
                     protocol: this.props.protocol
                 }));
             });
-            console.log('AAA' + JSON.stringify(common.jsonConfig))
+
             instance.canStart = !common.onlyWWW;
             instance.config = !common.noConfig;
             instance.materialize = common.materialize || false;
@@ -437,11 +437,17 @@ class Instances extends Component {
         const oldState = this.states[id];
         this.states[id] = state;
         if ((!oldState && state) || (oldState && !state) || (oldState && state && oldState.val !== state.val)) {
-            if (!this.statesUpdateTimer) {
-                this.statesUpdateTimer = setTimeout(() => {
-                    this.statesUpdateTimer = null;
-                    this.forceUpdate();
-                }, 300);
+            if (this.state.dialog === 'config' && this.state.dialogProp) {
+                this.statesUpdateTimer && clearTimeout(this.statesUpdateTimer);
+                this.statesUpdateTimer = null;
+                this.shouldUpdateAfterDialogClosed = true;
+            } else {
+                if (!this.statesUpdateTimer) {
+                    this.statesUpdateTimer = setTimeout(() => {
+                        this.statesUpdateTimer = null;
+                        this.forceUpdate();
+                    }, 300);
+                }
             }
         }
     };
@@ -905,6 +911,18 @@ class Instances extends Component {
             }
         }
 
+        if (this.shouldUpdateAfterDialogClosed) {
+            this.shouldUpdateAfterDialogClosed = false;
+            if (!this.statesUpdateTimer) {
+                if (!this.statesUpdateTimer) {
+                    this.statesUpdateTimer = setTimeout(() => {
+                        this.statesUpdateTimer = null;
+                        this.forceUpdate();
+                    }, 300);
+                }
+            }
+        }
+
         return <TabContainer>
             <TabHeader>
                 <Tooltip title={this.t('Show / hide List')}>
@@ -1002,6 +1020,7 @@ Instances.propTypes = {
     protocol: PropTypes.string,
     socket: PropTypes.object,
     themeName: PropTypes.string,
+    themeType: PropTypes.string,
     theme: PropTypes.object,
     systemLang: PropTypes.string,
     width: PropTypes.string,

@@ -5,6 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import {LinearProgress} from "@material-ui/core";
 
 import ConfigTabs from './ConfigTabs';
+import ConfigPanel from './ConfigPanel';
 
 const styles = theme => ({
     root: {
@@ -13,7 +14,7 @@ const styles = theme => ({
     }
 });
 
-class JsonConfig extends Component {
+class JsonConfigComponent extends Component {
     constructor(props) {
         super(props);
 
@@ -34,7 +35,7 @@ class JsonConfig extends Component {
         if (this.props.common && this.props.data) {
             return Promise.resolve();
         } else {
-            this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`)
+            return this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`)
                 .then(obj => this.setState({common: obj.common, data: this.props.data || obj.native}));
         }
     }
@@ -55,7 +56,7 @@ class JsonConfig extends Component {
         }
     }
 
-    onChange(data) {
+    onChange = data => {
         const state = {data};
         state.changed = JSON.stringify(data) !== this.state.originalData;
 
@@ -63,13 +64,14 @@ class JsonConfig extends Component {
             this.props.onChange(data, state.changed));
     }
 
-    onError(error, attr) {
+    onError = (error, attr) => {
         const _error = JSON.parse(JSON.stringify(this.state.error));
         if (error) {
             _error[attr] = error;
         } else {
             delete _error[attr];
         }
+
         if (JSON.stringify(_error) !== JSON.parse(JSON.stringify(this.state.error))) {
             this.setState({error: _error}, () =>
                 this.props.onError(!!Object.keys(this.state.error).length));
@@ -79,12 +81,35 @@ class JsonConfig extends Component {
     renderItem(item) {
         if (item.type === 'tabs') {
             return <ConfigTabs
-                {...this.props}
+                socket={this.props.socket}
+                adapterName={this.props.adapterName}
+                instance={this.props.instance}
+                common={this.props.common}
+                alive={this.state.alive}
+                themeType={this.props.themeType}
+                themeName={this.props.themeName}
+                data={this.props.data}
+                schema={item}
+                systemConfig={this.state.systemConfig}
+
                 onChange={data => this.onChange(data)}
                 onError={(error, attr) => this.onError(error, attr)}
-                systemConfig={this.state.systemConfig}
-                common={this.state.common || this.props.common}
+            />;
+        } else if (item.type === 'panel') {
+            return <ConfigPanel
+                socket={this.props.socket}
+                adapterName={this.props.adapterName}
+                instance={this.props.instance}
+                common={this.props.common}
                 alive={this.state.alive}
+                themeType={this.props.themeType}
+                themeName={this.props.themeName}
+                data={this.props.data}
+                schema={item}
+                systemConfig={this.state.systemConfig}
+
+                onChange={data => this.onChange(data)}
+                onError={(error, attr) => this.onError(error, attr)}
             />
         }
     }
@@ -100,7 +125,7 @@ class JsonConfig extends Component {
     }
 }
 
-JsonConfig.propTypes = {
+JsonConfigComponent.propTypes = {
     socket: PropTypes.object.isRequired,
 
     adapterName: PropTypes.string.isRequired,
@@ -117,4 +142,4 @@ JsonConfig.propTypes = {
     onChange: PropTypes.func,
 };
 
-export default withStyles(styles)(JsonConfig);
+export default withStyles(styles)(JsonConfigComponent);

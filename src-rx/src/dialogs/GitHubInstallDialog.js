@@ -79,15 +79,18 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
             });
         }
     }), [categories, repository]);
+
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
+
     const closeInit = () => {
         setAutocompleteValue(null);
         setDebug(false);
         setValue(0);
         setUrl('')
-    }
+    };
+
     return <Dialog
         onClose={onClose}
         open={open}
@@ -134,13 +137,12 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
                         <SmsIcon style={{ marginRight: 10 }} />
                         <Autocomplete
                             fullWidth
-                            id="combo-box-demo"
                             value={autocompleteValue}
                             getOptionSelected={(option, value) => option.name === value.name}
                             onChange={(_, e) => setAutocompleteValue(e)}
                             options={array()}
                             getOptionLabel={(option) => option.name}
-                            renderInput={(params) => <TextField {...params} label="Select adapter" />}
+                            renderInput={(params) => <TextField {...params} label={I18n.t('Select adapter')} />}
                         /></div>
                     <div style={{
                         fontSize: 40,

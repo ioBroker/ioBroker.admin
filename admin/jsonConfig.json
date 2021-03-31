@@ -77,6 +77,14 @@
         "auth": {
           "newLine": true,
           "type": "checkbox",
+          "confirm": {
+            "condition": "!data.secure && data.auth",
+            "title": "Warning!",
+            "text": "Unsecure_Auth",
+            "ok": "Ignore warning",
+            "cancel": "Disable authentication",
+            "type": "warning"
+          },
           "label": {
             "en": "Authentication"
           },
@@ -300,6 +308,19 @@
           "newLine": true,
           "type": "custom",
           "component": "customInstancesEditor"
+        }
+      }
+    },
+    "demoTab": {
+      "type": "panel",
+      "label": {
+        "en": "Demo"
+      },
+      "items": {
+        "demoPattern": {
+          "type": "pattern",
+          "pattern": "my ${data.bind} ${_alive}",
+          "copyToClipboard": true
         }
       }
     }

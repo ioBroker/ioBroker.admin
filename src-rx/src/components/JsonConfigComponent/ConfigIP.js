@@ -58,8 +58,8 @@ class ConfigIP extends ConfigGeneric {
                 renderValue={val => item?.name || val}
                 onChange={e => this.onChange(this.props.attr, e.target.value)}
             >
-                {this.state.ips?.map(item =>
-                    <MenuItem value={item.address}>{item.name}</MenuItem>)}
+                {this.state.ips?.map((item, i) =>
+                    <MenuItem key={i} value={item.address}>{item.name}</MenuItem>)}
             </Select>
             {this.props.schema.help ? <FormHelperText>{this.getText(this.props.schema.help)}</FormHelperText> : null}
         </FormControl>;
@@ -75,7 +75,7 @@ ConfigIP.propTypes = {
     data: PropTypes.object.isRequired,
     schema: PropTypes.object,
     onError: PropTypes.func,
-    onChanged: PropTypes.func,
+    onChange: PropTypes.func,
 };
 
 export default withStyles(styles)(ConfigIP);

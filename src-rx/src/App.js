@@ -1,7 +1,10 @@
 import React, { Suspense } from 'react';
 import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
-
+import { ThemeProvider } from '@material-ui/core/styles';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { TouchBackend } from 'react-dnd-touch-backend';
 import clsx from 'clsx';
 
 import Connection from './components/Connection';
@@ -13,8 +16,6 @@ import Router from '@iobroker/adapter-react/Components/Router';
 // @material-ui/core
 import AppBar from '@material-ui/core/AppBar';
 import Avatar from '@material-ui/core/Avatar';
-
-// import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
@@ -34,31 +35,26 @@ import Brightness6Icon from '@material-ui/icons/Brightness6';
 import Brightness7Icon from '@material-ui/icons/Brightness7';
 import PictureInPictureAltIcon from '@material-ui/icons/PictureInPictureAlt';
 
-import ConfirmDialog from './dialogs/ConfirmDialog';
+import i18n from '@iobroker/adapter-react/i18n';
+import Utils from '@iobroker/adapter-react/Components/Utils';
+import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
+
 import CommandDialog from './dialogs/CommandDialog';
 import Drawer from './components/Drawer';
 import { STATES as DrawerStates } from './components/Drawer';
 import { DRAWER_FULL_WIDTH, DRAWER_COMPACT_WIDTH } from './components/Drawer';
 import Connecting from './components/Connecting';
-
-import { ThemeProvider } from '@material-ui/core/styles';
+import WizardDialog from './dialogs/WizardDialog';
+import BaseSettingsDialog from './dialogs/BaseSettingsDialog';
+import SystemSettingsDialog from './dialogs/SystemSettingsDialog';
 import theme from './Theme';
 import LogsWorker from './components/LogsWorker';
 import InstancesWorker from './components/InstancesWorker';
 import HostsWorker from './components/HostsWorker';
 import Login from './login/Login';
-
-import i18n from '@iobroker/adapter-react/i18n';
-import Utils from '@iobroker/adapter-react/Components/Utils';
-import WizardDialog from './dialogs/WizardDialog';
-import BaseSettingsDialog from './dialogs/BaseSettingsDialog';
-import SystemSettingsDialog from './dialogs/SystemSettingsDialog';
-
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { TouchBackend } from 'react-dnd-touch-backend';
 import { ContextWrapper } from './components/ContextWrapper';
 import HostSelectors from './components/HostSelectors';
+
 // Tabs
 const Adapters = React.lazy(() => import('./tabs/Adapters'));
 const Instances = React.lazy(() => import('./tabs/Instances'));
@@ -684,6 +680,7 @@ class App extends Router {
                             protocol={this.state.protocol}
                             hostname={this.state.hostname}
                             themeName={this.state.themeName}
+                            themeType={this.state.themeType}
                             theme={this.state.theme}
                             expertMode={this.state.expertMode}
                             idHost={this.state.hosts.find(({ common: { name } }) => name === this.state.currentHostName)._id}
@@ -975,7 +972,7 @@ class App extends Router {
     }
 
     renderConfirmDialog() {
-        return <ConfirmDialog
+        /*return <ConfirmDialog
             onClose={() => this.closeDataNotStoredDialog()}
             open={this.state.dataNotStoredDialog}
             header={i18n.t('Please confirm')}
@@ -983,7 +980,16 @@ class App extends Router {
             confirmText={i18n.t('Ok')}
         >
             {i18n.t('Some data are not stored. Discard?')}
-        </ConfirmDialog>;
+        </ConfirmDialog>;*/
+
+        return this.state.dataNotStoredDialog && <ConfirmDialog
+            title={ I18n.t('Please confirm') }
+            text={ I18n.t('Some data are not stored. Discard?') }
+            ok={ I18n.t('Ok') }
+            cancel={ I18n.t('Cancel') }
+            onClose={isYes =>
+                isYes ? this.confirmDataNotStored() : this.confirmDataNotStored()}
+        />;
     }
 
     renderHostSelector() {

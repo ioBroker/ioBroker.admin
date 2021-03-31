@@ -10,15 +10,18 @@ const styles = theme => ({
     }
 });
 
-class ConfigStaticText extends ConfigGeneric {
+class ConfigStaticImage extends ConfigGeneric {
     renderItem() {
-        return <span
+        return <img
+            className={this.props.classes.fullWidth}
+            src={this.props.schema.src}
             onClick={this.props.schema.href ? () => this.props.schema.href && window.open(this.props.schema.href, '_blank') : null}
-        >{this.getText(this.props.schema.text)}</span>;
+            alt=""
+        />;
     }
 }
 
-ConfigStaticText.propTypes = {
+ConfigStaticImage.propTypes = {
     socket: PropTypes.object.isRequired,
     themeType: PropTypes.string,
     themeName: PropTypes.string,
@@ -27,7 +30,7 @@ ConfigStaticText.propTypes = {
     data: PropTypes.object.isRequired,
     schema: PropTypes.object,
     onError: PropTypes.func,
-    onChanged: PropTypes.func,
+    onChange: PropTypes.func,
 };
 
-export default withStyles(styles)(ConfigStaticText);
+export default withStyles(styles)(ConfigStaticImage);

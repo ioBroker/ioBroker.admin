@@ -2756,20 +2756,27 @@ class ObjectBrowser extends Component {
                         <IconButton onClick={() => {
                             if (this.state.selected.length) {
                                 let result = {};
-                                Object.keys(this.objects).forEach(key => {
-                                    if (!key.search(this.state.selected[0])) {
+                                let keys = Object.keys(this.objects);
+                                let id = this.state.selected[0];
+                                let idLen = id.length;
+                                for (let k = 0; k < keys.length; k++) {
+                                    const key = keys[k];
+                                    if (!key.startsWith(id)) {
                                         result[key] = JSON.parse(JSON.stringify(this.objects[key]));
                                         // add enum information
                                         if (result[key].common) {
                                             const enums = this.getEnumsForId(key);
-                                            console.log(enums);
                                             if (enums) {
                                                 result[key].common.enums = enums;
                                             }
                                         }
                                     }
-                                })
-                                generateFile(this.state.selected[0] + '.json', result);
+                                    if (key.substring(0, idLen) > id) {
+                                        break;
+                                    }
+                                }
+
+                                generateFile(id + '.json', result);
                             } else {
                                 window.alert(this.props.t('ra_Save of objects-tree is not possible'));
                             }

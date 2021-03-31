@@ -59,17 +59,19 @@ const schema = {
                 //  !- tooltip - optional tooltip
                 //  - default - default value
                 //  - placeholder - placeholder (for text mostly)
-                //  - confirm
+                //  !- confirm
                 //     - condition - JS function: true show confirm dialog
                 //     - text
                 //     - title
                 //     - ok - Text for OK button
                 //     - cancel - Text for cancel button
+                //     - type - info, warning, error, none
                 
                 // possible types:
-                // - tabs
+                // !- tabs
                 
-                // - tab
+                // !- tab
+                //  - icon - tab can have icon (base64)
                 
                 // - text*
                 
@@ -79,22 +81,27 @@ const schema = {
                 
                 // - checkbox**
                 
-                // - slider               
-                //   - min (default 0)
-                //   - max (default 100)
-                //   - step (default 1)
+                    // - slider               
+                    //   - min (default 0)
+                    //   - max (default 100)
+                    //   - step (default 1)
                 
-                // - ip - bind address
+                // !- ip - bind address
                 //   - listenOnAllPorts - add 0.0.0.0 to option
                 //   - onlyIp4 - show only IP4 addresses
                 //   - onlyIp6 - show only IP6 addresses
                 
-                // - user - Select user from system.user. (With color and icon)
+                // !- user - Select user from system.user. (With color and icon)
+                //   - short - no system.user.
                 
                 // - room - Select room from enum.room (With color and icon)
+                //   - short - no system.room.
+                //   - use this.props.socket.getEnums('room')
                 
                 // - func - Select function from enum.func (With color and icon)
-                
+                //   - short - no system.func.
+                //   - use this.props.socket.getEnums('func')
+
                 // - select* 
                 //   - options - [{label: {en: "option 1"}, value: 1}, ...]
                 
@@ -134,33 +141,40 @@ const schema = {
                 // - password (repeat - if repeat password must be shown with the same width settings)
                 //   - repeat password must be compared with password
                 
-                // - instance (adapter - name of adapter)
+                // - instance 
+                //  - adapter - name of adapter
+                //  - allowDeactivate - if true. Additional option "deactivate" is shown
                 
                 // - chips - user can enter word and it will be added (see cloud => services => White list)
                 
                 // - alive - just indication if the instance is alive and it could be used in "hidden" and "disabled" (will not be saved in config)
+                //   - just text: Instance is running, Instance is not running
                 
-                // - pattern - read only field with pattern like 'https://${data.ip}:${data.port}' (will not be saved in config)                
-
+                // !- pattern - read only field with pattern like 'https://${data.ip}:${data.port}' (will not be saved in config)                
+                //  - text input - read only that shows pattern
+                //  - copyToClipboard - if true - show button
+                //  - pattern - my pattern
+                
                 // - sendto - button that sends request to instance (https://github.com/iobroker-community-adapters/ioBroker.email/blob/master/admin/index_m.html#L128)
                 //    - command - (Default 'send')
                 //    - data: {subject1: '${data.subject}, options1: {host: '${data.host}'}}
                 //    - result: {result1: {en: 'A'}, result2: {en: 'B'}}
                 //    - error: {error1: {en: 'E'}, error2: {en: 'E2'}}
+                //    - this.props.socket.sendTo(adapterName.instance, command || 'send', 
 
                 // - setState - button that set instance's state
                 //    - id - 'info.test'
                 //    - ack: false (default false)
                 //    - val: '${data.myText}_test' or number. Type must be detected automatically and convertaion done too
 
-                // - staticText - static text like description
+                // !- staticText - static text like description
                 //    - text - multi-language text
                 
-                // - staticLink - static link
+                // !- staticLink - static link
                 //    - text - multi-language text
                 //    - href - link
                 
-                // - staticImage - static image
+                // !- staticImage - static image
                 //    - href - optional HTTP link
                 //    - src - name of picture (from admin directory)
                 
@@ -169,6 +183,7 @@ const schema = {
                 // - table - table with items that could be deleted, added, movedUP, moved Down
                 //   - items: [{type: see above, width: px or %, title: {en: 'header'}, attr: 'name', filter: true}]
                 //   - noDelete: boolean if delete or add disabled
+                //   - if noDelete is false, add, delete and move up/down shold work
                 
                 // - json - json editor 
                 //   - height in px or % or em
@@ -181,10 +196,8 @@ const schema = {
                 
                 // - certificate
                 //   - certType: public, private, chained
-                
-                // - invisible
-                //  - this element is invisible for user and not editable
-                
+                //   - see https://github.com/ioBroker/ioBroker.admin/blob/master/src/js/adapter-settings.js#L324
+                                
                 // - custom
                 //  - component - Component name that will be provided via props, like componentInstancesEditor
                 
@@ -192,7 +205,6 @@ const schema = {
   
                 // - header
                 //   - text
-              
             }
         },
         tab2: {

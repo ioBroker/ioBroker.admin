@@ -85,7 +85,7 @@ ConfigColor.propTypes = {
     data: PropTypes.object.isRequired,
     schema: PropTypes.object,
     onError: PropTypes.func,
-    onChanged: PropTypes.func,
+    onChange: PropTypes.func,
 };
 
 export default withStyles(styles)(ConfigColor);

@@ -30,18 +30,32 @@ class ConfigTabs extends ConfigGeneric {
 
     render() {
         const items = this.props.schema.items;
+
         return <div className={this.props.classes.tabs}>
             <Tabs value={this.state.tab} onChange={(e, tab) => {
                 window.localStorage.setItem((this.props.dialogName || 'App') + '.' + this.props.adapterName, tab);
                 this.setState({tab});
             }}>
-                {Object.keys(items).map(name =>
-                    <Tab value={name} label={this.getText(items[name].label)} />)}
+                {Object.keys(items).map(name => {
+                    const disabled = this.execute(items[name].disabled, false);
+                    return <Tab disabled={disabled} key={name} value={name} label={this.getText(items[name].label)} />
+                })}
             </Tabs>
             {<ConfigPanel
                 key={this.state.tab}
                 className={this.props.classes.panel}
-                {...this.props}
+                socket={this.props.socket}
+                adapterName={this.props.adapterName}
+                instance={this.props.instance}
+                common={this.props.common}
+                alive={this.props.alive}
+                themeType={this.props.themeType}
+                themeName={this.props.themeName}
+                data={this.props.data}
+                systemConfig={this.props.systemConfig}
+                onError={this.props.onError}
+                onChange={this.props.onChange}
+
                 schema={items[this.state.tab]}
             />}
         </div>;
@@ -57,7 +71,7 @@ ConfigTabs.propTypes = {
     data: PropTypes.object.isRequired,
     schema: PropTypes.object,
     onError: PropTypes.func,
-    onChanged: PropTypes.func,
+    onChange: PropTypes.func,
 
     systemConfig: PropTypes.object,
     alive: PropTypes.bool,

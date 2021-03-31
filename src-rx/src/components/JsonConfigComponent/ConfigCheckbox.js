@@ -11,11 +11,16 @@ const styles = theme => ({
 
 class ConfigCheckbox extends ConfigGeneric {
     renderItem(error, disabled) {
+        const value = this.getValue(this.props.data, this.props.attr);
+        if (value && typeof value === 'object') {
+            // different case
+        }
+
         return <FormControlLabel
             control={<Checkbox
-                checked={!!this.getValue(this.props.data, this.props.attr)}
+                checked={!!value}
                 onChange={e => this.onChange(this.props.attr, e.target.checked)}
-                error={!!error}
+                //error={!!error}
                 disabled={!!disabled}
             />}
             label={this.getText(this.props.schema.label)}
@@ -32,7 +37,7 @@ ConfigCheckbox.propTypes = {
     data: PropTypes.object.isRequired,
     schema: PropTypes.object,
     onError: PropTypes.func,
-    onChanged: PropTypes.func,
+    onChange: PropTypes.func,
 };
 
 export default withStyles(styles)(ConfigCheckbox);

@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 
 import Router from '@iobroker/adapter-react/Components/Router';
 
-import JsonSchemaConfig from '../components/JsonSchemaConfig';
+import JsonConfig from '../components/JsonConfig';
 
 const styles = {
     root: {
@@ -57,18 +57,19 @@ class Config extends Component {
     }
 
     getConfigurator() {
-        
+
         if (this.props.jsonConfig) {
-            return <JsonSchemaConfig
+            return <JsonConfig
                 menuPadding={this.props.menuPadding}
                 theme={this.props.theme}
                 width={this.props.width}
-                adapter={this.props.adapter}
+                adapterName={this.props.adapter}
                 instance={this.props.instance}
                 socket={this.props.socket}
                 themeName={this.props.themeName}
                 themeType={this.props.themeType}
-                t={this.props.t} />;
+                t={this.props.t}
+            />;
         } else {
             return <iframe
                 title="config"
@@ -80,7 +81,7 @@ class Config extends Component {
 
     render() {
         const { classes } = this.props;
-        console.log('JSON: ' +this.props.jsonConfig )
+
         if (!this.props.jsonConfig && window.location.port === '3000') {
             return 'Test it in not development mode!';
         } else {
@@ -97,7 +98,6 @@ class Config extends Component {
         }
     }
 }
-
 
 Config.propTypes = {
     menuPadding: PropTypes.number,

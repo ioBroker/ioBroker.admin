@@ -1,12 +1,16 @@
-import { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
 import LinearProgress from '@material-ui/core/LinearProgress';
 
 import SaveCloseButtons from '@iobroker/adapter-react/Components/SaveCloseButtons';
+import Router from '@iobroker/adapter-react/Components/Router';
 import theme from '@iobroker/adapter-react/Theme';
-import JsonConfig from './JsonConfig';
+import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
+import I18n from '@iobroker/adapter-react/i18n';
+
+import JsonConfigComponent from './JsonConfigComponent';
 
 const styles = {
     scroll: {
@@ -15,15 +19,16 @@ const styles = {
     }
 };
 
-class JsonSchemaConfig extends Component {
+class JsonConfig extends Router {
     constructor(props) {
         super(props);
 
         this.state = {
-            schema: undefined,
-            data: undefined,
-            common: undefined,
+            schema: null,
+            data: null,
+            common: null,
             changed: false,
+            confirmDialog: false,
             theme: theme(props.themeName), // buttons requires special theme
         };
 
@@ -35,7 +40,7 @@ class JsonSchemaConfig extends Component {
     }
 
     getConfigFile() {
-        return this.props.socket.readFile(this.props.adapter + '.admin', 'jsonConfig.json')
+        return this.props.socket.readFile(this.props.adapterName + '.admin', 'jsonConfig.json')
             .then(data => {
                 try {
                     return JSON.parse(data);
@@ -46,25 +51,40 @@ class JsonSchemaConfig extends Component {
     }
 
     getInstanceObject() {
-        return this.props.socket.getObject(`system.adapter.${this.props.adapter}.${this.props.instance}`);
+        return this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`);
     }
 
-    setInstanceObject(newObj) {
-        return this.props.socket.setObject(`system.adapter.${this.props.adapter}.${this.props.instance}`, newObj);
+    renderConfirmDialog() {
+        if (!this.state.confirmDialog) {
+            return null;
+        }
+        return <ConfirmDialog
+            title={ I18n.t('Please confirm') }
+            text={ I18n.t('Some data are not stored. Discard?') }
+            ok={ I18n.t('Discard') }
+            cancel={ I18n.t('Cancel') }
+            onClose={isYes =>
+                this.setState({ confirmDialog: false}, () => isYes && Router.doNavigate(null))}
+        />;
     }
 
     async closeDialog(doSave) {
         if (doSave) {
             const obj = await this.getInstanceObject();
 
-            console.log('save', this.state.data);
-
             for (const a in this.state.data) {
                 if (this.state.data.hasOwnProperty(a)) {
                     obj.native[a] = this.state.data[a];
                 }
             }
-            await this.setInstanceObject(obj);
+
+            await this.props.socket.setObject(obj._id, obj);
+        } else {
+            if (this.state.changed) {
+                return this.setState({confirmDialog: true});
+            } else {
+                Router.doNavigate(null);
+            }
         }
     }
 
@@ -76,9 +96,16 @@ class JsonSchemaConfig extends Component {
         }
 
         return <>
-            <JsonConfig
+            {this.renderConfirmDialog()}
+            <JsonConfigComponent
                 className={ classes.scroll }
-                {...this.props}
+                socket={this.props.socket}
+                theme={this.props.theme}
+                themeName={this.props.themeName}
+                themeType={this.props.themeType}
+                adapterName={this.props.adapterName}
+                instance={this.props.instance}
+
                 schema={this.state.schema}
                 common={this.state.common}
                 data={this.state.data}
@@ -99,9 +126,9 @@ class JsonSchemaConfig extends Component {
     }
 }
 
-JsonSchemaConfig.propTypes = {
+JsonConfig.propTypes = {
     menuPadding: PropTypes.number,
-    adapter: PropTypes.string,
+    adapterName: PropTypes.string,
     instance: PropTypes.number,
 
     socket: PropTypes.object,
@@ -111,4 +138,4 @@ JsonSchemaConfig.propTypes = {
     themeType: PropTypes.string,
 };
 
-export default withStyles(styles)(JsonSchemaConfig);
+export default withStyles(styles)(JsonConfig);

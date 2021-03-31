@@ -1,15 +1,24 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import Grid from '@material-ui/core/Grid';
 
 import I18n from '@iobroker/adapter-react/i18n';
+import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
+import IconInfo from '@material-ui/icons/Info';
+import IconWarning from '@material-ui/icons/Warning';
+import IconError from '@material-ui/icons/Error';
 
 class ConfigGeneric extends Component {
+    static DIFFERENT_VALUE = '__different__';
+    static DIFFERENT_LABEL  = I18n.t('__different__');
+
     constructor(props) {
         super(props);
 
-        this.state = {};
+        this.state = {
+            confirmDialog: false,
+        };
 
         this.lang = I18n.getLanguage();
     }
@@ -64,20 +73,62 @@ class ConfigGeneric extends Component {
         }
     }
 
+    renderConfirmDialog() {
+        if (!this.state.confirmDialog) {
+            return null;
+        }
+        let icon = null;
+        if (this.props.schema.confirm.type === 'warning') {
+            icon = <IconWarning />;
+        } else if (this.props.schema.confirm.type === 'error') {
+            icon = <IconError />;
+        } else if (this.props.schema.confirm.type === 'info') {
+            icon = <IconInfo />;
+        }
+
+        return <ConfirmDialog
+            title={ this.getText(this.props.schema.confirm.title) || I18n.t('Please confirm') }
+            text={ this.getText(this.props.schema.confirm.text) }
+            ok={ this.getText(this.props.schema.confirm.ok) || I18n.t('Ok') }
+            cancel={ this.getText(this.props.schema.confirm.cancel) || I18n.t('Cancel') }
+            icon={icon}
+            onClose={isOk =>
+                this.setState({ confirmDialog: false}, () => {
+                    if (isOk) {
+                        const data = JSON.parse(JSON.stringify(this.props.data));
+                        this.setValue(data, this.state.confirmAttr, this.state.confirmNewValue);
+                        this.setState({confirmDialog: false, confirmNewValue: null, confirmAttr: null, confirmOldValue: null}, () =>
+                            this.props.onChange(data));
+                    } else {
+                        this.setState({confirmDialog: false, confirmNewValue: null, confirmAttr: null, confirmOldValue: null});
+                    }
+                })
+            }
+        />;
+    }
+
     onChange(attr, newValue) {
         const data = JSON.parse(JSON.stringify(this.props.data));
         this.setValue(data, attr, newValue);
-        this.props.onChange(data);
+        if (this.props.schema.confirm && this.execute(this.props.schema.confirm.condition, '', false, data)) {
+            return this.setState({
+                confirmDialog: true,
+                confirmNewValue: newValue,
+                confirmAttr: attr
+            });
+        } else {
+            this.props.onChange(data);
+        }
     }
 
-    execute(func, attr, defaultValue) {
+    execute(func, attr, defaultValue, data) {
         if (!func) {
             return defaultValue;
         } else {
             try {
                 // eslint-disable-next-line no-new-func
                 const f = new Function('data', '_system', '_alive', '_common', '_socket', func.includes('return') ? func : 'return ' + func);
-                return f(this.props.data, this.props.systemConfig, this.props.alive, this.props.common, this.props.socket);
+                return f(data || this.props.data, this.props.systemConfig, this.props.alive, this.props.common, this.props.socket);
             } catch (e) {
                 console.error(`Cannot execute ${func}: ${e}`);
                 return defaultValue;
@@ -97,6 +148,21 @@ class ConfigGeneric extends Component {
         return this.getText(this.props.schema.label) || this.getText(this.props.schema.text)
     }
 
+    getPattern(pattern) {
+        if (!pattern) {
+            return '';
+        } else {
+            try {
+                // eslint-disable-next-line no-new-func
+                const f = new Function('data', '_system', '_alive', '_common', '_socket', 'return `' + pattern.replace(/`/g, '\\`') + '`');
+                return f(this.props.data, this.props.systemConfig, this.props.alive, this.props.common, this.props.socket);
+            } catch (e) {
+                console.error(`Cannot execute ${pattern}: ${e}`);
+                return pattern;
+            }
+        }
+    }
+
     render() {
         const {error, disabled, hidden} = this.calculate(this.props.schema, this.props.attr);
 
@@ -109,22 +175,29 @@ class ConfigGeneric extends Component {
         const item = <Grid
             item
             title={this.getText(this.props.schema.tooltip)}
-            className={this.props.classes.row}
             xs={schema.xs || undefined}
             lg={schema.lg || undefined}
             md={schema.md || undefined}
             sm={schema.sm || undefined}
-            spacing={schema.spacing || 8}
+
             style={Object.assign({}, {marginBottom: 12, marginRight: 8}, this.props.schema.style)}>
             {this.renderItem(error, disabled)}
         </Grid>;
 
         if (schema.newLine) {
-            return <Grid container>
+            return <Grid container spacing={schema.spacing || 8}>
+                {this.renderConfirmDialog()}
                 {item}
             </Grid>
         } else {
-            return item;
+            if (this.state.confirmDialog) {
+                return <>
+                    {this.renderConfirmDialog()}
+                    {item}
+                </>;
+            } else {
+                return item;
+            }
         }
     }
 }
