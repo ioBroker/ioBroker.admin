@@ -8,7 +8,6 @@ import FileBrowser from '../components/FileBrowser';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import FileEditOfAccessControl from '../dialogs/FileEditOfAccessControl';
-import FileEditOfAccessControl2 from '../dialogs/FileEditOfAccessControl2';
 
 class Files extends Component {
 
@@ -27,7 +26,6 @@ class Files extends Component {
         this.props.socket.getObjects(true, true).then(objects => {
             this.objects = objects;
         })
-        this.props.socket.readMetaItems().then(el=>console.log(1111,el))
     }
 
     translate = (word, arg1, arg2) => {
@@ -63,14 +61,16 @@ class Files extends Component {
                     allowDelete={true}
                     expertMode={this.props.expertMode}
                     modalEditOfAccessControl={(context, objData) =>
-                        <FileEditOfAccessControl2
+                        <FileEditOfAccessControl
                             open={context.state.modalEditOfAccess}
-                            extendObject={(adapter, file, data) => {
+                            extendObject={(adapter,file, data) => {
+                                console.log(adapter,file, data)
                                 this.props.socket.chmodFile(adapter, file, data).then(newFiles => console.log(newFiles))
                             }}
                             selected={context.state.selected}
                             folders={context.state.folders}
                             objects={this.objects}
+                            socket={this.props.socket}
                             t={this.t}
                             onClose={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null })}
                             onApply={() => context.setState({ modalEditOfAccess: false, modalEditOfAccessObjData: null })} />

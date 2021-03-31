@@ -20,7 +20,7 @@ const schema = {
                     hidden: 'myType === 1', // hidden if myType is 1 
                     disabled: 'myType === 2' // disabled if myType is 2
                 },
-                'options.myType': { // name could support more than one level
+                'options.myType': { // name could support more than one levelhelperText
                     newLine: true, // must start from new row
                     type: 'select',
                     label: {en: "Type"},
@@ -39,23 +39,24 @@ const schema = {
                 // all labels, texts, helps can be multilanguage or just strings
                 
                 // all types could have:
-                //  - s - width in 1/12 of screen on small screen
-                //  - m - width in 1/12 of screen on middle screens
-                //  - l - width in 1/12 of screen on large screens
+                //  !- sm - width in 1/12 of screen on small screen
+                //  !- md - width in 1/12 of screen on middle screens
+                //  !- lg - width in 1/12 of screen on large screens
+                //  !- xs - width in 1/12 of screen on very small screens
                 //  - width - width in px (if number) or string (%, rem, em) 
-                //  - newLine - should be shown from new line
+                //  !- newLine - should be shown from new line
                 //  - label - String or object like {en: 'Name', ru: 'Имя'}
-                //  - hidden - JS function that could use native.attributes for calculation
-                //  - disabled - JS function that could use native.attributes for calculation
+                //  !- hidden - JS function that could use native.attributes for calculation
+                //  !- disabled - JS function that could use native.attributes for calculation
                 //  - helpLink - href to help
                 //  - help - help text (multi-language)
                 //  - icon - base64 svg
                 //  - encrypted - is value encrypted or not (of course only for texts)
                 //    - if encrypted, use __encrypted__ value for show and if was changed, encrypt it with socket.encrypt 
-                //  - style - css style (default)
+                //  !- style - css style (default)
                 //  - darkStyle - css style for dark mode
-                //  - validator - JS function: true no error, false - error
-                //  - tooltip - optional tooltip
+                //  !- validator - JS function: true no error, false - error
+                //  !- tooltip - optional tooltip
                 //  - default - default value
                 //  - placeholder - placeholder (for text mostly)
                 //  - confirm
@@ -153,12 +154,9 @@ const schema = {
                 //    - val: '${data.myText}_test' or number. Type must be detected automatically and convertaion done too
 
                 // - staticText - static text like description
-                //    - fontSize - font size 
                 //    - text - multi-language text
-                //    - backgroundColor - {dark: '#556677', light: '#112233'} or just '#00FF00'
                 
                 // - staticLink - static link
-                //    - fontSize - font size 
                 //    - text - multi-language text
                 //    - href - link
                 
@@ -190,8 +188,11 @@ const schema = {
                 // - custom
                 //  - component - Component name that will be provided via props, like componentInstancesEditor
                 
-                // - divider
-                
+                // - divider - horizontal line
+  
+                // - header
+                //   - text
+              
             }
         },
         tab2: {

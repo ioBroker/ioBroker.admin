@@ -1,95 +1,65 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import { Checkbox, FormControl, InputLabel, MenuItem, Select, Switch } from '@material-ui/core';
+import { Checkbox, FormControl, InputLabel, LinearProgress, MenuItem, Select, Switch } from '@material-ui/core';
 import CustomModal from '../components/CustomModal';
+import Utils from '@iobroker/adapter-react/Components/Utils';
+import Icon from '@iobroker/adapter-react/Components/Icon';
+import I18n from '@iobroker/adapter-react/i18n';
 
 const readWriteArray = [
     {
         Owner: [
-            { name: 'read', value: '0x400', valueNum: 1024, title: 'read owner' },
-            { name: 'write', value: '0x200', valueNum: 512, title: 'write owner' }
+            { name: 'read', valueNum: 0x400, title: 'read owner' },
+            { name: 'write', valueNum: 0x200, title: 'write owner' }
         ]
     },
     {
         Group: [
-            { name: 'read', value: '0x40', valueNum: 64, title: 'read group' },
-            { name: 'write', value: '0x20', valueNum: 32, title: 'write group' }
+            { name: 'read', valueNum: 0x40, title: 'read group' },
+            { name: 'write', valueNum: 0x20, title: 'write group' }
         ]
     },
     {
         Everyone: [
-            { name: 'read', value: '0x4', valueNum: 4, title: 'read everyone' },
-            { name: 'write', value: '0x2', valueNum: 2, title: 'write everyone' }
+            { name: 'read', valueNum: 0x4, title: 'read everyone' },
+            { name: 'write', valueNum: 0x2, title: 'write everyone' }
         ]
     },
-]
-const check = [
-    { value: '0x400', valueNum: 1024 },
-    { value: '0x200', valueNum: 512 },
-    { value: '0x40', valueNum: 64 },
-    { value: '0x20', valueNum: 32 },
-    { value: '0x4', valueNum: 4 },
-    { value: '0x2', valueNum: 2 }
 ];
-const defaulHex = {
-    '0x400': false,
-    '0x200': false,
-    '0x40': false,
-    '0x20': false,
-    '0x4': false,
-    '0x2': false
+
+const newValueAccessControl = (value, newValue, mask) => {
+    value |= newValue & mask;
+    value &= newValue | (~mask & 0xFFFF);
+    return value;
 }
-const newValueAccessControl = (value, newValue, objectHex) => {
-    let different = newValue;
-    let currentValue = value;
-    let result = 1638;
-    check.forEach(el => {
-        if (different - el.valueNum >= 0) {
-            different -= el.valueNum;
-            if (currentValue - el.valueNum >= 0) {
-                currentValue -= el.valueNum;
-            } else {
-                result = objectHex[el.value] ? result - el.valueNum : result;
-            }
-        } else {
-            if (currentValue - el.valueNum >= 0) {
-                currentValue -= el.valueNum;
-                result = objectHex[el.value] ? result : result - el.valueNum;
-            } else {
-                result -= el.valueNum;
-            }
-        }
-    });
-    return result;
-}
-const ObjectRights = ({ value, setValue, t, differentValue, switchBool, checkDifferent, setCheckDifferent }) => {
+
+const ObjectRights = ({ value, setValue, t, differentValues, applyToChildren, mask, setMask }) => {
     useEffect(() => {
-        if (switchBool) {
-            differentValue.forEach(el => {
-                let different = el;
-                let currentValue = value;
-                check.forEach(val => {
-                    if (different - val.valueNum >= 0) {
-                        different -= val.valueNum;
-                        if (currentValue - val.valueNum < 0) {
-                            setCheckDifferent(check => !check[val.value] ? ({ ...check, [val.value]: true }) : check)
-                        } else {
-                            currentValue -= val.valueNum;
+        if (applyToChildren) {
+            let _checkDifferent = 0;
+            let i = 1;
+            while (i < 0x1000) {
+                for (let e = 0; e < differentValues.length; e++) {
+                    if (value & i) {
+                        if (!(differentValues[e] & i)) {
+                            _checkDifferent |= i;
                         }
                     } else {
-                        if (currentValue - val.valueNum >= 0) {
-                            currentValue -= val.valueNum;
-                            setCheckDifferent(check => !check[val.value] ? ({ ...check, [val.value]: true }) : check)
+                        if (differentValues[e] & i) {
+                            _checkDifferent |= i;
                         }
                     }
-                })
-            })
+                }
+                i = i << 1;
+            }
+            setMask(_checkDifferent);
         } else {
-            setCheckDifferent(defaulHex)
+            setMask(0);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [differentValue, switchBool]);
-    let newselected = value;
+    }, [differentValues, applyToChildren]);
+
+    let newSelected = value;
+
     return <div style={{
         display: 'flex',
         width: 'fit-content',
@@ -122,8 +92,8 @@ const ObjectRights = ({ value, setValue, t, differentValue, switchBool, checkDif
                 }}>
                     {el[name].map((obj, idx) => {
                         let bool = false;
-                        if (newselected - obj.valueNum >= 0) {
-                            newselected = newselected - obj.valueNum;
+                        if (newSelected - obj.valueNum >= 0) {
+                            newSelected = newSelected - obj.valueNum;
                             bool = true;
                         }
                         return <div style={{
@@ -132,7 +102,7 @@ const ObjectRights = ({ value, setValue, t, differentValue, switchBool, checkDif
                             flex: 1,
                             alignItems: 'center',
                             borderRight: idx === 0 ? '1px solid' : 0
-                        }} key={obj.value}>
+                        }} key={obj.valueNum}>
                             <div style={{
                                 height: 50,
                                 borderBottom: '1px solid',
@@ -145,163 +115,323 @@ const ObjectRights = ({ value, setValue, t, differentValue, switchBool, checkDif
                             <div style={{ height: 50, display: 'flex' }}>
                                 <Checkbox
                                     checked={bool}
-                                    color={checkDifferent[obj.value] ? "primary" : "secondary"}
-                                    indeterminate={checkDifferent[obj.value]}
-                                    style={checkDifferent[obj.value] ? { opacity: 0.5 } : null}
-                                    onChange={(e) => {
-                                        if (checkDifferent[obj.value]) {
-                                            setCheckDifferent(check => ({ ...check, [obj.value]: false }))
+                                    color={mask & obj.valueNum ? 'primary' : 'secondary'}
+                                    indeterminate={!!(mask & obj.valueNum)}
+                                    style={mask & obj.valueNum ? { opacity: 0.5 } : null}
+                                    onChange={e => {
+                                        if (mask & obj.valueNum) {
+                                            mask &= (~obj.valueNum) & 0xFFFF;
+                                            setMask(mask);
                                         }
                                         let newValue = value;
                                         if (!e.target.checked) {
-                                            newValue -= obj.valueNum;
+                                            newValue &= (~obj.valueNum) & 0xFFFF;
                                         } else {
-                                            newValue += obj.valueNum;
+                                            newValue |= obj.valueNum;
                                         }
                                         setValue(newValue);
                                     }}
-                                    inputProps={{ 'aria-label': 'primary checkbox' }}
-                                /></div>
+                                />
+                            </div>
                         </div>
                     })}
                 </div>
             </div>
         })}
-    </div >
+    </div>;
 }
 
+function getBackgroundColor(textColor, themeType) {
+    if (!textColor) {
+        return undefined;
+    } else {
+        const invertedColor = Utils.invertColor(textColor, true);
+        if (invertedColor === '#FFFFFF' && themeType === 'dark') {
+            return '#DDD';
+        }
+        if (invertedColor === '#000000' && themeType === 'light') {
+            return '#222';
+        }
+        return undefined;
+    }
+}
 
-const FileEditOfAccessControl = ({ onClose, onApply, open, selected, extendObject, folders, t, objects }) => {
+function sortFolders(a, b) {
+    if (a.folder && b.folder) {
+        return a.name > b.name ? 1 : (a.name < b.name ? -1 : 0);
+    } else if (a.folder) {
+        return -1;
+    } else if (b.folder) {
+        return 1;
+    } else {
+        return a.name > b.name ? 1 : (a.name < b.name ? -1 : 0)
+    }
+}
+
+const serchFolders = async (folderId, _newFolders, socket) => {
+    const parts = folderId.split('/');
+    const level = parts.length;
+    const adapter = parts.shift();
+    const relPath = parts.join('/');
+    await socket.readDir(adapter, relPath)
+        .then(files => {
+            files.forEach(file => {
+                const item = {
+                    id: folderId + '/' + file.file,
+                    ext: Utils.getFileExtension(file.file),
+                    folder: file.isDir,
+                    name: file.file,
+                    size: file.stats && file.stats.size,
+                    modified: file.modifiedAt,
+                    acl: file.acl,
+                    level
+                };
+                _newFolders.push(item);
+            });
+
+            _newFolders.sort(sortFolders);
+        });
+    let array = []
+    _newFolders.forEach(async el => {
+        if (el.folder) {
+            await serchFolders(el.id, array, socket);
+        }
+    })
+    return [..._newFolders, ...array]
+}
+const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObject, objects, t, modalEmptyId, themeType, folders, socket }) => {
     const select = selected.substring(0, selected.lastIndexOf('/')) || selected;
     const object = selected.split('/').length === 1 ? folders['/'].find(({ id }) => id === selected) : folders[select].find(({ id }) => id === selected);
-    // console.log(1, selected, object, objects['system.config'].common.defaultNewAcl)
-    const [stateOwnerUser, setStateOwnerUser] = useState(object?.acl?.owner || objects['system.config'].common.defaultNewAcl.owner);
-    const [stateOwnerGroup, setStateOwnerGroup] = useState(object?.acl?.ownerGroup || objects['system.config'].common.defaultNewAcl.ownerGroup);
-    const [ownerUser, setOwnerUser] = useState([]);
-    const [ownerGroup, setOwnerGroup] = useState([]);
-    const [switchBool, setSwitchBool] = useState(false);
-    const [checkState, setCheckState] = useState(false);
-    const [count, setCount] = useState(0);
-    const [valueObjectAccessControl, setValueObjectAccessControl] = useState(object?.acl?.permissions || object?.acl?.file || objects['system.config'].common.defaultNewAcl.ownerGroup.file);
-    // const [valueStateAccessControl, setValueStateAccessControl] = useState(object.acl.permissions || object.acl.state);
+    const [stateOwnerUser, setStateOwnerUser] = useState(null);
+    const [stateOwnerGroup, setStateOwnerGroup] = useState(null);
+    const [ownerUsers, setOwnerUsers] = useState([]);
+    const [ownerGroups, setOwnerGroups] = useState([]);
+    const [applyToChildren, setApplyToChildren] = useState(false);
+    const [childrenCount, setChildrenCount] = useState(0);
+    const [valueObjectAccessControl, setValueObjectAccessControl] = useState(null);
     const [differentOwner, setDifferentOwner] = useState(false);
     const [differentGroup, setDifferentGroup] = useState(false);
-    const [differentState, setDifferentState] = useState([]);
     const [differentObject, setDifferentObject] = useState([]);
-    const [differentHexState, setDifferentHexState] = useState(defaulHex);
-    const [differentHexObject, setDifferentHexObject] = useState(defaulHex);
-    console.log(object)
-    useEffect(() => {
-        if (!object.folder) {
-            setCount((el) => el + 1);
-        }
-        // console.log(2222,objects)
-        Object.keys(objects).forEach(key => {
-            //     if (!key.search(selected)) {
-            //         setCount((el) => el + 1);
-            //         if (!differentOwner && objects[selected].acl.owner !== objects[key].acl.owner) {
-            //             setDifferentOwner(true);
-            //         }
-            //         if (!differentGroup && objects[selected].acl.ownerGroup !== objects[key].acl.ownerGroup) {
-            //             setDifferentGroup(true);
-            //         }
-            //         if (objects[key].acl.state) {
-            //             if (objects[selected].acl.state !== objects[key].acl.state) {
-            //                 setDifferentState(el => el.indexOf(objects[key].acl.state) === -1 ? ([...el, objects[key].acl.state]) : el)
-            //             }
-            //             if (!checkState) {
-            //                 setCheckState(true);
-            //             }
-            //         }
-            //         if (objects[selected].acl.object !== objects[key].acl.object) {
-            //             setDifferentObject(el => el.indexOf(objects[key].acl.object) === -1 ? ([...el, objects[key].acl.object]) : el)
-            //         }
+    const [maskObject, setMaskObject] = useState(0);
+    const [ids, setIds] = useState([]);
+    const [newFolders, setNewFolders] = useState([]);
 
-            //     }
-            if (!key.search('system.group')) {
-                setOwnerGroup(el => ([...el, {
-                    name: key.replace('system.group.', ''),
-                    value: key
-                }]))
+    const [disabledButton, setDisabledButton] = useState(true);
+
+    const different = t('different');
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(async () => {
+        let _differentObject = [];
+
+        let id = object.id;
+        let idWithDot = id + '.';
+        const keys = Object.keys(folders).sort();
+        const objectsKeys = Object.keys(objects).sort();
+        let groups = [];
+        let users = [];
+        const lang = I18n.getLanguage();
+
+        let _differentOwner = false;
+        let _differentGroup = false;
+        let _stateOwnerUser = null;
+        let _stateOwnerGroup = null;
+        let _valueObjectAccessControl = null;
+        let _newFolders = [];
+        const _ids = [];
+        let count = 0
+        if (!object.folder) {
+            id = select;
+        }
+        for (let k = 0; k < keys.length; k++) {
+            const key = keys[k];
+            const foldersArray = folders[key];
+            if (foldersArray && (key === id || key.startsWith(idWithDot))) {
+                for (let i = 0; i < foldersArray.length; i++) {
+                    const keyFolder = foldersArray[i];
+                    count++;
+                    _ids.push(keyFolder.id);
+                    if (keyFolder.folder) {
+                        await serchFolders(keyFolder.id, _newFolders, socket);
+                    }
+                    if (!keyFolder.acl) {
+                        continue;
+                    }
+                    if (_valueObjectAccessControl === null && (keyFolder.acl.permissions || keyFolder.acl.file) !== undefined) {
+                        _valueObjectAccessControl = keyFolder.acl.permissions || keyFolder.acl.file;
+                    }
+                    if (_stateOwnerUser === null && keyFolder.acl.owner !== undefined) {
+                        _stateOwnerUser = keyFolder.acl.owner;
+                    }
+                    if (_stateOwnerGroup === null && keyFolder.acl.ownerGroup !== undefined) {
+                        _stateOwnerGroup = keyFolder.acl.ownerGroup;
+                    }
+
+                    if (!differentOwner && _stateOwnerUser !== keyFolder.acl.owner && keyFolder.acl.owner !== undefined) {
+                        _differentOwner = true;
+                    }
+                    if (!differentGroup && _stateOwnerGroup !== keyFolder.acl.ownerGroup && keyFolder.acl.ownerGroup !== undefined) {
+                        _differentGroup = true;
+                    }
+                    if (keyFolder.acl.permissions !== undefined && _valueObjectAccessControl !== keyFolder.acl.permissions && !_differentObject.includes(keyFolder.acl.permissions)) {
+                        _differentObject.push(keyFolder.acl.permissions);
+                    }
+                }
             }
-            if (!key.search('system.user')) {
-                setOwnerUser(el => ([...el, {
-                    name: key.replace('system.user.', ''),
-                    value: key
-                }]))
+        }
+        for (let i = 0; i < _newFolders.length; i++) {
+            const keyFolder = _newFolders[i];
+            count++;
+            _ids.push(keyFolder.id);
+            if (keyFolder.folder) {
+                continue;
             }
-        });
+            if (!keyFolder.acl) {
+                continue;
+            }
+            if (_valueObjectAccessControl === null && (keyFolder.acl.permissions || keyFolder.acl.file) !== undefined) {
+                _valueObjectAccessControl = keyFolder.acl.permissions || keyFolder.acl.file;
+            }
+            if (_stateOwnerUser === null && keyFolder.acl.owner !== undefined) {
+                _stateOwnerUser = keyFolder.acl.owner;
+            }
+            if (_stateOwnerGroup === null && keyFolder.acl.ownerGroup !== undefined) {
+                _stateOwnerGroup = keyFolder.acl.ownerGroup;
+            }
+
+            if (!differentOwner && _stateOwnerUser !== keyFolder.acl.owner && keyFolder.acl.owner !== undefined) {
+                _differentOwner = true;
+            }
+            if (!differentGroup && _stateOwnerGroup !== keyFolder.acl.ownerGroup && keyFolder.acl.ownerGroup !== undefined) {
+                _differentGroup = true;
+            }
+            if (keyFolder.acl.permissions !== undefined && _valueObjectAccessControl !== keyFolder.acl.permissions && !_differentObject.includes(keyFolder.acl.permissions)) {
+                _differentObject.push(keyFolder.acl.permissions);
+            }
+        }
+        for (let k = 0; k < objectsKeys.length; k++) {
+            const key = objectsKeys[k];
+            const obj = objects[key];
+            if (key.startsWith('system.group.') && obj?.type === 'group') {
+                groups.push({
+                    name: Utils.getObjectNameFromObj(obj, lang).replace('system.group.', ''),
+                    value: key,
+                    icon: obj.common?.icon,
+                    color: obj.common?.color,
+                });
+            } else
+                if (key.startsWith('system.user.') && obj?.type === 'user') {
+                    users.push({
+                        name: Utils.getObjectNameFromObj(obj, lang).replace('system.user.', ''),
+                        value: key,
+                        icon: obj.common?.icon,
+                        color: obj.common?.color,
+                    });
+                }
+
+        }
+        _stateOwnerUser = _stateOwnerUser || objects['system.config'].common.defaultNewAcl.owner;
+        _stateOwnerGroup = _stateOwnerGroup || objects['system.config'].common.defaultNewAcl.ownerGroup;
+        _valueObjectAccessControl = _valueObjectAccessControl || objects['system.config'].common.defaultNewAcl.object;
+        setValueObjectAccessControl(_valueObjectAccessControl);
+
+        const userItem = users.find(item => item.value === _stateOwnerUser);
+        const groupItem = groups.find(item => item.value === _stateOwnerGroup);
+        setStateOwnerUser(userItem);
+        setStateOwnerGroup(groupItem);
+
+        setDifferentOwner(_differentOwner);
+        setDifferentGroup(_differentGroup);
+
+        setOwnerUsers(users);
+        setOwnerGroups(groups);
+
+        object.folder && setApplyToChildren(true);
+        setChildrenCount(count);
+
+        setDifferentObject(_differentObject);
+
+        setIds(_ids);
+        setNewFolders(_newFolders)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [objects, selected]);
-    // useEffect(() => {
-    //     if (switchBool) {
-    //         if (differentGroup) {
-    //             setStateOwnerGroup('different');
-    //             setOwnerGroup(el => ([{
-    //                 name: 'different',
-    //                 value: 'different'
-    //             }, ...el]));
-    //         }
-    //         if (differentOwner) {
-    //             setStateOwnerUser('different');
-    //             setOwnerUser(el => ([{
-    //                 name: 'different',
-    //                 value: 'different'
-    //             }, ...el]));
-    //         }
-    //     } else {
-    //         if (stateOwnerUser === 'different') {
-    //             setStateOwnerUser(objects[selected].acl.owner);
-    //         }
-    //         if (stateOwnerGroup === 'different') {
-    //             setStateOwnerGroup(objects[selected].acl.ownerGroup);
-    //         }
-    //         setOwnerGroup(el => el.filter(({ name }) => name !== 'different'));
-    //         setOwnerUser(el => el.filter(({ name }) => name !== 'different'));
-    //     }
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [switchBool])
-    return (
-        <CustomModal
+    useEffect(() => {
+        if (applyToChildren) {
+            if (differentGroup) {
+                stateOwnerGroup.value !== 'different' && setStateOwnerGroup({ name: different, value: 'different' });
+                if (!ownerGroups.find(item => item.value === 'different')) {
+                    setOwnerGroups(el => ([{
+                        name: different,
+                        value: 'different'
+                    }, ...el]));
+                }
+            }
+
+            if (differentOwner) {
+                stateOwnerUser.value !== 'different' && setStateOwnerUser({ name: different, value: 'different' });
+                if (!ownerUsers.find(item => item.value === 'different')) {
+                    setOwnerUsers(el => ([{
+                        name: different,
+                        value: 'different'
+                    }, ...el]));
+                }
+            }
+        } else {
+            if (stateOwnerUser && stateOwnerUser.value === 'different') {
+                setStateOwnerUser(objects[selected].acl.owner);
+            }
+            if (stateOwnerGroup && stateOwnerGroup.value === 'different') {
+                setStateOwnerGroup(objects[selected].acl.ownerGroup);
+            }
+            // remove different from list
+            setOwnerGroups(el => el.filter(({ value }) => value !== 'different'));
+            setOwnerUsers(el => el.filter(({ value }) => value !== 'different'));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [applyToChildren, stateOwnerUser, stateOwnerGroup, differentOwner, differentGroup]);
+
+    if (!ids.length) {
+        return <LinearProgress />;
+    } else {
+        return <CustomModal
             open={open}
             titleButtonApply="apply"
             overflowHidden
-            // applyDisabled={!name}
+            applyDisabled={disabledButton}
             onClose={onClose}
-            onApply={() => {
-                if (!switchBool) {
-                    let newObj = object.acl
-                    if (newObj.permissions) {
-                        newObj.permissions = valueObjectAccessControl;
-                    } else if (newObj.file) {
-                        newObj.file = valueObjectAccessControl;
-                    }
-                    newObj.owner = stateOwnerUser;
-                    newObj.ownerGroup = stateOwnerGroup;
-                    extendObject(null, selected, newObj)
+            onApply={async () => {
+                const parts = select.split('/');
+                const adapter = parts.shift();
+                if (!applyToChildren) {
+                    let newAcl = JSON.parse(JSON.stringify(object.acl || {}));
+                    newAcl.permissions = valueObjectAccessControl;
+                    newAcl.owner = stateOwnerUser.value;
+                    newAcl.ownerGroup = stateOwnerGroup.value;
+                    extendObject(adapter, object.name, newAcl);
                 }
-                // else {
-                //     let newObj = objects[selected].acl;
-                //     newObj.object = valueObjectAccessControl;
-                //     Object.keys(objects).forEach(async key => {
-                //         if (!key.search(selected)) {
-                //             let newObj = objects[key].acl;
-                //             newObj.object = newValueAccessControl(objects[key].acl.object, valueObjectAccessControl, differentHexObject);
-                //             if (stateOwnerUser !== 'different') {
-                //                 newObj.owner = stateOwnerUser;
-                //             }
-                //             if (stateOwnerGroup !== 'different') {
-                //                 newObj.ownerGroup = stateOwnerGroup;
-                //             }
-                //             if (objects[key].acl.state) {
-                //                 newObj.state = newValueAccessControl(objects[key].acl.state, valueStateAccessControl, differentHexState);
-                //             }
-                //             await extendObject(key, { acl: newObj });
-                //         }
-                //     })
-                // }
+                else {
+                    let _maskObject = ~maskObject & 0xFFFF;
+
+                    for (let i = 0; i < ids.length; i++) {
+                        const key = ids[i];
+                        const obj = newFolders.find(el => key === el.id) || null;
+                        if (!obj) {
+                            continue;
+                        }
+                        let newAcl = JSON.parse(JSON.stringify(obj.acl || {}));
+                        newAcl.object = newValueAccessControl(obj.acl.object, valueObjectAccessControl, _maskObject);
+                        if (stateOwnerUser.value !== 'different') {
+                            newAcl.owner = stateOwnerUser.value;
+                        }
+                        if (stateOwnerGroup.value !== 'different') {
+                            newAcl.ownerGroup = stateOwnerGroup.value;
+                        }
+                        await extendObject(null, key, newAcl);
+                    }
+                }
                 onApply();
             }}>
+
             <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <div style={{
                     margin: 10,
@@ -309,25 +439,39 @@ const FileEditOfAccessControl = ({ onClose, onApply, open, selected, extendObjec
                 }}>{t('Access control list: %s', selected)}</div>
                 <div style={{ display: 'flex' }}>
                     <FormControl fullWidth style={{ marginRight: 10 }}>
-                        <InputLabel id="demo-simple-select-helper-label">{t('Owner user')}</InputLabel>
+                        <InputLabel>{t('Owner user')}</InputLabel>
                         <Select
-                            labelId="demo-simple-select-helper-label"
-                            id="demo-simple-select-helper"
-                            value={stateOwnerUser}
-                            onChange={(el) => setStateOwnerUser(el.target.value)}
+                            value={stateOwnerUser.value}
+                            renderValue={value => <span>{stateOwnerUser.icon ? <Icon src={stateOwnerUser.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}{stateOwnerUser.name}</span>}
+                            style={stateOwnerUser.value === 'different' ? { opacity: 0.5 } : { color: stateOwnerUser.color || undefined, backgroundColor: getBackgroundColor(stateOwnerUser.color, themeType) }}
+                            onChange={el => {
+                                const userItem = ownerUsers.find(item => item.value === el.target.value);
+                                setStateOwnerUser(userItem);
+                                setDisabledButton(false);
+                            }}
                         >
-                            {ownerUser.map(el => <MenuItem key={el.value} value={el.value}>{t(el.name)}</MenuItem>)}
+                            {ownerUsers.map(el => <MenuItem style={el.value === 'different' ? { opacity: 0.5 } : { color: el.color || undefined, backgroundColor: getBackgroundColor(el.color, themeType) }} key={el.value} value={el.value}>
+                                {el.icon ? <Icon src={el.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}
+                                {el.name}
+                            </MenuItem>)}
                         </Select>
                     </FormControl>
                     <FormControl fullWidth>
-                        <InputLabel id="demo-simple-select-helper-label">{t('Owner group')}</InputLabel>
+                        <InputLabel>{t('Owner group')}</InputLabel>
                         <Select
-                            labelId="demo-simple-select-helper-label"
-                            id="demo-simple-select-helper"
-                            value={stateOwnerGroup}
-                            onChange={(el) => setStateOwnerGroup(el.target.value)}
+                            value={stateOwnerGroup.value}
+                            renderValue={value => <span>{stateOwnerGroup.icon ? <Icon src={stateOwnerGroup.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}{stateOwnerGroup.name}</span>}
+                            style={stateOwnerGroup.value === 'different' ? { opacity: 0.5 } : { color: stateOwnerGroup.color || undefined, backgroundColor: getBackgroundColor(stateOwnerGroup.color, themeType) }}
+                            onChange={el => {
+                                const groupItem = ownerGroups.find(item => item.value === el.target.value);
+                                setStateOwnerGroup(groupItem);
+                                setDisabledButton(false);
+                            }}
                         >
-                            {ownerGroup.map(el => <MenuItem key={el.value} value={el.value}>{t(el.name)}</MenuItem>)}
+                            {ownerGroups.map(el => <MenuItem key={el.value} value={el.value} style={el.value === 'different' ? { opacity: 0.5 } : { color: el.color || undefined, backgroundColor: getBackgroundColor(el.color, themeType) }}>
+                                {el.icon ? <Icon src={el.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}
+                                {el.name}
+                            </MenuItem>)}
                         </Select>
                     </FormControl>
                 </div>
@@ -340,31 +484,37 @@ const FileEditOfAccessControl = ({ onClose, onApply, open, selected, extendObjec
                     marginLeft: 0,
                     color: 'silver'
                 }}>
-                    <div style={!switchBool ? { color: 'green' } : null}>{t('to apply one item')}</div>
+                    <div style={(!object.folder || !applyToChildren) ? { color: 'green' } : null}>{t('to apply one item')}</div>
                     <Switch
-                        disabled={count === 1}
-                        checked={switchBool}
-                        onChange={(e) => setSwitchBool(e.target.checked)}
+                        disabled={!!object.folder || childrenCount === 1}
+                        checked={!!object.folder || applyToChildren}
+                        onChange={e => {
+                            setApplyToChildren(e.target.checked);
+                            setDisabledButton(false);
+                        }}
                         color="primary"
-                        name="checkedB"
-                        inputProps={{ 'aria-label': 'primary checkbox' }}
                     />
-                    <div style={switchBool ? { color: 'green' } : null}>{t('to apply with children')}</div>
+                    <div style={(object.folder || applyToChildren) ? { color: 'green' } : null}>{t('to apply with children')} {(object.folder || childrenCount > 1) ? `(${childrenCount} ${t('object(s)')})` : ''}</div>
                 </div>
                 <div style={{ overflowY: 'auto' }}>
                     <div>
                         <h2>{t('File rights')}</h2>
-                        <ObjectRights checkDifferent={differentHexObject} setCheckDifferent={setDifferentHexObject} switchBool={switchBool} differentValue={differentObject} t={t} setValue={setValueObjectAccessControl} value={valueObjectAccessControl} />
+                        <ObjectRights
+                            mask={maskObject}
+                            setMask={setMaskObject}
+                            applyToChildren={applyToChildren}
+                            differentValues={differentObject}
+                            t={t}
+                            setValue={e => {
+                                setValueObjectAccessControl(e);
+                                setDisabledButton(false);
+                            }}
+                            value={valueObjectAccessControl} />
                     </div>
-                    {/* {((switchBool && checkState) || object.acl.state) && <div>
-                        <h2>{t('States rights')}</h2>
-                        <ObjectRights checkDifferent={differentHexState} setCheckDifferent={setDifferentHexState} switchBool={switchBool} differentValue={switchBool ? differentState : []} t={t} setValue={setValueStateAccessControl} value={valueStateAccessControl} />
-                    </div>} */}
-
                 </div>
             </div>
-        </CustomModal >
-    )
+        </CustomModal>;
+    }
 }
 
-export default FileEditOfAccessControl;
+export default FileEditOfAccessControl2;

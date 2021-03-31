@@ -27,6 +27,7 @@
  
 
 ## Instances
+- Show icon edit name only by onMouseOver name
 ## Objects
 - Decode quality code to text (BF)
 <!-- - ACL settings for non-existing objects with '---' and "apply to children" selected -->
