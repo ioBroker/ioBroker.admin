@@ -157,21 +157,23 @@ function getBackgroundColor(textColor, themeType) {
     }
 }
 
-const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObject, objects, t, modalEmptyId, themeType}) => {
+const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObject, objects, t, modalEmptyId, themeType,folders}) => {
+    const select = selected.substring(0, selected.lastIndexOf('/')) || selected;
+    const object = selected.split('/').length === 1 ? folders['/'].find(({ id }) => id === selected) : folders[select].find(({ id }) => id === selected);
     const [stateOwnerUser, setStateOwnerUser] = useState(null);
     const [stateOwnerGroup, setStateOwnerGroup] = useState(null);
     const [ownerUsers, setOwnerUsers] = useState([]);
     const [ownerGroups, setOwnerGroups] = useState([]);
     const [applyToChildren, setApplyToChildren] = useState(false);
-    const [checkState, setCheckState] = useState(false);
+    // const [checkState, setCheckState] = useState(false);
     const [childrenCount, setChildrenCount] = useState(0);
     const [valueObjectAccessControl, setValueObjectAccessControl] = useState(null);
-    const [valueStateAccessControl, setValueStateAccessControl] = useState(null);
+    // const [valueStateAccessControl, setValueStateAccessControl] = useState(null);
     const [differentOwner, setDifferentOwner] = useState(false);
     const [differentGroup, setDifferentGroup] = useState(false);
-    const [differentState, setDifferentState] = useState([]);
+    // const [differentState, setDifferentState] = useState([]);
     const [differentObject, setDifferentObject] = useState([]);
-    const [maskState, setMaskState] = useState(0);
+    // const [maskState, setMaskState] = useState(0);
     const [maskObject, setMaskObject] = useState(0);
     const [ids, setIds] = useState([]);
 
@@ -180,14 +182,18 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
     const different = t('different');
 
     useEffect(() => {
+        if (object.folder) {
+            console.log(object,folders)
+            setChildrenCount(folders[object.id]?.length || 0)
+        }
         let count = 0
-        let _differentState = [];
+        // let _differentState = [];
         let _differentObject = [];
 
-        let id = selected || modalEmptyId;
+        let id = object.id;
         let idWithDot = id + '.';
         const keys = Object.keys(objects).sort();
-        let _checkState = false;
+        // let _checkState = false;
         let groups = [];
         let users = [];
         const lang = I18n.getLanguage();
@@ -197,7 +203,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
         let _stateOwnerUser  = null;
         let _stateOwnerGroup = null;
         let _valueObjectAccessControl = null;
-        let _valueStateAccessControl = null;
+        // let _valueStateAccessControl = null;
         const _ids = [];
 
         for (let k = 0; k < keys.length; k++) {
@@ -210,12 +216,12 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                     continue;
                 }
 
-                if (_valueObjectAccessControl === null && obj.acl.object !== undefined) {
-                    _valueObjectAccessControl = obj.acl.object;
+                if (_valueObjectAccessControl === null && (obj.acl.permissions || obj.acl.file) !== undefined) {
+                    _valueObjectAccessControl = obj.acl.permissions || obj.acl.file;
                 }
-                if (_valueStateAccessControl === null && obj.acl.state !== undefined) {
-                    _valueStateAccessControl = obj.acl.state;
-                }
+                // if (_valueStateAccessControl === null && obj.acl.state !== undefined) {
+                //     _valueStateAccessControl = obj.acl.state;
+                // }
                 if (_stateOwnerUser === null && obj.acl.owner !== undefined) {
                     _stateOwnerUser = obj.acl.owner;
                 }
@@ -229,15 +235,15 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                 if (!differentGroup && _stateOwnerGroup !== obj.acl.ownerGroup && obj.acl.ownerGroup !== undefined) {
                     _differentGroup = true;
                 }
-                if (obj.acl.state !== undefined && _valueStateAccessControl !== obj.acl.state && !_differentState.includes(obj.acl.state)) {
-                    _differentState.push(obj.acl.state);
-                }
+                // if (obj.acl.state !== undefined && _valueStateAccessControl !== obj.acl.state && !_differentState.includes(obj.acl.state)) {
+                //     _differentState.push(obj.acl.state);
+                // }
                 if (obj.acl.object !== undefined && _valueObjectAccessControl !== obj.acl.object && !_differentObject.includes(obj.acl.object)) {
                     _differentObject.push(obj.acl.object);
                 }
-                if (obj.type === 'state') {
-                    _checkState = true;
-                }
+                // if (obj.type === 'state') {
+                //     _checkState = true;
+                // }
             }
 
             if (key.startsWith('system.group.') && obj?.type === 'group') {
@@ -263,10 +269,10 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
         _valueObjectAccessControl = _valueObjectAccessControl || objects['system.config'].common.defaultNewAcl.object;
         setValueObjectAccessControl(_valueObjectAccessControl);
 
-        if (_checkState) {
-            _valueStateAccessControl = _valueStateAccessControl || objects['system.config'].common.defaultNewAcl.state;
-            setValueStateAccessControl(_valueStateAccessControl);
-        }
+        // if (_checkState) {
+        //     _valueStateAccessControl = _valueStateAccessControl || objects['system.config'].common.defaultNewAcl.state;
+        //     setValueStateAccessControl(_valueStateAccessControl);
+        // }
 
         const userItem  = users.find(item => item.value === _stateOwnerUser);
         const groupItem = groups.find(item => item.value === _stateOwnerGroup);
@@ -280,11 +286,13 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
         setOwnerUsers(users);
         setOwnerGroups(groups);
 
-        _checkState && setCheckState(true);
-        modalEmptyId && setApplyToChildren(true);
-        setChildrenCount(count);
+        // _checkState && setCheckState(true);
+        object.folder && setApplyToChildren(true);
+        if(!object.folder){
+            setChildrenCount(count);
+        }
 
-        setDifferentState(_differentState);
+        // setDifferentState(_differentState);
         setDifferentObject(_differentObject);
 
         setIds(_ids);
@@ -342,14 +350,14 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                     newAcl.owner      = stateOwnerUser.value;
                     newAcl.ownerGroup = stateOwnerGroup.value;
 
-                    if (objects[selected].type === 'state') {
-                        newAcl.state = valueStateAccessControl;
-                    }
+                    // if (objects[selected].type === 'state') {
+                    //     newAcl.state = valueStateAccessControl;
+                    // }
                     extendObject(selected, { acl: newAcl });
                 }
                 else {
                     //let maskState = Object.keys(differentHexState).reduce((sum, key) => sum | (differentHexState[key] ? parseInt(key, 16) : 0), 0);
-                    let _maskState = ~maskState & 0xFFFF;
+                    // let _maskState = ~maskState & 0xFFFF;
 
                     //let maskObject = Object.keys(differentHexObject).reduce((sum, key) => sum | (differentHexObject[key] ? parseInt(key, 16) : 0), 0);
                     let _maskObject = ~maskObject & 0xFFFF;
@@ -358,16 +366,16 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                         const key = ids[i];
                         const obj = objects[key];
                         let newAcl = JSON.parse(JSON.stringify(obj.acl || {}));
-                        newAcl.object = newValueAccessControl(obj.acl.object, valueObjectAccessControl, _maskState);
+                        newAcl.object = newValueAccessControl(obj.acl.object, valueObjectAccessControl, _maskObject);
                         if (stateOwnerUser.value !== 'different') {
                             newAcl.owner = stateOwnerUser.value;
                         }
                         if (stateOwnerGroup.value !== 'different') {
                             newAcl.ownerGroup = stateOwnerGroup.value;
                         }
-                        if (obj.type === 'state') {
-                            newAcl.state = newValueAccessControl(obj.acl.state, valueStateAccessControl, _maskObject);
-                        }
+                        // if (obj.type === 'state') {
+                        //     newAcl.state = newValueAccessControl(obj.acl.state, valueStateAccessControl, _maskObject);
+                        // }
                         await extendObject(key, { acl: newAcl });
                     }
                 }
@@ -378,7 +386,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                 <div style={{
                     margin: 10,
                     fontSize: 20
-                }}>{t('Access control list: %s', selected || modalEmptyId)}</div>
+                }}>{t('Access control list: %s', selected)}</div>
                 <div style={{ display: 'flex' }}>
                     <FormControl fullWidth style={{ marginRight: 10 }}>
                         <InputLabel>{t('Owner user')}</InputLabel>
@@ -426,21 +434,21 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                     marginLeft: 0,
                     color: 'silver'
                 }}>
-                    <div style={!applyToChildren ? { color: 'green' } : null}>{t('to apply one item')}</div>
+                    <div style={(!object.folder || !applyToChildren) ? { color: 'green' } : null}>{t('to apply one item')}</div>
                     <Switch
-                        disabled={!!modalEmptyId || childrenCount === 1}
-                        checked={!!modalEmptyId || applyToChildren}
+                        disabled={!!object.folder || childrenCount === 1}
+                        checked={!!object.folder || applyToChildren}
                         onChange={e => {
                             setApplyToChildren(e.target.checked);
                             setDisabledButton(false);
                         }}
                         color="primary"
                     />
-                    <div style={applyToChildren ? { color: 'green' } : null}>{t('to apply with children')} {(modalEmptyId || childrenCount > 1) ? `(${childrenCount} ${t('object(s)')})` : ''}</div>
+                    <div style={(object.folder || !applyToChildren) ? { color: 'green' } : null}>{t('to apply with children')} {(object.folder || childrenCount > 1) ? `(${childrenCount} ${t('object(s)')})` : ''}</div>
                 </div>
                 <div style={{ overflowY: 'auto' }}>
                     <div>
-                        <h2>{t('Object rights')}</h2>
+                        <h2>{t('File rights')}</h2>
                         <ObjectRights
                             mask={maskObject}
                             setMask={setMaskObject}
@@ -453,25 +461,10 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                             }}
                             value={valueObjectAccessControl} />
                     </div>
-                    {((applyToChildren && checkState) || objects[selected]?.acl.state) && <div>
-                        <h2>{t('States rights')}</h2>
-                        <ObjectRights
-                            mask={maskState}
-                            setMask={setMaskState}
-                            applyToChildren={applyToChildren}
-                            differentValues={applyToChildren ? differentState : []}
-                            t={t}
-                            setValue={e => {
-                                setValueStateAccessControl(e);
-                                setDisabledButton(false);
-                            }}
-                            value={valueStateAccessControl} />
-                    </div>}
-
                 </div>
             </div>
         </CustomModal>;
     }
 }
 
-export default ObjectEditOfAccessControl;
+export default FileEditOfAccessControl2;
