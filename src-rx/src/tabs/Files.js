@@ -63,9 +63,22 @@ class Files extends Component {
                     modalEditOfAccessControl={(context, objData) =>
                         <FileEditOfAccessControl
                             open={context.state.modalEditOfAccess}
-                            extendObject={(adapter,file, data) => {
-                                console.log(adapter,file, data)
-                                this.props.socket.chmodFile(adapter, file, data).then(newFiles => console.log(newFiles))
+                            extendObject={(adapter, file, data) => {
+                                console.log(adapter, file, data)
+                                if (!file) {
+                                    console.log('APPLY acl for ' + adapter);
+                                    return Promise.resolve();
+                                } else {
+                                    if ((data.owner || data.ownerGroup) && data.permissions) {
+                                        return this.props.socket.chownFile(adapter, file, {owner: data.owner, ownerGroup: data.ownerGroup})
+                                            .then(() => this.props.socket.chmodFile(adapter, file, {mode: data.permissions}));
+                                    } else
+                                    if (data.permissions) {
+                                        return this.props.socket.chmodFile(adapter, file, {mode: data.permissions});
+                                    } else if (data.owner || data.ownerGroup) {
+                                        return this.props.socket.chownFile(adapter, file, {owner: data.owner, ownerGroup: data.ownerGroup});
+                                    }
+                                }
                             }}
                             selected={context.state.selected}
                             folders={context.state.folders}

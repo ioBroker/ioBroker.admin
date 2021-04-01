@@ -691,6 +691,18 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
     return visible;
 }
 
+function getVisibleItems(item, type, objects, _result) {
+    _result = _result || [];
+    const data = item.data;
+    if (data.visible || data.hasVisibleChildren) {
+        data.id && objects[data.id] && (!type || objects[data.id].type === type) && _result.push(data.id);
+        item.children?.forEach(_item =>
+            getVisibleItems(_item, type, objects, _result));
+    }
+
+    return _result;
+}
+
 function getSystemIcon(objects, id, k, imagePrefix) {
     let icon;
 
@@ -2790,11 +2802,17 @@ class ObjectBrowser extends Component {
                 {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t('ra_States')}: ${Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length}`}
             </div>
             {this.props.objectEditBoolean && <IconButton onClick={() => {
-                if (this.state.selected.length) {
-                    window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', this.state.selected[0]);
+                // get all visible states
+                const ids = getVisibleItems(this.root, 'state', this.objects);
+
+                if (ids.length) {
                     this.pauseSubscribe(true);
-                    this.props.router && this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
-                    this.setState({ customDialog: [this.state.selected[0]] });
+
+                    if (ids.length === 1) {
+                        window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', this.state.selected[0]);
+                        this.props.router && this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
+                    }
+                    this.setState({ customDialog: ids });
                 } else {
                     this.setState({ toast: this.props.t('ra_please select object') });
                 }

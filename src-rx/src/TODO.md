@@ -74,3 +74,5 @@
 ## JSON config - Admin settings dialog (index_m.html)
 - write it with react (see [SCHEMA.md](SCHEMA.md))
 - Should work: admin, cloud, email
+- Layout: Header "Instance settings: admin.0" must not be scrolled
+- Layout: Tabs must not be scrolled (only content of tab(panel))
