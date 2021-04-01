@@ -22,28 +22,28 @@
 - Adapters - Use readme renderer from www.iobroker.net (BF)
 - Show number of possible updates on "Adapters" in menu on the left (impossible ?)
 - Open the configuration dialog for just installed instance (only if document.hidden === false) (https://github.com/ioBroker/ioBroker.admin/issues/541)
-- Show which version is minimal required by the dependencies' problem (https://github.com/ioBroker/ioBroker.admin/issues/507)
+<!-- - Show which version is minimal required by the dependencies' problem (https://github.com/ioBroker/ioBroker.admin/issues/507) -->
   - https://github.com/ioBroker/ioBroker.admin/issues/557
-- sort list of adapters in "Select adapter"
-- Show number of adapters in toolbox
-- Show number of updated adapters in last month if space is enough 
+<!-- - sort list of adapters in "Select adapter" -->
+<!-- - Show number of adapters in toolbox -->
+<!-- - Show number of updated adapters in last month if space is enough  -->
   
 ## Instances
-- Do not show "Edit config" button for instances with "common.noConfig" flag
+<!-- - Do not show "Edit config" button for instances with "common.noConfig" flag
 
-- Show icon edit name only by onMouseOver name
+- Show icon edit name only by onMouseOver name -->
 ## Objects
 - Decode quality code to text (BF)
 - Add in object edit the possibility to set color and icon (icon could be uploaded as base64 and may not be bigger than 5k) and use it for text color. Add possibility to scale the images.
   - https://github.com/ioBroker/ioBroker.material/blob/master/src/src/basic-controls/react-image-selector/ImageSelector.js
-  - add new Tab Common (first tab)
-    - edit name
-    - edit icon
-    - edit color
-    - edit common.type (select: number, string, boolean, object, mixed, file, json) 
-    - edit role (autocomplete)
+  <!-- - add new Tab Common (first tab) -->
+    <!-- - edit name -->
+    <!-- - edit icon -->
+    <!-- - edit color -->
+    <!-- - edit common.type (select: number, string, boolean, object, mixed, file, json)  -->
+    <!-- - edit role (autocomplete) -->
 
-- Fix error: open role edit dialog  and close it.
+<!-- - Fix error: open role edit dialog  and close it. -->
 
 ## Objects - Custom editor
 - edit config by JSON

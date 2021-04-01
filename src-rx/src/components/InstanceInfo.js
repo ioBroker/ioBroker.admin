@@ -23,7 +23,7 @@ const InstanceInfo = props => {
                 }
             </Grid>
             <Grid item>
-                <Typography>
+                <Typography component="div">
                     { props.children }
                 </Typography>
             </Grid>

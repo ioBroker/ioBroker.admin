@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-json';
@@ -31,6 +31,10 @@ import IconCheck from '@material-ui/icons/Check';
 
 import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
 import copy from "@iobroker/adapter-react/Components/copy-to-clipboard";
+import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
+import { FaFileUpload as UploadIcon } from 'react-icons/fa';
+import Dropzone from 'react-dropzone';
+import { Autocomplete } from '@material-ui/lab';
 
 const styles = theme => ({
     divWithoutTitle: {
@@ -70,6 +74,66 @@ const styles = theme => ({
     },
     marginTop: {
         marginTop: 20,
+    },
+    commonTabWrapper: {
+        margin: '20px 0',
+        minWidth: 300,
+        maxWidth: 500
+    },
+    marginBlock: {
+        marginTop: 20
+    },
+    dropZone: {
+        width: '100%',
+        height: 100,
+        position: 'relative',
+    },
+    dropZoneEmpty: {
+
+    },
+    image: {
+        height: '100%',
+        width: 'auto',
+        objectFir: 'contain'
+    },
+
+    uploadDiv: {
+        position: 'relative',
+        width: '100%',
+        height: 100,
+        opacity: 0.9,
+        marginTop: 30
+    },
+    uploadDivDragging: {
+        opacity: 1,
+    },
+
+    uploadCenterDiv: {
+        margin: 5,
+        border: '3px dashed grey',
+        borderRadius: 5,
+        width: 'calc(100% - 10px)',
+        height: 'calc(100% - 10px)',
+        position: 'relative',
+    },
+    uploadCenterIcon: {
+        paddingTop: 10,
+        width: 48,
+        height: 48,
+    },
+    uploadCenterText: {
+        fontSize: 16,
+    },
+    uploadCenterTextAndIcon: {
+        textAlign: 'center',
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+    },
+    disabledOpacity: {
+        opacity: 0.3
     }
 });
 
@@ -158,13 +222,13 @@ class ObjectBrowserEditObject extends Component {
                 }
             }
             return obj;
-        } catch(e) {
+        } catch (e) {
             return null;
         }
     }
 
     onChange(value) {
-        const newState = {text: value};
+        const newState = { text: value };
         const json = this.prepareObject(value);
         if (json) {
             newState.changed = this.originalObj !== JSON.stringify(json, null, 2);
@@ -206,13 +270,22 @@ class ObjectBrowserEditObject extends Component {
         if (this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state') {
             return <Tabs value={this.state.tab} onChange={(e, tab) => {
                 window.localStorage.setItem((this.props.dialogName || 'App') + '.editTab', tab);
-                this.setState({tab});
+                this.setState({ tab });
             }}>
+                <Tab value="common" label={this.props.t('Common')} />
                 <Tab value="object" label={this.props.t('Object data')} />
                 <Tab value="alias" label={this.props.t('Alias')} />
             </Tabs>;
+        } else if (this.props.obj.type === 'state') {
+            return <Tabs value={this.state.tab} onChange={(e, tab) => {
+                window.localStorage.setItem((this.props.dialogName || 'App') + '.editTab', tab);
+                this.setState({ tab });
+            }}>
+                <Tab value="common" label={this.props.t('Common')} />
+                <Tab value="object" label={this.props.t('Object data')} />
+            </Tabs>;
         } else {
-            return null;
+            return null
         }
     }
 
@@ -233,9 +306,9 @@ class ObjectBrowserEditObject extends Component {
             statesOnly={true}
             onOk={id => {
                 this.setAliasItem(json, 'id', id);
-                this.setState({selectId: false, text: JSON.stringify(json, null, 2)});
+                this.setState({ selectId: false, text: JSON.stringify(json, null, 2) });
             }}
-            onClose={() => this.setState({selectId: false})}
+            onClose={() => this.setState({ selectId: false })}
         />;
     }
 
@@ -246,7 +319,129 @@ class ObjectBrowserEditObject extends Component {
 
         this.onChange(JSON.stringify(json, null, 2));
     }
+    onDrop(acceptedFiles, json) {
+        const file = acceptedFiles[0];
+        const reader = new FileReader();
 
+        reader.onabort = () => console.log('file reading was aborted');
+        reader.onerror = () => console.log('file reading has failed');
+        reader.onload = () => {
+            let ext = 'image/' + file.name.split('.').pop().toLowerCase();
+            if (ext === 'image/jpg') {
+                ext = 'image/jpeg';
+            } else if (ext === 'image/svg') {
+                ext = 'image/svg+xml';
+            }
+
+            const base64 = 'data:' + ext + ';base64,' + btoa(
+                new Uint8Array(reader.result)
+                    .reduce((data, byte) => data + String.fromCharCode(byte), ''));
+            this.setCommonItem(json, 'color', base64)
+        };
+        reader.readAsArrayBuffer(file);
+    }
+    setCommonItem(json, name, value) {
+        json.common[name] = value;
+        this.onChange(JSON.stringify(json, null, 2));
+    }
+    renderCommonEdit() {
+        try {
+            const json = JSON.parse(this.state.text);
+            const stateTypeArray = [
+                'boolean',
+                'json',
+                'string',
+                'number',
+                'multistate',
+                'file',
+                'object',
+                'mixed'
+            ];
+            const disabled = !json.common.write
+            const { classes, t, roleArray } = this.props;
+            return <div className={classes.commonTabWrapper}>
+
+                {typeof json.common.name !== "undefined" && <TextField
+                    disabled={disabled}
+                    label={t('Name')}
+                    className={classes.marginBlock}
+                    fullWidth
+                    value={json.common.name}
+                    onChange={(el) => this.setCommonItem(json, 'name', el.target.value)}
+                />
+                }
+                {typeof json.common.type !== "undefined" && <FormControl
+                    className={classes.marginBlock}
+                    fullWidth>
+                    <InputLabel id="demo-simple-select-helper-label">{t('State type')}</InputLabel>
+                    <Select
+                        disabled={disabled}
+                        labelId="demo-simple-select-helper-label"
+                        id="demo-simple-select-helper"
+                        value={json.common.type}
+                        onChange={(el) => this.setCommonItem(json, 'type', el.target.value)}
+                    >
+                        {stateTypeArray.map(el => <MenuItem key={el} value={el}>{t(el)}</MenuItem>)}
+                    </Select>
+                </FormControl>
+                }
+                {typeof json.common.role !== "undefined" && <Autocomplete
+                    className={classes.marginBlock}
+                    fullWidth
+                    disabled={disabled}
+                    value={json.common.role}
+                    getOptionSelected={(option, value) => option.name === value.name}
+                    onChange={(_, e) => this.setCommonItem(json, 'role', e)}
+                    options={roleArray}
+                    renderInput={(params) => <TextField {...params} label={t('Role')} />}
+                />
+                }
+                {typeof json.common.color !== "undefined" && <TextField
+                    disabled={disabled}
+                    className={classes.marginBlock}
+                    fullWidth={true}
+                    label={t('Color')}
+                    type="color"
+                    value={json.common.color}
+                    onChange={el => this.setCommonItem(json, 'color', el.target.value)} />
+                }
+                {typeof json.common.icon !== "undefined" && <Dropzone
+                    disabled={disabled}
+                    key="dropzone"
+                    multiple={false}
+                    accept="image/svg+xml,image/png,image/jpeg"
+                    maxSize={256 * 1024}
+                    onDragEnter={() => this.setState({ uploadFile: 'dragging' })}
+                    onDragLeave={() => this.setState({ uploadFile: true })}
+                    onDrop={acceptedFiles => this.onDrop(acceptedFiles, json)}
+                >
+                    {({ getRootProps, getInputProps }) => (
+                        <div className={clsx(
+                            classes.uploadDiv,
+                            this.state.uploadFile === 'dragging' && classes.uploadDivDragging,
+                            classes.dropZone,
+                            disabled && classes.disabledOpacity,
+                            !json.common.icon && classes.dropZoneEmpty
+                        )}
+                            {...getRootProps()}>
+                            <input {...getInputProps()} />
+                            <div className={classes.uploadCenterDiv}>
+                                <div className={classes.uploadCenterTextAndIcon}>
+                                    <UploadIcon className={classes.uploadCenterIcon} />
+                                    <div className={classes.uploadCenterText}>{
+                                        this.state.uploadFile === 'dragging' ? t('Drop file here') :
+                                            t('Place your files here or click here to open the browse dialog')}</div>
+                                </div>
+                                {json.common.icon ? <img src={json.common.icon} className={classes.image} alt="icon" /> : null}
+                            </div>
+
+                        </div>)}
+                </Dropzone>}
+            </div>
+        } catch (e) {
+            return <div>{this.props.t('Cannot parse JSON!')}</div>;
+        }
+    }
     renderAliasEdit() {
         try {
             const json = JSON.parse(this.state.text);
@@ -260,14 +455,14 @@ class ObjectBrowserEditObject extends Component {
                         //helperText={this.props.t('')}
                         className={this.props.classes.aliasIdEdit}
                         InputProps={{
-                            endAdornment: json.common?.alias?.id ? <InputAdornment position="end"><IconButton onClick={() => this.setAliasItem(json, 'id', '')}><IconClose/></IconButton></InputAdornment> : null,
+                            endAdornment: json.common?.alias?.id ? <InputAdornment position="end"><IconButton onClick={() => this.setAliasItem(json, 'id', '')}><IconClose /></IconButton></InputAdornment> : null,
                         }}
                         onChange={e => this.setAliasItem(json, 'id', e.target.value)}
                         margin="normal"
                     />
                     <Fab className={this.props.classes.button}
-                         size="small"
-                         onClick={() => this.setState({selectId: true})}>...</Fab>
+                        size="small"
+                        onClick={() => this.setState({ selectId: true })}>...</Fab>
                 </Grid>
                 <Grid item className={this.props.classes.marginTop}>
                     <FormControlLabel
@@ -299,7 +494,7 @@ class ObjectBrowserEditObject extends Component {
                             className={this.props.classes.funcEdit}
                             error={!!this.state.readError}
                             InputProps={{
-                                endAdornment: json.common?.alias?.read ? <InputAdornment position="end"><IconButton onClick={() => this.setAliasItem(json, 'read', '')}><IconClose/></IconButton></InputAdornment> : null,
+                                endAdornment: json.common?.alias?.read ? <InputAdornment position="end"><IconButton onClick={() => this.setAliasItem(json, 'read', '')}><IconClose /></IconButton></InputAdornment> : null,
                                 startAdornment: <InputAdornment position="start">Σ</InputAdornment>,
                             }}
                             onChange={e => this.setAliasItem(json, 'read', e.target.value)}
@@ -340,27 +535,27 @@ class ObjectBrowserEditObject extends Component {
         const withAlias = this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state';
 
         return <Dialog
-            classes={{paper: this.props.classes.dialog}}
-            open={ true }
+            classes={{ paper: this.props.classes.dialog }}
+            open={true}
             maxWidth="lg"
-            fullWidth={ this.state.type !== 'number' && this.state.type !== 'boolean' }
-            fullScreen={ false }
-            onClose={ () => this.props.onClose() }
+            fullWidth={this.state.type !== 'number' && this.state.type !== 'boolean'}
+            fullScreen={false}
+            onClose={() => this.props.onClose()}
             aria-labelledby="edit-value-dialog-title"
             aria-describedby="edit-value-dialog-description"
         >
-            <DialogTitle id="edit-value-dialog-title">{ this.props.t('Edit object:') } <span className={ this.props.classes.id }>{ this.props.obj._id }</span></DialogTitle>
+            <DialogTitle id="edit-value-dialog-title">{this.props.t('Edit object:')} <span className={this.props.classes.id}>{this.props.obj._id}</span></DialogTitle>
             <DialogContent>
                 {this.renderTabs()}
-                {this.state.tab === 'object' || !withAlias ?
-                    <div className={ clsx(this.props.classes.divWithoutTitle, withAlias && this.props.classes.divWithoutTitleAndTab, this.state.error && this.props.classes.error) }>
+                {this.state.tab === 'object' || this.props.obj.type !== 'state' ?
+                    <div className={clsx(this.props.classes.divWithoutTitle, withAlias && this.props.classes.divWithoutTitleAndTab, this.state.error && this.props.classes.error)}>
                         <AceEditor
                             mode="json"
                             width="100%"
                             height="100%"
-                            theme={ this.props.themeName === 'dark' ? 'clouds_midnight' : 'chrome' }
-                            value={ this.state.text }
-                            onChange={ newValue => this.onChange(newValue) }
+                            theme={this.props.themeName === 'dark' ? 'clouds_midnight' : 'chrome'}
+                            value={this.state.text}
+                            onChange={newValue => this.onChange(newValue)}
                             name="UNIQUE_ID_OF_DIV"
                             fontSize={14}
                             setOptions={{
@@ -376,12 +571,15 @@ class ObjectBrowserEditObject extends Component {
                 {this.state.tab === 'alias' && this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state' ?
                     this.renderAliasEdit() : null
                 }
+                {this.state.tab === 'common' && this.props.obj.type === 'state' ?
+                    this.renderCommonEdit() : null
+                }
                 {this.renderSelectDialog()}
             </DialogContent>
             <DialogActions>
-                <Button onClick={ e => this.onCopy(e) } disabled={this.state.error}><IconCopy/>{ this.props.t('Copy into clipboard') }</Button>
-                <Button variant="contained" disabled={ this.state.error || !this.state.changed } onClick={ () => this.onUpdate() } color="primary"><IconCheck/>{ this.props.t('Write') }</Button>
-                <Button variant="contained" onClick={ () => this.props.onClose() }><IconClose/>{ this.props.t('Cancel') }</Button>
+                <Button onClick={e => this.onCopy(e)} disabled={this.state.error}><IconCopy />{this.props.t('Copy into clipboard')}</Button>
+                <Button variant="contained" disabled={this.state.error || !this.state.changed} onClick={() => this.onUpdate()} color="primary"><IconCheck />{this.props.t('Write')}</Button>
+                <Button variant="contained" onClick={() => this.props.onClose()}><IconClose />{this.props.t('Cancel')}</Button>
             </DialogActions>
         </Dialog>;
     }

@@ -691,18 +691,6 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
     return visible;
 }
 
-function getVisibleItems(item, type, objects, _result) {
-    _result = _result || [];
-    const data = item.data;
-    if (data.visible || data.hasVisibleChildren) {
-        data.id && objects[data.id] && (!type || objects[data.id].type === type) && _result.push(data.id);
-        item.children?.forEach(_item =>
-            getVisibleItems(_item, type, objects, _result));
-    }
-
-    return _result;
-}
-
 function getSystemIcon(objects, id, k, imagePrefix) {
     let icon;
 
@@ -1370,7 +1358,7 @@ const SCREEN_WIDTHS = {
 };
 
 const DraggableObject = (props) => {
-    let dragSettings = {...props.dragSettings};
+    let dragSettings = { ...props.dragSettings };
     dragSettings.item = props.item;
     const [{ isDragging }, dragRef] = useDrag(dragSettings);
 
@@ -2522,7 +2510,6 @@ class ObjectBrowser extends Component {
      */
     getEnumsForId = (id) => {
         let result = [];
-        console.log(this.info.enums);
         this.info.enums.forEach(_id => {
             if (this.objects[_id]?.common?.members?.includes(id)) {
                 const en = {
@@ -2768,27 +2755,20 @@ class ObjectBrowser extends Component {
                         <IconButton onClick={() => {
                             if (this.state.selected.length) {
                                 let result = {};
-                                let keys = Object.keys(this.objects);
-                                let id = this.state.selected[0];
-                                let idLen = id.length;
-                                for (let k = 0; k < keys.length; k++) {
-                                    const key = keys[k];
-                                    if (!key.startsWith(id)) {
+                                Object.keys(this.objects).forEach(key => {
+                                    if (!key.search(this.state.selected[0])) {
                                         result[key] = JSON.parse(JSON.stringify(this.objects[key]));
                                         // add enum information
                                         if (result[key].common) {
                                             const enums = this.getEnumsForId(key);
+                                            console.log(enums);
                                             if (enums) {
                                                 result[key].common.enums = enums;
                                             }
                                         }
                                     }
-                                    if (key.substring(0, idLen) > id) {
-                                        break;
-                                    }
-                                }
-
-                                generateFile(id + '.json', result);
+                                })
+                                generateFile(this.state.selected[0] + '.json', result);
                             } else {
                                 window.alert(this.props.t('ra_Save of objects-tree is not possible'));
                             }
@@ -2802,17 +2782,11 @@ class ObjectBrowser extends Component {
                 {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t('ra_States')}: ${Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length}`}
             </div>
             {this.props.objectEditBoolean && <IconButton onClick={() => {
-                // get all visible states
-                const ids = getVisibleItems(this.root, 'state', this.objects);
-
-                if (ids.length) {
+                if (this.state.selected.length) {
+                    window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', this.state.selected[0]);
                     this.pauseSubscribe(true);
-
-                    if (ids.length === 1) {
-                        window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', this.state.selected[0]);
-                        this.props.router && this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
-                    }
-                    this.setState({ customDialog: ids });
+                    this.props.router && this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
+                    this.setState({ customDialog: [this.state.selected[0]] });
                 } else {
                     this.setState({ toast: this.props.t('ra_please select object') });
                 }
@@ -3261,8 +3235,10 @@ class ObjectBrowser extends Component {
                 t={this.props.t}
                 roles={this.info.roles}
                 onClose={obj => {
-                    this.info.objects[this.state.roleDialog] = obj;
-                    this.setState({ roleDialog: null });
+                    if (obj) {
+                        this.info.objects[this.state.roleDialog] = obj;
+                    }
+                    this.setState({ roleDialog: false });
                 }}
             />;
         } else {
@@ -3963,6 +3939,7 @@ class ObjectBrowser extends Component {
 
         return <ObjectBrowserEditObject
             obj={this.objects[this.state.editObjectDialog]}
+            roleArray={this.info.roles}
             objects={this.objects}
             themeName={this.props.themeName}
             socket={this.props.socket}

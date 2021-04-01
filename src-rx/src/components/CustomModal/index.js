@@ -45,7 +45,7 @@ const CustomModal = ({ title, applyDisabled, applyButton, classes, open, onClose
                 multiline
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                customValue
+                // customValue
             />}
             {children}
         </DialogContent>

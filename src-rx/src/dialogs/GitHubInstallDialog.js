@@ -68,7 +68,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
     const [url, setUrl] = useState('');
     const [value, setValue] = useState(0);
     // eslint-disable-next-line array-callback-return
-    const array = useCallback(() => categories.map(category => category.adapters).flat().map(el => {
+    const array = useCallback(() => categories.map(category => category.adapters).sort().flat().map(el => {
         const adapter = repository[el]
         if (!adapter?.controller) {
             return ({
@@ -78,7 +78,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
                         .indexOf('/'))}]`
             });
         }
-    }), [categories, repository]);
+    }).sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0), [categories, repository]);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);

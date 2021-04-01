@@ -171,7 +171,11 @@ const styles = theme => ({
         visibility: 'hidden'
     },
     button: {
-        padding: '5px'
+        padding: '5px',
+        transition: 'opacity 0.2s'
+    },
+    visibility: {
+        opacity: 0
     },
     enabled: {
         color: green[400],
@@ -242,7 +246,7 @@ const styles = theme => ({
     marginLeft5: {
         marginLeft: 5
     },
-    enableButton:{
+    enableButton: {
         display: 'flex',
         justifyContent: 'space-between'
     },
@@ -319,9 +323,9 @@ const CardInstances = ({
 
     const customModal =
         openDialogSelect ||
-        openDialogText   ||
-        openDialogDelete ||
-        openDialogMemoryLimit ?
+            openDialogText ||
+            openDialogDelete ||
+            openDialogMemoryLimit ?
             <CustomModal
                 title={
                     (openDialogText && t('Enter title for %s', instance.id)) ||
@@ -379,139 +383,139 @@ const CardInstances = ({
 
     const secondCardInfo = openCollapse || mouseOver ?
         <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
-            <CardContent classes={{root: classes.cardContent}} className={classes.overflowAuto}>
-            <div className={classes.collapseIcon}>
-                <div className={classes.close} onClick={() => setCollapse(false)} />
-            </div>
-            <Typography gutterBottom component={'span'} variant={'body2'}>
-                {expertMode && checkCompact && compact && <div className={classes.displayFlex}>
-                    <FormControl className={classes.addCompact} variant="outlined" >
-                        <InputLabel htmlFor="outlined-age-native-simple">{t('compact groups')}</InputLabel>
-                        <Select
-                            variant="standard"
-                            onClose={() => setOpenSelect(false)}
-                            onOpen={() => setOpenSelect(true)}
-                            open={openSelect}
-                            value={compactGroup === undefined ? 1 : compactGroup || '0'}
-                            fullWidth
-                            onChange={el => setCompactGroup(el.target.value)}
+            <CardContent classes={{ root: classes.cardContent }} className={classes.overflowAuto}>
+                <div className={classes.collapseIcon}>
+                    <div className={classes.close} onClick={() => setCollapse(false)} />
+                </div>
+                <Typography gutterBottom component={'span'} variant={'body2'}>
+                    {expertMode && checkCompact && compact && <div className={classes.displayFlex}>
+                        <FormControl className={classes.addCompact} variant="outlined" >
+                            <InputLabel htmlFor="outlined-age-native-simple">{t('compact groups')}</InputLabel>
+                            <Select
+                                variant="standard"
+                                onClose={() => setOpenSelect(false)}
+                                onOpen={() => setOpenSelect(true)}
+                                open={openSelect}
+                                value={compactGroup === undefined ? 1 : compactGroup || '0'}
+                                fullWidth
+                                onChange={el => setCompactGroup(el.target.value)}
+                            >
+                                <div className={classes.addCompactButton}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                    }}>
+                                    <Button onClick={() => {
+                                        setOpenSelect(false);
+                                        setCompactGroup(compactGroupCount + 1);
+                                    }} variant="outlined" stylevariable='outlined'>{t('Add compact group')}</Button>
+                                </div>
+                                <MenuItem value='0'>
+                                    {t('with controller (0)')}
+                                </MenuItem>
+                                <MenuItem value={1}>
+                                    {t('default group (1)')}
+                                </MenuItem>
+                                {Array(compactGroupCount - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
+                                    {idx + 2}
+                                </MenuItem>)}
+                            </Select>
+                        </FormControl>
+                    </div>}
+                    <State state={connectedToHost} >{t('Connected to host')}</State>
+                    <State state={alive} >{t('Heartbeat')}</State>
+                    {connected !== null &&
+                        <State state={connected}>{t('Connected to %s', instance.adapter)}</State>
+                    }
+                    <InstanceInfo icon={<InfoIcon />} tooltip={t('Installed')}>
+                        {instance.version}
+                    </InstanceInfo>
+                    <InstanceInfo icon={<MemoryIcon />} tooltip={t('RAM usage')}>
+                        {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
+                    </InstanceInfo>
+                    {expertMode && <div className={classes.displayFlex}>
+                        <InstanceInfo
+                            icon={<MemoryIcon className={classes.memoryIcon} />}
+                            tooltip={t('RAM limit')}
                         >
-                            <div className={classes.addCompactButton}
-                                 onClick={(e) => {
-                                     e.preventDefault();
-                                     e.stopPropagation();
-                                 }}>
-                                <Button onClick={() => {
-                                    setOpenSelect(false);
-                                    setCompactGroup(compactGroupCount + 1);
-                                }} variant="outlined" stylevariable='outlined'>{t('Add compact group')}</Button>
-                            </div>
-                            <MenuItem value='0'>
-                                {t('with controller (0)')}
-                            </MenuItem>
-                            <MenuItem value={1}>
-                                {t('default group (1)')}
-                            </MenuItem>
-                            {Array(compactGroupCount - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
-                                {idx + 2}
-                            </MenuItem>)}
-                        </Select>
-                    </FormControl>
-                </div>}
-                <State state={connectedToHost} >{t('Connected to host')}</State>
-                <State state={alive} >{t('Heartbeat')}</State>
-                {connected !== null &&
-                    <State state={connected}>{t('Connected to %s', instance.adapter)}</State>
-                }
-                <InstanceInfo icon={<InfoIcon />} tooltip={t('Installed')}>
-                    {instance.version}
-                </InstanceInfo>
-                <InstanceInfo icon={<MemoryIcon />} tooltip={t('RAM usage')}>
-                    {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
-                </InstanceInfo>
-                {expertMode && <div className={classes.displayFlex}>
-                    <InstanceInfo
-                        icon={<MemoryIcon className={classes.memoryIcon} />}
-                        tooltip={t('RAM limit')}
-                    >
-                        {(memoryLimitMB ? memoryLimitMB : '-.--') + ' MB'}
-                    </InstanceInfo>
-                    <IconButton
-                        size="small"
-                        className={classes.button}
-                        onClick={() => setOpenDialogMemoryLimit(true)}
-                    >
-                        <EditIcon />
-                    </IconButton>
-                </div>
-                }
-                {expertMode && <div className={classes.displayFlex}>
-                    <InstanceInfo icon={loglevelIcon} tooltip={t('loglevel')}>
-                        {logLevel}
-                    </InstanceInfo>
-                    <IconButton
-                        size="small"
-                        className={classes.button}
-                        onClick={() => setOpenDialogSelect(true)}
-                    >
-                        <EditIcon />
-                    </IconButton>
-                </div>}
-                {mode && <div className={classes.displayFlex}>
-                    <InstanceInfo icon={<ScheduleIcon />} tooltip={t('schedule_group')}>
-                        {getSchedule(id) || '-'}
-                    </InstanceInfo>
-                    <IconButton
-                        size="small"
-                        className={classes.button}
-                        onClick={() => setOpenDialogSchedule(true)}
-                    >
-                        <EditIcon />
-                    </IconButton>
-                </div>}
-                {expertMode && (instance.mode === 'daemon') &&
-                <div className={classes.displayFlex}>
-                    <InstanceInfo
-                        icon={<ScheduleIcon className={classes.scheduleIcon} />}
-                        tooltip={t('restart')}
-                    >
-                        {getRestartSchedule(id) || '-'}
-                    </InstanceInfo>
-                    <IconButton
-                        size="small"
-                        className={classes.button}
-                        onClick={() => setOpenDialogCron(true)}
-                    >
-                        <EditIcon />
-                    </IconButton>
-                </div>
-                }
-                {expertMode &&
-                    <div className={classes.displayFlex}>
-                        <InstanceInfo icon={<ImportExportIcon />} tooltip={t('events')}>
-                            <div className={classes.displayFlex}>
-                                <Tooltip title={t('input events')}>
-                                    <div className={classes.marginRight5}>⇥${inputOutput.stateInput}</div>
-                                </Tooltip>
+                            {(memoryLimitMB ? memoryLimitMB : '-.--') + ' MB'}
+                        </InstanceInfo>
+                        <IconButton
+                            size="small"
+                            className={classes.button}
+                            onClick={() => setOpenDialogMemoryLimit(true)}
+                        >
+                            <EditIcon />
+                        </IconButton>
+                    </div>
+                    }
+                    {expertMode && <div className={classes.displayFlex}>
+                        <InstanceInfo icon={loglevelIcon} tooltip={t('loglevel')}>
+                            {logLevel}
+                        </InstanceInfo>
+                        <IconButton
+                            size="small"
+                            className={classes.button}
+                            onClick={() => setOpenDialogSelect(true)}
+                        >
+                            <EditIcon />
+                        </IconButton>
+                    </div>}
+                    {mode && <div className={classes.displayFlex}>
+                        <InstanceInfo icon={<ScheduleIcon />} tooltip={t('schedule_group')}>
+                            {getSchedule(id) || '-'}
+                        </InstanceInfo>
+                        <IconButton
+                            size="small"
+                            className={classes.button}
+                            onClick={() => setOpenDialogSchedule(true)}
+                        >
+                            <EditIcon />
+                        </IconButton>
+                    </div>}
+                    {expertMode && (instance.mode === 'daemon') &&
+                        <div className={classes.displayFlex}>
+                            <InstanceInfo
+                                icon={<ScheduleIcon className={classes.scheduleIcon} />}
+                                tooltip={t('restart')}
+                            >
+                                {getRestartSchedule(id) || '-'}
+                            </InstanceInfo>
+                            <IconButton
+                                size="small"
+                                className={classes.button}
+                                onClick={() => setOpenDialogCron(true)}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        </div>
+                    }
+                    {expertMode &&
+                        <div className={classes.displayFlex}>
+                            <InstanceInfo icon={<ImportExportIcon />} tooltip={t('events')}>
+                                <div className={classes.displayFlex}>
+                                    <Tooltip title={t('input events')}>
+                                        <div className={classes.marginRight5}>⇥${inputOutput.stateInput}</div>
+                                    </Tooltip>
                                 /
                                 <Tooltip title={t('output events')}>
-                                    <div className={classes.marginLeft5}>↦${inputOutput.stateOutput}</div>
-                                </Tooltip>
-                            </div>
-                        </InstanceInfo>
-                    </div>
-                }
-                <Hidden smUp>
-                    <IconButton
-                        size="small"
-                        className={classes.button}
-                        onClick={() => openConfig(id)}
-                    >
-                        <BuildIcon />
-                    </IconButton>
-                </Hidden>
-            </Typography>
-        </CardContent>
+                                        <div className={classes.marginLeft5}>↦${inputOutput.stateOutput}</div>
+                                    </Tooltip>
+                                </div>
+                            </InstanceInfo>
+                        </div>
+                    }
+                    <Hidden smUp>
+                        <IconButton
+                            size="small"
+                            className={classes.button}
+                            onClick={() => openConfig(id)}
+                        >
+                            <BuildIcon />
+                        </IconButton>
+                    </Hidden>
+                </Typography>
+            </CardContent>
             <div className={classes.footerBlock}>
                 <div className={classes.displayFlex}>
                     <IconButton
@@ -574,7 +578,7 @@ const CardInstances = ({
                 }
             }}
         />;
-
+    const [visibleEdit, handlerEdit] = useState(false);
     return <Card key={key} className={clsx(classes.root, hidden ? classes.hidden : '')}>
         {customModal}
         {cronDialog}
@@ -586,7 +590,7 @@ const CardInstances = ({
             connectedToHost && alive && connected === false && classes.instanceStateAliveNotConnected1,
             connectedToHost && alive && connected !== false && classes.instanceStateAliveAndConnected1
         )}>
-            <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'}/>
+            <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
             <div className={classes.adapter}>{instance.id}</div>
             <div className={classes.versionDate}>
                 {/* {expertMode && checkCompact && <Tooltip title={t('compact groups')}>
@@ -607,11 +611,15 @@ const CardInstances = ({
 
         <CardContent className={classes.cardContentH5}>
             <Typography gutterBottom variant="h5" component="h5">
-                <div className={classes.displayFlex}>
+                <div
+                    onMouseMove={() => handlerEdit(true)}
+                    onMouseEnter={() => handlerEdit(true)}
+                    onMouseLeave={() => handlerEdit(false)}
+                    className={classes.displayFlex}>
                     {name}
                     <IconButton
                         size="small"
-                        className={classes.button}
+                        className={clsx(classes.button, !visibleEdit && classes.visibility)}
                         onClick={() => setOpenDialogText(true)}
                     >
                         <EditIcon />
@@ -633,7 +641,7 @@ const CardInstances = ({
                     <Hidden xsDown>
                         <IconButton
                             size="small"
-                            className={classes.button}
+                            className={clsx(classes.button,!instance.config && classes.visibility)}
                             onClick={() => openConfig(id)}
                         >
                             <BuildIcon />
