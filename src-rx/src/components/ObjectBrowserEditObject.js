@@ -24,12 +24,13 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 
-
 import IconClose from '@material-ui/icons/Close';
 import IconCopy from '@iobroker/adapter-react/icons/IconCopy';
 import IconCheck from '@material-ui/icons/Check';
 
 import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
+import Utils from '@iobroker/adapter-react/Components/Utils';
+import I18n from '@iobroker/adapter-react/i18n';
 import copy from "@iobroker/adapter-react/Components/copy-to-clipboard";
 import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
 import { FaFileUpload as UploadIcon } from 'react-icons/fa';
@@ -276,7 +277,7 @@ class ObjectBrowserEditObject extends Component {
                 <Tab value="object" label={this.props.t('Object data')} />
                 <Tab value="alias" label={this.props.t('Alias')} />
             </Tabs>;
-        } else if (this.props.obj.type === 'state') {
+        } else {
             return <Tabs value={this.state.tab} onChange={(e, tab) => {
                 window.localStorage.setItem((this.props.dialogName || 'App') + '.editTab', tab);
                 this.setState({ tab });
@@ -284,8 +285,6 @@ class ObjectBrowserEditObject extends Component {
                 <Tab value="common" label={this.props.t('Common')} />
                 <Tab value="object" label={this.props.t('Object data')} />
             </Tabs>;
-        } else {
-            return null
         }
     }
 
@@ -357,7 +356,7 @@ class ObjectBrowserEditObject extends Component {
                 'object',
                 'mixed'
             ];
-            const disabled = !json.common.write
+            const disabled = false;
             const { classes, t, roleArray } = this.props;
             return <div className={classes.commonTabWrapper}>
 
@@ -365,8 +364,8 @@ class ObjectBrowserEditObject extends Component {
                     disabled={disabled}
                     label={t('Name')}
                     className={classes.marginBlock}
-                    fullWidth
-                    value={json.common.name}
+                    fullWidtn
+                    value={Utils.getObjectNameFromObj(json, I18n.getLanguage())}
                     onChange={(el) => this.setCommonItem(json, 'name', el.target.value)}
                 />
                 }
@@ -547,7 +546,7 @@ class ObjectBrowserEditObject extends Component {
             <DialogTitle id="edit-value-dialog-title">{this.props.t('Edit object:')} <span className={this.props.classes.id}>{this.props.obj._id}</span></DialogTitle>
             <DialogContent>
                 {this.renderTabs()}
-                {this.state.tab === 'object' || this.props.obj.type !== 'state' ?
+                {this.state.tab === 'object'  ?
                     <div className={clsx(this.props.classes.divWithoutTitle, withAlias && this.props.classes.divWithoutTitleAndTab, this.state.error && this.props.classes.error)}>
                         <AceEditor
                             mode="json"
@@ -571,7 +570,7 @@ class ObjectBrowserEditObject extends Component {
                 {this.state.tab === 'alias' && this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state' ?
                     this.renderAliasEdit() : null
                 }
-                {this.state.tab === 'common' && this.props.obj.type === 'state' ?
+                {this.state.tab === 'common' ?
                     this.renderCommonEdit() : null
                 }
                 {this.renderSelectDialog()}

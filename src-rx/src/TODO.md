@@ -22,16 +22,11 @@
 - Adapters - Use readme renderer from www.iobroker.net (BF)
 - Show number of possible updates on "Adapters" in menu on the left (impossible ?)
 - Open the configuration dialog for just installed instance (only if document.hidden === false) (https://github.com/ioBroker/ioBroker.admin/issues/541)
-<!-- - Show which version is minimal required by the dependencies' problem (https://github.com/ioBroker/ioBroker.admin/issues/507) -->
   - https://github.com/ioBroker/ioBroker.admin/issues/557
-<!-- - sort list of adapters in "Select adapter" -->
-<!-- - Show number of adapters in toolbox -->
-<!-- - Show number of updated adapters in last month if space is enough  -->
+- Show number of updated adapters in last month if **space is enough**
   
 ## Instances
-<!-- - Do not show "Edit config" button for instances with "common.noConfig" flag
 
-- Show icon edit name only by onMouseOver name -->
 ## Objects
 - Decode quality code to text (BF)
 - Add in object edit the possibility to set color and icon (icon could be uploaded as base64 and may not be bigger than 5k) and use it for text color. Add possibility to scale the images.
@@ -42,8 +37,16 @@
     <!-- - edit color -->
     <!-- - edit common.type (select: number, string, boolean, object, mixed, file, json)  -->
     <!-- - edit role (autocomplete) -->
+     - If field does not exist, show BUtton "Add xxx" and by pressing on it show the input control.
+     - Width of name is equal to others and other fields too
+     - Width of color is 70px
+     - Clear button on all fields (except name)
+     - Add type is only by "state"
+     - Role can be by "channel", "device", "state"
+     - Tabs must be always visible (scroll the panel not the dialog)
+     - Max icon size is 5k
 
-<!-- - Fix error: open role edit dialog  and close it. -->
+ - use color of items for "ID" (think about contrast, means invert background)     
 
 ## Objects - Custom editor
 - edit config by JSON
@@ -52,7 +55,6 @@
 - Files - bulk edit of access rights
   - file.acl.permissions//
 - File viewer can show: json, js, ts, md, css, html
-<!-- - Allow switch of background color for images: jpg, png, bmp, svg, ico, jpeg -->
 - Edit file ACL for "adapter" or "instance" (All folders of the first level)
 - Edit files: json, js, txt, html (only in expert mode)
   

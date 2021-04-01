@@ -239,13 +239,35 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
         let _newFolders = [];
         const _ids = [];
         let count = 0
-        if (!object.folder) {
-            id = select;
-        }
+
         for (let k = 0; k < keys.length; k++) {
             const key = keys[k];
             const foldersArray = folders[key];
+            const adapter = objects[key];
+
             if (foldersArray && (key === id || key.startsWith(idWithDot))) {
+                count++;
+                _ids.push(key);
+    
+                if (_valueFileAccessControl === null && adapter.acl.file !== undefined) {
+                    _valueFileAccessControl = adapter.acl.file;
+                }
+                if (_stateOwnerUser === null && adapter.acl.owner !== undefined) {
+                    _stateOwnerUser = adapter.acl.owner;
+                }
+                if (_stateOwnerGroup === null && adapter.acl.ownerGroup !== undefined) {
+                    _stateOwnerGroup = adapter.acl.ownerGroup;
+                }
+    
+                if (!differentOwner && _stateOwnerUser !== adapter.acl.owner && adapter.acl.owner !== undefined) {
+                    _differentOwner = true;
+                }
+                if (!differentGroup && _stateOwnerGroup !== adapter.acl.ownerGroup && adapter.acl.ownerGroup !== undefined) {
+                    _differentGroup = true;
+                }
+                if (adapter.acl.file !== undefined && _valueFileAccessControl !== adapter.acl.file && !_differentObject.includes(adapter.acl.file)) {
+                    _differentObject.push(adapter.acl.file);
+                }
                 for (let i = 0; i < foldersArray.length; i++) {
                     const keyFolder = foldersArray[i];
                     count++;
@@ -256,8 +278,8 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
                     if (!keyFolder.acl) {
                         continue;
                     }
-                    if (_valueFileAccessControl === null && (keyFolder.acl.permissions || keyFolder.acl.file) !== undefined) {
-                        _valueFileAccessControl = keyFolder.acl.permissions || keyFolder.acl.file;
+                    if (_valueFileAccessControl === null && keyFolder.acl.permissions !== undefined) {
+                        _valueFileAccessControl = keyFolder.acl.permissions;
                     }
                     if (_stateOwnerUser === null && keyFolder.acl.owner !== undefined) {
                         _stateOwnerUser = keyFolder.acl.owner;
@@ -421,11 +443,12 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
                         }
                         if (object.acl?.ownerGroup !== stateOwnerGroup.value) {
                             newAcl.ownerGroup = stateOwnerUser.ownerGroup;
-                            changed = true;
+                            changed = true;                            
                         }
+                        changed && extendObject(adapter, path, newAcl);
+                    } else if (objects) {
+                        // setObject(acl)
                     }
-
-                    changed && extendObject(adapter, path, newAcl);
                 }
                 else {
                     let _maskObject = ~maskObject & 0xFFFF;
@@ -453,6 +476,8 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
                                 changed = true;
                             }
                             changed && await extendObject(adapter, path, newAcl);
+                        } else {
+                            // setObject if object
                         }
                     }
                 }
