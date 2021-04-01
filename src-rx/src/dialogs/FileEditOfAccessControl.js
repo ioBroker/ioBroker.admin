@@ -403,32 +403,39 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
             applyDisabled={disabledButton}
             onClose={onClose}
             onApply={async () => {
-                const parts = select.split('/');
-                const adapter = parts.shift();
                 if (!applyToChildren) {
+                    const parts = object.id.split('/');
+                    const adapter = parts.shift();
+                    const path = parts.join('/');
                     let newAcl = {};
                     let changed = false;
-                    if (object.acl.permissions !== valueFileAccessControl) {
-                        newAcl.permissions = valueFileAccessControl;
-                        changed = true;
+                    if (!object.folder) {
+                        if (object.acl?.permissions !== valueFileAccessControl) {
+                            newAcl.permissions = valueFileAccessControl;
+                            changed = true;
+                        }
+                        if (object.acl?.owner !== stateOwnerUser.value) {
+                            newAcl.owner = stateOwnerUser.value;
+                            changed = true;
+                        }
+                        if (object.acl?.ownerGroup !== stateOwnerGroup.value) {
+                            newAcl.ownerGroup = stateOwnerUser.ownerGroup;
+                            changed = true;
+                        }
                     }
-                    if (object.acl.owner !== stateOwnerUser.value) {
-                        newAcl.owner = stateOwnerUser.value;
-                        changed = true;
-                    }
-                    if (object.acl.ownerGroup !== stateOwnerGroup.value) {
-                        newAcl.ownerGroup = stateOwnerUser.ownerGroup;
-                        changed = true;
-                    }
-                    changed && extendObject(adapter, object.name, newAcl);
+                    
+                    changed && extendObject(adapter, path, newAcl);
                 }
                 else {
                     let _maskObject = ~maskObject & 0xFFFF;
-
                     for (let i = 0; i < ids.length; i++) {
                         const key = ids[i];
+                        const parts = key.split('/');
+                        const adapter = parts.shift();
+                        const path = parts.join('/');
                         const file = folders[adapter].find(file => file.id === key);
-                        if (file) {
+
+                        if (file && !file.folder) {
                             let changed = false;
                             const newAcl = {};
                             const permissions = newValueAccessControl(file.acl.permissions, valueFileAccessControl, _maskObject);
@@ -444,7 +451,7 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
                                 newAcl.ownerGroup = stateOwnerGroup.value;
                                 changed = true;
                             }
-                            changed && await extendObject(adapter, file.name, newAcl);
+                            changed && await extendObject(adapter, path, newAcl);
                         }
                     }
                 }

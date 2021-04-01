@@ -69,14 +69,24 @@ class Files extends Component {
                                     console.log('APPLY acl for ' + adapter);
                                     return Promise.resolve();
                                 } else {
+                                    let promise;
                                     if ((data.owner || data.ownerGroup) && data.permissions) {
-                                        return this.props.socket.chownFile(adapter, file, {owner: data.owner, ownerGroup: data.ownerGroup})
+                                        promise = this.props.socket.chownFile(adapter, file, {owner: data.owner, ownerGroup: data.ownerGroup})
                                             .then(() => this.props.socket.chmodFile(adapter, file, {mode: data.permissions}));
                                     } else
                                     if (data.permissions) {
-                                        return this.props.socket.chmodFile(adapter, file, {mode: data.permissions});
+                                        promise = this.props.socket.chmodFile(adapter, file, {mode: data.permissions});
                                     } else if (data.owner || data.ownerGroup) {
-                                        return this.props.socket.chownFile(adapter, file, {owner: data.owner, ownerGroup: data.ownerGroup});
+                                        promise = this.props.socket.chownFile(adapter, file, {owner: data.owner, ownerGroup: data.ownerGroup});
+                                    }
+
+                                    if (promise) {
+                                        promise.then(result => {
+                                            result?.entries.forEach(file =>
+                                                console.log(`USE new options: ${adapter}/${file.path + (file.path ? '/' : '')}${file.file} - ${JSON.stringify(file.acl)}`));
+                                        });
+                                    } else {
+                                        return Promise.resolve();
                                     }
                                 }
                             }}
