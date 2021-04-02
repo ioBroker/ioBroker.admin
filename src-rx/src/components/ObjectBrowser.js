@@ -3606,7 +3606,7 @@ class ObjectBrowser extends Component {
         let checkColor = item.data?.obj?.common?.color;
         let invertBackground = 'none';
         if (checkColor && !this.state.selected.includes(id)) {
-            invertBackground = Utils.invertColor(checkColor);
+            invertBackground = Utils.invertColor(checkColor, true);
         }
         if (!checkColor || this.state.selected.includes(id)) {
             checkColor = 'inherit';
