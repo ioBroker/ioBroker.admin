@@ -27,12 +27,13 @@ import IconButton from '@material-ui/core/IconButton';
 import IconClose from '@material-ui/icons/Close';
 import IconCopy from '@iobroker/adapter-react/icons/IconCopy';
 import IconCheck from '@material-ui/icons/Check';
+import AddIcon from '@material-ui/icons/Add';
 
 import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import I18n from '@iobroker/adapter-react/i18n';
 import copy from "@iobroker/adapter-react/Components/copy-to-clipboard";
-import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
+import { FormControl, InputLabel, MenuItem, Select, Tooltip } from '@material-ui/core';
 import { FaFileUpload as UploadIcon } from 'react-icons/fa';
 import Dropzone from 'react-dropzone';
 import { Autocomplete } from '@material-ui/lab';
@@ -93,15 +94,16 @@ const styles = theme => ({
 
     },
     image: {
-        height: '100%',
         width: 'auto',
-        objectFir: 'contain'
+        objectFit: 'contain',
+        margin: 'auto',
+        display: 'flex'
     },
 
     uploadDiv: {
         position: 'relative',
         width: '100%',
-        height: 100,
+        height: 300,
         opacity: 0.9,
         marginTop: 30
     },
@@ -116,6 +118,7 @@ const styles = theme => ({
         width: 'calc(100% - 10px)',
         height: 'calc(100% - 10px)',
         position: 'relative',
+        display:'flex'
     },
     uploadCenterIcon: {
         paddingTop: 10,
@@ -132,9 +135,64 @@ const styles = theme => ({
         bottom: 0,
         left: 0,
         right: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
+
     },
     disabledOpacity: {
         opacity: 0.3
+    },
+    buttonAdd: {
+        minWidth: 150
+    },
+    textField: {
+        width: '100%'
+    },
+    flex: {
+        display: 'flex'
+    },
+    close: {
+        width: '20px',
+        height: '20px',
+        opacity: '0.9',
+        cursor: 'pointer',
+        position: 'relative',
+        top: 20,
+        transition: 'all 0.6s ease',
+        '&:hover': {
+            transform: 'rotate(90deg)'
+        },
+        '&:before': {
+            position: 'absolute',
+            left: '9px',
+            content: '""',
+            height: '20px',
+            width: '3px',
+            backgroundColor: '#ff4f4f',
+            transform: 'rotate(45deg)'
+        },
+        '&:after': {
+            position: 'absolute',
+            left: '9px',
+            content: '""',
+            height: '20px',
+            width: '3px',
+            backgroundColor: '#ff4f4f',
+            transform: 'rotate(-45deg)'
+        },
+    },
+    color: {
+        width: 70
+    },
+    buttonRemoveWrapper: {
+        position: 'absolute',
+        zIndex: 222,
+        right: 0
+    },
+    tabsPadding:{
+        padding: '0px 24px'
     }
 });
 
@@ -268,24 +326,14 @@ class ObjectBrowserEditObject extends Component {
     }
 
     renderTabs() {
-        if (this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state') {
-            return <Tabs value={this.state.tab} onChange={(e, tab) => {
-                window.localStorage.setItem((this.props.dialogName || 'App') + '.editTab', tab);
-                this.setState({ tab });
-            }}>
-                <Tab value="common" label={this.props.t('Common')} />
-                <Tab value="object" label={this.props.t('Object data')} />
-                <Tab value="alias" label={this.props.t('Alias')} />
-            </Tabs>;
-        } else {
-            return <Tabs value={this.state.tab} onChange={(e, tab) => {
-                window.localStorage.setItem((this.props.dialogName || 'App') + '.editTab', tab);
-                this.setState({ tab });
-            }}>
-                <Tab value="common" label={this.props.t('Common')} />
-                <Tab value="object" label={this.props.t('Object data')} />
-            </Tabs>;
-        }
+        return <Tabs className={this.props.classes.tabsPadding} value={this.state.tab} onChange={(e, tab) => {
+            window.localStorage.setItem((this.props.dialogName || 'App') + '.editTab', tab);
+            this.setState({ tab });
+        }}>
+            <Tab value="common" label={this.props.t('Common')} />
+            <Tab value="object" label={this.props.t('Object data')} />
+            {this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state' && <Tab value="alias" label={this.props.t('Alias')} />}
+        </Tabs>;
     }
 
     renderSelectDialog() {
@@ -331,17 +379,39 @@ class ObjectBrowserEditObject extends Component {
             } else if (ext === 'image/svg') {
                 ext = 'image/svg+xml';
             }
-
+            if(file.size >5000){
+                return alert('File is too big!')
+            }
             const base64 = 'data:' + ext + ';base64,' + btoa(
                 new Uint8Array(reader.result)
-                    .reduce((data, byte) => data + String.fromCharCode(byte), ''));
-            this.setCommonItem(json, 'color', base64)
+                    .reduce((data, byte) => {
+                       return data + String.fromCharCode(byte)}, ''));
+            this.setCommonItem(json, 'icon', base64)
         };
         reader.readAsArrayBuffer(file);
     }
     setCommonItem(json, name, value) {
         json.common[name] = value;
         this.onChange(JSON.stringify(json, null, 2));
+    }
+    removeCommonItem(json, name) {
+        delete json.common[name]
+        this.onChange(JSON.stringify(json, null, 2));
+    }
+    buttonAddKey(nameKey, cb) {
+        const { t, classes } = this.props;
+        return <div
+            className={classes.marginBlock}>
+            <Button
+                className={classes.buttonAdd}
+                variant="contained"
+                color="secondary"
+                onClick={cb}><AddIcon />{t('add %s', nameKey)}</Button>
+        </div>
+    }
+    buttonRemoveKey(nameKey, cb) {
+        const { t, classes } = this.props;
+        return <Tooltip title={t('Remove %s', nameKey)}><div className={classes.close} onClick={cb} /></Tooltip>
     }
     renderCommonEdit() {
         try {
@@ -357,85 +427,120 @@ class ObjectBrowserEditObject extends Component {
                 'mixed'
             ];
             const disabled = false;
-            const { classes, t, roleArray } = this.props;
+            const { classes, t, roleArray, obj } = this.props;
+            const checkState = obj.type === 'state';
+            const checkRole = obj.type === 'channel' || obj.type === 'device' || checkState;
             return <div className={classes.commonTabWrapper}>
 
-                {typeof json.common.name !== "undefined" && <TextField
-                    disabled={disabled}
-                    label={t('Name')}
-                    className={classes.marginBlock}
-                    fullWidtn
-                    value={Utils.getObjectNameFromObj(json, I18n.getLanguage())}
-                    onChange={(el) => this.setCommonItem(json, 'name', el.target.value)}
-                />
-                }
-                {typeof json.common.type !== "undefined" && <FormControl
-                    className={classes.marginBlock}
-                    fullWidth>
-                    <InputLabel id="demo-simple-select-helper-label">{t('State type')}</InputLabel>
-                    <Select
+                {typeof json.common.name !== "undefined" ?
+                    <TextField
                         disabled={disabled}
-                        labelId="demo-simple-select-helper-label"
-                        id="demo-simple-select-helper"
-                        value={json.common.type}
-                        onChange={(el) => this.setCommonItem(json, 'type', el.target.value)}
-                    >
-                        {stateTypeArray.map(el => <MenuItem key={el} value={el}>{t(el)}</MenuItem>)}
-                    </Select>
-                </FormControl>
+                        label={t('Name')}
+                        className={clsx(classes.marginBlock, classes.textField)}
+                        fullWidth
+                        value={Utils.getObjectNameFromObj(json, I18n.getLanguage())}
+                        onChange={(el) => this.setCommonItem(json, 'name', el.target.value)}
+                    /> :
+                    this.buttonAddKey('name', () => this.setCommonItem(json, 'name', ''))
                 }
-                {typeof json.common.role !== "undefined" && <Autocomplete
-                    className={classes.marginBlock}
-                    fullWidth
-                    disabled={disabled}
-                    value={json.common.role}
-                    getOptionSelected={(option, value) => option.name === value.name}
-                    onChange={(_, e) => this.setCommonItem(json, 'role', e)}
-                    options={roleArray}
-                    renderInput={(params) => <TextField {...params} label={t('Role')} />}
-                />
+                {checkState ? typeof json.common.type !== "undefined" ?
+                    <div className={classes.flex}>
+                        <FormControl
+                            className={classes.marginBlock}
+                            fullWidth>
+                            <InputLabel id="demo-simple-select-helper-label">{t('State type')}</InputLabel>
+                            <Select
+                                disabled={disabled}
+                                labelId="demo-simple-select-helper-label"
+                                id="demo-simple-select-helper"
+                                value={json.common.type}
+                                onChange={(el) => this.setCommonItem(json, 'type', el.target.value)}
+                            >
+                                {stateTypeArray.map(el => <MenuItem key={el} value={el}>{t(el)}</MenuItem>)}
+                            </Select>
+                        </FormControl>
+                        {this.buttonRemoveKey('type', () => this.removeCommonItem(json, 'type'))}
+                    </div>
+                    :
+                    this.buttonAddKey('type', () => this.setCommonItem(json, 'type', 'string'))
+                    : null}
+                {checkRole ? typeof json.common.role !== "undefined" ?
+                    <div className={classes.flex}>
+                        <Autocomplete
+                            className={classes.marginBlock}
+                            fullWidth
+                            disabled={disabled}
+                            value={json.common.role}
+                            getOptionSelected={(option, value) => option.name === value.name}
+                            onChange={(_, e) => this.setCommonItem(json, 'role', e)}
+                            options={roleArray}
+                            renderInput={(params) => <TextField {...params} label={t('Role')} />}
+                        />
+                        {this.buttonRemoveKey('role', () => this.removeCommonItem(json, 'role'))}
+                    </div> :
+                    this.buttonAddKey('role', () => this.setCommonItem(json, 'role', ''))
+                    : null}
+                {typeof json.common.color !== "undefined" ?
+                    <div className={classes.flex}>
+                        <TextField
+                            disabled={disabled}
+                            className={clsx(classes.marginBlock, classes.color)}
+                            label={t('Color')}
+                            type="color"
+                            value={json.common.color}
+                            onChange={el => this.setCommonItem(json, 'color', el.target.value)} />
+                        {this.buttonRemoveKey('color', () => this.removeCommonItem(json, 'color'))}
+                    </div> :
+                    this.buttonAddKey('color', () => this.setCommonItem(json, 'color', ''))
                 }
-                {typeof json.common.color !== "undefined" && <TextField
-                    disabled={disabled}
-                    className={classes.marginBlock}
-                    fullWidth={true}
-                    label={t('Color')}
-                    type="color"
-                    value={json.common.color}
-                    onChange={el => this.setCommonItem(json, 'color', el.target.value)} />
-                }
-                {typeof json.common.icon !== "undefined" && <Dropzone
-                    disabled={disabled}
-                    key="dropzone"
-                    multiple={false}
-                    accept="image/svg+xml,image/png,image/jpeg"
-                    maxSize={256 * 1024}
-                    onDragEnter={() => this.setState({ uploadFile: 'dragging' })}
-                    onDragLeave={() => this.setState({ uploadFile: true })}
-                    onDrop={acceptedFiles => this.onDrop(acceptedFiles, json)}
-                >
-                    {({ getRootProps, getInputProps }) => (
-                        <div className={clsx(
-                            classes.uploadDiv,
-                            this.state.uploadFile === 'dragging' && classes.uploadDivDragging,
-                            classes.dropZone,
-                            disabled && classes.disabledOpacity,
-                            !json.common.icon && classes.dropZoneEmpty
-                        )}
-                            {...getRootProps()}>
-                            <input {...getInputProps()} />
-                            <div className={classes.uploadCenterDiv}>
-                                <div className={classes.uploadCenterTextAndIcon}>
-                                    <UploadIcon className={classes.uploadCenterIcon} />
-                                    <div className={classes.uploadCenterText}>{
-                                        this.state.uploadFile === 'dragging' ? t('Drop file here') :
-                                            t('Place your files here or click here to open the browse dialog')}</div>
-                                </div>
-                                {json.common.icon ? <img src={json.common.icon} className={classes.image} alt="icon" /> : null}
-                            </div>
+                {typeof json.common.icon !== "undefined" ?
+                    <div className={classes.flex}>
+                        <Dropzone
+                            disabled={disabled}
+                            key="dropzone"
+                            multiple={false}
+                            accept="image/svg+xml,image/png,image/jpeg"
+                            maxSize={256 * 1024}
+                            onDragEnter={() => this.setState({ uploadFile: 'dragging' })}
+                            onDragLeave={() => this.setState({ uploadFile: true })}
+                            onDrop={acceptedFiles => this.onDrop(acceptedFiles, json)}
+                        >
+                            {({ getRootProps, getInputProps }) => (
+                                <div className={clsx(
+                                    classes.uploadDiv,
+                                    this.state.uploadFile === 'dragging' && classes.uploadDivDragging,
+                                    classes.dropZone,
+                                    disabled && classes.disabledOpacity,
+                                    !json.common.icon && classes.dropZoneEmpty
+                                )}
+                                    {...getRootProps()}>
+                                    <input {...getInputProps()} />
+                                    <div className={classes.uploadCenterDiv}>
+                                        {!json.common.icon ? <div className={classes.uploadCenterTextAndIcon}>
+                                            <UploadIcon className={classes.uploadCenterIcon} />
+                                            <div className={classes.uploadCenterText}>{
+                                                this.state.uploadFile === 'dragging' ? t('Drop file here') :
+                                                    t('Place your files here or click here to open the browse dialog')}</div>
+                                        </div> : <div className={classes.buttonRemoveWrapper}>
+                                            <Tooltip title={t('Clear %s', 'icon')}>
+                                                <IconButton onClick={e => {
+                                                    this.setCommonItem(json, 'icon', '');
+                                                    e.stopPropagation();
+                                                }}><IconClose />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </div>
 
-                        </div>)}
-                </Dropzone>}
+                                        }
+                                        {json.common.icon ? <img src={json.common.icon} className={classes.image} alt="icon" /> : null}
+                                    </div>
+
+                                </div>)}
+                        </Dropzone>
+                        {this.buttonRemoveKey('icon', () => this.removeCommonItem(json, 'icon'))}
+                    </div> :
+                    this.buttonAddKey('icon', () => this.setCommonItem(json, 'icon', ''))
+                }
             </div>
         } catch (e) {
             return <div>{this.props.t('Cannot parse JSON!')}</div>;
@@ -451,7 +556,6 @@ class ObjectBrowserEditObject extends Component {
                     <TextField
                         label={this.props.t('Alias state')}
                         value={json.common?.alias?.id || ''}
-                        //helperText={this.props.t('')}
                         className={this.props.classes.aliasIdEdit}
                         InputProps={{
                             endAdornment: json.common?.alias?.id ? <InputAdornment position="end"><IconButton onClick={() => this.setAliasItem(json, 'id', '')}><IconClose /></IconButton></InputAdornment> : null,
@@ -544,9 +648,10 @@ class ObjectBrowserEditObject extends Component {
             aria-describedby="edit-value-dialog-description"
         >
             <DialogTitle id="edit-value-dialog-title">{this.props.t('Edit object:')} <span className={this.props.classes.id}>{this.props.obj._id}</span></DialogTitle>
+
+            {this.renderTabs()}
             <DialogContent>
-                {this.renderTabs()}
-                {this.state.tab === 'object'  ?
+                {this.state.tab === 'object' ?
                     <div className={clsx(this.props.classes.divWithoutTitle, withAlias && this.props.classes.divWithoutTitleAndTab, this.state.error && this.props.classes.error)}>
                         <AceEditor
                             mode="json"

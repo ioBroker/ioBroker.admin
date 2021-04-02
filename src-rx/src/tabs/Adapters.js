@@ -18,7 +18,8 @@ import {
     Tooltip,
     Typography,
     InputAdornment,
-    ListItemText
+    ListItemText,
+    Hidden
 } from '@material-ui/core';
 
 import CloudOffIcon from '@material-ui/icons/CloudOff';
@@ -1236,12 +1237,14 @@ class Adapters extends Component {
                         value={this.state.filterTiles} />
                 }
                 <div className={classes.grow} />
-                <div className={classes.infoAdapters}>
-                    <div className={clsx(classes.counte, classes.greenText)}>{this.t('Select adapters')}<div ref={this.countRef} ></div></div>
-                    <div className={clsx(classes.counte)}>{this.t('All adapters')}<div>{this.allAdapters}</div></div>
-                    <div className={clsx(classes.counte)}>{this.t('Installed adapters')}<div>{this.installedAdapters}</div></div>
-                    <div className={clsx(classes.counte)}>{this.t('Update adapters last month')}<div>{this.updateAdapters}</div></div>
-                </div>
+                <Hidden only={['xs','sm']} >
+                    <div className={classes.infoAdapters}>
+                        <div className={clsx(classes.counte, classes.greenText)}>{this.t('Select adapters')}<div ref={this.countRef} ></div></div>
+                        <div className={clsx(classes.counte)}>{this.t('All adapters')}<div>{this.allAdapters}</div></div>
+                        <div className={clsx(classes.counte)}>{this.t('Installed adapters')}<div>{this.installedAdapters}</div></div>
+                        <div className={clsx(classes.counte)}>{this.t('Update adapters last month')}<div>{this.updateAdapters}</div></div>
+                    </div>
+                </Hidden>
             </TabHeader>
             {this.state.viewMode && <TabContent>
                 <TableContainer className={classes.container}>

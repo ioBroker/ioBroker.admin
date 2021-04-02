@@ -199,7 +199,7 @@ const styles = theme => ({
         cursor: 'pointer',
         width: '100%',
         '&:hover': {
-            background: theme.palette.primary.main,
+            background: `${theme.palette.primary.main} !important`,
             color: Utils.invertColor(theme.palette.primary.main, true),
         },
         whiteSpace: 'nowrap',
@@ -264,7 +264,7 @@ const styles = theme => ({
 
     },
     cellCopyButton: {
-        color: 'white',
+        // color: 'white',
         width: SMALL_BUTTON_SIZE,
         height: SMALL_BUTTON_SIZE,
         top: (ROW_HEIGHT - SMALL_BUTTON_SIZE) / 2,
@@ -453,8 +453,8 @@ const styles = theme => ({
         opacity: 0.5,
     },
     itemSelected: {
-        background: theme.palette.type === 'dark' ? theme.palette.primary.light : theme.palette.primary.dark,
-        color: Utils.invertColor(theme.palette.primary.main, true),
+        background: `${theme.palette.type === 'dark' ? theme.palette.primary.light : theme.palette.primary.dark} !important`,
+        color: `${Utils.invertColor(theme.palette.primary.main, true)} !important`,
     },
     header: {
         width: '100%'
@@ -3539,7 +3539,14 @@ class ObjectBrowser extends Component {
             }}
                 className={classes.cellIdAlias}
             >→{item.data.obj?.common?.alias?.id}</div> : null;
-
+        let checkColor = item.data?.obj?.common?.color;
+        let invertBackground = 'none';
+        if (checkColor && !this.state.selected.includes(id)) {
+            invertBackground = Utils.invertColor(checkColor);
+        }
+        if (!checkColor || this.state.selected.includes(id)) {
+            checkColor = 'inherit';
+        }
         return <Grid
             container
             direction="row"
@@ -3567,6 +3574,10 @@ class ObjectBrowser extends Component {
                     item
                     container
                     alignItems="center"
+                    style={{
+                        color: checkColor,
+                        background: invertBackground
+                    }}
                 >
                     {checkbox}
                     {iconFolder}
@@ -3574,12 +3585,21 @@ class ObjectBrowser extends Component {
                 <Grid
                     item
                     className={classes.cellIdSpan}
-                    style={{ color: id === 'system' ? COLOR_NAME_SYSTEM : (id === 'system.adapter' ? COLOR_NAME_SYSTEM_ADAPTER : 'inherit') }}
+                    style={{
+                        background: invertBackground,
+                        color: id === 'system' ?
+                            COLOR_NAME_SYSTEM : (id === 'system.adapter' ? COLOR_NAME_SYSTEM_ADAPTER :
+                                checkColor)
+                    }}
                 >
                     {item.data.name}
                     {alias}
                 </Grid>
-                <div className={classes.grow} />
+                <div
+                    style={{
+                        color: checkColor,
+                        background: invertBackground
+                    }} className={classes.grow} />
                 <Grid
                     item
                     container
@@ -3587,7 +3607,12 @@ class ObjectBrowser extends Component {
                 >
                     {iconItem}
                 </Grid>
-                <IconCopy className={Utils.clsx(classes.cellCopyButton, 'copyButton')} onClick={(e) => this.onCopy(e, id)} />
+                <div
+                    style={{
+                        color: checkColor
+                    }}>
+                    <IconCopy className={Utils.clsx(classes.cellCopyButton, 'copyButton')} onClick={(e) => this.onCopy(e, id)} />
+                </div>
             </Grid>
             {this.columnsVisibility.name ? <div className={classes.cellName} style={{ width: this.columnsVisibility.name }}>{(item.data?.title) || ''}</div> : null}
 
