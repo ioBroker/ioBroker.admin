@@ -32,26 +32,13 @@ const newValueAccessControl = (value, newValue, mask) => {
     return value;
 }
 
-const ObjectRights = ({ value, setValue, t, differentValues, applyToChildren, mask, setMask }) => {
+const ObjectRights = ({ value, disabled, setValue, t, differentValues, applyToChildren, mask, setMask }) => {
     useEffect(() => {
         if (applyToChildren) {
             let _checkDifferent = 0;
-            let i = 1;
-            while (i < 0x1000) {
-                for (let e = 0; e < differentValues.length; e++){
-                    if (value & i) {
-                        if (!(differentValues[e] & i)) {
-                            _checkDifferent |= i;
-                        }
-                    } else {
-                        if (differentValues[e] & i) {
-                            _checkDifferent |= i;
-                        }
-                    }
-                }
-                i = i << 1;
+            for (let e = 0; e < differentValues.length; e++) {
+                _checkDifferent |= value ^ differentValues[e];
             }
-            //_checkDifferent = (~_checkDifferent) & 0xFFFF;
             setMask(_checkDifferent);
         } else {
             setMask(0);
@@ -115,6 +102,7 @@ const ObjectRights = ({ value, setValue, t, differentValues, applyToChildren, ma
                             }}>{t(obj.name)}</div>
                             <div style={{ height: 50, display: 'flex' }}>
                                 <Checkbox
+                                    disabled={disabled}
                                     checked={bool}
                                     color={mask & obj.valueNum ? 'primary' : 'secondary'}
                                     indeterminate={mask & obj.valueNum}
@@ -174,6 +162,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
     const [maskState, setMaskState] = useState(0);
     const [maskObject, setMaskObject] = useState(0);
     const [ids, setIds] = useState([]);
+    const [progress, setProgress] = useState(false);
 
     const [disabledButton, setDisabledButton] = useState(true);
 
@@ -334,44 +323,50 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
             titleButtonApply="apply"
             overflowHidden
             applyDisabled={disabledButton}
+            progress={progress}
             onClose={onClose}
-            onApply={async () => {
-                if (!applyToChildren) {
-                    let newAcl        = JSON.parse(JSON.stringify(objects[selected].acl || {}));
-                    newAcl.object     = valueObjectAccessControl;
-                    newAcl.owner      = stateOwnerUser.value;
-                    newAcl.ownerGroup = stateOwnerGroup.value;
+            onApply={() => {
+                setProgress(true);
+                setTimeout(async () => {
+                    if (!applyToChildren) {
+                        let newAcl        = JSON.parse(JSON.stringify(objects[selected].acl || {}));
+                        newAcl.object     = valueObjectAccessControl;
+                        newAcl.owner      = stateOwnerUser.value;
+                        newAcl.ownerGroup = stateOwnerGroup.value;
 
-                    if (objects[selected].type === 'state') {
-                        newAcl.state = valueStateAccessControl;
+                        if (objects[selected].type === 'state') {
+                            newAcl.state = valueStateAccessControl;
+                        }
+                        extendObject(selected, { acl: newAcl });
                     }
-                    extendObject(selected, { acl: newAcl });
-                }
-                else {
-                    //let maskState = Object.keys(differentHexState).reduce((sum, key) => sum | (differentHexState[key] ? parseInt(key, 16) : 0), 0);
-                    let _maskState = ~maskState & 0xFFFF;
+                    else {
+                        //let maskState = Object.keys(differentHexState).reduce((sum, key) => sum | (differentHexState[key] ? parseInt(key, 16) : 0), 0);
+                        let _maskState = ~maskState & 0xFFFF;
 
-                    //let maskObject = Object.keys(differentHexObject).reduce((sum, key) => sum | (differentHexObject[key] ? parseInt(key, 16) : 0), 0);
-                    let _maskObject = ~maskObject & 0xFFFF;
+                        //let maskObject = Object.keys(differentHexObject).reduce((sum, key) => sum | (differentHexObject[key] ? parseInt(key, 16) : 0), 0);
+                        let _maskObject = ~maskObject & 0xFFFF;
 
-                    for (let i = 0; i < ids.length; i++) {
-                        const key = ids[i];
-                        const obj = objects[key];
-                        let newAcl = JSON.parse(JSON.stringify(obj.acl || {}));
-                        newAcl.object = newValueAccessControl(obj.acl.object, valueObjectAccessControl, _maskState);
-                        if (stateOwnerUser.value !== 'different') {
-                            newAcl.owner = stateOwnerUser.value;
+                        for (let i = 0; i < ids.length; i++) {
+                            const key = ids[i];
+                            const obj = objects[key];
+                            let newAcl = JSON.parse(JSON.stringify(obj.acl || {}));
+                            newAcl.object = newValueAccessControl(obj.acl.object, valueObjectAccessControl, _maskState);
+                            if (stateOwnerUser.value !== 'different') {
+                                newAcl.owner = stateOwnerUser.value;
+                            }
+                            if (stateOwnerGroup.value !== 'different') {
+                                newAcl.ownerGroup = stateOwnerGroup.value;
+                            }
+                            if (obj.type === 'state') {
+                                newAcl.state = newValueAccessControl(obj.acl.state, valueStateAccessControl, _maskObject);
+                            }
+                            await extendObject(key, { acl: newAcl });
                         }
-                        if (stateOwnerGroup.value !== 'different') {
-                            newAcl.ownerGroup = stateOwnerGroup.value;
-                        }
-                        if (obj.type === 'state') {
-                            newAcl.state = newValueAccessControl(obj.acl.state, valueStateAccessControl, _maskObject);
-                        }
-                        await extendObject(key, { acl: newAcl });
                     }
-                }
-                onApply();
+
+                    setProgress(false);
+                    onApply();
+                }, 200);
             }}>
 
             <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -383,6 +378,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                     <FormControl fullWidth style={{ marginRight: 10 }}>
                         <InputLabel>{t('Owner user')}</InputLabel>
                         <Select
+                            disabled={progress}
                             value={stateOwnerUser.value}
                             renderValue={value => <span>{stateOwnerUser.icon ? <Icon src={stateOwnerUser.icon} style={{width: 16, height: 16, marginRight: 8}}/> : null}{stateOwnerUser.name}</span>}
                             style={stateOwnerUser.value === 'different' ? { opacity: 0.5 } : {color: stateOwnerUser.color || undefined, backgroundColor: getBackgroundColor(stateOwnerUser.color, themeType)}}
@@ -401,6 +397,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                     <FormControl fullWidth>
                         <InputLabel>{t('Owner group')}</InputLabel>
                         <Select
+                            disabled={progress}
                             value={stateOwnerGroup.value}
                             renderValue={value => <span>{stateOwnerGroup.icon ? <Icon src={stateOwnerGroup.icon} style={{width: 16, height: 16, marginRight: 8}}/> : null}{stateOwnerGroup.name}</span>}
                             style={stateOwnerGroup.value === 'different' ? { opacity: 0.5 } : {color: stateOwnerGroup.color || undefined, backgroundColor: getBackgroundColor(stateOwnerGroup.color, themeType)}}
@@ -428,7 +425,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                 }}>
                     <div style={!applyToChildren ? { color: 'green' } : null}>{t('to apply one item')}</div>
                     <Switch
-                        disabled={!!modalEmptyId || childrenCount === 1}
+                        disabled={progress || !!modalEmptyId || childrenCount === 1}
                         checked={!!modalEmptyId || applyToChildren}
                         onChange={e => {
                             setApplyToChildren(e.target.checked);
@@ -438,11 +435,15 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                     />
                     <div style={applyToChildren ? { color: 'green' } : null}>{t('to apply with children')} {(modalEmptyId || childrenCount > 1) ? `(${childrenCount} ${t('object(s)')})` : ''}</div>
                 </div>
+
+                {progress && <LinearProgress/>}
+
                 <div style={{ overflowY: 'auto' }}>
                     <div>
                         <h2>{t('Object rights')}</h2>
                         <ObjectRights
                             mask={maskObject}
+                            disabled={progress}
                             setMask={setMaskObject}
                             applyToChildren={applyToChildren}
                             differentValues={differentObject}
@@ -457,6 +458,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                         <h2>{t('States rights')}</h2>
                         <ObjectRights
                             mask={maskState}
+                            disabled={progress}
                             setMask={setMaskState}
                             applyToChildren={applyToChildren}
                             differentValues={applyToChildren ? differentState : []}
@@ -467,7 +469,6 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                             }}
                             value={valueStateAccessControl} />
                     </div>}
-
                 </div>
             </div>
         </CustomModal>;

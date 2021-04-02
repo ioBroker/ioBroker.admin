@@ -20,7 +20,8 @@ const styles = theme => ({
         overflow: 'hidden'
     }
 });
-const CustomModal = ({ title, applyDisabled, applyButton, classes, open, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue, overflowHidden }) => {
+
+const CustomModal = ({ title, progress, applyDisabled, applyButton, classes, open, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue, overflowHidden }) => {
     const [value, setValue] = useState(defaultValue);
     useEffect(() => {
         setValue(defaultValue);
@@ -50,10 +51,10 @@ const CustomModal = ({ title, applyDisabled, applyButton, classes, open, onClose
             {children}
         </DialogContent>
         <DialogActions>
-            {applyButton && <Button disabled={applyDisabled && defaultValue === value} onClick={() => onApply(textInput ? value : '')} variant="contained" color="primary">
+            {applyButton && <Button disabled={progress || (applyDisabled && defaultValue === value)} onClick={() => onApply(textInput ? value : '')} variant="contained" color="primary">
                 {i18n.t(titleButtonApply)}
             </Button>}
-            <Button onClick={onClose} variant="contained">
+            <Button onClick={onClose} disabled={progress} variant="contained">
                 {i18n.t(titleButtonClose)}
             </Button>
         </DialogActions>
