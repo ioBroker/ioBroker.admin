@@ -91,6 +91,7 @@ class JsonConfigComponent extends Component {
                 data={this.props.data}
                 schema={item}
                 systemConfig={this.state.systemConfig}
+                customs={this.props.customs}
 
                 onChange={data => this.onChange(data)}
                 onError={(error, attr) => this.onError(error, attr)}
@@ -107,6 +108,7 @@ class JsonConfigComponent extends Component {
                 data={this.props.data}
                 schema={item}
                 systemConfig={this.state.systemConfig}
+                customs={this.props.customs}
 
                 onChange={data => this.onChange(data)}
                 onError={(error, attr) => this.onError(error, attr)}
@@ -131,6 +133,7 @@ JsonConfigComponent.propTypes = {
     adapterName: PropTypes.string.isRequired,
     instance: PropTypes.number.isRequired,
     common: PropTypes.object,
+    customs: PropTypes.object,
 
     themeType: PropTypes.string,
     themeName: PropTypes.string,

@@ -76,3 +76,4 @@
 - Should work: admin, cloud, email
 - Layout: Header "Instance settings: admin.0" must not be scrolled
 - Layout: Tabs must not be scrolled (only content of tab(panel))
+- Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)

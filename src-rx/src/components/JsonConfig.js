@@ -11,6 +11,7 @@ import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 import I18n from '@iobroker/adapter-react/i18n';
 
 import JsonConfigComponent from './JsonConfigComponent';
+import ConfigCustomEasyAccess from './JsonConfigComponent/ConfigCustomEasyAccess';
 
 const styles = {
     scroll: {
@@ -159,6 +160,10 @@ class JsonConfig extends Router {
                 data={this.state.data}
                 onError={error => this.setState({error})}
                 onChange={(data, changed) => this.setState({data, changed})}
+
+                customs={{
+                    configCustomEasyAccess: ConfigCustomEasyAccess
+                }}
             />
             <SaveCloseButtons
                 dense={true}

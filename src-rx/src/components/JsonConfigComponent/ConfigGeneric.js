@@ -213,6 +213,7 @@ ConfigGeneric.propTypes = {
     style: PropTypes.object,
     onError: PropTypes.func,
     onChange: PropTypes.func,
+    customs: PropTypes.object,
 
     systemConfig: PropTypes.object,
     alive: PropTypes.bool,

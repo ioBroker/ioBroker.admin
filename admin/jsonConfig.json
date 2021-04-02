@@ -257,9 +257,10 @@
           }
         },
         "accessAllowedConfigs": {
+          "hidden": "!data.accessLimit",
           "newLine": true,
           "type": "custom",
-          "component": "customInstancesEditor"
+          "component": "configCustomEasyAccess"
         }
       }
     },

@@ -48,6 +48,7 @@ class ConfigTabs extends ConfigGeneric {
                 adapterName={this.props.adapterName}
                 instance={this.props.instance}
                 common={this.props.common}
+                customs={this.props.customs}
                 alive={this.props.alive}
                 themeType={this.props.themeType}
                 themeName={this.props.themeName}
@@ -72,6 +73,7 @@ ConfigTabs.propTypes = {
     schema: PropTypes.object,
     onError: PropTypes.func,
     onChange: PropTypes.func,
+    customs: PropTypes.object,
 
     systemConfig: PropTypes.object,
     alive: PropTypes.bool,
