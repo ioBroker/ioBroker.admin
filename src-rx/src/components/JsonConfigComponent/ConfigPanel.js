@@ -46,7 +46,17 @@ class ConfigPanel extends ConfigGeneric {
     renderItems(items) {
         return Object.keys(items).map(attr => {
             const type = items[attr].type || 'panel';
-            const ItemComponent = components[type] || ConfigGeneric;
+            let ItemComponent;
+            if (type === 'custom') {
+                if (this.props.customs && this.props.customs[items[attr].component]) {
+                    ItemComponent = this.props.customs[items[attr].component];
+                } else {
+                    console.error('Cannot find custom component: ' + items[attr].component);
+                    ItemComponent = ConfigGeneric;
+                }
+            } else {
+                ItemComponent = components[type] || ConfigGeneric;
+            }
 
             return <ItemComponent
                 key={attr}
@@ -62,6 +72,7 @@ class ConfigPanel extends ConfigGeneric {
                 systemConfig={this.props.systemConfig}
                 onError={this.props.onError}
                 onChange={this.props.onChange}
+                customs={this.props.customs}
                 attr={attr}
                 schema={items[attr]}
             />;
@@ -71,7 +82,7 @@ class ConfigPanel extends ConfigGeneric {
     render() {
         const items = this.props.schema.items;
         return <Paper className={(this.props.className || '') + ' ' + this.props.classes.paper}>
-            <Grid container className={this.props.classes.fullWidth}>
+            <Grid container className={this.props.classes.fullWidth} spacing={2}>
                 {this.renderItems(items)}
             </Grid>
         </Paper>;
@@ -86,8 +97,10 @@ ConfigPanel.propTypes = {
     className: PropTypes.string,
     data: PropTypes.object.isRequired,
     schema: PropTypes.object,
+    customs: PropTypes.object,
     alive: PropTypes.bool,
     systemConfig: PropTypes.object,
+
     onError: PropTypes.func,
     onChange: PropTypes.func,
 };

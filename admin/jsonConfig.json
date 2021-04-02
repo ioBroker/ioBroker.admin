@@ -4,16 +4,12 @@
   "items": {
     "mainTab": {
       "type": "panel",
-      "label": {
-        "en": "Main settings"
-      },
+      "label": "Main settings",
       "items": {
         "bind": {
           "type": "ip",
           "listenOnAllPorts": true,
-          "label": {
-            "en": "IP"
-          },
+          "label": "IP",
           "sm": 12,
           "md": 8,
           "lg": 5
@@ -22,9 +18,7 @@
           "type": "number",
           "min": 1,
           "max": 65565,
-          "label": {
-            "en": "Port"
-          },
+          "label": "Port",
           "sm": 12,
           "md": 4,
           "lg": 3
@@ -32,9 +26,7 @@
         "secure": {
           "newLine": true,
           "type": "checkbox",
-          "label": {
-            "en": "Secure(HTTPS)"
-          },
+          "label": "Secure(HTTPS)",
           "sm": 12,
           "md": 6,
           "lg": 2
@@ -44,9 +36,7 @@
           "hidden": "!data.secure",
           "certType": "public",
           "validator": "!data.secure || data.certPublic",
-          "label": {
-            "en": "Public certificate"
-          },
+          "label": "Public certificate",
           "sm": 12,
           "md": 6,
           "lg": 2
@@ -56,9 +46,7 @@
           "type": "certificate",
           "certType": "private",
           "validator": "!data.secure || data.certPrivate",
-          "label": {
-            "en": "Private certificate"
-          },
+          "label": "Private certificate",
           "sm": 12,
           "md": 6,
           "lg": 2
@@ -67,9 +55,7 @@
           "hidden": "!data.secure",
           "type": "certificate",
           "certType": "chained",
-          "label": {
-            "en": "Chained certificate"
-          },
+          "label": "Chained certificate",
           "sm": 12,
           "md": 6,
           "lg": 2
@@ -85,29 +71,23 @@
             "cancel": "Disable authentication",
             "type": "warning"
           },
-          "label": {
-            "en": "Authentication"
-          },
+          "label": "Authentication",
           "sm": 12,
           "md": 6,
           "lg": 2
         },
         "defaultUser": {
-          "hidden": "data.auth",
+          "hidden": "!!data.auth",
           "type": "user",
-          "label": {
-            "en": "Run as"
-          },
+          "label": "Run as",
           "sm": 12,
           "md": 6,
           "lg": 2
         },
         "ttl": {
-          "hidden": "data.auth",
+          "hidden": "!data.auth",
           "type": "number",
-          "label": {
-            "en": "Login timeout"
-          },
+          "label": "Login timeout",
           "help": {
             "en": "sec"
           },
@@ -118,18 +98,16 @@
         "autoUpdate": {
           "newLine": true,
           "type": "select",
-          "label": {
-            "en": "Auto update"
-          },
+          "label": "Auto update",
           "options": [
-            {"label": {"en": "manually"},       "value": 0},
-            {"label": {"en": "every 12 hours"}, "value": 12},
-            {"label": {"en": "every day"},      "value": 24},
-            {"label": {"en": "every 2 days"},   "value": 48},
-            {"label": {"en": "every 3 days"},   "value": 72},
-            {"label": {"en": "every week"},     "value": 168},
-            {"label": {"en": "every 2 weeks"},  "value": 336},
-            {"label": {"en": "monthly"},        "value": 720}
+            {"label": "manually",       "value": 0},
+            {"label": "every 12 hours", "value": 12},
+            {"label": "every day",      "value": 24},
+            {"label": "every 2 days",   "value": 48},
+            {"label": "every 3 days",   "value": 72},
+            {"label": "every week",     "value": 168},
+            {"label": "every 2 weeks",  "value": 336},
+            {"label": "monthly",        "value": 720}
           ],
           "sm": 12,
           "md": 6,
@@ -138,19 +116,15 @@
         "thresholdValue": {
           "type": "number",
           "min": 50,
-          "label": {
-            "en": "Events threshold value"
-          },
+          "label": "Events threshold value",
           "sm": 12,
           "md": 4,
-          "lg": 3
+          "lg": 2
         },
         "react": {
           "newLine": true,
           "type": "checkbox",
-          "label": {
-            "en": "Use react UI(experts)"
-          },
+          "label": "Use react UI(experts)",
           "sm": 12,
           "md": 6,
           "lg": 3
@@ -164,9 +138,7 @@
       "items": {
         "_image": {
           "type": "staticImage",
-          "tooltip": {
-            "en": "Read about Let's Encrypt certificates"
-          },
+          "tooltip": "Read about Let's Encrypt certificates",
           "href": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md#lets-encrypt-certificates",
           "src": "../../img/le.png",
           "style": {
@@ -178,9 +150,7 @@
           "newLine": true,
           "type": "staticLink",
           "href": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md#lets-encrypt-certificates",
-          "text": {
-            "en": "Read about Let's Encrypt certificates"
-          },
+          "text": "Read about Let's Encrypt certificates",
           "style": {
             "fontSize": 16,
             "marginBottom": 20
@@ -189,17 +159,13 @@
         "leEnabled": {
           "newLine": true,
           "type": "checkbox",
-          "label": {
-            "en": "Use Lets Encrypt certificates"
-          }
+          "label": "Use Lets Encrypt certificates"
         },
         "leUpdate": {
           "newLine": true,
           "type": "checkbox",
           "hidden": "!data.leEnabled",
-          "label": {
-            "en": "Use this instance for automatic update"
-          }
+          "label": "Use this instance for automatic update"
         },
         "lePort": {
           "newLine": true,
@@ -207,9 +173,7 @@
           "lg": 4,
           "type": "number",
           "hidden": "!data.leEnabled || !data.leUpdate",
-          "label": {
-            "en": "Port to check the domain"
-          },
+          "label": "Port to check the domain",
           "style": {
             "marginTop": 15,
             "maxWidth": 200
@@ -219,9 +183,7 @@
     },
     "loginTab": {
       "type": "panel",
-      "label": {
-        "en": "Login background"
-      },
+      "label": "Login background",
       "disabled": "!data.auth",
       "items": {
         "loginBackgroundColor": {
@@ -229,9 +191,7 @@
           "sm": 12,
           "md": 8,
           "lg": 4,
-          "label": {
-            "en": "Background color of the login screen"
-          }
+          "label": "Background color of the login screen"
         },
         "loginHideLogo": {
           "newLine": true,
@@ -239,9 +199,7 @@
           "md": 8,
           "lg": 4,
           "type": "checkbox",
-          "label": {
-            "en": "Hide logo"
-          }
+          "label": "Hide logo"
         },
         "loginMotto": {
           "newLine": true,
@@ -249,9 +207,7 @@
           "md": 8,
           "lg": 4,
           "type": "text",
-          "label": {
-            "en": "Own motto"
-          }
+          "label": "Own motto"
         },
         "loginBackgroundImage": {
           "newLine": true,
@@ -259,9 +215,7 @@
           "md": 8,
           "lg": 4,
           "type": "checkbox",
-          "label": {
-            "en": "Use background image"
-          }
+          "label": "Use background image"
         },
         "login-bg.png": {
           "newLine": true,
@@ -271,9 +225,7 @@
           "md": 8,
           "lg": 4,
           "accept": "image/*",
-          "label": {
-            "en": "Upload image"
-          },
+          "label": "Upload image",
           "crop": true
         }
       }
@@ -305,9 +257,10 @@
           }
         },
         "accessAllowedConfigs": {
+          "hidden": "!data.accessLimit",
           "newLine": true,
           "type": "custom",
-          "component": "customInstancesEditor"
+          "component": "configCustomEasyAccess"
         }
       }
     },

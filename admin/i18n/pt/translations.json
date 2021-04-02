@@ -4,15 +4,10 @@
   "Allow access only to specific instances": "Permitir acesso apenas a instâncias específicas",
   "Apply access rights for selected instances": "Aplicar direitos de acesso para instâncias selecionadas",
   "Authentication was deactivated": "A autenticação foi desativada",
-  "Authentication:": "Autenticação",
-  "Auto update:": "Verificar atualizações",
   "Background": "Correr no fundo",
   "Background color of the login screen": "Cor de fundo da tela de login",
   "Background image": "Imagem de fundo",
-  "Cache:": "Buffer",
-  "Chained certificate:": "Certificado acorrentado",
   "Disable authentication": "Desativar autenticação",
-  "Enabled:": "Ativado",
   "Events threshold value:": "Valor limiar de eventos",
   "Hide logo": "Esconder logotipo",
   "IP:": "IP",
@@ -57,5 +52,7 @@
   "tooltip_secure": "Habilite o protocolo SSL. O administrador estará disponível através de https:// e não http://",
   "tooltip_thresholdValue": "Se o navegador receber muitos eventos em 3 segundos, a atualização será interrompida",
   "tooltip_ttl": "Tempo limite de login. Após esse tempo, o usuário será automaticamente desconectado.",
-  "users permissions": "permissões de usuários"
+  "users permissions": "permissões de usuários",
+  "Secure(HTTPS)": "Seguro (HTTPS)",
+  "Use react UI(experts)": "Use a interface do usuário react (especialistas)"
 }

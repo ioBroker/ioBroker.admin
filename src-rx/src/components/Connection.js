@@ -2002,6 +2002,16 @@ class Connection {
             this._socket.emit('chownFile', adapter, filename, options, (err, entries, id) =>
                 err ? reject(err) : resolve({entries, id})));
     }
+
+    fileExists(adapter, filename) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        return new Promise((resolve, reject) =>
+            this._socket.emit('fileExists', adapter, filename, (err, exists) =>
+                err ? reject(err) : resolve(exists)));
+    }
 }
 
 Connection.Connection = {

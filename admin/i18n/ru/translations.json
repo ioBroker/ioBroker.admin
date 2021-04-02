@@ -4,15 +4,10 @@
   "Allow access only to specific instances": "Разрешить доступ только к конкретным настройкам",
   "Apply access rights for selected instances": "Применить права доступа для выбранных экземпляров",
   "Authentication was deactivated": "Аутентификация была отключена",
-  "Authentication:": "Аутентификация",
-  "Auto update:": "Проверка обновлений",
   "Background": "Фон",
   "Background color of the login screen": "Цвет фона экрана входа в систему",
   "Background image": "Фоновое изображение",
-  "Cache:": "Кэш",
-  "Chained certificate:": "'Chained' сертификат",
   "Disable authentication": "Отключить аутентификацию",
-  "Enabled:": "Включено",
   "Events threshold value:": "Порог отключения обновлений",
   "Hide logo": "Скрыть логотип",
   "IP:": "IP",
@@ -57,5 +52,7 @@
   "tooltip_secure": "Активировать протокол SSL. Сайт будет доступен по https:// , а не по http://",
   "tooltip_thresholdValue": "если браузер получает слишком много событий за 3 секунды, обновление будет остановлено",
   "tooltip_ttl": "По прошествии этого времени при бездействии пользователь будет разлогинен.",
-  "users permissions": "Права доступа"
+  "users permissions": "Права доступа",
+  "Secure(HTTPS)": "Шифрование (HTTPS)",
+  "Use react UI(experts)": "Использовать React UI (эксперт)"
 }

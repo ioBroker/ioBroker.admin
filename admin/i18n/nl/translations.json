@@ -4,15 +4,10 @@
   "Allow access only to specific instances": "Sta alleen toegang toe tot specifieke instanties",
   "Apply access rights for selected instances": "Pas toegangsrechten toe voor geselecteerde instanties",
   "Authentication was deactivated": "Verificatie was gedeactiveerd",
-  "Authentication:": "Authenticatie",
-  "Auto update:": "Updates controleren",
   "Background": "Achtergrond",
   "Background color of the login screen": "Achtergrondkleur van het inlogscherm",
   "Background image": "Achtergrond afbeelding",
-  "Cache:": "Cache",
-  "Chained certificate:": "Ketencertificaat",
   "Disable authentication": "Schakel verificatie uit",
-  "Enabled:": "Ingeschakeld",
   "Events threshold value:": "Drempelwaarde voor gebeurtenissen",
   "Hide logo": "Logo verbergen",
   "IP:": "IP",
@@ -57,5 +52,7 @@
   "tooltip_secure": "Schakel SSL-protocol in. Beheerpagina is beschikbaar via https: // en niet http: //",
   "tooltip_thresholdValue": "Als de browser te veel gebeurtenissen binnen 3 seconden ontvangt, wordt de update gestopt",
   "tooltip_ttl": "Time-out aanmelding. Na deze tijd zal de gebruiker automatisch uitloggen.",
-  "users permissions": "gebruikersrechten"
+  "users permissions": "gebruikersrechten",
+  "Secure(HTTPS)": "Veilig (HTTPS)",
+  "Use react UI(experts)": "Gebruik React UI (experts)"
 }

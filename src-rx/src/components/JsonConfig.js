@@ -11,6 +11,7 @@ import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 import I18n from '@iobroker/adapter-react/i18n';
 
 import JsonConfigComponent from './JsonConfigComponent';
+import ConfigCustomEasyAccess from './JsonConfigComponent/ConfigCustomEasyAccess';
 
 const styles = {
     scroll: {
@@ -18,6 +19,41 @@ const styles = {
         overflowY: 'auto'
     }
 };
+
+// Todo: delete it after adapter-react 1.6.9
+I18n.extendTranslations = I18n.extendTranslations || ((words, lang) => {
+    try {
+        if (!lang) {
+            Object.keys(words).forEach(word => {
+                Object.keys(words[word]).forEach(lang => {
+                    if (!I18n.translations[lang]) {
+                        console.warn(`Used unknown language: ${lang}`);
+                    }
+                    if (!I18n.translations[lang][word]) {
+                        I18n.translations[lang][word] = words[word][lang];
+                    } else if (I18n.translations[lang][word] !== words[word][lang]) {
+                        console.warn(`Translation for word "${word}" in "${lang}" was ignored: existing = "${I18n.translations[lang][word]}", new = ${words[word][lang]}`);
+                    }
+                });
+            });
+        } else {
+            if (!I18n.translations[lang]) {
+                console.warn(`Used unknown language: ${lang}`);
+            }
+            I18n.translations[lang] = I18n.translations[lang] || {};
+            Object.keys(words)
+                .forEach(word => {
+                    if (!I18n.translations[lang][word]) {
+                        I18n.translations[lang][word] = words[word];
+                    } else if (I18n.translations[lang][word] !== words[word]) {
+                        console.warn(`Translation for word "${word}" in "${lang}" was ignored: existing = "${I18n.translations[lang][word]}", new = ${words[word]}`);
+                    }
+                });
+        }
+    } catch (e) {
+        console.error(`Cannot apply translations: ${e}`);
+    }
+});
 
 class JsonConfig extends Router {
     constructor(props) {
@@ -33,10 +69,44 @@ class JsonConfig extends Router {
         };
 
         this.getInstanceObject()
-            .then(obj => {
-                return this.getConfigFile()
-                    .then(schema => this.setState({schema, data: obj.native, common: obj.common}));
-            });
+            .then(obj => this.getConfigFile()
+                .then(schema =>
+                    // load language
+                    this.loadI18n(schema.i18n)
+                        .then(() =>
+                            this.setState({schema, data: obj.native, common: obj.common}))));
+    }
+
+    loadI18n(i18n) {
+        if (i18n === true) {
+            const lang = I18n.getLanguage();
+            return this.props.socket.fileExists(this.props.adapterName + '.admin', `i18n/${lang}.json`)
+                .then(exists => {
+                    if (exists) {
+                        return `i18n/${lang}.json`;
+                    } else {
+                        return this.props.socket.fileExists(this.props.adapterName + '.admin', `i18n/${lang}/translations.json`)
+                            .then(exists =>
+                                exists ? `i18n/${lang}/translations.json` : '')
+                    }
+                })
+                .then(fileName => {
+                    return fileName && this.props.socket.readFile(this.props.adapterName + '.admin', fileName)
+                        .then(json => {
+                            try {
+                                json = JSON.parse(json);
+                                // apply file to I18n
+                                I18n.extendTranslations(json, lang);
+                            } catch (e) {
+                                console.error(`Cannot parse language file "${this.props.adapterName}.admin/${fileName}: ${e}`);
+                            }
+                        })
+                });
+        } else if (i18n && typeof i18n === 'object') {
+            I18n.extendTranslations(i18n);
+        } else {
+            return Promise.resolve();
+        }
     }
 
     getConfigFile() {
@@ -111,6 +181,10 @@ class JsonConfig extends Router {
                 data={this.state.data}
                 onError={error => this.setState({error})}
                 onChange={(data, changed) => this.setState({data, changed})}
+
+                customs={{
+                    configCustomEasyAccess: ConfigCustomEasyAccess
+                }}
             />
             <SaveCloseButtons
                 dense={true}

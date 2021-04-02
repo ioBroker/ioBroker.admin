@@ -39,22 +39,11 @@ const DragObjectBrowser = (props) => {
     />
 }
 
-const DropZone = (props) => {
-    const [{ canDrop, isOver }, dropRef] = useDrop(() => ({
-        accept: 'object',
-        drop: () => ({ group_id: 22 }),
-        canDrop: (item, monitor) => !!(item.data.obj),
-        collect: (monitor) => ({
-            isOver: monitor.isOver(),
-            canDrop: monitor.canDrop(),
-        }),
-    }));
-    return <div ref={dropRef}>drop zone</div>;
-}
-
 class EnumsList extends Component {
     state = {
-        enums: null
+        enums: null,
+        enumsTree: null,
+        selectedTab: null
     }
 
     componentDidMount() {
@@ -63,9 +52,40 @@ class EnumsList extends Component {
 
     updateData = () => {
         this.props.socket.getForeignObjects('enum.*', 'enum').then(enums => {
-            console.log(enums);
             this.setState({enums: enums})
+            this.createTree(enums);
         });
+    }
+
+    createTree(enums) {
+        let enumsTree = {
+            data: null,
+            children: {},
+            id: ''
+        };
+        
+        for (let i in enums) {
+            let id = enums[i]._id;
+            let currentEnum = enums[i];
+            let idParts = id.split('.');
+            let currentContainer = enumsTree;
+            let currentParts = [];
+            for (let i2 in idParts) {
+                let currentPart = idParts[i2]
+                currentParts.push(currentPart);
+                if (!currentContainer.children[currentPart]) {
+                    currentContainer.children[currentPart] = {
+                        data: null,
+                        children: {},
+                        id: currentParts.join('.')
+                    };
+                }
+                currentContainer = currentContainer.children[currentPart];
+            }
+            currentContainer.data = currentEnum;
+        }
+        console.log(enumsTree);
+        this.setState({enumsTree: enumsTree})
     }
 
     addItemToEnum = (itemId, enumId) => {
@@ -79,20 +99,24 @@ class EnumsList extends Component {
         }
     }
 
+    renderTree(container) {
+        return <div style={{paddingLeft: '10px'}}>
+            {container.data ? <EnumBlock 
+                enum={container.data}
+            /> : null}
+            {Object.values(container.children).map(item => this.renderTree(item))}
+        </div>
+    }
+
     render() {
-        if (!this.state.enums) {
+        if (!this.state.enumsTree) {
             return 'loading';
         }
         return <>
             <DndProvider backend={HTML5Backend}>
                 <Grid container>
                     <Grid md={6} item>
-                        <DropZone/>
-                        {Object.values(this.state.enums).map(enumItem => 
-                            <EnumBlock 
-                                enum={enumItem}
-                            />
-                        )}
+                        {this.renderTree(this.state.enumsTree)}
                     </Grid>
                     <Grid md={6} item>
                         <DragObjectBrowser 

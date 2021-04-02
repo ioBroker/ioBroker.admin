@@ -275,6 +275,47 @@ If no schema provided, the schema must be created automatically from data.
 
 If element has no attribute `type`, assume it has default type 'panel'.
 
+## i18n
+1. User can provide translations directly in label like: 
+```
+{
+   "type": "text",
+   "label: {
+        "en": "Label",
+        "de": "Taxt"
+    }
+}
+```
+
+2. User can provide texts from files.
+
+On the top level of structure set `i18n: true` and provide files in admin:
+- admin/i18n/de/translations.json
+- admin/i18n/en/translations.json
+- ...
+
+or 
+- admin/i18n/de.json
+- admin/i18n/en.json
+- ...
+
+3. User can provide translations in i18n attribute: 
+```
+{
+    "18n": {
+        "My Text: {
+            "en": "My Text",
+            "de": "Mein Text"
+        },
+        "My Text2: {
+            "en": "My Text2",
+            "de": "Mein Text2"
+        },
+    },
+    "type": "panel",
+    ...
+}
+```
 
 ## JS Functions
 JS functions is:
