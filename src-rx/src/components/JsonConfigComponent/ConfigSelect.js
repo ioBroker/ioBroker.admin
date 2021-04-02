@@ -33,7 +33,7 @@ class ConfigSelect extends ConfigGeneric {
         }
     }
 
-    renderItem(error, disabled) {
+    renderItem(error, disabled, defaultValue) {
         if (!this.state.selectOptions) {
             return null;
         }

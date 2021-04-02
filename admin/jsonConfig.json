@@ -71,6 +71,7 @@
             "cancel": "Disable authentication",
             "type": "warning"
           },
+          "dependsOn": ["secure"],
           "label": "Authentication",
           "sm": 12,
           "md": 6,

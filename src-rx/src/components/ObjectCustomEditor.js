@@ -1,4 +1,4 @@
-import { createRef, Component } from 'react';
+import React, { createRef, Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import withWidth from '@material-ui/core/withWidth';
 import PropTypes from 'prop-types';
@@ -9,14 +9,13 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import Paper from  '@material-ui/core/Paper';
+import FormControlLabel from  '@material-ui/core/FormControlLabel';
+import Checkbox from  '@material-ui/core/Checkbox';
+
+import DialogError from '@iobroker/adapter-react/Dialogs/Error';
 
 import '../assets/materialize.css';
 
@@ -85,6 +84,19 @@ const styles = theme => ({
         width: '100%',
         height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
         overflow: 'auto',
+    },
+    fullWidth: {
+        width: '100%',
+    },
+    enabledControl: {
+        width: 100,
+        display: 'inline-block',
+        verticalAlign: 'top',
+    },
+    customControls: {
+        width: 'calc(100% - 100px)',
+        display: 'inline-block',
+        verticalAlign: 'top',
     }
 });
 
@@ -260,7 +272,7 @@ function translateWord(text, lang, dictionary) {
             }
         }
     } else if (typeof text === 'string' && !text.match(/_tooltip$/)) {
-        console.log('"' + text + '": {"en": "' + text + '", "de": "' + text + '", "ru": "' + text + '", "pt": "' + text + '", "nl": "' + text + '", "fr": "' + text + '", "es": "' + text + '", "pl": "' + text + '", "it": "' + text + '", "zh-cn": "' + text + '"},');
+        console.log(`"${text}": {"en": "${text}", "de": "${text}", "ru": "${text}", "pt": "${text}", "nl": "${text}", "fr": "${text}", "es": "${text}", "pl": "${text}", "it": "${text}", "zh-cn": "${text}"},`);
     } else if (typeof text !== 'string') {
         console.warn('Trying to translate non-text:' + text);
     }
@@ -406,6 +418,8 @@ function installTemplate(el, lang, id, commonConfig, wordDifferent, onChange) {
 }
 
 class ObjectCustomEditor extends Component {
+    static AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+
     constructor(props) {
         super(props);
 
@@ -419,14 +433,15 @@ class ObjectCustomEditor extends Component {
         this.state = {
             loaded: false,
             hasChanges: false,
+            expanded,
         };
 
         this.scrollDone = false;
-        this.expanded = expanded;
         this.lastExpanded = window.localStorage.getItem('App.customsLastExpanded') || '';
         this.scrollDivRef = createRef();
 
         this.changedItems = [];
+        this.jsonConfigs = {};
 
         this.controls = {};
         this.refTemplate = {};
@@ -449,14 +464,25 @@ class ObjectCustomEditor extends Component {
         const promises = [];
         this.props.customsInstances.forEach(id => {
             const adapter = id.replace(/\.\d+$/, '').replace('system.adapter.');
-            if (!GLOBAL_PROMISES[adapter]) {
-                GLOBAL_PROMISES[adapter] = this.getCustomTemplate(adapter);
-                promises.push(GLOBAL_PROMISES[adapter]);
+            if (this.jsonConfigs[adapter] === undefined) {
+                this.jsonConfigs[adapter] = false;
+                promises.push(this.getCustomTemplate(adapter))
             }
         });
 
         return Promise.all(promises)
-            .then(() => Promise.all(GLOBAL_PROMISES_ARRAY));
+            .then(() => {
+                this.props.customsInstances.forEach(id => {
+                    const adapter = id.replace(/\.\d+$/, '').replace('system.adapter.');
+                    if (this.jsonConfigs[adapter]) {
+                        this.jsonConfigs[adapter].instanceObjs = this.jsonConfigs[adapter].instanceObjs || {};
+                        this.jsonConfigs[adapter].instanceObjs[id] = {
+                            common: JSON.parse(JSON.stringify(this.props.objects['system.adapter.' + id]?.common)),
+                            native: JSON.parse(JSON.stringify(this.props.objects['system.adapter.' + id]?.native))
+                        }
+                    }
+                });
+            });
     }
 
     showError(error) {
@@ -468,8 +494,32 @@ class ObjectCustomEditor extends Component {
     }
 
     getCustomTemplate(adapter) {
+        const ad = this.props.objects['system.adapter.' + adapter];
+        if (!ad) {
+            console.error('Cannot find adapter ' + ad);
+            return Promise.resolve(null);
+        } else {
+            if (ad.common?.jsonCustom) {
+                return this.props.socket.readFile(adapter + '.admin', 'jsonCustom.json')
+                    .then(json => {
+                        try {
+                            json = JSON.parse(json);
+                            this.jsonConfigs[adapter] = this.jsonConfigs[adapter] || {};
+                            this.jsonConfigs[adapter].json = json;
+                        } catch (e) {
+                            console.error(`Cannot parse jsonConfig of ${adapter}: ${e}`);
+                            window.alert(`Cannot parse jsonConfig of ${adapter}: ${e}`);
+                        }
+                    });
+            } else {
+                console.error(`Adapter ${adapter} is not yet supported by this version of admin`);
+                window.alert(`Adapter ${adapter} is not yet supported by this version of admin`);
+                return Promise.resolve(null);
+            }
+        }
+
         //return fetch('./adapter/' + adapter + '/custom_m.html')
-        return fetch(URL_PREFIX + '/adapter/' + adapter + '/custom_m.html')
+        /*return fetch(URL_PREFIX + '/adapter/' + adapter + '/custom_m.html')
             .catch(err => fetch(URL_PREFIX + '/adapter/' + adapter + '/custom.html'))
             .then(data => data.text())
             .catch(err => {
@@ -500,7 +550,33 @@ class ObjectCustomEditor extends Component {
 
                     GLOBAL_TEMPLATES[adapter] = template;
                 }
-            });
+            });*/
+    }
+
+    getDefaultValues(adapter, obj) {
+        const defaultValues = {enabled: false};
+
+        if (this.jsonConfigs[adapter]) {
+            const items = this.jsonConfigs[adapter].json.items;
+            items && Object.keys(items).filter(attr => items[attr])
+                .forEach(async attr => {
+                    if (items[attr].defaultFunc) {
+                        const func = items[attr].defaultFunc;
+                        try {
+                            // eslint-disable-next-line no-new-func
+                            const f = new Function('data', '_system', 'customObj', 'instanceObj', '_socket', func.includes('return') ? func : 'return ' + func);
+                            defaultValues[attr] = f(defaultValues, this.props.systemConfig, obj, this.jsonConfigs[adapter].instanceObj, this.props.socket);
+                        } catch (e) {
+                            console.error(`Cannot execute ${func}: ${e}`);
+                            defaultValues[attr] = items[attr].default
+                        }
+                    } else if (attr.default !== undefined) {
+                        defaultValues[attr] = items[attr].default;
+                    }
+                });
+        }
+
+        return defaultValues;
     }
 
     getCommonConfig () {
@@ -508,72 +584,127 @@ class ObjectCustomEditor extends Component {
         const objects = this.props.objects;
 
         const commons = {};
-        let type = null;
-        let role = null;
+        // let type = null;
+        // let role = null;
 
         // calculate common settings
         this.props.customsInstances.forEach(inst => {
+            const adapter =
             commons[inst] = {};
             ids.forEach(id => {
-                const custom = objects[id].common.custom;
-                const sett   = custom ? custom[inst] : null;
+                const customObj = objects[id];
+                const custom = customObj?.common?.custom ? customObj.common.custom[inst] || null : null;
 
-                if (objects[id].common) {
+                /*if (customObj.common) {
                     if (type === null) {
-                        type = objects[id].common.type;
-                    } else if (type !== '' && type !== objects[id].common.type) {
+                        type = customObj.common.type;
+                    } else if (type !== '' && type !== customObj.common.type) {
                         type = '';
                     }
 
                     if (role === null) {
                         role = objects[id].common.role;
-                    } else if (role !== '' && role !== objects[id].common.role) {
+                    } else if (role !== '' && role !== customObj.common.role) {
                         role = '';
                     }
-                }
+                }*/
 
-                if (sett) {
-                    for (const _attr in sett) {
-                        if (!sett.hasOwnProperty(_attr)) {
-                            continue;
-                        }
+                if (custom) {
+                    Object.keys(custom).forEach(_attr => {
                         if (commons[inst][_attr] === undefined) {
-                            commons[inst][_attr] = sett[_attr];
-                        } else if (commons[inst][_attr] !== sett[_attr]) {
-                            commons[inst][_attr] = STR_DIFFERENT;
+                            commons[inst][_attr] = custom[_attr];
+                        } else if (commons[inst][_attr] !== custom[_attr]) {
+                            // different
+                            if (!Array.isArray(commons[inst][_attr])) {
+                                commons[inst][_attr] = [commons[inst][_attr]];
+                            }
+
+                            !commons[inst][_attr].includes(custom[_attr]) && commons[inst][_attr].push(custom[_attr]);
                         }
-                    }
+                    });
                 } else {
                     const adapter = inst.split('.')[0];
-                    let _default;
-                    // Try to get default values
-                    if (window.defaults[adapter]) {
-                        if (typeof window.defaults[adapter] === 'function') {
-                            _default = window.defaults[adapter](objects[id], objects['system.adapter.' + inst]);
-                        } else {
-                            _default = window.defaults[adapter];
-                        }
-                    } else {
-                        _default = window.defaults[adapter];
-                    }
+                    // Calculate defaults for this object
+                    let _default = this.getDefaultValues(adapter, customObj);
 
-                    for (const attr in _default) {
-                        if (!_default.hasOwnProperty(attr)) continue;
-                        if (commons[inst][attr] === undefined) {
-                            commons[inst][attr] = _default[attr];
-                        } else if (commons[inst][attr] !== _default[attr]) {
-                            commons[inst][attr] = STR_DIFFERENT;
+                    Object.keys(_default).forEach(_attr => {
+                        if (commons[inst][_attr] === undefined) {
+                            commons[inst][_attr] = _default[_attr];
+                        } else if (commons[inst][_attr] !== _default[_attr]) {
+                            // different
+                            if (!Array.isArray(commons[inst][_attr])) {
+                                commons[inst][_attr] = [commons[inst][_attr]];
+                            }
+
+                            !commons[inst][_attr].includes(_default[_attr]) && commons[inst][_attr].push(_default[_attr]);
                         }
-                    }
+                    });
+                }
+            });
+
+            // sort all "different" arrays
+            Object.keys(commons[inst]).forEach(attr => {
+                if (Array.isArray(commons[inst][attr])) {
+                    commons[inst][attr].sort();
                 }
             });
         });
 
-        return {commons, type, role};
+        return commons;
     }
 
-    renderOneCustom(id) {
-        const adapter = id.replace(/\.\d+$/, '');
+    renderOneCustom(instance, instanceObj) {
+        const adapter = instance.split('.')[0];
+
+        const icon = `${URL_PREFIX}/adapter/${adapter}/${this.props.objects['system.adapter.' + adapter].common.icon}`;
+        const enabled = this.commonConfig[instance].enabled; // could be true, false or [true, false]
+
+        return <Accordion
+            key={ instance }
+            id={ 'Accordion_' + instance }
+            defaultExpanded={ this.state.expanded.includes(instance) }
+            ref={ this.refTemplate[instance] }
+            onChange={(e, _expanded) => {
+                const expanded = [...this.state.expanded];
+                const pos = expanded.indexOf(instance);
+                if (_expanded) {
+                    pos === -1 && expanded.push(instance);
+                } else {
+                    pos !== -1 && expanded.splice(pos, 1);
+                }
+                window.localStorage.setItem('App.customsExpanded', JSON.stringify(expanded));
+                _expanded && window.localStorage.setItem('App.customsLastExpanded', instance);
+                this.setState({expanded});
+            }}
+            >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} data-id={ instance }>
+                <img src={ icon } className={ this.props.classes.headingIcon } alt="" />
+                <Typography className={ this.props.classes.heading }>{ this.props.t('Settings %s', instance)}</Typography>
+                <div className={ clsx(this.props.classes.titleEnabled, 'titleEnabled') } style={{ display: enabled ? 'display-block' : 'none'} }>{ this.props.t('Enabled') }</div>
+            </AccordionSummary>
+            <AccordionDetails >
+                <Paper>
+                    <div className={this.props.classes.enabledControl}>
+                        <FormControlLabel
+                            className={ this.props.classes.formControl }
+                            control={<Checkbox
+                                intermediate={ Array.isArray(enabled)}
+                                checked={ enabled === true }
+                                onChange={e => {
+                                    this.value = e.target.checked
+                                }}/>}
+                            label={this.props.t('Enabled')}
+                        />
+                    </div>
+                    <div className={this.props.classes.customControls}>
+                        <pre>
+                            {JSON.stringify(this.commonConfig[instance], null, 2)}
+                        </pre>
+                    </div>
+                </Paper>
+            </AccordionDetails>
+        </Accordion>;
+        /*
         const icon = URL_PREFIX + '/adapter/' + adapter + '/' + this.props.objects['system.adapter.' + id].common.icon;
         const enabled = this.commonConfig.commons[id] && (this.commonConfig.commons[id].enabled === true || this.commonConfig.commons[id].enabled === STR_DIFFERENT);
 
@@ -605,11 +736,13 @@ class ObjectCustomEditor extends Component {
                 <div className={ this.props.classes.expansionPanelDetailsTabDiv } dangerouslySetInnerHTML={{__html: GLOBAL_TEMPLATES[adapter]}} />
             </AccordionDetails>
         </Accordion>;
+         */
+
     }
 
     isAllOk() {
         let allOk = true;
-        Object.keys(this.refTemplate).forEach(id => {
+        /*Object.keys(this.refTemplate).forEach(id => {
             const adapter = id.replace(/\.\d+$/, '');
             // post init => add custom logic
             if (window.customPostOnSave.hasOwnProperty(adapter) && typeof window.customPostOnSave[adapter] === 'function') {
@@ -618,7 +751,7 @@ class ObjectCustomEditor extends Component {
                     allOk = false;
                 }
             }
-        });
+        });*/
         return allOk;
     }
 
@@ -627,7 +760,7 @@ class ObjectCustomEditor extends Component {
         if (!this.scrollDone && this.scrollDivRef.current) {
             const wordDifferent = this.props.t(STR_DIFFERENT);
 
-            Object.keys(this.refTemplate).forEach(id => {
+            /*Object.keys(this.refTemplate).forEach(id => {
                 if (this.refTemplate[id].current && !this.controls[id]) {
                     const adapter = id.replace(/\.\d+$/, '');
                     this.controls[id] = installTemplate(
@@ -663,25 +796,16 @@ class ObjectCustomEditor extends Component {
                     item = window.document.getElementById('Accordion_' + this.expanded[0]);
                 }
                 item && item.scrollIntoView(true);
-            }
+            }*/
         }
     }
 
     renderErrorMessage() {
-        return <Dialog
-                open={ !!this.state.error }
-                onClose={() => this.setState({ error: '' }) }
-                aria-labelledby="object-custom-dialog-title"
-                aria-describedby="object-custom-dialog-description"
-            >
-                <DialogTitle id="object-custom-dialog-title">{ this.props.t('Error') }</DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="object-custom-dialog-description">{ this.state.error }</DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => this.setState({ error: '' }) } color="primary" autoFocus>{ this.props.t('Close') }</Button>
-                </DialogActions>
-            </Dialog>;
+        return !!this.state.error && <DialogError
+            title={this.props.t('Error')}
+            text={this.state.error}
+            onClose={this.setState({ error: '' })}
+        />;
     }
 
     onChange = (id, attr, isChanged, value) => {
@@ -717,7 +841,7 @@ class ObjectCustomEditor extends Component {
             this.props.socket.getObject(id)
                 .then(obj => {
                     if (!obj) {
-                        return window.alert('Invalid object ' + id);
+                        return window.alert(`Invalid object ${id}`);
                     }
 
                     if (obj.common && obj.common.custom) {
@@ -805,8 +929,15 @@ class ObjectCustomEditor extends Component {
                 <Button disabled={ !this.state.hasChanges } variant="contained" color="primary" onClick={ () => this.onSave() }>{ this.props.t('Save') }</Button>
             </Toolbar>
             <div className={ this.props.classes.scrollDiv } ref={ this.scrollDivRef }>
-                { this.props.customsInstances.map(id =>
-                    this.renderOneCustom(id)) }
+                {Object.keys(this.jsonConfigs).map(adapter => {
+                    if (this.jsonConfigs[adapter]) {
+                        return Object.keys(this.jsonConfigs[adapter].instanceObjs)
+                            .map(instance =>
+                                this.renderOneCustom(instance, this.jsonConfigs[adapter].instanceObjs[instance]));
+                    } else {
+                        return null;
+                    }
+                })}
             </div>
             { this.renderErrorMessage() }
         </Paper>;

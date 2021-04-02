@@ -28,6 +28,9 @@ class JsonConfigComponent extends Component {
             alive: false,
         };
 
+        this.schema = JSON.parse(JSON.stringify(this.props.schema));
+        this.buildDependencies(this.schema);
+
         this.readData();
     }
 
@@ -78,6 +81,35 @@ class JsonConfigComponent extends Component {
         }
     }
 
+    flatten(schema, _list) {
+        _list = _list || {};
+        if (schema.items) {
+            Object.keys(schema.items).forEach(attr => {
+                _list[attr] = schema.items[attr];
+                this.flatten(schema.items[attr], _list);
+            })
+        }
+
+        return _list;
+    }
+
+    buildDependencies(schema) {
+        const attrs = this.flatten(schema);
+        Object.keys(attrs).forEach(attr => {
+            if (attrs[attr].dependsOn) {
+                attrs[attr].dependsOn.forEach(dep => {
+                    attrs[dep].depends = attrs[dep].depends || [];
+                    const depObj = {...attrs[attr], attr};
+                    if (depObj.confirm) {
+                        depObj.confirm.cancel = 'Undo';
+                    }
+
+                    attrs[dep].depends.push(depObj);
+                });
+            }
+        });
+    }
+
     renderItem(item) {
         if (item.type === 'tabs') {
             return <ConfigTabs
@@ -122,7 +154,7 @@ class JsonConfigComponent extends Component {
         }
 
         return <div className={this.props.classes.root}>
-            {this.renderItem(this.props.schema)}
+            {this.renderItem(this.schema)}
         </div>;
     }
 }

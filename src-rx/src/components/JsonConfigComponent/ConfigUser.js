@@ -66,7 +66,7 @@ class ConfigUser extends ConfigGeneric {
             });
     }
 
-    renderItem(error, disabled) {
+    renderItem(error, disabled, defaultValue) {
         const value = this.getValue(this.props.data, this.props.attr);
 
         return <FormControl className={this.props.classes.fullWidth}>

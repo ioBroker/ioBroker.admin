@@ -9,7 +9,7 @@ const styles = theme => ({
 });
 
 class ConfigText extends ConfigGeneric {
-    renderItem(error, disabled) {
+    renderItem(error, disabled, defaultValue) {
         const value = this.getValue(this.props.data, this.props.attr);
         if (value && typeof value === 'object') {
             // different case

@@ -40,7 +40,7 @@ class ConfigCustomEasyAccess extends ConfigGeneric {
             });
     }
 
-    renderItem(error, disabled) {
+    renderItem(error, disabled, defaultValue) {
         if (!this.state.instances) {
             return null;
         } else {
