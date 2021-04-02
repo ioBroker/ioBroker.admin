@@ -234,50 +234,7 @@
                 "dsn": "https://9d2aaf29332a4999b133c693f43203b9@sentry.iobroker.net/18"
             }
         },
-        "$schema": {
-            "type": "object",
-            "properties": {
-                "port": {
-                    "title": {
-                        "en": "Port"
-                    },
-                    "type": "number"
-                },
-                "auth": {
-                    "title": {
-                        "en": "Authentication"
-                    },
-                    "type": "boolean"
-                },
-                "secure": {
-                    "title": {
-                        "en": "HTTPS"
-                    },
-                    "type": "boolean"
-                },
-                "bind": {
-                    "title": {
-                        "en": "IP"
-                    },
-                    "type": "ip"
-                },
-                "password": {
-                    "title": {
-                        "en": "Password"
-                    },
-                    "type": "password"
-                },
-                "refreshInterval": {
-                    "title": {
-                        "en": "Refresh Interval"
-                    },
-                    "description": "Seconds",
-                    "type": "number",
-                    "min": 0,
-                    "max": 100
-                }
-            }
-        }
+        "jsonConfig": true
     },
     "native": {
         "port": 8081,

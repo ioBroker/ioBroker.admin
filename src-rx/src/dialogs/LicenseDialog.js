@@ -6,7 +6,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 
 import I18n from '@iobroker/adapter-react/i18n';
-import { makeStyles, ThemeProvider } from '@material-ui/core';
+import {DialogTitle, makeStyles, ThemeProvider} from '@material-ui/core';
 
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
@@ -52,6 +52,7 @@ const LicenseDialog = ({ url, func }) => {
             open={open}
             classes={{ paper: classes.paper }}
         >
+            <DialogTitle>{I18n.t('License agreement')}</DialogTitle>
             <DialogContent className={classes.overflowHidden} dividers>
                 <div className={classes.root}>
                     <pre className={classes.pre} style={

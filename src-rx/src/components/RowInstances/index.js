@@ -174,7 +174,11 @@ const styles = theme => ({
         visibility: 'hidden'
     },
     button: {
-        padding: '5px'
+        padding: '5px',
+        transition: 'opacity 0.2s'
+    },
+    visibility: {
+        opacity: 0
     },
     enabled: {
         color: green[400],
@@ -514,7 +518,7 @@ const RowInstances = ({
             </FormControl>}
             {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
         </CustomModal>: null;
-
+    const [visibleEdit, handlerEdit] = useState(false);
     return <Accordion key={key} square
         expanded={expanded === instance.id}
         onChange={() => {
@@ -588,12 +592,16 @@ const RowInstances = ({
                         </div>
                     </div>
                 </div>
-                <Typography className={classes.secondaryHeading}>
-                    <div className={classes.secondaryHeadingDiv}>
+                <Typography className={classes.secondaryHeading} component="div">
+                    <div
+                    onMouseMove={() => handlerEdit(true)}
+                    onMouseEnter={() => handlerEdit(true)}
+                    onMouseLeave={() => handlerEdit(false)}
+                    className={classes.secondaryHeadingDiv}>
                         <div className={classes.secondaryHeadingDivDiv}>{name}</div>
                         <IconButton
                             size="small"
-                            className={classes.button}
+                            className={clsx(classes.button, !visibleEdit && classes.visibility)}
                             onClick={event => {
                                 setOpenDialogText(true);
                                 event.stopPropagation();
@@ -676,7 +684,7 @@ const RowInstances = ({
             <Hidden xsDown>
                 <IconButton
                     size="small"
-                    className={classes.button}
+                    className={clsx(classes.button,!instance.config && classes.visibility)}
                     onClick={() => openConfig(id)}
                 >
                     <BuildIcon />
@@ -719,12 +727,12 @@ const RowInstances = ({
                             </State>
                         }
                     </Grid>
-                    <Grid item direction="column" xs={12} sm={6} md={4}>
+                    <Grid container item direction="column" xs={12} sm={6} md={4}>
                         <InstanceInfo icon={<InfoIcon />} tooltip={t('Installed')}>
                             {instance.version}
                         </InstanceInfo>
                     </Grid>
-                    <Grid item direction="column" xs={12} sm={6} md={4} className={classes.paddingRight200}>
+                    <Grid container item direction="column" xs={12} sm={6} md={4} className={classes.paddingRight200}>
                         {expertMode && <div className={classes.displayFlex}>
                             <InstanceInfo icon={loglevelIcon} tooltip={t('loglevel')}>
                                 {logLevel}

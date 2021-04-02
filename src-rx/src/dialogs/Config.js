@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 
 import Router from '@iobroker/adapter-react/Components/Router';
 
-import JsonSchemaConfig from './JsonSchemaConfig';
+import JsonConfig from '../components/JsonConfig';
 
 const styles = {
     root: {
@@ -57,16 +57,19 @@ class Config extends Component {
     }
 
     getConfigurator() {
-        if (this.props.jsonSchema) {
-            return <JsonSchemaConfig
+
+        if (this.props.jsonConfig) {
+            return <JsonConfig
                 menuPadding={this.props.menuPadding}
                 theme={this.props.theme}
                 width={this.props.width}
-                adapter={this.props.adapter}
+                adapterName={this.props.adapter}
                 instance={this.props.instance}
                 socket={this.props.socket}
                 themeName={this.props.themeName}
-                t={this.props.t} />;
+                themeType={this.props.themeType}
+                t={this.props.t}
+            />;
         } else {
             return <iframe
                 title="config"
@@ -79,7 +82,7 @@ class Config extends Component {
     render() {
         const { classes } = this.props;
 
-        if (!this.props.jsonSchema && window.location.port === '3000') {
+        if (!this.props.jsonConfig && window.location.port === '3000') {
             return 'Test it in not development mode!';
         } else {
             return <Paper className={classes.root}>
@@ -96,15 +99,15 @@ class Config extends Component {
     }
 }
 
-
 Config.propTypes = {
     menuPadding: PropTypes.number,
     adapter: PropTypes.string,
     instance: PropTypes.number,
     materialize: PropTypes.bool,
-    jsonSchema: PropTypes.bool,
+    jsonConfig: PropTypes.bool,
     socket: PropTypes.object,
     themeName: PropTypes.string,
+    themeType: PropTypes.string,
     t: PropTypes.func
 };
 

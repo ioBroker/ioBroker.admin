@@ -58,6 +58,7 @@ import CustomModal from '../components/CustomModal';
 import Router from '@iobroker/adapter-react/Components/Router';
 import AdaptersUpdaterDialog from "../dialogs/AdaptersUpdaterDialog";
 import PropTypes from "prop-types";
+import clsx from 'clsx';
 
 const WIDTHS = {
     emptyBlock: 50,
@@ -169,6 +170,24 @@ const styles = theme => ({
         left: 3,
         opacity: 0.4,
         color: theme.palette.type === 'dark' ? '#aad5ff' : '#007fff'
+    },
+    counte: {
+        marginRight: 10,
+        minWidth: 120,
+        display: 'flex',
+        '& div': {
+            marginLeft: 3
+        }
+    },
+    visible: {
+        opacity: 0
+    },
+    infoAdapters: {
+        fontSize: 10,
+        color: 'silver'
+    },
+    greenText: {
+        color: '#00a005d1'
     }
 });
 
@@ -216,9 +235,15 @@ class Adapters extends Component {
 
         this.rebuildSupported = false;
         this.inputRef = createRef();
+        this.countRef = createRef();
+
         this.t = this.translate;
         this.wordCache = {};
         this.cache = {};
+        this.listOfVisibleAdapterLength = 0;
+        this.allAdapters = 0;
+        this.installedAdapters = 0;
+        this.updateAdapters = 0;
     }
 
     translate = (word, arg1, arg2) => {
@@ -246,6 +271,9 @@ class Adapters extends Component {
         const descWidth = this.getDescWidth();
         if (this.state.descWidth !== descWidth) {
             this.setState({ descWidth });
+        }
+        if (this.countRef.current) {
+            this.countRef.current.innerHTML = this.listOfVisibleAdapterLength;
         }
     }
 
@@ -313,7 +341,7 @@ class Adapters extends Component {
                         }
                     }
                 });
-
+                const now = Date.now();
                 Object.keys(repository).forEach(value => {
 
                     const adapter = repository[value];
@@ -332,6 +360,13 @@ class Adapters extends Component {
                         const type = adapter.type;
                         const installedInGroup = installed[value];
 
+                        const daysAgo = Math.round((now - new Date(adapter.versionDate).getTime()) / 86400000);
+                        if (daysAgo <= 31) {
+                            this.updateAdapters++
+                        }
+                        if (installed[value]) {
+                            this.installedAdapters++
+                        }
                         if (!categories[type]) {
                             categories[type] = {
                                 name: type,
@@ -402,7 +437,7 @@ class Adapters extends Component {
                 const installedList = JSON.parse(window.localStorage.getItem('Adapters.installedList'));
                 const categoriesTiles = window.localStorage.getItem('Adapters.categoriesTiles') || 'All';
                 const filterTiles = window.localStorage.getItem('Adapters.filterTiles') || 'A-Z';
-
+                this.allAdapters = Object.keys(repository).length - 1;
                 this.setState({
                     filterTiles,
                     categoriesTiles,
@@ -910,7 +945,7 @@ class Adapters extends Component {
                 </Fragment>;
             });
         }
-
+        this.listOfVisibleAdapterLength = count !== undefined ? count : this.listOfVisibleAdapterLength;
         if (!count) {
             return <tr><td colSpan={4} style={{ padding: 16, fontSize: 18 }}>{this.t('all items are filtered out')}</td></tr>;
         } else {
@@ -969,7 +1004,7 @@ class Adapters extends Component {
                     }
                 }
             }));
-
+        this.listOfVisibleAdapterLength = this.cache.listOfVisibleAdapter.length
         if (sortAZ) {
             this.cache.listOfVisibleAdapter.sort();
         } else {
@@ -977,9 +1012,9 @@ class Adapters extends Component {
                 if (sortPopularFirst) {
                     return this.state.repository[b].stat - this.state.repository[a].stat;
                 } else
-                if (sortRecentlyUpdated) {
-                    return this.cache.adapters[a].daysAgo - this.cache.adapters[b].daysAgo;
-                }
+                    if (sortRecentlyUpdated) {
+                        return this.cache.adapters[a].daysAgo - this.cache.adapters[b].daysAgo;
+                    }
             });
         }
     }
@@ -996,9 +1031,9 @@ class Adapters extends Component {
             }}>{this.props.t('all items are filtered out')}</div>;
         } else {
             return this.cache.listOfVisibleAdapter.map(value => {
-                const adapter   = this.state.repository[value];
+                const adapter = this.state.repository[value];
                 const installed = this.state.installed[value];
-                const cached    = this.cache.adapters[value];
+                const cached = this.cache.adapters[value];
 
                 if (cached.title instanceof Object || !cached.desc) {
                     console.warn(adapter);
@@ -1069,7 +1104,6 @@ class Adapters extends Component {
             return document.body.scrollWidth - SUM - 50 + 15;
         }
     }
-
     render() {
 
         if (!this.state.init) {
@@ -1096,7 +1130,6 @@ class Adapters extends Component {
 
         const { classes } = this.props;
         const descHidden = this.state.descWidth < 50;
-
         return <TabContainer>
             {this.state.update &&
                 <Grid item>
@@ -1203,6 +1236,12 @@ class Adapters extends Component {
                         value={this.state.filterTiles} />
                 }
                 <div className={classes.grow} />
+                <div className={classes.infoAdapters}>
+                    <div className={clsx(classes.counte, classes.greenText)}>{this.t('Select adapters')}<div ref={this.countRef} ></div></div>
+                    <div className={clsx(classes.counte)}>{this.t('All adapters')}<div>{this.allAdapters}</div></div>
+                    <div className={clsx(classes.counte)}>{this.t('Installed adapters')}<div>{this.installedAdapters}</div></div>
+                    <div className={clsx(classes.counte)}>{this.t('Update adapters last month')}<div>{this.updateAdapters}</div></div>
+                </div>
             </TabHeader>
             {this.state.viewMode && <TabContent>
                 <TableContainer className={classes.container}>

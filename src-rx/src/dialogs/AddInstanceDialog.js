@@ -85,21 +85,15 @@ class AddInstanceDialog extends Component {
         if (!dependencies) {
             return '';
         }
+        let array = []
         for (let adapter of dependencies) {
-            if (adapter.name === 'js-controller') {
-                if (!adapter.rightVersion) {
-                    return this.props.t('Invalid version of %s. Required %s', adapter.name, adapter.version);
-                }
-            } else {
-                if (!adapter.installedVersion) {
-                    return this.props.t('No version of %s', adapter.name);
-                }
-                if (!adapter.rightVersion) {
-                    return this.props.t('Invalid version of %s', adapter.name);
-                }
+            if (!adapter.installedVersion) {
+                array.push(this.props.t('No version of %s', adapter.name));
+            } else if (!adapter.rightVersion) {
+                array.push(`${this.props.t('Invalid version of %s. Required %s. Current ', adapter.name, adapter.version)}${adapter.installedVersion}`);
             }
         }
-        return '';
+        return array.length ? array.map(el => <div key={el}>{el}</div>) : '';
     }
 
     render() {

@@ -389,7 +389,7 @@ class Instances extends Component {
             instance.canStart = !common.onlyWWW;
             instance.config = !common.noConfig;
             instance.materialize = common.materialize || false;
-            instance.jsonSchema = !!common.$schema || null;
+            instance.jsonConfig = !!common.jsonConfig;
             instance.compactMode = common.runAsCompactMode || false;
             instance.mode = common.mode || null;
             instance.loglevel = common.loglevel || null;
@@ -437,11 +437,17 @@ class Instances extends Component {
         const oldState = this.states[id];
         this.states[id] = state;
         if ((!oldState && state) || (oldState && !state) || (oldState && state && oldState.val !== state.val)) {
-            if (!this.statesUpdateTimer) {
-                this.statesUpdateTimer = setTimeout(() => {
-                    this.statesUpdateTimer = null;
-                    this.forceUpdate();
-                }, 300);
+            if (this.state.dialog === 'config' && this.state.dialogProp) {
+                this.statesUpdateTimer && clearTimeout(this.statesUpdateTimer);
+                this.statesUpdateTimer = null;
+                this.shouldUpdateAfterDialogClosed = true;
+            } else {
+                if (!this.statesUpdateTimer) {
+                    this.statesUpdateTimer = setTimeout(() => {
+                        this.statesUpdateTimer = null;
+                        this.forceUpdate();
+                    }, 300);
+                }
             }
         }
     };
@@ -496,11 +502,11 @@ class Instances extends Component {
     }
 
     getInstanceState = (id) => {
-        const obj      = this.objects[id];
+        const obj = this.objects[id];
         const instance = this.state.instances[id];
-        const common   = obj ? obj.common : null;
-        const mode     = common?.mode || '';
-        let state      = mode === 'daemon' ? 'green' : 'blue';
+        const common = obj ? obj.common : null;
+        const mode = common?.mode || '';
+        let state = mode === 'daemon' ? 'green' : 'blue';
 
         if (common && common.enabled && (!common.webExtension || !obj.native.webInstance || mode === 'daemon')) {
             const alive = this.states[id + '.alive'];
@@ -892,15 +898,28 @@ class Instances extends Component {
                         adapter={instance.id.split('.')[0]}
                         instance={parseInt(instance.id.split('.')[1])}
                         materialize={instance.materialize}
-                        jsonSchema={ instance.jsonSchema }
-                        socket={ this.props.socket }
+                        jsonConfig={instance.jsonConfig}
+                        socket={this.props.socket}
                         themeName={this.props.themeName}
+                        themeType={this.props.themeType}
                         theme={this.props.theme}
                         width={this.props.width}
                         t={this.t}
                         configStored={this.props.configStored}
                     />
                 </Paper>;
+            }
+        }
+
+        if (this.shouldUpdateAfterDialogClosed) {
+            this.shouldUpdateAfterDialogClosed = false;
+            if (!this.statesUpdateTimer) {
+                if (!this.statesUpdateTimer) {
+                    this.statesUpdateTimer = setTimeout(() => {
+                        this.statesUpdateTimer = null;
+                        this.forceUpdate();
+                    }, 300);
+                }
             }
         }
 
@@ -1001,6 +1020,7 @@ Instances.propTypes = {
     protocol: PropTypes.string,
     socket: PropTypes.object,
     themeName: PropTypes.string,
+    themeType: PropTypes.string,
     theme: PropTypes.object,
     systemLang: PropTypes.string,
     width: PropTypes.string,

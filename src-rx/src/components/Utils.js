@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2019 bluefox <dogafox@gmail.com>
+ * Copyright 2018-2021 bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -16,6 +16,11 @@ class Utils {
     static dateFormat = ['DD', 'MM'];
     static FORBIDDEN_CHARS = /[\][*,;'"`<>\\?]/g;
 
+    /**
+     * Capitalize words.
+     * @param {string | undefined} name
+     * @returns {string}
+     */
     static CapitalWords(name) {
         return (name || '').split(/[\s_]/)
             .filter(item => item)
@@ -23,11 +28,6 @@ class Utils {
             .join(' ');
     }
 
-    /**
-     * Format number in seconds to time text
-     * @param {!number} seconds
-     * @returns {String}
-     */
     static formatSeconds(seconds) {
         const days = Math.floor(seconds / (3600 * 24));
         seconds %= 3600 * 24;
@@ -54,10 +54,24 @@ class Utils {
         return text;
     }
 
+    /**
+     * Get the name of the object by id from the name or description.
+     * @param {Record<string, ioBroker.Object>} objects
+     * @param {string} id
+     * @param {{ name: any; } | ioBroker.Languages | null} settings
+     * @param {{ language?: ioBroker.Languages; }} options
+     * @param {boolean} [isDesc] Set to true to get the description.
+     * @returns {string}
+     */
     static getObjectName(objects, id, settings, options, isDesc) {
         let item = objects[id];
         let text = id;
         const attr = isDesc ? 'desc' : 'name';
+
+        if (typeof settings === 'string' && !options) {
+            options = {language: settings};
+            settings = null;
+        }
 
         options = options || {};
         if (!options.language) {
@@ -90,10 +104,23 @@ class Utils {
         return text.trim();
     }
 
+    /**
+     * Get the name of the object from the name or description.
+     * @param {ioBroker.PartialObject} obj
+     * @param {{ name: any; } | ioBroker.Languages | null } settings or language
+     * @param {{ language?: ioBroker.Languages; } } options
+     * @param {boolean} [isDesc] Set to true to get the description.
+     * @returns {string}
+     */
     static getObjectNameFromObj(obj, settings, options, isDesc) {
         let item = obj;
-        let text = obj._id;
+        let text = (obj && obj._id) || '';
         const attr = isDesc ? 'desc' : 'name';
+
+        if (typeof settings === 'string' && !options) {
+            options = {language: settings};
+            settings = null;
+        }
 
         options = options || {};
 
@@ -111,7 +138,7 @@ class Utils {
             if (typeof text === 'object') {
                 text = text[options.language] || text.en;
             }
-            text = (text || '').replace(/[_.]/g, ' ');
+            text = (text || '').toString().replace(/[_.]/g, ' ');
 
             if (text === text.toUpperCase()) {
                 text = text[0] + text.substring(1).toLowerCase();
@@ -120,6 +147,12 @@ class Utils {
         return text.trim();
     }
 
+    /**
+     * @param {ioBroker.PartialObject | ioBroker.ObjectCommon} obj
+     * @param {string} forEnumId
+     * @param {{ user: string; }} options
+     * @returns {string | null}
+     */
     static getSettingsOrder(obj, forEnumId, options) {
         if (obj && obj.hasOwnProperty('common')) {
             obj = obj.common;
@@ -143,6 +176,11 @@ class Utils {
         return null;
     }
 
+    /**
+     * @param {ioBroker.PartialObject | ioBroker.ObjectCommon} obj
+     * @param {string} forEnumId
+     * @param {{ user: string; }} options
+     */
     static getSettingsCustomURLs(obj, forEnumId, options) {
         if (obj && obj.hasOwnProperty('common')) {
             obj = obj.common;
@@ -166,6 +204,12 @@ class Utils {
         return null;
     }
 
+    /**
+     * Reorder the array items in list between source and dest.
+     * @param {Iterable<any> | ArrayLike<any>} list
+     * @param {number} source
+     * @param {number} dest
+     */
     static reorder(list, source, dest) {
         const result = Array.from(list);
         const [removed] = result.splice(source, 1);
@@ -173,6 +217,11 @@ class Utils {
         return result;
     };
 
+    /**
+     * @param {any} obj
+     * @param {{ id: any; user: any; name: any; icon: any; color: any; language: ioBroker.Languages; }} options
+     * @param {boolean} [defaultEnabling]
+     */
     static getSettings(obj, options, defaultEnabling) {
         let settings;
         const id = (obj && obj._id) || (options && options.id);
@@ -211,7 +260,7 @@ class Utils {
         if (typeof settings.name === 'object') {
             settings.name = settings.name[options.language] || settings.name.en;
 
-            settings.name = (settings.name || '').replace(/_/g, ' ');
+            settings.name = (settings.name || '').toString().replace(/_/g, ' ');
 
             if (settings.name === settings.name.toUpperCase()) {
                 settings.name = settings.name[0] + settings.name.substring(1).toLowerCase();
@@ -220,13 +269,18 @@ class Utils {
         if (!settings.name && id) {
             let pos = id.lastIndexOf('.');
             settings.name = id.substring(pos + 1).replace(/[_.]/g, ' ');
-            settings.name = (settings.name || '').replace(/_/g, ' ');
+            settings.name = (settings.name || '').toString().replace(/_/g, ' ');
             settings.name = Utils.CapitalWords(settings.name);
         }
 
         return settings;
     }
 
+    /**
+     * @param {any} obj
+     * @param {any} settings
+     * @param {{ user: any; language: ioBroker.Languages; }} options
+     */
     static setSettings(obj, settings, options) {
         if (obj) {
             obj.common = obj.common || {};
@@ -260,28 +314,54 @@ class Utils {
         }
     }
 
+    /**
+     * Get the icon for the given settings.
+     * @param {{ icon: string | undefined; name: string | undefined; prefix: string | undefined}} settings
+     * @param {any} style
+     * @returns {JSX.Element | null}
+     */
     static getIcon(settings, style) {
         if (settings && settings.icon) {
+            // If UTF-8 icon
+            if (settings.icon.length <= 2) {
+                return <span style={style || {}}>{settings.icon}</span>;
+            } else
             if (settings.icon.startsWith('data:image')) {
-                return (<img alt={settings.name} src={settings.icon} style={style || {}}/>);
+                return <img alt={settings.name} src={settings.icon} style={style || {}}/>;
             } else { // may be later some changes for second type
-                return (<img alt={settings.name} src={settings.icon} style={style || {}}/>);
+                return <img alt={settings.name} src={(settings.prefix || '') + settings.icon} style={style || {}}/>;
             }
         }
         return null;
     }
 
+    /**
+     * Get the icon for the given object.
+     * @param {string} id
+     * @param {{ common: { icon: any; }; }} obj
+     * @returns {string | null}
+     */
     static getObjectIcon(id, obj) {
+        // If id is Object
+        if (typeof id === 'object') {
+            obj = id;
+            id = obj._id;
+        }
+
         if (obj && obj.common && obj.common.icon) {
             let icon = obj.common.icon;
+            // If UTF-8 icon
+            if (typeof icon === 'string' && icon.length <= 2) {
+                return icon;
+            } else
             if (icon.startsWith('data:image')) {
                 return icon;
             } else {
                 const parts = id.split('.');
                 if (parts[0] === 'system') {
-                    icon = 'adapter/' + parts[2] + icon;
+                    icon = 'adapter/' + parts[2] + (icon.startsWith('/') ? '' : '/') + icon;
                 } else {
-                    icon = 'adapter/' + parts[0] + icon;
+                    icon = 'adapter/' + parts[0] + (icon.startsWith('/') ? '' : '/') + icon;
                 }
 
                 if (window.location.pathname.match(/adapter\/[^/]+\/[^/]+\.html/)) {
@@ -299,6 +379,11 @@ class Utils {
         }
     }
 
+    /**
+     * Splits CamelCase into words.
+     * @param {string | undefined} text
+     * @returns {string}
+     */
     static splitCamelCase(text) {
         if (false && text !== text.toUpperCase()) {
             const words = text.split(/\s+/);
@@ -337,7 +422,13 @@ class Utils {
         }
     }
 
-    // https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
+    /**
+     * Check if the given color is bright.
+     * https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
+     * @param {string | null | undefined} color
+     * @param {boolean} [defaultValue]
+     * @returns {boolean}
+     */
     static isUseBright(color, defaultValue) {
         if (color === null || color === undefined || color === '') {
             return defaultValue === undefined ? true : defaultValue;
@@ -369,11 +460,14 @@ class Utils {
             b = parseInt(color.slice(4, 6), 16);
         }
 
-
         // http://stackoverflow.com/a/3943023/112731
         return (r * 0.299 + g * 0.587 + b * 0.114) <= 186;
     };
 
+    /**
+     * Get the time string in the format 00:00.
+     * @param {string | number} seconds
+     */
     static getTimeString(seconds) {
         seconds = parseFloat(seconds);
         if (isNaN(seconds)) {
@@ -392,6 +486,11 @@ class Utils {
         }
     }
 
+    /**
+     * Gets the wind direction with the given angle (degrees).
+     * @param {number} angle in degrees.
+     * @returns {string | undefined}
+     */
     static getWindDirection(angle) {
         if (angle >= 0 && angle < 11.25) {
             return 'N'
@@ -430,6 +529,10 @@ class Utils {
         }
     }
 
+    /**
+     * Pad the given number with a zero if its not 2 digits long.
+     * @param {string | number} num
+     */
     static padding(num) {
         if (typeof num === 'string') {
             if (num.length < 2) {
@@ -444,6 +547,10 @@ class Utils {
         }
     }
 
+    /**
+     * Sets the date format.
+     * @param {string} format
+     */
     static setDataFormat(format) {
         if (format) {
             Utils.dateFormat = format.toUpperCase().split(/[.-/]/);
@@ -451,6 +558,11 @@ class Utils {
         }
     }
 
+    /**
+     * Converts the date to a string.
+     * @param {string | number | Date} now
+     * @returns {string}
+     */
     static date2string(now) {
         if (typeof now === 'string') {
             now = now.trim();
@@ -477,7 +589,7 @@ class Utils {
                             now = new Date(year, a[1] - 1, a[0]);
                         }
                     } else
-                    // DD MM
+                        // DD MM
                     if (Utils.dateFormat[0][0] === 'D' && Utils.dateFormat[1][0] === 'M') {
                         now = new Date(year, a[1] - 1, a[0]);
                         if (Math.abs(now.getTime - Date.now()) > 3600000 * 24 * 10) {
@@ -494,28 +606,49 @@ class Utils {
             now = new Date(now);
         }
 
-        let date = I18n.t('dow_' + days[now.getDay()]).replace('dow_', '');
-        date += '. ' + now.getDate() + ' ' + I18n.t('month_' + months[now.getMonth()]).replace('month_', '');
+        let date = I18n.t('ra_dow_' + days[now.getDay()]).replace('ra_dow_', '');
+        date += '. ' + now.getDate() + ' ' + I18n.t('ra_month_' + months[now.getMonth()]).replace('ra_month_', '');
         return date;
     }
 
+    /**
+     * Render a text as a link.
+     * @param {string} text
+     * @returns {string | JSX.Element[]}
+     */
     static renderTextWithA(text) {
-        const m = text.match(/<a .*<\/a>/);
+        let m = text.match(/<a [^<]+<\/a>/);
         if (m) {
-            let href = m[0].match(/href="([^"]+)"/) || m[0].match(/href='([^']+)'/);
-            let target = m[0].match(/target="([^"]+)"/) || m[0].match(/target='([^']+)'/);
-            const title = m[0].match(/>([^<]*)</);
-            const p = text.split(m[0]);
-            return [
-                p[0] ? (<span key="a1">{p[0]}</span>) : null,
-                <a  key="a2" rel="noopener noreferrer" href={href ? href[1] : ''} target={target ? target[1] : '_blank'}>{title ? title[1] : ''}</a>,
-                p[1] ? (<span key="a3">{p[1]}</span>) : null
-            ];
+            const result = [];
+            let key = 1;
+            do {
+                let href = m[0].match(/href="([^"]+)"/) || m[0].match(/href='([^']+)'/);
+                let target = m[0].match(/target="([^"]+)"/) || m[0].match(/target='([^']+)'/);
+                let rel = m[0].match(/rel="([^"]+)"/) || m[0].match(/rel='([^']+)'/);
+                const title = m[0].match(/>([^<]*)</);
+
+                const p = text.split(m[0]);
+                p[0] && result.push(<span key={'a' + (key++)}>{p[0]}</span>);
+                result.push(<a key={'a' + (key++)} href={href ? href[1] : ''} target={target ? target[1] : '_blank'} rel={rel ? rel[1] : ''}>{title ? title[1] : ''}</a>);
+                text = p[1];
+                m = text && text.match(/<a [^<]+<\/a>/);
+                if (!m) {
+                    p[1] && result.push(<span key={'a' + (key++)}>{p[1]}</span>);
+                }
+            } while (m);
+            return result;
         } else {
             return text;
         }
     }
 
+    /**
+     * Get the smart name of the given state.
+     * @param {Record<string, ioBroker.StateObject> | ioBroker.StateObject} states
+     * @param {string} id
+     * @param {string} instanceId
+     * @param {boolean} [noCommon]
+     */
     static getSmartName(states, id, instanceId, noCommon) {
         if (!id) {
             if (!noCommon) {
@@ -551,6 +684,12 @@ class Utils {
         }
     }
 
+    /**
+     * Get the smart name from a state.
+     * @param {ioBroker.StateObject} obj
+     * @param {string} instanceId
+     * @param {boolean} [noCommon]
+     */
     static getSmartNameFromObj(obj, instanceId, noCommon) {
         if (!noCommon) {
             if (!obj.common) {
@@ -575,6 +714,12 @@ class Utils {
         }
     }
 
+    /**
+     * Enable smart name for a state.
+     * @param {ioBroker.StateObject} obj
+     * @param {string} instanceId
+     * @param {boolean} [noCommon]
+     */
     static enableSmartName(obj, instanceId, noCommon) {
         if (noCommon) {
             obj.common.custom = obj.common.custom || {};
@@ -585,16 +730,31 @@ class Utils {
         }
     }
 
+    /**
+     * Completely remove smart name from a state.
+     * @param {ioBroker.StateObject} obj
+     * @param {string | number} instanceId
+     * @param {boolean} [noCommon]
+     */
     static removeSmartName(obj, instanceId, noCommon) {
         if (noCommon) {
             if (obj.common && obj.common.custom && obj.common.custom[instanceId]) {
-                delete obj.common.custom[instanceId];
+                obj.common.custom[instanceId] = null;
             }
         } else {
             obj.common.smartName = null;
         }
     }
 
+    /**
+     * Update the smartname of a state.
+     * @param {ioBroker.StateObject} obj
+     * @param {string} newSmartName
+     * @param {string | undefined} byON
+     * @param {string | undefined} smartType
+     * @param {string} instanceId
+     * @param {boolean} [noCommon]
+     */
     static updateSmartName(obj, newSmartName, byON, smartType, instanceId, noCommon) {
         const language = I18n.getLanguage();
 
@@ -711,6 +871,12 @@ class Utils {
         }
     }
 
+    /**
+     * Disable the smart name of a state.
+     * @param {ioBroker.StateObject} obj
+     * @param {string} instanceId
+     * @param {boolean} [noCommon]
+     */
     static disableSmartName(obj, instanceId, noCommon) {
         if (noCommon) {
             obj.common.custom = obj.common.custom || {};
@@ -721,6 +887,11 @@ class Utils {
         }
     }
 
+    /**
+     * Copy text to the clipboard.
+     * @param {string} text
+     * @param {Event} [e]
+     */
     static copyToClipboard(text, e) {
         const el = window.document.createElement('textarea');
         el.value = text;
@@ -731,6 +902,310 @@ class Utils {
         console.log(text);
         e && e.stopPropagation();
         e && e.preventDefault();
+    }
+
+    /**
+     * Gets the extension of a file name.
+     * @param {string | null} [fileName] the file name.
+     * @returns {string | null} The extension in lower case.
+     */
+    static getFileExtension(fileName) {
+        const pos = (fileName || '').lastIndexOf('.');
+        if (pos !== -1) {
+            return fileName.substring(pos + 1).toLowerCase();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Format number of bytes as a string with B, KB, MB or GB.
+     * The base for all calculations is 1024.
+     * @param {number} bytes The number of bytes.
+     * @returns {string} The formatted string (e.g. '723.5 KB')
+     */
+    static formatBytes(bytes) {
+        if (Math.abs(bytes) < 1024) {
+            return bytes + ' B';
+        }
+
+        const units = ['KB','MB','GB'];
+        //const units = ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+        let u = -1;
+
+        do {
+            bytes /= 1024;
+            ++u;
+        } while (Math.abs(bytes) >= 1024 && u < units.length - 1);
+
+        return bytes.toFixed(1) + ' ' + units[u];
+    }
+
+    // Big thanks to : https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
+    /**
+     * Invert the given color
+     * @param {string} hex Color in the format '#rrggbb' or '#rgb' (or without hash)
+     * @param {boolean} [bw] Set to black or white.
+     * @returns {string}
+     */
+    static invertColor(hex, bw) {
+        if (hex.indexOf('#') === 0) {
+            hex = hex.slice(1);
+        }
+        // convert 3-digit hex to 6-digits.
+        if (hex.length === 3) {
+            hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+        }
+        if (hex.length !== 6) {
+            throw new Error('Invalid HEX color.');
+        }
+        let r = parseInt(hex.slice(0, 2), 16);
+        let g = parseInt(hex.slice(2, 4), 16);
+        let b = parseInt(hex.slice(4, 6), 16);
+
+        if (bw) {
+            // http://stackoverflow.com/a/3943023/112731
+            return (r * 0.299 + g * 0.587 + b * 0.114) > 186
+                ? '#000000'
+                : '#FFFFFF';
+        }
+        // invert color components
+        r = (255 - r).toString(16);
+        g = (255 - g).toString(16);
+        b = (255 - b).toString(16);
+        // pad each with zeros and return
+        return '#' + r.padStart(2, '0') + g.padStart(2, '0') + b.padStart(2, '0');
+    }
+
+    // https://github.com/lukeed/clsx/blob/master/src/index.js
+    // License
+    // MIT © Luke Edwards
+    /**
+     * @private
+     * @param {any} mix
+     * @returns {string}
+     */
+    static _toVal(mix) {
+        let k, y, str='';
+
+        if (typeof mix === 'string' || typeof mix === 'number') {
+            str += mix;
+        } else if (typeof mix === 'object') {
+            if (Array.isArray(mix)) {
+                for (k=0; k < mix.length; k++) {
+                    if (mix[k]) {
+                        if (y = Utils._toVal(mix[k])) {
+                            str && (str += ' ');
+                            str += y;
+                        }
+                    }
+                }
+            } else {
+                for (k in mix) {
+                    if (mix[k]) {
+                        str && (str += ' ');
+                        str += k;
+                    }
+                }
+            }
+        }
+
+        return str;
+    }
+
+    // https://github.com/lukeed/clsx/blob/master/src/index.js
+    // License
+    // MIT © Luke Edwards
+    /**
+     * Convert any object to a string with its values.
+     * @returns {string}
+     */
+    static clsx () {
+        let i = 0;
+        let tmp;
+        let x;
+        let str = '';
+        while (i < arguments.length) {
+            if (tmp = arguments[i++]) {
+                if (x = Utils._toVal(tmp)) {
+                    str && (str += ' ');
+                    str += x
+                }
+            }
+        }
+        return str;
+    }
+
+    /**
+     * Get the current theme name (either from local storage or the browser settings).
+     * @param {string} [themeName]
+     * @returns {string}
+     */
+    static getThemeName(themeName = '') {
+        return themeName ? themeName : window.localStorage && window.localStorage.getItem('App.themeName') ?
+            window.localStorage.getItem('App.themeName') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'colored';
+    }
+
+    /**
+     * Get the type of theme.
+     * @param {string} [themeName]
+     * @returns {'dark' | 'light'}
+     */
+    static getThemeType(themeName = '') {
+        themeName = themeName || window.localStorage && window.localStorage.getItem('App.themeName');
+        return themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light';
+    }
+
+    /**
+     * Set the theme name and theme type.
+     * @param {string} themeName
+     */
+    static setThemeName(themeName) {
+        window.localStorage.setItem('App.themeName', themeName);
+        window.localStorage.setItem('App.theme', themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light');
+    }
+
+    /**
+     * Toggle the theme name between 'dark' and 'colored'.
+     * @param {string | null} themeName
+     * @returns {string} the new theme name.
+     */
+    static toggleTheme(themeName) {
+        themeName = themeName || window.localStorage && window.localStorage.getItem('App.themeName');
+
+        // dark => blue => colored => light => dark
+        const newThemeName = themeName === 'dark' ? 'blue' :
+            (themeName === 'blue' ? 'colored' :
+                (themeName === 'colored' ? 'light' : 'dark'));
+
+        Utils.setThemeName(newThemeName);
+
+        return newThemeName;
+    }
+
+    /**
+     * Parse a query string into its parts.
+     * @param {string} query
+     * @returns {Record<string, string | boolean | number>}
+     */
+    static parseQuery(query) {
+        query = (query || '').toString().replace(/^\?/, '');
+        /** @type {Record<string, string | boolean | number>} */
+        const result = {};
+        query.split('&').forEach(part => {
+            part = part.trim();
+            if (part) {
+                const parts = part.split('=');
+                const attr = decodeURIComponent(parts[0]).trim();
+                if (parts.length > 1) {
+                    result[attr] = decodeURIComponent(parts[1]);
+                    if (result[attr] === 'true') {
+                        result[attr] = true;
+                    } else if (result[attr] === 'false') {
+                        result[attr] = false;
+                    } else {
+                        const f = parseFloat(result[attr]);
+                        if (f.toString() === result[attr]) {
+                            result[attr] = f;
+                        }
+                    }
+                } else {
+                    result[attr] = true;
+                }
+            }
+        });
+        return result;
+    }
+
+    /**
+     * Returns parent ID.
+     * @param {string} id
+     * @returns {string | null} parent ID or null if no parent
+     */
+    static getParentId(id) {
+        const p = (id || '').toString().split('.');
+        if (p.length > 1) {
+            p.pop();
+            return p.join('.');
+        } else {
+            return null;
+        }
+    }
+
+    static MDtext2link(text) {
+        const m = text.match(/\d+\.\)\s/);
+        if (m) {
+            text = text.replace(m[0], m[0].replace(/\s/, '&nbsp;'));
+        }
+
+        return text.replace(/[^a-zA-Zа-яА-Я0-9]/g, '').trim().replace(/\s/g, '').toLowerCase();
+    }
+
+    static openLink(url, target) {
+        if (target === 'this') {
+            window.location = url;
+        } else {
+            window.open(url, target || '_blank');
+        }
+    }
+
+    static MDgetTitle(text) {
+        let {body, header} = Utils.extractHeader(text);
+        if (!header.title) {
+            // remove {docsify-bla}
+            body = body.replace(/{[^}]*}/g, '');
+            body = body.trim();
+            const lines = body.replace(/\r/g, '').split('\n');
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].startsWith('# ')) {
+                    return lines[i].substring(2).trim();
+                }
+            }
+            return '';
+        } else {
+            return header.title;
+        }
+    }
+
+    static MDextractHeader(text) {
+        const attrs = {};
+        if (text.substring(0, 3) === '---') {
+            const pos = text.substring(3).indexOf('\n---');
+            if (pos !== -1) {
+                const _header = text.substring(3, pos + 3);
+                const lines = _header.replace(/\r/g, '').split('\n');
+                lines.forEach(line => {
+                    if (!line.trim()) {
+                        return;
+                    }
+                    const pos = line.indexOf(':');
+                    if (pos !== -1) {
+                        const attr = line.substring(0, pos).trim();
+                        attrs[attr] = line.substring(pos + 1).trim();
+                        attrs[attr] = attrs[attr].replace(/^['"]|['"]$/g, '');
+                        if (attrs[attr] === 'true') {
+                            attrs[attr] = true;
+                        } else if (attrs[attr] === 'false') {
+                            attrs[attr] = false;
+                        } else if (parseFloat(attrs[attr]).toString() === attrs[attr]) {
+                            attrs[attr] = parseFloat(attrs[attr]);
+                        }
+                    } else {
+                        attrs[line.trim()] = true;
+                    }
+                });
+                text = text.substring(pos + 7);
+            }
+        }
+        return {header: attrs, body: text};
+    }
+
+    static MDremoveDocsify(text) {
+        const m = text.match(/{docsify-[^}]*}/g);
+        if (m) {
+            m.forEach(doc => text = text.replace(doc, ''));
+        }
+        return text;
     }
 }
 

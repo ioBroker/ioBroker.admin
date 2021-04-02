@@ -1147,5 +1147,6 @@
   "Write converter": "Конвертер при записи",
   "Copy into clipboard": "Скопировать в буфер обмена",
   "Cannot parse code!": "Не могу разобрать код!",
-  "Type of result is not as expected: %s": "Тип результата не соответствует ожиданиям: %s"
+  "Type of result is not as expected: %s": "Тип результата не соответствует ожиданиям: %s",
+  "Accept": "Принимаю"
 }

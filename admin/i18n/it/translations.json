@@ -4,15 +4,10 @@
   "Allow access only to specific instances": "Consentire l'accesso solo a istanze specifiche",
   "Apply access rights for selected instances": "Applica i diritti di accesso per le istanze selezionate",
   "Authentication was deactivated": "L'autenticazione è stata disattivata",
-  "Authentication:": "Autenticazione",
-  "Auto update:": "Verifica aggiornamenti",
   "Background": "Sottofondo",
   "Background color of the login screen": "Colore di sottofondo della schermata d'accesso",
   "Background image": "Immagine di sottofondo",
-  "Cache:": "Buffer",
-  "Chained certificate:": "Certificato concatenato",
   "Disable authentication": "Disabilitare l'autenticazione",
-  "Enabled:": "Abilitato",
   "Events threshold value:": "Valore soglia eventi",
   "Hide logo": "Nascondi logo",
   "IP:": "IP",
@@ -57,5 +52,7 @@
   "tooltip_secure": "Abilita il protocollo SSL. L'amministratore sarà disponibile tramite https: // e non più con http: //",
   "tooltip_thresholdValue": "Se il browser riceve troppi eventi in 3 secondi, l'aggiornamento verrà interrotto",
   "tooltip_ttl": "Timeout di login. Dopo questo tempo l'utente sarà disconnesso automaticamente.",
-  "users permissions": "Permessi degli utenti"
+  "users permissions": "Permessi degli utenti",
+  "Secure(HTTPS)": "Sicuro (HTTPS)",
+  "Use react UI(experts)": "Usa React UI (esperti)"
 }

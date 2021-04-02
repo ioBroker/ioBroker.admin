@@ -68,7 +68,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
     const [url, setUrl] = useState('');
     const [value, setValue] = useState(0);
     // eslint-disable-next-line array-callback-return
-    const array = useCallback(() => categories.map(category => category.adapters).flat().map(el => {
+    const array = useCallback(() => categories.map(category => category.adapters).sort().flat().map(el => {
         const adapter = repository[el]
         if (!adapter?.controller) {
             return ({
@@ -78,16 +78,19 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
                         .indexOf('/'))}]`
             });
         }
-    }), [categories, repository]);
+    }).sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0), [categories, repository]);
+
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
+
     const closeInit = () => {
         setAutocompleteValue(null);
         setDebug(false);
         setValue(0);
         setUrl('')
-    }
+    };
+
     return <Dialog
         onClose={onClose}
         open={open}
@@ -134,13 +137,12 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
                         <SmsIcon style={{ marginRight: 10 }} />
                         <Autocomplete
                             fullWidth
-                            id="combo-box-demo"
                             value={autocompleteValue}
                             getOptionSelected={(option, value) => option.name === value.name}
                             onChange={(_, e) => setAutocompleteValue(e)}
                             options={array()}
                             getOptionLabel={(option) => option.name}
-                            renderInput={(params) => <TextField {...params} label="Select adapter" />}
+                            renderInput={(params) => <TextField {...params} label={I18n.t('Select adapter')} />}
                         /></div>
                     <div style={{
                         fontSize: 40,

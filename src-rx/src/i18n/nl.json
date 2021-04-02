@@ -1143,5 +1143,6 @@
   "Write converter": "Schrijf converter",
   "Copy into clipboard": "Kopieer naar klembord",
   "Cannot parse code!": "Kan code niet parseren!",
-  "Type of result is not as expected: %s": "Type resultaat is niet zoals verwacht: %s"
+  "Type of result is not as expected: %s": "Type resultaat is niet zoals verwacht: %s",
+  "Accept": "Aanvaarden"
 }

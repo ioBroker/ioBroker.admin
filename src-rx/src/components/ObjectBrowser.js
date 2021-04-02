@@ -403,6 +403,12 @@ const styles = theme => ({
         paddingTop: 0,
         marginTop: -2,
     },
+    cellButtonsEmptyButton: {
+        fontSize: 12,
+    },
+    cellButtonMinWidth: {
+        minWidth: 47,
+    },
     cellButtonsButtonAlone: {
         marginLeft: SMALL_BUTTON_SIZE + 4,
         paddingTop: 0,
@@ -521,9 +527,6 @@ const styles = theme => ({
     backgroundDef: {
         backgroundColor: theme.palette.background.default
     },
-    emptyButton: {
-        minWidth: 47
-    },
     buttonDiv: {
         display: 'flex',
         height: '100%',
@@ -543,6 +546,10 @@ const styles = theme => ({
     textCenter: {
         padding: 12,
         textAlign: 'center'
+    },
+    tooltipAccessControl: {
+        display: 'flex',
+        flexDirection: 'column'
     }
 });
 
@@ -619,11 +626,11 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
             if (customFilter.type && customFilter.type !== data.obj.type) {
                 filteredOut = true;
             } else
-                if (customFilter.common && customFilter.common.custom) {
-                    if (!common || !common.custom || (customFilter.common.custom !== true && !common.custom[customFilter.common.custom])) {
-                        filteredOut = true;
-                    }
+            if (customFilter.common && customFilter.common.custom) {
+                if (!common || !common.custom || (customFilter.common.custom !== true && !common.custom[customFilter.common.custom])) {
+                    filteredOut = true;
                 }
+            }
         }
 
         if (!filteredOut && !filters.expertMode) {
@@ -682,6 +689,18 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
     }
 
     return visible;
+}
+
+function getVisibleItems(item, type, objects, _result) {
+    _result = _result || [];
+    const data = item.data;
+    if (data.visible || data.hasVisibleChildren) {
+        data.id && objects[data.id] && (!type || objects[data.id].type === type) && _result.push(data.id);
+        item.children?.forEach(_item =>
+            getVisibleItems(_item, type, objects, _result));
+    }
+
+    return _result;
 }
 
 function getSystemIcon(objects, id, k, imagePrefix) {
@@ -747,12 +766,12 @@ function buildTree(objects, options) {
     let info = {
         funcEnums: [],
         roomEnums: [],
-        roles: [],
-        ids: [],
-        types: [],
+        roles:     [],
+        ids:       [],
+        types:     [],
         objects,
-        customs: [],
-        enums: [],
+        customs:   [],
+        enums:     [],
         hasSomeCustoms: false,
     };
 
@@ -810,12 +829,12 @@ function buildTree(objects, options) {
                         if (!binarySearch(info.ids, curPath)) {
                             const _croot = {
                                 data: {
-                                    name: parts[k],
-                                    parent: croot,
-                                    id: curPath,
-                                    obj: objects[curPath],
-                                    level: k,
-                                    icon: getSystemIcon(objects, curPath, k, imagePrefix),
+                                    name:      parts[k],
+                                    parent:    croot,
+                                    id:        curPath,
+                                    obj:       objects[curPath],
+                                    level:     k,
+                                    icon:      getSystemIcon(objects, curPath, k, imagePrefix),
                                     generated: true,
                                 }
                             };
@@ -832,15 +851,15 @@ function buildTree(objects, options) {
 
                 const _croot = {
                     data: {
-                        name: parts[parts.length - 1],
-                        title: getName(obj && obj.common && obj.common.name, options.lang),
+                        name:       parts[parts.length - 1],
+                        title:      getName(obj && obj.common && obj.common.name, options.lang),
                         obj,
-                        parent: croot,
-                        icon: getSelectIdIcon(objects, id, imagePrefix) || getSystemIcon(objects, id, 0, imagePrefix),
+                        parent:     croot,
+                        icon:       getSelectIdIcon(objects, id, imagePrefix) || getSystemIcon(objects, id, 0, imagePrefix),
                         id,
                         hasCustoms: obj.common && obj.common.custom && Object.keys(obj.common.custom).length,
-                        level: parts.length - 1,
-                        generated: false,
+                        level:      parts.length - 1,
+                        generated:  false,
                     }
                 };
 
@@ -850,7 +869,7 @@ function buildTree(objects, options) {
 
                 currentPathLen = parts.length;
                 currentPathArr = parts;
-                currentPath = id;
+                currentPath    = id;
             } else {
                 let u = 0;
 
@@ -870,7 +889,7 @@ function buildTree(objects, options) {
                 } else {
                     croot = root;
                     currentPathArr = [];
-                    currentPath = '';
+                    currentPath    = '';
                     currentPathLen = 0;
                 }
                 repeat = true;
@@ -905,12 +924,9 @@ function findNode(root, id, _parts, _path, _level) {
                 found = root.children[i];
                 break;
             } else
-                /*if (_id < _path) {
-                    continue;
-                } else */
-                if (_id > _path) {
-                    break;
-                }
+            if (_id > _path) {
+                break;
+            }
         }
         if (found) {
             return findNode(found, id, _parts, _path + '.' + _parts[_level + 1], _level + 1);
@@ -1023,15 +1039,15 @@ function getStates(obj) {
                 states = null;
             }
         } else
-            // if old format val1:text1;val2:text2
-            if (typeof states === 'string') {
-                const parts = states.split(';');
-                states = {};
-                for (let p = 0; p < parts.length; p++) {
-                    const s = parts[p].split(':');
-                    states[s[0]] = s[1];
-                }
+        // if old format val1:text1;val2:text2
+        if (typeof states === 'string') {
+            const parts = states.split(';');
+            states = {};
+            for (let p = 0; p < parts.length; p++) {
+                const s = parts[p].split(':');
+                states[s[0]] = s[1];
             }
+        }
     }
     return states;
 }
@@ -1247,19 +1263,19 @@ function prepareSparkData(values, from) {
             // assume the value was always null
             v.push(0);
         } else
-            if (i < values.length) {
-                if (typeof values[i].val === 'boolean' || typeof values[i - 1].val === 'boolean') {
-                    v.push(values[i].val ? 1 : 0);
-                } else {
-                    // remove nulls
-                    values[i - 1].val = values[i - 1].val || 0;
-                    values[i].val = values[i].val || 0;
-                    // interpolate
-                    let val = values[i - 1].val + (values[i].val - values[i - 1].val) * (time - values[i - 1].ts) / (values[i].ts - values[i - 1].ts);
+        if (i < values.length) {
+            if (typeof values[i].val === 'boolean' || typeof values[i - 1].val === 'boolean') {
+                v.push(values[i].val ? 1 : 0);
+            } else {
+                // remove nulls
+                values[i - 1].val = values[i - 1].val || 0;
+                values[i].val = values[i].val || 0;
+                // interpolate
+                let val = values[i - 1].val + (values[i].val - values[i - 1].val) * (time - values[i - 1].ts) / (values[i].ts - values[i - 1].ts);
 
-                    v.push(val);
-                }
+                v.push(val);
             }
+        }
 
         time += 3600000;
     }
@@ -1271,7 +1287,7 @@ function prepareSparkData(values, from) {
  * @type {import('./types').ObjectBrowserTableFilter}
  */
 const DEFAULT_FILTER = {
-    id: '',
+    id:   '',
     name: '',
     room: '',
     func: '',
@@ -1351,7 +1367,7 @@ const SCREEN_WIDTHS = {
 };
 
 const DraggableObject = (props) => {
-    let dragSettings = {...props.dragSettings};
+    let dragSettings = { ...props.dragSettings };
     dragSettings.item = props.item;
     const [{ isDragging }, dragRef] = useDrag(dragSettings);
 
@@ -1499,34 +1515,71 @@ class ObjectBrowser extends Component {
         this.edit = {};
 
         this.texts = {
-            value: props.t('ra_tooltip_value'),
-            ack: props.t('ra_tooltip_ack'),
-            ts: props.t('ra_tooltip_ts'),
-            lc: props.t('ra_tooltip_lc'),
-            from: props.t('ra_tooltip_from'),
-            user: props.t('ra_tooltip_user'),
-            quality: props.t('ra_tooltip_quality'),
-            editObject: props.t('ra_tooltip_editObject'),
-            deleteObject: props.t('ra_tooltip_deleteObject'),
-            customConfig: props.t('ra_tooltip_customConfig'),
-            copyState: props.t('ra_tooltip_copyState'),
-            editState: props.t('ra_tooltip_editState'),
-            close: props.t('ra_Close'),
-            filter_id: props.t('ra_filter_id'),
-            filter_name: props.t('ra_filter_name'),
-            filter_type: props.t('ra_filter_type'),
-            filter_role: props.t('ra_filter_role'),
-            filter_room: props.t('ra_filter_room'),
-            filter_func: props.t('ra_filter_func'),
-            filter_customs: props.t('ra_filter_customs'), //
-            objectChangedByUser: props.t('ra_object_changed_by_user'), // Object last changed at
-            objectChangedBy: props.t('ra_object_changed_by'), // Object changed by
-            objectChangedFrom: props.t('ra_state_changed_from'), // Object changed from
-            stateChangedBy: props.t('ra_state_changed_by'), // State changed by
-            stateChangedFrom: props.t('ra_state_changed_from'), // State changed from
-            ownerGroup: props.t('ra_Owner group'),
-            ownerUser: props.t('ra_Owner user'),
+            value:                    props.t('ra_tooltip_value'),
+            ack:                      props.t('ra_tooltip_ack'),
+            ts:                       props.t('ra_tooltip_ts'),
+            lc:                       props.t('ra_tooltip_lc'),
+            from:                     props.t('ra_tooltip_from'),
+            user:                     props.t('ra_tooltip_user'),
+            quality:                  props.t('ra_tooltip_quality'),
+            editObject:               props.t('ra_tooltip_editObject'),
+            deleteObject:             props.t('ra_tooltip_deleteObject'),
+            customConfig:             props.t('ra_tooltip_customConfig'),
+            copyState:                props.t('ra_tooltip_copyState'),
+            editState:                props.t('ra_tooltip_editState'),
+            close:                    props.t('ra_Close'),
+            filter_id:                props.t('ra_filter_id'),
+            filter_name:              props.t('ra_filter_name'),
+            filter_type:              props.t('ra_filter_type'),
+            filter_role:              props.t('ra_filter_role'),
+            filter_room:              props.t('ra_filter_room'),
+            filter_func:              props.t('ra_filter_func'),
+            filter_customs:           props.t('ra_filter_customs'), //
+            objectChangedByUser:      props.t('ra_object_changed_by_user'), // Object last changed at
+            objectChangedBy:          props.t('ra_object_changed_by'), // Object changed by
+            objectChangedFrom:        props.t('ra_state_changed_from'), // Object changed from
+            stateChangedBy:           props.t('ra_state_changed_by'), // State changed by
+            stateChangedFrom:         props.t('ra_state_changed_from'), // State changed from
+            ownerGroup:               props.t('ra_Owner group'),
+            ownerUser:                props.t('ra_Owner user'),
+            value:                    props.t('ra_tooltip_value'),
+            ack:                      props.t('ra_tooltip_ack'),
+            ts:                       props.t('ra_tooltip_ts'),
+            lc:                       props.t('ra_tooltip_lc'),
+            from:                     props.t('ra_tooltip_from'),
+            user:                     props.t('ra_tooltip_user'),
+            quality:                  props.t('ra_tooltip_quality'),
+            editObject:               props.t('ra_tooltip_editObject'),
+            deleteObject:             props.t('ra_tooltip_deleteObject'),
+            customConfig:             props.t('ra_tooltip_customConfig'),
+            copyState:                props.t('ra_tooltip_copyState'),
+            editState:                props.t('ra_tooltip_editState'),
+            close:                    props.t('ra_Close'),
+            filter_id:                props.t('ra_filter_id'),
+            filter_name:              props.t('ra_filter_name'),
+            filter_type:              props.t('ra_filter_type'),
+            filter_role:              props.t('ra_filter_role'),
+            filter_room:              props.t('ra_filter_room'),
+            filter_func:              props.t('ra_filter_func'),
+            filter_customs:           props.t('ra_filter_customs'), //
+            objectChangedByUser:      props.t('ra_object_changed_by_user'), // Object last changed at
+            objectChangedBy:          props.t('ra_object_changed_by'), // Object changed by
+            objectChangedFrom:        props.t('ra_state_changed_from'), // Object changed from
+            stateChangedBy:           props.t('ra_state_changed_by'), // State changed by
+            stateChangedFrom:         props.t('ra_state_changed_from'), // State changed from
+            ownerGroup:               props.t('ra_Owner group'),
+            ownerUser:                props.t('ra_Owner user'),
 
+            aclOwner_read_object:     props.t('ra_aclOwner_read_object'),
+            aclOwner_read_state:      props.t('ra_aclOwner_read_state'),
+            aclOwner_write_object:    props.t('ra_aclOwner_write_object'),
+            aclOwner_write_state:     props.t('ra_aclOwner_write_state'),
+            aclGroup_read_object:     props.t('ra_aclGroup_read_object'),
+            aclGroup_read_state:      props.t('ra_aclGroup_read_state'),
+            aclGroup_write_object:    props.t('ra_aclGroup_write_object'),
+            aclGroup_write_state:     props.t('ra_aclGroup_write_state'),
+            aclEveryone_read_object:  props.t('ra_aclEveryone_read_object'),
+            aclEveryone_read_state:   props.t('ra_aclEveryone_read_state'),
             aclOwner_read_object: props.t('ra_aclOwner_read_object'),
             aclOwner_read_state: props.t('ra_aclOwner_read_state'),
             aclOwner_write_object: props.t('ra_aclOwner_write_object'),
@@ -1538,7 +1591,9 @@ class ObjectBrowser extends Component {
             aclEveryone_read_object: props.t('ra_aclEveryone_read_object'),
             aclEveryone_read_state: props.t('ra_aclEveryone_read_state'),
             aclEveryone_write_object: props.t('ra_aclEveryone_write_object'),
+            aclEveryone_write_state:  props.t('ra_aclEveryone_write_state'),
             aclEveryone_write_state: props.t('ra_aclEveryone_write_state'),
+
         };
 
         this.onStateChangeBound = this.onStateChange.bind(this);
@@ -1552,11 +1607,11 @@ class ObjectBrowser extends Component {
                     Object.keys(objects).forEach(id => {
                         const type = objects[id] && objects[id].type;
                         if (type && (
-                            type === 'channel' ||
-                            type === 'device' ||
-                            type === 'enum' ||
-                            type === 'folder' ||
-                            type === 'adapter' ||
+                            type === 'channel'  ||
+                            type === 'device'   ||
+                            type === 'enum'     ||
+                            type === 'folder'   ||
+                            type === 'adapter'  ||
                             type === 'instance' ||
                             props.types.includes(type))) {
                             this.objects[id] = objects[id];
@@ -2305,7 +2360,7 @@ class ObjectBrowser extends Component {
                     let name;
                     let icon;
                     if (typeof item === 'object') {
-                        id = item.value;
+                        id   = item.value;
                         name = item.name;
                         icon = item.icon;
                     } else {
@@ -2503,7 +2558,6 @@ class ObjectBrowser extends Component {
      */
     getEnumsForId = (id) => {
         let result = [];
-        console.log(this.info.enums);
         this.info.enums.forEach(_id => {
             if (this.objects[_id]?.common?.members?.includes(id)) {
                 const en = {
@@ -2749,20 +2803,27 @@ class ObjectBrowser extends Component {
                         <IconButton onClick={() => {
                             if (this.state.selected.length) {
                                 let result = {};
-                                Object.keys(this.objects).forEach(key => {
-                                    if (!key.search(this.state.selected[0])) {
+                                let keys = Object.keys(this.objects);
+                                let id = this.state.selected[0];
+                                let idLen = id.length;
+                                for (let k = 0; k < keys.length; k++) {
+                                    const key = keys[k];
+                                    if (!key.startsWith(id)) {
                                         result[key] = JSON.parse(JSON.stringify(this.objects[key]));
                                         // add enum information
                                         if (result[key].common) {
                                             const enums = this.getEnumsForId(key);
-                                            console.log(enums);
                                             if (enums) {
                                                 result[key].common.enums = enums;
                                             }
                                         }
                                     }
-                                })
-                                generateFile(this.state.selected[0] + '.json', result);
+                                    if (key.substring(0, idLen) > id) {
+                                        break;
+                                    }
+                                }
+
+                                generateFile(id + '.json', result);
                             } else {
                                 window.alert(this.props.t('ra_Save of objects-tree is not possible'));
                             }
@@ -2776,11 +2837,17 @@ class ObjectBrowser extends Component {
                 {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t('ra_States')}: ${Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length}`}
             </div>
             {this.props.objectEditBoolean && <IconButton onClick={() => {
-                if (this.state.selected.length) {
-                    window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', this.state.selected[0]);
+                // get all visible states
+                const ids = getVisibleItems(this.root, 'state', this.objects);
+
+                if (ids.length) {
                     this.pauseSubscribe(true);
-                    this.props.router && this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
-                    this.setState({ customDialog: [this.state.selected[0]] });
+
+                    if (ids.length === 1) {
+                        window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', this.state.selected[0]);
+                        this.props.router && this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
+                    }
+                    this.setState({ customDialog: ids });
                 } else {
                     this.setState({ toast: this.props.t('ra_please select object') });
                 }
@@ -2832,13 +2899,13 @@ class ObjectBrowser extends Component {
             return null;
         }
         const check = [
-            { value: '0x400', valueNum: 0x400, title: 'read', group: 'Owner' },
+            { value: '0x400', valueNum: 0x400, title: 'read',  group: 'Owner' },
             { value: '0x200', valueNum: 0x200, title: 'write', group: 'Owner' },
-            { value: '0x40', valueNum: 0x40, title: 'read', group: 'Group' },
-            { value: '0x20', valueNum: 0x20, title: 'write', group: 'Group' },
-            { value: '0x4', valueNum: 0x4, title: 'read', group: 'Everyone' },
-            { value: '0x2', valueNum: 0x2, title: 'write', group: 'Everyone' }
-        ]
+            { value: '0x40',  valueNum: 0x40,  title: 'read',  group: 'Group' },
+            { value: '0x20',  valueNum: 0x20,  title: 'write', group: 'Group' },
+            { value: '0x4',   valueNum: 0x4,   title: 'read',  group: 'Everyone' },
+            { value: '0x2',   valueNum: 0x2,   title: 'write', group: 'Everyone' }
+        ];
         const arrayTooltipText = [];
         const funcRenderStateObject = (value = 'object') => {
             let rights = acl[value];
@@ -2853,12 +2920,12 @@ class ObjectBrowser extends Component {
             });
         }
         arrayTooltipText.push(<span key="group">{this.texts.ownerGroup + ': ' + acl.ownerGroup.replace('system.group.', '')}</span>);
-        arrayTooltipText.push(<span key="owner">{this.texts.ownerUser + ': ' + acl.owner.replace('system.user.', '')}</span>);
+        arrayTooltipText.push(<span key="owner">{this.texts.ownerUser  + ': ' + acl.owner.replace('system.user.', '')}</span>);
         funcRenderStateObject();
         if (acl.state) {
             funcRenderStateObject('state');
         }
-        return arrayTooltipText.length ? <span style={{ display: 'flex', flexDirection: 'column' }}>{arrayTooltipText.map(el => el)}</span> : '';
+        return arrayTooltipText.length ? <span className={this.props.classes.tooltipAccessControl}>{arrayTooltipText.map(el => el)}</span> : '';
     }
 
     /**
@@ -2870,11 +2937,10 @@ class ObjectBrowser extends Component {
         if (!item.data.obj) {
             return this.props.onObjectDelete ? <div className={classes.buttonDiv}>
                 {this.props.expertMode && <IconButton
-                    style={{ minWidth: 47 }}
-                    className={Utils.clsx(classes.cellButtonsButton)}
+                    className={Utils.clsx(classes.cellButtonsButton, classes.cellButtonsEmptyButton, classes.cellButtonMinWidth)}
                     onClick={() =>
-                        this.setState({ modalEditOfAccess: true, modalEmptyId: id, modalEditOfAccessObjData: item.data })
-                    }>---</IconButton>}
+                        this.setState({ modalEditOfAccess: true, modalEmptyId: id, modalEditOfAccessObjData: item.data })}
+                >---</IconButton>}
                 <IconButton
                     className={Utils.clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone)}
                     size="small"
@@ -2889,7 +2955,7 @@ class ObjectBrowser extends Component {
         item.data.aclTooltip = item.data.aclTooltip || this.renderTooltipAccessControl(item.data.obj.acl);
 
         return [
-            this.props.expertMode && this.props.objectEditOfAccessControl ? <Tooltip key="acl" title={item.data.aclTooltip}><IconButton style={{ minWidth: 47 }} onClick={() =>
+            this.props.expertMode && this.props.objectEditOfAccessControl ? <Tooltip key="acl" title={item.data.aclTooltip}><IconButton className={classes.cellButtonMinWidth} onClick={() =>
                 this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })
             }>
                 <div className={classes.aclText}>{Number(item.data.obj.type === 'state' ?
@@ -2897,7 +2963,7 @@ class ObjectBrowser extends Component {
                         item.data.obj.acl.state :
                         item.data.obj.acl.object :
                     item.data.obj.acl.object).toString(16)}</div>
-            </IconButton></Tooltip> : <div key="aclEmpty" className={classes.emptyButton} />,
+            </IconButton></Tooltip> : <div key="aclEmpty" className={classes.cellButtonMinWidth} />,
             <IconButton
                 key="edit"
                 className={classes.cellButtonsButton}
@@ -3131,8 +3197,7 @@ class ObjectBrowser extends Component {
             const itemEnums = this.state.enumDialogEnums;
             const enumsOriginal = this.state.enumDialog.enumsOriginal;
 
-            const enums = (type === 'room' ? this.info.roomEnums : this.info.funcEnums).map(id =>
-            ({
+            const enums = (type === 'room' ? this.info.roomEnums : this.info.funcEnums).map(id => ({
                 name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop(), this.props.lang),
                 value: id,
                 icon: getSelectIdIcon(this.objects, id, this.imagePrefix)
@@ -3171,7 +3236,7 @@ class ObjectBrowser extends Component {
                             let icon;
 
                             if (typeof item === 'object') {
-                                id = item.value;
+                                id   = item.value;
                                 name = item.name;
                                 icon = item.icon;
                             } else {
@@ -3230,8 +3295,10 @@ class ObjectBrowser extends Component {
                 t={this.props.t}
                 roles={this.info.roles}
                 onClose={obj => {
-                    this.info.objects[this.state.roleDialog] = obj;
-                    this.setState({ roleDialog: null });
+                    if (obj) {
+                        this.info.objects[this.state.roleDialog] = obj;
+                    }
+                    this.setState({ roleDialog: false });
                 }}
             />;
         } else {
@@ -3324,9 +3391,12 @@ class ObjectBrowser extends Component {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="contained" onClick={() => this.onColumnsEditCustomDialogClose(true)}
+                    <Button
+                        variant="contained"
+                        onClick={() => this.onColumnsEditCustomDialogClose(true)}
                         disabled={!this.state.customColumnDialogValueChanged}
-                        color="primary">
+                        color="primary"
+                    >
                         <IconCheck className={this.props.classes.buttonIcon} /> {this.props.t('ra_Update')}
                     </Button>
                     <Button variant="contained" onClick={() => this.onColumnsEditCustomDialogClose()}><IconClose className={this.props.classes.buttonIcon} />{this.props.t('Cancel')}</Button>
@@ -3519,17 +3589,18 @@ class ObjectBrowser extends Component {
                 newValueTitle.push(`${this.texts.stateChangedBy} ${user}`);
             }
         }
-        item.data.obj?.from && newValueTitle.push(this.texts.objectChangedFrom + ' ' + item.data.obj.from.replace(/^system\.adapter\.|^system\./, ''));
-        item.data.obj?.user && newValueTitle.push(this.texts.objectChangedBy + ' ' + item.data.obj.user.replace(/^system\.user\./, ''));
-        item.data.obj?.ts && newValueTitle.push(this.texts.objectChangedByUser + ' ' + formatDate(new Date(item.data.obj.ts)));
+        item.data.obj?.from && newValueTitle.push(this.texts.objectChangedFrom   + ' ' + item.data.obj.from.replace(/^system\.adapter\.|^system\./, ''));
+        item.data.obj?.user && newValueTitle.push(this.texts.objectChangedBy     + ' ' + item.data.obj.user.replace(/^system\.user\./, ''));
+        item.data.obj?.ts   && newValueTitle.push(this.texts.objectChangedByUser + ' ' + formatDate(new Date(item.data.obj.ts)));
 
         const alias = id.startsWith('alias.') && item.data.obj?.common?.alias?.id ?
-            <div onClick={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                this.onSelect(item.data.obj.common.alias.id);
-                setTimeout(() => this.scrollToItem(item.data.obj.common.alias.id), 200);
-            }}
+            <div
+                onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    this.onSelect(item.data.obj.common.alias.id);
+                    setTimeout(() => this.scrollToItem(item.data.obj.common.alias.id), 200);
+                }}
                 className={classes.cellIdAlias}
             >→{item.data.obj?.common?.alias?.id}</div> : null;
 
@@ -3595,8 +3666,8 @@ class ObjectBrowser extends Component {
                 <>
                     {this.columnsVisibility.changedFrom ? <div className={classes.cellName} style={{ width: this.columnsVisibility.changedFrom }} title={newValueTitle.join('\n')}>{checkVisibleObjectType && this.states[id]?.from ? newValue : null}</div> : null}
                     {this.columnsVisibility.qualityCode ? <div className={classes.cellName} style={{ width: this.columnsVisibility.qualityCode }}>{checkVisibleObjectType ? quality2text(this.states[id]?.q || 0) : null}</div> : null}
-                    {this.columnsVisibility.timestamp ? <div className={classes.cellName} style={{ width: this.columnsVisibility.timestamp }}>{checkVisibleObjectType && this.states[id]?.ts ? formatDate(new Date(this.states[id].ts)) : null}</div> : null}
-                    {this.columnsVisibility.lastChange ? <div className={classes.cellName} style={{ width: this.columnsVisibility.lastChange }}>{checkVisibleObjectType && this.states[id]?.lc ? formatDate(new Date(this.states[id].lc)) : null}</div> : null}
+                    {this.columnsVisibility.timestamp   ? <div className={classes.cellName} style={{ width: this.columnsVisibility.timestamp }}>{checkVisibleObjectType && this.states[id]?.ts ? formatDate(new Date(this.states[id].ts)) : null}</div> : null}
+                    {this.columnsVisibility.lastChange  ? <div className={classes.cellName} style={{ width: this.columnsVisibility.lastChange }}>{checkVisibleObjectType && this.states[id]?.lc ? formatDate(new Date(this.states[id].lc)) : null}</div> : null}
                 </>
             }
             {this.adapterColumns.map(it => <div className={classes.cellAdapter} style={{ width: this.columnsVisibility[it.id] }} key={it.id} title={it.adapter + ' => ' + it.pathText}>{this.renderCustomValue(obj, it, item)}</div>)}
@@ -3606,7 +3677,7 @@ class ObjectBrowser extends Component {
                 }
                 this.edit = {
                     val: this.states[id] ? this.states[id].val : '',
-                    q: 0,
+                    q:   0,
                     ack: false,
                     id,
                 };
@@ -3686,10 +3757,10 @@ class ObjectBrowser extends Component {
      * @param {Record<string, number>} [columnsWidths]
      */
     calculateColumnsVisibility(columnsAuto, columns, columnsForAdmin, columnsWidths) {
-        columnsWidths = columnsWidths || this.state.columnsWidths;
+        columnsWidths   = columnsWidths   || this.state.columnsWidths;
         columnsForAdmin = columnsForAdmin || this.state.columnsForAdmin;
-        columns = columns || this.state.columns || [];
-        columnsAuto = typeof columnsAuto !== 'boolean' ? this.state.columnsAuto : columnsAuto;
+        columns         = columns         || this.state.columns || [];
+        columnsAuto     = typeof columnsAuto !== 'boolean' ? this.state.columnsAuto : columnsAuto;
 
         columnsWidths = JSON.parse(JSON.stringify(columnsWidths));
         Object.keys(columnsWidths).forEach(name => {
@@ -3703,18 +3774,18 @@ class ObjectBrowser extends Component {
 
         if (columnsAuto) {
             this.columnsVisibility = {
-                id: SCREEN_WIDTHS[this.props.width].idWidth,
-                name: this.visibleCols.includes('name') ? WIDTHS.name : 0,
-                type: this.visibleCols.includes('type') ? WIDTHS.type : 0,
-                role: this.visibleCols.includes('role') ? WIDTHS.role : 0,
-                room: this.visibleCols.includes('room') ? WIDTHS.room : 0,
-                func: this.visibleCols.includes('func') ? WIDTHS.func : 0,
+                id:          SCREEN_WIDTHS[this.props.width].idWidth,
+                name:        this.visibleCols.includes('name')        ? WIDTHS.name        : 0,
+                type:        this.visibleCols.includes('type')        ? WIDTHS.type        : 0,
+                role:        this.visibleCols.includes('role')        ? WIDTHS.role        : 0,
+                room:        this.visibleCols.includes('room')        ? WIDTHS.room        : 0,
+                func:        this.visibleCols.includes('func')        ? WIDTHS.func        : 0,
                 changedFrom: this.visibleCols.includes('changedFrom') ? WIDTHS.changedFrom : 0,
                 qualityCode: this.visibleCols.includes('qualityCode') ? WIDTHS.qualityCode : 0,
-                timestamp: this.visibleCols.includes('timestamp') ? WIDTHS.timestamp : 0,
-                lastChange: this.visibleCols.includes('lastChange') ? WIDTHS.lastChange : 0,
-                val: this.visibleCols.includes('val') ? WIDTHS.val : 0,
-                buttons: this.visibleCols.includes('buttons') ? WIDTHS.buttons : 0,
+                timestamp:   this.visibleCols.includes('timestamp')   ? WIDTHS.timestamp   : 0,
+                lastChange:  this.visibleCols.includes('lastChange')  ? WIDTHS.lastChange  : 0,
+                val:         this.visibleCols.includes('val')         ? WIDTHS.val         : 0,
+                buttons:     this.visibleCols.includes('buttons')     ? WIDTHS.buttons     : 0,
             };
 
             if (this.columnsVisibility.name) {
@@ -3760,9 +3831,9 @@ class ObjectBrowser extends Component {
                         if (columns.includes(id)) {
                             const item = {
                                 adapter,
-                                id: '_' + adapter + '_' + column.path,
-                                name: column.name,
-                                path: column.path.split('.'),
+                                id:       '_' + adapter + '_' + column.path,
+                                name:     column.name,
+                                path:     column.path.split('.'),
                                 pathText: column.path
                             };
                             if (column.edit) {
@@ -3932,6 +4003,7 @@ class ObjectBrowser extends Component {
 
         return <ObjectBrowserEditObject
             obj={this.objects[this.state.editObjectDialog]}
+            roleArray={this.info.roles}
             objects={this.objects}
             themeName={this.props.themeName}
             socket={this.props.socket}

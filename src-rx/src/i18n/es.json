@@ -1143,5 +1143,6 @@
   "Write converter": "Conversor de escritura",
   "Copy into clipboard": "Copiar al portapapeles",
   "Cannot parse code!": "¡No se puede analizar el código!",
-  "Type of result is not as expected: %s": "El tipo de resultado no es el esperado: %s"
+  "Type of result is not as expected: %s": "El tipo de resultado no es el esperado: %s",
+  "Accept": "Aceptar"
 }

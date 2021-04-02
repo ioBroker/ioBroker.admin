@@ -782,6 +782,7 @@ class FileBrowser extends Component {
                 return (<FileIcon className={this.props.classes['itemIcon' + this.state.viewType]} />);
         }
     }
+
     setStateBackgroundImage = () => {
         let array = ['light', 'dark', 'colored', 'delete'];
         this.setState(({ backgroundImage }) => {
@@ -794,6 +795,7 @@ class FileBrowser extends Component {
             }
         })
     }
+
     getClassBackgroundImage = () => {
         //['light', 'dark', 'colored', 'delete']
         switch (this.state.backgroundImage) {
@@ -809,6 +811,7 @@ class FileBrowser extends Component {
                 return null;
         }
     }
+
     renderFile(item) {
         const padding = this.state.viewType === TABLE ? item.level * this.levelPadding : 0;
         const ext = Utils.getFileExtension(item.name);
@@ -1034,11 +1037,12 @@ class FileBrowser extends Component {
         </Toolbar>;
     }
 
-    findItem(id) {
+    findItem(id, folders) {
+        folders = folders || this.state.folders;
         const parts = id.split('/');
         parts.pop();
         const parentFolder = parts.join('/');
-        return this.state.folders[parentFolder || '/'].find(item => item.id === id);
+        return folders[parentFolder || '/'].find(item => item.id === id);
     }
 
     renderInputDialog() {
@@ -1166,6 +1170,7 @@ class FileBrowser extends Component {
                                         }
                                     });
                             };
+
                             reader.readAsArrayBuffer(file);
                         });
                     }}
@@ -1267,6 +1272,19 @@ class FileBrowser extends Component {
         } else {
             return null;
         }
+    }
+
+    updateItemsAcl(info) {
+        const folders = JSON.parse(JSON.stringify(this.state.folders));
+        let changed;
+        info.forEach(it => {
+            const item = this.findItem(it.id, folders);
+            if (item && JSON.stringify(item.acl) !== JSON.stringify(it.acl)) {
+                item.acl = it.acl;
+                changed = true;
+            }
+        });
+        changed && this.setState({folders});
     }
 
     changeToPath() {

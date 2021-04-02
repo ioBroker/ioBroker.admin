@@ -4,15 +4,10 @@
   "Allow access only to specific instances": "只允许访问特定实例",
   "Apply access rights for selected instances": "对选定实例应用访问权限",
   "Authentication was deactivated": "身份验证已停用",
-  "Authentication:": "认证",
-  "Auto update:": "检查更新",
   "Background": "背景",
   "Background color of the login screen": "登录界面的背景颜色",
   "Background image": "背景图片",
-  "Cache:": "高速缓存",
-  "Chained certificate:": "链式证书",
   "Disable authentication": "禁用身份验证",
-  "Enabled:": "启用",
   "Events threshold value:": "事件阈值",
   "Hide logo": "隐藏图标",
   "IP:": "IP",
@@ -57,5 +52,7 @@
   "tooltip_secure": "启用SSL协议。admin界面将通过https://而不是http://访问",
   "tooltip_thresholdValue": "如果浏览器在3秒内收到太多事件，将停止刷新",
   "tooltip_ttl": "登录超时时间。超时后用户将自动注销。",
-  "users permissions": "用户权限"
+  "users permissions": "用户权限",
+  "Secure(HTTPS)": "安全（HTTPS）",
+  "Use react UI(experts)": "使用React UI（专家）"
 }
