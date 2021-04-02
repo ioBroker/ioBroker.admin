@@ -71,7 +71,7 @@ class ConfigPanel extends ConfigGeneric {
     render() {
         const items = this.props.schema.items;
         return <Paper className={(this.props.className || '') + ' ' + this.props.classes.paper}>
-            <Grid container className={this.props.classes.fullWidth}>
+            <Grid container className={this.props.classes.fullWidth} spacing={2}>
                 {this.renderItems(items)}
             </Grid>
         </Paper>;

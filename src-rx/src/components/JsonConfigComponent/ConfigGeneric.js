@@ -180,15 +180,16 @@ class ConfigGeneric extends Component {
             md={schema.md || undefined}
             sm={schema.sm || undefined}
 
-            style={Object.assign({}, {marginBottom: 12, marginRight: 8}, this.props.schema.style)}>
+            style={Object.assign({}, {marginBottom: 0, marginRight: 8}, this.props.schema.style)}>
             {this.renderItem(error, disabled)}
         </Grid>;
 
         if (schema.newLine) {
-            return <Grid container spacing={schema.spacing || 8}>
+            return <>
+                <div style={{flexBasis: '100%', height: 0}} />
                 {this.renderConfirmDialog()}
                 {item}
-            </Grid>
+            </>
         } else {
             if (this.state.confirmDialog) {
                 return <>

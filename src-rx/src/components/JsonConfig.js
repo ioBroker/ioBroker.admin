@@ -19,6 +19,22 @@ const styles = {
     }
 };
 
+// Todo: delete it after adapter-react 1.6.9
+I18n.extendTranslationsForLanguage = I18n.extendTranslationsForLanguage || ((words, lang) => {
+    if (!I18n.translations[lang]) {
+        console.warn('Used unknown language: ' + lang);
+    }
+    I18n.translations[lang] = I18n.translations[lang] || {};
+    Object.keys(words)
+        .forEach(word => {
+            if (!I18n.translations[lang][word]) {
+                I18n.translations[lang][word] = words[word];
+            } else if (I18n.translations[lang][word] !== words[word]) {
+                console.warn(`Translation for word "${word}" in "${lang}" was ignored: existing = "${I18n.translations[lang][word]}", new = ${words[word]}`);
+            }
+        });
+});
+
 class JsonConfig extends Router {
     constructor(props) {
         super(props);
@@ -33,10 +49,42 @@ class JsonConfig extends Router {
         };
 
         this.getInstanceObject()
-            .then(obj => {
-                return this.getConfigFile()
-                    .then(schema => this.setState({schema, data: obj.native, common: obj.common}));
-            });
+            .then(obj => this.getConfigFile()
+                .then(schema =>
+                    // load language
+                    this.loadI18n(schema.i18n)
+                        .then(() =>
+                            this.setState({schema, data: obj.native, common: obj.common}))));
+    }
+
+    loadI18n(i18n) {
+        if (i18n) {
+            const lang = I18n.getLanguage();
+            return this.props.socket.fileExists(this.props.adapterName + '.admin', `i18n/${lang}.json`)
+                .then(exists => {
+                    if (exists) {
+                        return `i18n/${lang}.json`;
+                    } else {
+                        return this.props.socket.fileExists(this.props.adapterName + '.admin', `i18n/${lang}/translations.json`)
+                            .then(exists =>
+                                exists ? `i18n/${lang}/translations.json` : '')
+                    }
+                })
+                .then(fileName => {
+                    return fileName && this.props.socket.readFile(this.props.adapterName + '.admin', fileName)
+                        .then(json => {
+                            try {
+                                json = JSON.parse(json);
+                                // apply file to I18n
+                                I18n.extendTranslationsForLanguage(json, lang);
+                            } catch (e) {
+                                console.error(`Cannot parse language file "${this.props.adapterName}.admin/${fileName}: ${e}`);
+                            }
+                        })
+                });
+        } else {
+            return Promise.resolve();
+        }
     }
 
     getConfigFile() {
