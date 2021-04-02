@@ -52,11 +52,9 @@
 - edit config by JSON
   
 ## Files
-- Files - bulk edit of access rights
-  - file.acl.permissions//
 - File viewer can show: json, js, ts, md, css, html
 - Edit file ACL for "adapter" or "instance" (All folders of the first level)
-- Edit files: json, js, txt, html (only in expert mode)
+- Edit files (by pressing button "Edit" opened edit mode) : json, js, txt, html (only in expert mode)
   
 ## Hosts  
 - Hosts tab => show all hosts in a list with settings

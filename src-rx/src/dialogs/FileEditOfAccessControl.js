@@ -32,7 +32,7 @@ const newValueAccessControl = (value, newValue, mask) => {
     return value;
 }
 
-const ObjectRights = ({ value, setValue, t, differentValues, applyToChildren, mask, setMask }) => {
+const ObjectRights = ({ value, setValue, t, differentValues, applyToChildren, mask, setMask, disabled }) => {
     useEffect(() => {
         if (applyToChildren) {
             let _checkDifferent = 0;
@@ -114,6 +114,7 @@ const ObjectRights = ({ value, setValue, t, differentValues, applyToChildren, ma
                             }}>{t(obj.name)}</div>
                             <div style={{ height: 50, display: 'flex' }}>
                                 <Checkbox
+                                    disabled={disabled}
                                     checked={bool}
                                     color={mask & obj.valueNum ? 'primary' : 'secondary'}
                                     indeterminate={!!(mask & obj.valueNum)}
@@ -168,7 +169,7 @@ function sortFolders(a, b) {
     }
 }
 
-const searchFolders = async (folderId, _newFolders, socket) => {
+const loadFolders = async (folderId, _newFolders, socket) => {
     const parts = folderId.split('/');
     const level = parts.length;
     const adapter = parts.shift();
@@ -188,17 +189,116 @@ const searchFolders = async (folderId, _newFolders, socket) => {
                     level
                 };
 
-                _newFolders.push(item);
+                _newFolders && _newFolders.push(item);
 
                 if (item.folder) {
-                    await searchFolders(item.id, _newFolders, socket);
+                    await loadFolders(item.id, _newFolders, socket);
                 }
             }
         });
 
     return _newFolders;
 }
-const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObject, objects, t, modalEmptyId, themeType, folders, socket }) => {
+
+async function _loadFolders (folderId, folders, socket) {
+    let files = folders[folderId];
+    if (!files) {
+        const parts = folderId.split('/');
+        const level = parts.length;
+        const adapter = parts.shift();
+        const relPath = parts.join('/');
+        files = await socket.readDir(adapter, relPath);
+        folders[folderId] = [];
+        for (let f = 0; f < files.length; f++) {
+            const file = files[f];
+            const item = {
+                id: folderId + '/' + file.file,
+                ext: Utils.getFileExtension(file.file),
+                folder: file.isDir,
+                name: file.file,
+                size: file.stats && file.stats.size,
+                modified: file.modifiedAt,
+                acl: file.acl,
+                level
+            };
+            folders[folderId].push(item);
+        }
+    }
+
+    for (let f = 0; f < files.length; f++) {
+        const item = files[f];
+        if (item.folder) {
+            await _loadFolders(item.id, folders, socket);
+        }
+    }
+}
+
+function flatList(folders) {
+    const list = {};
+
+    Object.keys(folders)
+        .forEach(key => {
+            list[key] = {
+                folder: true
+            };
+            folders[key].forEach(item => {
+                list[item.id] = item;
+            });
+        });
+
+    return list;
+}
+
+async function loadPath(socket, folders, path, adapter, part, level) {
+    if (typeof path === 'string') {
+        path = path.split('/');
+        level = 0;
+        adapter = path.shift();
+        part = '';
+    }
+
+    if (path.length >= level) {
+        return;
+    }
+
+    if (folders[adapter + part]) {
+        if (path.length - 1 === level) {
+            // try to find file
+            const aa = adapter + part + '/' + path[level];
+            const ff = folders[adapter + part].find(item => item.id === aa);
+            if (ff && ff.folder) {
+                // load all
+                await _loadFolders(adapter + part, folders, socket);
+            }
+            return;
+        }
+        part += '/' + path[level];
+
+        await loadPath(socket, folders, path, adapter, part, level + 1);
+    } else {
+        // load path
+        const files = await socket.readDir(adapter, part);
+        folders[adapter + part] = [];
+        files.forEach(file => {
+            const item = {
+                id:       part + '/' + file.file,
+                ext:      Utils.getFileExtension(file.file),
+                folder:   file.isDir,
+                name:     file.file,
+                size:     file.stats && file.stats.size,
+                modified: file.modifiedAt,
+                acl:      file.acl,
+                level
+            };
+
+            folders[adapter + part].push(item);
+        });
+
+        await loadPath(socket, folders, path, adapter, part, level + 1);
+    }
+}
+
+const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObject, objects, t, themeType, folders, socket }) => {
     const select = selected.substring(0, selected.lastIndexOf('/')) || selected;
     const object = selected.split('/').length === 1 ? folders['/'].find(({ id }) => id === selected) : folders[select].find(({ id }) => id === selected);
     const [stateOwnerUser, setStateOwnerUser] = useState(null);
@@ -213,9 +313,8 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
     const [differentObject, setDifferentObject] = useState([]);
     const [maskObject, setMaskObject] = useState(0);
     const [ids, setIds] = useState([]);
-    const [newFolders, setNewFolders] = useState([]);
-
     const [disabledButton, setDisabledButton] = useState(true);
+    const [progress, setProgress] = useState(false);
 
     const different = t('different');
 
@@ -224,9 +323,6 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
         let _differentObject = [];
 
         let id = object.id;
-        let idWithDot = id + '.';
-        const keys = Object.keys(folders).sort();
-        const objectsKeys = Object.keys(objects).sort();
         let groups = [];
         let users = [];
         const lang = I18n.getLanguage();
@@ -236,48 +332,49 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
         let _stateOwnerUser = null;
         let _stateOwnerGroup = null;
         let _valueFileAccessControl = null;
-        let _newFolders = [];
         const _ids = [];
         let count = 0
 
-        for (let k = 0; k < keys.length; k++) {
-            const key = keys[k];
-            const foldersArray = folders[key];
-            const adapter = objects[key];
+        await loadPath(socket, folders, id);
 
-            if (foldersArray && (key === id || key.startsWith(idWithDot))) {
-                count++;
-                _ids.push(key);
-    
-                if (_valueFileAccessControl === null && adapter.acl.file !== undefined) {
-                    _valueFileAccessControl = adapter.acl.file;
-                }
-                if (_stateOwnerUser === null && adapter.acl.owner !== undefined) {
-                    _stateOwnerUser = adapter.acl.owner;
-                }
-                if (_stateOwnerGroup === null && adapter.acl.ownerGroup !== undefined) {
-                    _stateOwnerGroup = adapter.acl.ownerGroup;
-                }
-    
-                if (!differentOwner && _stateOwnerUser !== adapter.acl.owner && adapter.acl.owner !== undefined) {
-                    _differentOwner = true;
-                }
-                if (!differentGroup && _stateOwnerGroup !== adapter.acl.ownerGroup && adapter.acl.ownerGroup !== undefined) {
-                    _differentGroup = true;
-                }
-                if (adapter.acl.file !== undefined && _valueFileAccessControl !== adapter.acl.file && !_differentObject.includes(adapter.acl.file)) {
-                    _differentObject.push(adapter.acl.file);
-                }
-                for (let i = 0; i < foldersArray.length; i++) {
-                    const keyFolder = foldersArray[i];
+        const list = flatList(folders);
+
+        let idWithSlash = id + '/';
+
+        Object.keys(list).forEach(key => {
+            if (key === '/') {
+                return;
+            }
+
+            if (key === id || key.startsWith(idWithSlash)) {
+                if (!key.includes('/') && objects[key]) { // it is object
+                    const objFolder = objects[key];
                     count++;
-                    _ids.push(keyFolder.id);
-                    if (keyFolder.folder) {
-                        await searchFolders(keyFolder.id, _newFolders, socket);
+                    _ids.push(objFolder);
+
+                    if (_valueFileAccessControl === null && objFolder.acl.file !== undefined) {
+                        _valueFileAccessControl = objFolder.acl.file;
                     }
-                    if (!keyFolder.acl) {
-                        continue;
+                    if (_stateOwnerUser === null && objFolder.acl.owner !== undefined) {
+                        _stateOwnerUser = objFolder.acl.owner;
                     }
+                    if (_stateOwnerGroup === null && objFolder.acl.ownerGroup !== undefined) {
+                        _stateOwnerGroup = objFolder.acl.ownerGroup;
+                    }
+
+                    if (!differentOwner && _stateOwnerUser !== objFolder.acl.owner && objFolder.acl.owner !== undefined) {
+                        _differentOwner = true;
+                    }
+                    if (!differentGroup && _stateOwnerGroup !== objFolder.acl.ownerGroup && objFolder.acl.ownerGroup !== undefined) {
+                        _differentGroup = true;
+                    }
+                    if (objFolder.acl.file !== undefined && _valueFileAccessControl !== objFolder.acl.file && !_differentObject.includes(objFolder.acl.file)) {
+                        _differentObject.push(objFolder.acl.file);
+                    }
+                } else if (!list[key].folder) {
+                    count++;
+                    const keyFolder = list[key];
+                    _ids.push(keyFolder);
                     if (_valueFileAccessControl === null && keyFolder.acl.permissions !== undefined) {
                         _valueFileAccessControl = keyFolder.acl.permissions;
                     }
@@ -299,59 +396,28 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
                     }
                 }
             }
-        }
-        for (let i = 0; i < _newFolders.length; i++) {
-            const keyFolder = _newFolders[i];
-            count++;
-            _ids.push(keyFolder.id);
-            if (keyFolder.folder) {
-                continue;
-            }
-            if (!keyFolder.acl) {
-                continue;
-            }
-            if (_valueFileAccessControl === null && (keyFolder.acl.permissions || keyFolder.acl.file) !== undefined) {
-                _valueFileAccessControl = keyFolder.acl.permissions || keyFolder.acl.file;
-            }
-            if (_stateOwnerUser === null && keyFolder.acl.owner !== undefined) {
-                _stateOwnerUser = keyFolder.acl.owner;
-            }
-            if (_stateOwnerGroup === null && keyFolder.acl.ownerGroup !== undefined) {
-                _stateOwnerGroup = keyFolder.acl.ownerGroup;
-            }
-
-            if (!differentOwner && _stateOwnerUser !== keyFolder.acl.owner && keyFolder.acl.owner !== undefined) {
-                _differentOwner = true;
-            }
-            if (!differentGroup && _stateOwnerGroup !== keyFolder.acl.ownerGroup && keyFolder.acl.ownerGroup !== undefined) {
-                _differentGroup = true;
-            }
-            if (keyFolder.acl.permissions !== undefined && _valueFileAccessControl !== keyFolder.acl.permissions && !_differentObject.includes(keyFolder.acl.permissions)) {
-                _differentObject.push(keyFolder.acl.permissions);
-            }
-        }
+        });
 
         // Get users and groups
-        for (let k = 0; k < objectsKeys.length; k++) {
-            const key = objectsKeys[k];
-            const obj = objects[key];
-            if (key.startsWith('system.group.') && obj?.type === 'group') {
+        Object.keys(objects).forEach(_id => {
+            const obj = objects[_id];
+            if (_id.startsWith('system.group.') && obj?.type === 'group') {
                 groups.push({
                     name: Utils.getObjectNameFromObj(obj, lang).replace('system.group.', ''),
-                    value: key,
+                    value: _id,
                     icon: obj.common?.icon,
                     color: obj.common?.color,
                 });
             } else
-            if (key.startsWith('system.user.') && obj?.type === 'user') {
+            if (_id.startsWith('system.user.') && obj?.type === 'user') {
                 users.push({
                     name: Utils.getObjectNameFromObj(obj, lang).replace('system.user.', ''),
-                    value: key,
+                    value: _id,
                     icon: obj.common?.icon,
                     color: obj.common?.color,
                 });
             }
-        }
+        });
 
         const defaultAcl = objects['system.config'].common.defaultNewAcl;
 
@@ -377,7 +443,6 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
         setDifferentObject(_differentObject);
 
         setIds(_ids);
-        setNewFolders(_newFolders)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [objects, selected]);
 
@@ -424,8 +489,13 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
             titleButtonApply="apply"
             overflowHidden
             applyDisabled={disabledButton}
+            progress={progress}
             onClose={onClose}
             onApply={async () => {
+                const defaultAclFile = objects['system.config'].common?.defaultNewAcl?.file || 0x664;
+
+                setProgress(true);
+
                 if (!applyToChildren) {
                     const parts = object.id.split('/');
                     const adapter = parts.shift();
@@ -443,41 +513,78 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
                         }
                         if (object.acl?.ownerGroup !== stateOwnerGroup.value) {
                             newAcl.ownerGroup = stateOwnerUser.ownerGroup;
-                            changed = true;                            
+                            changed = true;
                         }
-                        changed && extendObject(adapter, path, newAcl);
-                    } else if (objects) {
+                        changed && (await extendObject(adapter, path, newAcl));
+                    } else if (!parts.length && objects[object.id]) {
                         // setObject(acl)
+                        const obj = objects[object.id];
+                        if (obj.acl?.file !== valueFileAccessControl) {
+                            obj.acl = obj.acl || {};
+                            obj.acl.file = valueFileAccessControl;
+                            changed = true;
+                        }
+                        if (obj.acl?.owner !== stateOwnerUser.value) {
+                            obj.acl = obj.acl || {};
+                            obj.acl.owner = stateOwnerUser.value;
+                            changed = true;
+                        }
+                        if (obj.acl?.ownerGroup !== stateOwnerGroup.value) {
+                            obj.acl = obj.acl || {};
+                            obj.acl.ownerGroup = stateOwnerGroup.value;
+                            changed = true;
+                        }
+                        changed && (await extendObject(obj._id, obj));
                     }
                 }
                 else {
                     let _maskObject = ~maskObject & 0xFFFF;
                     for (let i = 0; i < ids.length; i++) {
-                        const key = ids[i];
-                        const parts = key.split('/');
-                        const adapter = parts.shift();
-                        const path = parts.join('/');
-                        const file = folders[adapter].find(file => file.id === key);
+                        const item = ids[i];
+                        let changed = false;
 
-                        if (file && !file.folder) {
-                            let changed = false;
-                            const newAcl = {};
-                            const permissions = newValueAccessControl(file.acl.permissions, valueFileAccessControl, _maskObject);
-                            if (permissions !== file.acl.permissions) {
-                                newAcl.permissions = permissions;
+                        if (item._id) {
+                            // it is object
+                            const permissions = newValueAccessControl(item.acl?.file || defaultAclFile, valueFileAccessControl, _maskObject);
+                            if (permissions !== item.acl?.file) {
+                                item.acl = item.acl || {};
+                                item.acl.file = permissions;
                                 changed = true;
                             }
-                            if (stateOwnerUser.value !== 'different' && stateOwnerUser.value !== file.acl.owner) {
-                                newAcl.owner = stateOwnerUser.value;
+                            if (stateOwnerUser.value !== 'different' && stateOwnerUser.value !== item.acl?.owner) {
+                                item.acl = item.acl || {};
+                                item.acl.owner = stateOwnerUser.value;
                                 changed = true;
                             }
-                            if (stateOwnerGroup.value !== 'different' && stateOwnerGroup.value !== file.acl.ownerGroup) {
-                                newAcl.ownerGroup = stateOwnerGroup.value;
+                            if (stateOwnerGroup.value !== 'different' && stateOwnerGroup.value !== item.acl?.ownerGroup) {
+                                item.acl = item.acl || {};
+                                item.acl.ownerGroup = stateOwnerGroup.value;
                                 changed = true;
                             }
-                            changed && await extendObject(adapter, path, newAcl);
+                            changed && (await extendObject(item._id, item));
                         } else {
-                            // setObject if object
+                            if (item && !item.folder) {
+                                const newAcl = {};
+                                const permissions = newValueAccessControl(item.acl?.permissions || defaultAclFile, valueFileAccessControl, _maskObject);
+                                if (permissions !== item.acl?.permissions) {
+                                    newAcl.permissions = permissions;
+                                    changed = true;
+                                }
+                                if (stateOwnerUser.value !== 'different' && stateOwnerUser.value !== item.acl?.owner) {
+                                    newAcl.owner = stateOwnerUser.value;
+                                    changed = true;
+                                }
+                                if (stateOwnerGroup.value !== 'different' && stateOwnerGroup.value !== item.acl?.ownerGroup) {
+                                    newAcl.ownerGroup = stateOwnerGroup.value;
+                                    changed = true;
+                                }
+                                if (changed) {
+                                    const parts = item.id.split('/');
+                                    const adapter = parts.shift();
+                                    const path = parts.join('/');
+                                    changed && (await extendObject(adapter, path, newAcl));
+                                }
+                            }
                         }
                     }
                 }
@@ -493,9 +600,10 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
                     <FormControl fullWidth style={{ marginRight: 10 }}>
                         <InputLabel>{t('Owner user')}</InputLabel>
                         <Select
-                            value={stateOwnerUser.value}
-                            renderValue={value => <span>{stateOwnerUser.icon ? <Icon src={stateOwnerUser.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}{stateOwnerUser.name}</span>}
-                            style={stateOwnerUser.value === 'different' ? { opacity: 0.5 } : { color: stateOwnerUser.color || undefined, backgroundColor: getBackgroundColor(stateOwnerUser.color, themeType) }}
+                            disabled={progress}
+                            value={stateOwnerUser?.value}
+                            renderValue={value => <span>{stateOwnerUser?.icon ? <Icon src={stateOwnerUser?.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}{stateOwnerUser?.name}</span>}
+                            style={stateOwnerUser?.value === 'different' ? { opacity: 0.5 } : { color: stateOwnerUser?.color || undefined, backgroundColor: getBackgroundColor(stateOwnerUser?.color, themeType) }}
                             onChange={el => {
                                 const userItem = ownerUsers.find(item => item.value === el.target.value);
                                 setStateOwnerUser(userItem);
@@ -511,9 +619,10 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
                     <FormControl fullWidth>
                         <InputLabel>{t('Owner group')}</InputLabel>
                         <Select
-                            value={stateOwnerGroup.value}
-                            renderValue={value => <span>{stateOwnerGroup.icon ? <Icon src={stateOwnerGroup.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}{stateOwnerGroup.name}</span>}
-                            style={stateOwnerGroup.value === 'different' ? { opacity: 0.5 } : { color: stateOwnerGroup.color || undefined, backgroundColor: getBackgroundColor(stateOwnerGroup.color, themeType) }}
+                            value={stateOwnerGroup?.value}
+                            disabled={progress}
+                            renderValue={value => <span>{stateOwnerGroup?.icon ? <Icon src={stateOwnerGroup?.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}{stateOwnerGroup?.name}</span>}
+                            style={stateOwnerGroup?.value === 'different' ? { opacity: 0.5 } : { color: stateOwnerGroup?.color || undefined, backgroundColor: getBackgroundColor(stateOwnerGroup?.color, themeType) }}
                             onChange={el => {
                                 const groupItem = ownerGroups.find(item => item.value === el.target.value);
                                 setStateOwnerGroup(groupItem);
@@ -538,8 +647,8 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
                 }}>
                     <div style={(!object.folder || !applyToChildren) ? { color: 'green' } : null}>{t('to apply one item')}</div>
                     <Switch
-                        disabled={!!object.folder || childrenCount === 1}
-                        checked={!!object.folder || applyToChildren}
+                        disabled={ids.length === 1 || progress}
+                        checked={(!objects[object.id] && !!object.folder) || applyToChildren}
                         onChange={e => {
                             setApplyToChildren(e.target.checked);
                             setDisabledButton(false);
@@ -552,6 +661,7 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
                     <div>
                         <h2>{t('File rights')}</h2>
                         <ObjectRights
+                            disabled={progress}
                             mask={maskObject}
                             setMask={setMaskObject}
                             applyToChildren={applyToChildren}

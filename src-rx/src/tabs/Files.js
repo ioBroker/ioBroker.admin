@@ -10,7 +10,6 @@ import TabContent from '../components/TabContent';
 import FileEditOfAccessControl from '../dialogs/FileEditOfAccessControl';
 
 class Files extends Component {
-
     constructor(props) {
         super(props);
 
@@ -63,13 +62,18 @@ class Files extends Component {
                     modalEditOfAccessControl={(context, objData) =>
                         <FileEditOfAccessControl
                             open={context.state.modalEditOfAccess}
-                            extendObject={(adapter, file, data) => {
-                                console.log(adapter, file, data)
-                                if (!file) {
-                                    console.log('APPLY acl for ' + adapter);
-                                    return Promise.resolve();
-                                } else {
-                                    let promise;
+                            extendObject={async (adapter, file, data) => {
+                                let promise;
+                                if (file && typeof file === 'object') {
+                                    const obj = file;
+                                    // it is setObject
+                                    promise = this.props.socket.getObject(obj._id)
+                                        .then(oldObj => {
+                                            oldObj.acl = obj.acl;
+                                            return this.props.socket.setObject(oldObj._id, oldObj)
+                                                .then(() => oldObj);
+                                        });
+                                } else if (file) {
                                     if ((data.owner || data.ownerGroup) && data.permissions) {
                                         promise = this.props.socket.chownFile(adapter, file, {owner: data.owner, ownerGroup: data.ownerGroup})
                                             .then(() => this.props.socket.chmodFile(adapter, file, {mode: data.permissions}));
@@ -79,14 +83,18 @@ class Files extends Component {
                                     } else if (data.owner || data.ownerGroup) {
                                         promise = this.props.socket.chownFile(adapter, file, {owner: data.owner, ownerGroup: data.ownerGroup});
                                     }
+                                }
 
-                                    if (promise) {
-                                        promise.then(result => {
-                                            result?.entries.forEach(file =>
-                                                console.log(`USE new options: ${adapter}/${file.path + (file.path ? '/' : '')}${file.file} - ${JSON.stringify(file.acl)}`));
-                                        });
-                                    } else {
-                                        return Promise.resolve();
+                                if (promise) {
+                                    const result = await promise;
+                                    if (result.entries) {
+                                        if (result?.entries) {
+                                            for ( let i = 0; i < result?.entries.length; i++) {
+                                                await context.updateItemsAcl([{id: adapter + '/' + (result.entries[i].path ? result.entries[i].path + '/' : '') + result.entries[i].file, acl: result.entries[i].acl}]);
+                                            }
+                                        }
+                                    } else if (result) {
+                                        await context.updateItemsAcl([{id: result._id, acl: result.acl}]);
                                     }
                                 }
                             }}
