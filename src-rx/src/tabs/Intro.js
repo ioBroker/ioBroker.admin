@@ -534,6 +534,7 @@ class Intro extends Component {
 
         const { classes } = this.props;
         const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
+        console.log(hostData)
         return [(<ul>
             {
                 hostData && typeof hostData === 'object' && Object.keys(hostData).map(value => <li key={value}>
@@ -570,7 +571,7 @@ class Intro extends Component {
                     hosts,
                     introLinks: systemConfig && systemConfig.native && systemConfig.native.introLinks ? systemConfig.native.introLinks : []
                 });
-
+                console.log('hosts',hosts)
                 // hosts data could last a long time, so show some results to user now and then get the info about hosts
                 return this.getHostsData(hosts)
             })

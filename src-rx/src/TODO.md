@@ -28,10 +28,11 @@
 ## Objects
 - Decode quality code to text (BF)
 <!-- - Add in object edit the possibility to set color and icon (icon could be uploaded as base64 and may not be bigger than 5k) and use it for text color. Add possibility to scale the images. -->
-  - https://github.com/ioBroker/ioBroker.material/blob/master/src/src/basic-controls/react-image-selector/ImageSelector.js
-  - add new Tab Common (first tab)
-     - Warning: File is too big. Max 5k allowed. Try use SVG.
-     - Place Icon edit (if enough space) on the right  
+  <!-- - https://github.com/ioBroker/ioBroker.material/blob/master/src/src/basic-controls/react-image-selector/ImageSelector.js
+  - add new Tab Common (first tab) -->
+  /
+     <!-- - Warning: File is too big. Max 5k allowed. Try use SVG.
+     - Place Icon edit (if enough space) on the right   -->
 
  <!-- - use color of items for "ID" (think about contrast, means invert background)      -->
 
@@ -48,8 +49,8 @@
 
 - Show on the second tab: CPU %, Mem%, uptime in days/hours, show in red if (diskFree / diskSize) * 100 <= diskWarning, show header in blink-red
 - iobroker upgrade self
-- iobroker restart
-- if not alive => events "- / -"
+<!-- - iobroker restart -->
+<!-- - if not alive => events "- / -" -->
 ## Users
 - Do not allow edit of user ID
 

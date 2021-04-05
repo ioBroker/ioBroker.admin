@@ -779,6 +779,7 @@ class App extends Router {
                             idHost={this.state.hosts.find(({ common: { name } }) => name === this.state.currentHostName)._id}
                             currentHostName={this.state.currentHostName}
                             t={I18n.t}
+                            currentHost={this.state.currentHost}
                             width={this.props.width}
                             configStored={value => this.allStored(value)}
                             executeCommand={cmd => this.executeCommand(cmd)}

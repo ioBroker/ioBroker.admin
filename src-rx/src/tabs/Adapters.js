@@ -1106,7 +1106,7 @@ class Adapters extends Component {
         }
     }
     render() {
-
+        console.log(this.state.repository)
         if (!this.state.init) {
             return <LinearProgress />;
         }

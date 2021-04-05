@@ -78,9 +78,19 @@ const styles = theme => ({
         marginTop: 20,
     },
     commonTabWrapper: {
-        margin: '20px 0',
-        minWidth: 300,
-        maxWidth: 500
+        flexFlow: 'wrap',
+        display: 'flex'
+    },
+
+    commonWrapper: {
+        width: 500,
+        minWidth: 300
+    },
+    flexDrop: {
+        width: '100%',
+        maxWidth: 500,
+        margin: 'auto',
+        display: 'flex'
     },
     marginBlock: {
         marginTop: 20
@@ -94,10 +104,11 @@ const styles = theme => ({
 
     },
     image: {
-        width: 'auto',
         objectFit: 'contain',
         margin: 'auto',
-        display: 'flex'
+        display: 'flex',
+        width: '100%',
+        height: '100%',
     },
 
     uploadDiv: {
@@ -118,7 +129,7 @@ const styles = theme => ({
         width: 'calc(100% - 10px)',
         height: 'calc(100% - 10px)',
         position: 'relative',
-        display:'flex'
+        display: 'flex'
     },
     uploadCenterIcon: {
         paddingTop: 10,
@@ -191,7 +202,7 @@ const styles = theme => ({
         zIndex: 222,
         right: 0
     },
-    tabsPadding:{
+    tabsPadding: {
         padding: '0px 24px'
     }
 });
@@ -379,13 +390,14 @@ class ObjectBrowserEditObject extends Component {
             } else if (ext === 'image/svg') {
                 ext = 'image/svg+xml';
             }
-            if(file.size >5000){
-                return alert('File is too big!')
+            if (file.size > 5000) {
+                return alert('File is too big. Max 5k allowed. Try use SVG.')
             }
             const base64 = 'data:' + ext + ';base64,' + btoa(
                 new Uint8Array(reader.result)
                     .reduce((data, byte) => {
-                       return data + String.fromCharCode(byte)}, ''));
+                        return data + String.fromCharCode(byte)
+                    }, ''));
             this.setCommonItem(json, 'icon', base64)
         };
         reader.readAsArrayBuffer(file);
@@ -432,69 +444,71 @@ class ObjectBrowserEditObject extends Component {
             const checkRole = obj.type === 'channel' || obj.type === 'device' || checkState;
             return <div className={classes.commonTabWrapper}>
 
-                {typeof json.common.name !== "undefined" ?
-                    <TextField
-                        disabled={disabled}
-                        label={t('Name')}
-                        className={clsx(classes.marginBlock, classes.textField)}
-                        fullWidth
-                        value={Utils.getObjectNameFromObj(json, I18n.getLanguage())}
-                        onChange={(el) => this.setCommonItem(json, 'name', el.target.value)}
-                    /> :
-                    this.buttonAddKey('name', () => this.setCommonItem(json, 'name', ''))
-                }
-                {checkState ? typeof json.common.type !== "undefined" ?
-                    <div className={classes.flex}>
-                        <FormControl
-                            className={classes.marginBlock}
-                            fullWidth>
-                            <InputLabel id="demo-simple-select-helper-label">{t('State type')}</InputLabel>
-                            <Select
-                                disabled={disabled}
-                                labelId="demo-simple-select-helper-label"
-                                id="demo-simple-select-helper"
-                                value={json.common.type}
-                                onChange={(el) => this.setCommonItem(json, 'type', el.target.value)}
-                            >
-                                {stateTypeArray.map(el => <MenuItem key={el} value={el}>{t(el)}</MenuItem>)}
-                            </Select>
-                        </FormControl>
-                        {this.buttonRemoveKey('type', () => this.removeCommonItem(json, 'type'))}
-                    </div>
-                    :
-                    this.buttonAddKey('type', () => this.setCommonItem(json, 'type', 'string'))
-                    : null}
-                {checkRole ? typeof json.common.role !== "undefined" ?
-                    <div className={classes.flex}>
-                        <Autocomplete
-                            className={classes.marginBlock}
-                            fullWidth
-                            disabled={disabled}
-                            value={json.common.role}
-                            getOptionSelected={(option, value) => option.name === value.name}
-                            onChange={(_, e) => this.setCommonItem(json, 'role', e)}
-                            options={roleArray}
-                            renderInput={(params) => <TextField {...params} label={t('Role')} />}
-                        />
-                        {this.buttonRemoveKey('role', () => this.removeCommonItem(json, 'role'))}
-                    </div> :
-                    this.buttonAddKey('role', () => this.setCommonItem(json, 'role', ''))
-                    : null}
-                {typeof json.common.color !== "undefined" ?
-                    <div className={classes.flex}>
+                <div className={classes.commonWrapper}>
+                    {typeof json.common.name !== "undefined" ?
                         <TextField
                             disabled={disabled}
-                            className={clsx(classes.marginBlock, classes.color)}
-                            label={t('Color')}
-                            type="color"
-                            value={json.common.color}
-                            onChange={el => this.setCommonItem(json, 'color', el.target.value)} />
-                        {this.buttonRemoveKey('color', () => this.removeCommonItem(json, 'color'))}
-                    </div> :
-                    this.buttonAddKey('color', () => this.setCommonItem(json, 'color', ''))
-                }
+                            label={t('Name')}
+                            className={clsx(classes.marginBlock, classes.textField)}
+                            fullWidth
+                            value={Utils.getObjectNameFromObj(json, I18n.getLanguage())}
+                            onChange={(el) => this.setCommonItem(json, 'name', el.target.value)}
+                        /> :
+                        this.buttonAddKey('name', () => this.setCommonItem(json, 'name', ''))
+                    }
+                    {checkState ? typeof json.common.type !== "undefined" ?
+                        <div className={classes.flex}>
+                            <FormControl
+                                className={classes.marginBlock}
+                                fullWidth>
+                                <InputLabel id="demo-simple-select-helper-label">{t('State type')}</InputLabel>
+                                <Select
+                                    disabled={disabled}
+                                    labelId="demo-simple-select-helper-label"
+                                    id="demo-simple-select-helper"
+                                    value={json.common.type}
+                                    onChange={(el) => this.setCommonItem(json, 'type', el.target.value)}
+                                >
+                                    {stateTypeArray.map(el => <MenuItem key={el} value={el}>{t(el)}</MenuItem>)}
+                                </Select>
+                            </FormControl>
+                            {this.buttonRemoveKey('type', () => this.removeCommonItem(json, 'type'))}
+                        </div>
+                        :
+                        this.buttonAddKey('type', () => this.setCommonItem(json, 'type', 'string'))
+                        : null}
+                    {checkRole ? typeof json.common.role !== "undefined" ?
+                        <div className={classes.flex}>
+                            <Autocomplete
+                                className={classes.marginBlock}
+                                fullWidth
+                                disabled={disabled}
+                                value={json.common.role}
+                                getOptionSelected={(option, value) => option.name === value.name}
+                                onChange={(_, e) => this.setCommonItem(json, 'role', e)}
+                                options={roleArray}
+                                renderInput={(params) => <TextField {...params} label={t('Role')} />}
+                            />
+                            {this.buttonRemoveKey('role', () => this.removeCommonItem(json, 'role'))}
+                        </div> :
+                        this.buttonAddKey('role', () => this.setCommonItem(json, 'role', ''))
+                        : null}
+                    {typeof json.common.color !== "undefined" ?
+                        <div className={classes.flex}>
+                            <TextField
+                                disabled={disabled}
+                                className={clsx(classes.marginBlock, classes.color)}
+                                label={t('Color')}
+                                type="color"
+                                value={json.common.color}
+                                onChange={el => this.setCommonItem(json, 'color', el.target.value)} />
+                            {this.buttonRemoveKey('color', () => this.removeCommonItem(json, 'color'))}
+                        </div> :
+                        this.buttonAddKey('color', () => this.setCommonItem(json, 'color', ''))
+                    }
+                </div>
                 {typeof json.common.icon !== "undefined" ?
-                    <div className={classes.flex}>
+                    <div className={classes.flexDrop}>
                         <Dropzone
                             disabled={disabled}
                             key="dropzone"
@@ -539,7 +553,9 @@ class ObjectBrowserEditObject extends Component {
                         </Dropzone>
                         {this.buttonRemoveKey('icon', () => this.removeCommonItem(json, 'icon'))}
                     </div> :
-                    this.buttonAddKey('icon', () => this.setCommonItem(json, 'icon', ''))
+                    <div className={classes.flexDrop}>
+                        {this.buttonAddKey('icon', () => this.setCommonItem(json, 'icon', ''))}
+                    </div>
                 }
             </div>
         } catch (e) {

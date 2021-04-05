@@ -1,29 +1,12 @@
-/* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
-import { Button, Card, CardContent, CardMedia, Fab, FormControl, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from "@material-ui/core";
+import React, { useEffect, useRef, useState } from 'react';
+import {  CardContent, CardMedia,  IconButton,  Tooltip, Typography } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import clsx from 'clsx';
-import BuildIcon from '@material-ui/icons/Build';
-import InputIcon from '@material-ui/icons/Input';
 import DeleteIcon from '@material-ui/icons/Delete';
-import InfoIcon from '@material-ui/icons/Info';
-import MemoryIcon from '@material-ui/icons/Memory';
-import ScheduleIcon from '@material-ui/icons/Schedule';
-import ViewCompactIcon from '@material-ui/icons/ViewCompact';
 
-import PauseIcon from '@material-ui/icons/Pause';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import I18n from '@iobroker/adapter-react/i18n';
 import { green, red } from '@material-ui/core/colors';
-import InstanceInfo from '../InstanceInfo';
-import State from '../State';
-import sentry from '../../assets/sentry.svg';
-import CustomModal from '../CustomModal';
 import EditIcon from '@material-ui/icons/Edit';
-import ImportExportIcon from '@material-ui/icons/ImportExport';
-import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
 import CachedIcon from '@material-ui/icons/Cached';
 import PropTypes from "prop-types";
 import Utils from '@iobroker/adapter-react/Components/Utils';
@@ -36,19 +19,17 @@ const styles = theme => ({
     root: {
         position: 'relative',
         margin: 7,
-        // width: 300,
-        // minHeight: 200,
         background: theme.palette.background.default,
         boxShadow,
-        display: 'flex',
-        // flexDirection: 'column',
-        transition: 'box-shadow 0.5s',
+        // display: 'flex',
+        overflow: 'hidden',
+        transition: 'box-shadow 0.5s,height 0.3s',
         '&:hover': {
             boxShadow: boxShadowHover
         }
     },
     imageBlock: {
-        background: 'silver',
+        // background: 'silver',
         minHeight: 60,
         width: '100%',
         maxWidth: 300,
@@ -94,9 +75,9 @@ const styles = theme => ({
     },
 
     collapse: {
-        height: '100%',
+        height: 150,
         backgroundColor: 'silver',
-        position: 'absolute',
+        // position: 'absolute',
         width: '100%',
         zIndex: 3,
         marginTop: 'auto',
@@ -104,10 +85,21 @@ const styles = theme => ({
         transition: 'height 0.3s',
         justifyContent: 'space-between',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
     },
     collapseOff: {
         height: 0
+    },
+    collapseOn: {
+        animation: '$height 1s'
+    },
+    '@keyframes height': {
+        '0%': {
+            height: 0
+        },
+        '100%': {
+            height: 150,
+        }
     },
     close: {
         width: '20px',
@@ -163,12 +155,12 @@ const styles = theme => ({
     },
     onOff: {
         alignSelf: 'center',
-        width: 20,
-        height: 20,
-        borderRadius: 20,
+        width: 10,
+        height: '100%',
+        // borderRadius: 20,
         // position: 'absolute',
-        top: 5,
-        right: 5,
+        // top: 5,
+        // right: 5,
     },
     adapter: {
         width: '100%',
@@ -288,175 +280,186 @@ const styles = theme => ({
         backgroundColor: 'rgb(0 255 0 / 14%)'
     }*/
     green: {
-        background: '#10fd10ba',
-        border: '1px solid #014a00'
+        background: '#00ce00',
+        position: 'relative',
+        overflow: 'hidden'
+    },
+    dotLine: {
+        width: 10,
+        height: 20,
+        background: 'linear-gradient( rgba(0,206,0,0.7497373949579832) 0%, rgba(31,255,1,1) 50%, rgba(0,206,0,0.7805497198879552) 100%)',
+        zIndex: 2,
+        position: 'absolute',
+        top: -21,
+        animation: '$colors 3s ease-in-out infinite'
+    },
+    '@keyframes colors': {
+        '0%': {
+            top: -21
+        },
+        '100%': {
+            top: '101%'
+        }
     },
     red: {
-        background: '#ff0000c7',
-        border: '1px solid #440202'
+        background: '#da0000',
+        animation: '$red 3s ease-in-out infinite alternate'
     },
-    flex:{
-        flex:1
+    '@keyframes red': {
+        '0%': {
+            opacity: 1
+        },
+        '100%': {
+            opacity: 0.80
+        }
+    },
+    flex: {
+        flex: 1
+    },
+
+    cardContentInfo: {
+        overflow: 'auto',
+        paddingTop: 0
+    },
+    cardContentDiv: {
+        position: 'sticky',
+        right: 0,
+        top: 0,
+        background: 'silver',
+        paddingTop: 10
+    },
+    wrapperFlex:{
+        display: 'flex', cursor: 'pointer'
+    },
+    wrapperColor:{
+        position: 'relative',
+        overflow: 'hidden'
     }
 });
+let outputCache = 'null';
+let inputCache = 'null';
 const RowHosts = ({
     name,
     classes,
     image,
     hidden,
-    connectedToHost,
     alive,
-    connected,
     key,
-    logLevel,
     color,
-    type,
     title,
     os,
     available,
     installed,
     events,
-    t
+    t,
+    description,
+    _id,
+    socket,
+    setEditDilog,
+    executeCommand
 }) => {
     const [openCollapse, setCollapse] = useState(false);
-    const [mouseOver, setMouseOver] = useState(false);
-    const [openSelect, setOpenSelect] = useState(false);
-    const [openDialogCron, setOpenDialogCron] = useState(false);
-    const [openDialogSchedule, setOpenDialogSchedule] = useState(false);
-    const [openDialogText, setOpenDialogText] = useState(false);
-    const [openDialogSelect, setOpenDialogSelect] = useState(false);
-    const [openDialogDelete, setOpenDialogDelete] = useState(false);
-    const [openDialogMemoryLimit, setOpenDialogMemoryLimit] = useState(false);
-    const [select, setSelect] = useState(logLevel);
-    const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
-
-    // const customModal =
-    //     openDialogSelect ||
-    //         openDialogText ||
-    //         openDialogDelete ||
-    //         openDialogMemoryLimit ?
-    //         <CustomModal
-    //             title={
-    //                 (openDialogText && t('Enter title for %s', instance.id)) ||
-    //                 (openDialogSelect && t('Edit log level rule for %s', instance.id)) ||
-    //                 (openDialogDelete && t('Please confirm')) ||
-    //                 (openDialogMemoryLimit && t('Edit memory limit rule for %s', instance.id))
-    //             }
-    //             open={true}
-    //             applyDisabled={openDialogText || openDialogMemoryLimit}
-    //             textInput={openDialogText || openDialogMemoryLimit}
-    //             defaultValue={openDialogText ? name : openDialogMemoryLimit ? memoryLimitMB : ''}
-    //             onApply={(value) => {
-    //                 if (openDialogSelect) {
-    //                     setLogLevel(select)
-    //                     setOpenDialogSelect(false);
-    //                 } else if (openDialogText) {
-    //                     setName(value);
-    //                     setOpenDialogText(false);
-    //                 } else if (openDialogDelete) {
-    //                     setOpenDialogDelete(false);
-    //                     deletedInstances();
-    //                 } else if (openDialogMemoryLimit) {
-    //                     setMemoryLimitMB(value)
-    //                     setOpenDialogMemoryLimit(false);
-    //                 }
-    //             }}
-    //             onClose={() => {
-    //                 if (openDialogSelect) {
-    //                     setSelect(logLevel);
-    //                     setOpenDialogSelect(false);
-    //                 } else if (openDialogText) {
-    //                     setOpenDialogText(false);
-    //                 } else if (openDialogDelete) {
-    //                     setOpenDialogDelete(false);
-    //                 } else if (openDialogMemoryLimit) {
-    //                     setOpenDialogMemoryLimit(false);
-    //                 }
-    //             }}>
-    //             {openDialogSelect && <FormControl className={classes.logLevel} variant="outlined" >
-    //                 <InputLabel htmlFor="outlined-age-native-simple">{t('log level')}</InputLabel>
-    //                 <Select
-    //                     variant="standard"
-    //                     value={select}
-    //                     fullWidth
-    //                     onChange={el => setSelect(el.target.value)}
-    //                 >
-    //                     {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
-    //                         {t(el)}
-    //                     </MenuItem>)}
-    //                 </Select>
-    //             </FormControl>}
-    //             {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
-    //         </CustomModal>
-    //         : null;
-
-
-
-
-    const [visibleEdit, handlerEdit] = useState(false);
-    return <div key={key} className={clsx(classes.root, hidden ? classes.hidden : '')}>
-        {/* {customModal} */}
-        <div>
-            <div className={clsx(classes.onOff, alive ? classes.green : classes.red)} /></div>
-        <div
-            style={{ background: color || 'inherit' }}
-            className={clsx(
-                classes.imageBlock,
-                (!connectedToHost || !alive) && classes.instanceStateNotAlive1,
-                connectedToHost && alive && connected === false && classes.instanceStateAliveNotConnected1,
-                connectedToHost && alive && connected !== false && classes.instanceStateAliveAndConnected1
-            )}>
-            <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
-            <div style={{
-                color: (color && Utils.invertColor(color)) || 'inherit',
-            }} className={classes.adapter}>{name}</div>
-        </div>
-
-        <CardContent className={classes.cardContentH5}>
-            {/* <div> */}
-            <Typography className={classes.flex} variant="body2" color="textSecondary" component="p">
-                {t('Type: %s', type)}
-            </Typography>
-            <Typography className={classes.flex} variant="body2" color="textSecondary" component="p">
-                {t('Title: %s', title)}
-            </Typography>
-            <Typography className={classes.flex} variant="body2" color="textSecondary" component="p">
-                {t('OS: %s', os)}
-            </Typography>
-            <Typography className={classes.flex} variant="body2" color="textSecondary" component="p">
-                {t('Available: %s', available)}
-            </Typography>
-            <Typography className={classes.flex} variant="body2" color="textSecondary" component="p">
-                {t('Installed: %s', installed)}
-            </Typography>
-            <Typography className={classes.flex} variant="body2" color="textSecondary" component="p">
-                {t('Events: %s', events)}
-            </Typography>
-            {/* </div> */}
-            <div className={classes.marginTop10}>
-                <Typography component={'span'} className={classes.enableButton}>
-                    <IconButton
-                        size="small"
-                        className={clsx(classes.button)}
-                        onClick={() => setOpenDialogText(true)}
-                    >
-                        <EditIcon />
-                    </IconButton>
-
-                    <Tooltip title={t('Reload')}>
-                        <IconButton >
-                            <CachedIcon />
-                        </IconButton>
-                    </Tooltip>
-
-                    <Tooltip title={t('Reload')}>
-                        <IconButton >
-                            {alive ? <RefreshIcon /> : <DeleteIcon />}
-                        </IconButton>
-                    </Tooltip>
-                </Typography>
+    const [focused, setFocused] = useState(false);
+    const refEvents = useRef();
+    const eventsFunc = (input, output) => {
+        let event;
+        if (input) {
+            inputCache = input;
+            event = `⇥${input} / ↦${outputCache}`;
+        } else if (output) {
+            outputCache = output;
+            event = `⇥${inputCache} / ↦${output}`;
+        } else {
+            event = `⇥null / ↦null`;
+        }
+        if (refEvents.current) {
+            refEvents.current.innerHTML = event;
+        }
+    }
+    useEffect(() => {
+        socket.subscribeState(`${_id}.inputCount`, (_, el) => eventsFunc(el.val));
+        socket.subscribeState(`${_id}.outputCount`, (_, el) => eventsFunc(null, el.val));
+        return () => {
+            socket.unsubscribeObject(`${_id}.inputCount`, (_, el) => eventsFunc(el.val));
+            socket.unsubscribeObject(`${_id}.outputCount`, (_, el) => eventsFunc(null, el.val));
+        }
+    }, [_id, socket]);
+    return <div
+        onMouseOut={() => setFocused(false)}
+        onMouseOver={() => setFocused(true)}
+        onMouseMove={() => setFocused(true)}
+        onClick={() => setCollapse((bool) => !bool)}
+        key={key} className={clsx(classes.root, hidden ? classes.hidden : '')}>
+        <div style={{border:`2px solid ${color || 'inherit'}`,borderRadius:5}} className={classes.wrapperFlex}>
+            <div className={classes.wrapperColor}>
+                <div className={clsx(classes.onOff, alive ? classes.green : classes.red)} />
+                {alive && <div className={classes.dotLine} />}
             </div>
-        </CardContent>
+            <div
+                // style={{ background: color || 'inherit' }}
+                className={clsx(
+                    classes.imageBlock,
+                )}>
+                <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
+                <div className={classes.adapter}>{name}</div>
+            </div>
+            <CardContent className={classes.cardContentH5}>
+                <Typography className={classes.flex} variant="body2" color="textSecondary" component="p">
+                    {title}
+                </Typography>
+                <Typography className={classes.flex} variant="body2" color="textSecondary" component="p">
+                    {os}
+                </Typography>
+                <Typography className={classes.flex} variant="body2" color="textSecondary" component="p">
+                    {available}
+                </Typography>
+                <Typography className={classes.flex} variant="body2" color="textSecondary" component="p">
+                    {installed}
+                </Typography>
+                <Typography className={classes.flex} variant="body2" color="textSecondary" component="div">
+                    <div ref={refEvents}>{events}</div>
+                </Typography>
+                <div className={classes.marginTop10}>
+                    <Typography component={'span'} className={classes.enableButton}>
+                        <IconButton
+                            size="small"
+                            className={clsx(classes.button)}
+                            onClick={(e) => {
+                                setEditDilog(true);
+                                e.stopPropagation();
+                            }}
+                        >
+                            <EditIcon />
+                        </IconButton>
+                        <Tooltip title={t('Auto restart')}>
+                            <IconButton onClick={(e) => {
+                                executeCommand();
+                                e.stopPropagation();
+                            }}>
+                                <CachedIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title={t('Reload')}>
+                            <IconButton >
+                                {alive ? <RefreshIcon /> : <DeleteIcon />}
+                            </IconButton>
+                        </Tooltip>
+                    </Typography>
+                </div>
+            </CardContent>
+        </div>
+        {(openCollapse || focused) && typeof description !== 'string' &&
+            <div
+                className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : classes.collapseOn)}>
+                <CardContent className={classes.cardContentInfo}>
+                    <Typography gutterBottom component={'span'} variant={'body2'} className={classes.description}>
+                        {t('Info')}
+                    </Typography>
+                    {description}
+                </CardContent>
+                <div className={classes.footerBlock}>
+                </div>
+            </div>}
     </div>
 }
 

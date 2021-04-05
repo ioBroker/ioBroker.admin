@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, Card, CardContent, CardMedia, Fab, FormControl, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -168,6 +168,13 @@ const styles = theme => ({
         top: 5,
         right: 5,
     },
+    onOffLine: {
+        alignSelf: 'center',
+        width: '100%',
+        height: 12,
+        // borderRadius: 20,
+
+    },
     adapter: {
         width: '100%',
         fontWeight: 'bold',
@@ -201,6 +208,10 @@ const styles = theme => ({
     },
     cardContent: {
         marginTop: 16,
+        paddingTop: 0
+    },
+    cardContentInfo: {
+        overflow: 'auto',
         paddingTop: 0
     },
     sentry: {
@@ -280,14 +291,104 @@ const styles = theme => ({
         backgroundColor: 'rgb(0 255 0 / 14%)'
     }*/
     green: {
-        background: '#10fd10ba',
-        border: '1px solid #014a00'
+        background: '#00ce00',
+        // border: '1px solid #014a00',
+        position: 'relative'
     },
     red: {
-        background: '#ff0000c7',
-        border: '1px solid #440202'
-    }
+        background: '#da0000',
+        // border: '1px solid #440202',,
+        animation: '$red 3s ease-in-out infinite alternate'
+    },
+    '@keyframes red': {
+        '0%': {
+            opacity: 1
+        },
+        '100%': {
+            opacity: 0.85
+        }
+    },
+    dotLine: {
+        width: 50,
+        height: '100%',
+        background: 'linear-gradient(90deg, rgba(0,206,0,0.7497373949579832) 0%, rgba(31,255,1,1) 50%, rgba(0,206,0,0.7805497198879552) 100%)',
+        zIndex: 2,
+        position: 'absolute',
+        left: -11,
+        // boxShadow: '12px 29px 81px 0px rgb(0 0 0 / 75%)',
+        animation: '$colors 3s ease-in-out infinite'
+    },
+    '@keyframes colors': {
+        '0%': {
+            left: -51
+        },
+        '100%': {
+            left: '101%'
+        }
+    },
+    versionDate: {
+        alignSelf: 'center'
+    },
+    description: {
+        color: theme.palette.type === 'dark' ? '#222' : 'inherit'
+    },
+
+    // cardContent: {
+    //     overflow: 'auto'
+    // },
+    cardContentDiv: {
+        position: 'sticky',
+        right: 0,
+        top: 0,
+        background: 'silver',
+        paddingTop: 10
+    },
+    cardContentFlex: {
+        display: 'flex'
+    },
+    cardContentFlexBetween: {
+        display: 'flex',
+        justifyContent: 'space-between'
+    },
+    cardContent2: {
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between'
+    },
+    cardMargin10: {
+        marginTop: 10,
+    },
+    availableVersion: {
+        display: 'flex',
+        justifyContent: 'space-between'
+    },
+    buttonUpdateIcon: {
+        height: 20,
+        width: 20,
+        marginRight: 10
+    },
+    curdContentFlexCenter: {
+        display: 'flex',
+        alignItems: 'center'
+    },
+
+    classPoll: {
+        color: 'orange'
+    },
+    classPush: {
+        color: 'green'
+    },
+    classAssumption: {
+        color: 'red',
+        transform: 'rotate(90deg)'
+    },
 });
+
+
+let outputCache = 'null';
+let inputCache = 'null';
+
 const CardHosts = ({
     name,
     classes,
@@ -305,87 +406,56 @@ const CardHosts = ({
     available,
     installed,
     events,
-    t
+    t,
+    description,
+    _id, 
+    socket,
+    setEditDilog,
+    executeCommand
 }) => {
     const [openCollapse, setCollapse] = useState(false);
-    const [mouseOver, setMouseOver] = useState(false);
-    const [openSelect, setOpenSelect] = useState(false);
-    const [openDialogCron, setOpenDialogCron] = useState(false);
-    const [openDialogSchedule, setOpenDialogSchedule] = useState(false);
-    const [openDialogText, setOpenDialogText] = useState(false);
-    const [openDialogSelect, setOpenDialogSelect] = useState(false);
-    const [openDialogDelete, setOpenDialogDelete] = useState(false);
-    const [openDialogMemoryLimit, setOpenDialogMemoryLimit] = useState(false);
-    const [select, setSelect] = useState(logLevel);
-    const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
-
-    // const customModal =
-    //     openDialogSelect ||
-    //         openDialogText ||
-    //         openDialogDelete ||
-    //         openDialogMemoryLimit ?
-    //         <CustomModal
-    //             title={
-    //                 (openDialogText && t('Enter title for %s', instance.id)) ||
-    //                 (openDialogSelect && t('Edit log level rule for %s', instance.id)) ||
-    //                 (openDialogDelete && t('Please confirm')) ||
-    //                 (openDialogMemoryLimit && t('Edit memory limit rule for %s', instance.id))
-    //             }
-    //             open={true}
-    //             applyDisabled={openDialogText || openDialogMemoryLimit}
-    //             textInput={openDialogText || openDialogMemoryLimit}
-    //             defaultValue={openDialogText ? name : openDialogMemoryLimit ? memoryLimitMB : ''}
-    //             onApply={(value) => {
-    //                 if (openDialogSelect) {
-    //                     setLogLevel(select)
-    //                     setOpenDialogSelect(false);
-    //                 } else if (openDialogText) {
-    //                     setName(value);
-    //                     setOpenDialogText(false);
-    //                 } else if (openDialogDelete) {
-    //                     setOpenDialogDelete(false);
-    //                     deletedInstances();
-    //                 } else if (openDialogMemoryLimit) {
-    //                     setMemoryLimitMB(value)
-    //                     setOpenDialogMemoryLimit(false);
-    //                 }
-    //             }}
-    //             onClose={() => {
-    //                 if (openDialogSelect) {
-    //                     setSelect(logLevel);
-    //                     setOpenDialogSelect(false);
-    //                 } else if (openDialogText) {
-    //                     setOpenDialogText(false);
-    //                 } else if (openDialogDelete) {
-    //                     setOpenDialogDelete(false);
-    //                 } else if (openDialogMemoryLimit) {
-    //                     setOpenDialogMemoryLimit(false);
-    //                 }
-    //             }}>
-    //             {openDialogSelect && <FormControl className={classes.logLevel} variant="outlined" >
-    //                 <InputLabel htmlFor="outlined-age-native-simple">{t('log level')}</InputLabel>
-    //                 <Select
-    //                     variant="standard"
-    //                     value={select}
-    //                     fullWidth
-    //                     onChange={el => setSelect(el.target.value)}
-    //                 >
-    //                     {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
-    //                         {t(el)}
-    //                     </MenuItem>)}
-    //                 </Select>
-    //             </FormControl>}
-    //             {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
-    //         </CustomModal>
-    //         : null;
-
-
-
-
-    const [visibleEdit, handlerEdit] = useState(false);
+    const refEvents = useRef();
+    const eventsFunc = (input, output) => {
+        let event;
+        if (input) {
+            inputCache = input;
+            event = `⇥${input} / ↦${outputCache}`;
+        } else if (output) {
+            outputCache = output;
+            event = `⇥${inputCache} / ↦${output}`;
+        } else {
+            event = `⇥null / ↦null`;
+        }
+        if (refEvents.current) {
+            refEvents.current.innerHTML = event;
+        }
+    }
+    useEffect(() => {
+        socket.subscribeState(`${_id}.inputCount`, (_, el) => eventsFunc(el.val));
+        socket.subscribeState(`${_id}.outputCount`, (_, el) => eventsFunc(null, el.val));
+        return () => {
+            socket.unsubscribeObject(`${_id}.inputCount`, (_, el) => eventsFunc(el.val));
+            socket.unsubscribeObject(`${_id}.outputCount`, (_, el) => eventsFunc(null, el.val));
+        }
+    }, [_id, socket])
+    const [focused, setFocused] = useState(false);
     return <Card key={key} className={clsx(classes.root, hidden ? classes.hidden : '')}>
-        {/* {customModal} */}
-
+        {(openCollapse || focused) && <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
+            <CardContent className={classes.cardContentInfo}>
+                <div className={classes.cardContentDiv}>
+                    <div className={classes.close} onClick={() => setCollapse((bool) => !bool)} />
+                </div>
+                <Typography gutterBottom component={'span'} variant={'body2'} className={classes.description}>
+                    {t('Info')}
+                </Typography>
+                    {description}
+            </CardContent>
+            <div className={classes.footerBlock}>
+            </div>
+        </div>}
+        <div className={clsx(classes.onOffLine, alive ? classes.green : classes.red)} >
+            {alive && <div className={classes.dotLine} />}
+        </div>
         <div
             style={{ background: color || 'inherit' }}
             className={clsx(
@@ -396,15 +466,17 @@ const CardHosts = ({
             )}>
             <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
             <div style={{
-                color: (color && Utils.invertColor(color)) || 'inherit',
+                color: (color && Utils.invertColor(color,true)) || 'inherit',
             }} className={classes.adapter}>{name}</div>
-            <div className={clsx(classes.onOff, alive ? classes.green : classes.red)} />
+            <Fab
+                disabled={typeof description === 'string'}
+                onMouseOut={() => setFocused(false)}
+                onMouseOver={() => setFocused(true)}
+                onClick={() => setCollapse((bool) => !bool)} className={classes.fab} color="primary" aria-label="add">
+                <MoreVertIcon />
+            </Fab>
         </div>
-
         <CardContent className={classes.cardContentH5}>
-            <Typography variant="body2" color="textSecondary" component="p">
-                {t('Type: %s', type)}
-            </Typography>
             <Typography variant="body2" color="textSecondary" component="p">
                 {t('Title: %s', title)}
             </Typography>
@@ -417,21 +489,21 @@ const CardHosts = ({
             <Typography variant="body2" color="textSecondary" component="p">
                 {t('Installed: %s', installed)}
             </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-                {t('Events: %s', events)}
+            <Typography variant="body2" color="textSecondary" component="div">
+                <div className={classes.displayFlex}>{t('Events: ')}<div ref={refEvents} className={classes.marginLeft5}>{events}</div></div>
             </Typography>
             <div className={classes.marginTop10}>
                 <Typography component={'span'} className={classes.enableButton}>
                     <IconButton
                         size="small"
                         className={clsx(classes.button)}
-                        onClick={() => setOpenDialogText(true)}
+                        onClick={() => setEditDilog(true)}
                     >
                         <EditIcon />
                     </IconButton>
 
-                    <Tooltip title={t('Reload')}>
-                        <IconButton >
+                    <Tooltip title={t('Auto restart')}>
+                        <IconButton onClick={executeCommand}>
                             <CachedIcon />
                         </IconButton>
                     </Tooltip>
