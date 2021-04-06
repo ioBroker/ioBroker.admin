@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {  CardContent, CardMedia,  IconButton,  Tooltip, Typography } from "@material-ui/core";
+import { CardContent, CardMedia, IconButton, Tooltip, Typography } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import clsx from 'clsx';
@@ -9,7 +9,6 @@ import { green, red } from '@material-ui/core/colors';
 import EditIcon from '@material-ui/icons/Edit';
 import CachedIcon from '@material-ui/icons/Cached';
 import PropTypes from "prop-types";
-import Utils from '@iobroker/adapter-react/Components/Utils';
 
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
@@ -57,23 +56,6 @@ const styles = theme => ({
             backgroundColor: '#fff',
         }
     },
-    installed: {
-        background: '#77c7ff8c'
-    },
-    /*update: {
-        background: '#10ff006b'
-    },*/
-    fab: {
-        position: 'absolute',
-        bottom: -20,
-        width: 40,
-        height: 40,
-        right: 20,
-    },
-    greenText: {
-        color: theme.palette.success.dark,
-    },
-
     collapse: {
         height: 150,
         backgroundColor: 'silver',
@@ -314,12 +296,19 @@ const styles = theme => ({
         }
     },
     flex: {
-        flex: 1
+        flex: 1,
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
     },
 
     cardContentInfo: {
         overflow: 'auto',
-        paddingTop: 0
+        paddingTop: 0,
+        justifyContent: 'center',
+        display: 'flex',
+        height: '100%',
+        alignItems: 'center'
     },
     cardContentDiv: {
         position: 'sticky',
@@ -328,16 +317,64 @@ const styles = theme => ({
         background: 'silver',
         paddingTop: 10
     },
-    wrapperFlex:{
-        display: 'flex', cursor: 'pointer'
+    wrapperFlex: {
+        display: 'flex', cursor: 'pointer',
+        '& .warning': {
+            backgroundColor: '#de0000 !important',
+            '&:before': {
+                position: 'absolute',
+                right: 0,
+                top: -5,
+                content: '"\u26A0"',
+                fontSize: 25,
+                height: '30px',
+                width: '30px',
+                color:'black'
+            },
+            animation: '$warning 2.5s ease-in-out infinite alternate'
+        }
     },
-    wrapperColor:{
+    '@keyframes warning': {
+        '0%': {
+            opacity: 1
+        },
+        '100%': {
+            opacity: 0.7
+        }
+    },
+    wrapperColor: {
         position: 'relative',
         overflow: 'hidden'
-    }
+    },
+    '@media screen and (max-width: 1100px)': {
+        hidden1100: {
+            display: 'none !important'
+        },
+    },
+    '@media screen and (max-width: 800px)': {
+        hidden800: {
+            display: 'none !important'
+        },
+    },
+    '@media screen and (max-width: 600px)': {
+        hidden600: {
+            display: 'none !important'
+        },
+    },
+    '@media screen and (max-width: 500px)': {
+        wrapperFlex: {
+            flexDirection: 'column'
+        },
+    },
 });
+
 let outputCache = 'null';
 let inputCache = 'null';
+
+let diskFreeCache = 1;
+let diskSizeCache = 1;
+let diskWarningCache = 1;
+
 const RowHosts = ({
     name,
     classes,
@@ -356,11 +393,18 @@ const RowHosts = ({
     _id,
     socket,
     setEditDilog,
-    executeCommand
+    executeCommand,
+    currentHost,
+    dialogUpgrade,
+    executeCommandRemove
 }) => {
+
     const [openCollapse, setCollapse] = useState(false);
     const [focused, setFocused] = useState(false);
+
     const refEvents = useRef();
+    const refWarning = useRef();
+
     const eventsFunc = (input, output) => {
         let event;
         if (input) {
@@ -376,26 +420,60 @@ const RowHosts = ({
             refEvents.current.innerHTML = event;
         }
     }
+
+    const warningFunc = (diskFree, diskSize, diskWarning) => {
+        let warning;
+        if (diskFree) {
+            diskFreeCache = diskFree;
+            warning = (diskFree / diskSizeCache) * 100 <= diskWarningCache;
+        } else if (diskSize) {
+            diskSizeCache = diskSize;
+            warning = (diskFreeCache / diskSize) * 100 <= diskWarningCache;
+        } else if (diskWarning) {
+            diskWarningCache = diskWarning;
+            warning = (diskFreeCache / diskSizeCache) * 100 <= diskWarning;
+        }
+        if (refWarning.current) {
+            if (warning) {
+                refWarning.current.setAttribute('title', t('disk Warning'));
+                refWarning.current.classList.add('warning');
+            } else {
+                refWarning.current.removeAttribute('title');
+                refWarning.current.classList.remove('warning');
+            }
+        }
+    }
+
     useEffect(() => {
         socket.subscribeState(`${_id}.inputCount`, (_, el) => eventsFunc(el.val));
         socket.subscribeState(`${_id}.outputCount`, (_, el) => eventsFunc(null, el.val));
+
+        socket.subscribeState(`${_id}.diskFree`, (_, el) => warningFunc(el.val));
+        socket.subscribeState(`${_id}.diskSize`, (_, el) => warningFunc(null, el.val));
+        socket.subscribeState(`${_id}.diskWarning`, (_, el) => warningFunc(null, null, el.val));
         return () => {
             socket.unsubscribeObject(`${_id}.inputCount`, (_, el) => eventsFunc(el.val));
             socket.unsubscribeObject(`${_id}.outputCount`, (_, el) => eventsFunc(null, el.val));
+
+            socket.unsubscribeObject(`${_id}.diskFree`, (_, el) => warningFunc(el.val));
+            socket.unsubscribeObject(`${_id}.diskSize`, (_, el) => warningFunc(null, el.val));
+            socket.unsubscribeObject(`${_id}.diskWarning`, (_, el) => warningFunc(null, null, el.val));
         }
-    }, [_id, socket]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [_id, socket,classes]);
     return <div
         onMouseOut={() => setFocused(false)}
         onMouseOver={() => setFocused(true)}
         onMouseMove={() => setFocused(true)}
         onClick={() => setCollapse((bool) => !bool)}
         key={key} className={clsx(classes.root, hidden ? classes.hidden : '')}>
-        <div style={{border:`2px solid ${color || 'inherit'}`,borderRadius:5}} className={classes.wrapperFlex}>
+        <div style={{ border: `2px solid ${color || 'inherit'}`, borderRadius: 5 }} className={classes.wrapperFlex}>
             <div className={classes.wrapperColor}>
                 <div className={clsx(classes.onOff, alive ? classes.green : classes.red)} />
                 {alive && <div className={classes.dotLine} />}
             </div>
             <div
+                ref={refWarning}
                 // style={{ background: color || 'inherit' }}
                 className={clsx(
                     classes.imageBlock,
@@ -404,26 +482,24 @@ const RowHosts = ({
                 <div className={classes.adapter}>{name}</div>
             </div>
             <CardContent className={classes.cardContentH5}>
-                <Typography className={classes.flex} variant="body2" color="textSecondary" component="p">
+                <Typography className={clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="p">
                     {title}
                 </Typography>
-                <Typography className={classes.flex} variant="body2" color="textSecondary" component="p">
+                <Typography className={clsx(classes.flex, classes.hidden1100)} variant="body2" color="textSecondary" component="p">
                     {os}
                 </Typography>
-                <Typography className={classes.flex} variant="body2" color="textSecondary" component="p">
+                <Typography className={clsx(classes.flex, classes.hidden800)} variant="body2" color="textSecondary" component="p">
                     {available}
                 </Typography>
-                <Typography className={classes.flex} variant="body2" color="textSecondary" component="p">
+                <Typography className={clsx(classes.flex, classes.hidden800)} variant="body2" color="textSecondary" component="p">
                     {installed}
                 </Typography>
-                <Typography className={classes.flex} variant="body2" color="textSecondary" component="div">
+                <Typography className={clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="div">
                     <div ref={refEvents}>{events}</div>
                 </Typography>
                 <div className={classes.marginTop10}>
                     <Typography component={'span'} className={classes.enableButton}>
                         <IconButton
-                            size="small"
-                            className={clsx(classes.button)}
                             onClick={(e) => {
                                 setEditDilog(true);
                                 e.stopPropagation();
@@ -439,22 +515,22 @@ const RowHosts = ({
                                 <CachedIcon />
                             </IconButton>
                         </Tooltip>
-                        <Tooltip title={t('Reload')}>
-                            <IconButton >
-                                {alive ? <RefreshIcon /> : <DeleteIcon />}
+                        <Tooltip title={t((alive || currentHost) ? 'Upgrade' : 'Remove')}>
+                            <IconButton onClick={(e) => {
+                                (alive || currentHost) ? dialogUpgrade() : executeCommandRemove();
+                                e.stopPropagation();
+                            }}>
+                                {(alive || currentHost) ? <RefreshIcon /> : <DeleteIcon />}
                             </IconButton>
                         </Tooltip>
                     </Typography>
                 </div>
             </CardContent>
         </div>
-        {(openCollapse || focused) && typeof description !== 'string' &&
+        {(openCollapse || focused) && typeof description === 'object' &&
             <div
                 className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : classes.collapseOn)}>
                 <CardContent className={classes.cardContentInfo}>
-                    <Typography gutterBottom component={'span'} variant={'body2'} className={classes.description}>
-                        {t('Info')}
-                    </Typography>
                     {description}
                 </CardContent>
                 <div className={classes.footerBlock}>

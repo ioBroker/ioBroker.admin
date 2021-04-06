@@ -662,7 +662,7 @@ class App extends Router {
                         t={I18n.t}
                         lang={I18n.getLanguage()}
                         expertMode={this.state.expertMode}
-                        executeCommand={cmd => this.executeCommand(cmd)}
+                        executeCommand={(cmd,cb)=>this.executeCommand(cmd,cb)}
                         commandRunning={this.state.commandRunning}
                         onSetCommandRunning={commandRunning => this.setState({commandRunning})}
 
@@ -947,10 +947,11 @@ class App extends Router {
         });
     }
 
-    executeCommand(cmd) {
+    executeCommand(cmd,callBack = false) {
         this.setState({
             cmd,
-            cmdDialog: true
+            cmdDialog: true,
+            callBack
         });
     }
 
@@ -959,7 +960,8 @@ class App extends Router {
             cmd: null,
             cmdDialog: false,
             commandError: false,
-            performed: false
+            performed: false,
+            callBack:false
         });
     }
 
@@ -980,6 +982,7 @@ class App extends Router {
                 onSetCommandRunning={commandRunning => this.setState({commandRunning})}
                 onClose={() => this.closeCmdDialog()}
                 visible={this.state.cmdDialog}
+                callBack={this.state.callBack}
                 header={i18n.t('Command')}
                 onInBackground={() => this.setState({ cmdDialog: false })}
                 cmd={this.state.cmd}

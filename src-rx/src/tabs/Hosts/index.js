@@ -25,8 +25,10 @@ import { useStateLocal } from '../../helpers/hooks/useStateLocal';
 import CardHosts from '../../components/CardHosts';
 import RowHosts from '../../components/RowHosts';
 import HostEdit from '../../components/HostEdit';
-import Utils from '@iobroker/adapter-react/Components/Utils';
 import { Skeleton } from '@material-ui/lab';
+import { JsControllerDialogFunc } from '../../dialogs/JsControllerDialog';
+import clsx from 'clsx';
+import Utils from '../../Utils';
 
 const styles = theme => ({
     table: {
@@ -136,7 +138,7 @@ const styles = theme => ({
         height: 30,
         display: 'flex',
         margin: 7,
-        color:'silver'
+        color: 'silver'
     },
     tabHeaderFirstItem: {
         width: 312,
@@ -151,9 +153,54 @@ const styles = theme => ({
         fontWeight: 600,
         alignSelf: 'center'
     },
+    tabHeaderItemButton: {
+        width:144,
+        fontSize: 14,
+        fontWeight: 600,
+        alignSelf: 'center'
+    },
     tabFlex: {
         display: 'flex', flex: 1, padding: '0 10px'
-    }
+    },
+    bold: {
+        fontWeight: 'bold'
+    },
+    wrapperInfo: {
+        display: 'flex',
+        flexFlow: 'wrap',
+    },
+    wrapperBlockItem: {
+        display: 'flex',
+        flexFlow: 'nowrap',
+        whiteSpace: 'nowrap',
+        margin: 10,
+        color:'black'
+    },
+    black:{
+        color:'black'
+    },
+    nowrap: {
+        display: 'flex',
+        flexFlow: 'nowrap',
+        flex: 1,
+        whiteSpace: 'nowrap',
+        marginRight: 5
+    },
+    '@media screen and (max-width: 1100px)': {
+        hidden1100: {
+            display: 'none !important'
+        },
+    },
+    '@media screen and (max-width: 800px)': {
+        hidden800: {
+            display: 'none !important'
+        },
+    },
+    '@media screen and (max-width: 600px)': {
+        hidden600: {
+            display: 'none !important'
+        },
+    },
 });
 
 let wordCache = {};
@@ -175,11 +222,11 @@ const getHostDescriptionAll = (id, t, classes, hostsData) => {
     if (typeof hostData === 'string') {
         return [hostData]
     }
-    return [(<ul>
+    return [(<ul className={classes.black}>
         {
             hostData && typeof hostData === 'object' && Object.keys(hostData).map(value => <li key={value}>
                 {hostData && typeof hostData === 'object' ?
-                    <span>
+                    <span className={classes.black}>
                         <span className={classes.bold}>{t(value)}: </span>
                         {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
                     </span>
@@ -188,7 +235,19 @@ const getHostDescriptionAll = (id, t, classes, hostsData) => {
                 }
             </li>)
         }
-    </ul>), hostData && typeof hostData === 'object' && Object.keys(hostData).reduce((acom, item) => acom + `${t(item)}:${(formatInfo[item] ? formatInfo[item](hostData[item], t) : hostData[item] || '--')}\n`)
+    </ul>), <div className={classes.wrapperInfo}>
+        {hostData && typeof hostData === 'object' && Object.keys(hostData).map(value => <div
+            className={classes.wrapperBlockItem} key={value}>
+            {hostData && typeof hostData === 'object' ?
+                <>
+                    <span className={clsx(classes.bold, classes.nowrap)}>{t(value)}: </span>
+                    {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
+                </>
+                :
+                <Skeleton />
+            }
+        </div>)}</div>
+
     ];
 }
 
@@ -222,12 +281,12 @@ const Hosts = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const t = (word, arg1) => {
-        if (arg1 !== undefined && !wordCache[word]) {
-            wordCache[word] = props.t(word, arg1);
+        if (arg1 !== undefined && !wordCache[`${word} ${arg1}`]) {
+            wordCache[`${word} ${arg1}`] = props.t(word, arg1);
         } else if (!wordCache[word]) {
             wordCache[word] = props.t(word);
         }
-        return wordCache[word];
+        return arg1 !== undefined ? wordCache[`${word} ${arg1}`] : wordCache[word];
     }
     const [hosts, setHosts] = useState([]);
     const [alive, setAlive] = useState({});
@@ -238,7 +297,7 @@ const Hosts = ({
     const [filterText, setFilterText] = useStateLocal(false, 'Hosts.filterText');
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(async () => {
-        let hostsArray = await socket.getHosts('');
+        let hostsArray = await socket.getHosts(true);
         const repositoryProm = await socket.getRepository(currentHost, { update: false });
         hostsArray.forEach(async ({ _id }) => {
             let aliveValue = await socket.getState(`${_id}.alive`);
@@ -250,7 +309,6 @@ const Hosts = ({
         setHostsData(hostDataObj);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [refresh]);
-
     const getAllArrayHosts = useMemo(() => hosts.map(({
         _id,
         common: { name, icon, color, title, installedVersion },
@@ -273,6 +331,9 @@ const Hosts = ({
             description={getHostDescriptionAll(_id, t, classes, hostsData)[0]}
             available={repository['js-controller']?.latestVersion || '-'}
             executeCommand={() => executeCommand('restart')}
+            executeCommandRemove={() => executeCommand(`host remove ${name}`)}
+            dialogUpgrade={JsControllerDialogFunc}
+            currentHost={currentHost === _id}
             installed={installedVersion}
             events={'⇥null / ↦null'}
             t={t}
@@ -292,7 +353,10 @@ const Hosts = ({
             title={title}
             os={platform}
             executeCommand={() => executeCommand('restart')}
-            description={getHostDescriptionAll(_id, t, classes, hostsData)[0]}
+            executeCommandRemove={() => executeCommand(`host remove ${name}`)}
+            dialogUpgrade={JsControllerDialogFunc}
+            currentHost={currentHost === _id}
+            description={getHostDescriptionAll(_id, t, classes, hostsData)[1]}
             available={repository['js-controller']?.latestVersion || '-'}
             installed={installedVersion}
             events={'⇥null / ↦null'}
@@ -302,7 +366,7 @@ const Hosts = ({
         name
     })
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    ), [hosts, alive, repository, hostsData]);
+    ), [hosts, alive, repository, hostsData, classes]);
 
     const [editDilog, setEditDilog] = useState({
         index: 0,
@@ -312,7 +376,7 @@ const Hosts = ({
     const getPanels = useCallback(() => {
         const items = getAllArrayHosts.filter(el => filterText ? el.name.toLowerCase().includes(filterText.toLowerCase()) : true).map(el => viewMode ? el.renderCard : el.renderRow);
         return items.length ? items : t('All items are filtered out');
-    }, [getAllArrayHosts, t, filterText, viewMode]);
+    }, [getAllArrayHosts, t, filterText, viewMode,]);
 
     const renderEditObjectDialog = () => {
         if (!editDilog.dialogName) {
@@ -331,11 +395,7 @@ const Hosts = ({
                 })
                 if (obj) {
                     socket.setObject(obj._id, obj)
-                        .then(_ => {
-                            const copyHosts = JSON.parse(JSON.stringify(hosts));
-                            copyHosts[editDilog.index] = obj;
-                            setHosts(copyHosts);
-                        })
+                        .then(_ => setRefresh((el)=>!el))
                         .catch(e => alert('Cannot write object: ' + e));
                 }
             }}
@@ -355,7 +415,7 @@ const Hosts = ({
                 </IconButton>
             </Tooltip>
             <Tooltip title={t('Reload')}>
-                <IconButton onClick={() => setRefresh(!refresh)}>
+                <IconButton onClick={() => setRefresh((el)=>!el)}>
                     <RefreshIcon />
                 </IconButton>
             </Tooltip>
@@ -388,12 +448,12 @@ const Hosts = ({
                             {t('Name:')}
                         </div>
                         <div className={classes.tabFlex}>
-                            <div className={classes.tabHeaderItem}>{t('Title:')}</div>
-                            <div className={classes.tabHeaderItem}>{t('OS:')}</div>
-                            <div className={classes.tabHeaderItem}>{t('Available:')}</div>
-                            <div className={classes.tabHeaderItem}>{t('Installed:')}</div>
-                            <div className={classes.tabHeaderItem}>{t('Events:')}</div>
-                            <div className={classes.tabHeaderItem}>{t('Buttons:')}</div>
+                            <div className={clsx(classes.tabHeaderItem,classes.hidden600)}>{t('Title:')}</div>
+                            <div className={clsx(classes.tabHeaderItem,classes.hidden1100)}>{t('OS:')}</div>
+                            <div className={clsx(classes.tabHeaderItem,classes.hidden800)}>{t('Available:')}</div>
+                            <div className={clsx(classes.tabHeaderItem,classes.hidden800)}>{t('Installed:')}</div>
+                            <div className={clsx(classes.tabHeaderItem,classes.hidden600)}>{t('Events:')}</div>
+                            <div className={classes.tabHeaderItemButton}></div>
                         </div>
                     </div>}
                 {getPanels()}

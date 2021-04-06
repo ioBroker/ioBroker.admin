@@ -21,8 +21,8 @@
 ## Adapters
 - Adapters - Use readme renderer from www.iobroker.net (BF)
 - Show number of possible updates on "Adapters" in menu on the left (impossible ?)
-- Open the configuration dialog for just installed instance (only if document.hidden === false) (https://github.com/ioBroker/ioBroker.admin/issues/541)
-  - https://github.com/ioBroker/ioBroker.admin/issues/557  
+<!-- - Open the configuration dialog for just installed instance (only if document.hidden === false) (https://github.com/ioBroker/ioBroker.admin/issues/541)
+  - https://github.com/ioBroker/ioBroker.admin/issues/557   -->
 ## Instances
 
 ## Objects
@@ -45,10 +45,11 @@
 - Edit files (by pressing button "Edit" opened edit mode) : json, js, txt, html (only in expert mode)
   
 ## Hosts  
-- Hosts tab => show all hosts in a list with settings//
+<!-- - Hosts tab => show all hosts in a list with settings -->
 
-- Show on the second tab: CPU %, Mem%, uptime in days/hours, show in red if (diskFree / diskSize) * 100 <= diskWarning, show header in blink-red
-- iobroker upgrade self
+- Show on the second tab: CPU %, Mem%, uptime in days/hours, 
+<!-- show in red if (diskFree / diskSize) * 100 <= diskWarning, show header in blink-red -->
+<!-- - iobroker upgrade self -->
 <!-- - iobroker restart -->
 <!-- - if not alive => events "- / -" -->
 ## Users
