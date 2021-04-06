@@ -35,7 +35,7 @@ class JsonConfigComponent extends Component {
     }
 
     readSettings() {
-        if (this.props.common && this.props.data) {
+        if ((this.props.custom || this.props.common) && this.props.data) {
             return Promise.resolve();
         } else {
             return this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`)
@@ -162,10 +162,11 @@ class JsonConfigComponent extends Component {
 JsonConfigComponent.propTypes = {
     socket: PropTypes.object.isRequired,
 
-    adapterName: PropTypes.string.isRequired,
+    adapterName: PropTypes.string,
     instance: PropTypes.number.isRequired,
     common: PropTypes.object,
-    customs: PropTypes.object,
+    custom: PropTypes.object, // is the customs settings must be shown
+    customs: PropTypes.object, // custom components
 
     themeType: PropTypes.string,
     themeName: PropTypes.string,

@@ -757,6 +757,7 @@ class App extends Router {
                     <Objects
                         key="objects"
                         t={I18n.t}
+                        theme={this.state.theme}
                         themeName={this.state.themeName}
                         themeType={this.state.themeType}
                         expertMode={this.state.expertMode}

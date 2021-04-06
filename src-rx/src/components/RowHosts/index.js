@@ -10,7 +10,6 @@ import EditIcon from '@material-ui/icons/Edit';
 import CachedIcon from '@material-ui/icons/Cached';
 import PropTypes from "prop-types";
 
-
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
@@ -405,22 +404,21 @@ const RowHosts = ({
     const refEvents = useRef();
     const refWarning = useRef();
 
-    const eventsFunc = (input, output) => {
-        let event;
-        if (input) {
-            inputCache = input;
-            event = `⇥${input} / ↦${outputCache}`;
-        } else if (output) {
-            outputCache = output;
-            event = `⇥${inputCache} / ↦${output}`;
-        } else {
-            event = `⇥null / ↦null`;
-        }
+    const eventsInputFunc = (_, input) => {
+        inputCache = input ? input.val : '-';
         if (refEvents.current) {
-            refEvents.current.innerHTML = event;
+            refEvents.current.innerHTML = `⇥${inputCache} / ↦${outputCache}`;
         }
-    }
+    };
 
+    const eventsOutputFunc = (_, output) => {
+        outputCache = output ? output.val : '-';
+        if (refEvents.current) {
+            refEvents.current.innerHTML = `⇥${inputCache} / ↦${outputCache}`;
+        }
+    };
+
+    // TODO: here is the same as with input/output
     const warningFunc = (diskFree, diskSize, diskWarning) => {
         let warning;
         if (diskFree) {
@@ -442,25 +440,27 @@ const RowHosts = ({
                 refWarning.current.classList.remove('warning');
             }
         }
-    }
+    };
 
     useEffect(() => {
-        socket.subscribeState(`${_id}.inputCount`, (_, el) => eventsFunc(el.val));
-        socket.subscribeState(`${_id}.outputCount`, (_, el) => eventsFunc(null, el.val));
+        socket.subscribeState(`${_id}.inputCount`, eventsInputFunc);
+        socket.subscribeState(`${_id}.outputCount`, eventsOutputFunc);
 
-        socket.subscribeState(`${_id}.diskFree`, (_, el) => warningFunc(el.val));
-        socket.subscribeState(`${_id}.diskSize`, (_, el) => warningFunc(null, el.val));
-        socket.subscribeState(`${_id}.diskWarning`, (_, el) => warningFunc(null, null, el.val));
+        socket.subscribeState(`${_id}.diskFree`, (_, el) => warningFunc(el?.val));
+        socket.subscribeState(`${_id}.diskSize`, (_, el) => warningFunc(null, el?.val));
+        socket.subscribeState(`${_id}.diskWarning`, (_, el) => warningFunc(null, null, el?.val));
+
         return () => {
-            socket.unsubscribeObject(`${_id}.inputCount`, (_, el) => eventsFunc(el.val));
-            socket.unsubscribeObject(`${_id}.outputCount`, (_, el) => eventsFunc(null, el.val));
+            socket.unsubscribeObject(`${_id}.inputCount`, eventsInputFunc);
+            socket.unsubscribeObject(`${_id}.outputCount`, eventsOutputFunc);
 
-            socket.unsubscribeObject(`${_id}.diskFree`, (_, el) => warningFunc(el.val));
-            socket.unsubscribeObject(`${_id}.diskSize`, (_, el) => warningFunc(null, el.val));
-            socket.unsubscribeObject(`${_id}.diskWarning`, (_, el) => warningFunc(null, null, el.val));
+            //socket.unsubscribeObject(`${_id}.diskFree`, (_, el) => warningFunc(el.val));
+            //socket.unsubscribeObject(`${_id}.diskSize`, (_, el) => warningFunc(null, el.val));
+            //socket.unsubscribeObject(`${_id}.diskWarning`, (_, el) => warningFunc(null, null, el.val));
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [_id, socket,classes]);
+
     return <div
         onMouseOut={() => setFocused(false)}
         onMouseOver={() => setFocused(true)}
@@ -540,10 +540,6 @@ const RowHosts = ({
 }
 
 RowHosts.propTypes = {
-    /**
-     * Link and text
-     * {link: 'https://example.com', text: 'example.com'}
-     */
     t: PropTypes.func,
 };
 

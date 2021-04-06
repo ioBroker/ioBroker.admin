@@ -12,7 +12,6 @@ import CachedIcon from '@material-ui/icons/Cached';
 import PropTypes from "prop-types";
 import Utils from '@iobroker/adapter-react/Components/Utils';
 
-
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
@@ -468,12 +467,12 @@ const CardHosts = ({
     }
 
     useEffect(() => {
-        socket.subscribeState(`${_id}.inputCount`, (_, el) => eventsFunc(el.val));
-        socket.subscribeState(`${_id}.outputCount`, (_, el) => eventsFunc(null, el.val));
+        socket.subscribeState(`${_id}.inputCount`, (_, el) => eventsFunc(el?.val));
+        socket.subscribeState(`${_id}.outputCount`, (_, el) => eventsFunc(null, el?.val));
 
-        socket.subscribeState(`${_id}.diskFree`, (_, el) => warningFunc(el.val));
-        socket.subscribeState(`${_id}.diskSize`, (_, el) => warningFunc(null, el.val));
-        socket.subscribeState(`${_id}.diskWarning`, (_, el) => warningFunc(null, null, el.val));
+        socket.subscribeState(`${_id}.diskFree`, (_, el) => warningFunc(el?.val));
+        socket.subscribeState(`${_id}.diskSize`, (_, el) => warningFunc(null, el?.val));
+        socket.subscribeState(`${_id}.diskWarning`, (_, el) => warningFunc(null, null, el?.val));
         return () => {
             socket.unsubscribeObject(`${_id}.inputCount`, (_, el) => eventsFunc(el.val));
             socket.unsubscribeObject(`${_id}.outputCount`, (_, el) => eventsFunc(null, el.val));
