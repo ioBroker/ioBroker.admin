@@ -47,9 +47,12 @@ class JsonConfigComponent extends Component {
         this.readSettings()
             .then(() => this.props.socket.getSystemConfig())
             .then(systemConfig => {
-                const state = {systemConfig: systemConfig.common};
-                this.setState(state, () =>
-                    this.props.socket.subscribeState(`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`, this.onAlive));
+                if (this.props.custom) {
+                    this.setState({systemConfig: systemConfig.common});
+                } else {
+                    this.setState({systemConfig: systemConfig.common}, () =>
+                        this.props.socket.subscribeState(`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`, this.onAlive));
+                }
             });
     }
 
@@ -163,9 +166,9 @@ JsonConfigComponent.propTypes = {
     socket: PropTypes.object.isRequired,
 
     adapterName: PropTypes.string,
-    instance: PropTypes.number.isRequired,
+    instance: PropTypes.number,
     common: PropTypes.object,
-    custom: PropTypes.object, // is the customs settings must be shown
+    custom: PropTypes.bool, // is the customs settings must be shown
     customs: PropTypes.object, // custom components
 
     themeType: PropTypes.string,

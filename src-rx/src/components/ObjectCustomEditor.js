@@ -416,6 +416,7 @@ class ObjectCustomEditor extends Component {
                     const adapter = inst.split('.')[0];
                     // Calculate defaults for this object
                     let _default = this.getDefaultValues(adapter, customObj);
+                    _default.enabled = false;
 
                     Object.keys(_default).forEach(_attr => {
                         if (commons[inst][_attr] === undefined) {
@@ -445,6 +446,12 @@ class ObjectCustomEditor extends Component {
 
     isChanged() {
         return !!Object.keys(this.state.newValues).length;
+    }
+
+    combineNewAndOld(instance) {
+        const data = Object.assign({}, this.commonConfig[instance] || {}, this.state.newValues[instance] || {});
+        console.log(instance + ': ' + JSON.stringify(data));
+        return data;
     }
 
     renderOneCustom(instance, instanceObj) {
@@ -511,12 +518,8 @@ class ObjectCustomEditor extends Component {
                             themeName={this.props.themeName}
                             themeType={this.props.themeType}
 
-                            adapterName={adapter}
-                            instance={this.props.instance}
-
-                            schema={this.jsonConfigs[adapter]}
-                            common={this.state.common}
-                            data={this.state.data}
+                            schema={this.jsonConfigs[adapter].json}
+                            data={this.combineNewAndOld(instance)}
                             onError={error => this.setState({error})}
                             onChange={(data, changed) => this.setState({data})}
                         /> : null}
