@@ -38,6 +38,8 @@ import { FaFileUpload as UploadIcon } from 'react-icons/fa';
 import Dropzone from 'react-dropzone';
 import { Autocomplete } from '@material-ui/lab';
 
+const MAX_FILE_SIZE = 10 * 1024;
+
 const styles = theme => ({
     divWithoutTitle: {
         width: '100%',
@@ -120,6 +122,7 @@ const styles = theme => ({
     },
     uploadDivDragging: {
         opacity: 1,
+        background: 'rgba(128,255,128,0.1)'
     },
 
     uploadCenterDiv: {
@@ -377,6 +380,7 @@ class ObjectBrowserEditObject extends Component {
 
         this.onChange(JSON.stringify(json, null, 2));
     }
+
     onDrop(acceptedFiles, json) {
         const file = acceptedFiles[0];
         const reader = new FileReader();
@@ -387,29 +391,31 @@ class ObjectBrowserEditObject extends Component {
             let ext = 'image/' + file.name.split('.').pop().toLowerCase();
             if (ext === 'image/jpg') {
                 ext = 'image/jpeg';
-            } else if (ext === 'image/svg') {
+            } else if (ext.includes('svg')) {
                 ext = 'image/svg+xml';
             }
-            if (file.size > 5000) {
-                return alert('File is too big. Max 5k allowed. Try use SVG.')
+            if (file.size > MAX_FILE_SIZE) {
+                return window.alert(this.props.t('File is too big. Max %sk allowed. Try use SVG.', Math.round(MAX_FILE_SIZE / 1024)));
             }
-            const base64 = 'data:' + ext + ';base64,' + btoa(
+            const base64 = `data:${ext};base64,${btoa(
                 new Uint8Array(reader.result)
-                    .reduce((data, byte) => {
-                        return data + String.fromCharCode(byte)
-                    }, ''));
-            this.setCommonItem(json, 'icon', base64)
+                    .reduce((data, byte) => data + String.fromCharCode(byte), ''))}`;
+
+            this.setCommonItem(json, 'icon', base64);
         };
         reader.readAsArrayBuffer(file);
     }
+
     setCommonItem(json, name, value) {
         json.common[name] = value;
         this.onChange(JSON.stringify(json, null, 2));
     }
+
     removeCommonItem(json, name) {
         delete json.common[name]
         this.onChange(JSON.stringify(json, null, 2));
     }
+
     buttonAddKey(nameKey, cb) {
         const { t, classes } = this.props;
         return <div
@@ -421,10 +427,12 @@ class ObjectBrowserEditObject extends Component {
                 onClick={cb}><AddIcon />{t('add %s', nameKey)}</Button>
         </div>
     }
+
     buttonRemoveKey(nameKey, cb) {
         const { t, classes } = this.props;
         return <Tooltip title={t('Remove %s', nameKey)}><div className={classes.close} onClick={cb} /></Tooltip>
     }
+
     renderCommonEdit() {
         try {
             const json = JSON.parse(this.state.text);
@@ -445,7 +453,7 @@ class ObjectBrowserEditObject extends Component {
             return <div className={classes.commonTabWrapper}>
 
                 <div className={classes.commonWrapper}>
-                    {typeof json.common.name !== "undefined" ?
+                    {typeof json.common.name !== 'undefined' ?
                         <TextField
                             disabled={disabled}
                             label={t('Name')}
@@ -456,16 +464,14 @@ class ObjectBrowserEditObject extends Component {
                         /> :
                         this.buttonAddKey('name', () => this.setCommonItem(json, 'name', ''))
                     }
-                    {checkState ? typeof json.common.type !== "undefined" ?
+                    {checkState ? typeof json.common.type !== 'undefined' ?
                         <div className={classes.flex}>
                             <FormControl
                                 className={classes.marginBlock}
                                 fullWidth>
-                                <InputLabel id="demo-simple-select-helper-label">{t('State type')}</InputLabel>
+                                <InputLabel >{t('State type')}</InputLabel>
                                 <Select
                                     disabled={disabled}
-                                    labelId="demo-simple-select-helper-label"
-                                    id="demo-simple-select-helper"
                                     value={json.common.type}
                                     onChange={(el) => this.setCommonItem(json, 'type', el.target.value)}
                                 >
@@ -477,7 +483,7 @@ class ObjectBrowserEditObject extends Component {
                         :
                         this.buttonAddKey('type', () => this.setCommonItem(json, 'type', 'string'))
                         : null}
-                    {checkRole ? typeof json.common.role !== "undefined" ?
+                    {checkRole ? typeof json.common.role !== 'undefined' ?
                         <div className={classes.flex}>
                             <Autocomplete
                                 className={classes.marginBlock}
@@ -493,7 +499,7 @@ class ObjectBrowserEditObject extends Component {
                         </div> :
                         this.buttonAddKey('role', () => this.setCommonItem(json, 'role', ''))
                         : null}
-                    {typeof json.common.color !== "undefined" ?
+                    {typeof json.common.color !== 'undefined' ?
                         <div className={classes.flex}>
                             <TextField
                                 disabled={disabled}
@@ -507,17 +513,25 @@ class ObjectBrowserEditObject extends Component {
                         this.buttonAddKey('color', () => this.setCommonItem(json, 'color', ''))
                     }
                 </div>
-                {typeof json.common.icon !== "undefined" ?
+                {typeof json.common.icon !== 'undefined' ?
                     <div className={classes.flexDrop}>
                         <Dropzone
                             disabled={disabled}
                             key="dropzone"
                             multiple={false}
-                            accept="image/svg+xml,image/png,image/jpeg"
-                            maxSize={256 * 1024}
+                            accept="image/*"
+                            maxSize={MAX_FILE_SIZE}
                             onDragEnter={() => this.setState({ uploadFile: 'dragging' })}
                             onDragLeave={() => this.setState({ uploadFile: true })}
-                            onDrop={acceptedFiles => this.onDrop(acceptedFiles, json)}
+                            onDrop={(acceptedFiles, errors) => {
+                                this.setState({ uploadFile: false });
+
+                                if (!acceptedFiles.length) {
+                                    window.alert((errors && errors[0] && errors[0].errors && errors[0].errors[0] && errors[0].errors[0].message) || t('Cannot upload'));
+                                } else {
+                                    return this.onDrop(acceptedFiles, json);
+                                }
+                            }}
                         >
                             {({ getRootProps, getInputProps }) => (
                                 <div className={clsx(
@@ -528,23 +542,24 @@ class ObjectBrowserEditObject extends Component {
                                     !json.common.icon && classes.dropZoneEmpty
                                 )}
                                     {...getRootProps()}>
-                                    <input {...getInputProps()} />
-                                    <div className={classes.uploadCenterDiv}>
-                                        {!json.common.icon ? <div className={classes.uploadCenterTextAndIcon}>
-                                            <UploadIcon className={classes.uploadCenterIcon} />
-                                            <div className={classes.uploadCenterText}>{
-                                                this.state.uploadFile === 'dragging' ? t('Drop file here') :
-                                                    t('Place your files here or click here to open the browse dialog')}</div>
-                                        </div> : <div className={classes.buttonRemoveWrapper}>
-                                            <Tooltip title={t('Clear %s', 'icon')}>
-                                                <IconButton onClick={e => {
-                                                    this.setCommonItem(json, 'icon', '');
-                                                    e.stopPropagation();
-                                                }}><IconClose />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </div>
-
+                                        <input {...getInputProps()} />
+                                        <div className={classes.uploadCenterDiv}>
+                                            {!json.common.icon ? <div className={classes.uploadCenterTextAndIcon}>
+                                                <UploadIcon className={classes.uploadCenterIcon} />
+                                                <div className={classes.uploadCenterText}>{
+                                                    this.state.uploadFile === 'dragging' ? t('Drop file here') :
+                                                        t('Place your files here or click here to open the browse dialog')}</div>
+                                            </div>
+                                                :
+                                            <div className={classes.buttonRemoveWrapper}>
+                                                <Tooltip title={t('Clear %s', 'icon')}>
+                                                    <IconButton onClick={e => {
+                                                        this.setCommonItem(json, 'icon', '');
+                                                        e.stopPropagation();
+                                                    }}><IconClose />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </div>
                                         }
                                         {json.common.icon ? <img src={json.common.icon} className={classes.image} alt="icon" /> : null}
                                     </div>
@@ -691,13 +706,11 @@ class ObjectBrowserEditObject extends Component {
                 {this.state.tab === 'alias' && this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state' ?
                     this.renderAliasEdit() : null
                 }
-                {this.state.tab === 'common' ?
-                    this.renderCommonEdit() : null
-                }
+                {this.state.tab === 'common' ? this.renderCommonEdit() : null}
                 {this.renderSelectDialog()}
             </DialogContent>
             <DialogActions>
-                <Button onClick={e => this.onCopy(e)} disabled={this.state.error}><IconCopy />{this.props.t('Copy into clipboard')}</Button>
+                {this.state.tab === 'object' && <Button onClick={e => this.onCopy(e)} disabled={this.state.error}><IconCopy />{this.props.t('Copy into clipboard')}</Button>}
                 <Button variant="contained" disabled={this.state.error || !this.state.changed} onClick={() => this.onUpdate()} color="primary"><IconCheck />{this.props.t('Write')}</Button>
                 <Button variant="contained" onClick={() => this.props.onClose()}><IconClose />{this.props.t('Cancel')}</Button>
             </DialogActions>
