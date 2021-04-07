@@ -307,7 +307,7 @@ const styles = theme => ({
         justifyContent: 'center',
         display: 'flex',
         height: '100%',
-        alignItems: 'center'
+        // alignItems: 'center'
     },
     cardContentDiv: {
         position: 'sticky',
@@ -328,7 +328,7 @@ const styles = theme => ({
                 fontSize: 25,
                 height: '30px',
                 width: '30px',
-                color:'black'
+                color: 'black'
             },
             animation: '$warning 2.5s ease-in-out infinite alternate'
         }
@@ -369,6 +369,9 @@ const styles = theme => ({
 
 let outputCache = 'null';
 let inputCache = 'null';
+let cpuCache = '- %';
+let memCache = '- %';
+let uptimeCache = '-/-';
 
 let diskFreeCache = 1;
 let diskSizeCache = 1;
@@ -380,10 +383,8 @@ const RowHosts = ({
     image,
     hidden,
     alive,
-    key,
     color,
     title,
-    os,
     available,
     installed,
     events,
@@ -403,34 +404,35 @@ const RowHosts = ({
 
     const refEvents = useRef();
     const refWarning = useRef();
+    const refCpu = useRef();
+    const refMem = useRef();
+    const refUptime = useRef();
 
     const eventsInputFunc = (_, input) => {
-        inputCache = input ? input.val : '-';
+        inputCache = input ? input.val : 'null';
         if (refEvents.current) {
             refEvents.current.innerHTML = `⇥${inputCache} / ↦${outputCache}`;
         }
     };
 
     const eventsOutputFunc = (_, output) => {
-        outputCache = output ? output.val : '-';
+        outputCache = output ? output.val : 'null';
         if (refEvents.current) {
             refEvents.current.innerHTML = `⇥${inputCache} / ↦${outputCache}`;
         }
     };
 
     // TODO: here is the same as with input/output
-    const warningFunc = (diskFree, diskSize, diskWarning) => {
+    const warningFunc = (name, obj) => {
         let warning;
-        if (diskFree) {
-            diskFreeCache = diskFree;
-            warning = (diskFree / diskSizeCache) * 100 <= diskWarningCache;
-        } else if (diskSize) {
-            diskSizeCache = diskSize;
-            warning = (diskFreeCache / diskSize) * 100 <= diskWarningCache;
-        } else if (diskWarning) {
-            diskWarningCache = diskWarning;
-            warning = (diskFreeCache / diskSizeCache) * 100 <= diskWarning;
+        if (name.endsWith('diskFree')) {
+            diskFreeCache = obj?.val || 0;
+        } else if (name.endsWith('diskSize')) {
+            diskSizeCache = obj?.val || 0;
+        } else if (name.endsWith('diskWarning')) {
+            diskWarningCache = obj?.val || 0;
         }
+        warning = (diskFreeCache / diskSizeCache) * 100 <= diskWarningCache;
         if (refWarning.current) {
             if (warning) {
                 refWarning.current.setAttribute('title', t('disk Warning'));
@@ -442,32 +444,66 @@ const RowHosts = ({
         }
     };
 
+    const CpuFunc = (_, obj) => {
+        cpuCache = `${obj?.val || '-'} %`;
+        if (refCpu.current) {
+            refCpu.current.innerHTML = cpuCache;
+        }
+    }
+
+    const memFunc = (_, obj) => {
+        memCache = `${obj?.val || '-'} %`;
+        if (refMem.current) {
+            refMem.current.innerHTML = memCache;
+        }
+    }
+
+    const uptimeFunc = (_, obj) => {
+        if (obj.val) {
+            const d = Math.floor(obj.val / (3600 * 24));
+            const h = Math.floor(obj.val % (3600 * 24) / 3600);
+            uptimeCache = (d || h) && `${d}/${h}`;
+        }
+        if (refUptime.current) {
+            refUptime.current.innerHTML = uptimeCache;
+        }
+    }
+
     useEffect(() => {
         socket.subscribeState(`${_id}.inputCount`, eventsInputFunc);
         socket.subscribeState(`${_id}.outputCount`, eventsOutputFunc);
 
-        socket.subscribeState(`${_id}.diskFree`, (_, el) => warningFunc(el?.val));
-        socket.subscribeState(`${_id}.diskSize`, (_, el) => warningFunc(null, el?.val));
-        socket.subscribeState(`${_id}.diskWarning`, (_, el) => warningFunc(null, null, el?.val));
+        socket.subscribeState(`${_id}.cpu`, CpuFunc);
+        socket.subscribeState(`${_id}.mem`, memFunc);
+        socket.subscribeState(`${_id}.uptime`, uptimeFunc);
+
+        socket.subscribeState(`${_id}.diskFree`, warningFunc);
+        socket.subscribeState(`${_id}.diskSize`, warningFunc);
+        socket.subscribeState(`${_id}.diskWarning`, warningFunc);
 
         return () => {
             socket.unsubscribeObject(`${_id}.inputCount`, eventsInputFunc);
             socket.unsubscribeObject(`${_id}.outputCount`, eventsOutputFunc);
 
-            //socket.unsubscribeObject(`${_id}.diskFree`, (_, el) => warningFunc(el.val));
-            //socket.unsubscribeObject(`${_id}.diskSize`, (_, el) => warningFunc(null, el.val));
-            //socket.unsubscribeObject(`${_id}.diskWarning`, (_, el) => warningFunc(null, null, el.val));
+            socket.unsubscribeObject(`${_id}.cpu`, CpuFunc);
+            socket.unsubscribeObject(`${_id}.mem`, memFunc);
+            socket.unsubscribeObject(`${_id}.uptime`, uptimeFunc);
+
+            socket.unsubscribeObject(`${_id}.diskFree`, warningFunc);
+            socket.unsubscribeObject(`${_id}.diskSize`, warningFunc);
+            socket.unsubscribeObject(`${_id}.diskWarning`, warningFunc);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [_id, socket,classes]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [_id, socket, classes]);
 
     return <div
+        style={{ border: `2px solid ${color || 'inherit'}`, borderRadius: 5 }}
         onMouseOut={() => setFocused(false)}
         onMouseOver={() => setFocused(true)}
         onMouseMove={() => setFocused(true)}
         onClick={() => setCollapse((bool) => !bool)}
-        key={key} className={clsx(classes.root, hidden ? classes.hidden : '')}>
-        <div style={{ border: `2px solid ${color || 'inherit'}`, borderRadius: 5 }} className={classes.wrapperFlex}>
+        key={_id} className={clsx(classes.root, hidden ? classes.hidden : '')}>
+        <div className={classes.wrapperFlex}>
             <div className={classes.wrapperColor}>
                 <div className={clsx(classes.onOff, alive ? classes.green : classes.red)} />
                 {alive && <div className={classes.dotLine} />}
@@ -485,13 +521,19 @@ const RowHosts = ({
                 <Typography className={clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="p">
                     {title}
                 </Typography>
-                <Typography className={clsx(classes.flex, classes.hidden1100)} variant="body2" color="textSecondary" component="p">
-                    {os}
+                <Typography className={clsx(classes.flex, classes.hidden800)} variant="body2" color="textSecondary" component="div">
+                    <div ref={refCpu}>{'- %'}</div>
                 </Typography>
-                <Typography className={clsx(classes.flex, classes.hidden800)} variant="body2" color="textSecondary" component="p">
+                <Typography className={clsx(classes.flex, classes.hidden800)} variant="body2" color="textSecondary" component="div">
+                    <div ref={refMem}>{'- %'}</div>
+                </Typography>
+                <Typography className={clsx(classes.flex, classes.hidden800)} variant="body2" color="textSecondary" component="div">
+                    <div ref={refUptime}>{'-/-'}</div>
+                </Typography>
+                <Typography className={clsx(classes.flex, classes.hidden1100)} variant="body2" color="textSecondary" component="p">
                     {available}
                 </Typography>
-                <Typography className={clsx(classes.flex, classes.hidden800)} variant="body2" color="textSecondary" component="p">
+                <Typography className={clsx(classes.flex, classes.hidden1100)} variant="body2" color="textSecondary" component="p">
                     {installed}
                 </Typography>
                 <Typography className={clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="div">

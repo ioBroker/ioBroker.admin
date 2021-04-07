@@ -168,6 +168,10 @@ const styles = theme => ({
     wrapperInfo: {
         display: 'flex',
         flexFlow: 'wrap',
+        width: '100%'
+    },
+    marginRight:{
+        marginRight: 'auto'
     },
     wrapperBlockItem: {
         display: 'flex',
@@ -236,7 +240,7 @@ const getHostDescriptionAll = (id, t, classes, hostsData) => {
             </li>)
         }
     </ul>), <div className={classes.wrapperInfo}>
-        {hostData && typeof hostData === 'object' && Object.keys(hostData).map(value => <div
+        <div className={classes.marginRight}>{hostData && typeof hostData === 'object' && Object.keys(hostData).map((value,idx) =>idx < 5 && <div
             className={classes.wrapperBlockItem} key={value}>
             {hostData && typeof hostData === 'object' ?
                 <>
@@ -247,6 +251,29 @@ const getHostDescriptionAll = (id, t, classes, hostsData) => {
                 <Skeleton />
             }
         </div>)}</div>
+        <div className={classes.marginRight}>{hostData && typeof hostData === 'object' && Object.keys(hostData).map((value,idx) =>idx > 4 && idx < 10 && <div
+            className={classes.wrapperBlockItem} key={value}>
+            {hostData && typeof hostData === 'object' ?
+                <>
+                    <span className={clsx(classes.bold, classes.nowrap)}>{t(value)}: </span>
+                    {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
+                </>
+                :
+                <Skeleton />
+            }
+        </div>)}</div>
+        <div className={classes.marginRight}>{hostData && typeof hostData === 'object' && Object.keys(hostData).map((value,idx) =>idx > 10 && <div
+            className={classes.wrapperBlockItem} key={value}>
+            {hostData && typeof hostData === 'object' ?
+                <>
+                    <span className={clsx(classes.bold, classes.nowrap)}>{t(value)}: </span>
+                    {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
+                </>
+                :
+                <Skeleton />
+            }
+        </div>)}</div>
+        </div>
 
     ];
 }
@@ -449,9 +476,11 @@ const Hosts = ({
                         </div>
                         <div className={classes.tabFlex}>
                             <div className={clsx(classes.tabHeaderItem,classes.hidden600)}>{t('Title:')}</div>
-                            <div className={clsx(classes.tabHeaderItem,classes.hidden1100)}>{t('OS:')}</div>
-                            <div className={clsx(classes.tabHeaderItem,classes.hidden800)}>{t('Available:')}</div>
-                            <div className={clsx(classes.tabHeaderItem,classes.hidden800)}>{t('Installed:')}</div>
+                            <div className={clsx(classes.tabHeaderItem,classes.hidden800)}>{t('Cpu:')}</div>
+                            <div className={clsx(classes.tabHeaderItem,classes.hidden800)}>{t('Mem:')}</div>
+                            <div className={clsx(classes.tabHeaderItem,classes.hidden800)}>{t('Days/Hours:')}</div>
+                            <div className={clsx(classes.tabHeaderItem,classes.hidden1100)}>{t('Available:')}</div>
+                            <div className={clsx(classes.tabHeaderItem,classes.hidden1100)}>{t('Installed:')}</div>
                             <div className={clsx(classes.tabHeaderItem,classes.hidden600)}>{t('Events:')}</div>
                             <div className={classes.tabHeaderItemButton}></div>
                         </div>

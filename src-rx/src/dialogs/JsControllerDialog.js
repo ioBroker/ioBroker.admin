@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-target-blank */
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import Button from '@material-ui/core/Button';

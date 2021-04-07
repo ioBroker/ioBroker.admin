@@ -39,7 +39,7 @@ const styles = theme => ({
                 fontSize: 25,
                 height: '30px',
                 width: '30px',
-                color:'black'
+                color: 'black'
             },
             animation: '$warning 2.5s ease-in-out infinite alternate'
         }
@@ -393,6 +393,9 @@ const styles = theme => ({
 
 let outputCache = 'null';
 let inputCache = 'null';
+let cpuCache = '- %';
+let memCache = '- %';
+let uptimeCache = '-/-';
 
 let diskFreeCache = 1;
 let diskSizeCache = 1;
@@ -408,7 +411,6 @@ const CardHosts = ({
     connected,
     color,
     title,
-    os,
     available,
     installed,
     events,
@@ -426,35 +428,34 @@ const CardHosts = ({
     const [openCollapse, setCollapse] = useState(false);
     const refEvents = useRef();
     const refWarning = useRef();
+    const refCpu = useRef();
+    const refMem = useRef();
+    const refUptime = useRef();
 
-    const eventsFunc = (input, output) => {
-        let event;
-        if (input) {
-            inputCache = input;
-            event = `⇥${input} / ↦${outputCache}`;
-        } else if (output) {
-            outputCache = output;
-            event = `⇥${inputCache} / ↦${output}`;
-        } else {
-            event = `⇥null / ↦null`;
-        }
+    const eventsInputFunc = (_, input) => {
+        inputCache = input ? input.val : 'null';
         if (refEvents.current) {
-            refEvents.current.innerHTML = event;
+            refEvents.current.innerHTML = `⇥${inputCache} / ↦${outputCache}`;
         }
-    }
+    };
 
-    const warningFunc = (diskFree, diskSize, diskWarning) => {
-        let warning;
-        if (diskFree) {
-            diskFreeCache = diskFree;
-            warning = (diskFree / diskSizeCache) * 100 <= diskWarningCache;
-        } else if (diskSize) {
-            diskSizeCache = diskSize;
-            warning = (diskFreeCache / diskSize) * 100 <= diskWarningCache;
-        } else if (diskWarning) {
-            diskWarningCache = diskWarning;
-            warning = (diskFreeCache / diskSizeCache) * 100 <= diskWarning;
+    const eventsOutputFunc = (_, output) => {
+        outputCache = output ? output.val : 'null';
+        if (refEvents.current) {
+            refEvents.current.innerHTML = `⇥${inputCache} / ↦${outputCache}`;
         }
+    };
+
+    const warningFunc = (name, obj) => {
+        let warning;
+        if (name.endsWith('diskFree')) {
+            diskFreeCache = obj?.val || 0;
+        } else if (name.endsWith('diskSize')) {
+            diskSizeCache = obj?.val || 0;
+        } else if (name.endsWith('diskWarning')) {
+            diskWarningCache = obj?.val || 0;
+        }
+        warning = (diskFreeCache / diskSizeCache) * 100 <= diskWarningCache;
         if (refWarning.current) {
             if (warning) {
                 refWarning.current.setAttribute('title', t('disk Warning'));
@@ -464,28 +465,61 @@ const CardHosts = ({
                 refWarning.current.classList.remove('warning');
             }
         }
+    };
+
+    const CpuFunc = (_, obj) => {
+        cpuCache = `${obj?.val || '-'} %`;
+        if (refCpu.current) {
+            refCpu.current.innerHTML = cpuCache;
+        }
+    }
+
+    const memFunc = (_, obj) => {
+        memCache = `${obj?.val || '-'} %`;
+        if (refMem.current) {
+            refMem.current.innerHTML = memCache;
+        }
+    }
+
+    const uptimeFunc = (_, obj) => {
+        if (obj.val) {
+            const d = Math.floor(obj.val / (3600 * 24));
+            const h = Math.floor(obj.val % (3600 * 24) / 3600);
+            uptimeCache = (d || h) && `${d}/${h}`;
+        }
+        if (refUptime.current) {
+            refUptime.current.innerHTML = uptimeCache;
+        }
     }
 
     useEffect(() => {
-        socket.subscribeState(`${_id}.inputCount`, (_, el) => eventsFunc(el?.val));
-        socket.subscribeState(`${_id}.outputCount`, (_, el) => eventsFunc(null, el?.val));
+        socket.subscribeState(`${_id}.inputCount`, eventsInputFunc);
+        socket.subscribeState(`${_id}.outputCount`, eventsOutputFunc);
 
-        socket.subscribeState(`${_id}.diskFree`, (_, el) => warningFunc(el?.val));
-        socket.subscribeState(`${_id}.diskSize`, (_, el) => warningFunc(null, el?.val));
-        socket.subscribeState(`${_id}.diskWarning`, (_, el) => warningFunc(null, null, el?.val));
+        socket.subscribeState(`${_id}.cpu`, CpuFunc);
+        socket.subscribeState(`${_id}.mem`, memFunc);
+        socket.subscribeState(`${_id}.uptime`, uptimeFunc);
+
+        socket.subscribeState(`${_id}.diskFree`, warningFunc);
+        socket.subscribeState(`${_id}.diskSize`, warningFunc);
+        socket.subscribeState(`${_id}.diskWarning`, warningFunc);
         return () => {
-            socket.unsubscribeObject(`${_id}.inputCount`, (_, el) => eventsFunc(el.val));
-            socket.unsubscribeObject(`${_id}.outputCount`, (_, el) => eventsFunc(null, el.val));
+            socket.unsubscribeObject(`${_id}.inputCount`, eventsInputFunc);
+            socket.unsubscribeObject(`${_id}.outputCount`, eventsOutputFunc);
 
-            socket.unsubscribeObject(`${_id}.diskFree`, (_, el) => warningFunc(el.val));
-            socket.unsubscribeObject(`${_id}.diskSize`, (_, el) => warningFunc(null, el.val));
-            socket.unsubscribeObject(`${_id}.diskWarning`, (_, el) => warningFunc(null, null, el.val));
+            socket.unsubscribeObject(`${_id}.cpu`, CpuFunc);
+            socket.unsubscribeObject(`${_id}.mem`, memFunc);
+            socket.unsubscribeObject(`${_id}.uptime`, uptimeFunc);
+
+            socket.unsubscribeObject(`${_id}.diskFree`, warningFunc);
+            socket.unsubscribeObject(`${_id}.diskSize`, warningFunc);
+            socket.unsubscribeObject(`${_id}.diskWarning`, warningFunc);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [_id, socket,classes])
+    }, [_id, socket, classes])
     const [focused, setFocused] = useState(false);
 
-    return <Card className={clsx(classes.root, hidden ? classes.hidden : '')}>
+    return <Card key={_id} className={clsx(classes.root, hidden ? classes.hidden : '')}>
         {(openCollapse || focused) && <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
             <CardContent className={classes.cardContentInfo}>
                 <div className={classes.cardContentDiv}>
@@ -524,8 +558,14 @@ const CardHosts = ({
             <Typography variant="body2" color="textSecondary" component="p">
                 {t('Title: %s', title)}
             </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-                {t('OS: %s', os)}
+            <Typography variant="body2" color="textSecondary" component="div">
+                <div className={classes.displayFlex}>{t('Cpu: ')}<div ref={refCpu} className={classes.marginLeft5}>{'- %'}</div></div>
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="div">
+                <div className={classes.displayFlex}>{t('Mem: ')}<div ref={refMem} className={classes.marginLeft5}>{'- %'}</div></div>
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="div">
+                <div className={classes.displayFlex}>{t('Days/Hours: ')}<div ref={refUptime} className={classes.marginLeft5}>{'-/-'}</div></div>
             </Typography>
             <Typography variant="body2" color="textSecondary" component="p">
                 {t('Available: %s', available)}

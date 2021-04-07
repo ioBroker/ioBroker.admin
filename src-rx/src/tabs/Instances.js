@@ -896,7 +896,7 @@ class Instances extends Component {
 
         if (this.state.dialog === 'config' && this.state.dialogProp) {
             const instance = this.state.instances[this.state.dialogProp] || null;
-
+console.log(instance)
             if (instance) {
                 return <Paper className={classes.paper}>
                     <Config

@@ -33,6 +33,8 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import CloseIcon from '@material-ui/icons/Close';
 import JsonIcon from '@material-ui/icons/Bookmark';
 import CssIcon from '@material-ui/icons/BookmarkBorder';
+import HtmlIcon from '@material-ui/icons/Description';
+import EditIcon from '@material-ui/icons/Edit';
 import JSIcon from '@material-ui/icons/Code';
 import FileIcon from '@material-ui/icons/InsertDriveFile';
 import UploadIcon from '@material-ui/icons/Publish';
@@ -702,6 +704,8 @@ class FileBrowser extends Component {
 
             {this.state.viewType === TABLE ? this.formatAcl(item.acl) : null}
 
+            {this.state.viewType === TABLE && this.props.expertMode && <div className={this.props.classes['itemDeleteButton' + this.state.viewType]} />}
+
             {this.state.viewType === TABLE && this.props.allowDownload ? <div className={this.props.classes['itemDownloadButton' + this.state.viewType]} /> : null}
 
             {this.state.viewType === TABLE && this.props.allowDelete && this.state.folders[item.id] && this.state.folders[item.id].length && (this.state.expertMode || item.id.startsWith(USER_DATA) || item.id.startsWith('vis.0/')) ?
@@ -770,6 +774,10 @@ class FileBrowser extends Component {
             case 'ts':
                 return (<JSIcon className={this.props.classes['itemIcon' + this.state.viewType]} />);
 
+            case 'html':
+            case 'md':
+                return (<HtmlIcon className={this.props.classes['itemIcon' + this.state.viewType]} />);
+
             case 'mp3':
             case 'ogg':
             case 'wav':
@@ -780,6 +788,18 @@ class FileBrowser extends Component {
 
             default:
                 return (<FileIcon className={this.props.classes['itemIcon' + this.state.viewType]} />);
+        }
+    }
+
+    getEditFile(ext) {
+        switch (ext) {
+            case 'json':
+            case 'js':
+            case 'html':
+            case 'txt':
+                return true;
+            default:
+                return false;
         }
     }
 
@@ -849,7 +869,26 @@ class FileBrowser extends Component {
             <div className={this.props.classes['itemName' + this.state.viewType]}>{item.name}</div>
             {this.formatSize(item.size)}
             {this.state.viewType === TABLE ? this.formatAcl(item.acl) : null}
+            {this.state.viewType === TABLE && this.props.expertMode && this.getEditFile(ext) ?
 
+                <IconButton aria-label="delete"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (!this.props.onSelect) {
+                            this.setState({ viewer: this.imagePrefix + item.id });
+                        } else if (
+                            (!this.props.filterFiles || this.props.filterFiles.includes(item.ext)) &&
+                            (!this.props.filterByType || EXTENSIONS[this.props.filterByType].includes(item.ext))
+                        ) {
+                            this.props.onSelect(item.id, true);
+                        }
+                    }}
+                    className={this.props.classes['itemDeleteButton' + this.state.viewType]}
+                >
+                    <EditIcon fontSize="small" />
+                </IconButton>
+                :
+                <div className={this.props.classes['itemDeleteButton' + this.state.viewType]} />}
             {this.state.viewType === TABLE && this.props.allowDownload ? <IconButton
                 download
                 href={this.imagePrefix + item.id}
@@ -1284,7 +1323,7 @@ class FileBrowser extends Component {
                 changed = true;
             }
         });
-        changed && this.setState({folders});
+        changed && this.setState({ folders });
     }
 
     changeToPath() {

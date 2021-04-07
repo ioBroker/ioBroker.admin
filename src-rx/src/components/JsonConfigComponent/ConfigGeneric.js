@@ -12,6 +12,8 @@ import IconError from '@material-ui/icons/Error';
 class ConfigGeneric extends Component {
     static DIFFERENT_VALUE = '__different__';
     static DIFFERENT_LABEL  = I18n.t('__different__');
+    static NONE_VALUE = '';
+    static NONE_LABEL  = I18n.t('none');
     static AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
     constructor(props) {

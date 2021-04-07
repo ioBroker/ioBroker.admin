@@ -15,6 +15,7 @@ import ConfigSelect from './ConfigSelect';
 import ConfigUser from './ConfigUser';
 import ConfigStaticText from './ConfigStaticText';
 import ConfigPattern from './ConfigPattern';
+import ConfigCertificateSelect from './ConfigCertificateSelect';
 
 const components = {
     text: ConfigText,
@@ -28,6 +29,7 @@ const components = {
     select: ConfigSelect,
     user: ConfigUser,
     pattern: ConfigPattern,
+    certificate: ConfigCertificateSelect
 };
 
 const styles = theme => ({

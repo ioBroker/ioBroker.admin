@@ -32,12 +32,14 @@
 - edit config by JSON
   
 ## Files
-- File viewer can show: json, js, ts, md, css, html
+<!-- - File viewer can show: json, js, ts, md, css, html -->
 - Edit file ACL for "adapter" or "instance" (All folders of the first level)
-- Edit files (by pressing button "Edit" opened edit mode) : json, js, txt, html (only in expert mode)
+- Edit files (by pressing button "Edit" opened edit mode) : json, js, txt, html (only in expert mode)// 
+not editable
+
   
 ## Hosts
-- Show on the second tab: CPU %, Mem%, uptime in days/hours, 
+<!-- - Show on the second tab: CPU %, Mem%, uptime in days/hours,  -->
 <!-- show in red if (diskFree / diskSize) * 100 <= diskWarning, show header in blink-red -->
 <!-- - iobroker upgrade self -->
 <!-- - iobroker restart -->
