@@ -44,10 +44,10 @@ let UsersColorPicker = function (props) {
                 style: {backgroundColor: props.value}
             }}
             InputProps={{
-                endAdornment: !props.disabled && props.formData[props.name] ?
+                endAdornment: !props.disabled && props.value ?
                     <IconButton
                         size="small"
-                        onClick={() => props.updateValue(props.name, '')}>
+                        onClick={() => props.onChange('')}>
                         <ClearIcon />
                     </IconButton>
                     : undefined,
