@@ -131,6 +131,9 @@ class ObjectCustomDialog extends Component {
                     }
                 });
             }}
+            theme={this.props.theme}
+            themeName={this.props.themeName}
+            themeType={this.props.themeType}
         />;
     }
 
@@ -184,7 +187,9 @@ ObjectCustomDialog.propTypes = {
     expertMode: PropTypes.bool,
     objects: PropTypes.object,
     socket: PropTypes.object,
+    theme: PropTypes.object,
     themeName: PropTypes.string,
+    themeType: PropTypes.string,
     customsInstances: PropTypes.array,
     objectIDs: PropTypes.array,
     onClose: PropTypes.func,

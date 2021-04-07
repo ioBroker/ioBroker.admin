@@ -9,15 +9,13 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import IconButton from '@material-ui/core/IconButton';
 
 import IconClose from '@material-ui/icons/Close';
 import IconCheck from '@material-ui/icons/Check';
 import AddIcon from '@material-ui/icons/Add';
 
-import {  Tooltip } from '@material-ui/core';
-import { FaFileUpload as UploadIcon } from 'react-icons/fa';
-import Dropzone from 'react-dropzone';
+import { Tooltip } from '@material-ui/core';
+import UploadImage from './UploadImage';
 
 const styles = theme => ({
     error: {
@@ -62,66 +60,6 @@ const styles = theme => ({
     },
     marginBlock: {
         marginTop: 20
-    },
-    dropZone: {
-        width: '100%',
-        height: 100,
-        position: 'relative',
-    },
-    dropZoneEmpty: {
-
-    },
-    image: {
-        objectFit: 'contain',
-        margin: 'auto',
-        display: 'flex',
-        width: '100%',
-        height: '100%',
-    },
-
-    uploadDiv: {
-        position: 'relative',
-        width: '100%',
-        height: 300,
-        opacity: 0.9,
-        marginTop: 30
-    },
-    uploadDivDragging: {
-        opacity: 1,
-    },
-
-    uploadCenterDiv: {
-        margin: 5,
-        border: '3px dashed grey',
-        borderRadius: 5,
-        width: 'calc(100% - 10px)',
-        height: 'calc(100% - 10px)',
-        position: 'relative',
-        display: 'flex'
-    },
-    uploadCenterIcon: {
-        paddingTop: 10,
-        width: 48,
-        height: 48,
-    },
-    uploadCenterText: {
-        fontSize: 16,
-    },
-    uploadCenterTextAndIcon: {
-        textAlign: 'center',
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center'
-
-    },
-    disabledOpacity: {
-        opacity: 0.3
     },
     buttonAdd: {
         minWidth: 150
@@ -219,32 +157,6 @@ class HostEdit extends Component {
         obj._id = this.props.obj._id; // do not allow change of id
         this.props.onClose(obj);
     }
-
-    onDrop(acceptedFiles, json) {
-        const file = acceptedFiles[0];
-        const reader = new FileReader();
-
-        reader.onabort = () => console.log('file reading was aborted');
-        reader.onerror = () => console.log('file reading has failed');
-        reader.onload = () => {
-            let ext = 'image/' + file.name.split('.').pop().toLowerCase();
-            if (ext === 'image/jpg') {
-                ext = 'image/jpeg';
-            } else if (ext === 'image/svg') {
-                ext = 'image/svg+xml';
-            }
-            if (file.size > 150000) {
-                return alert('File is too big. Max 150k allowed. Try use SVG.')
-            }
-            const base64 = 'data:' + ext + ';base64,' + btoa(
-                new Uint8Array(reader.result)
-                    .reduce((data, byte) => {
-                        return data + String.fromCharCode(byte)
-                    }, ''));
-            this.setCommonItem(json, 'icon', base64)
-        };
-        reader.readAsArrayBuffer(file);
-    }
     setCommonItem(json, name, value) {
         json.common[name] = value;
         this.onChange(JSON.stringify(json, null, 2));
@@ -302,48 +214,14 @@ class HostEdit extends Component {
                 </div>
                 {typeof json.common.icon !== "undefined" ?
                     <div className={classes.flexDrop}>
-                        <Dropzone
+                        <UploadImage
                             disabled={disabled}
-                            key="dropzone"
-                            multiple={false}
-                            accept="image/svg+xml,image/png,image/jpeg"
                             maxSize={256 * 1024}
-                            onDragEnter={() => this.setState({ uploadFile: 'dragging' })}
-                            onDragLeave={() => this.setState({ uploadFile: true })}
-                            onDrop={acceptedFiles => this.onDrop(acceptedFiles, json)}
-                        >
-                            {({ getRootProps, getInputProps }) => (
-                                <div className={clsx(
-                                    classes.uploadDiv,
-                                    this.state.uploadFile === 'dragging' && classes.uploadDivDragging,
-                                    classes.dropZone,
-                                    disabled && classes.disabledOpacity,
-                                    !json.common.icon && classes.dropZoneEmpty
-                                )}
-                                    {...getRootProps()}>
-                                    <input {...getInputProps()} />
-                                    <div className={classes.uploadCenterDiv}>
-                                        {!json.common.icon ? <div className={classes.uploadCenterTextAndIcon}>
-                                            <UploadIcon className={classes.uploadCenterIcon} />
-                                            <div className={classes.uploadCenterText}>{
-                                                this.state.uploadFile === 'dragging' ? t('Drop file here') :
-                                                    t('Place your files here or click here to open the browse dialog')}</div>
-                                        </div> : <div className={classes.buttonRemoveWrapper}>
-                                            <Tooltip title={t('Clear %s', 'icon')}>
-                                                <IconButton onClick={e => {
-                                                    this.setCommonItem(json, 'icon', '');
-                                                    e.stopPropagation();
-                                                }}><IconClose />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </div>
-
-                                        }
-                                        {json.common.icon ? <img src={json.common.icon} className={classes.image} alt="icon" /> : null}
-                                    </div>
-
-                                </div>)}
-                        </Dropzone>
+                            icon={json.common.icon}
+                            removeIconFunc={() => this.setCommonItem(json, 'icon', '')}
+                            onChange={(base64) => this.setCommonItem(json, 'icon', base64)}
+                            t={t}
+                        />
                         {this.buttonRemoveKey('icon', () => this.removeCommonItem(json, 'icon'))}
                     </div> :
                     <div className={classes.flexDrop}>

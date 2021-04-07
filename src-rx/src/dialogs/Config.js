@@ -57,7 +57,6 @@ class Config extends Component {
     }
 
     getConfigurator() {
-
         if (this.props.jsonConfig) {
             return <JsonConfig
                 menuPadding={this.props.menuPadding}

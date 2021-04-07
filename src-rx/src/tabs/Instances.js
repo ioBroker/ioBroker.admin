@@ -200,9 +200,9 @@ class Instances extends Component {
         this.statesUpdateTimer = null;
         this.objectsUpdateTimer = null;
         this.wordCache = {};
+        this.oneReload = false;
 
         this.t = this.translate;
-
         this.inputRef = createRef();
     }
 
@@ -225,6 +225,13 @@ class Instances extends Component {
     async componentDidUpdate() {
         if (this.props.inBackgroundCommand && this.state.delete) {
             await this.getData(true);
+        }
+        if (this.state.dialog === 'config' && this.state.dialogProp) {
+            const instance = (this.state.instances && this.state.instances[this.state.dialogProp]) || null;
+            if (!instance && !this.oneReload) {
+                this.oneReload = true;
+                this.getData(true);
+            }
         }
     }
     async componentWillUnmount() {
@@ -889,7 +896,7 @@ class Instances extends Component {
 
         if (this.state.dialog === 'config' && this.state.dialogProp) {
             const instance = this.state.instances[this.state.dialogProp] || null;
-
+console.log(instance)
             if (instance) {
                 return <Paper className={classes.paper}>
                     <Config

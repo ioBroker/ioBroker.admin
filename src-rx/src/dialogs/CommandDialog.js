@@ -51,14 +51,13 @@ class CommandDialog extends Component {
 
         this.t = props.t;
     }
-
     render() {
         const { classes } = this.props;
 
         return <Dialog
             scroll="paper"
             fullWidth={true}
-            classes={{root: !this.props.visible ? classes.hiddenDialog : '', paper: classes.dialogRoot}}
+            classes={{ root: !this.props.visible ? classes.hiddenDialog : '', paper: classes.dialogRoot }}
             onClose={this.props.inBackground ? this.props.onClose : this.props.onInBackground}
             open={true}
             maxWidth="md"
@@ -69,7 +68,7 @@ class CommandDialog extends Component {
                     <CloseIcon />
                 </IconButton>
             </DialogTitle>
-            <DialogContent dividers style={{height: '100%'}}>
+            <DialogContent dividers style={{ height: '100%' }}>
                 <Command
                     noSpacing={true}
                     key="command"
@@ -81,6 +80,7 @@ class CommandDialog extends Component {
                     commandError={this.props.commandError}
                     errorFunc={this.props.errorFunc}
                     performed={this.props.performed}
+                    callBack={this.props.callBack}
                     cmd={this.props.cmd}
                     onFinished={() => this.state.closeOnReady && this.props.onClose()}
                     onSetCommandRunning={running => this.props.onSetCommandRunning(running)}

@@ -1,33 +1,16 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Card, CardContent, CardMedia, Fab, FormControl, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from "@material-ui/core";
+import { Card, CardContent, CardMedia, Fab, IconButton, Tooltip, Typography } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import clsx from 'clsx';
-import BuildIcon from '@material-ui/icons/Build';
-import InputIcon from '@material-ui/icons/Input';
 import DeleteIcon from '@material-ui/icons/Delete';
-import InfoIcon from '@material-ui/icons/Info';
-import MemoryIcon from '@material-ui/icons/Memory';
-import ScheduleIcon from '@material-ui/icons/Schedule';
-import ViewCompactIcon from '@material-ui/icons/ViewCompact';
 
-import PauseIcon from '@material-ui/icons/Pause';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import I18n from '@iobroker/adapter-react/i18n';
 import { green, red } from '@material-ui/core/colors';
-import InstanceInfo from '../InstanceInfo';
-import State from '../State';
-import sentry from '../../assets/sentry.svg';
-import CustomModal from '../CustomModal';
 import EditIcon from '@material-ui/icons/Edit';
-import ImportExportIcon from '@material-ui/icons/ImportExport';
-import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
 import CachedIcon from '@material-ui/icons/Cached';
 import PropTypes from "prop-types";
 import Utils from '@iobroker/adapter-react/Components/Utils';
-
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -45,6 +28,28 @@ const styles = theme => ({
         transition: 'box-shadow 0.5s',
         '&:hover': {
             boxShadow: boxShadowHover
+        },
+        '& .warning': {
+            backgroundColor: '#de0000 !important',
+            '&:before': {
+                position: 'absolute',
+                right: 0,
+                top: -5,
+                content: '"\u26A0"',
+                fontSize: 25,
+                height: '30px',
+                width: '30px',
+                color: 'black'
+            },
+            animation: '$warning 2.5s ease-in-out infinite alternate'
+        }
+    },
+    '@keyframes warning': {
+        '0%': {
+            opacity: 1
+        },
+        '100%': {
+            opacity: 0.7
         }
     },
     imageBlock: {
@@ -388,6 +393,13 @@ const styles = theme => ({
 
 let outputCache = 'null';
 let inputCache = 'null';
+let cpuCache = '- %';
+let memCache = '- %';
+let uptimeCache = '-/-';
+
+let diskFreeCache = 1;
+let diskSizeCache = 1;
+let diskWarningCache = 1;
 
 const CardHosts = ({
     name,
@@ -397,58 +409,123 @@ const CardHosts = ({
     connectedToHost,
     alive,
     connected,
-    key,
-    logLevel,
     color,
-    type,
     title,
-    os,
     available,
     installed,
     events,
     t,
     description,
-    _id, 
+    _id,
     socket,
     setEditDilog,
-    executeCommand
+    executeCommand,
+    executeCommandRemove,
+    currentHost,
+    dialogUpgrade
 }) => {
+
     const [openCollapse, setCollapse] = useState(false);
     const refEvents = useRef();
-    const eventsFunc = (input, output) => {
-        let event;
-        if (input) {
-            inputCache = input;
-            event = `⇥${input} / ↦${outputCache}`;
-        } else if (output) {
-            outputCache = output;
-            event = `⇥${inputCache} / ↦${output}`;
-        } else {
-            event = `⇥null / ↦null`;
-        }
+    const refWarning = useRef();
+    const refCpu = useRef();
+    const refMem = useRef();
+    const refUptime = useRef();
+
+    const eventsInputFunc = (_, input) => {
+        inputCache = input ? input.val : 'null';
         if (refEvents.current) {
-            refEvents.current.innerHTML = event;
+            refEvents.current.innerHTML = `⇥${inputCache} / ↦${outputCache}`;
+        }
+    };
+
+    const eventsOutputFunc = (_, output) => {
+        outputCache = output ? output.val : 'null';
+        if (refEvents.current) {
+            refEvents.current.innerHTML = `⇥${inputCache} / ↦${outputCache}`;
+        }
+    };
+
+    const warningFunc = (name, obj) => {
+        let warning;
+        if (name.endsWith('diskFree')) {
+            diskFreeCache = obj?.val || 0;
+        } else if (name.endsWith('diskSize')) {
+            diskSizeCache = obj?.val || 0;
+        } else if (name.endsWith('diskWarning')) {
+            diskWarningCache = obj?.val || 0;
+        }
+        warning = (diskFreeCache / diskSizeCache) * 100 <= diskWarningCache;
+        if (refWarning.current) {
+            if (warning) {
+                refWarning.current.setAttribute('title', t('disk Warning'));
+                refWarning.current.classList.add('warning');
+            } else {
+                refWarning.current.removeAttribute('title');
+                refWarning.current.classList.remove('warning');
+            }
+        }
+    };
+
+    const CpuFunc = (_, obj) => {
+        cpuCache = `${obj?.val || '-'} %`;
+        if (refCpu.current) {
+            refCpu.current.innerHTML = cpuCache;
         }
     }
-    useEffect(() => {
-        socket.subscribeState(`${_id}.inputCount`, (_, el) => eventsFunc(el.val));
-        socket.subscribeState(`${_id}.outputCount`, (_, el) => eventsFunc(null, el.val));
-        return () => {
-            socket.unsubscribeObject(`${_id}.inputCount`, (_, el) => eventsFunc(el.val));
-            socket.unsubscribeObject(`${_id}.outputCount`, (_, el) => eventsFunc(null, el.val));
+
+    const memFunc = (_, obj) => {
+        memCache = `${obj?.val || '-'} %`;
+        if (refMem.current) {
+            refMem.current.innerHTML = memCache;
         }
-    }, [_id, socket])
+    }
+
+    const uptimeFunc = (_, obj) => {
+        if (obj.val) {
+            const d = Math.floor(obj.val / (3600 * 24));
+            const h = Math.floor(obj.val % (3600 * 24) / 3600);
+            uptimeCache = (d || h) && `${d}/${h}`;
+        }
+        if (refUptime.current) {
+            refUptime.current.innerHTML = uptimeCache;
+        }
+    }
+
+    useEffect(() => {
+        socket.subscribeState(`${_id}.inputCount`, eventsInputFunc);
+        socket.subscribeState(`${_id}.outputCount`, eventsOutputFunc);
+
+        socket.subscribeState(`${_id}.cpu`, CpuFunc);
+        socket.subscribeState(`${_id}.mem`, memFunc);
+        socket.subscribeState(`${_id}.uptime`, uptimeFunc);
+
+        socket.subscribeState(`${_id}.diskFree`, warningFunc);
+        socket.subscribeState(`${_id}.diskSize`, warningFunc);
+        socket.subscribeState(`${_id}.diskWarning`, warningFunc);
+        return () => {
+            socket.unsubscribeObject(`${_id}.inputCount`, eventsInputFunc);
+            socket.unsubscribeObject(`${_id}.outputCount`, eventsOutputFunc);
+
+            socket.unsubscribeObject(`${_id}.cpu`, CpuFunc);
+            socket.unsubscribeObject(`${_id}.mem`, memFunc);
+            socket.unsubscribeObject(`${_id}.uptime`, uptimeFunc);
+
+            socket.unsubscribeObject(`${_id}.diskFree`, warningFunc);
+            socket.unsubscribeObject(`${_id}.diskSize`, warningFunc);
+            socket.unsubscribeObject(`${_id}.diskWarning`, warningFunc);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [_id, socket, classes])
     const [focused, setFocused] = useState(false);
-    return <Card key={key} className={clsx(classes.root, hidden ? classes.hidden : '')}>
+
+    return <Card key={_id} className={clsx(classes.root, hidden ? classes.hidden : '')}>
         {(openCollapse || focused) && <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
             <CardContent className={classes.cardContentInfo}>
                 <div className={classes.cardContentDiv}>
                     <div className={classes.close} onClick={() => setCollapse((bool) => !bool)} />
                 </div>
-                <Typography gutterBottom component={'span'} variant={'body2'} className={classes.description}>
-                    {t('Info')}
-                </Typography>
-                    {description}
+                {description}
             </CardContent>
             <div className={classes.footerBlock}>
             </div>
@@ -457,6 +534,7 @@ const CardHosts = ({
             {alive && <div className={classes.dotLine} />}
         </div>
         <div
+            ref={refWarning}
             style={{ background: color || 'inherit' }}
             className={clsx(
                 classes.imageBlock,
@@ -466,7 +544,7 @@ const CardHosts = ({
             )}>
             <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
             <div style={{
-                color: (color && Utils.invertColor(color,true)) || 'inherit',
+                color: (color && Utils.invertColor(color, true)) || 'inherit',
             }} className={classes.adapter}>{name}</div>
             <Fab
                 disabled={typeof description === 'string'}
@@ -480,8 +558,14 @@ const CardHosts = ({
             <Typography variant="body2" color="textSecondary" component="p">
                 {t('Title: %s', title)}
             </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-                {t('OS: %s', os)}
+            <Typography variant="body2" color="textSecondary" component="div">
+                <div className={classes.displayFlex}>{t('Cpu: ')}<div ref={refCpu} className={classes.marginLeft5}>{'- %'}</div></div>
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="div">
+                <div className={classes.displayFlex}>{t('Mem: ')}<div ref={refMem} className={classes.marginLeft5}>{'- %'}</div></div>
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="div">
+                <div className={classes.displayFlex}>{t('Days/Hours: ')}<div ref={refUptime} className={classes.marginLeft5}>{'-/-'}</div></div>
             </Typography>
             <Typography variant="body2" color="textSecondary" component="p">
                 {t('Available: %s', available)}
@@ -495,8 +579,6 @@ const CardHosts = ({
             <div className={classes.marginTop10}>
                 <Typography component={'span'} className={classes.enableButton}>
                     <IconButton
-                        size="small"
-                        className={clsx(classes.button)}
                         onClick={() => setEditDilog(true)}
                     >
                         <EditIcon />
@@ -507,10 +589,9 @@ const CardHosts = ({
                             <CachedIcon />
                         </IconButton>
                     </Tooltip>
-
-                    <Tooltip title={t('Reload')}>
-                        <IconButton >
-                            {alive ? <RefreshIcon /> : <DeleteIcon />}
+                    <Tooltip title={t((alive || currentHost) ? 'Upgrade' : 'Remove')}>
+                        <IconButton onClick={(alive || currentHost) ? dialogUpgrade : executeCommandRemove}>
+                            {(alive || currentHost) ? <RefreshIcon /> : <DeleteIcon />}
                         </IconButton>
                     </Tooltip>
                 </Typography>

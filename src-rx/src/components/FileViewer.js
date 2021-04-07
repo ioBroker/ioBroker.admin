@@ -47,7 +47,7 @@ const styles = theme => ({
 
 export const EXTENSIONS = {
     images: ['png', 'jpg', 'svg', 'jpeg', 'jpg'],
-    code: ['js', 'json'],
+    code: ['js', 'json', 'md'],
     txt: ['log', 'txt', 'html', 'css', 'xml'],
 };
 
@@ -71,7 +71,6 @@ class FileViewer extends Component {
             code: null,
             copyPossible: EXTENSIONS.code.includes(this.ext) || EXTENSIONS.txt.includes(this.ext)
         };
-
         if (this.state.copyPossible) {
             fetch(this.props.href)
                 .then(response => response.text())
@@ -107,7 +106,7 @@ class FileViewer extends Component {
         } else if (this.state.text !== null) {
             return <TextField
                 className={this.props.classes.textarea}
-                value={this.state.code}
+                value={this.state.text}
                 multiline
                 readOnly={true} />;
         }

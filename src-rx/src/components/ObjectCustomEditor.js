@@ -17,10 +17,12 @@ import Checkbox from  '@material-ui/core/Checkbox';
 
 import DialogError from '@iobroker/adapter-react/Dialogs/Error';
 
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
 import '../assets/materialize.css';
 
 // Icons
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import JsonConfigComponent from './JsonConfigComponent';
 
 const styles = theme => ({
     paper: {
@@ -215,208 +217,6 @@ function jQ(el) {
 
 const URL_PREFIX = '.'; // or './' or 'http://localhost:8081' for debug
 
-// simulate jQuery
-window.$ = function (el) {
-    return new jQ(el);
-};
-
-window.$.extend = function (systemDictionary, data) {
-    return Object.assign(systemDictionary, data);
-};
-
-window.$.get = function (options) {
-    let url;
-    if (options.url[0] !== '/') {
-        url = URL_PREFIX + '/' + options.url;
-    } else {
-        url = URL_PREFIX + options.url;
-    }
-
-    const promise = GLOBAL_PROMISES[options.url] =
-        fetch(url)
-            .then(data => data.text())
-            .then(data => {
-                try {
-                    options.success(data);
-                } catch (e) {
-
-                }
-            });
-
-    GLOBAL_PROMISES_ARRAY.push(promise);
-};
-
-window.gMain = {
-    socket: null,
-    objects: null,
-    showError: error => console.error(error),
-    navigateGetParams: function () {
-        const parts = decodeURI(window.location.hash).split('/');
-        return parts[2] ? decodeURIComponent(parts[2]) : null;
-    }
-};
-
-function translateWord(text, lang, dictionary) {
-    if (!text) return '';
-
-    text = text.toString();
-
-    if (dictionary[text]) {
-        let newText = dictionary[text][lang];
-        if (newText) {
-            return newText;
-        } else if (lang !== 'en') {
-            newText = dictionary[text].en;
-            if (newText) {
-                return newText;
-            }
-        }
-    } else if (typeof text === 'string' && !text.match(/_tooltip$/)) {
-        console.log(`"${text}": {"en": "${text}", "de": "${text}", "ru": "${text}", "pt": "${text}", "nl": "${text}", "fr": "${text}", "es": "${text}", "pl": "${text}", "it": "${text}", "zh-cn": "${text}"},`);
-    } else if (typeof text !== 'string') {
-        console.warn('Trying to translate non-text:' + text);
-    }
-    return text;
-}
-
-function installTemplate(el, lang, id, commonConfig, wordDifferent, onChange) {
-    const template = el.getElementsByClassName('m')[0];
-    const words = template.getElementsByClassName('translate');
-    const adapter = id.split('.')[0];
-
-    for (let w = 0; w < words.length; w++) {
-        words[w].innerHTML = translateWord(words[w].innerHTML, lang, window.systemDictionary || {});
-    }
-
-    const controls = {};
-    const inputs = template.getElementsByTagName('input');
-
-    for (let i = 0; i < inputs.length; i++) {
-        const field = inputs[i].dataset.field;
-
-        let def = inputs[i].dataset.default;
-        if (def !== undefined && (!window.defaults[adapter] || window.defaults[adapter][field] === undefined)) {
-            if (def === 'true')  {
-                def = true;
-            }
-            if (def === 'false') {
-                def = false;
-            }
-            if (def !== undefined && def.toString().replace(/\+/, '') === parseFloat(def).toString()) {
-                def = parseFloat(def);
-            }
-            window.defaults[adapter] = window.defaults[adapter] || {};
-            window.defaults[adapter][field] = def;
-        }
-
-        controls[field] = {
-            default: window.defaults[adapter] ? window.defaults[adapter][field] : undefined,
-            el:      inputs[i],
-            type:    inputs[i].type
-        };
-
-        if (controls[field].type === 'checkbox') {
-            controls[field].el.parentNode.onclick = function () {
-                const input = this.getElementsByTagName('input')[0];
-
-                if (input.indeterminate) {
-                    input.indeterminate = false;
-                    input.checked = true;
-                } else {
-                    input.checked = !input.checked;
-                }
-
-                const evt = document.createEvent('HTMLEvents');
-                evt.initEvent('change', false, true);
-                input.dispatchEvent(evt);
-            };
-
-            // control opacity of expansion tab
-            if (field === 'enabled') {
-                controls[field].el.addEventListener('change', function () {
-                    const val = this.checked;
-                    el.style.opacity = val ? 1 : 0.6;
-                    el.getElementsByClassName('titleEnabled')[0].style.display = val ? 'inline-block' : 'none';
-                });
-            }
-
-            if (commonConfig[id][field] !== undefined) {
-                if (commonConfig[id][field] === STR_DIFFERENT) {
-                    controls[field].el.indeterminate = true;
-                } else {
-                    controls[field].el.checked = !!commonConfig[id][field];
-                }
-            } else if (controls[field].def !== undefined) {
-                controls[field].el.checked = !!controls[field].def;
-            }
-        } else {
-            if (commonConfig[id][field] !== undefined) {
-                if (commonConfig[id][field] === STR_DIFFERENT) {
-                    if (controls[field].el.type === 'number') {
-                        controls[field].el.type = 'text';
-                    }
-                    if (commonConfig[id].tagName.toUpperCase() === 'SELECT'){
-                        const opt = document.createElement('option');
-                        opt.value = wordDifferent;
-                        opt.innerHTML = wordDifferent;
-                        controls[field].el.prependChild(opt);
-                        controls[field].el.value = wordDifferent;
-                    } else {
-                        controls[field].el.placeholder = wordDifferent;
-                    }
-                } else {
-                    controls[field].el.value = commonConfig[id][field];
-                }
-            } else if (controls[field].def !== undefined) {
-                controls[field].el.value = controls[field].def;
-            }
-
-            if (controls[field].el.tagName.toUpperCase() === 'INPUT' || controls[field].el.type !== 'checkbox') {
-                // labels control
-                if (true || controls[field].el.value) {
-                    const label = controls[field].el.parentNode.getElementsByTagName('label')[0];
-                    label && label.classList.add('active');
-                }
-
-                /*controls[field].el.addEventListener('keyup', function () {
-                    const label = this.parentNode.getElementsByTagName('label')[0];
-                    if (!label) {
-                        return;
-                    }
-                    if (this.value) {
-                        label.classList.add('active');
-                    } else {
-                        label.classList.remove('active');
-                    }
-                });*/
-            }
-        }
-
-        if (controls[field].el.type === 'checkbox') {
-            controls[field].el._initialValue = controls[field].el.checked;
-        } else {
-            controls[field].el._initialValue = controls[field].el.indeterminate ? 'indeterminate' : controls[field].el.checked;
-        }
-
-        controls[field].el.addEventListener('change', function () {
-            let val;
-            if (this.type === 'checkbox') {
-                val = this.checked;
-            } else {
-                val = this.value;
-            }
-
-            if (this._initialValue !== val) {
-                onChange(id, field, true, val);
-            } else {
-                onChange(id, field, false, val);
-            }
-        });
-    }
-
-    return controls;
-}
-
 class ObjectCustomEditor extends Component {
     static AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
@@ -434,29 +234,24 @@ class ObjectCustomEditor extends Component {
             loaded: false,
             hasChanges: false,
             expanded,
+            newValues: {},
         };
 
-        this.scrollDone = false;
+        this.scrollDone   = false;
         this.lastExpanded = window.localStorage.getItem('App.customsLastExpanded') || '';
         this.scrollDivRef = createRef();
 
         this.changedItems = [];
-        this.jsonConfigs = {};
+        this.jsonConfigs  = {};
 
-        this.controls = {};
-        this.refTemplate = {};
+        this.controls     = {};
+        this.refTemplate  = {};
         this.props.customsInstances.map(id => this.refTemplate[id] = createRef());
-
-        window.gMain.objects = this.props.objects;
-        window.gMain.socket = this.props.socket.getRawSocket();
-
-        window.gMain.showError = this.showError.bind(this);
 
         this.loadAllPromises = this.loadAllCustoms()
             .then(() => {
                 this.commonConfig = this.getCommonConfig();
-                this.commonConfig.newValues = {};
-                this.setState({ loaded: true });
+                this.setState({ loaded: true, newValues: {} });
             });
     }
 
@@ -487,10 +282,6 @@ class ObjectCustomEditor extends Component {
 
     showError(error) {
         this.setState({ error });
-    }
-
-    static getDerivedStateFromProps() {
-        return null;
     }
 
     getCustomTemplate(adapter) {
@@ -558,6 +349,7 @@ class ObjectCustomEditor extends Component {
 
         if (this.jsonConfigs[adapter]) {
             const items = this.jsonConfigs[adapter].json.items;
+
             items && Object.keys(items).filter(attr => items[attr])
                 .forEach(async attr => {
                     if (items[attr].defaultFunc) {
@@ -584,8 +376,6 @@ class ObjectCustomEditor extends Component {
         const objects = this.props.objects;
 
         const commons = {};
-        // let type = null;
-        // let role = null;
 
         // calculate common settings
         this.props.customsInstances.forEach(inst => {
@@ -626,6 +416,7 @@ class ObjectCustomEditor extends Component {
                     const adapter = inst.split('.')[0];
                     // Calculate defaults for this object
                     let _default = this.getDefaultValues(adapter, customObj);
+                    _default.enabled = false;
 
                     Object.keys(_default).forEach(_attr => {
                         if (commons[inst][_attr] === undefined) {
@@ -653,11 +444,22 @@ class ObjectCustomEditor extends Component {
         return commons;
     }
 
+    isChanged() {
+        return !!Object.keys(this.state.newValues).length;
+    }
+
+    combineNewAndOld(instance) {
+        const data = Object.assign({}, this.commonConfig[instance] || {}, this.state.newValues[instance] || {});
+        console.log(instance + ': ' + JSON.stringify(data));
+        return data;
+    }
+
     renderOneCustom(instance, instanceObj) {
         const adapter = instance.split('.')[0];
 
         const icon = `${URL_PREFIX}/adapter/${adapter}/${this.props.objects['system.adapter.' + adapter].common.icon}`;
         const enabled = this.commonConfig[instance].enabled; // could be true, false or [true, false]
+        const isIntermediate = Array.isArray(enabled) && (!this.state.newValues[instance] || this.state.newValues[instance].enabled === undefined);
 
         return <Accordion
             key={ instance }
@@ -688,56 +490,43 @@ class ObjectCustomEditor extends Component {
                         <FormControlLabel
                             className={ this.props.classes.formControl }
                             control={<Checkbox
-                                intermediate={ Array.isArray(enabled)}
-                                checked={ enabled === true }
+                                intermediate={ isIntermediate.toString() }
+                                checked={ this.state.newValues[instance] && this.state.newValues[instance].enabled !== undefined ? this.state.newValues[instance].enabled : (this.state.newValues[instance] === null ? false : this.commonConfig[instance].enabled) }
                                 onChange={e => {
-                                    this.value = e.target.checked
+                                    this.state.newValues[instance] = this.state.newValues[instance] || {};
+                                    if (isIntermediate || e.target.checked) {
+                                        this.state.newValues[instance].enabled = true;
+                                    } else {
+                                        if (enabled) {
+                                            this.state.newValues[instance] = null;
+                                        } else {
+                                            delete this.state.newValues[instance];
+                                        }
+                                    }
+                                    this.setState({hasChanges: this.isChanged()})
                                 }}/>}
                             label={this.props.t('Enabled')}
                         />
                     </div>
                     <div className={this.props.classes.customControls}>
-                        <pre>
-                            {JSON.stringify(this.commonConfig[instance], null, 2)}
-                        </pre>
+                        {enabled || isIntermediate ?
+                        <JsonConfigComponent
+                            custom={true}
+                            className={ '' }
+                            socket={this.props.socket}
+                            theme={this.props.theme}
+                            themeName={this.props.themeName}
+                            themeType={this.props.themeType}
+
+                            schema={this.jsonConfigs[adapter].json}
+                            data={this.combineNewAndOld(instance)}
+                            onError={error => this.setState({error})}
+                            onChange={(data, changed) => this.setState({data})}
+                        /> : null}
                     </div>
                 </Paper>
             </AccordionDetails>
         </Accordion>;
-        /*
-        const icon = URL_PREFIX + '/adapter/' + adapter + '/' + this.props.objects['system.adapter.' + id].common.icon;
-        const enabled = this.commonConfig.commons[id] && (this.commonConfig.commons[id].enabled === true || this.commonConfig.commons[id].enabled === STR_DIFFERENT);
-
-        // we use style here, because it will be controlled from non-react (vanilaJS) part
-        return <Accordion
-            key={ id }
-            id={ 'Accordion_' + id }
-            className="expansionDiv"
-            defaultExpanded={ this.expanded.includes(id) }
-            ref={ this.refTemplate[id] }
-            style={ {opacity: enabled ? 1 : 0.6 }}
-            onChange={(e, _expanded) => {
-                const pos = this.expanded.indexOf(id);
-                if (_expanded) {
-                    pos === -1 && this.expanded.push(id);
-                } else {
-                    pos !== -1 && this.expanded.splice(pos, 1);
-                }
-                window.localStorage.setItem('App.customsExpanded', JSON.stringify(this.expanded));
-                _expanded && window.localStorage.setItem('App.customsLastExpanded', id);
-            }}
-        >
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} data-id={ id }>
-                <img src={ icon } className={ this.props.classes.headingIcon } alt="" />
-                <Typography className={ this.props.classes.heading }>{ this.props.t('Settings %s', id)}</Typography>
-                <div className={ clsx(this.props.classes.titleEnabled, 'titleEnabled') } style={{ display: enabled ? 'display-block' : 'none'} }>{ this.props.t('Enabled') }</div>
-            </AccordionSummary>
-            <AccordionDetails className={ clsx(this.props.classes.simulateM, 'm') } >
-                <div className={ this.props.classes.expansionPanelDetailsTabDiv } dangerouslySetInnerHTML={{__html: GLOBAL_TEMPLATES[adapter]}} />
-            </AccordionDetails>
-        </Accordion>;
-         */
-
     }
 
     isAllOk() {
@@ -753,51 +542,6 @@ class ObjectCustomEditor extends Component {
             }
         });*/
         return allOk;
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        // scroll to last expanded div
-        if (!this.scrollDone && this.scrollDivRef.current) {
-            const wordDifferent = this.props.t(STR_DIFFERENT);
-
-            /*Object.keys(this.refTemplate).forEach(id => {
-                if (this.refTemplate[id].current && !this.controls[id]) {
-                    const adapter = id.replace(/\.\d+$/, '');
-                    this.controls[id] = installTemplate(
-                        this.refTemplate[id].current,
-                        this.props.lang,
-                        id,
-                        this.commonConfig.commons,
-                        wordDifferent,
-                        this.onChange
-                    );
-
-                    // post init => add custom logic
-                    if (window.customPostInits.hasOwnProperty(adapter) && typeof window.customPostInits[adapter] === 'function') {
-                        window.customPostInits[adapter](
-                            window.$(this.refTemplate[id].current),
-                            this.commonConfig.commons[id],
-                            this.props.objects['system.adapter.' + id],
-                            this.commonConfig.type,
-                            this.commonConfig.role,
-                            this.props.objectIDs.length > 1 ? false : this.props.objects[this.props.objectIDs[0]] // only if one element
-                        );
-                    }
-                }
-            });
-
-            this.scrollDone = true;
-
-            if (this.expanded.length) {
-                let item;
-                if (this.expanded.includes(this.lastExpanded)) {
-                    item = window.document.getElementById('Accordion_' + this.lastExpanded);
-                } else {
-                    item = window.document.getElementById('Accordion_' + this.expanded[0]);
-                }
-                item && item.scrollIntoView(true);
-            }*/
-        }
     }
 
     renderErrorMessage() {
@@ -844,6 +588,7 @@ class ObjectCustomEditor extends Component {
                         return window.alert(`Invalid object ${id}`);
                     }
 
+                    // remove all disabled commons
                     if (obj.common && obj.common.custom) {
                         Object.keys(obj.common.custom).forEach(ins => {
                             if (!obj.common.custom[ins] || !obj.common.custom[ins].enabled) {
@@ -853,28 +598,20 @@ class ObjectCustomEditor extends Component {
                     }
 
                     const newObj = JSON.parse(JSON.stringify(obj));
-                    Object.keys(this.commonConfig.newValues)
+                    Object.keys(this.state.newValues)
                         .forEach(instance => {
                             const adapter = instance.split('.')[0];
 
-                            if (this.commonConfig.newValues[instance].enabled === false) {
+                            if (this.state.newValues[instance].enabled === false) {
                                 if (newObj.common && newObj.common.custom && newObj.common.custom[instance]) {
                                     newObj.common.custom[instance] = null; // here must be null and not deleted, so controller can remove it
                                 }
-                            } else if (this.commonConfig.newValues[instance].enabled === true) {
+                            } else if (this.state.newValues[instance].enabled === true) {
                                 newObj.common.custom = newObj.common.custom || {};
 
                                 if (!newObj.common.custom[instance]) {
                                     // provide defaults
-                                    let _default;
-
-                                    if (window.defaults[adapter]) {
-                                        if (typeof window.defaults[adapter] === 'function') {
-                                            _default = window.defaults[adapter](newObj, this.props.objects['system.adapter.' + instance]);
-                                        } else {
-                                            _default = window.defaults[adapter];
-                                        }
-                                    }
+                                    let _default = this.getDefaultValues(adapter, newObj);
 
                                     if (_default) {
                                         newObj.common.custom[instance] = JSON.parse(JSON.stringify(_default));
@@ -885,8 +622,8 @@ class ObjectCustomEditor extends Component {
 
                                 newObj.common.custom[instance].enabled = true;
 
-                                Object.keys(this.commonConfig.newValues[instance]).forEach(attr => {
-                                    let val = this.commonConfig.newValues[instance][attr];
+                                Object.keys(this.state.newValues[instance]).forEach(attr => {
+                                    let val = this.state.newValues[instance][attr];
                                     let f = parseFloat(val);
                                     // replace trailing 0 and prefix +
                                     if (val.toString().replace(/^\+/, '').replace(/([0-9]+(\.[0-9]+[1-9])?)(\.?0+$)/,'$1') === f.toString()) {
@@ -902,10 +639,10 @@ class ObjectCustomEditor extends Component {
                         return this.props.socket.setObject(id, newObj)
                             .then(() =>
                                 setTimeout(() =>
-                                    this.saveOneState(ids, cb)));
+                                    this.saveOneState(ids, cb)), 0);
                     } else {
                         setTimeout(() =>
-                            this.saveOneState(ids, cb));
+                            this.saveOneState(ids, cb), 0);
                     }
                 });
         }
@@ -915,7 +652,7 @@ class ObjectCustomEditor extends Component {
         this.saveOneState([...this.props.objectIDs], () => {
             this.changedItems = [];
             this.commonConfig.newValues = {};
-            this.setState({ hasChanges: false}, () =>
+            this.setState({ hasChanges: false, newValues: {}}, () =>
                 this.props.onChange(false, true));
         });
     }
@@ -953,6 +690,9 @@ ObjectCustomEditor.propTypes = {
     customsInstances: PropTypes.array,
     socket: PropTypes.object,
     objectIDs: PropTypes.array,
+    theme: PropTypes.object,
+    themeName: PropTypes.string,
+    themeType: PropTypes.string,
 };
 
 export default withWidth()(withStyles(styles)(ObjectCustomEditor));
