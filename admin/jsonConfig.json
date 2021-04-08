@@ -275,6 +275,26 @@
           "type": "pattern",
           "pattern": "my ${data.bind} ${_alive}",
           "copyToClipboard": true
+        },
+        "myTable": {
+          "items": [
+            {
+              "type": "text",
+              "attr": "ip",
+              "width": 100,
+              "title": "IP",
+              "filter": true,
+              "sort": true
+            },
+            {
+              "type": "number",
+              "attr": "delay",
+              "width": "100%",
+              "title": "Delay",
+              "filter": false,
+              "sort": true,
+            }
+          ]
         }
       }
     }

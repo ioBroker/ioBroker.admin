@@ -181,7 +181,7 @@ const schema = {
                 // - coordinates ?
                 
                 // - table - table with items that could be deleted, added, movedUP, moved Down
-                //   - items: [{type: see above, width: px or %, title: {en: 'header'}, attr: 'name', filter: true}]
+                //   - items:   [{type: see above, width: px or %, title: {en: 'header'}, attr: 'name', filter: false, sort: true}]
                 //   - noDelete: boolean if delete or add disabled
                 //     - if noDelete is false, add, delete and move up/down shold work
                 
