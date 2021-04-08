@@ -1,14 +1,17 @@
-import { Component } from 'react';
+import { Component, createRef } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import Dropzone from 'react-dropzone';
 
 import { withStyles } from '@material-ui/core/styles';
-import { Tooltip } from '@material-ui/core';
+import { Menu, MenuItem, Tooltip } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 
 import IconClose from '@material-ui/icons/Close';
+import CropIcon from '@material-ui/icons/Crop';
 import { FaFileUpload as UploadIcon } from 'react-icons/fa';
+import { Cropper } from 'react-cropper';
+import "cropperjs/dist/cropper.css";
 
 
 const styles = theme => ({
@@ -33,7 +36,9 @@ const styles = theme => ({
         width: '100%',
         height: 300,
         opacity: 0.9,
-        marginTop: 30
+        marginTop: 30,
+        cursor: 'pointer',
+        outline: 'none'
     },
     uploadDivDragging: {
         opacity: 1,
@@ -71,21 +76,34 @@ const styles = theme => ({
 
     },
     disabledOpacity: {
-        opacity: 0.3
+        opacity: 0.3,
+        cursor: 'default'
     },
     buttonRemoveWrapper: {
         position: 'absolute',
         zIndex: 222,
         right: 0
     },
+    buttonCropWrapper: {
+        position: 'absolute',
+        zIndex: 222,
+        right: 0,
+        top: 50
+    },
+    error: {
+        border: '2px solid red'
+    }
 });
 
 class UploadImage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            uploadFile: false
+            uploadFile: false,
+            anchorEl: null,
+            cropHandler: false,
         };
+        this.cropperRef = createRef();
     }
 
     onDrop(acceptedFiles) {
@@ -116,13 +134,13 @@ class UploadImage extends Component {
     }
 
     render() {
-        const { disabled, maxSize, classes, icon, t, removeIconFunc } = this.props;
-        const { uploadFile } = this.state;
+        const { disabled, maxSize, classes, icon, t, removeIconFunc, accept, error, crop, onChange } = this.props;
+        const { uploadFile, anchorEl, cropHandler } = this.state;
         return <Dropzone
-            disabled={disabled}
+            disabled={disabled || cropHandler}
             key="dropzone"
             multiple={false}
-            accept="image/*"
+            accept={accept}
             maxSize={maxSize}
             onDragEnter={() => this.setState({ uploadFile: 'dragging' })}
             onDragLeave={() => this.setState({ uploadFile: true })}
@@ -145,7 +163,7 @@ class UploadImage extends Component {
                 )}
                     {...getRootProps()}>
                     <input {...getInputProps()} />
-                    <div className={classes.uploadCenterDiv}>
+                    <div className={clsx(classes.uploadCenterDiv, error && classes.error)}>
                         {!icon ? <div className={classes.uploadCenterTextAndIcon}>
                             <UploadIcon className={classes.uploadCenterIcon} />
                             <div className={classes.uploadCenterText}>{
@@ -153,8 +171,8 @@ class UploadImage extends Component {
                                     t('Place your files here or click here to open the browse dialog')}</div>
                         </div>
                             :
-                            removeIconFunc && <div className={classes.buttonRemoveWrapper}>
-                                <Tooltip title={t('Clear %s', 'icon')}>
+                            removeIconFunc && !cropHandler && <div className={classes.buttonRemoveWrapper}>
+                                <Tooltip title={t('Clear')}>
                                     <IconButton onClick={e => {
                                         removeIconFunc && removeIconFunc();
                                         e.stopPropagation();
@@ -163,7 +181,46 @@ class UploadImage extends Component {
                                 </Tooltip>
                             </div>
                         }
-                        {icon ? <img src={icon} className={classes.image} alt="icon" /> : null}
+                        {icon && crop && <div className={classes.buttonCropWrapper}>
+                            <Tooltip title={t('Crop')}>
+                                <IconButton onClick={e => {
+                                    if (!cropHandler) {
+                                        this.setState({ cropHandler: true });
+                                    } else {
+                                        this.setState({ anchorEl: e.currentTarget });
+                                    }
+                                    e.stopPropagation();
+                                }}><CropIcon color={cropHandler ? 'primary' : 'inherit'} />
+                                </IconButton>
+                            </Tooltip>
+                            <Menu
+                                id="simple-menu"
+                                anchorEl={anchorEl}
+                                keepMounted
+                                open={Boolean(anchorEl)}
+                                onClose={() => this.setState({ anchorEl: null })}
+                            >
+                                <MenuItem onClick={() => this.setState({ anchorEl: null, cropHandler: false }, () => {
+                                    const imageElement = this.cropperRef?.current?.cropper;
+                                    onChange(imageElement.getCroppedCanvas().toDataURL());
+                                })}>{t('Save')}</MenuItem>
+                                <MenuItem onClick={() => this.setState({ anchorEl: null, cropHandler: false })}>{t('Close')}</MenuItem>
+                            </Menu>
+                        </div>}
+                        {icon && !cropHandler ? <img src={icon} className={classes.image} alt="icon" /> : null}
+
+                        {icon && crop && cropHandler ? <Cropper
+                            ref={this.cropperRef}
+                            className={classes.image}
+                            src={icon}
+                            initialAspectRatio={1}
+                            viewMode={1}
+                            guides={false}
+                            minCropBoxHeight={10}
+                            minCropBoxWidth={10}
+                            background={false}
+                            checkOrientation={false}
+                        /> : null}
                     </div>
 
                 </div>)}
@@ -175,16 +232,22 @@ UploadImage.defaultProps = {
     disabled: false,
     maxSize: 10 * 1024,
     icon: null,
-    removeIconFunc: undefined,
+    removeIconFunc: null,
+    accept: "image/*",
+    error: false,
     onChange: base64 => console.log(base64),
-    t: el => el
+    t: el => el,
+    crop: false
 }
 
 UploadImage.propTypes = {
     classes: PropTypes.object,
     maxSize: PropTypes.number,
     disabled: PropTypes.bool,
+    crop: PropTypes.bool,
+    error: PropTypes.bool,
     onChange: PropTypes.func,
+    accept: PropTypes.string,
     t: PropTypes.func,
 };
 

@@ -32,7 +32,7 @@ class ConfigCustomEasyAccess extends ConfigGeneric {
                 instances = instances.filter(instance =>
                     instance && instance.common && (!instance.common.noConfig || instance.common.adminTab))
                     .map(instance => ({
-                        id: instance._id.replace(/^system\.config\./, ''),
+                        id: instance._id.replace(/^system\.adapter\./, ''),
                         config: !instance.common.noConfig,
                         adminTab: instance.common.adminTab
                     }));

@@ -115,14 +115,14 @@ const schema = {
                 // - image - saves image as file of adapter.0 object
                 //   - filename - name of file is structure name 
                      ```
-                     "login-bg.png": {
-                          "type": "image",
-                          "accept": "image/*",
-                          "label": {
-                            "en": "Upload image"
-                          },
-                          "crop": true
-                        }
+                //     "login-bg.png": {
+                //          "type": "image",
+                //          "accept": "image/*",
+                //          "label": {
+                //            "en": "Upload image"
+                //          },
+                //          "crop": true
+                //        }
                      ```
                      login-bg.png is file name for writeFile('myAdapter.INSTANCE', 'login-bg.png')   
                 //   - accept - html accept attribute, like "image/*,.pdf"

@@ -216,6 +216,7 @@ class HostEdit extends Component {
                     <div className={classes.flexDrop}>
                         <UploadImage
                             disabled={disabled}
+                            crop
                             maxSize={256 * 1024}
                             icon={json.common.icon}
                             removeIconFunc={() => this.setCommonItem(json, 'icon', '')}

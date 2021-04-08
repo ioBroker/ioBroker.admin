@@ -17,7 +17,8 @@ const styles = {
     root: {
         height: '100%',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        overflow: 'hidden'
     },
     scroll: {
         height: '100%',

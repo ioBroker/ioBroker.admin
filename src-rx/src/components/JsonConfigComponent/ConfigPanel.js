@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
-import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 
 import ConfigGeneric from './ConfigGeneric';
@@ -16,6 +15,8 @@ import ConfigUser from './ConfigUser';
 import ConfigStaticText from './ConfigStaticText';
 import ConfigPattern from './ConfigPattern';
 import ConfigCertificateSelect from './ConfigCertificateSelect';
+import ConfigImageUpload from './ConfigImageUpload';
+import ConfigInstanceSelect from './ConfigInstanceSelect';
 
 const components = {
     text: ConfigText,
@@ -29,7 +30,9 @@ const components = {
     select: ConfigSelect,
     user: ConfigUser,
     pattern: ConfigPattern,
-    certificate: ConfigCertificateSelect
+    certificate: ConfigCertificateSelect,
+    image: ConfigImageUpload,
+    instance: ConfigInstanceSelect
 };
 
 const styles = theme => ({
@@ -38,9 +41,14 @@ const styles = theme => ({
         //height: '100%',
     },
     paper: {
-        width: 'calc(100% - ' + theme.spacing(2) + 'px)',
-        height: 'calc(100% - ' + theme.spacing(2) + 'px)',
-        padding: theme.spacing(1)
+        margin: 10,
+        height: 'calc(100vh - 230px) !important',
+        width: 'auto !important',
+        overflowY: 'auto',
+
+    },
+    padding: {
+        padding: 10,
     }
 });
 
@@ -83,11 +91,11 @@ class ConfigPanel extends ConfigGeneric {
 
     render() {
         const items = this.props.schema.items;
-        return <Paper className={(this.props.className || '') + ' ' + this.props.classes.paper}>
-            <Grid container className={this.props.classes.fullWidth} spacing={2}>
+        return <div className={(this.props.className || '') + ' ' + this.props.classes.paper}>
+            <Grid container className={this.props.classes.fullWidth + " " + this.props.classes.padding} spacing={2}>
                 {this.renderItems(items)}
             </Grid>
-        </Paper>;
+        </div>;
     }
 }
 
