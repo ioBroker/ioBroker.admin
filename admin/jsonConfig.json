@@ -277,6 +277,8 @@
           "copyToClipboard": true
         },
         "myTable": {
+          "noDelete": false,
+          "type": "table",
           "items": [
             {
               "type": "text",
@@ -292,7 +294,7 @@
               "width": "100%",
               "title": "Delay",
               "filter": false,
-              "sort": true,
+              "sort": true
             }
           ]
         }
