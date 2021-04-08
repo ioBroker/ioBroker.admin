@@ -18,7 +18,7 @@ const styles = theme => ({
 class ConfigInstanceSelect extends ConfigGeneric {
     async componentDidMount() {
         super.componentDidMount();
-        const value = this.getValue(this.props.data, this.props.attr);
+        const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         this.props.socket.getAdapterInstances()
             .then(instances => {
                 const selectOptions = instances.filter(instance =>

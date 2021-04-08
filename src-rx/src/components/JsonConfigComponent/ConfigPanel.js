@@ -17,6 +17,7 @@ import ConfigPattern from './ConfigPattern';
 import ConfigCertificateSelect from './ConfigCertificateSelect';
 import ConfigImageUpload from './ConfigImageUpload';
 import ConfigInstanceSelect from './ConfigInstanceSelect';
+// import { Paper } from '@material-ui/core';
 
 const components = {
     text: ConfigText,
@@ -83,6 +84,7 @@ class ConfigPanel extends ConfigGeneric {
                 onError={this.props.onError}
                 onChange={this.props.onChange}
                 customs={this.props.customs}
+                custom={this.props.custom}
                 attr={attr}
                 schema={items[attr]}
             />;
@@ -96,6 +98,17 @@ class ConfigPanel extends ConfigGeneric {
                 {this.renderItems(items)}
             </Grid>
         </div>;
+        // if (this.props.custom) {
+        //     return <Grid container className={this.props.classes.fullWidth} spacing={2}>
+        //         {this.renderItems(items)}
+        //     </Grid>;
+        // } else {
+        //     return <Paper className={`${this.props.className || ''} ${this.props.classes.paper}`}>
+        //         <Grid container className={this.props.classes.fullWidth} spacing={2}>
+        //             {this.renderItems(items)}
+        //         </Grid>
+        //     </Paper>;
+        // }
     }
 }
 
@@ -108,6 +121,7 @@ ConfigPanel.propTypes = {
     data: PropTypes.object.isRequired,
     schema: PropTypes.object,
     customs: PropTypes.object,
+    custom: PropTypes.bool,
     alive: PropTypes.bool,
     systemConfig: PropTypes.object,
 

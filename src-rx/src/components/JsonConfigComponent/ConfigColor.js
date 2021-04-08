@@ -33,7 +33,7 @@ class ConfigColor extends ConfigGeneric {
     }
 
     renderItem(error, disabled, defaultValue) {
-        const value = this.getValue(this.props.data, this.props.attr);
+        const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         let textColor = Utils.isUseBright(value, null);
         if (textColor === null) {
             textColor = undefined;

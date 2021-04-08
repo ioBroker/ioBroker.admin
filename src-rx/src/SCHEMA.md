@@ -234,7 +234,7 @@ data: {
 ```
 In this case input must be text, where shown `__different__`, with autocomplete option of 3 possible values. User can select from dropdown 1000, 2000 or 3000 or input own new value, e.g. 500.
 
-Boolean must support intermediate if value is [false, true]
+Boolean must support indeterminate if value is [false, true]
 
 For non changed `__different__` the value different must be returned:
 
@@ -271,7 +271,7 @@ If no schema provided, the schema must be created automatically from data.
 - number => number
 - name "bind" => ip
 - name "port" => number, min=1, max=0xFFFF
-- name "timeout" => number, helpText="ms"
+- name "timeout" => number, help="ms"
 
 If element has no attribute `type`, assume it has default type 'panel'.
 

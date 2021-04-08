@@ -18,7 +18,7 @@ const styles = theme => ({
 class ConfigCertificateSelect extends ConfigGeneric {
     async componentDidMount() {
         super.componentDidMount();
-        const value = this.getValue(this.props.data, this.props.attr);
+        const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         let selectOptions = await this.props.socket.getCertificates();
         selectOptions = selectOptions
         .filter(el => this.props.attr.toLowerCase().endsWith(el.type))
