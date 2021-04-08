@@ -44,8 +44,8 @@ class ConfigCustomEasyAccess extends ConfigGeneric {
         if (!this.state.instances) {
             return null;
         } else {
-            const accessAllowedConfigs = this.getValue(this.props.data, 'accessAllowedConfigs') || [];
-            const accessAllowedTabs    = this.getValue(this.props.data, 'accessAllowedTabs')    || [];
+            const accessAllowedConfigs = ConfigGeneric.getValue(this.props.data, 'accessAllowedConfigs') || [];
+            const accessAllowedTabs    = ConfigGeneric.getValue(this.props.data, 'accessAllowedTabs')    || [];
 
             return <TableContainer>
                 <Table className={this.props.classes.table} size="small">

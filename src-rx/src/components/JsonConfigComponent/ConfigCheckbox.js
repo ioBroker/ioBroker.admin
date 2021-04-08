@@ -11,15 +11,25 @@ const styles = theme => ({
 
 class ConfigCheckbox extends ConfigGeneric {
     renderItem(error, disabled) {
-        const value = this.getValue(this.props.data, this.props.attr);
-        if (value && typeof value === 'object') {
-            // different case
-        }
+        const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
+        let isIndeterminate = Array.isArray(value);
 
         return <FormControlLabel
+            onClick={e => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.onChange(this.props.attr, !value);
+            }}
             control={<Checkbox
+                indeterminate={isIndeterminate}
                 checked={!!value}
-                onChange={e => this.onChange(this.props.attr, e.target.checked)}
+                onChange={e => {
+                    if (isIndeterminate) {
+                        this.onChange(this.props.attr, true);
+                    } else {
+                        this.onChange(this.props.attr, e.target.checked);
+                    }
+                }}
                 //error={!!error}
                 disabled={!!disabled}
             />}

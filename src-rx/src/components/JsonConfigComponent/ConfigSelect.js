@@ -18,7 +18,7 @@ const styles = theme => ({
 class ConfigSelect extends ConfigGeneric {
     componentDidMount() {
         super.componentDidMount();
-        const value = this.getValue(this.props.data, this.props.attr);
+        const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
         const selectOptions = JSON.parse(JSON.stringify(this.props.schema.options));
 

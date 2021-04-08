@@ -4,13 +4,51 @@ import { withStyles } from '@material-ui/core/styles';
 
 import {LinearProgress} from "@material-ui/core";
 
+import I18n from '@iobroker/adapter-react/i18n';
+
 import ConfigTabs from './ConfigTabs';
 import ConfigPanel from './ConfigPanel';
+
 
 const styles = theme => ({
     root: {
         width: '100%',
         height: '100%'
+    }
+});
+
+// Todo: delete it after adapter-react 1.6.9
+I18n.extendTranslations = I18n.extendTranslations || ((words, lang) => {
+    try {
+        if (!lang) {
+            Object.keys(words).forEach(word => {
+                Object.keys(words[word]).forEach(lang => {
+                    if (!I18n.translations[lang]) {
+                        console.warn(`Used unknown language: ${lang}`);
+                    }
+                    if (!I18n.translations[lang][word]) {
+                        I18n.translations[lang][word] = words[word][lang];
+                    } else if (I18n.translations[lang][word] !== words[word][lang]) {
+                        console.warn(`Translation for word "${word}" in "${lang}" was ignored: existing = "${I18n.translations[lang][word]}", new = ${words[word][lang]}`);
+                    }
+                });
+            });
+        } else {
+            if (!I18n.translations[lang]) {
+                console.warn(`Used unknown language: ${lang}`);
+            }
+            I18n.translations[lang] = I18n.translations[lang] || {};
+            Object.keys(words)
+                .forEach(word => {
+                    if (!I18n.translations[lang][word]) {
+                        I18n.translations[lang][word] = words[word];
+                    } else if (I18n.translations[lang][word] !== words[word]) {
+                        console.warn(`Translation for word "${word}" in "${lang}" was ignored: existing = "${I18n.translations[lang][word]}", new = ${words[word]}`);
+                    }
+                });
+        }
+    } catch (e) {
+        console.error(`Cannot apply translations: ${e}`);
     }
 });
 
@@ -32,6 +70,38 @@ class JsonConfigComponent extends Component {
         this.buildDependencies(this.schema);
 
         this.readData();
+    }
+
+    static loadI18n(socket, i18n, adapterName) {
+        if (i18n === true) {
+            const lang = I18n.getLanguage();
+            return socket.fileExists(adapterName + '.admin', `i18n/${lang}.json`)
+                .then(exists => {
+                    if (exists) {
+                        return `i18n/${lang}.json`;
+                    } else {
+                        return socket.fileExists(adapterName + '.admin', `i18n/${lang}/translations.json`)
+                            .then(exists =>
+                                exists ? `i18n/${lang}/translations.json` : '')
+                    }
+                })
+                .then(fileName => {
+                    return fileName && socket.readFile(adapterName + '.admin', fileName)
+                        .then(json => {
+                            try {
+                                json = JSON.parse(json);
+                                // apply file to I18n
+                                I18n.extendTranslations(json, lang);
+                            } catch (e) {
+                                console.error(`Cannot parse language file "${adapterName}.admin/${fileName}: ${e}`);
+                            }
+                        })
+                });
+        } else if (i18n && typeof i18n === 'object') {
+            I18n.extendTranslations(i18n);
+        } else {
+            return Promise.resolve();
+        }
     }
 
     readSettings() {
@@ -62,12 +132,16 @@ class JsonConfigComponent extends Component {
         }
     }
 
-    onChange = data => {
-        const state = {data};
-        state.changed = JSON.stringify(data) !== this.state.originalData;
+    onChange = (data, value) => {
+        if (this.props.onValueChange) {
+            this.props.onValueChange(data, value);
+        } else {
+            const state = {data};
+            state.changed = JSON.stringify(data) !== this.state.originalData;
 
-        this.setState({state}, () =>
-            this.props.onChange(data, state.changed));
+            this.setState({state}, () =>
+                this.props.onChange(data, state.changed));
+        }
     }
 
     onError = (error, attr) => {
@@ -127,11 +201,12 @@ class JsonConfigComponent extends Component {
                 schema={item}
                 systemConfig={this.state.systemConfig}
                 customs={this.props.customs}
+                custom={this.props.custom}
 
-                onChange={data => this.onChange(data)}
+                onChange={this.onChange}
                 onError={(error, attr) => this.onError(error, attr)}
             />;
-        } else if (item.type === 'panel') {
+        } else if (item.type === 'panel' || !item.type) {
             return <ConfigPanel
                 socket={this.props.socket}
                 adapterName={this.props.adapterName}
@@ -144,8 +219,9 @@ class JsonConfigComponent extends Component {
                 schema={item}
                 systemConfig={this.state.systemConfig}
                 customs={this.props.customs}
+                custom={this.props.custom}
 
-                onChange={data => this.onChange(data)}
+                onChange={this.onChange}
                 onError={(error, attr) => this.onError(error, attr)}
             />
         }
@@ -179,6 +255,7 @@ JsonConfigComponent.propTypes = {
     schema: PropTypes.object,
     onError: PropTypes.func,
     onChange: PropTypes.func,
+    onValueChange: PropTypes.func,
 };
 
 export default withStyles(styles)(JsonConfigComponent);

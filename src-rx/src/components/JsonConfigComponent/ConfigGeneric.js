@@ -35,16 +35,16 @@ class ConfigGeneric extends Component {
     componentWillUnmount() {
     }
 
-    getValue(data, attr) {
+    static getValue(data, attr) {
         if (typeof attr === 'string') {
-            return this.getValue(data, attr.split('.'));
+            return ConfigGeneric.getValue(data, attr.split('.'));
         } else {
             if (attr.length === 1) {
                 return data[attr[0]];
             } else {
                 const part = attr.shift();
                 if (typeof data[part] === 'object') {
-                    return this.getValue(data[part], attr);
+                    return ConfigGeneric.getValue(data[part], attr);
                 } else {
                     return null;
                 }
@@ -54,7 +54,7 @@ class ConfigGeneric extends Component {
 
     setValue(data, attr, value) {
         if (typeof attr === 'string') {
-            return this.setValue(data, attr.split('.'), value);
+            return ConfigGeneric.setValue(data, attr.split('.'), value);
         } else {
             if (attr.length === 1) {
                 data[attr[0]] = value;
@@ -63,7 +63,7 @@ class ConfigGeneric extends Component {
                 if (!data[part] || typeof data[part] === 'object') {
                     data[part] = data[part] || {};
                 }
-                return this.setValue(data[part], attr, value);
+                return ConfigGeneric.setValue(data[part], attr, value);
             }
         }
     }
@@ -104,7 +104,7 @@ class ConfigGeneric extends Component {
                 this.setState({ confirmDialog: false}, () => {
                     if (isOk) {
                         const data = JSON.parse(JSON.stringify(this.props.data));
-                        this.setValue(data, this.state.confirmAttr, this.state.confirmNewValue);
+                        ConfigGeneric.setValue(data, this.state.confirmAttr, this.state.confirmNewValue);
                         this.setState({confirmDialog: false, confirmNewValue: null, confirmAttr: null, confirmOldValue: null, confirmData: null}, () =>
                             this.props.onChange(data));
                     } else {
@@ -116,8 +116,13 @@ class ConfigGeneric extends Component {
     }
 
     onChange(attr, newValue) {
+        if (this.props.custom) {
+            return this.props.onChange(attr, newValue);
+        }
+
         const data = JSON.parse(JSON.stringify(this.props.data));
-        this.setValue(data, attr, newValue);
+        ConfigGeneric.setValue(data, attr, newValue);
+
         if (this.props.schema.confirm && this.execute(this.props.schema.confirm.condition, false, data)) {
             return this.setState({
                 confirmDialog: true,
@@ -131,7 +136,7 @@ class ConfigGeneric extends Component {
                 for (let z = 0; z < this.props.schema.depends.length; z++) {
                     const dep = this.props.schema.depends[z];
                     if (dep.confirm) {
-                        const val = this.getValue(data, dep.attr);
+                        const val = ConfigGeneric.getValue(data, dep.attr);
 
                         if (this.execute(dep.confirm.condition, false, data)) {
                             return this.setState({
@@ -166,11 +171,40 @@ class ConfigGeneric extends Component {
         }
     }
 
+    executeCustom(func, data, customObj, instanceObj) {
+        if (!func) {
+            return null;
+        } else {
+            try {
+                // eslint-disable-next-line no-new-func
+                const f = new Function('data', '_system', 'instanceObj', 'customObj', '_socket', func.includes('return') ? func : 'return ' + func);
+                const result = f(data || this.props.data, this.props.systemConfig, instanceObj, customObj, this.props.socket);
+                console.log(result);
+                return result;
+            } catch (e) {
+                console.error(`Cannot execute ${func}: ${e}`);
+                return null;
+            }
+        }
+    }
+
     calculate(schema) {
-        const error        = schema.validator   ? this.execute(schema.validator,   true)    : false;
-        const disabled     = schema.disabled    ? this.execute(schema.disabled,    false)   : false;
-        const hidden       = schema.hidden      ? this.execute(schema.hidden,      false)   : false;
-        const defaultValue = schema.defaultFunc ? this.execute(schema.defaultFunc, schema.default) : schema.default;
+        let error;
+        let disabled;
+        let hidden;
+        let defaultValue;
+
+        if (this.props.custom) {
+            error        = schema.validator   ? this.executeCustom(schema.validator,   true)    : false;
+            disabled     = schema.disabled    ? this.executeCustom(schema.disabled,    false)   : false;
+            hidden       = schema.hidden      ? this.executeCustom(schema.hidden,      false)   : false;
+            //defaultValue = schema.defaultFunc ? this.executeCustom(schema.defaultFunc, schema.default) : schema.default;
+        } else {
+            error        = schema.validator   ? this.execute(schema.validator,   true)    : false;
+            disabled     = schema.disabled    ? this.execute(schema.disabled,    false)   : false;
+            hidden       = schema.hidden      ? this.execute(schema.hidden,      false)   : false;
+            defaultValue = schema.defaultFunc ? this.execute(schema.defaultFunc, schema.default) : schema.default;
+        }
 
         return {error, disabled, hidden, defaultValue};
     }
@@ -210,8 +244,7 @@ class ConfigGeneric extends Component {
             lg={schema.lg || undefined}
             md={schema.md || undefined}
             sm={schema.sm || undefined}
-
-            style={Object.assign({}, {marginBottom: 0, marginRight: 8}, this.props.schema.style)}>
+            style={Object.assign({}, {marginBottom: 0, /*marginRight: 8, */textAlign: 'left'}, this.props.schema.style)}>
             {this.renderItem(error, disabled, defaultValue)}
         </Grid>;
 
@@ -245,6 +278,7 @@ ConfigGeneric.propTypes = {
     onError: PropTypes.func,
     onChange: PropTypes.func,
     customs: PropTypes.object,
+    custom: PropTypes.bool,
 
     systemConfig: PropTypes.object,
     alive: PropTypes.bool,

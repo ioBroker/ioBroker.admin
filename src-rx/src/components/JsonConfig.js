@@ -70,14 +70,11 @@ class JsonConfig extends Router {
 
         this.getInstanceObject()
             .then(obj => this.getConfigFile()
-                .then(schema => {
+                .then(schema =>
                     // load language
-                    console.log('schema', schema)
-                    this.setState({ schema, data: obj.native, common: obj.common });
-                    return this.loadI18n(schema.i18n)
-                        .then(() => {})
-                }
-                ));
+                    this.loadI18n(schema.i18n)
+                        .then(() =>
+                            this.setState({schema, data: obj.native, common: obj.common}))));
     }
 
     loadI18n(i18n) {
@@ -132,12 +129,12 @@ class JsonConfig extends Router {
             return null;
         }
         return <ConfirmDialog
-            title={I18n.t('Please confirm')}
-            text={I18n.t('Some data are not stored. Discard?')}
-            ok={I18n.t('Discard')}
-            cancel={I18n.t('Cancel')}
+            title={ I18n.t('Please confirm') }
+            text={ I18n.t('Some data are not stored. Discard?') }
+            ok={ I18n.t('Discard') }
+            cancel={ I18n.t('Cancel') }
             onClose={isYes =>
-                this.setState({ confirmDialog: false }, () => isYes && Router.doNavigate(null))}
+                this.setState({ confirmDialog: false}, () => isYes && Router.doNavigate(null))}
         />;
     }
 
@@ -154,7 +151,7 @@ class JsonConfig extends Router {
             await this.props.socket.setObject(obj._id, obj);
         } else {
             if (this.state.changed) {
-                return this.setState({ confirmDialog: true });
+                return this.setState({confirmDialog: true});
             } else {
                 Router.doNavigate(null);
             }
@@ -163,7 +160,7 @@ class JsonConfig extends Router {
 
     render() {
         const { classes } = this.props;
-        console.log(this.state.data, this.state.schema)
+
         if (!this.state.data || !this.state.schema) {
             return <LinearProgress />;
         }
@@ -171,7 +168,7 @@ class JsonConfig extends Router {
         return <>
             {this.renderConfirmDialog()}
             <JsonConfigComponent
-                className={classes.scroll}
+                className={ classes.scroll }
                 socket={this.props.socket}
                 theme={this.props.theme}
                 themeName={this.props.themeName}

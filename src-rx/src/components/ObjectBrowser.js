@@ -1555,8 +1555,6 @@ class ObjectBrowser extends Component {
             aclEveryone_read_state:   props.t('ra_aclEveryone_read_state'),
         };
 
-        this.onStateChangeBound = this.onStateChange.bind(this);
-
         this.calculateColumnsVisibility();
 
         props.socket.getObjects(true, true)
@@ -1699,7 +1697,7 @@ class ObjectBrowser extends Component {
         // remove all subscribes
         this.subscribes.forEach(pattern => {
             console.log('- unsubscribe ' + pattern);
-            this.props.socket.unsubscribeState(pattern, this.onStateChangeBound);
+            this.props.socket.unsubscribeState(pattern, this.onStateChange);
         });
 
         this.subscribes = [];
@@ -1713,7 +1711,7 @@ class ObjectBrowser extends Component {
         // remove all subscribes
         this.subscribes.forEach(async pattern => {
             console.log('- unsubscribe ' + pattern);
-            await this.props.socket.unsubscribeState(pattern, this.onStateChangeBound);
+            await this.props.socket.unsubscribeState(pattern, this.onStateChange);
         });
 
         this.subscribes = [];
@@ -2021,7 +2019,7 @@ class ObjectBrowser extends Component {
      * @param {string} id
      * @param {ioBroker.State} state
      */
-    onStateChange(id, state) {
+    onStateChange = (id, state) => {
         console.log('> stateChange ' + id);
         if (this.states[id]) {
             const item = this.findItem(id);
@@ -2044,7 +2042,7 @@ class ObjectBrowser extends Component {
                 this.statesUpdateTimer = null;
             }
         }
-    }
+    };
 
     /**
      * @private
@@ -2146,7 +2144,7 @@ class ObjectBrowser extends Component {
             this.subscribes.push(id);
             console.log('+ subscribe ' + id);
             if (!this.pausedSubscribes) {
-                this.props.socket.subscribeState(id, this.onStateChangeBound);
+                this.props.socket.subscribeState(id, this.onStateChange);
             }
         }
     }
@@ -2163,7 +2161,7 @@ class ObjectBrowser extends Component {
                 delete this.states[id];
             }
             console.log('- unsubscribe ' + id);
-            this.props.socket.unsubscribeState(id, this.onStateChangeBound);
+            this.props.socket.unsubscribeState(id, this.onStateChange);
 
             if (this.pausedSubscribes) {
                 console.warn('Unsubscribe during pause?');
@@ -2178,10 +2176,10 @@ class ObjectBrowser extends Component {
     pauseSubscribe(isPause) {
         if (!this.pausedSubscribes && isPause) {
             this.pausedSubscribes = true;
-            this.subscribes.forEach(id => this.props.socket.unsubscribeState(id, this.onStateChangeBound));
+            this.subscribes.forEach(id => this.props.socket.unsubscribeState(id, this.onStateChange));
         } else if (this.pausedSubscribes && !isPause) {
             this.pausedSubscribes = false;
-            this.subscribes.forEach(id => this.props.socket.subscribeState(id, this.onStateChangeBound));
+            this.subscribes.forEach(id => this.props.socket.subscribeState(id, this.onStateChange));
         }
     }
 
@@ -3947,6 +3945,7 @@ class ObjectBrowser extends Component {
             const ObjectCustomDialog = this.props.objectCustomDialog;
 
             return <ObjectCustomDialog
+                reportChangedIds={changedIds => this.changedIds = [...changedIds]}
                 objectIDs={this.state.customDialog}
                 expertMode={this.state.filter.expertMode}
                 t={this.props.t}
@@ -3960,6 +3959,12 @@ class ObjectBrowser extends Component {
                 onClose={() => {
                     this.pauseSubscribe(false);
                     this.setState({ customDialog: null });
+                    if (this.changedIds) {
+                        this.changedIds = null;
+                        // update all changed IDs
+                        this.forceUpdate();
+                    }
+
                     this.props.router && this.props.router.doNavigate('tab-objects');
                 }}
             />;

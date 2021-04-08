@@ -133,7 +133,7 @@ const tabsInfo = {
     'tab-adapters': { order: 10, icon: <StoreIcon />, host: true },
     'tab-instances': { order: 15, icon: <SubtitlesIcon />, host: true },
     'tab-objects': { order: 20, icon: <ViewListIcon /> },
-    'tab-hosts': { order: 20, icon: <ViewListIcon /> },
+    //'tab-hosts': { order: 20, icon: <ViewListIcon /> },
     'tab-enums': { order: 25, icon: <ArtTrackIcon /> },
     'tab-devices': { order: 27, icon: <DvrIcon />, host: true },
     'tab-logs': { order: 30, icon: <ViewHeadlineIcon />, host: true },
