@@ -70,13 +70,11 @@ class JsonConfig extends Router {
 
         this.getInstanceObject()
             .then(obj => this.getConfigFile()
-                .then(schema =>{
+                .then(schema =>
                     // load language
-                    // this.setState({schema, data: obj.native, common: obj.common})
                     this.loadI18n(schema.i18n)
                         .then(() =>
-                            this.setState({schema, data: obj.native, common: obj.common}))
-                        }));
+                            this.setState({schema, data: obj.native, common: obj.common}))));
     }
 
     loadI18n(i18n) {
