@@ -141,7 +141,7 @@ const schema = {
                 // - password (repeat - if repeat password must be shown with the same width settings)
                 //   - repeat password must be compared with password
                 
-                // - instance 
+                // - instance *
                 //  - adapter - name of adapter
                 //  - allowDeactivate - if true. Additional option "deactivate" is shown
                 
@@ -150,7 +150,7 @@ const schema = {
                 // - alive - just indication if the instance is alive and it could be used in "hidden" and "disabled" (will not be saved in config)
                 //   - just text: Instance is running, Instance is not running
                 
-                // !- pattern - read only field with pattern like 'https://${data.ip}:${data.port}' (will not be saved in config)                
+                // !- pattern* - read only field with pattern like 'https://${data.ip}:${data.port}' (will not be saved in config)                
                 //  - text input - read only that shows pattern
                 //  - copyToClipboard - if true - show button
                 //  - pattern - my pattern
@@ -183,7 +183,7 @@ const schema = {
                 // - table - table with items that could be deleted, added, movedUP, moved Down
                 //   - items: [{type: see above, width: px or %, title: {en: 'header'}, attr: 'name', filter: true}]
                 //   - noDelete: boolean if delete or add disabled
-                //   - if noDelete is false, add, delete and move up/down shold work
+                //     - if noDelete is false, add, delete and move up/down shold work
                 
                 // - json - json editor 
                 //   - height in px or % or em
@@ -191,10 +191,10 @@ const schema = {
                 // - language 
                 //   - system (use system from system.config as default)
                 
-                // - instances
+                // - instances*
                 //   - filter: ?? (not yet clear)
                 
-                // - certificate
+                // - certificate*
                 //   - certType: public, private, chained
                 //   - see https://github.com/ioBroker/ioBroker.admin/blob/master/src/js/adapter-settings.js#L324
                                 

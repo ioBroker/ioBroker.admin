@@ -61,8 +61,10 @@ class ConfigNumber extends ConfigGeneric {
                 value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
                 error={!!error}
                 disabled={!!disabled}
-                onChange={e =>
-                    this.onChange(this.props.attr, parseFloat(e.target.value))}
+                onChange={e => {
+                    this.setState({value: e.target.value}, () =>
+                        this.onChange(this.props.attr, parseFloat(this.state.value)));
+                }}
                 placeholder={this.getText(this.props.schema.placeholder)}
                 label={this.getText(this.props.schema.label)}
                 helperText={this.getText(this.props.schema.help)}

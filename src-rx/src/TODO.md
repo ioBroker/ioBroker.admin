@@ -21,6 +21,7 @@
 ## Adapters
 - Adapters - Use readme renderer from www.iobroker.net (BF)
 - Show number of possible updates on "Adapters" in menu on the left (impossible ?)
+
 ## Instances
 
 ## Objects
@@ -36,7 +37,6 @@
 - Edit file ACL for "adapter" or "instance" (All folders of the first level)
 - Edit files (by pressing button "Edit" opened edit mode) : json, js, txt, html (only in expert mode)// 
 not editable
-
   
 ## Hosts
 <!-- - Show on the second tab: CPU %, Mem%, uptime in days/hours,  -->
@@ -63,3 +63,14 @@ not editable
 - Layout: Header "Instance settings: admin.0" must not be scrolled
 - Layout: Tabs must not be scrolled (only content of tab(panel))
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)
+
+- room editor (multiple or single choose)
+- func editor (multiple or single choose)
+- object ID editor
+- chips (see javascript config)
+- setState (read object before write to detect the type of value) (see email TEST button)
+- table!!!
+- json editor as control
+- language selector
+- divider
+- header
