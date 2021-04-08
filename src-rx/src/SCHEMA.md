@@ -205,6 +205,7 @@ const schema = {
   
                 // - header
                 //   - text
+                //   - size 1-5 => h1-h5
             }
         },
         tab2: {

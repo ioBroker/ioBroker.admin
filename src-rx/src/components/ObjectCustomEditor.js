@@ -277,7 +277,7 @@ class ObjectCustomEditor extends Component {
                         }
                     });
                 } else {
-                    const adapter = inst.split('.')[0];
+                    // const adapter = inst.split('.')[0];
                     // Calculate defaults for this object
                     let _default = this.getDefaultValues(inst, customObj);
                     _default.enabled = false;
@@ -504,7 +504,7 @@ class ObjectCustomEditor extends Component {
 
                     Object.keys(this.state.newValues)
                         .forEach(instance => {
-                            const adapter = instance.split('.')[0];
+                            // const adapter = instance.split('.')[0];
                             const newValues = this.combineNewAndOld(instance);
 
                             if (newValues.enabled === false) {

@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 
 import ConfigGeneric from './ConfigGeneric';
-import I18n from "@iobroker/adapter-react/i18n";
+// import I18n from "@iobroker/adapter-react/i18n";
 import {Autocomplete} from "@material-ui/lab";
 import React from "react";
 

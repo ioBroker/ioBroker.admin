@@ -295,6 +295,14 @@
               "title": "Delay",
               "filter": false,
               "sort": true
+            },
+            {
+              "type": "checkbox",
+              "attr": "enabled",
+              "width": 50,
+              "title": "Active",
+              "filter": false,
+              "sort": false
             }
           ]
         }
