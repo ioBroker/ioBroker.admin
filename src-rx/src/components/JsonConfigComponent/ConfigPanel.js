@@ -93,22 +93,17 @@ class ConfigPanel extends ConfigGeneric {
 
     render() {
         const items = this.props.schema.items;
-        return <div className={(this.props.className || '') + ' ' + this.props.classes.paper}>
-            <Grid container className={this.props.classes.fullWidth + " " + this.props.classes.padding} spacing={2}>
+        if (this.props.custom) {
+            return <Grid container className={this.props.classes.fullWidth} spacing={2}>
                 {this.renderItems(items)}
-            </Grid>
-        </div>;
-        // if (this.props.custom) {
-        //     return <Grid container className={this.props.classes.fullWidth} spacing={2}>
-        //         {this.renderItems(items)}
-        //     </Grid>;
-        // } else {
-        //     return <Paper className={`${this.props.className || ''} ${this.props.classes.paper}`}>
-        //         <Grid container className={this.props.classes.fullWidth} spacing={2}>
-        //             {this.renderItems(items)}
-        //         </Grid>
-        //     </Paper>;
-        // }
+            </Grid>;
+        } else {
+             return <div className={(this.props.className || '') + ' ' + this.props.classes.paper}>
+                 <Grid container className={this.props.classes.fullWidth + " " + this.props.classes.padding} spacing={2}>
+                    {this.renderItems(items)}
+                 </Grid>
+             </div>;
+        }
     }
 }
 

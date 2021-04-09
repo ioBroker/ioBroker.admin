@@ -29,7 +29,6 @@ class ConfigSelect extends ConfigGeneric {
             this.setState({value: ConfigGeneric.DIFFERENT_VALUE, selectOptions});
         } else {
             this.setState({value, selectOptions});
-
         }
     }
 
@@ -45,10 +44,10 @@ class ConfigSelect extends ConfigGeneric {
             <Select
                 error={!!error}
                 disabled={!!disabled}
-                value={this.state.value}
+                value={this.state.value || '_'}
                 renderValue={val => this.getText(item?.label, this.props.schema.noTranslation)}
                 onChange={e => {
-                    this.setState({value: e.target.value}, () => {
+                    this.setState({value: e.target.value === '_' ? '' : e.target.value}, () => {
                         if (this.state.value === ConfigGeneric.DIFFERENT_VALUE) {
                             this.onChange(this.props.attr, this.initialValue);
                         } else {

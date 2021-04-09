@@ -20,11 +20,14 @@ class ConfigCertificateSelect extends ConfigGeneric {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         let selectOptions = await this.props.socket.getCertificates();
+
         selectOptions = selectOptions
-        .filter(el => this.props.attr.toLowerCase().endsWith(el.type))
-        .map((el)=>({label:el.name,value:el.name}));
-            selectOptions.unshift({label: ConfigGeneric.NONE_LABEL, value: ConfigGeneric.NONE_VALUE});
-            this.setState({value, selectOptions});
+            .filter(el => this.props.attr.toLowerCase().endsWith(el.type))
+            .map(el => ({label: el.name, value: el.name}));
+
+        selectOptions.unshift({label: ConfigGeneric.NONE_LABEL, value: ConfigGeneric.NONE_VALUE});
+
+        this.setState({value, selectOptions});
     }
 
     renderItem(error, disabled, defaultValue) {
@@ -32,7 +35,8 @@ class ConfigCertificateSelect extends ConfigGeneric {
             return null;
         }
         // eslint-disable-next-line
-        const item = this.state.selectOptions?.find(item => item.value == this.state.value);
+        const item = this.state.selectOptions?.find(item => item.value === this.state.value);
+
         return <FormControl className={this.props.classes.fullWidth}>
             <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel>
             <Select
@@ -40,15 +44,18 @@ class ConfigCertificateSelect extends ConfigGeneric {
                 displayEmpty
                 disabled={!!disabled}
                 value={this.state.value}
-                renderValue={val => this.getText(item?.label, this.props.schema.noTranslation)}
-                onChange={e => {
-                    this.setState({ value: e.target.value }, () => {
-                            this.onChange(this.props.attr, this.state.value);
-                    });
-                }}
+                renderValue={val => this.getText(item?.label, this.props.schema.noTranslation !== false)}
+                onChange={e =>
+                    this.setState({ value: e.target.value }, () =>
+                        this.onChange(this.props.attr, this.state.value))}
             >
                 {this.state.selectOptions?.map(item =>
-                    <MenuItem key={item.value} value={item.value} style={item.value === ConfigGeneric.NONE_VALUE ? { opacity: 0.5 } : {}}>{this.getText(item.label, this.props.schema.noTranslation)}</MenuItem>)}
+                    <MenuItem
+                        key={item.value}
+                        value={item.value}
+                        style={item.value === ConfigGeneric.NONE_VALUE ? { opacity: 0.5 } : {}}>{
+                            this.getText(item.label, this.props.schema.noTranslation !== false)
+                        }</MenuItem>)}
             </Select>
             {this.props.schema.help ? <FormHelperText>{this.getText(this.props.schema.help)}</FormHelperText> : null}
         </FormControl>;

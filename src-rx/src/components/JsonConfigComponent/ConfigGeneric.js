@@ -195,12 +195,13 @@ class ConfigGeneric extends Component {
         let defaultValue;
 
         if (this.props.custom) {
-            error        = schema.validator   ? this.executeCustom(schema.validator,   true)    : false;
+            error        = schema.validator   ? !this.executeCustom(schema.validator,  false)   : false;
             disabled     = schema.disabled    ? this.executeCustom(schema.disabled,    false)   : false;
             hidden       = schema.hidden      ? this.executeCustom(schema.hidden,      false)   : false;
+            defaultValue = schema.default;
             //defaultValue = schema.defaultFunc ? this.executeCustom(schema.defaultFunc, schema.default) : schema.default;
         } else {
-            error        = schema.validator   ? this.execute(schema.validator,   true)    : false;
+            error        = schema.validator   ? !this.execute(schema.validator,  false)   : false;
             disabled     = schema.disabled    ? this.execute(schema.disabled,    false)   : false;
             hidden       = schema.hidden      ? this.execute(schema.hidden,      false)   : false;
             defaultValue = schema.defaultFunc ? this.execute(schema.defaultFunc, schema.default) : schema.default;

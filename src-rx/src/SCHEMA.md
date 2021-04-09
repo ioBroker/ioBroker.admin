@@ -192,7 +192,7 @@ const schema = {
                 //   - system (use system from system.config as default)
                 
                 // - instances*
-                //   - filter: ?? (not yet clear)
+                //   - adapter: name of adapter or nothing if all instances
                 
                 // - certificate*
                 //   - certType: public, private, chained

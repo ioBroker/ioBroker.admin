@@ -34,51 +34,12 @@ const styles = theme => ({
         width: 32,
         height: 32,
     },
-    simulateM: {
-        '&.m .row': {
-            marginBottom: 0,
-        },
-        '&.m .row .col': {
-            textAlign: 'left',
-        },
-        '&.m input': {
-            height: '32px !important',
-            color: 'inherit',
-        },
-        '&.m .input-field': {
-            marginTop: 0,
-            marginBottom: 10,
-        },
-        '&.m select': {
-            display: 'inline-block',
-            fontSize: 16,
-            fontFamily: 'sans-serif',
-            fontWeight: 700,
-            color: theme.palette.text.primary,
-            lineHeight: 1.3,
-            padding: '.6em 1.4em .5em .8em',
-            margin: 0,
-            borderTop: 0,
-            borderLeft: 0,
-            borderRight: 0,
-            borderBottom: '1px solid #aaa',
-            boxShadow: '0 1px 0 1px rgba(0,0,0,.04)',
-            appearance: 'none',
-            backgroundColor: theme.palette.background.paper,
-            backgroundRepeat: 'no-repeat, repeat',
-            backgroundPosition: 'right .7em top 50%, 0 0',
-            backgroundSize: '.65em auto, 100%',
-        }
-    },
     titleEnabled: {
         float: 'right',
         fontSize: 16,
         color: 'green',
         fontWeight: 'bold',
         paddingLeft: 20,
-    },
-    expansionPanelDetailsTabDiv: {
-        width: '100%'
     },
     scrollDiv: {
         width: '100%',
@@ -101,17 +62,24 @@ const styles = theme => ({
     },
 
     accordionOdd: {
-        backgroundColor: 'rgba(128, 128, 128, 0.2)'
+        //backgroundColor: 'rgba(128, 128, 128, 0.2)'
     },
     accordionEven: {
         backgroundColor: 'rgba(128, 128, 128, 0.1)'
     },
 
     accordionHeaderOdd: {
-        backgroundColor: 'rgba(128, 128, 128, 0.4)'
+        backgroundColor: 'rgba(128, 128, 128, 0.2)'
     },
     accordionHeaderEven: {
         backgroundColor: 'rgba(128, 128, 128, 0.3)'
+    },
+
+    enabledVisible: {
+        display: 'inline-block'
+    },
+    enabledInvisible: {
+        display: 'none'
     }
 });
 
@@ -241,7 +209,7 @@ class ObjectCustomEditor extends Component {
                             console.error(`Cannot execute ${func}: ${e}`);
                             defaultValues[attr] = items[attr].default
                         }
-                    } else if (attr.default !== undefined) {
+                    } else if (items[attr].default !== undefined) {
                         defaultValues[attr] = items[attr].default;
                     }
                 });
@@ -317,7 +285,6 @@ class ObjectCustomEditor extends Component {
         if (this.state.newValues[instance] === null) {
             data.enabled = false;
         }
-        console.log(instance + ': ' + JSON.stringify(data));
         return data;
     }
 
@@ -351,7 +318,9 @@ class ObjectCustomEditor extends Component {
             <AccordionSummary expandIcon={<ExpandMoreIcon />} data-id={ instance } className={i % 2 ? this.props.classes.accordionHeaderOdd : this.props.classes.accordionHeaderEven}>
                 <img src={ icon } className={ this.props.classes.headingIcon } alt="" />
                 <Typography className={ this.props.classes.heading }>{ this.props.t('Settings %s', instance)}</Typography>
-                <div className={ clsx(this.props.classes.titleEnabled, 'titleEnabled') } style={{ display: enabled ? 'display-block' : 'none'} }>{ this.props.t('Enabled') }</div>
+                <div className={ clsx(this.props.classes.titleEnabled, 'titleEnabled', enabled ? this.props.classes.enabledVisible : this.props.classes.enabledInvisible) }>{
+                    this.props.t('Enabled')
+                }</div>
             </AccordionSummary>
             <AccordionDetails >
                 {/*<Paper className={this.props.classes.fullWidth}>*/}
@@ -502,47 +471,46 @@ class ObjectCustomEditor extends Component {
                         });
                     }
 
-                    Object.keys(this.state.newValues)
-                        .forEach(instance => {
-                            // const adapter = instance.split('.')[0];
-                            const newValues = this.combineNewAndOld(instance);
+                    const instances = Object.keys(this.state.newValues);
+                    for (let i = 0; i < instances.length; i++) {
+                        const instance = instances[i];
+                        // const adapter = instance.split('.')[0];
+                        const newValues = this.combineNewAndOld(instance);
 
-                            if (newValues.enabled === false) {
-                                if (obj.common && obj.common.custom && obj.common.custom[instance]) {
-                                    obj.common.custom[instance] = null; // here must be null and not deleted, so controller can remove it
-                                }
-                            } else if (newValues.enabled) {
-                                obj.common = obj.common || {};
-                                if (Array.isArray(newValues.enabled)) {
-                                    if (!obj.common.custom || !obj.common.custom[instance] || !obj.common.custom[instance].enabled) {
-                                        // leave this object disabled
-                                        if (obj.common.custom[instance]) {
-                                            obj.common.custom[instance] = null;
-                                        }
-
-                                        return setTimeout(() =>
-                                            this.saveOneState(ids, cb, _objects, _oldObjects), 0);
-                                    }
-                                }
-
-                                obj.common.custom = obj.common.custom || {};
-
-                                if (!obj.common.custom[instance] || !obj.common.custom[instance].enabled) {
-                                    // provide defaults
-                                    let _default = this.getDefaultValues(instance, obj);
-                                    obj.common.custom[instance] = JSON.parse(JSON.stringify(_default || {}));
-                                }
-
-                                obj.common.custom[instance].enabled = true;
-
-                                Object.keys(newValues).forEach(attr => {
-                                    // if not different
-                                    if (!Array.isArray(newValues[attr])) {
-                                        obj.common.custom[instance][attr] = newValues[attr];
-                                    }
-                                });
+                        if (newValues.enabled === false) {
+                            if (obj.common && obj.common.custom && obj.common.custom[instance]) {
+                                obj.common.custom[instance] = null; // here must be null and not deleted, so controller can remove it
                             }
-                        });
+                        } else if (newValues.enabled) {
+                            obj.common = obj.common || {};
+                            if (Array.isArray(newValues.enabled)) {
+                                if (!obj.common.custom || !obj.common.custom[instance] || !obj.common.custom[instance].enabled) {
+                                    // leave this object disabled
+                                    if (obj.common.custom && obj.common.custom[instance]) {
+                                        obj.common.custom[instance] = null;
+                                    }
+                                    continue; // instance disabled
+                                }
+                            }
+
+                            obj.common.custom = obj.common.custom || {};
+
+                            if (!obj.common.custom[instance] || !obj.common.custom[instance].enabled) {
+                                // provide defaults
+                                let _default = this.getDefaultValues(instance, obj);
+                                obj.common.custom[instance] = JSON.parse(JSON.stringify(_default || {}));
+                            }
+
+                            obj.common.custom[instance].enabled = true;
+
+                            Object.keys(newValues).forEach(attr => {
+                                // if not different
+                                if (!Array.isArray(newValues[attr])) {
+                                    obj.common.custom[instance][attr] = newValues[attr];
+                                }
+                            });
+                        }
+                    }
 
                     setTimeout(() =>
                         this.saveOneState(ids, cb, _objects, _oldObjects), 0);
@@ -566,14 +534,15 @@ class ObjectCustomEditor extends Component {
         if (!this.state.loaded) {
             return <LinearProgress />;
         }
+        let index = 0;
 
         return <Paper className={ this.props.classes.paper }>
             <div className={ this.props.classes.scrollDiv } ref={ this.scrollDivRef }>
                 {Object.keys(this.jsonConfigs).map(adapter => {
                     if (this.jsonConfigs[adapter]) {
                         return Object.keys(this.jsonConfigs[adapter].instanceObjs)
-                            .map((instance, i) =>
-                                this.renderOneCustom(instance, this.jsonConfigs[adapter].instanceObjs[instance], i));
+                            .map(instance =>
+                                this.renderOneCustom(instance, this.jsonConfigs[adapter].instanceObjs[instance], index++));
                     } else {
                         return null;
                     }
