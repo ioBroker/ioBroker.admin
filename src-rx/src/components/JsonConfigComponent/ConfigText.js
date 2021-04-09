@@ -1,11 +1,11 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
 import TextField from '@material-ui/core/TextField';
+import {Autocomplete} from '@material-ui/lab';
 
 import ConfigGeneric from './ConfigGeneric';
-import {Autocomplete} from "@material-ui/lab";
-import React from "react";
 
 const styles = theme => ({
     indeterminate: {
@@ -24,6 +24,8 @@ class ConfigText extends ConfigGeneric {
         const value = ConfigGeneric.getValue(props.data, props.attr);
         if (value === null || value === undefined || value.toString().trim() !== (state.value ||  '').toString().trim()) {
             return {value};
+        } else {
+            return null;
         }
     }
 
@@ -59,7 +61,9 @@ class ConfigText extends ConfigGeneric {
                 error={!!error}
                 disabled={!!disabled}
                 onChange={e => {
-                   this.onChange(this.props.attr, e.target.value);
+                    const value = e.target.value;
+                    this.setState({value}, () =>
+                        this.onChange(this.props.attr, (value || '').trim()));
                 }}
                 placeholder={this.getText(this.props.schema.placeholder)}
                 label={this.getText(this.props.schema.label)}

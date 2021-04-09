@@ -30,16 +30,14 @@ class ConfigCertificateSelect extends ConfigGeneric {
                 disabled={disabled}
                 accept={this.props.schema.accept}
                 crop={this.props.schema.crop}
-                maxSize={256 * 1024}
+                maxSize={this.props.schema.maxSize || 256 * 1024}
                 icon={this.state.value}
                 removeIconFunc={() =>
-                    this.setState({ value: null }, () => {
-                        this.onChange(this.props.attr, this.state.value);
-                    })}
-                onChange={(base64) =>
-                    this.setState({ value: base64 }, () => {
-                        this.onChange(this.props.attr, this.state.value);
-                    })}
+                    this.setState({ value: null }, () =>
+                        this.onChange(this.props.attr, this.state.value))}
+                onChange={base64 =>
+                    this.setState({ value: base64 }, () =>
+                        this.onChange(this.props.attr, this.state.value))}
                 t={this.props.t}
             />
             {this.props.schema.help ? <FormHelperText>{this.getText(this.props.schema.help)}</FormHelperText> : null}

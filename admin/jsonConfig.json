@@ -272,6 +272,7 @@
       },
       "items": {
         "demoPattern": {
+          "label": "Pattern",
           "type": "pattern",
           "pattern": "my ${data.bind} ${_alive}",
           "copyToClipboard": true
@@ -305,6 +306,14 @@
               "sort": false
             }
           ]
+        },
+        "myInstance": {
+          "sm": 6,
+          "md": 3,
+          "lg": 2,
+          "type": "instance",
+          "adapter": "history",
+          "label": "History"
         }
       }
     }

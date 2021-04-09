@@ -25,6 +25,8 @@ class ConfigNumber extends ConfigGeneric {
         const value = ConfigGeneric.getValue(props.data, props.attr);
         if (value === null || value === undefined || value.toString() !== parseFloat(state.value).toString()) {
             return {value};
+        } else {
+            return null;
         }
     }
 
@@ -62,7 +64,9 @@ class ConfigNumber extends ConfigGeneric {
                 error={!!error}
                 disabled={!!disabled}
                 onChange={e => {
-                        this.onChange(this.props.attr, parseFloat(e.target.value));
+                    const value = e.target.value;
+                    this.setState({value}, () =>
+                        this.onChange(this.props.attr, parseFloat(value) || 0));
                 }}
                 placeholder={this.getText(this.props.schema.placeholder)}
                 label={this.getText(this.props.schema.label)}
