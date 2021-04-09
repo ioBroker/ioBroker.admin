@@ -17,6 +17,7 @@ import ConfigPattern from './ConfigPattern';
 import ConfigCertificateSelect from './ConfigCertificateSelect';
 import ConfigImageUpload from './ConfigImageUpload';
 import ConfigInstanceSelect from './ConfigInstanceSelect';
+import ConfigTable from './ConfigTable';
 // import { Paper } from '@material-ui/core';
 
 const components = {
@@ -33,7 +34,8 @@ const components = {
     pattern: ConfigPattern,
     certificate: ConfigCertificateSelect,
     image: ConfigImageUpload,
-    instance: ConfigInstanceSelect
+    instance: ConfigInstanceSelect,
+    table: ConfigTable
 };
 
 const styles = theme => ({
@@ -55,6 +57,7 @@ const styles = theme => ({
 
 class ConfigPanel extends ConfigGeneric {
     renderItems(items) {
+        console.log('items',items)
         return Object.keys(items).map(attr => {
             const type = items[attr].type || 'panel';
             let ItemComponent;
@@ -93,6 +96,9 @@ class ConfigPanel extends ConfigGeneric {
 
     render() {
         const items = this.props.schema.items;
+        if(this.props.table){
+            return this.renderItems(items)
+        }
         return <div className={(this.props.className || '') + ' ' + this.props.classes.paper}>
             <Grid container className={this.props.classes.fullWidth + " " + this.props.classes.padding} spacing={2}>
                 {this.renderItems(items)}
