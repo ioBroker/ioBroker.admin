@@ -66,11 +66,11 @@ not editable
 
 - room editor (multiple or single choose)
 - func editor (multiple or single choose)
-- object ID editor
+<!-- - object ID editor -->
 - chips (see javascript config)
 - setState (read object before write to detect the type of value) (see email TEST button)
-- table!!!
+//- table!!!
 - json editor as control
-- language selector
+<!-- - language selector -->
 - divider
 - header

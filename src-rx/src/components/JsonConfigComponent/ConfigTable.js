@@ -1,68 +1,78 @@
 import PropTypes from 'prop-types';
 import { lighten, withStyles } from '@material-ui/core/styles';
 
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 
 import ConfigGeneric from './ConfigGeneric';
 import ConfigPanel from './ConfigPanel';
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography } from '@material-ui/core';
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Toolbar, Typography } from '@material-ui/core';
 
-const styles = theme => ({
-    fullWidth: {
-        width: '100%'
-    },
-    root: {
-        width: '100%',
-      },
-      paper: {
-        width: '100%',
-        marginBottom: theme.spacing(2),
-      },
-      table: {
-        minWidth: 750,
-      },
-      visuallyHidden: {
-        border: 0,
-        clip: 'rect(0 0 0 0)',
-        height: 1,
-        margin: -1,
-        overflow: 'hidden',
-        padding: 0,
-        position: 'absolute',
-        top: 20,
-        width: 1,
-      },
-    //   root: {
-    //     paddingLeft: theme.spacing(2),
-    //     paddingRight: theme.spacing(1),
-    //   },
-      highlight:
-        theme.palette.type === 'light'
-          ? {
-              color: theme.palette.secondary.main,
-              backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-            }
-          : {
-              color: theme.palette.text.primary,
-              backgroundColor: theme.palette.secondary.dark,
-            },
-      title: {
-        flex: '1 1 100%',
-      },
-});
+const styles = theme => {
+    return ({
+        fullWidth: {
+            width: '100%'
+        },
+        root: {
+            width: '100%',
+        },
+        paper: {
+            width: '100%',
+            marginBottom: theme.spacing(2),
+            backgroundColor: `rgba(255, 255, 255, 0.1)`,
+        },
+        table: {
+            minWidth: 750,
+        },
+        visuallyHidden: {
+            border: 0,
+            clip: 'rect(0 0 0 0)',
+            height: 1,
+            margin: -1,
+            overflow: 'hidden',
+            padding: 0,
+            position: 'absolute',
+            top: 20,
+            width: 1,
+        },
+        highlight:
+            theme.palette.type === 'light'
+                ? {
+                    color: theme.palette.secondary.main,
+                    backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+                }
+                : {
+                    color: theme.palette.text.primary,
+                    backgroundColor: theme.palette.secondary.dark,
+                },
+        title: {
+            flex: '1 1 100%',
+        },
+        rootTool: {
+            paddingLeft: theme.spacing(2),
+            paddingRight: theme.spacing(1),
+        },
+    })
+};
 
 class ConfigTable extends ConfigGeneric {
     async componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-        this.setState({ value: value });
+        this.setState({ value: value, orderBy: value.length ? Object.keys(value[0])[0] : '', order: 'asc' });
     }
 
-    itemTable(schema, data, idx) {
+    itemTable(attrItem, data, idx) {
+        const { value, systemConfig } = this.state;
+        const { schema } = this.props;
+        const schemaFind = schema.items.find(el => el.attr === attrItem);
+        if (!schemaFind) {
+            return null
+        }
+        const schemaItem = {
+            items: {
+                [attrItem]: schemaFind
+            }
+        }
         return <ConfigPanel
             socket={this.props.socket}
             adapterName={this.props.adapterName}
@@ -74,12 +84,12 @@ class ConfigTable extends ConfigGeneric {
             data={data}
             table
             custom
-            schema={schema}
-            systemConfig={this.state.systemConfig}
+            schema={schemaItem}
+            systemConfig={systemConfig}
             customs={this.props.customs}
             onChange={(attr, valueChange) => {
                 this.typingTimer && clearTimeout(this.typingTimer);
-                const newObj = JSON.parse(JSON.stringify(this.state.value));
+                const newObj = JSON.parse(JSON.stringify(value));
                 newObj[idx][attr] = valueChange;
                 this.setState({ value: newObj });
                 this.typingTimer = setTimeout(value => {
@@ -91,31 +101,64 @@ class ConfigTable extends ConfigGeneric {
         />
     }
 
+    descendingComparator(a, b, orderBy) {
+        if (b[orderBy] < a[orderBy]) {
+            return -1;
+        }
+        if (b[orderBy] > a[orderBy]) {
+            return 1;
+        }
+        return 0;
+    }
 
-    EnhancedTableHead(props) {
+    getComparator(order, orderBy) {
+        return order === 'desc'
+            ? (a, b) => this.descendingComparator(a, b, orderBy)
+            : (a, b) => -this.descendingComparator(a, b, orderBy);
+    }
+
+    handleRequestSort = (property) => {
+        const { order, orderBy } = this.state;
+        const isAsc = orderBy === property && order === 'asc';
+        const newOreder = isAsc ? 'desc' : 'asc';
+        const newValue = this.stableSort(newOreder, property);
+        this.setState({ order: newOreder, orderBy: property, value: newValue }, () => {
+            this.onChange(this.props.attr, newValue);
+        });
+    }
+
+    stableSort = (order, orderBy) => {
+        const { value } = this.state;
+        const comparator = this.getComparator(order, orderBy);
+        const stabilizedThis = value.map((el, index) => [el, index]);
+        stabilizedThis.sort((a, b) => {
+            const order = comparator(a[0], b[0]);
+            if (order !== 0) return order;
+            return a[1] - b[1];
+        });
+        return stabilizedThis.map((el) => el[0]);
+    }
+
+    EnhancedTableHead() {
+        const { schema } = this.props;
+        const { order, orderBy } = this.state;
         return (
             <TableHead>
                 <TableRow>
-                    {this.props.schema.items.map((headCell) => (
+                    {schema.items.map((headCell) => (
                         <TableCell
-                            // width={headCell.width}
-                            key={headCell.id}
-                            align={headCell.numeric ? 'right' : 'left'}
-                            padding={headCell.disablePadding ? 'none' : 'default'}
-                        //   sortDirection={orderBy === headCell.id ? order : false}
+                            style={{ width: typeof headCell.width === 'string' && headCell.width.endsWith('%') ? 'auto' : headCell.width }}
+                            key={headCell.attr}
+                            align="left"
+                            sortDirection={orderBy === headCell.attr ? order : false}
                         >
                             <TableSortLabel
-                                // active={headCell.filter}
+                                active={orderBy === headCell.attr}
                                 disabled={!headCell.sort}
-                            // direction={orderBy === headCell.id ? order : 'asc'}
-                            // onClick={createSortHandler(headCell.id)}
+                                direction={orderBy === headCell.attr ? order : 'asc'}
+                                onClick={() => this.handleRequestSort(headCell.attr)}
                             >
                                 {headCell.title}
-                                {/* {orderBy === headCell.id ? (
-                      <span className={classes.visuallyHidden}>
-                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                      </span>
-                    ) : null} */}
                             </TableSortLabel>
                         </TableCell>
                     ))}
@@ -126,47 +169,43 @@ class ConfigTable extends ConfigGeneric {
 
     renderItem(error, disabled, defaultValue) {
         // eslint-disable-next-line
-
-        if (!this.state.value) {
+        const { classes, schema } = this.props;
+        const { value } = this.state;
+        if (!value) {
             return null;
         }
-        const { classes, schema } = this.props;
         return <Paper className={classes.paper}>
-        {/* <FormControl className={classes.fullWidth}> */}
-        <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-        {this.getText(schema.label)}
-        </Typography>
-            {/* <InputLabel shrink>{this.getText(schema.label)}</InputLabel> */}
+            <Toolbar
+                className={classes.rootTool}
+            >
+                <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+                    {this.getText(schema.label)}
+                </Typography>
+            </Toolbar>
             <TableContainer>
                 <Table
                     className={classes.table}
                     aria-labelledby="tableTitle"
-                    size={'small'}
+                    size="small"
                     aria-label="enhanced table"
                 >
                     {this.EnhancedTableHead()}
                     <TableBody>
-                        {this.state.value.map((el, idx) => {
-                            return <TableRow
+                        {value.map((keys, idx) =>
+                            <TableRow
                                 hover
-                                // onClick={(event) => handleClick(event, row.name)}
-                                role="checkbox"
-                                // aria-checked={isItemSelected}
-                                tabIndex={-1}
-                            // key={row.name}
-                            // selected={isItemSelected}
+                                key={idx}
                             >
-                                {Object.keys(el).map(attr => {
-                                    console.log(attr, this.props.schema.items.find(el => el.attr === attr))
-                                    return <TableCell align="left">{this.itemTable({ items: { [attr]: this.props.schema.items.find(el => el.attr === attr) } }, el, idx)}</TableCell>
-                                })}
-                            </TableRow>
-                        })}
+                                {Object.keys(keys).map(attr =>
+                                    <TableCell key={attr + idx} align="left">
+                                        {this.itemTable(attr, keys, idx)}
+                                    </TableCell>
+                                )}
+                            </TableRow>)}
                     </TableBody>
                 </Table>
             </TableContainer>
             {schema.help ? <FormHelperText>{this.getText(schema.help)}</FormHelperText> : null}
-        {/* </FormControl> */}
         </Paper>;
     }
 }

@@ -19,6 +19,9 @@ import ConfigImageUpload from './ConfigImageUpload';
 import ConfigInstanceSelect from './ConfigInstanceSelect';
 import ConfigTable from './ConfigTable';
 import ConfigSendto from './ConfigSendto';
+import ConfigObjectId from './ConfigObjectId';
+import ConfigLanguage from './ConfigLanguage';
+import ConfigChip from './ConfigChip';
 
 //import ConfigTabs from "./ConfigTabs";
 // import { Paper } from '@material-ui/core';
@@ -36,6 +39,9 @@ const components = {
     user: ConfigUser,
     pattern: ConfigPattern,
     certificate: ConfigCertificateSelect,
+    objectId: ConfigObjectId,
+    language: ConfigLanguage,
+    chip: ConfigChip,
     image: ConfigImageUpload,
     instance: ConfigInstanceSelect,
     table: ConfigTable,
@@ -62,7 +68,6 @@ const styles = theme => ({
 
 class ConfigPanel extends ConfigGeneric {
     renderItems(items) {
-        console.log('items',items)
         return Object.keys(items).map(attr => {
             const type = items[attr].type || 'panel';
             let ItemComponent;
@@ -103,19 +108,19 @@ class ConfigPanel extends ConfigGeneric {
 
     render() {
         const items = this.props.schema.items;
-        if(this.props.table){
-            return this.renderItems(items)
+        if (this.props.table) {
+            return this.renderItems(items);
         }
         if (this.props.custom) {
             return <Grid container className={this.props.classes.fullWidth} spacing={2}>
                 {this.renderItems(items)}
             </Grid>;
         } else {
-             return <div className={(this.props.className || '') + ' ' + this.props.classes.paper}>
-                 <Grid container className={this.props.classes.fullWidth + " " + this.props.classes.padding} spacing={2}>
+            return <div className={(this.props.className || '') + ' ' + this.props.classes.paper}>
+                <Grid container className={this.props.classes.fullWidth + " " + this.props.classes.padding} spacing={2}>
                     {this.renderItems(items)}
-                 </Grid>
-             </div>;
+                </Grid>
+            </div>;
         }
     }
 }
