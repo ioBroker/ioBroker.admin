@@ -9,7 +9,6 @@ import I18n from '@iobroker/adapter-react/i18n';
 import ConfigTabs from './ConfigTabs';
 import ConfigPanel from './ConfigPanel';
 
-
 const styles = theme => ({
     root: {
         width: '100%',
@@ -64,6 +63,7 @@ class JsonConfigComponent extends Component {
             },
             systemConfig: null,
             alive: false,
+            commandRunning: false,
         };
 
         this.schema = JSON.parse(JSON.stringify(this.props.schema));
@@ -103,6 +103,8 @@ class JsonConfigComponent extends Component {
             return Promise.resolve();
         }
     }
+
+    onCommandRunning = commandRunning => this.setState( {commandRunning});
 
     readSettings() {
         if ((this.props.custom || this.props.common) && this.props.data) {
@@ -190,6 +192,8 @@ class JsonConfigComponent extends Component {
     renderItem(item) {
         if (item.type === 'tabs') {
             return <ConfigTabs
+                onCommandRunning={this.onCommandRunning}
+                commandRunning={this.state.commandRunning}
                 socket={this.props.socket}
                 adapterName={this.props.adapterName}
                 instance={this.props.instance}
@@ -208,6 +212,8 @@ class JsonConfigComponent extends Component {
             />;
         } else if (item.type === 'panel' || !item.type) {
             return <ConfigPanel
+                onCommandRunning={this.onCommandRunning}
+                commandRunning={this.state.commandRunning}
                 socket={this.props.socket}
                 adapterName={this.props.adapterName}
                 instance={this.props.instance}

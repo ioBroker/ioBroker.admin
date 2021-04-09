@@ -1,11 +1,11 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
 import TextField from '@material-ui/core/TextField';
+import {Autocomplete} from '@material-ui/lab';
 
 import ConfigGeneric from './ConfigGeneric';
-import {Autocomplete} from "@material-ui/lab";
-import React from "react";
 
 const styles = theme => ({
     indeterminate: {

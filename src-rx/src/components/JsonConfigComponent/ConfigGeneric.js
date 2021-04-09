@@ -284,6 +284,8 @@ ConfigGeneric.propTypes = {
     systemConfig: PropTypes.object,
     alive: PropTypes.bool,
     common: PropTypes.object,
+    adapterName: PropTypes.string,
+    instance: PropTypes.number,
 };
 
 export default ConfigGeneric;

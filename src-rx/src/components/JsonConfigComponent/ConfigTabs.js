@@ -43,6 +43,8 @@ class ConfigTabs extends ConfigGeneric {
             </Tabs>
             {<ConfigPanel
                 key={this.state.tab}
+                onCommandRunning={this.props.onCommandRunning}
+                commandRunning={this.props.commandRunning}
                 className={this.props.classes.panel}
                 socket={this.props.socket}
                 adapterName={this.props.adapterName}
@@ -74,6 +76,10 @@ ConfigTabs.propTypes = {
     onError: PropTypes.func,
     onChange: PropTypes.func,
     customs: PropTypes.object,
+    adapterName: PropTypes.string,
+    instance: PropTypes.number,
+    commandRunning: PropTypes.bool,
+    onCommandRunning: PropTypes.func,
 
     systemConfig: PropTypes.object,
     alive: PropTypes.bool,

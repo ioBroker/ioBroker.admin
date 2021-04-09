@@ -17,6 +17,9 @@ import ConfigPattern from './ConfigPattern';
 import ConfigCertificateSelect from './ConfigCertificateSelect';
 import ConfigImageUpload from './ConfigImageUpload';
 import ConfigInstanceSelect from './ConfigInstanceSelect';
+import ConfigSendto from './ConfigSendto';
+
+//import ConfigTabs from "./ConfigTabs";
 // import { Paper } from '@material-ui/core';
 
 const components = {
@@ -33,7 +36,9 @@ const components = {
     pattern: ConfigPattern,
     certificate: ConfigCertificateSelect,
     image: ConfigImageUpload,
-    instance: ConfigInstanceSelect
+    instance: ConfigInstanceSelect,
+    sendto: ConfigSendto,
+    sendTo: ConfigSendto,
 };
 
 const styles = theme => ({
@@ -71,6 +76,8 @@ class ConfigPanel extends ConfigGeneric {
 
             return <ItemComponent
                 key={attr}
+                onCommandRunning={this.props.onCommandRunning}
+                commandRunning={this.props.commandRunning}
                 className={this.props.classes.panel}
                 socket={this.props.socket}
                 adapterName={this.props.adapterName}
@@ -119,6 +126,10 @@ ConfigPanel.propTypes = {
     custom: PropTypes.bool,
     alive: PropTypes.bool,
     systemConfig: PropTypes.object,
+    adapterName: PropTypes.string,
+    instance: PropTypes.number,
+    commandRunning: PropTypes.bool,
+    onCommandRunning: PropTypes.func,
 
     onError: PropTypes.func,
     onChange: PropTypes.func,
