@@ -47,14 +47,15 @@ const schema = {
                 //  !- newLine - should be shown from new line
                 //  - label - String or object like {en: 'Name', ru: 'Имя'}
                 //  !- hidden - JS function that could use native.attributes for calculation
+                //  - hideOnlyControl - if hidden the place will be shown, but no control
                 //  !- disabled - JS function that could use native.attributes for calculation
                 //  - helpLink - href to help
-                //  - help - help text (multi-language)
-                //  - icon - base64 svg
+                //  ! - help - help text (multi-language)
+                //  ! - icon - base64 svg
                 //  - encrypted - is value encrypted or not (of course only for texts)
                 //    - if encrypted, use __encrypted__ value for show and if was changed, encrypt it with socket.encrypt 
                 //  !- style - css style (default)
-                //  - darkStyle - css style for dark mode
+                //  !- darkStyle - css style for dark mode
                 //  !- validator - JS function: true no error, false - error
                 //  !- tooltip - optional tooltip
                 //  - default - default value
@@ -73,18 +74,18 @@ const schema = {
                 // !- tab
                 //  - icon - tab can have icon (base64)
                 
-                // - text*
+                // !- text*
                 
-                // - number* (min, max)
+                // !- number* (min, max)
                 
-                // - color*
+                // !- color*
                 
-                // - checkbox**
+                // !- checkbox**
                 
-                    // - slider               
-                    //   - min (default 0)
-                    //   - max (default 100)
-                    //   - step (default 1)
+                // - slider               
+                //   - min (default 0)
+                //   - max (default 100)
+                //   - step (default 1)
                 
                 // !- ip - bind address
                 //   - listenOnAllPorts - add 0.0.0.0 to option
@@ -102,7 +103,7 @@ const schema = {
                 //   - short - no system.func.
                 //   - use this.props.socket.getEnums('func')
 
-                // - select* 
+                // !- select* 
                 //   - options - [{label: {en: "option 1"}, value: 1}, ...]
                 
                 // - icon - base64
@@ -138,10 +139,11 @@ const schema = {
                 // - oid - object ID - show it with name, color and icon
                 //   - types: ['channel', 'device', ...] (only "state" by default)
                 
-                // - password (repeat - if repeat password must be shown with the same width settings)
+                // !- password (repeat - if repeat password must be shown with the same width settings)
                 //   - repeat password must be compared with password
+                //   - visible: true if allow view of password
                 
-                // - instance *
+                // !- instance
                 //  - adapter - name of adapter
                 //  - allowDeactivate - if true. Additional option "deactivate" is shown
                 
@@ -191,14 +193,11 @@ const schema = {
                 // - language 
                 //   - system (use system from system.config as default)
                 
-                // - instances*
-                //   - adapter: name of adapter or nothing if all instances
-                
-                // - certificate*
+                // !- certificate
                 //   - certType: public, private, chained
                 //   - see https://github.com/ioBroker/ioBroker.admin/blob/master/src/js/adapter-settings.js#L324
                                 
-                // - custom
+                // !- custom
                 //  - component - Component name that will be provided via props, like componentInstancesEditor
                 
                 // - divider - horizontal line

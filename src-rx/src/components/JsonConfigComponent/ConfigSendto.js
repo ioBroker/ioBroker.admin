@@ -9,6 +9,11 @@ import DialogError from '@iobroker/adapter-react/Dialogs/Error';
 import DialogMessage from '@iobroker/adapter-react/Dialogs/Message';
 
 import ConfigGeneric from './ConfigGeneric';
+import IconWarning from "@material-ui/icons/Warning";
+import IconError from "@material-ui/icons/Error";
+import IconInfo from "@material-ui/icons/Info";
+import ConfirmDialog from "@iobroker/adapter-react/Dialogs/Confirm";
+import React from "react";
 
 const styles = theme => ({
     fullWidth: {
@@ -65,17 +70,64 @@ class ConfigSendto extends ConfigGeneric {
             this.props.schema.command || 'send',
             data
         )
-            .then(result => {
-                if (result?.error) {
-                    this.setState({_error: result.error ? I18n.t(result.error) : I18n.t('Error')});
+            .then(response => {
+                if (response?.error) {
+                    if (this.props.schema.error && this.props.schema.error[response.error]) {
+                        let error = this.getText(this.props.schema.error[response.error]);
+                        if (response.args) {
+                            response.args.forEach(arg => error = error.replace('%s', arg));
+                        }
+                        this.setState({_error: error});
+                    } else {
+                        this.setState({_error: response.error ? I18n.t(response.error) : I18n.t('Error')});
+                    }
                 } else {
-                    window.alert(result?.result || I18n.t('Ok'));
+                    if (response?.result && this.props.schema.result && this.props.schema.result[response.result]) {
+                        let text = this.getText(this.props.schema.result[response.result]);
+                        if (response.args) {
+                            response.args.forEach(arg => text = text.replace('%s', arg));
+                        }
+                        window.alert(text);
+                    } else {
+                        window.alert(response?.result || I18n.t('Ok'));
+                    }
                 }
             })
             .catch(e => {
-                this.setState({_error: I18n.t(e) || I18n.t('Error')});
+                if (this.props.schema.error && this.props.schema.error[e.toString()]) {
+                    this.setState({_error: this.getText(this.props.schema.error[e.toString()])});
+                } else {
+                    this.setState({_error: I18n.t(e.toString()) || I18n.t('Error')});
+                }
             })
             .then(() => this.props.onCommandRunning(false))
+    }
+
+    renderConfirmDialog() {
+        if (!this.state.confirmDialog) {
+            return null;
+        }
+        const confirm = this.state.confirmData || this.props.schema.confirm;
+        let icon = null;
+        if (confirm.type === 'warning') {
+            icon = <IconWarning />;
+        } else if (confirm.type === 'error') {
+            icon = <IconError />;
+        } else if (confirm.type === 'info') {
+            icon = <IconInfo />;
+        }
+
+        return <ConfirmDialog
+            title={ this.getText(confirm.title) || I18n.t('Please confirm') }
+            text={ this.getText(confirm.text) }
+            ok={ this.getText(confirm.ok) || I18n.t('Ok') }
+            cancel={ this.getText(confirm.cancel) || I18n.t('Cancel') }
+            icon={icon}
+            onClose={isOk =>
+                this.setState({ confirmDialog: false}, () =>
+                    isOk && this._onClick())
+            }
+        />;
     }
 
     renderItem(error, disabled, defaultValue) {
@@ -86,7 +138,11 @@ class ConfigSendto extends ConfigGeneric {
                 className={this.props.classes.fullWidth}
                 disabled={disabled || this.props.commandRunning}
                 onClick={() => {
-                    this._onClick()
+                    if (this.props.schema.confirm) {
+                        this.setState({confirmDialog: true});
+                    } else {
+                        this._onClick();
+                    }
                 }}
             >
                 {this.props.schema.icon ? <Icon src={this.props.schema.icon} className={this.props.classes.icon}/> : null}

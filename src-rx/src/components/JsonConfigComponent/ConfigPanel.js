@@ -22,6 +22,7 @@ import ConfigSendto from './ConfigSendto';
 import ConfigObjectId from './ConfigObjectId';
 import ConfigLanguage from './ConfigLanguage';
 import ConfigChip from './ConfigChip';
+import ConfigPassword from './ConfigPassword';
 
 //import ConfigTabs from "./ConfigTabs";
 // import { Paper } from '@material-ui/core';
@@ -47,6 +48,7 @@ const components = {
     table: ConfigTable,
     sendto: ConfigSendto,
     sendTo: ConfigSendto,
+    password: ConfigPassword,
 };
 
 const styles = theme => ({
@@ -99,7 +101,11 @@ class ConfigPanel extends ConfigGeneric {
                 onError={this.props.onError}
                 onChange={this.props.onChange}
                 customs={this.props.customs}
+
+                customObj={this.props.customObj}
+                instanceObj={this.props.instanceObj}
                 custom={this.props.custom}
+
                 attr={attr}
                 schema={items[attr]}
             />;
@@ -134,13 +140,16 @@ ConfigPanel.propTypes = {
     data: PropTypes.object.isRequired,
     schema: PropTypes.object,
     customs: PropTypes.object,
-    custom: PropTypes.bool,
     alive: PropTypes.bool,
     systemConfig: PropTypes.object,
     adapterName: PropTypes.string,
     instance: PropTypes.number,
     commandRunning: PropTypes.bool,
     onCommandRunning: PropTypes.func,
+
+    customObj: PropTypes.object,
+    instanceObj: PropTypes.object,
+    custom: PropTypes.bool,
 
     onError: PropTypes.func,
     onChange: PropTypes.func,

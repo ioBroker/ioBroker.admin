@@ -57,8 +57,8 @@ const styles = theme => {
 class ConfigTable extends ConfigGeneric {
     async componentDidMount() {
         super.componentDidMount();
-        const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-        this.setState({ value: value, orderBy: value.length ? Object.keys(value[0])[0] : '', order: 'asc' });
+        const value = ConfigGeneric.getValue(this.props.data, this.props.attr) || [];
+        this.setState({ value, orderBy: value.length ? Object.keys(value[0])[0] : '', order: 'asc' });
     }
 
     itemTable(attrItem, data, idx) {

@@ -74,3 +74,9 @@ not editable
 <!-- - language selector -->
 - divider
 - header
+
+- Write jsonCustom for:
+  - lovelace
+  - eventlist
+  - mqtt-client
+  - ??

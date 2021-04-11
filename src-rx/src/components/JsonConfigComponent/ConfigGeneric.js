@@ -52,7 +52,7 @@ class ConfigGeneric extends Component {
         }
     }
 
-   static setValue(data, attr, value) {
+    static setValue(data, attr, value) {
         if (typeof attr === 'string') {
             return ConfigGeneric.setValue(data, attr.split('.'), value);
         } else {
@@ -92,7 +92,6 @@ class ConfigGeneric extends Component {
         } else if (confirm.type === 'info') {
             icon = <IconInfo />;
         }
-
 
         return <ConfirmDialog
             title={ this.getText(confirm.title) || I18n.t('Please confirm') }
@@ -162,7 +161,7 @@ class ConfigGeneric extends Component {
                 // eslint-disable-next-line no-new-func
                 const f = new Function('data', '_system', '_alive', '_common', '_socket', func.includes('return') ? func : 'return ' + func);
                 const result = f(data || this.props.data, this.props.systemConfig, this.props.alive, this.props.common, this.props.socket);
-                console.log(result);
+                // console.log(result);
                 return result;
             } catch (e) {
                 console.error(`Cannot execute ${func}: ${e}`);
@@ -195,11 +194,10 @@ class ConfigGeneric extends Component {
         let defaultValue;
 
         if (this.props.custom) {
-            error        = schema.validator   ? !this.executeCustom(schema.validator,  false)   : false;
-            disabled     = schema.disabled    ? this.executeCustom(schema.disabled,    false)   : false;
-            hidden       = schema.hidden      ? this.executeCustom(schema.hidden,      false)   : false;
+            error        = schema.validator   ? !this.executeCustom(schema.validator,  this.props.data, this.props.customObj, this.props.instanceObj)   : false;
+            disabled     = schema.disabled    ? this.executeCustom(schema.disabled,    this.props.data, this.props.customObj, this.props.instanceObj)   : false;
+            hidden       = schema.hidden      ? this.executeCustom(schema.hidden,      this.props.data, this.props.customObj, this.props.instanceObj)   : false;
             defaultValue = schema.default;
-            //defaultValue = schema.defaultFunc ? this.executeCustom(schema.defaultFunc, schema.default) : schema.default;
         } else {
             error        = schema.validator   ? !this.execute(schema.validator,  false)   : false;
             disabled     = schema.disabled    ? this.execute(schema.disabled,    false)   : false;
@@ -208,6 +206,10 @@ class ConfigGeneric extends Component {
         }
 
         return {error, disabled, hidden, defaultValue};
+    }
+
+    onError(attr, error) {
+        this.props.onError && this.props.onError(attr, error);
     }
 
     renderItem(error, disabled, defaultValue) {
@@ -232,11 +234,37 @@ class ConfigGeneric extends Component {
     render() {
         const {error, disabled, hidden, defaultValue} = this.calculate(this.props.schema);
 
+        const schema = this.props.schema;
+
         if (hidden) {
-            return null;
+            if (this.props.schema.hideOnlyControl) {
+                const item = <Grid
+                    item
+                    xs={schema.xs || undefined}
+                    lg={schema.lg || undefined}
+                    md={schema.md || undefined}
+                    sm={schema.sm || undefined}
+                    style={Object.assign(
+                        {},
+                        {marginBottom: 0, /*marginRight: 8, */textAlign: 'left'},
+                        this.props.schema.style,
+                        this.props.themaType === 'dark' ? this.props.schema.darkStyle : {}
+                    )}
+                />;
+
+                if (schema.newLine) {
+                    return <>
+                        <div style={{flexBasis: '100%', height: 0}} />
+                        {item}
+                    </>
+                } else {
+                    return item;
+                }
+            } else {
+                return null;
+            }
         }
 
-        const schema = this.props.schema;
 
         const item = <Grid
             item
@@ -279,13 +307,16 @@ ConfigGeneric.propTypes = {
     onError: PropTypes.func,
     onChange: PropTypes.func,
     customs: PropTypes.object,
-    custom: PropTypes.bool,
 
     systemConfig: PropTypes.object,
     alive: PropTypes.bool,
     common: PropTypes.object,
     adapterName: PropTypes.string,
     instance: PropTypes.number,
+
+    customObj: PropTypes.object,
+    instanceObj: PropTypes.object,
+    custom: PropTypes.bool,
 };
 
 export default ConfigGeneric;

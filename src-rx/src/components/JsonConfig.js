@@ -12,6 +12,7 @@ import I18n from '@iobroker/adapter-react/i18n';
 
 import JsonConfigComponent from './JsonConfigComponent';
 import ConfigCustomEasyAccess from './JsonConfigComponent/ConfigCustomEasyAccess';
+import ConfigGeneric from "./JsonConfigComponent/ConfigGeneric";
 
 const styles = {
     scroll: {
@@ -62,6 +63,7 @@ class JsonConfig extends Router {
         this.state = {
             schema: null,
             data: null,
+            updateData: 0,
             common: null,
             changed: false,
             confirmDialog: false,
@@ -72,41 +74,9 @@ class JsonConfig extends Router {
             .then(obj => this.getConfigFile()
                 .then(schema =>
                     // load language
-                    this.loadI18n(schema.i18n)
+                    JsonConfigComponent.loadI18n(this.props.socket, schema.i18n, this.props.adapterName)
                         .then(() =>
                             this.setState({schema, data: obj.native, common: obj.common}))));
-    }
-
-    loadI18n(i18n) {
-        if (i18n === true) {
-            const lang = I18n.getLanguage();
-            return this.props.socket.fileExists(this.props.adapterName + '.admin', `i18n/${lang}.json`)
-                .then(exists => {
-                    if (exists) {
-                        return `i18n/${lang}.json`;
-                    } else {
-                        return this.props.socket.fileExists(this.props.adapterName + '.admin', `i18n/${lang}/translations.json`)
-                            .then(exists =>
-                                exists ? `i18n/${lang}/translations.json` : '')
-                    }
-                })
-                .then(fileName => {
-                    return fileName && this.props.socket.readFile(this.props.adapterName + '.admin', fileName)
-                        .then(json => {
-                            try {
-                                json = JSON.parse(json);
-                                // apply file to I18n
-                                I18n.extendTranslations(json, lang);
-                            } catch (e) {
-                                console.error(`Cannot parse language file "${this.props.adapterName}.admin/${fileName}: ${e}`);
-                            }
-                        })
-                });
-        } else if (i18n && typeof i18n === 'object') {
-            I18n.extendTranslations(i18n);
-        } else {
-            return Promise.resolve();
-        }
     }
 
     getConfigFile() {
@@ -138,17 +108,20 @@ class JsonConfig extends Router {
         />;
     }
 
-    async closeDialog(doSave) {
+    async onSave(doSave, close) {
         if (doSave) {
             const obj = await this.getInstanceObject();
 
             for (const a in this.state.data) {
                 if (this.state.data.hasOwnProperty(a)) {
-                    obj.native[a] = this.state.data[a];
+                    ConfigGeneric.setValue(obj.native, a, this.state.data[a]);
                 }
             }
 
             await this.props.socket.setObject(obj._id, obj);
+
+            this.setState({changed: false, data: obj.native, updateData: this.state.updateData + 1}, () =>
+                close && Router.doNavigate(null));
         } else {
             if (this.state.changed) {
                 return this.setState({confirmDialog: true});
@@ -178,6 +151,7 @@ class JsonConfig extends Router {
                 schema={this.state.schema}
                 common={this.state.common}
                 data={this.state.data}
+                updateData={this.state.updateData}
                 onError={error => this.setState({ error })}
                 onChange={(data, changed) => this.setState({ data, changed })}
 
@@ -186,14 +160,15 @@ class JsonConfig extends Router {
                 }}
             />
             <SaveCloseButtons
+                isIFrame={false}
                 dense={true}
                 paddingLeft={this.props.menuPadding}
                 theme={this.state.theme}
                 noTextOnButtons={this.props.width === 'xs' || this.props.width === 'sm' || this.props.width === 'md'}
-                changed={!this.state.error && this.state.changed}
+                changed={this.state.error || this.state.changed}
                 error={this.state.error}
-                onSave={() => this.closeDialog(true)}
-                onClose={() => this.closeDialog(false)}
+                onSave={async close => await this.onSave(true, close)}
+                onClose={async () => await this.onSave(false)}
             />
         </>;
     }

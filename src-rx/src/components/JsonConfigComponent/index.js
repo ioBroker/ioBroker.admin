@@ -61,6 +61,7 @@ class JsonConfigComponent extends Component {
             errors: {
 
             },
+            updateData: this.props.updateData,
             systemConfig: null,
             alive: false,
             commandRunning: false,
@@ -70,6 +71,14 @@ class JsonConfigComponent extends Component {
         this.buildDependencies(this.schema);
 
         this.readData();
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        if (JSON.stringify(props.updateData) !== JSON.stringify(state.updateData)) {
+            return {updateData: props.updateData, originalData: JSON.stringify(props.data)};
+        } else {
+            return null;
+        }
     }
 
     static loadI18n(socket, i18n, adapterName) {
@@ -86,19 +95,25 @@ class JsonConfigComponent extends Component {
                     }
                 })
                 .then(fileName => {
-                    return fileName && socket.readFile(adapterName + '.admin', fileName)
-                        .then(json => {
-                            try {
-                                json = JSON.parse(json);
-                                // apply file to I18n
-                                I18n.extendTranslations(json, lang);
-                            } catch (e) {
-                                console.error(`Cannot parse language file "${adapterName}.admin/${fileName}: ${e}`);
-                            }
-                        })
+                    if (fileName) {
+                        return socket.readFile(adapterName + '.admin', fileName)
+                            .then(json => {
+                                try {
+                                    json = JSON.parse(json);
+                                    // apply file to I18n
+                                    I18n.extendTranslations(json, lang);
+                                } catch (e) {
+                                    console.error(`Cannot parse language file "${adapterName}.admin/${fileName}: ${e}`);
+                                }
+                            })
+                    } else {
+                        console.warn(`Cannot find i18n for ${adapterName} / ${fileName}`);
+                        return Promise.resolve();
+                    }
                 });
         } else if (i18n && typeof i18n === 'object') {
             I18n.extendTranslations(i18n);
+            return Promise.resolve();
         } else {
             return Promise.resolve();
         }
@@ -146,17 +161,17 @@ class JsonConfigComponent extends Component {
         }
     }
 
-    onError = (error, attr) => {
-        const _error = JSON.parse(JSON.stringify(this.state.error));
+    onError = (attr, error) => {
+        const errors = JSON.parse(JSON.stringify(this.state.errors));
         if (error) {
-            _error[attr] = error;
+            errors[attr] = error;
         } else {
-            delete _error[attr];
+            delete errors[attr];
         }
 
-        if (JSON.stringify(_error) !== JSON.parse(JSON.stringify(this.state.error))) {
-            this.setState({error: _error}, () =>
-                this.props.onError(!!Object.keys(this.state.error).length));
+        if (JSON.stringify(errors) !== JSON.parse(JSON.stringify(this.state.errors))) {
+            this.setState({errors}, () =>
+                this.props.onError(!!Object.keys(this.state.errors).length));
         }
     }
 
@@ -205,10 +220,13 @@ class JsonConfigComponent extends Component {
                 schema={item}
                 systemConfig={this.state.systemConfig}
                 customs={this.props.customs}
+
                 custom={this.props.custom}
+                customObj={this.props.customObj}
+                instanceObj={this.props.instanceObj}
 
                 onChange={this.onChange}
-                onError={(error, attr) => this.onError(error, attr)}
+                onError={(attr, error) => this.onError(attr, error)}
             />;
         } else if (item.type === 'panel' || !item.type) {
             return <ConfigPanel
@@ -225,10 +243,13 @@ class JsonConfigComponent extends Component {
                 schema={item}
                 systemConfig={this.state.systemConfig}
                 customs={this.props.customs}
+
                 custom={this.props.custom}
+                customObj={this.props.customObj}
+                instanceObj={this.props.instanceObj}
 
                 onChange={this.onChange}
-                onError={(error, attr) => this.onError(error, attr)}
+                onError={(attr, error) => this.onError(attr, error)}
             />
         }
     }
@@ -250,14 +271,18 @@ JsonConfigComponent.propTypes = {
     adapterName: PropTypes.string,
     instance: PropTypes.number,
     common: PropTypes.object,
-    custom: PropTypes.bool, // is the customs settings must be shown
     customs: PropTypes.object, // custom components
+
+    custom: PropTypes.bool, // is the customs settings must be shown
+    customObj: PropTypes.object,
+    instanceObj: PropTypes.object,
 
     themeType: PropTypes.string,
     themeName: PropTypes.string,
     style: PropTypes.object,
     className: PropTypes.string,
     data: PropTypes.object.isRequired,
+    updateData: PropTypes.number,
     schema: PropTypes.object,
     onError: PropTypes.func,
     onChange: PropTypes.func,

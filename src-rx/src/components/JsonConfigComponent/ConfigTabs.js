@@ -59,6 +59,10 @@ class ConfigTabs extends ConfigGeneric {
                 onError={this.props.onError}
                 onChange={this.props.onChange}
 
+                customObj={this.props.customObj}
+                instanceObj={this.props.instanceObj}
+                custom={this.props.custom}
+
                 schema={items[this.state.tab]}
             />}
         </div>;
@@ -80,6 +84,10 @@ ConfigTabs.propTypes = {
     instance: PropTypes.number,
     commandRunning: PropTypes.bool,
     onCommandRunning: PropTypes.func,
+
+    customObj: PropTypes.object,
+    instanceObj: PropTypes.object,
+    custom: PropTypes.bool,
 
     systemConfig: PropTypes.object,
     alive: PropTypes.bool,

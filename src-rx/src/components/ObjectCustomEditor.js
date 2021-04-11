@@ -75,6 +75,14 @@ const styles = theme => ({
         backgroundColor: 'rgba(128, 128, 128, 0.3)'
     },
 
+    accordionHeaderEnabledOdd: {
+        backgroundColor: 'rgba(128, 255, 128, 0.2)'
+    },
+    accordionHeaderEnabledEven: {
+        backgroundColor: 'rgba(128, 255, 128, 0.2)'
+    },
+
+
     enabledVisible: {
         display: 'inline-block'
     },
@@ -118,6 +126,8 @@ class ObjectCustomEditor extends Component {
         this.refTemplate  = {};
         this.props.customsInstances.map(id => this.refTemplate[id] = createRef());
 
+        this.customObj    = this.props.objectIDs.length > 1 ? {custom: {}, native: {}} : JSON.parse(JSON.stringify(this.props.objects[this.props.objectIDs[0]]));
+
         this.loadAllPromises = this.loadAllCustoms()
             .then(() => {
                 this.commonConfig = this.getCommonConfig();
@@ -139,7 +149,7 @@ class ObjectCustomEditor extends Component {
             const adapter = id.replace(/\.\d+$/, '').replace('system.adapter.');
             if (this.jsonConfigs[adapter] === undefined) {
                 this.jsonConfigs[adapter] = false;
-                promises.push(this.getCustomTemplate(adapter))
+                promises.push(this.getCustomTemplate(adapter));
             }
         });
 
@@ -181,6 +191,10 @@ class ObjectCustomEditor extends Component {
                         }
 
                         return JsonConfigComponent.loadI18n(this.props.socket, json.i18n, adapter);
+                    })
+                    .catch(e => {
+                        console.error(`Cannot load jsonConfig of ${adapter}: ${e}`);
+                        window.alert(`Cannot load jsonConfig of ${adapter}: ${e}`);
                     });
             } else {
                 console.error(`Adapter ${adapter} is not yet supported by this version of admin`);
@@ -288,7 +302,7 @@ class ObjectCustomEditor extends Component {
         return data;
     }
 
-    renderOneCustom(instance, instanceObj, i) {
+    renderOneCustom(instance, instanceObj, customObj, i) {
         const adapter = instance.split('.')[0];
 
         const icon = `${URL_PREFIX}/adapter/${adapter}/${this.props.objects['system.adapter.' + adapter].common.icon}`;
@@ -315,7 +329,7 @@ class ObjectCustomEditor extends Component {
                 this.setState({expanded});
             }}
             >
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} data-id={ instance } className={i % 2 ? this.props.classes.accordionHeaderOdd : this.props.classes.accordionHeaderEven}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} data-id={ instance } className={i % 2 ? (enabled ? this.props.classes.accordionHeaderEnabledOdd : this.props.classes.accordionHeaderOdd) : (enabled ? this.props.classes.accordionHeaderEnabledEven : this.props.classes.accordionHeaderEven)}>
                 <img src={ icon } className={ this.props.classes.headingIcon } alt="" />
                 <Typography className={ this.props.classes.heading }>{ this.props.t('Settings %s', instance)}</Typography>
                 <div className={ clsx(this.props.classes.titleEnabled, 'titleEnabled', enabled ? this.props.classes.enabledVisible : this.props.classes.enabledInvisible) }>{
@@ -323,64 +337,64 @@ class ObjectCustomEditor extends Component {
                 }</div>
             </AccordionSummary>
             <AccordionDetails >
-                {/*<Paper className={this.props.classes.fullWidth}>*/}
-                    <div className={this.props.classes.enabledControl}>
-                        <FormControlLabel
-                            className={ this.props.classes.formControl }
-                            control={<Checkbox
-                                indeterminate={ isIndeterminate }
-                                checked={ !!enabled }
-                                onChange={e => {
-                                    const newValues = JSON.parse(JSON.stringify(this.state.newValues));
+                <div className={this.props.classes.enabledControl}>
+                    <FormControlLabel
+                        className={ this.props.classes.formControl }
+                        control={<Checkbox
+                            indeterminate={ isIndeterminate }
+                            checked={ !!enabled }
+                            onChange={e => {
+                                const newValues = JSON.parse(JSON.stringify(this.state.newValues));
 
-                                    newValues[instance] = newValues[instance] || {};
-                                    if (isIndeterminate || e.target.checked) {
-                                        newValues[instance].enabled = true;
+                                newValues[instance] = newValues[instance] || {};
+                                if (isIndeterminate || e.target.checked) {
+                                    newValues[instance].enabled = true;
+                                } else {
+                                    if (enabled) {
+                                        newValues[instance] = null;
                                     } else {
-                                        if (enabled) {
-                                            newValues[instance] = null;
-                                        } else {
-                                            delete newValues[instance];
-                                        }
+                                        delete newValues[instance];
                                     }
-                                    this.setState({newValues, hasChanges: this.isChanged(newValues)}, () =>
-                                        this.props.onChange && this.props.onChange(this.state.hasChanges));
-                                }}/>}
-                            label={this.props.t('Enabled')}
-                        />
-                    </div>
-                    <div className={this.props.classes.customControls}>
-                        {enabled || isIndeterminate ?
-                            <JsonConfigComponent
-                                custom={true}
-                                className={ '' }
-                                socket={this.props.socket}
-                                theme={this.props.theme}
-                                themeName={this.props.themeName}
-                                themeType={this.props.themeType}
+                                }
+                                this.setState({newValues, hasChanges: this.isChanged(newValues)}, () =>
+                                    this.props.onChange && this.props.onChange(this.state.hasChanges));
+                            }}/>}
+                        label={this.props.t('Enabled')}
+                    />
+                </div>
+                <div className={this.props.classes.customControls}>
+                    {enabled || isIndeterminate ?
+                        <JsonConfigComponent
+                            instanceObj={instanceObj}
+                            customObj={customObj}
+                            custom={true}
+                            className={ '' }
+                            socket={this.props.socket}
+                            theme={this.props.theme}
+                            themeName={this.props.themeName}
+                            themeType={this.props.themeType}
 
-                                schema={this.jsonConfigs[adapter].json}
-                                data={this.combineNewAndOld(instance)}
-                                onError={error =>
-                                    this.setState({error}, () => this.props.onError && this.props.onError(error))}
-                                onValueChange={(attr, value) => {
-                                    console.log(attr + ' => ' + value);
-                                    const newValues = JSON.parse(JSON.stringify(this.state.newValues));
-                                    newValues[instance] = newValues[instance] || {};
-                                    if (this.commonConfig[instance][attr] === value) {
-                                        delete newValues[instance][attr];
-                                        if (!Object.keys(newValues[instance]).length) {
-                                            delete newValues[instance];
-                                        }
-                                    } else {
-                                        newValues[instance][attr] = value;
+                            schema={this.jsonConfigs[adapter].json}
+                            data={this.combineNewAndOld(instance)}
+                            onError={error =>
+                                this.setState({error}, () => this.props.onError && this.props.onError(error))}
+                            onValueChange={(attr, value) => {
+                                console.log(attr + ' => ' + value);
+                                const newValues = JSON.parse(JSON.stringify(this.state.newValues));
+                                newValues[instance] = newValues[instance] || {};
+                                if (this.commonConfig[instance][attr] === value) {
+                                    delete newValues[instance][attr];
+                                    if (!Object.keys(newValues[instance]).length) {
+                                        delete newValues[instance];
                                     }
-                                    this.setState({newValues, hasChanges: this.isChanged(newValues)}, () =>
-                                        this.props.onChange && this.props.onChange(this.state.hasChanges));
-                                }}
-                            /> : null}
-                    </div>
-                {/*</Paper>*/}
+                                } else {
+                                    newValues[instance][attr] = value;
+                                }
+                                this.setState({newValues, hasChanges: this.isChanged(newValues)}, () =>
+                                    this.props.onChange && this.props.onChange(this.state.hasChanges));
+                            }}
+                        /> : null}
+                </div>
             </AccordionDetails>
         </Accordion>;
     }
@@ -542,7 +556,7 @@ class ObjectCustomEditor extends Component {
                     if (this.jsonConfigs[adapter]) {
                         return Object.keys(this.jsonConfigs[adapter].instanceObjs)
                             .map(instance =>
-                                this.renderOneCustom(instance, this.jsonConfigs[adapter].instanceObjs[instance], index++));
+                                this.renderOneCustom(instance, this.jsonConfigs[adapter].instanceObjs[instance], this.customObj, index++));
                     } else {
                         return null;
                     }
