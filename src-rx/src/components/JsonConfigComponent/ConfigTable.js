@@ -66,13 +66,15 @@ class ConfigTable extends ConfigGeneric {
         const { schema } = this.props;
         const schemaFind = schema.items.find(el => el.attr === attrItem);
         if (!schemaFind) {
-            return null
+            return null;
         }
+
         const schemaItem = {
             items: {
                 [attrItem]: schemaFind
             }
-        }
+        };
+
         return <ConfigPanel
             socket={this.props.socket}
             adapterName={this.props.adapterName}
@@ -98,17 +100,18 @@ class ConfigTable extends ConfigGeneric {
                 }, 300, newObj);
             }}
             onError={(error, attr) => this.onError(error, attr)}
-        />
+        />;
     }
 
     descendingComparator(a, b, orderBy) {
         if (b[orderBy] < a[orderBy]) {
             return -1;
-        }
+        } else
         if (b[orderBy] > a[orderBy]) {
             return 1;
+        } else {
+            return 0;
         }
-        return 0;
     }
 
     getComparator(order, orderBy) {
@@ -120,11 +123,10 @@ class ConfigTable extends ConfigGeneric {
     handleRequestSort = (property) => {
         const { order, orderBy } = this.state;
         const isAsc = orderBy === property && order === 'asc';
-        const newOreder = isAsc ? 'desc' : 'asc';
-        const newValue = this.stableSort(newOreder, property);
-        this.setState({ order: newOreder, orderBy: property, value: newValue }, () => {
-            this.onChange(this.props.attr, newValue);
-        });
+        const newOrder = isAsc ? 'desc' : 'asc';
+        const newValue = this.stableSort(newOrder, property);
+        this.setState({ order: newOrder, orderBy: property, value: newValue }, () =>
+            this.onChange(this.props.attr, newValue));
     }
 
     stableSort = (order, orderBy) => {
@@ -133,55 +135,56 @@ class ConfigTable extends ConfigGeneric {
         const stabilizedThis = value.map((el, index) => [el, index]);
         stabilizedThis.sort((a, b) => {
             const order = comparator(a[0], b[0]);
-            if (order !== 0) return order;
-            return a[1] - b[1];
+            if (order !== 0) {
+                return order;
+            } else {
+                return a[1] - b[1];
+            }
         });
-        return stabilizedThis.map((el) => el[0]);
+        return stabilizedThis.map(el => el[0]);
     }
 
-    EnhancedTableHead() {
+    enhancedTableHead() {
         const { schema } = this.props;
         const { order, orderBy } = this.state;
-        return (
-            <TableHead>
-                <TableRow>
-                    {schema.items.map((headCell) => (
-                        <TableCell
-                            style={{ width: typeof headCell.width === 'string' && headCell.width.endsWith('%') ? 'auto' : headCell.width }}
-                            key={headCell.attr}
-                            align="left"
-                            sortDirection={orderBy === headCell.attr ? order : false}
+        return <TableHead>
+            <TableRow>
+                {schema.items.map(headCell => (
+                    <TableCell
+                        style={{ width: typeof headCell.width === 'string' && headCell.width.endsWith('%') ? 'auto' : headCell.width }}
+                        key={headCell.attr}
+                        align="left"
+                        sortDirection={orderBy === headCell.attr ? order : false}
+                    >
+                        <TableSortLabel
+                            active={orderBy === headCell.attr}
+                            disabled={!headCell.sort}
+                            direction={orderBy === headCell.attr ? order : 'asc'}
+                            onClick={() => this.handleRequestSort(headCell.attr)}
                         >
-                            <TableSortLabel
-                                active={orderBy === headCell.attr}
-                                disabled={!headCell.sort}
-                                direction={orderBy === headCell.attr ? order : 'asc'}
-                                onClick={() => this.handleRequestSort(headCell.attr)}
-                            >
-                                {headCell.title}
-                            </TableSortLabel>
-                        </TableCell>
-                    ))}
-                </TableRow>
-            </TableHead>
-        );
+                            {headCell.title}
+                        </TableSortLabel>
+                    </TableCell>
+                ))}
+            </TableRow>
+        </TableHead>;
     }
 
     renderItem(error, disabled, defaultValue) {
-        // eslint-disable-next-line
         const { classes, schema } = this.props;
         const { value } = this.state;
         if (!value) {
             return null;
         }
         return <Paper className={classes.paper}>
-            <Toolbar
+            {schema.label ? <Toolbar
+                variant="dense"
                 className={classes.rootTool}
             >
                 <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
                     {this.getText(schema.label)}
                 </Typography>
-            </Toolbar>
+            </Toolbar> : null}
             <TableContainer>
                 <Table
                     className={classes.table}
@@ -189,7 +192,7 @@ class ConfigTable extends ConfigGeneric {
                     size="small"
                     aria-label="enhanced table"
                 >
-                    {this.EnhancedTableHead()}
+                    {this.enhancedTableHead()}
                     <TableBody>
                         {value.map((keys, idx) =>
                             <TableRow

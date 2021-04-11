@@ -265,7 +265,6 @@ class ConfigGeneric extends Component {
             }
         }
 
-
         const item = <Grid
             item
             title={this.getText(this.props.schema.tooltip)}
@@ -274,7 +273,7 @@ class ConfigGeneric extends Component {
             md={schema.md || undefined}
             sm={schema.sm || undefined}
             style={Object.assign({}, {marginBottom: 0, /*marginRight: 8, */textAlign: 'left'}, this.props.schema.style)}>
-            {this.renderItem(error, disabled, defaultValue)}
+            {this.renderItem(error, disabled || this.props.commandRunning, defaultValue)}
         </Grid>;
 
         if (schema.newLine) {

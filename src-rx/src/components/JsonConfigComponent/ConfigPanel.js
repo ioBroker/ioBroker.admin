@@ -23,6 +23,9 @@ import ConfigObjectId from './ConfigObjectId';
 import ConfigLanguage from './ConfigLanguage';
 import ConfigChip from './ConfigChip';
 import ConfigPassword from './ConfigPassword';
+import ConfigStaticHeader from './ConfigStaticHeader';
+import ConfigStaticDivider from './ConfigStaticDivider';
+import ConfigSetState from './ConfigSetState';
 
 //import ConfigTabs from "./ConfigTabs";
 // import { Paper } from '@material-ui/core';
@@ -49,6 +52,9 @@ const components = {
     sendto: ConfigSendto,
     sendTo: ConfigSendto,
     password: ConfigPassword,
+    header: ConfigStaticHeader,
+    divider: ConfigStaticDivider,
+    setState: ConfigSetState,
 };
 
 const styles = theme => ({

@@ -38,8 +38,8 @@ class ConfigInstanceSelect extends ConfigGeneric {
             return null;
         }
 
-        // eslint-disable-next-line
         const item = this.state.selectOptions?.find(item => item.value === this.state.value);
+
         return <FormControl className={this.props.classes.fullWidth}>
             <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel>
             <Select
@@ -47,14 +47,14 @@ class ConfigInstanceSelect extends ConfigGeneric {
                 displayEmpty
                 disabled={!!disabled}
                 value={this.state.value}
-                renderValue={val => this.getText(item?.label, this.props.schema.noTranslation)}
+                renderValue={val => this.getText(item?.label, true)}
                 onChange={e =>
                     this.setState({ value: e.target.value }, () =>
                         this.onChange(this.props.attr, this.state.value))}
             >
                 {this.state.selectOptions.map(item =>
                     <MenuItem key={item.value} value={item.value} style={item.value === ConfigGeneric.NONE_VALUE ? { opacity: 0.5 } : {}}>{
-                        this.getText(item.label, this.props.schema.noTranslation)
+                        this.getText(item.label, true)
                     }</MenuItem>)}
             </Select>
             {this.props.schema.help ? <FormHelperText>{this.getText(this.props.schema.help)}</FormHelperText> : null}

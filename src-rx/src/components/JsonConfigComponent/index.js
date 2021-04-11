@@ -2,7 +2,7 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
-import {LinearProgress} from "@material-ui/core";
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 import I18n from '@iobroker/adapter-react/i18n';
 
@@ -82,16 +82,17 @@ class JsonConfigComponent extends Component {
     }
 
     static loadI18n(socket, i18n, adapterName) {
-        if (i18n === true) {
+        if (i18n === true || (i18n && typeof i18n === 'string')) {
             const lang = I18n.getLanguage();
-            return socket.fileExists(adapterName + '.admin', `i18n/${lang}.json`)
+            const path = typeof i18n === 'string' ? i18n : 'i18n';
+            return socket.fileExists(adapterName + '.admin', `${path}/${lang}.json`)
                 .then(exists => {
                     if (exists) {
-                        return `i18n/${lang}.json`;
+                        return `${path}/${lang}.json`;
                     } else {
-                        return socket.fileExists(adapterName + '.admin', `i18n/${lang}/translations.json`)
+                        return socket.fileExists(adapterName + '.admin', `${path}/${lang}/translations.json`)
                             .then(exists =>
-                                exists ? `i18n/${lang}/translations.json` : '')
+                                exists ? `${path}/${lang}/translations.json` : '')
                     }
                 })
                 .then(fileName => {

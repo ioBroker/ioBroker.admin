@@ -136,7 +136,7 @@ class ConfigSendto extends ConfigGeneric {
                 variant={this.props.schema.variant || undefined}
                 color={this.props.schema.color || undefined}
                 className={this.props.classes.fullWidth}
-                disabled={disabled || this.props.commandRunning}
+                disabled={disabled}
                 onClick={() => {
                     if (this.props.schema.confirm) {
                         this.setState({confirmDialog: true});

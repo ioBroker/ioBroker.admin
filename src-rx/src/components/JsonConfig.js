@@ -21,41 +21,6 @@ const styles = {
     }
 };
 
-// Todo: delete it after adapter-react 1.6.9
-I18n.extendTranslations = I18n.extendTranslations || ((words, lang) => {
-    try {
-        if (!lang) {
-            Object.keys(words).forEach(word => {
-                Object.keys(words[word]).forEach(lang => {
-                    if (!I18n.translations[lang]) {
-                        console.warn(`Used unknown language: ${lang}`);
-                    }
-                    if (!I18n.translations[lang][word]) {
-                        I18n.translations[lang][word] = words[word][lang];
-                    } else if (I18n.translations[lang][word] !== words[word][lang]) {
-                        console.warn(`Translation for word "${word}" in "${lang}" was ignored: existing = "${I18n.translations[lang][word]}", new = ${words[word][lang]}`);
-                    }
-                });
-            });
-        } else {
-            if (!I18n.translations[lang]) {
-                console.warn(`Used unknown language: ${lang}`);
-            }
-            I18n.translations[lang] = I18n.translations[lang] || {};
-            Object.keys(words)
-                .forEach(word => {
-                    if (!I18n.translations[lang][word]) {
-                        I18n.translations[lang][word] = words[word];
-                    } else if (I18n.translations[lang][word] !== words[word]) {
-                        console.warn(`Translation for word "${word}" in "${lang}" was ignored: existing = "${I18n.translations[lang][word]}", new = ${words[word]}`);
-                    }
-                });
-        }
-    } catch (e) {
-        console.error(`Cannot apply translations: ${e}`);
-    }
-});
-
 class JsonConfig extends Router {
     constructor(props) {
         super(props);

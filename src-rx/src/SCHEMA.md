@@ -163,11 +163,13 @@ const schema = {
                 //    - result: {result1: {en: 'A'}, result2: {en: 'B'}}
                 //    - error: {error1: {en: 'E'}, error2: {en: 'E2'}}
                 //    - this.props.socket.sendTo(adapterName.instance, command || 'send', 
+                //    - variant: contained, outlined, ''
 
                 // - setState - button that set instance's state
                 //    - id - 'info.test'
                 //    - ack: false (default false)
                 //    - val: '${data.myText}_test' or number. Type must be detected automatically and convertaion done too
+                //    - okText: Alert that will be shown by pressing the button
 
                 // !- staticText - static text like description
                 //    - text - multi-language text
@@ -190,8 +192,8 @@ const schema = {
                 // - json - json editor 
                 //   - height in px or % or em
                 
-                // - language 
-                //   - system (use system from system.config as default)
+                // !- language 
+                //   - system (allow the usage of the system language from system.config as default)
                 
                 // !- certificate
                 //   - certType: public, private, chained
@@ -201,6 +203,8 @@ const schema = {
                 //  - component - Component name that will be provided via props, like componentInstancesEditor
                 
                 // - divider - horizontal line
+                //   - height - optional height
+                //   - color - optional divider color or "primary", "secondary"
   
                 // - header
                 //   - text
@@ -297,6 +301,16 @@ On the top level of structure set `i18n: true` and provide files in admin:
 or 
 - admin/i18n/de.json
 - admin/i18n/en.json
+- ...
+
+Additionally, user can provide the path to i18n files, `i18n: "customI18n"`and provide files in admin:
+- admin/customI18n/de/translations.json
+- admin/customI18n/en/translations.json
+- ...
+
+or
+- admin/customI18n/de.json
+- admin/customI18n/en.json
 - ...
 
 3. User can provide translations in i18n attribute: 

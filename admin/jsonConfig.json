@@ -277,6 +277,11 @@
           "pattern": "my ${data.bind} ${_alive}",
           "copyToClipboard": true
         },
+        "_header": {
+          "newLine": true,
+          "type": "divider",
+          "sm": 12
+        },
         "myTable": {
           "newLine": true,
           "sm": 12,
@@ -310,13 +315,32 @@
           ]
         },
         "myInstance": {
-          "newLine": 12,
+          "newLine": true,
           "sm": 6,
-          "md": 3,
-          "lg": 2,
           "type": "instance",
           "adapter": "history",
           "label": "History"
+        },
+        "myObjectId": {
+          "type": "objectId",
+          "sm": 6,
+          "label": "Object ID"
+        },
+        "myLanguage": {
+          "newLine": true,
+          "type": "language",
+          "sm": 6,
+          "label": "Language",
+          "system": true
+        },
+        "_setState": {
+          "type": "setState",
+          "ack": true,
+          "variant": "contained",
+          "okText": "Done",
+          "val": "${data.myLanguage}",
+          "id": "javascript.0.value",
+          "label": "Test"
         }
       }
     }

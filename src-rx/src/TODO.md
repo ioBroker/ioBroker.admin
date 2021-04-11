@@ -60,20 +60,13 @@ not editable
 ## JSON config - Admin settings dialog (index_m.html)
 - write it with react (see [SCHEMA.md](SCHEMA.md))
 - Should work: admin, cloud, email
-- Layout: Header "Instance settings: admin.0" must not be scrolled
-- Layout: Tabs must not be scrolled (only content of tab(panel))
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)
 
 - room editor (multiple or single choose)
 - func editor (multiple or single choose)
-<!-- - object ID editor -->
 - chips (see javascript config)
-- setState (read object before write to detect the type of value) (see email TEST button)
 //- table!!!
 - json editor as control
-<!-- - language selector -->
-- divider
-- header
 
 - Write jsonCustom for:
   - lovelace
