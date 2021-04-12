@@ -728,6 +728,7 @@ class App extends Router {
                         expertMode={this.state.expertMode}
                         lang={I18n.getLanguage()}
                         socket={this.socket}
+                        themeName={this.state.themeName}
                     />
                 </Suspense>;
             } else if (this.state.currentTab.tab === 'tab-users') {

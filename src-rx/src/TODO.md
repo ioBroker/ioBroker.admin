@@ -60,8 +60,8 @@ not editable
 
 - room editor (multiple or single choose)
 - func editor (multiple or single choose)
-- chips (see javascript config)
-//- table!!!
+<!-- - chips (see javascript config) -->
+<!-- //- table!!! -->
 - json editor as control
 
 - Write jsonCustom for:

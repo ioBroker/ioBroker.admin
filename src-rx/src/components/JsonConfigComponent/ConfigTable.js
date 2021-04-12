@@ -2,10 +2,15 @@ import PropTypes from 'prop-types';
 import { lighten, withStyles } from '@material-ui/core/styles';
 
 import FormHelperText from '@material-ui/core/FormHelperText';
-
+import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
 import ConfigGeneric from './ConfigGeneric';
 import ConfigPanel from './ConfigPanel';
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Toolbar, Typography } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
+import { IconButton, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, TextField, Toolbar, Tooltip, Typography } from '@material-ui/core';
+import clsx from 'clsx';
+import { createRef } from 'react';
+import I18n from '@iobroker/adapter-react/i18n';
 
 const styles = theme => {
     return ({
@@ -34,6 +39,10 @@ const styles = theme => {
             top: 20,
             width: 1,
         },
+        addIcon: {
+            display: 'flex',
+            justifyContent: 'space-between'
+        },
         highlight:
             theme.palette.type === 'light'
                 ? {
@@ -51,30 +60,49 @@ const styles = theme => {
             paddingLeft: theme.spacing(2),
             paddingRight: theme.spacing(1),
         },
+        silver: {
+            opacity: 0.2
+        },
+        flex: {
+            display: 'flex'
+        },
+        filteredOut: {
+            padding: 10,
+            display: 'flex',
+            textAlign: 'center'
+        }
     })
 };
 
 class ConfigTable extends ConfigGeneric {
+    constructor(props) {
+        super(props)
+        this.filterRefs = {};
+        this.props.schema.items.forEach(el => {
+            if (el.filter) {
+                this.filterRefs[el.attr] = createRef();
+            }
+        });
+
+    }
     async componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr) || [];
-        this.setState({ value, orderBy: value.length ? Object.keys(value[0])[0] : '', order: 'asc' });
+        this.setState({ value, visibleValue: value, orderBy: value.length ? Object.keys(value[0])[0] : '', order: 'asc' });
     }
 
     itemTable(attrItem, data, idx) {
-        const { value, systemConfig } = this.state;
+        const { value, systemConfig, visibleValue } = this.state;
         const { schema } = this.props;
         const schemaFind = schema.items.find(el => el.attr === attrItem);
         if (!schemaFind) {
             return null;
         }
-
         const schemaItem = {
             items: {
                 [attrItem]: schemaFind
             }
         };
-
         return <ConfigPanel
             socket={this.props.socket}
             adapterName={this.props.adapterName}
@@ -90,14 +118,12 @@ class ConfigTable extends ConfigGeneric {
             systemConfig={systemConfig}
             customs={this.props.customs}
             onChange={(attr, valueChange) => {
-                this.typingTimer && clearTimeout(this.typingTimer);
                 const newObj = JSON.parse(JSON.stringify(value));
+                const newVisibleValue = JSON.parse(JSON.stringify(visibleValue));
                 newObj[idx][attr] = valueChange;
-                this.setState({ value: newObj });
-                this.typingTimer = setTimeout(value => {
-                    this.typingTimer = null;
-                    this.onChange(this.props.attr, value);
-                }, 300, newObj);
+                newVisibleValue[idx][attr] = valueChange;
+                this.setState({ value: newObj, visibleValue: newVisibleValue });
+                this.onChangeWrapper(newObj,true);
             }}
             onError={(error, attr) => this.onError(error, attr)}
         />;
@@ -107,11 +133,11 @@ class ConfigTable extends ConfigGeneric {
         if (b[orderBy] < a[orderBy]) {
             return -1;
         } else
-        if (b[orderBy] > a[orderBy]) {
-            return 1;
-        } else {
-            return 0;
-        }
+            if (b[orderBy] > a[orderBy]) {
+                return 1;
+            } else {
+                return 0;
+            }
     }
 
     getComparator(order, orderBy) {
@@ -120,13 +146,12 @@ class ConfigTable extends ConfigGeneric {
             : (a, b) => -this.descendingComparator(a, b, orderBy);
     }
 
-    handleRequestSort = (property) => {
+    handleRequestSort = (property, orderCheck = false) => {
         const { order, orderBy } = this.state;
         const isAsc = orderBy === property && order === 'asc';
-        const newOrder = isAsc ? 'desc' : 'asc';
+        const newOrder = orderCheck ? order : isAsc ? 'desc' : 'asc';
         const newValue = this.stableSort(newOrder, property);
-        this.setState({ order: newOrder, orderBy: property, value: newValue }, () =>
-            this.onChange(this.props.attr, newValue));
+        this.setState({ order: newOrder, orderBy: property, visibleValue: newValue });
     }
 
     stableSort = (order, orderBy) => {
@@ -145,7 +170,7 @@ class ConfigTable extends ConfigGeneric {
     }
 
     enhancedTableHead() {
-        const { schema } = this.props;
+        const { schema, classes } = this.props;
         const { order, orderBy } = this.state;
         return <TableHead>
             <TableRow>
@@ -156,35 +181,122 @@ class ConfigTable extends ConfigGeneric {
                         align="left"
                         sortDirection={orderBy === headCell.attr ? order : false}
                     >
-                        <TableSortLabel
-                            active={orderBy === headCell.attr}
-                            disabled={!headCell.sort}
-                            direction={orderBy === headCell.attr ? order : 'asc'}
-                            onClick={() => this.handleRequestSort(headCell.attr)}
-                        >
-                            {headCell.title}
-                        </TableSortLabel>
+                        <div className={classes.flex}>
+                            {headCell.sort && <TableSortLabel
+                                active
+                                className={clsx(orderBy !== headCell.attr && classes.silver)}
+                                direction={orderBy === headCell.attr ? order : 'asc'}
+                                onClick={() => this.handleRequestSort(headCell.attr)}
+                            />}
+                            {headCell.filter ?
+                                <TextField
+                                    ref={this.filterRefs[headCell.attr]}
+                                    onChange={(el) => this.onFilter()}
+                                    InputProps={{
+                                        endAdornment: (
+                                            this.filterRefs[headCell.attr]?.current?.children[0]?.children[0]?.value && <InputAdornment position="end">
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={(e) => {
+                                                        this.filterRefs[headCell.attr].current.children[0].children[0].value = '';
+                                                        this.onFilter()
+                                                    }}
+                                                >
+                                                    <CloseIcon />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }} fullWidth placeholder={headCell.title} />
+                                : headCell.title}
+                        </div>
                     </TableCell>
                 ))}
+                {!schema.noDelete && <TableCell style={{ paddingLeft: 20 }} padding="checkbox">
+                    <IconButton disabled size="small">
+                        <DeleteIcon />
+                    </IconButton>
+                </TableCell>}
             </TableRow>
         </TableHead>;
     }
 
+    onDelete = (index) =>
+        () => {
+            const { value, orderBy } = this.state;
+            const newObj = JSON.parse(JSON.stringify(value));
+            newObj.splice(index, 1);
+            this.setState({ value: newObj }, () => {
+                this.onFilter(false, newObj);
+                this.handleRequestSort(orderBy, true);
+            });
+            this.onChangeWrapper(newObj);
+        }
+
+    onChangeWrapper = (newValue, updateVisible = false) => {
+        const { orderBy } = this.state;
+        this.typingTimer && clearTimeout(this.typingTimer);
+        this.typingTimer = setTimeout(value => {
+            this.typingTimer = null;
+            this.onChange(this.props.attr, value);
+            if (updateVisible) {
+                this.onFilter(false, value);
+                this.handleRequestSort(orderBy, true);
+            }
+        }, 300, newValue);
+    }
+
+    onAdd = () => {
+        const { schema } = this.props;
+        const { value, orderBy } = this.state;
+        const newObj = JSON.parse(JSON.stringify(value));
+        const newEl = schema.items.reduce((accumulator, currentValue) => {
+            accumulator[currentValue.attr] = null;
+            return accumulator;
+        }, {});
+        newObj.push(newEl);
+        this.setState({ value: newObj }, () => {
+            this.onFilter(false, newObj);
+            this.handleRequestSort(orderBy, true);
+        });
+        this.onChangeWrapper(newObj);
+
+    }
+
+    onFilter = (clear = false, value = this.state.value) => {
+        let newValue = JSON.parse(JSON.stringify(value));
+        Object.keys(this.filterRefs).forEach(key => {
+            const valueInputRef = this.filterRefs[key].current.children[0].children[0].value;
+            if (!clear && valueInputRef) {
+                newValue = newValue.filter(el => el[key]?.toLowerCase().includes(valueInputRef?.toLowerCase()));
+            } else {
+                this.filterRefs[key].current.children[0].children[0].value = '';
+            }
+        });
+        this.setState({ visibleValue: newValue })
+    }
+
     renderItem(error, disabled, defaultValue) {
         const { classes, schema } = this.props;
-        const { value } = this.state;
+        const { value, visibleValue } = this.state;
         if (!value) {
             return null;
         }
         return <Paper className={classes.paper}>
-            {schema.label ? <Toolbar
-                variant="dense"
-                className={classes.rootTool}
-            >
-                <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-                    {this.getText(schema.label)}
-                </Typography>
-            </Toolbar> : null}
+            <div className={classes.addIcon}>
+                {schema.label ? <Toolbar
+                    variant="dense"
+                    className={classes.rootTool}
+                >
+                    <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+                        {this.getText(schema.label)}
+                    </Typography>
+                </Toolbar> : null}
+                <Tooltip title={I18n.t('Add row')}>
+                    <IconButton onClick={this.onAdd}>
+                        <AddIcon />
+                    </IconButton>
+                </Tooltip>
+            </div>
             <TableContainer>
                 <Table
                     className={classes.table}
@@ -194,7 +306,7 @@ class ConfigTable extends ConfigGeneric {
                 >
                     {this.enhancedTableHead()}
                     <TableBody>
-                        {value.map((keys, idx) =>
+                        {visibleValue.map((keys, idx) =>
                             <TableRow
                                 hover
                                 key={idx}
@@ -204,9 +316,28 @@ class ConfigTable extends ConfigGeneric {
                                         {this.itemTable(attr, keys, idx)}
                                     </TableCell>
                                 )}
+                                {!schema.noDelete && <TableCell align="left">
+                                    <Tooltip title={I18n.t('Remove current row')}>
+                                        <IconButton size="small" onClick={this.onDelete(idx)}>
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                </TableCell>}
                             </TableRow>)}
                     </TableBody>
                 </Table>
+                {!visibleValue.length &&
+                    <div className={classes.filteredOut}>
+                        <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+                            {I18n.t('All items are filtered out')}
+                            <IconButton
+                                size="small"
+                                onClick={(e) => this.onFilter(true)}
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </Typography>
+                    </div>}
             </TableContainer>
             {schema.help ? <FormHelperText>{this.getText(schema.help)}</FormHelperText> : null}
         </Paper>;

@@ -30,6 +30,7 @@
     "leaflet": "^1.7.1",
     "leaflet-geosearch": "^3.2.2",
     "lodash": "^4.17.21",
+    "material-ui-chip-input": "^2.0.0-beta.2",
     "ol": "^6.5.0",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",

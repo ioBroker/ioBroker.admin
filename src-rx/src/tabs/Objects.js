@@ -90,8 +90,8 @@ class Objects extends Component {
 
             this.setState({ deleteObjectShow: null });
         } else {
-            this.props.socket.delObject(id, true)
-                .then(() => this.setState({ deleteObjectShow: null }));
+            this.props.socket.delObject(id, true);
+            this.setState({ deleteObjectShow: null })
         }
     }
 

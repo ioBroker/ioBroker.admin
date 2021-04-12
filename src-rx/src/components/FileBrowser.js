@@ -431,6 +431,7 @@ class FileBrowser extends Component {
             deleteItem: '',
             marked: [],
             viewer: '',
+            formatEditFile:'',
             path: selected,
             selected,
             errorText: '',
@@ -875,7 +876,7 @@ class FileBrowser extends Component {
                     onClick={(e) => {
                         e.stopPropagation();
                         if (!this.props.onSelect) {
-                            this.setState({ viewer: this.imagePrefix + item.id });
+                            this.setState({ viewer: this.imagePrefix + item.id, formatEditFile: ext });
                         } else if (
                             (!this.props.filterFiles || this.props.filterFiles.includes(item.ext)) &&
                             (!this.props.filterByType || EXTENSIONS[this.props.filterByType].includes(item.ext))
@@ -1296,12 +1297,14 @@ class FileBrowser extends Component {
         return this.state.viewer ? <FileViewer
             key={this.state.viewer}
             href={this.state.viewer}
+            formatEditFile={this.state.formatEditFile}
+            themeName={this.props.themeName}
             setStateBackgroundImage={this.setStateBackgroundImage}
             getClassBackgroundImage={this.getClassBackgroundImage}
             t={this.props.t}
             lang={this.props.lang}
             expertMode={this.state.expertMode}
-            onClose={() => this.setState({ viewer: '' })}
+            onClose={() => this.setState({ viewer: '', formatEditFile: '' })}
         /> : null;
     }
 

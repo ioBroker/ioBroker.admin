@@ -5,8 +5,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 
 import ConfigGeneric from './ConfigGeneric';
-import { Autocomplete } from '@material-ui/lab';
-import { Chip, TextField } from '@material-ui/core';
+import ChipInput from 'material-ui-chip-input';
 
 const styles = theme => ({
     fullWidth: {
@@ -19,64 +18,32 @@ class ConfigLanguage extends ConfigGeneric {
         super.componentDidMount();
         const { data, attr } = this.props;
         const value = ConfigGeneric.getValue(data, attr);
-        console.log(value)
         this.setState({ value: value || [] });
     }
 
     renderItem(error, disabled, defaultValue) {
-
-        const { attr } = this.props;
-        const { value, prevValue, } = this.state;
-        // eslint-disable-next-line
+        const { attr,schema } = this.props;
+        const { value } = this.state;
         return <FormControl className={this.props.classes.fullWidth}>
-            <Autocomplete
-                multiple
-                disabled={!!disabled}
-                error={!!error}
-                id="tags-standard"
-                filterOptions={filter => false}
-                freeSolo
-                options={[]}
-                // getOptionLabel={(option) => option.title}
-                // onChange={el=>console.log(el)}
-
+            <ChipInput
                 value={value}
-                // renderTags={(tagValue, getTagProps) =>
-                //     value.map((option, index) => (
-                //       <Chip
-                //         label={option}
-                //         // {...getTagProps({ index })}
-                //         // disabled={value.indexOf(option) !== -1}
-                //       />
-                //     ))
-                //   }
-                InputProps={{
-                    startAdornment: value?.map((item) => (
-                        <Chip
-                            key={item}
-                            label={item}
-                        />
-                    )),
-                }}
-                onBlur={el => {
-                    if (prevValue) {
+                disabled={!!disabled}
+                label={this.getText(schema.label)}
+                error={!!error}
+                onAdd={chip => {
                         const newValue = JSON.parse(JSON.stringify(value));
-                        newValue.push(prevValue);
-                        this.setState({ value: newValue }, () => {
+                        newValue.push(chip);
+                        this.setState({ value: newValue, prevValue: '' }, () => {
                             this.onChange(attr, newValue);
                         })
-                    }
                 }}
-                // defaultValue={value}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        onChange={el => this.setState({ prevValue: el.target.value })}
-                        variant="standard"
-                        label={this.getText(this.props.schema.label)}
-                        placeholder={this.getText(this.props.schema.label)}
-                    />
-                )}
+                onDelete={(chip, index) => {
+                    const newValue = JSON.parse(JSON.stringify(value));
+                    newValue.splice(index, 1);;
+                    this.setState({ value: newValue, prevValue: '' }, () => {
+                        this.onChange(attr, newValue);
+                    })
+                }}
             />
             {this.props.schema.help ? <FormHelperText>{this.getText(this.props.schema.help)}</FormHelperText> : null}
         </FormControl>;
