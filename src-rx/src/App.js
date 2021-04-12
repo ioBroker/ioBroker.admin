@@ -768,23 +768,24 @@ class App extends Router {
             }  else if (this.state.currentTab.tab === 'tab-hosts') {
                 return <Suspense fallback={<Connecting />}>
                     <Hosts
-                            menuPadding={this.state.drawerState === DrawerStates.closed ? 0 : (this.state.drawerState === DrawerStates.opened ? DRAWER_FULL_WIDTH : DRAWER_COMPACT_WIDTH)}
-                            socket={this.socket}
-                            lang={I18n.getLanguage()}
-                            protocol={this.state.protocol}
-                            hostname={this.state.hostname}
-                            themeName={this.state.themeName}
-                            themeType={this.state.themeType}
-                            theme={this.state.theme}
-                            expertMode={this.state.expertMode}
-                            idHost={this.state.hosts.find(({ common: { name } }) => name === this.state.currentHostName)._id}
-                            currentHostName={this.state.currentHostName}
-                            t={I18n.t}
-                            currentHost={this.state.currentHost}
-                            width={this.props.width}
-                            configStored={value => this.allStored(value)}
-                            executeCommand={cmd => this.executeCommand(cmd)}
-                            inBackgroundCommand={this.state.commandError || this.state.performed}
+                        menuPadding={this.state.drawerState === DrawerStates.closed ? 0 : (this.state.drawerState === DrawerStates.opened ? DRAWER_FULL_WIDTH : DRAWER_COMPACT_WIDTH)}
+                        socket={this.socket}
+                        lang={I18n.getLanguage()}
+                        protocol={this.state.protocol}
+                        hostname={this.state.hostname}
+                        themeName={this.state.themeName}
+                        themeType={this.state.themeType}
+                        theme={this.state.theme}
+                        expertMode={this.state.expertMode}
+                        idHost={this.state.hosts.find(({ common: { name } }) => name === this.state.currentHostName)._id}
+                        currentHostName={this.state.currentHostName}
+                        t={I18n.t}
+                        currentHost={this.state.currentHost}
+                        width={this.props.width}
+                        configStored={value => this.allStored(value)}
+                        executeCommand={cmd => this.executeCommand(cmd)}
+                        inBackgroundCommand={this.state.commandError || this.state.performed}
+                        systemConfig={this.state.systemConfig}
                     />
                 </Suspense>;
             } else {

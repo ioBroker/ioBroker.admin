@@ -39,11 +39,7 @@
 not editable
   
 ## Hosts
-<!-- - Show on the second tab: CPU %, Mem%, uptime in days/hours,  -->
-<!-- show in red if (diskFree / diskSize) * 100 <= diskWarning, show header in blink-red -->
-<!-- - iobroker upgrade self -->
-<!-- - iobroker restart -->
-<!-- - if not alive => events "- / -" -->
+- extend hostsWorker to detect updates of hosts
 
 ## Users
 - Do not allow edit of user ID

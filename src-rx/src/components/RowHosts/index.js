@@ -27,7 +27,6 @@ const styles = theme => ({
         }
     },
     imageBlock: {
-        // background: 'silver',
         minHeight: 60,
         width: '100%',
         maxWidth: 300,
@@ -57,7 +56,7 @@ const styles = theme => ({
     },
     collapse: {
         height: 150,
-        backgroundColor: 'silver',
+        backgroundColor: 'rgba(128, 128, 128, 0.1)',
         // position: 'absolute',
         width: '100%',
         zIndex: 3,
@@ -82,37 +81,6 @@ const styles = theme => ({
             height: 150,
         }
     },
-    close: {
-        width: '20px',
-        height: '20px',
-        opacity: '0.9',
-        cursor: 'pointer',
-        position: 'relative',
-        marginLeft: 'auto',
-        marginBottom: 10,
-        transition: 'all 0.6s ease',
-        '&:hover': {
-            transform: 'rotate(90deg)'
-        },
-        '&:before': {
-            position: 'absolute',
-            left: '9px',
-            content: '""',
-            height: '20px',
-            width: '3px',
-            backgroundColor: '#ff4f4f',
-            transform: 'rotate(45deg)'
-        },
-        '&:after': {
-            position: 'absolute',
-            left: '9px',
-            content: '""',
-            height: '20px',
-            width: '3px',
-            backgroundColor: '#ff4f4f',
-            transform: 'rotate(-45deg)'
-        },
-    },
     footerBlock: {
         background: theme.palette.background.default,
         padding: 10,
@@ -121,18 +89,6 @@ const styles = theme => ({
     },
     hidden: {
         display: 'none'
-    },
-    buttonUpdate: {
-        border: '1px solid',
-        padding: '0px 7px',
-        borderRadius: 5,
-        display: 'flex',
-        alignItems: 'center',
-        cursor: 'pointer',
-        transition: 'background 0.5s',
-        '&:hover': {
-            background: '#00800026'
-        }
     },
     onOff: {
         alignSelf: 'center',
@@ -143,48 +99,16 @@ const styles = theme => ({
         // top: 5,
         // right: 5,
     },
-    adapter: {
+    host: {
         width: '100%',
         fontWeight: 'bold',
         fontSize: 16,
         paddingLeft: 8,
         alignSelf: 'center',
-        color: theme.palette.type === 'dark' ? '#333' : '#555',
+        color: theme.palette.type === 'dark' ? '#ddd' : '#222',
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-    },
-    hide: {
-        visibility: 'hidden'
-    },
-    button: {
-        padding: '5px',
-        transition: 'opacity 0.2s'
-    },
-    visibility: {
-        opacity: 0
-    },
-    enabled: {
-        color: green[400],
-        '&:hover': {
-            backgroundColor: green[200]
-        }
-    },
-    disabled: {
-        color: red[400],
-        '&:hover': {
-            backgroundColor: red[200]
-        }
-    },
-    cardContent: {
-        marginTop: 16,
-        paddingTop: 0
-    },
-    sentry: {
-        width: 24,
-        height: 24,
-        objectFit: 'fill',
-        filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)'
     },
     cardContentH5: {
         height: '100%',
@@ -200,66 +124,10 @@ const styles = theme => ({
         marginLeft: 'auto',
         display: 'flex'
     },
-    memoryIcon: {
-        color: '#dc8e00',
-    },
-    displayFlex: {
-        display: 'flex',
-    },
-    logLevel: {
-        width: '100%',
-        marginBottom: 5
-    },
-    overflowAuto: {
-        overflow: 'auto'
-    },
-    collapseIcon: {
-        position: 'sticky',
-        right: 0,
-        top: 0,
-        background: 'silver',
-        zIndex: 2
-    },
-    addCompact: {
-        width: '100%',
-        marginBottom: 5
-    },
-    addCompactButton: {
-        display: 'flex',
-        margin: 5,
-        justifyContent: 'space-around'
-    },
-    scheduleIcon: {
-        color: '#dc8e00'
-    },
-    marginRight5: {
-        marginRight: 5
-    },
-    marginLeft5: {
-        marginLeft: 5
-    },
     enableButton: {
         display: 'flex',
         justifyContent: 'space-between'
     },
-    instanceStateNotAlive1: {
-        backgroundColor: 'rgba(192, 192, 192, 0.4)'
-    },
-    /*instanceStateNotAlive2: {
-        backgroundColor: 'rgb(192 192 192 / 15%)'
-    },*/
-    instanceStateAliveNotConnected1: {
-        backgroundColor: 'rgba(255, 177, 0, 0.4)'
-    },
-    /*instanceStateAliveNotConnected2: {
-        backgroundColor: 'rgb(255 177 0  / 14%)'
-    },*/
-    instanceStateAliveAndConnected1: {
-        backgroundColor: 'rgba(0, 255, 0, 0.4)'
-    },
-    /*instanceStateAliveAndConnected2: {
-        backgroundColor: 'rgb(0 255 0 / 14%)'
-    }*/
     green: {
         background: '#00ce00',
         position: 'relative',
@@ -308,13 +176,6 @@ const styles = theme => ({
         display: 'flex',
         height: '100%',
         // alignItems: 'center'
-    },
-    cardContentDiv: {
-        position: 'sticky',
-        right: 0,
-        top: 0,
-        background: 'silver',
-        paddingTop: 10
     },
     wrapperFlex: {
         display: 'flex', cursor: 'pointer',
@@ -367,11 +228,11 @@ const styles = theme => ({
     },
 });
 
-let outputCache = 'null';
-let inputCache = 'null';
+let outputCache = '-';
+let inputCache = '-';
 let cpuCache = '- %';
 let memCache = '- %';
-let uptimeCache = '-/-';
+let uptimeCache = '-';
 
 let diskFreeCache = 1;
 let diskSizeCache = 1;
@@ -384,7 +245,7 @@ const RowHosts = ({
     hidden,
     alive,
     color,
-    title,
+    //title,
     available,
     installed,
     events,
@@ -392,11 +253,12 @@ const RowHosts = ({
     description,
     _id,
     socket,
-    setEditDilog,
+    setEditDialog,
     executeCommand,
     currentHost,
     dialogUpgrade,
-    executeCommandRemove
+    executeCommandRemove,
+    systemConfig
 }) => {
 
     const [openCollapse, setCollapse] = useState(false);
@@ -409,28 +271,37 @@ const RowHosts = ({
     const refUptime = useRef();
 
     const eventsInputFunc = (_, input) => {
-        inputCache = input ? input.val : 'null';
+        inputCache = input ? input.val : '-';
         if (refEvents.current) {
             refEvents.current.innerHTML = `⇥${inputCache} / ↦${outputCache}`;
         }
     };
 
     const eventsOutputFunc = (_, output) => {
-        outputCache = output ? output.val : 'null';
+        outputCache = output ? output.val : '-';
         if (refEvents.current) {
             refEvents.current.innerHTML = `⇥${inputCache} / ↦${outputCache}`;
         }
     };
 
-    // TODO: here is the same as with input/output
-    const warningFunc = (name, obj) => {
+    const formatValue = (state, unit) => {
+        if (!state || state.val === null || state.val === undefined) {
+            return '-' + (unit ? ' ' + unit : '');
+        } else if (systemConfig.common.isFloatComma) {
+            return state.val.toString().replace('.', ',') + (unit ? ' ' + unit : '');
+        } else {
+            return state.val + (unit ? ' ' + unit : '');
+        }
+    };
+
+    const warningFunc = (name, state) => {
         let warning;
         if (name.endsWith('diskFree')) {
-            diskFreeCache = obj?.val || 0;
+            diskFreeCache = state?.val || 0;
         } else if (name.endsWith('diskSize')) {
-            diskSizeCache = obj?.val || 0;
+            diskSizeCache = state?.val || 0;
         } else if (name.endsWith('diskWarning')) {
-            diskWarningCache = obj?.val || 0;
+            diskWarningCache = state?.val || 0;
         }
         warning = (diskFreeCache / diskSizeCache) * 100 <= diskWarningCache;
         if (refWarning.current) {
@@ -444,25 +315,25 @@ const RowHosts = ({
         }
     };
 
-    const CpuFunc = (_, obj) => {
-        cpuCache = `${obj?.val || '-'} %`;
+    const cpuFunc = (_, state) => {
+        cpuCache = formatValue(state, '%');
         if (refCpu.current) {
             refCpu.current.innerHTML = cpuCache;
         }
     }
 
-    const memFunc = (_, obj) => {
-        memCache = `${obj?.val || '-'} %`;
+    const memFunc = (_, state) => {
+        memCache = formatValue(state, '%');
         if (refMem.current) {
             refMem.current.innerHTML = memCache;
         }
     }
 
-    const uptimeFunc = (_, obj) => {
-        if (obj.val) {
-            const d = Math.floor(obj.val / (3600 * 24));
-            const h = Math.floor(obj.val % (3600 * 24) / 3600);
-            uptimeCache = (d || h) && `${d}/${h}`;
+    const uptimeFunc = (_, state) => {
+        if (state && state.val) {
+            const d = Math.floor(state.val / (3600 * 24));
+            const h = Math.floor(state.val % (3600 * 24) / 3600);
+            uptimeCache = d ? `${d}d${h}h` : `${h}h`; // TODO translate
         }
         if (refUptime.current) {
             refUptime.current.innerHTML = uptimeCache;
@@ -473,7 +344,7 @@ const RowHosts = ({
         socket.subscribeState(`${_id}.inputCount`, eventsInputFunc);
         socket.subscribeState(`${_id}.outputCount`, eventsOutputFunc);
 
-        socket.subscribeState(`${_id}.cpu`, CpuFunc);
+        socket.subscribeState(`${_id}.cpu`, cpuFunc);
         socket.subscribeState(`${_id}.mem`, memFunc);
         socket.subscribeState(`${_id}.uptime`, uptimeFunc);
 
@@ -485,7 +356,7 @@ const RowHosts = ({
             socket.unsubscribeObject(`${_id}.inputCount`, eventsInputFunc);
             socket.unsubscribeObject(`${_id}.outputCount`, eventsOutputFunc);
 
-            socket.unsubscribeObject(`${_id}.cpu`, CpuFunc);
+            socket.unsubscribeObject(`${_id}.cpu`, cpuFunc);
             socket.unsubscribeObject(`${_id}.mem`, memFunc);
             socket.unsubscribeObject(`${_id}.uptime`, uptimeFunc);
 
@@ -511,16 +382,14 @@ const RowHosts = ({
             <div
                 ref={refWarning}
                 // style={{ background: color || 'inherit' }}
-                className={clsx(
-                    classes.imageBlock,
-                )}>
+                className={classes.imageBlock}>
                 <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
-                <div className={classes.adapter}>{name}</div>
+                <div className={classes.host}>{name}</div>
             </div>
             <CardContent className={classes.cardContentH5}>
-                <Typography className={clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="p">
+                {/*<Typography className={clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="p">
                     {title}
-                </Typography>
+                </Typography>*/}
                 <Typography className={clsx(classes.flex, classes.hidden800)} variant="body2" color="textSecondary" component="div">
                     <div ref={refCpu}>{'- %'}</div>
                 </Typography>
@@ -543,8 +412,8 @@ const RowHosts = ({
                     <Typography component={'span'} className={classes.enableButton}>
                         <IconButton
                             onClick={(e) => {
-                                setEditDilog(true);
                                 e.stopPropagation();
+                                setEditDialog(true);
                             }}
                         >
                             <EditIcon />
@@ -583,6 +452,7 @@ const RowHosts = ({
 
 RowHosts.propTypes = {
     t: PropTypes.func,
+    systemConfig: PropTypes.object,
 };
 
 export default withStyles(styles)(RowHosts);
