@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
-import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 
 import ConfigGeneric from './ConfigGeneric';
@@ -15,6 +14,21 @@ import ConfigSelect from './ConfigSelect';
 import ConfigUser from './ConfigUser';
 import ConfigStaticText from './ConfigStaticText';
 import ConfigPattern from './ConfigPattern';
+import ConfigCertificateSelect from './ConfigCertificateSelect';
+import ConfigImageUpload from './ConfigImageUpload';
+import ConfigInstanceSelect from './ConfigInstanceSelect';
+import ConfigTable from './ConfigTable';
+import ConfigSendto from './ConfigSendto';
+import ConfigObjectId from './ConfigObjectId';
+import ConfigLanguage from './ConfigLanguage';
+import ConfigChip from './ConfigChip';
+import ConfigPassword from './ConfigPassword';
+import ConfigStaticHeader from './ConfigStaticHeader';
+import ConfigStaticDivider from './ConfigStaticDivider';
+import ConfigSetState from './ConfigSetState';
+
+//import ConfigTabs from "./ConfigTabs";
+// import { Paper } from '@material-ui/core';
 
 const components = {
     text: ConfigText,
@@ -28,6 +42,19 @@ const components = {
     select: ConfigSelect,
     user: ConfigUser,
     pattern: ConfigPattern,
+    certificate: ConfigCertificateSelect,
+    objectId: ConfigObjectId,
+    language: ConfigLanguage,
+    chip: ConfigChip,
+    image: ConfigImageUpload,
+    instance: ConfigInstanceSelect,
+    table: ConfigTable,
+    sendto: ConfigSendto,
+    sendTo: ConfigSendto,
+    password: ConfigPassword,
+    header: ConfigStaticHeader,
+    divider: ConfigStaticDivider,
+    setState: ConfigSetState,
 };
 
 const styles = theme => ({
@@ -36,9 +63,14 @@ const styles = theme => ({
         //height: '100%',
     },
     paper: {
-        width: 'calc(100% - ' + theme.spacing(2) + 'px)',
-        height: 'calc(100% - ' + theme.spacing(2) + 'px)',
-        padding: theme.spacing(1)
+        margin: 10,
+        height: 'calc(100vh - 230px) !important',
+        width: 'auto !important',
+        overflowY: 'auto',
+
+    },
+    padding: {
+        padding: 10,
     }
 });
 
@@ -60,6 +92,8 @@ class ConfigPanel extends ConfigGeneric {
 
             return <ItemComponent
                 key={attr}
+                onCommandRunning={this.props.onCommandRunning}
+                commandRunning={this.props.commandRunning}
                 className={this.props.classes.panel}
                 socket={this.props.socket}
                 adapterName={this.props.adapterName}
@@ -73,6 +107,11 @@ class ConfigPanel extends ConfigGeneric {
                 onError={this.props.onError}
                 onChange={this.props.onChange}
                 customs={this.props.customs}
+
+                customObj={this.props.customObj}
+                instanceObj={this.props.instanceObj}
+                custom={this.props.custom}
+
                 attr={attr}
                 schema={items[attr]}
             />;
@@ -81,11 +120,20 @@ class ConfigPanel extends ConfigGeneric {
 
     render() {
         const items = this.props.schema.items;
-        return <Paper className={(this.props.className || '') + ' ' + this.props.classes.paper}>
-            <Grid container className={this.props.classes.fullWidth} spacing={2}>
+        if (this.props.table) {
+            return this.renderItems(items);
+        }
+        if (this.props.custom) {
+            return <Grid container className={this.props.classes.fullWidth} spacing={2}>
                 {this.renderItems(items)}
-            </Grid>
-        </Paper>;
+            </Grid>;
+        } else {
+            return <div className={(this.props.className || '') + ' ' + this.props.classes.paper}>
+                <Grid container className={this.props.classes.fullWidth + " " + this.props.classes.padding} spacing={2}>
+                    {this.renderItems(items)}
+                </Grid>
+            </div>;
+        }
     }
 }
 
@@ -100,6 +148,14 @@ ConfigPanel.propTypes = {
     customs: PropTypes.object,
     alive: PropTypes.bool,
     systemConfig: PropTypes.object,
+    adapterName: PropTypes.string,
+    instance: PropTypes.number,
+    commandRunning: PropTypes.bool,
+    onCommandRunning: PropTypes.func,
+
+    customObj: PropTypes.object,
+    instanceObj: PropTypes.object,
+    custom: PropTypes.bool,
 
     onError: PropTypes.func,
     onChange: PropTypes.func,

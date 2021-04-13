@@ -12,6 +12,8 @@ import IconError from '@material-ui/icons/Error';
 class ConfigGeneric extends Component {
     static DIFFERENT_VALUE = '__different__';
     static DIFFERENT_LABEL  = I18n.t('__different__');
+    static NONE_VALUE = '';
+    static NONE_LABEL  = I18n.t('none');
     static AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
     constructor(props) {
@@ -33,16 +35,16 @@ class ConfigGeneric extends Component {
     componentWillUnmount() {
     }
 
-    getValue(data, attr) {
+    static getValue(data, attr) {
         if (typeof attr === 'string') {
-            return this.getValue(data, attr.split('.'));
+            return ConfigGeneric.getValue(data, attr.split('.'));
         } else {
             if (attr.length === 1) {
                 return data[attr[0]];
             } else {
                 const part = attr.shift();
                 if (typeof data[part] === 'object') {
-                    return this.getValue(data[part], attr);
+                    return ConfigGeneric.getValue(data[part], attr);
                 } else {
                     return null;
                 }
@@ -50,9 +52,9 @@ class ConfigGeneric extends Component {
         }
     }
 
-    setValue(data, attr, value) {
+    static setValue(data, attr, value) {
         if (typeof attr === 'string') {
-            return this.setValue(data, attr.split('.'), value);
+            return ConfigGeneric.setValue(data, attr.split('.'), value);
         } else {
             if (attr.length === 1) {
                 data[attr[0]] = value;
@@ -61,7 +63,7 @@ class ConfigGeneric extends Component {
                 if (!data[part] || typeof data[part] === 'object') {
                     data[part] = data[part] || {};
                 }
-                return this.setValue(data[part], attr, value);
+                return ConfigGeneric.setValue(data[part], attr, value);
             }
         }
     }
@@ -91,7 +93,6 @@ class ConfigGeneric extends Component {
             icon = <IconInfo />;
         }
 
-
         return <ConfirmDialog
             title={ this.getText(confirm.title) || I18n.t('Please confirm') }
             text={ this.getText(confirm.text) }
@@ -102,7 +103,7 @@ class ConfigGeneric extends Component {
                 this.setState({ confirmDialog: false}, () => {
                     if (isOk) {
                         const data = JSON.parse(JSON.stringify(this.props.data));
-                        this.setValue(data, this.state.confirmAttr, this.state.confirmNewValue);
+                        ConfigGeneric.setValue(data, this.state.confirmAttr, this.state.confirmNewValue);
                         this.setState({confirmDialog: false, confirmNewValue: null, confirmAttr: null, confirmOldValue: null, confirmData: null}, () =>
                             this.props.onChange(data));
                     } else {
@@ -114,8 +115,13 @@ class ConfigGeneric extends Component {
     }
 
     onChange(attr, newValue) {
+        if (this.props.custom) {
+            return this.props.onChange(attr, newValue);
+        }
+
         const data = JSON.parse(JSON.stringify(this.props.data));
-        this.setValue(data, attr, newValue);
+        ConfigGeneric.setValue(data, attr, newValue);
+
         if (this.props.schema.confirm && this.execute(this.props.schema.confirm.condition, false, data)) {
             return this.setState({
                 confirmDialog: true,
@@ -129,7 +135,7 @@ class ConfigGeneric extends Component {
                 for (let z = 0; z < this.props.schema.depends.length; z++) {
                     const dep = this.props.schema.depends[z];
                     if (dep.confirm) {
-                        const val = this.getValue(data, dep.attr);
+                        const val = ConfigGeneric.getValue(data, dep.attr);
 
                         if (this.execute(dep.confirm.condition, false, data)) {
                             return this.setState({
@@ -155,7 +161,7 @@ class ConfigGeneric extends Component {
                 // eslint-disable-next-line no-new-func
                 const f = new Function('data', '_system', '_alive', '_common', '_socket', func.includes('return') ? func : 'return ' + func);
                 const result = f(data || this.props.data, this.props.systemConfig, this.props.alive, this.props.common, this.props.socket);
-                console.log(result);
+                // console.log(result);
                 return result;
             } catch (e) {
                 console.error(`Cannot execute ${func}: ${e}`);
@@ -164,13 +170,46 @@ class ConfigGeneric extends Component {
         }
     }
 
+    executeCustom(func, data, customObj, instanceObj) {
+        if (!func) {
+            return null;
+        } else {
+            try {
+                // eslint-disable-next-line no-new-func
+                const f = new Function('data', '_system', 'instanceObj', 'customObj', '_socket', func.includes('return') ? func : 'return ' + func);
+                const result = f(data || this.props.data, this.props.systemConfig, instanceObj, customObj, this.props.socket);
+                console.log(result);
+                return result;
+            } catch (e) {
+                console.error(`Cannot execute ${func}: ${e}`);
+                return null;
+            }
+        }
+    }
+
     calculate(schema) {
-        const error        = schema.validator   ? this.execute(schema.validator,   true)    : false;
-        const disabled     = schema.disabled    ? this.execute(schema.disabled,    false)   : false;
-        const hidden       = schema.hidden      ? this.execute(schema.hidden,      false)   : false;
-        const defaultValue = schema.defaultFunc ? this.execute(schema.defaultFunc, schema.default) : schema.default;
+        let error;
+        let disabled;
+        let hidden;
+        let defaultValue;
+
+        if (this.props.custom) {
+            error        = schema.validator   ? !this.executeCustom(schema.validator,  this.props.data, this.props.customObj, this.props.instanceObj)   : false;
+            disabled     = schema.disabled    ? this.executeCustom(schema.disabled,    this.props.data, this.props.customObj, this.props.instanceObj)   : false;
+            hidden       = schema.hidden      ? this.executeCustom(schema.hidden,      this.props.data, this.props.customObj, this.props.instanceObj)   : false;
+            defaultValue = schema.default;
+        } else {
+            error        = schema.validator   ? !this.execute(schema.validator,  false)   : false;
+            disabled     = schema.disabled    ? this.execute(schema.disabled,    false)   : false;
+            hidden       = schema.hidden      ? this.execute(schema.hidden,      false)   : false;
+            defaultValue = schema.defaultFunc ? this.execute(schema.defaultFunc, schema.default) : schema.default;
+        }
 
         return {error, disabled, hidden, defaultValue};
+    }
+
+    onError(attr, error) {
+        this.props.onError && this.props.onError(attr, error);
     }
 
     renderItem(error, disabled, defaultValue) {
@@ -195,11 +234,36 @@ class ConfigGeneric extends Component {
     render() {
         const {error, disabled, hidden, defaultValue} = this.calculate(this.props.schema);
 
-        if (hidden) {
-            return null;
-        }
-
         const schema = this.props.schema;
+
+        if (hidden) {
+            if (this.props.schema.hideOnlyControl) {
+                const item = <Grid
+                    item
+                    xs={schema.xs || undefined}
+                    lg={schema.lg || undefined}
+                    md={schema.md || undefined}
+                    sm={schema.sm || undefined}
+                    style={Object.assign(
+                        {},
+                        {marginBottom: 0, /*marginRight: 8, */textAlign: 'left'},
+                        this.props.schema.style,
+                        this.props.themaType === 'dark' ? this.props.schema.darkStyle : {}
+                    )}
+                />;
+
+                if (schema.newLine) {
+                    return <>
+                        <div style={{flexBasis: '100%', height: 0}} />
+                        {item}
+                    </>
+                } else {
+                    return item;
+                }
+            } else {
+                return null;
+            }
+        }
 
         const item = <Grid
             item
@@ -208,9 +272,8 @@ class ConfigGeneric extends Component {
             lg={schema.lg || undefined}
             md={schema.md || undefined}
             sm={schema.sm || undefined}
-
-            style={Object.assign({}, {marginBottom: 0, marginRight: 8}, this.props.schema.style)}>
-            {this.renderItem(error, disabled, defaultValue)}
+            style={Object.assign({}, {marginBottom: 0, /*marginRight: 8, */textAlign: 'left'}, this.props.schema.style)}>
+            {this.renderItem(error, disabled || this.props.commandRunning, defaultValue)}
         </Grid>;
 
         if (schema.newLine) {
@@ -247,6 +310,12 @@ ConfigGeneric.propTypes = {
     systemConfig: PropTypes.object,
     alive: PropTypes.bool,
     common: PropTypes.object,
+    adapterName: PropTypes.string,
+    instance: PropTypes.number,
+
+    customObj: PropTypes.object,
+    instanceObj: PropTypes.object,
+    custom: PropTypes.bool,
 };
 
 export default ConfigGeneric;

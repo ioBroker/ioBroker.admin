@@ -1,33 +1,15 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Card, CardContent, CardMedia, Fab, FormControl, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from "@material-ui/core";
+import { Card, CardContent, CardMedia, Fab, IconButton, Tooltip, Typography } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import clsx from 'clsx';
-import BuildIcon from '@material-ui/icons/Build';
-import InputIcon from '@material-ui/icons/Input';
 import DeleteIcon from '@material-ui/icons/Delete';
-import InfoIcon from '@material-ui/icons/Info';
-import MemoryIcon from '@material-ui/icons/Memory';
-import ScheduleIcon from '@material-ui/icons/Schedule';
-import ViewCompactIcon from '@material-ui/icons/ViewCompact';
 
-import PauseIcon from '@material-ui/icons/Pause';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import I18n from '@iobroker/adapter-react/i18n';
-import { green, red } from '@material-ui/core/colors';
-import InstanceInfo from '../InstanceInfo';
-import State from '../State';
-import sentry from '../../assets/sentry.svg';
-import CustomModal from '../CustomModal';
 import EditIcon from '@material-ui/icons/Edit';
-import ImportExportIcon from '@material-ui/icons/ImportExport';
-import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
 import CachedIcon from '@material-ui/icons/Cached';
 import PropTypes from "prop-types";
 import Utils from '@iobroker/adapter-react/Components/Utils';
-
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -45,10 +27,31 @@ const styles = theme => ({
         transition: 'box-shadow 0.5s',
         '&:hover': {
             boxShadow: boxShadowHover
+        },
+        '& .warning': {
+            backgroundColor: '#de0000 !important',
+            '&:before': {
+                position: 'absolute',
+                right: 0,
+                top: -5,
+                content: '"\u26A0"',
+                fontSize: 25,
+                height: '30px',
+                width: '30px',
+                color: 'black'
+            },
+            animation: '$warning 2.5s ease-in-out infinite alternate'
+        }
+    },
+    '@keyframes warning': {
+        '0%': {
+            opacity: 1
+        },
+        '100%': {
+            opacity: 0.7
         }
     },
     imageBlock: {
-        background: 'silver',
         minHeight: 60,
         display: 'flex',
         padding: '0 10px 0 10px',
@@ -87,13 +90,9 @@ const styles = theme => ({
         height: 40,
         right: 20,
     },
-    greenText: {
-        color: theme.palette.success.dark,
-    },
 
     collapse: {
         height: '100%',
-        backgroundColor: 'silver',
         position: 'absolute',
         width: '100%',
         zIndex: 3,
@@ -147,27 +146,6 @@ const styles = theme => ({
     hidden: {
         display: 'none'
     },
-    buttonUpdate: {
-        border: '1px solid',
-        padding: '0px 7px',
-        borderRadius: 5,
-        display: 'flex',
-        alignItems: 'center',
-        cursor: 'pointer',
-        transition: 'background 0.5s',
-        '&:hover': {
-            background: '#00800026'
-        }
-    },
-    onOff: {
-        alignSelf: 'center',
-        width: 20,
-        height: 20,
-        borderRadius: 20,
-        position: 'absolute',
-        top: 5,
-        right: 5,
-    },
     onOffLine: {
         alignSelf: 'center',
         width: '100%',
@@ -184,41 +162,15 @@ const styles = theme => ({
         paddingTop: 16,
         color: theme.palette.type === 'dark' ? '#333' : '#555'
     },
-    hide: {
-        visibility: 'hidden'
-    },
-    button: {
-        padding: '5px',
-        transition: 'opacity 0.2s'
-    },
-    visibility: {
-        opacity: 0
-    },
-    enabled: {
-        color: green[400],
-        '&:hover': {
-            backgroundColor: green[200]
-        }
-    },
-    disabled: {
-        color: red[400],
-        '&:hover': {
-            backgroundColor: red[200]
-        }
-    },
     cardContent: {
         marginTop: 16,
         paddingTop: 0
     },
     cardContentInfo: {
         overflow: 'auto',
-        paddingTop: 0
-    },
-    sentry: {
-        width: 24,
-        height: 24,
-        objectFit: 'fill',
-        filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)'
+        paddingTop: 0,
+        backgroundColor: theme.palette.background.paper,
+        color: theme.palette.type === 'dark' ? '#EEE' : '#111',
     },
     cardContentH5: {
         height: '100%',
@@ -230,40 +182,8 @@ const styles = theme => ({
     marginTop10: {
         marginTop: 10
     },
-    memoryIcon: {
-        color: '#dc8e00',
-    },
     displayFlex: {
         display: 'flex',
-    },
-    logLevel: {
-        width: '100%',
-        marginBottom: 5
-    },
-    overflowAuto: {
-        overflow: 'auto'
-    },
-    collapseIcon: {
-        position: 'sticky',
-        right: 0,
-        top: 0,
-        background: 'silver',
-        zIndex: 2
-    },
-    addCompact: {
-        width: '100%',
-        marginBottom: 5
-    },
-    addCompactButton: {
-        display: 'flex',
-        margin: 5,
-        justifyContent: 'space-around'
-    },
-    scheduleIcon: {
-        color: '#dc8e00'
-    },
-    marginRight5: {
-        marginRight: 5
     },
     marginLeft5: {
         marginLeft: 5
@@ -329,65 +249,24 @@ const styles = theme => ({
     versionDate: {
         alignSelf: 'center'
     },
-    description: {
-        color: theme.palette.type === 'dark' ? '#222' : 'inherit'
-    },
 
-    // cardContent: {
-    //     overflow: 'auto'
-    // },
     cardContentDiv: {
         position: 'sticky',
         right: 0,
         top: 0,
-        background: 'silver',
         paddingTop: 10
-    },
-    cardContentFlex: {
-        display: 'flex'
-    },
-    cardContentFlexBetween: {
-        display: 'flex',
-        justifyContent: 'space-between'
-    },
-    cardContent2: {
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between'
-    },
-    cardMargin10: {
-        marginTop: 10,
-    },
-    availableVersion: {
-        display: 'flex',
-        justifyContent: 'space-between'
-    },
-    buttonUpdateIcon: {
-        height: 20,
-        width: 20,
-        marginRight: 10
-    },
-    curdContentFlexCenter: {
-        display: 'flex',
-        alignItems: 'center'
-    },
-
-    classPoll: {
-        color: 'orange'
-    },
-    classPush: {
-        color: 'green'
-    },
-    classAssumption: {
-        color: 'red',
-        transform: 'rotate(90deg)'
     },
 });
 
+let outputCache = '-';
+let inputCache = '-';
+let cpuCache = '- %';
+let memCache = '- %';
+let uptimeCache = '-';
 
-let outputCache = 'null';
-let inputCache = 'null';
+let diskFreeCache = 1;
+let diskSizeCache = 1;
+let diskWarningCache = 1;
 
 const CardHosts = ({
     name,
@@ -397,58 +276,134 @@ const CardHosts = ({
     connectedToHost,
     alive,
     connected,
-    key,
-    logLevel,
     color,
-    type,
     title,
-    os,
     available,
     installed,
     events,
     t,
     description,
-    _id, 
+    _id,
     socket,
-    setEditDilog,
-    executeCommand
+    setEditDialog,
+    executeCommand,
+    executeCommandRemove,
+    currentHost,
+    dialogUpgrade,
+    systemConfig
 }) => {
+
     const [openCollapse, setCollapse] = useState(false);
     const refEvents = useRef();
-    const eventsFunc = (input, output) => {
-        let event;
-        if (input) {
-            inputCache = input;
-            event = `⇥${input} / ↦${outputCache}`;
-        } else if (output) {
-            outputCache = output;
-            event = `⇥${inputCache} / ↦${output}`;
-        } else {
-            event = `⇥null / ↦null`;
-        }
+    const refWarning = useRef();
+    const refCpu = useRef();
+    const refMem = useRef();
+    const refUptime = useRef();
+
+    const eventsInputFunc = (_, input) => {
+        inputCache = input ? input.val : '-';
         if (refEvents.current) {
-            refEvents.current.innerHTML = event;
+            refEvents.current.innerHTML = `⇥${inputCache} / ↦${outputCache}`;
+        }
+    };
+
+    const eventsOutputFunc = (_, output) => {
+        outputCache = output ? output.val : '-';
+        if (refEvents.current) {
+            refEvents.current.innerHTML = `⇥${inputCache} / ↦${outputCache}`;
+        }
+    };
+
+    const formatValue = (state, unit) => {
+        if (!state || state.val === null || state.val === undefined) {
+            return '-' + (unit ? ' ' + unit : '');
+        } else if (systemConfig.common.isFloatComma) {
+            return state.val.toString().replace('.', ',') + (unit ? ' ' + unit : '');
+        } else {
+            return state.val + (unit ? ' ' + unit : '');
+        }
+    };
+
+    const warningFunc = (name, state) => {
+        let warning;
+        if (name.endsWith('diskFree')) {
+            diskFreeCache = state?.val || 0;
+        } else if (name.endsWith('diskSize')) {
+            diskSizeCache = state?.val || 0;
+        } else if (name.endsWith('diskWarning')) {
+            diskWarningCache = state?.val || 0;
+        }
+        warning = (diskFreeCache / diskSizeCache) * 100 <= diskWarningCache;
+        if (refWarning.current) {
+            if (warning) {
+                refWarning.current.setAttribute('title', t('disk Warning'));
+                refWarning.current.classList.add('warning');
+            } else {
+                refWarning.current.removeAttribute('title');
+                refWarning.current.classList.remove('warning');
+            }
+        }
+    };
+
+    const cpuFunc = (_, state) => {
+        cpuCache = formatValue(state, '%');
+        if (refCpu.current) {
+            refCpu.current.innerHTML = cpuCache;
         }
     }
-    useEffect(() => {
-        socket.subscribeState(`${_id}.inputCount`, (_, el) => eventsFunc(el.val));
-        socket.subscribeState(`${_id}.outputCount`, (_, el) => eventsFunc(null, el.val));
-        return () => {
-            socket.unsubscribeObject(`${_id}.inputCount`, (_, el) => eventsFunc(el.val));
-            socket.unsubscribeObject(`${_id}.outputCount`, (_, el) => eventsFunc(null, el.val));
+
+    const memFunc = (_, state) => {
+        memCache = formatValue(state, '%');
+        if (refMem.current) {
+            refMem.current.innerHTML = memCache;
         }
-    }, [_id, socket])
+    }
+
+    const uptimeFunc = (_, state) => {
+        if (state.val) {
+            const d = Math.floor(state.val / (3600 * 24));
+            const h = Math.floor(state.val % (3600 * 24) / 3600);
+            uptimeCache = d ? `${d}d${h}h` : `${h}h`; // TODO translate
+        }
+        if (refUptime.current) {
+            refUptime.current.innerHTML = uptimeCache;
+        }
+    }
+
+    useEffect(() => {
+        socket.subscribeState(`${_id}.inputCount`, eventsInputFunc);
+        socket.subscribeState(`${_id}.outputCount`, eventsOutputFunc);
+
+        socket.subscribeState(`${_id}.cpu`, cpuFunc);
+        socket.subscribeState(`${_id}.mem`, memFunc);
+        socket.subscribeState(`${_id}.uptime`, uptimeFunc);
+
+        socket.subscribeState(`${_id}.diskFree`, warningFunc);
+        socket.subscribeState(`${_id}.diskSize`, warningFunc);
+        socket.subscribeState(`${_id}.diskWarning`, warningFunc);
+        return () => {
+            socket.unsubscribeObject(`${_id}.inputCount`, eventsInputFunc);
+            socket.unsubscribeObject(`${_id}.outputCount`, eventsOutputFunc);
+
+            socket.unsubscribeObject(`${_id}.cpu`, cpuFunc);
+            socket.unsubscribeObject(`${_id}.mem`, memFunc);
+            socket.unsubscribeObject(`${_id}.uptime`, uptimeFunc);
+
+            socket.unsubscribeObject(`${_id}.diskFree`, warningFunc);
+            socket.unsubscribeObject(`${_id}.diskSize`, warningFunc);
+            socket.unsubscribeObject(`${_id}.diskWarning`, warningFunc);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [_id, socket, classes])
     const [focused, setFocused] = useState(false);
-    return <Card key={key} className={clsx(classes.root, hidden ? classes.hidden : '')}>
+
+    return <Card key={_id} className={clsx(classes.root, hidden ? classes.hidden : '')}>
         {(openCollapse || focused) && <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
             <CardContent className={classes.cardContentInfo}>
                 <div className={classes.cardContentDiv}>
-                    <div className={classes.close} onClick={() => setCollapse((bool) => !bool)} />
+                    <div className={classes.close} onClick={() => setCollapse(false)} />
                 </div>
-                <Typography gutterBottom component={'span'} variant={'body2'} className={classes.description}>
-                    {t('Info')}
-                </Typography>
-                    {description}
+                {description}
             </CardContent>
             <div className={classes.footerBlock}>
             </div>
@@ -457,6 +412,7 @@ const CardHosts = ({
             {alive && <div className={classes.dotLine} />}
         </div>
         <div
+            ref={refWarning}
             style={{ background: color || 'inherit' }}
             className={clsx(
                 classes.imageBlock,
@@ -465,39 +421,43 @@ const CardHosts = ({
                 connectedToHost && alive && connected !== false && classes.instanceStateAliveAndConnected1
             )}>
             <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
-            <div style={{
-                color: (color && Utils.invertColor(color,true)) || 'inherit',
-            }} className={classes.adapter}>{name}</div>
+            <div
+                style={{color: (color && Utils.invertColor(color, true)) || 'inherit'}}
+                className={classes.adapter}>{name}</div>
             <Fab
                 disabled={typeof description === 'string'}
                 onMouseOut={() => setFocused(false)}
                 onMouseOver={() => setFocused(true)}
-                onClick={() => setCollapse((bool) => !bool)} className={classes.fab} color="primary" aria-label="add">
+                onClick={() => setCollapse(true)} className={classes.fab} color="primary" aria-label="add">
                 <MoreVertIcon />
             </Fab>
         </div>
         <CardContent className={classes.cardContentH5}>
-            <Typography variant="body2" color="textSecondary" component="p">
-                {t('Title: %s', title)}
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-                {t('OS: %s', os)}
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-                {t('Available: %s', available)}
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-                {t('Installed: %s', installed)}
+            {/*<Typography variant="body2" color="textSecondary" component="p">
+                {t('Title')}: {title}
+            </Typography>*/}
+            <Typography variant="body2" color="textSecondary" component="div">
+                <div className={classes.displayFlex}>CPU:<div ref={refCpu} className={classes.marginLeft5}>{'- %'}</div></div>
             </Typography>
             <Typography variant="body2" color="textSecondary" component="div">
-                <div className={classes.displayFlex}>{t('Events: ')}<div ref={refEvents} className={classes.marginLeft5}>{events}</div></div>
+                <div className={classes.displayFlex}>RAM:<div ref={refMem} className={classes.marginLeft5}>{'- %'}</div></div>
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="div">
+                <div className={classes.displayFlex}>{t('Uptime')}: <div ref={refUptime} className={classes.marginLeft5}>{'-d -h'}</div></div>
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+                {t('Available')}: {available}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+                {t('Installed')}: {installed}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="div">
+                <div className={classes.displayFlex}>{t('Events')}: <div ref={refEvents} className={classes.marginLeft5}>{events}</div></div>
             </Typography>
             <div className={classes.marginTop10}>
                 <Typography component={'span'} className={classes.enableButton}>
                     <IconButton
-                        size="small"
-                        className={clsx(classes.button)}
-                        onClick={() => setEditDilog(true)}
+                        onClick={() => setEditDialog(true)}
                     >
                         <EditIcon />
                     </IconButton>
@@ -507,24 +467,20 @@ const CardHosts = ({
                             <CachedIcon />
                         </IconButton>
                     </Tooltip>
-
-                    <Tooltip title={t('Reload')}>
-                        <IconButton >
-                            {alive ? <RefreshIcon /> : <DeleteIcon />}
+                    <Tooltip title={t((alive || currentHost) ? 'Upgrade' : 'Remove')}>
+                        <IconButton onClick={(alive || currentHost) ? dialogUpgrade : executeCommandRemove}>
+                            {(alive || currentHost) ? <RefreshIcon /> : <DeleteIcon />}
                         </IconButton>
                     </Tooltip>
                 </Typography>
             </div>
         </CardContent>
-    </Card>
+    </Card>;
 }
 
 CardHosts.propTypes = {
-    /**
-     * Link and text
-     * {link: 'https://example.com', text: 'example.com'}
-     */
     t: PropTypes.func,
+    systemConfig: PropTypes.object,
 };
 
 export default withStyles(styles)(CardHosts);

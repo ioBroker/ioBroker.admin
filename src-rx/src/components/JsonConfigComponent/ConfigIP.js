@@ -46,7 +46,7 @@ class ConfigIP extends ConfigGeneric {
     }
 
     renderItem(error, disabled, defaultValue) {
-        const value = this.getValue(this.props.data, this.props.attr);
+        const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         const item = this.state.ips?.find(item => item.address === value);
 
         return <FormControl className={this.props.classes.fullWidth}>

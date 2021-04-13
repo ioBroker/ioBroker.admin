@@ -7,6 +7,8 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
+import I18n from '@iobroker/adapter-react/i18n';
+
 import ConfigGeneric from './ConfigGeneric';
 
 const styles = theme => ({
@@ -15,29 +17,67 @@ const styles = theme => ({
     }
 });
 
-class ConfigSelect extends ConfigGeneric {
+const LANGUAGES =[
+    {
+        value: 'en',
+        label: 'English'
+    },
+    {
+        value: 'de',
+        label: 'Deutsch'
+    },
+    {
+        value: 'ru',
+        label: 'русский'
+    },
+    {
+        value: 'pt',
+        label: 'Portugues'
+    },
+    {
+        value: 'nl',
+        label: 'Nederlands'
+    },
+    {
+        value: 'fr',
+        label: 'français'
+    },
+    {
+        value: 'it',
+        label: 'Italiano'
+    },
+    {
+        value: 'es',
+        label: 'Espanol'
+    },
+    {
+        value: 'pl',
+        label: 'Polski'
+    },
+    {
+        value: 'zh-ch',
+        label: '简体中文'
+    }
+];
+
+class ConfigLanguage extends ConfigGeneric {
     componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-
-        const selectOptions = JSON.parse(JSON.stringify(this.props.schema.options));
-
-        // if __different
-        if (Array.isArray(value)) {
-            this.initialValue = [...value];
-            selectOptions.unshift({label: ConfigGeneric.DIFFERENT_LABEL, value: ConfigGeneric.DIFFERENT_VALUE});
-            this.setState({value: ConfigGeneric.DIFFERENT_VALUE, selectOptions});
-        } else {
-            this.setState({value, selectOptions});
+        const languages = [...LANGUAGES];
+        if (this.props.schema.system) {
+            languages.unshift({value: '', label: I18n.t('System language')});
         }
+
+        this.setState({value: value || I18n.getLanguage(), selectOptions: languages});
     }
 
     renderItem(error, disabled, defaultValue) {
         if (!this.state.selectOptions) {
             return null;
         }
-        // eslint-disable-next-line
-        const item = this.state.selectOptions?.find(item => item.value == this.state.value); // let "==" be and not ===
+
+        const item = this.state.selectOptions?.find(item => item.value === this.state.value || (!item.value && !this.state.value));
 
         return <FormControl className={this.props.classes.fullWidth}>
             <InputLabel>{this.getText(this.props.schema.label)}</InputLabel>
@@ -47,24 +87,20 @@ class ConfigSelect extends ConfigGeneric {
                 value={this.state.value || '_'}
                 renderValue={val => this.getText(item?.label, this.props.schema.noTranslation)}
                 onChange={e => {
-                    this.setState({value: e.target.value === '_' ? '' : e.target.value}, () => {
-                        if (this.state.value === ConfigGeneric.DIFFERENT_VALUE) {
-                            this.onChange(this.props.attr, this.initialValue);
-                        } else {
-                            this.onChange(this.props.attr, this.state.value);
-                        }
-                    });
+                    const value = e.target.value === '_' ? '' : e.target.value;
+                    this.setState({value}, () =>
+                        this.onChange(this.props.attr, value));
                 }}
             >
                 {this.state.selectOptions?.map(item =>
-                    <MenuItem key={item.value} value={item.value} style={item.value === ConfigGeneric.DIFFERENT_VALUE ? {opacity: 0.5} : {}}>{this.getText(item.label, this.props.schema.noTranslation)}</MenuItem>)}
+                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>)}
             </Select>
             {this.props.schema.help ? <FormHelperText>{this.getText(this.props.schema.help)}</FormHelperText> : null}
         </FormControl>;
     }
 }
 
-ConfigSelect.propTypes = {
+ConfigLanguage.propTypes = {
     socket: PropTypes.object.isRequired,
     themeType: PropTypes.string,
     themeName: PropTypes.string,
@@ -76,4 +112,4 @@ ConfigSelect.propTypes = {
     onChange: PropTypes.func,
 };
 
-export default withStyles(styles)(ConfigSelect);
+export default withStyles(styles)(ConfigLanguage);

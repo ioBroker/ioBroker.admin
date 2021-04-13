@@ -50,6 +50,7 @@ class Files extends Component {
                     showViewTypeButton={true}
                     ready={this.props.ready}
                     socket={this.props.socket}
+                    themeName={this.props.themeName}
                     lang={this.props.lang}
                     t={this.props.t}
                     showToolbar={true}

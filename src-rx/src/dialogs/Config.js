@@ -17,7 +17,8 @@ const styles = {
     root: {
         height: '100%',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        overflow: 'hidden'
     },
     scroll: {
         height: '100%',
@@ -57,7 +58,6 @@ class Config extends Component {
     }
 
     getConfigurator() {
-
         if (this.props.jsonConfig) {
             return <JsonConfig
                 menuPadding={this.props.menuPadding}

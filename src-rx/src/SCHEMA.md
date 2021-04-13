@@ -47,14 +47,15 @@ const schema = {
                 //  !- newLine - should be shown from new line
                 //  - label - String or object like {en: 'Name', ru: 'Имя'}
                 //  !- hidden - JS function that could use native.attributes for calculation
+                //  - hideOnlyControl - if hidden the place will be shown, but no control
                 //  !- disabled - JS function that could use native.attributes for calculation
                 //  - helpLink - href to help
-                //  - help - help text (multi-language)
-                //  - icon - base64 svg
+                //  ! - help - help text (multi-language)
+                //  ! - icon - base64 svg
                 //  - encrypted - is value encrypted or not (of course only for texts)
                 //    - if encrypted, use __encrypted__ value for show and if was changed, encrypt it with socket.encrypt 
                 //  !- style - css style (default)
-                //  - darkStyle - css style for dark mode
+                //  !- darkStyle - css style for dark mode
                 //  !- validator - JS function: true no error, false - error
                 //  !- tooltip - optional tooltip
                 //  - default - default value
@@ -73,18 +74,18 @@ const schema = {
                 // !- tab
                 //  - icon - tab can have icon (base64)
                 
-                // - text*
+                // !- text*
                 
-                // - number* (min, max)
+                // !- number* (min, max)
                 
-                // - color*
+                // !- color*
                 
-                // - checkbox**
+                // !- checkbox**
                 
-                    // - slider               
-                    //   - min (default 0)
-                    //   - max (default 100)
-                    //   - step (default 1)
+                // - slider               
+                //   - min (default 0)
+                //   - max (default 100)
+                //   - step (default 1)
                 
                 // !- ip - bind address
                 //   - listenOnAllPorts - add 0.0.0.0 to option
@@ -102,7 +103,7 @@ const schema = {
                 //   - short - no system.func.
                 //   - use this.props.socket.getEnums('func')
 
-                // - select* 
+                // !- select* 
                 //   - options - [{label: {en: "option 1"}, value: 1}, ...]
                 
                 // - icon - base64
@@ -115,14 +116,14 @@ const schema = {
                 // - image - saves image as file of adapter.0 object
                 //   - filename - name of file is structure name 
                      ```
-                     "login-bg.png": {
-                          "type": "image",
-                          "accept": "image/*",
-                          "label": {
-                            "en": "Upload image"
-                          },
-                          "crop": true
-                        }
+                //     "login-bg.png": {
+                //          "type": "image",
+                //          "accept": "image/*",
+                //          "label": {
+                //            "en": "Upload image"
+                //          },
+                //          "crop": true
+                //        }
                      ```
                      login-bg.png is file name for writeFile('myAdapter.INSTANCE', 'login-bg.png')   
                 //   - accept - html accept attribute, like "image/*,.pdf"
@@ -138,10 +139,11 @@ const schema = {
                 // - oid - object ID - show it with name, color and icon
                 //   - types: ['channel', 'device', ...] (only "state" by default)
                 
-                // - password (repeat - if repeat password must be shown with the same width settings)
+                // !- password (repeat - if repeat password must be shown with the same width settings)
                 //   - repeat password must be compared with password
+                //   - visible: true if allow view of password
                 
-                // - instance 
+                // !- instance
                 //  - adapter - name of adapter
                 //  - allowDeactivate - if true. Additional option "deactivate" is shown
                 
@@ -150,7 +152,7 @@ const schema = {
                 // - alive - just indication if the instance is alive and it could be used in "hidden" and "disabled" (will not be saved in config)
                 //   - just text: Instance is running, Instance is not running
                 
-                // !- pattern - read only field with pattern like 'https://${data.ip}:${data.port}' (will not be saved in config)                
+                // !- pattern* - read only field with pattern like 'https://${data.ip}:${data.port}' (will not be saved in config)                
                 //  - text input - read only that shows pattern
                 //  - copyToClipboard - if true - show button
                 //  - pattern - my pattern
@@ -161,11 +163,13 @@ const schema = {
                 //    - result: {result1: {en: 'A'}, result2: {en: 'B'}}
                 //    - error: {error1: {en: 'E'}, error2: {en: 'E2'}}
                 //    - this.props.socket.sendTo(adapterName.instance, command || 'send', 
+                //    - variant: contained, outlined, ''
 
                 // - setState - button that set instance's state
                 //    - id - 'info.test'
                 //    - ack: false (default false)
                 //    - val: '${data.myText}_test' or number. Type must be detected automatically and convertaion done too
+                //    - okText: Alert that will be shown by pressing the button
 
                 // !- staticText - static text like description
                 //    - text - multi-language text
@@ -181,30 +185,30 @@ const schema = {
                 // - coordinates ?
                 
                 // - table - table with items that could be deleted, added, movedUP, moved Down
-                //   - items: [{type: see above, width: px or %, title: {en: 'header'}, attr: 'name', filter: true}]
+                //   - items:   [{type: see above, width: px or %, title: {en: 'header'}, attr: 'name', filter: false, sort: true}]
                 //   - noDelete: boolean if delete or add disabled
-                //   - if noDelete is false, add, delete and move up/down shold work
+                //     - if noDelete is false, add, delete and move up/down shold work
                 
                 // - json - json editor 
                 //   - height in px or % or em
                 
-                // - language 
-                //   - system (use system from system.config as default)
+                // !- language 
+                //   - system (allow the usage of the system language from system.config as default)
                 
-                // - instances
-                //   - filter: ?? (not yet clear)
-                
-                // - certificate
+                // !- certificate
                 //   - certType: public, private, chained
                 //   - see https://github.com/ioBroker/ioBroker.admin/blob/master/src/js/adapter-settings.js#L324
                                 
-                // - custom
+                // !- custom
                 //  - component - Component name that will be provided via props, like componentInstancesEditor
                 
                 // - divider - horizontal line
+                //   - height - optional height
+                //   - color - optional divider color or "primary", "secondary"
   
                 // - header
                 //   - text
+                //   - size 1-5 => h1-h5
             }
         },
         tab2: {
@@ -234,7 +238,7 @@ data: {
 ```
 In this case input must be text, where shown `__different__`, with autocomplete option of 3 possible values. User can select from dropdown 1000, 2000 or 3000 or input own new value, e.g. 500.
 
-Boolean must support intermediate if value is [false, true]
+Boolean must support indeterminate if value is [false, true]
 
 For non changed `__different__` the value different must be returned:
 
@@ -271,7 +275,7 @@ If no schema provided, the schema must be created automatically from data.
 - number => number
 - name "bind" => ip
 - name "port" => number, min=1, max=0xFFFF
-- name "timeout" => number, helpText="ms"
+- name "timeout" => number, help="ms"
 
 If element has no attribute `type`, assume it has default type 'panel'.
 
@@ -297,6 +301,16 @@ On the top level of structure set `i18n: true` and provide files in admin:
 or 
 - admin/i18n/de.json
 - admin/i18n/en.json
+- ...
+
+Additionally, user can provide the path to i18n files, `i18n: "customI18n"`and provide files in admin:
+- admin/customI18n/de/translations.json
+- admin/customI18n/en/translations.json
+- ...
+
+or
+- admin/customI18n/de.json
+- admin/customI18n/en.json
 - ...
 
 3. User can provide translations in i18n attribute: 

@@ -172,7 +172,7 @@ class Instances extends Component {
             mem: null,
             percent: null,
             memFree: null,
-            filterText: '',
+            filterText: window.localStorage.getItem('instances.filter') || '',
             compact: false,
             compactGroupCount: 0,
             filterCompactGroup: 'All',
@@ -200,9 +200,9 @@ class Instances extends Component {
         this.statesUpdateTimer = null;
         this.objectsUpdateTimer = null;
         this.wordCache = {};
+        this.oneReload = false;
 
         this.t = this.translate;
-
         this.inputRef = createRef();
     }
 
@@ -222,11 +222,20 @@ class Instances extends Component {
         await this.getData();
         await this.getHostsData();
     }
+
     async componentDidUpdate() {
         if (this.props.inBackgroundCommand && this.state.delete) {
             await this.getData(true);
         }
+        if (this.state.dialog === 'config' && this.state.dialogProp) {
+            const instance = (this.state.instances && this.state.instances[this.state.dialogProp]) || null;
+            if (!instance && !this.oneReload) {
+                this.oneReload = true;
+                this.getData(true);
+            }
+        }
     }
+
     async componentWillUnmount() {
         this.subscribeObjects(true);
         this.subscribeStates(true);
@@ -877,7 +886,8 @@ class Instances extends Component {
 
         this.typingTimer = setTimeout(value => {
             this.typingTimer = null;
-            this.setState({ filterText: value })
+            this.setState({ filterText: value });
+            window.localStorage.setItem('instances.filter', value);
         }, 300, event.target.value);
     }
 
@@ -889,7 +899,6 @@ class Instances extends Component {
 
         if (this.state.dialog === 'config' && this.state.dialogProp) {
             const instance = this.state.instances[this.state.dialogProp] || null;
-
             if (instance) {
                 return <Paper className={classes.paper}>
                     <Config
@@ -977,7 +986,7 @@ class Instances extends Component {
                     inputRef={this.inputRef}
                     label={this.t('Filter')}
                     style={{ margin: '5px 0' }}
-                    defaultValue=""
+                    defaultValue={this.state.filterText}
                     onChange={event => this.handleFilterChange(event)}
                     InputProps={{
                         endAdornment: (

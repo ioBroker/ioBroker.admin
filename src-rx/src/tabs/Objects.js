@@ -90,8 +90,8 @@ class Objects extends Component {
 
             this.setState({ deleteObjectShow: null });
         } else {
-            this.props.socket.delObject(id, true)
-                .then(() => this.setState({ deleteObjectShow: null }));
+            this.props.socket.delObject(id, true);
+            this.setState({ deleteObjectShow: null })
         }
     }
 
@@ -168,6 +168,8 @@ class Objects extends Component {
                 t={this.t}
                 lang={this.props.lang}
                 themeName={this.props.themeName}
+                themeType={this.props.themeType}
+                theme={this.props.theme}
                 objectCustomDialog={ObjectCustomDialog}
                 objectBrowserValue={ObjectBrowserValue}
                 objectBrowserEditObject={ObjectBrowserEditObject}
@@ -222,6 +224,7 @@ Objects.propTypes = {
     socket: PropTypes.object,
     themeName: PropTypes.string,
     themeType: PropTypes.string,
+    theme: PropTypes.object,
     expertMode: PropTypes.bool,
 };
 

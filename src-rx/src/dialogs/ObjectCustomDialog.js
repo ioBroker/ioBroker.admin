@@ -13,9 +13,14 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
 import Router from '@iobroker/adapter-react/Components/Router';
+import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
+import I18n from '@iobroker/adapter-react/i18n';
 
 // Icons
 import CloseIcon from '@material-ui/icons/Close';
+import SaveIcon from '@material-ui/icons/Save';
+
+
 import ObjectCustomEditor from '../components/ObjectCustomEditor';
 import ObjectHistoryData from '../components/ObjectHistoryData';
 import ObjectChart from '../components/ObjectChart';
@@ -61,9 +66,12 @@ class ObjectCustomDialog extends Component {
         }
 
         this.state = {
-            allSaved: true,
+            hasChanges: false,
             currentTab,
+            confirmDialog: false,
         };
+
+        this.saveFunc = null;
     }
 
     isChartAvailable() {
@@ -113,6 +121,7 @@ class ObjectCustomDialog extends Component {
     renderCustomEditor() {
         return <ObjectCustomEditor
             id={'custom-settings-tabpanel'}
+            registerSaveFunc={func => this.saveFunc = func }
             t={this.props.t}
             lang={this.props.lang}
             expertMode={this.props.expertMode}
@@ -120,8 +129,9 @@ class ObjectCustomDialog extends Component {
             objectIDs={this.props.objectIDs}
             customsInstances={this.props.customsInstances}
             objects={this.props.objects}
-            onChange={(haveChanges, update) => {
-                this.setState({ allSaved: !haveChanges }, () => {
+            reportChangedIds={this.props.reportChangedIds}
+            onChange={(hasChanges, update) => {
+                this.setState({ hasChanges }, () => {
                     if (update) {
                         const chartAvailable = this.isChartAvailable();
                         if (chartAvailable !== this.chartAvailable) {
@@ -131,7 +141,32 @@ class ObjectCustomDialog extends Component {
                     }
                 });
             }}
+            theme={this.props.theme}
+            themeName={this.props.themeName}
+            themeType={this.props.themeType}
         />;
+    }
+
+    renderConfirmDialog() {
+        if (!this.state.confirmDialog) {
+            return null;
+        }
+        return <ConfirmDialog
+            title={ I18n.t('You have unsaved changes') }
+            text={ I18n.t('Discard?') }
+            ok={ I18n.t('Yes') }
+            cancel={ I18n.t('Cancel') }
+            onClose={isYes =>
+                this.setState({ confirmDialog: false}, () => isYes && this.props.onClose())}
+        />;
+    }
+
+    onClose() {
+        if (this.state.hasChanges) {
+            this.setState({confirmDialog: true});
+        } else {
+            this.props.onClose();
+        }
     }
 
     render() {
@@ -146,6 +181,7 @@ class ObjectCustomDialog extends Component {
             maxWidth="xl"
             aria-labelledby="form-dialog-title"
         >
+            {this.renderConfirmDialog()}
             <DialogTitle id="form-dialog-title">{
                 this.props.objectIDs.length > 1 ?
                     this.props.t('Edit config for %s states', this.props.objectIDs.length) :
@@ -167,10 +203,17 @@ class ObjectCustomDialog extends Component {
                 {(varType === 'number' || varType === 'boolean') && this.props.objectIDs.length === 1 && this.chartAvailable && this.state.currentTab === 2 ? <div className={this.props.classes.tabPanel}>{this.renderCharts()}</div> : null}
             </DialogContent>
             <DialogActions>
+                {this.state.currentTab === 0 && <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={!this.state.hasChanges}
+                    onClick={() => this.saveFunc && this.saveFunc()}
+                >
+                    <SaveIcon />{this.props.t('Save')}
+                </Button>}
                 <Button
                     variant="contained"
-                    disabled={!this.state.allSaved}
-                    onClick={() => this.props.onClose()} >
+                    onClick={() => this.onClose()} >
                     <CloseIcon />{this.props.t('Close')}
                 </Button>
             </DialogActions>
@@ -184,10 +227,13 @@ ObjectCustomDialog.propTypes = {
     expertMode: PropTypes.bool,
     objects: PropTypes.object,
     socket: PropTypes.object,
+    theme: PropTypes.object,
     themeName: PropTypes.string,
+    themeType: PropTypes.string,
     customsInstances: PropTypes.array,
     objectIDs: PropTypes.array,
     onClose: PropTypes.func,
+    reportChangedIds: PropTypes.func,
 };
 
 export default withWidth()(withStyles(styles)(ObjectCustomDialog));

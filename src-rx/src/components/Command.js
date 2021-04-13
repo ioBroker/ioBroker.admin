@@ -1,8 +1,9 @@
-import React, {Component} from 'react';
-import {Grid, LinearProgress, Paper, Switch, Typography} from '@material-ui/core';
+import React, { Component } from 'react';
+import { Grid, LinearProgress, Paper, Switch, Typography } from '@material-ui/core';
 import PropTypes from 'prop-types';
-import {withStyles} from '@material-ui/core/styles';
-import {amber, blue, red} from '@material-ui/core/colors';
+import { withStyles } from '@material-ui/core/styles';
+import { amber, blue, red } from '@material-ui/core/colors';
+import Router from '@iobroker/adapter-react/Components/Router';
 
 const styles = theme => ({
     log: {
@@ -54,7 +55,7 @@ class Command extends Component {
             this.executeCommand();
         }
         const closeOnReady = JSON.parse(window.localStorage.getItem('CommandDialog.closeOnReady')) || false;
-        this.setState({closeOnReady});
+        this.setState({ closeOnReady });
     }
 
     componentDidUpdate() {
@@ -65,7 +66,7 @@ class Command extends Component {
     }
 
     executeCommand() {
-        this.setState({init: true}, () => this.props.onSetCommandRunning(true));
+        this.setState({ init: true }, () => this.props.onSetCommandRunning(true));
 
         this.props.socket.registerCmdStdoutHandler(this.cmdStdoutHandler.bind(this));
         this.props.socket.registerCmdStderrHandler(this.cmdStderrHandler.bind(this));
@@ -73,7 +74,7 @@ class Command extends Component {
 
         const activeCmdId = Math.floor(Math.random() * 0xFFFFFFE) + 1;
 
-        this.setState({activeCmdId});
+        this.setState({ activeCmdId });
 
         this.props.socket.cmdExec(this.props.currentHost, this.props.cmd, activeCmdId)
             .catch(error =>
@@ -188,7 +189,7 @@ class Command extends Component {
             const log = this.state.log.slice();
             log.push(text);
 
-            this.setState({log});
+            this.setState({ log });
 
             console.log('cmdStderr');
             console.log(id);
@@ -198,11 +199,17 @@ class Command extends Component {
 
     cmdExitHandler(id, exitCode) {
         if (this.state.activeCmdId && this.state.activeCmdId === id) {
-
             const log = this.state.log.slice();
+            if (!document.hidden && exitCode === 0 && log.length && log[log.length - 1].endsWith('created') && this.props.callBack) {
+                const newArr = log[log.length - 1].split(' ');
+                const adapter = newArr.find(el => el.startsWith('system'));
+                if (adapter) {
+                    Router.doNavigate('tab-instances', 'config', adapter);
+                }
+            }
             log.push(`${exitCode !== 0 ? 'ERROR: ' : ''}Process exited with code ${exitCode}`);
 
-            this.setState({log, stopped: true}, () => {
+            this.setState({ log, stopped: true }, () => {
                 this.props.onSetCommandRunning(false);
                 if (exitCode !== 0) {
                     this.props.errorFunc && this.props.errorFunc();
@@ -265,7 +272,7 @@ class Command extends Component {
             component="p"
             variant="body2"
         >
-            { this.colorize(value) }
+            {this.colorize(value)}
         </Typography>);
     }
 
@@ -273,7 +280,7 @@ class Command extends Component {
         const classes = this.props.classes;
 
         return <Grid
-            style={this.props.noSpacing ? {height: '100%', width: '100%'} : {}}
+            style={this.props.noSpacing ? { height: '100%', width: '100%' } : {}}
             container
             direction="column"
             spacing={this.props.noSpacing ? 0 : 2}
@@ -302,7 +309,7 @@ class Command extends Component {
                 >
                     {this.colorize(this.state.log[this.state.log.length - 1])}
                 </Typography>
-                <Typography component="div" style={{width: 180}}>
+                <Typography component="div" style={{ width: 180 }}>
                     <Grid component="label" container alignItems="center" spacing={1}>
                         <Grid item>{this.props.t('less')}</Grid>
                         <Grid item>
@@ -316,7 +323,7 @@ class Command extends Component {
                     </Grid>
                 </Typography>
             </div>
-            <Grid item style={this.props.noSpacing ? {height: 'calc(100% - 45px)', width: '100%'} : {}}>
+            <Grid item style={this.props.noSpacing ? { height: 'calc(100% - 45px)', width: '100%' } : {}}>
                 <Paper className={this.props.noSpacing ? classes.logNoSpacing : classes.log}>
                     {this.state.moreChecked ? this.getLog() : null}
                 </Paper>

@@ -21,36 +21,26 @@
 ## Adapters
 - Adapters - Use readme renderer from www.iobroker.net (BF)
 - Show number of possible updates on "Adapters" in menu on the left (impossible ?)
-- Open the configuration dialog for just installed instance (only if document.hidden === false) (https://github.com/ioBroker/ioBroker.admin/issues/541)
-  - https://github.com/ioBroker/ioBroker.admin/issues/557  
+
 ## Instances
 
 ## Objects
 - Decode quality code to text (BF)
-<!-- - Add in object edit the possibility to set color and icon (icon could be uploaded as base64 and may not be bigger than 5k) and use it for text color. Add possibility to scale the images. -->
-  <!-- - https://github.com/ioBroker/ioBroker.material/blob/master/src/src/basic-controls/react-image-selector/ImageSelector.js
-  - add new Tab Common (first tab) -->
-  /
-     <!-- - Warning: File is too big. Max 5k allowed. Try use SVG.
-     - Place Icon edit (if enough space) on the right   -->
-
- <!-- - use color of items for "ID" (think about contrast, means invert background)      -->
-
+- Add in object edit the possibility to set color and icon (icon could be uploaded as base64 and may not be bigger than 5k) and use it for text color. Add possibility to scale the images.
+  - Integrate https://react-dropzone.js.org/#!/Doka for image upload
+  
 ## Objects - Custom editor
 - edit config by JSON
   
 ## Files
-- File viewer can show: json, js, ts, md, css, html
+<!-- - File viewer can show: json, js, ts, md, css, html -->
 - Edit file ACL for "adapter" or "instance" (All folders of the first level)
-- Edit files (by pressing button "Edit" opened edit mode) : json, js, txt, html (only in expert mode)
+- Edit files (by pressing button "Edit" opened edit mode) : json, js, txt, html (only in expert mode)// 
+not editable
   
-## Hosts  
-- Hosts tab => show all hosts in a list with settings//
+## Hosts
+- extend hostsWorker to detect updates of hosts
 
-- Show on the second tab: CPU %, Mem%, uptime in days/hours, show in red if (diskFree / diskSize) * 100 <= diskWarning, show header in blink-red
-- iobroker upgrade self
-<!-- - iobroker restart -->
-<!-- - if not alive => events "- / -" -->
 ## Users
 - Do not allow edit of user ID
 
@@ -66,6 +56,16 @@
 ## JSON config - Admin settings dialog (index_m.html)
 - write it with react (see [SCHEMA.md](SCHEMA.md))
 - Should work: admin, cloud, email
-- Layout: Header "Instance settings: admin.0" must not be scrolled
-- Layout: Tabs must not be scrolled (only content of tab(panel))
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)
+
+- room editor (multiple or single choose)
+- func editor (multiple or single choose)
+<!-- - chips (see javascript config) -->
+<!-- //- table!!! -->
+- json editor as control
+
+- Write jsonCustom for:
+  - lovelace
+  - eventlist
+  - mqtt-client
+  - ??

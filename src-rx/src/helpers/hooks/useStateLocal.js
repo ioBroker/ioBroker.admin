@@ -1,13 +1,17 @@
 import * as React from 'react';
 
-export function useStateLocal(el, key) {
+export function useStateLocal(defaultValue, key) {
     const [state, setState] = React.useState(
-        localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : el
+        window.localStorage.getItem(key) ?
+            JSON.parse(window.localStorage.getItem(key))
+            :
+            defaultValue
     );
 
-    const eventsToInstall = (newHeadCells) => {
-        localStorage.setItem(key, JSON.stringify(newHeadCells));
-        setState(newHeadCells);
+    const eventsToInstall = newValue => {
+        window.localStorage.setItem(key, JSON.stringify(newValue));
+        setState(newValue);
     };
-    return [state, eventsToInstall, localStorage.getItem(key) ? true : false];
+
+    return [state, eventsToInstall, !!window.localStorage.getItem(key)];
 }

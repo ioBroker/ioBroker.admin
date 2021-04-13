@@ -662,7 +662,7 @@ class App extends Router {
                         t={I18n.t}
                         lang={I18n.getLanguage()}
                         expertMode={this.state.expertMode}
-                        executeCommand={cmd => this.executeCommand(cmd)}
+                        executeCommand={(cmd,cb)=>this.executeCommand(cmd,cb)}
                         commandRunning={this.state.commandRunning}
                         onSetCommandRunning={commandRunning => this.setState({commandRunning})}
 
@@ -728,6 +728,7 @@ class App extends Router {
                         expertMode={this.state.expertMode}
                         lang={I18n.getLanguage()}
                         socket={this.socket}
+                        themeName={this.state.themeName}
                     />
                 </Suspense>;
             } else if (this.state.currentTab.tab === 'tab-users') {
@@ -757,6 +758,7 @@ class App extends Router {
                     <Objects
                         key="objects"
                         t={I18n.t}
+                        theme={this.state.theme}
                         themeName={this.state.themeName}
                         themeType={this.state.themeType}
                         expertMode={this.state.expertMode}
@@ -767,23 +769,24 @@ class App extends Router {
             }  else if (this.state.currentTab.tab === 'tab-hosts') {
                 return <Suspense fallback={<Connecting />}>
                     <Hosts
-                            menuPadding={this.state.drawerState === DrawerStates.closed ? 0 : (this.state.drawerState === DrawerStates.opened ? DRAWER_FULL_WIDTH : DRAWER_COMPACT_WIDTH)}
-                            socket={this.socket}
-                            lang={I18n.getLanguage()}
-                            protocol={this.state.protocol}
-                            hostname={this.state.hostname}
-                            themeName={this.state.themeName}
-                            themeType={this.state.themeType}
-                            theme={this.state.theme}
-                            expertMode={this.state.expertMode}
-                            idHost={this.state.hosts.find(({ common: { name } }) => name === this.state.currentHostName)._id}
-                            currentHostName={this.state.currentHostName}
-                            t={I18n.t}
-                            currentHost={this.state.currentHost}
-                            width={this.props.width}
-                            configStored={value => this.allStored(value)}
-                            executeCommand={cmd => this.executeCommand(cmd)}
-                            inBackgroundCommand={this.state.commandError || this.state.performed}
+                        menuPadding={this.state.drawerState === DrawerStates.closed ? 0 : (this.state.drawerState === DrawerStates.opened ? DRAWER_FULL_WIDTH : DRAWER_COMPACT_WIDTH)}
+                        socket={this.socket}
+                        lang={I18n.getLanguage()}
+                        protocol={this.state.protocol}
+                        hostname={this.state.hostname}
+                        themeName={this.state.themeName}
+                        themeType={this.state.themeType}
+                        theme={this.state.theme}
+                        expertMode={this.state.expertMode}
+                        idHost={this.state.hosts.find(({ common: { name } }) => name === this.state.currentHostName)._id}
+                        currentHostName={this.state.currentHostName}
+                        t={I18n.t}
+                        currentHost={this.state.currentHost}
+                        width={this.props.width}
+                        configStored={value => this.allStored(value)}
+                        executeCommand={cmd => this.executeCommand(cmd)}
+                        inBackgroundCommand={this.state.commandError || this.state.performed}
+                        systemConfig={this.state.systemConfig}
                     />
                 </Suspense>;
             } else {
@@ -947,10 +950,11 @@ class App extends Router {
         });
     }
 
-    executeCommand(cmd) {
+    executeCommand(cmd,callBack = false) {
         this.setState({
             cmd,
-            cmdDialog: true
+            cmdDialog: true,
+            callBack
         });
     }
 
@@ -959,7 +963,8 @@ class App extends Router {
             cmd: null,
             cmdDialog: false,
             commandError: false,
-            performed: false
+            performed: false,
+            callBack:false
         });
     }
 
@@ -980,6 +985,7 @@ class App extends Router {
                 onSetCommandRunning={commandRunning => this.setState({commandRunning})}
                 onClose={() => this.closeCmdDialog()}
                 visible={this.state.cmdDialog}
+                callBack={this.state.callBack}
                 header={i18n.t('Command')}
                 onInBackground={() => this.setState({ cmdDialog: false })}
                 cmd={this.state.cmd}

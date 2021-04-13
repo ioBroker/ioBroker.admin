@@ -1505,7 +1505,7 @@ class ObjectBrowser extends Component {
             columns,
             columnsForAdmin: null,
             columnsSelectorShow: false,
-            columnsAuto: window.localStorage.getItem(`${props.dialogName || 'App'}.columnsAuto`) === 'false' ? false : true,
+            columnsAuto: window.localStorage.getItem(`${props.dialogName || 'App'}.columnsAuto`) !== 'false',
             columnsWidths,
             columnsDialogTransparent: 100,
             columnsEditCustomDialog: null,
@@ -1515,33 +1515,6 @@ class ObjectBrowser extends Component {
         this.edit = {};
 
         this.texts = {
-            value:                    props.t('ra_tooltip_value'),
-            ack:                      props.t('ra_tooltip_ack'),
-            ts:                       props.t('ra_tooltip_ts'),
-            lc:                       props.t('ra_tooltip_lc'),
-            from:                     props.t('ra_tooltip_from'),
-            user:                     props.t('ra_tooltip_user'),
-            quality:                  props.t('ra_tooltip_quality'),
-            editObject:               props.t('ra_tooltip_editObject'),
-            deleteObject:             props.t('ra_tooltip_deleteObject'),
-            customConfig:             props.t('ra_tooltip_customConfig'),
-            copyState:                props.t('ra_tooltip_copyState'),
-            editState:                props.t('ra_tooltip_editState'),
-            close:                    props.t('ra_Close'),
-            filter_id:                props.t('ra_filter_id'),
-            filter_name:              props.t('ra_filter_name'),
-            filter_type:              props.t('ra_filter_type'),
-            filter_role:              props.t('ra_filter_role'),
-            filter_room:              props.t('ra_filter_room'),
-            filter_func:              props.t('ra_filter_func'),
-            filter_customs:           props.t('ra_filter_customs'), //
-            objectChangedByUser:      props.t('ra_object_changed_by_user'), // Object last changed at
-            objectChangedBy:          props.t('ra_object_changed_by'), // Object changed by
-            objectChangedFrom:        props.t('ra_state_changed_from'), // Object changed from
-            stateChangedBy:           props.t('ra_state_changed_by'), // State changed by
-            stateChangedFrom:         props.t('ra_state_changed_from'), // State changed from
-            ownerGroup:               props.t('ra_Owner group'),
-            ownerUser:                props.t('ra_Owner user'),
             value:                    props.t('ra_tooltip_value'),
             ack:                      props.t('ra_tooltip_ack'),
             ts:                       props.t('ra_tooltip_ts'),
@@ -1580,23 +1553,7 @@ class ObjectBrowser extends Component {
             aclGroup_write_state:     props.t('ra_aclGroup_write_state'),
             aclEveryone_read_object:  props.t('ra_aclEveryone_read_object'),
             aclEveryone_read_state:   props.t('ra_aclEveryone_read_state'),
-            aclOwner_read_object: props.t('ra_aclOwner_read_object'),
-            aclOwner_read_state: props.t('ra_aclOwner_read_state'),
-            aclOwner_write_object: props.t('ra_aclOwner_write_object'),
-            aclOwner_write_state: props.t('ra_aclOwner_write_state'),
-            aclGroup_read_object: props.t('ra_aclGroup_read_object'),
-            aclGroup_read_state: props.t('ra_aclGroup_read_state'),
-            aclGroup_write_object: props.t('ra_aclGroup_write_object'),
-            aclGroup_write_state: props.t('ra_aclGroup_write_state'),
-            aclEveryone_read_object: props.t('ra_aclEveryone_read_object'),
-            aclEveryone_read_state: props.t('ra_aclEveryone_read_state'),
-            aclEveryone_write_object: props.t('ra_aclEveryone_write_object'),
-            aclEveryone_write_state:  props.t('ra_aclEveryone_write_state'),
-            aclEveryone_write_state: props.t('ra_aclEveryone_write_state'),
-
         };
-
-        this.onStateChangeBound = this.onStateChange.bind(this);
 
         this.calculateColumnsVisibility();
 
@@ -1740,7 +1697,7 @@ class ObjectBrowser extends Component {
         // remove all subscribes
         this.subscribes.forEach(pattern => {
             console.log('- unsubscribe ' + pattern);
-            this.props.socket.unsubscribeState(pattern, this.onStateChangeBound);
+            this.props.socket.unsubscribeState(pattern, this.onStateChange);
         });
 
         this.subscribes = [];
@@ -1754,7 +1711,7 @@ class ObjectBrowser extends Component {
         // remove all subscribes
         this.subscribes.forEach(async pattern => {
             console.log('- unsubscribe ' + pattern);
-            await this.props.socket.unsubscribeState(pattern, this.onStateChangeBound);
+            await this.props.socket.unsubscribeState(pattern, this.onStateChange);
         });
 
         this.subscribes = [];
@@ -2062,7 +2019,7 @@ class ObjectBrowser extends Component {
      * @param {string} id
      * @param {ioBroker.State} state
      */
-    onStateChange(id, state) {
+    onStateChange = (id, state) => {
         console.log('> stateChange ' + id);
         if (this.states[id]) {
             const item = this.findItem(id);
@@ -2085,7 +2042,7 @@ class ObjectBrowser extends Component {
                 this.statesUpdateTimer = null;
             }
         }
-    }
+    };
 
     /**
      * @private
@@ -2187,7 +2144,7 @@ class ObjectBrowser extends Component {
             this.subscribes.push(id);
             console.log('+ subscribe ' + id);
             if (!this.pausedSubscribes) {
-                this.props.socket.subscribeState(id, this.onStateChangeBound);
+                this.props.socket.subscribeState(id, this.onStateChange);
             }
         }
     }
@@ -2204,7 +2161,7 @@ class ObjectBrowser extends Component {
                 delete this.states[id];
             }
             console.log('- unsubscribe ' + id);
-            this.props.socket.unsubscribeState(id, this.onStateChangeBound);
+            this.props.socket.unsubscribeState(id, this.onStateChange);
 
             if (this.pausedSubscribes) {
                 console.warn('Unsubscribe during pause?');
@@ -2219,10 +2176,10 @@ class ObjectBrowser extends Component {
     pauseSubscribe(isPause) {
         if (!this.pausedSubscribes && isPause) {
             this.pausedSubscribes = true;
-            this.subscribes.forEach(id => this.props.socket.unsubscribeState(id, this.onStateChangeBound));
+            this.subscribes.forEach(id => this.props.socket.unsubscribeState(id, this.onStateChange));
         } else if (this.pausedSubscribes && !isPause) {
             this.pausedSubscribes = false;
-            this.subscribes.forEach(id => this.props.socket.subscribeState(id, this.onStateChangeBound));
+            this.subscribes.forEach(id => this.props.socket.subscribeState(id, this.onStateChange));
         }
     }
 
@@ -3988,17 +3945,26 @@ class ObjectBrowser extends Component {
             const ObjectCustomDialog = this.props.objectCustomDialog;
 
             return <ObjectCustomDialog
+                reportChangedIds={changedIds => this.changedIds = [...changedIds]}
                 objectIDs={this.state.customDialog}
                 expertMode={this.state.filter.expertMode}
                 t={this.props.t}
                 lang={this.props.lang}
                 socket={this.props.socket}
                 themeName={this.props.themeName}
+                themeType={this.props.themeType}
+                theme={this.props.theme}
                 objects={this.objects}
                 customsInstances={this.info.customs}
                 onClose={() => {
                     this.pauseSubscribe(false);
                     this.setState({ customDialog: null });
+                    if (this.changedIds) {
+                        this.changedIds = null;
+                        // update all changed IDs
+                        this.forceUpdate();
+                    }
+
                     this.props.router && this.props.router.doNavigate('tab-objects');
                 }}
             />;
@@ -4164,6 +4130,7 @@ ObjectBrowser.propTypes = {
     imagePrefix: PropTypes.string,
     themeName: PropTypes.string,
     themeType: PropTypes.string,
+    theme: PropTypes.object,
     t: PropTypes.func,
     lang: PropTypes.string.isRequired,
     multiSelect: PropTypes.bool,
