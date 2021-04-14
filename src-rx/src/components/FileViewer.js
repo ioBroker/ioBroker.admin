@@ -51,24 +51,15 @@ const styles = theme => ({
 });
 
 export const EXTENSIONS = {
-    images: ['png', 'jpg', 'svg', 'jpeg', 'jpg'],
+    images: ['png', 'jpg', 'svg', 'jpeg', 'jpg', 'bmp'],
     code: ['js', 'json', 'md'],
     txt: ['log', 'txt', 'html', 'css', 'xml'],
 };
 
-function getFileExtension(fileName) {
-    const pos = fileName.lastIndexOf('.');
-    if (pos !== -1) {
-        return fileName.substring(pos + 1).toLowerCase();
-    } else {
-        return null;
-    }
-}
-
 class FileViewer extends Component {
     constructor(props) {
         super(props);
-        this.ext = getFileExtension(this.props.href); // todo: replace later with Utils.getFileExtension
+        this.ext = Utils.getFileExtension(this.props.href);
 
         this.state = {
             text: null,

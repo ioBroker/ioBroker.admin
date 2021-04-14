@@ -1101,8 +1101,7 @@ class App extends Router {
             return <ThemeProvider theme={this.state.theme}>
                 <Login t={I18n.t} />
             </ThemeProvider>;
-        }
-
+        } else
         if (!this.state.ready) {
             return <ThemeProvider theme={this.state.theme}>
                 <Loader theme={this.state.themeType} />
