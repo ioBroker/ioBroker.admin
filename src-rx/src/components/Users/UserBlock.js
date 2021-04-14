@@ -15,7 +15,7 @@ function UserBlock(props) {
     const [{ isDragging }, dragRef] = useDrag(
         {
             type: 'user',
-            item: {user_id: props.user._id},
+            item: {user_id: props.user._id}, 
             end: (item, monitor) => {
                 const dropResult = monitor.getDropResult();
                 if (item && dropResult) {
@@ -26,13 +26,26 @@ function UserBlock(props) {
     );
 
     let textColor = !props.user.common.color || Color(props.user.common.color).hsl().object().l > 50 ? 'black' : 'white';
-    return <Card raised style={{backgroundColor: props.user.common.color, color: textColor, cursor: 'grab'}} className={props.classes.userGroupCard} ref={dragRef}>
+    return <Card 
+        style={{ color: textColor, cursor: 'grab'}} 
+        className={props.classes.userGroupCard} 
+        ref={dragRef}
+    >
         <div className={props.classes.right}>
-            <CheckBox checked={props.user.common.enabled} disabled={props.user.common.dontDelete} onChange={e => {
-                props.socket.extendObject(props.user._id, { common: { enabled: !props.user.common.enabled } }).then(()=>
-                    props.updateData()
-                );
-            }}/>
+            <CheckBox 
+                checked={props.user.common.enabled} 
+                disabled={props.user.common.dontDelete} 
+                onChange={e => {
+                    props.socket.extendObject(
+                        props.user._id, 
+                        { common: { 
+                            enabled: !props.user.common.enabled 
+                        } 
+                    }).then(()=>
+                        props.updateData()
+                    );
+                }
+            }/>
             <IconButton size="small" onClick={()=>{props.showUserEditDialog(props.user, false)}}><EditIcon/></IconButton>
             <IconButton size="small" onClick={()=>{props.showUserDeleteDialog(props.user)}} disabled={props.user.common.dontDelete}><DeleteIcon/></IconButton>
         </div>
