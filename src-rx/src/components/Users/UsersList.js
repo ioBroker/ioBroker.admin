@@ -24,6 +24,8 @@ const styles = theme => ({
     userGroupCard: {
         margin:    10,
         height: 140,
+        backgroundColor: "#EEE",
+        //transition: "all 300ms ease-out"
     },
     userGroupTitle: {
         display: 'inline-flex',
@@ -62,7 +64,7 @@ const styles = theme => ({
     },
     colorPicker: {
         
-    }, 
+    },  
     iconPreview: {
         maxHeight: 40,
         maxWidth: 40,
@@ -291,7 +293,7 @@ class UsersList extends Component {
                 this.updateData();
             });
         }
-    }
+    } 
 
     render() {
         if (!this.state.users || !this.state.groups) {
@@ -299,10 +301,16 @@ class UsersList extends Component {
         }
         return <>
             <DndProvider backend={HTML5Backend}>
-                <div className={this.props.classes.mainDescription}>{this.props.t('You can drag users to groups.')}</div>
+                <div className={this.props.classes.mainDescription}>
+                    {this.props.t('You can drag users to groups.')}
+                </div>
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
-                        <Fab size="small" className={this.props.classes.left} onClick={()=>this.showGroupEditDialog(this.groupTemplate, true)}>
+                        <Fab 
+                            size="small" 
+                            className={this.props.classes.left} 
+                            onClick={()=>this.showGroupEditDialog(this.groupTemplate, true)}
+                        >
                             <GroupAddIcon/>
                         </Fab>
                         <Typography gutterBottom variant="h4" component="h4">{this.props.t('Groups')}</Typography>
@@ -320,10 +328,20 @@ class UsersList extends Component {
                         }
                     </Grid>
                     <Grid item xs={12} md={6}>
-                    <Fab size="small" className={this.props.classes.left} onClick={()=>this.showUserEditDialog(this.userTemplate, true)}>
+                        <Fab 
+                            size="small" 
+                            className={this.props.classes.left} 
+                            onClick={()=>this.showUserEditDialog(this.userTemplate, true)}
+                        >
                             <PersonAddIcon/>
                         </Fab>
-                        <Typography gutterBottom variant="h4" component="h4">{this.props.t('Users')}</Typography>
+                        <Typography 
+                            gutterBottom 
+                            variant="h4" 
+                            component="h4"
+                        >
+                            {this.props.t('Users')}
+                        </Typography>
                         {
                             this.state.users.map(user => <UserBlock 
                                 user={user} 
