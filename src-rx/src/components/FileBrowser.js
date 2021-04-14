@@ -1302,6 +1302,7 @@ class FileBrowser extends Component {
             setStateBackgroundImage={this.setStateBackgroundImage}
             getClassBackgroundImage={this.getClassBackgroundImage}
             t={this.props.t}
+            socket={this.props.socket}
             lang={this.props.lang}
             expertMode={this.state.expertMode}
             onClose={() => this.setState({ viewer: '', formatEditFile: '' })}
