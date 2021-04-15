@@ -55,6 +55,8 @@ import Login from './login/Login';
 import { ContextWrapper } from './components/ContextWrapper';
 import HostSelectors from './components/HostSelectors';
 import { Hidden } from '@material-ui/core';
+import { expertModeDialogFunc } from './dialogs/ExpertModeDialog';
+import { newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
 
 // Tabs
 const Adapters = React.lazy(() => import('./tabs/Adapters'));
@@ -164,6 +166,7 @@ const styles = theme => ({
     },
     avatarNotVisible: {
         opacity: 0,
+        marginLeft: 5,
         transition: 'opacity 0.3s'
     },
     avatarVisible: {
@@ -190,6 +193,11 @@ const styles = theme => ({
     performed: {
         color: '#388e3c',
         animation: '0.2s linear infinite alternate $myEffect2',
+    },
+    wrapperButtons: {
+        display: 'flex',
+        marginRight: 'auto',
+        overflowY: 'auto'
     },
     '@keyframes myEffect2': {
         '0%': {
@@ -276,7 +284,7 @@ class App extends Router {
 
                 allTabs: null,
 
-                expertMode: window.localStorage.getItem('App.expertMode') === 'true',
+                expertMode: false,
 
                 states: {},
                 hosts: [],
@@ -412,6 +420,11 @@ class App extends Router {
 
                     this.subscribeOnHostsStatus();
 
+                    newState.expertMode = window.sessionStorage.getItem('App.expertMode') === 'true' || !!newState.systemConfig.common.expertMode;
+                    console.log(newState)
+
+                    this.getNews();
+
                     this.setState(newState, () => this.setCurrentTabTitle());
 
                     this.logsWorkerChanged(this.state.currentHost);
@@ -430,6 +443,55 @@ class App extends Router {
                     this.showAlert(error, 'error');
                 }
             });
+        }
+    }
+
+    getNews = async () => {
+        // newsAdminDialogFunc
+        //    const result = await fetch('https://github.com/ioBroker/ioBroker.docs/blob/master/info/news.json');
+
+        const newsFeed = await this.socket.getState(`system.adapter.admin.0.info.newsFeed`);
+        const lastNewsId = await this.socket.getState(`system.adapter.admin.0.info.lastNewsId`);
+        if (!newsFeed) {
+            const newNewsFeed = {
+                common: {
+                    name: "newsFeed",
+                    desc: "Manually created",
+                    "role": "",
+                    type: "object",
+                    "read": true,
+                    "write": true,
+                    "def": false
+                },
+                type: "state"
+            }
+            await this.socket.extendObject('system.adapter.admin.0.info.newsFeed', newNewsFeed);
+            await this.socket.setState(`system.adapter.admin.0.info.newsFeed`, '[]');
+        }
+        if (!lastNewsId) {
+            const newLastNewsId = {
+                common: {
+                    name: "lastNewsId",
+                    desc: "Manually created",
+                    "role": "",
+                    type: "object",
+                    "read": true,
+                    "write": true,
+                    "def": false
+                },
+                type: "state"
+            }
+            await this.socket.extendObject('system.adapter.admin.0.info.lastNewsId', newLastNewsId);
+            await this.socket.setState(`system.adapter.admin.0.info.lastNewsId`, '');
+
+        }
+        if (newsFeed && JSON.parse(newsFeed?.val).length && lastNewsId) {
+            const checkNews = JSON.parse(newsFeed?.val)?.find(el => el.id > lastNewsId?.val || !lastNewsId?.val);
+            if (checkNews) {
+                newsAdminDialogFunc(JSON.parse(newsFeed.val), lastNewsId.val, (id) => {
+                    this.socket.setState(`system.adapter.admin.0.info.lastNewsId`, id);
+                })
+            }
         }
     }
 
@@ -1039,8 +1101,7 @@ class App extends Router {
             return <ThemeProvider theme={this.state.theme}>
                 <Login t={I18n.t} />
             </ThemeProvider>;
-        }
-
+        } else
         if (!this.state.ready) {
             return <ThemeProvider theme={this.state.theme}>
                 <Loader theme={this.state.themeType} />
@@ -1049,6 +1110,10 @@ class App extends Router {
 
         const { classes } = this.props;
         const small = this.props.width === 'xs' || this.props.width === 'sm';
+
+        console.log( this.state.themeName )
+        console.log( this.state.theme )
+
         return <ThemeProvider theme={this.state.theme}>
             <Paper elevation={0} className={classes.root}>
                 <AppBar
@@ -1068,64 +1133,74 @@ class App extends Router {
                         >
                             <MenuIcon />
                         </IconButton>
-                        <IconButton>
-                            <VisibilityIcon />
-                        </IconButton>
-                        <IconButton onClick={() => Router.doNavigate(null, 'system')}>
-                            <BuildIcon />
-                        </IconButton>
-                        <IconButton onClick={() => this.toggleTheme()}>
-                            {this.state.themeName === 'dark' && <Brightness4Icon />}
-                            {this.state.themeName === 'blue' && <Brightness5Icon />}
-                            {this.state.themeName === 'colored' && <Brightness6Icon />}
-                            {this.state.themeName === 'light' && <Brightness7Icon />}
-                        </IconButton>
-                        {/*This will be removed later to settings, to not allow so easy to enable it*/}
-                        <IconButton
-                            onClick={() => {
-                                window.localStorage.setItem('App.expertMode', !this.state.expertMode);
-                                this.setState({ expertMode: !this.state.expertMode });
-                                this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
-                            }}
-                            style={{ color: this.state.expertMode ? '#BB0000' : 'inherit' }}
-                            color="default"
-                        >
-                            <ExpertIcon
-                                title={I18n.t('Toggle expert mode')}
-                                glowColor={this.state.theme.palette.secondary.main}
-                                active={this.state.expertMode}
-                                className={clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
-                            />
-                        </IconButton>
-                        {/*This will be removed later to settings, to not allow so easy to edit it*/}
-                        {this.state.expertMode &&
-                            <IconButton onClick={() => Router.doNavigate(null, 'base')}>
-                                <BuildIcon className={classes.baseSettingsButton} />
+                        <div className={classes.wrapperButtons}>
+                            <IconButton>
+                                <VisibilityIcon />
                             </IconButton>
-                        }
-                        <HostSelectors
-                            expertMode={this.state.expertMode}
-                            socket={this.socket}
-                            currentHost={this.state.currentHost}
-                            setCurrentHost={(hostName, host) => {
-                                this.setState({
-                                    currentHostName: hostName,
-                                    currentHost: host
-                                }, () => {
-                                    this.logsWorkerChanged(host);
-                                    window.localStorage.setItem('App.currentHost', host);
-                                });
-                            }}
-                            disabled={
-                                this.state.currentTab.tab !== 'tab-instances' &&
-                                this.state.currentTab.tab !== 'tab-adapters' &&
-                                this.state.currentTab.tab !== 'tab-logs'
+                            <IconButton onClick={() => Router.doNavigate(null, 'system')}>
+                                <BuildIcon />
+                            </IconButton>
+                            <IconButton onClick={() => this.toggleTheme()}>
+                                {this.state.themeName === 'dark' && <Brightness4Icon />}
+                                {this.state.themeName === 'blue' && <Brightness5Icon />}
+                                {this.state.themeName === 'colored' && <Brightness6Icon />}
+                                {this.state.themeName === 'light' && <Brightness7Icon />}
+                            </IconButton>
+                            {/*This will be removed later to settings, to not allow so easy to enable it*/}
+                            <IconButton
+                                onClick={() => {
+                                    if (!!this.state.systemConfig.common.expertMode === !this.state.expertMode) {
+                                        window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
+                                        this.setState({ expertMode: !this.state.expertMode });
+                                        this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
+                                    } else {
+                                        expertModeDialogFunc(this.state.expertMode, () => {
+                                            window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
+                                            this.setState({ expertMode: !this.state.expertMode });
+                                            this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
+                                        }, () => Router.doNavigate(null, 'system'))
+                                    }
+                                }}
+                                style={{ color: this.state.expertMode ? '#BB0000' : 'inherit' }}
+                                color="default"
+                            >
+                                <ExpertIcon
+                                    title={I18n.t('Toggle expert mode')}
+                                    glowColor={this.state.theme.palette.secondary.main}
+                                    active={this.state.expertMode}
+                                    className={clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
+                                />
+                            </IconButton>
+                            {/*This will be removed later to settings, to not allow so easy to edit it*/}
+                            {this.state.expertMode &&
+                                <IconButton onClick={() => Router.doNavigate(null, 'base')}>
+                                    <BuildIcon className={classes.baseSettingsButton} />
+                                </IconButton>
                             }
-                        />
-                        <Typography variant="h6" className={classes.title} style={{ flexGrow: 1 }} />
-                        {this.state.cmd && !this.state.cmdDialog && <IconButton onClick={() => this.setState({ cmdDialog: true })}>
-                            <PictureInPictureAltIcon className={this.state.commandError ? classes.errorCmd : this.state.performed ? classes.performed : classes.cmd} />
-                        </IconButton>}
+                            <HostSelectors
+                                expertMode={this.state.expertMode}
+                                socket={this.socket}
+                                currentHost={this.state.currentHost}
+                                setCurrentHost={(hostName, host) => {
+                                    this.setState({
+                                        currentHostName: hostName,
+                                        currentHost: host
+                                    }, () => {
+                                        this.logsWorkerChanged(host);
+                                        window.localStorage.setItem('App.currentHost', host);
+                                    });
+                                }}
+                                disabled={
+                                    this.state.currentTab.tab !== 'tab-instances' &&
+                                    this.state.currentTab.tab !== 'tab-adapters' &&
+                                    this.state.currentTab.tab !== 'tab-logs'
+                                }
+                            />
+                            <Typography variant="h6" className={classes.title} style={{ flexGrow: 1 }} />
+                            {this.state.cmd && !this.state.cmdDialog && <IconButton onClick={() => this.setState({ cmdDialog: true })}>
+                                <PictureInPictureAltIcon className={this.state.commandError ? classes.errorCmd : this.state.performed ? classes.performed : classes.cmd} />
+                            </IconButton>}
+                        </div>
                         {/* Show host selector */}
 
                         <Grid container className={clsx(this.state.drawerState !== 0 && classes.avatarVisible, classes.avatarNotVisible)} spacing={1} alignItems="center" style={{ width: 'initial' }}>

@@ -205,27 +205,28 @@ class Connection {
         });
 
         this._socket.on('error', err => {
-            let _err = (err || '');
+            let _err = err || '';
             if (typeof _err.toString !== 'function') {
                 _err = JSON.stringify(_err);
-                console.error('Received strange error: ' + _err);
+                console.error(`Received strange error: ${_err}`);
             }
             _err = _err.toString();
-            if (_err.indexOf('User not authorized') !== -1) {
+            if (_err.includes('User not authorized')) {
                 this.authenticate();
             } else {
-                window.alert('Socket Error: ' + err);
+                window.alert(`Socket Error: ${err}`);
             }
         });
 
         this._socket.on('connect_error', err =>
-            console.error('Connect error: ' + err));
+            console.error(`Connect error: ${err}`));
 
         this._socket.on('permissionError', err =>
             this.onError({message: 'no permission', operation: err.operation, type: err.type, id: (err.id || '')}));
 
         this._socket.on('objectChange', (id, obj) =>
             setTimeout(() => this.objectChange(id, obj), 0));
+
         this._socket.on('stateChange', (id, state) =>
             setTimeout(() => this.stateChange(id, state), 0));
 
@@ -372,7 +373,11 @@ class Connection {
      * @private
      */
     authenticate() {
-        window.location = `${window.location.protocol}//${window.location.host}${window.location.pathname}?login&href=${window.location.search}${window.location.hash}`;
+        if (window.location.search.includes('&href=')) {
+            window.location = `${window.location.protocol}//${window.location.host}${window.location.pathname}${window.location.search}${window.location.hash}`;
+        } else {
+            window.location = `${window.location.protocol}//${window.location.host}${window.location.pathname}?login&href=${window.location.search}${window.location.hash}`;
+        }
     }
 
     /**

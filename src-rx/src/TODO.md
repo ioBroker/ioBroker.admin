@@ -22,6 +22,15 @@
 - Adapters - Use readme renderer from www.iobroker.net (BF)
 - Show number of possible updates on "Adapters" in menu on the left (impossible ?)
 
+## Wizard
+- Theme switcher
+
+## Discovery
+- todo
+
+## Logs
+- Redesign - very much space for nothing
+
 ## Instances
 
 ## Objects
@@ -48,16 +57,11 @@ not editable -->
 - Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io) (BF)
 
 ## Login and authentication
-- check and implement id needed
+- check and implement if needed
 
 ## JSON config - Admin settings dialog (index_m.html)
-- Should work: admin, cloud, email
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)
 
-- room editor (multiple or single choose)
-- func editor (multiple or single choose)
-<!-- - chips (see javascript config) -->
-<!-- //- table!!! -->
 <!-- - json editor as control -->
 
 <!-- - Write jsonCustom for:

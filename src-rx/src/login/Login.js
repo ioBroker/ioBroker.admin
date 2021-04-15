@@ -13,23 +13,21 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
 function Copyright() {
-    return (
-        <Typography
-            variant="body2"
-            color="textSecondary"
-            align="center"
+    return <Typography
+        variant="body2"
+        color="textSecondary"
+        align="center"
+    >
+        { (window.loginMotto || 'Discover awesome.') + ' ' }
+        <Link
+            color="inherit"
+            href="https://www.iobroker.net/"
+            rel="noopener noreferrer"
+            target="_blank"
         >
-            { (window.loginMotto || 'Discover awesome.') + ' ' }
-            <Link
-                color="inherit"
-                href="https://www.iobroker.net/"
-                rel="noopener noreferrer"
-                target="_blank"
-            >
-                ioBroker
-            </Link>
-        </Typography>
-    );
+            ioBroker
+        </Link>
+    </Typography>;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -57,6 +55,10 @@ const useStyles = makeStyles(theme => ({
     alert: {
         marginTop: theme.spacing(2),
         backgroundColor: '#f44336',
+        padding: 8,
+        color: '#fff',
+        borderRadius: 4,
+        fontSize: 16,
     }
 }));
 
