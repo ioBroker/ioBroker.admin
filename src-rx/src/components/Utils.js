@@ -1132,6 +1132,63 @@ class Utils {
         }
     }
 
+    static formatDate(dateObj, dateFormat) {
+        //return dateObj.getFullYear() + '-' +
+        //    ('0' + (dateObj.getMonth() + 1).toString(10)).slice(-2) + '-' +
+        //    ('0' + (dateObj.getDate()).toString(10)).slice(-2) + ' ' +
+        //    ('0' + (dateObj.getHours()).toString(10)).slice(-2) + ':' +
+        //    ('0' + (dateObj.getMinutes()).toString(10)).slice(-2) + ':' +
+        //    ('0' + (dateObj.getSeconds()).toString(10)).slice(-2);
+        // Following implementation is 5 times faster
+        if (!dateObj) return '';
+    
+        let text = dateObj.getFullYear();
+        let v = dateObj.getMonth() + 1;
+        if (v < 10) {
+            text += '-0' + v;
+        } else {
+            text += '-' + v;
+        }
+    
+        v = dateObj.getDate();
+        if (v < 10) {
+            text += '-0' + v;
+        } else {
+            text += '-' + v;
+        }
+    
+        v = dateObj.getHours();
+        if (v < 10) {
+            text += ' 0' + v;
+        } else {
+            text += ' ' + v;
+        }
+        v = dateObj.getMinutes();
+        if (v < 10) {
+            text += ':0' + v;
+        } else {
+            text += ':' + v;
+        }
+    
+        v = dateObj.getSeconds();
+        if (v < 10) {
+            text += ':0' + v;
+        } else {
+            text += ':' + v;
+        }
+    
+        v = dateObj.getMilliseconds();
+        if (v < 10) {
+            text += '.00' + v;
+        } else if (v < 100) {
+            text += '.0' + v;
+        } else {
+            text += '.' + v;
+        }
+    
+        return text;
+    }
+
     static MDtext2link(text) {
         const m = text.match(/\d+\.\)\s/);
         if (m) {

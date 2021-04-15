@@ -17,7 +17,8 @@ import I18n from '@iobroker/adapter-react/i18n';
 import { Accordion, AccordionDetails, AccordionSummary, AppBar, Box, DialogTitle, makeStyles, Tab, Tabs, ThemeProvider, Typography } from '@material-ui/core';
 
 import theme from '@iobroker/adapter-react/Theme';
-import Utils from '@iobroker/adapter-react/Components/Utils';
+//import Utils from '@iobroker/adapter-react/Components/Utils';
+import Utils from '../components/Utils';
 
 
 import MemoryIcon from '@material-ui/icons/Memory';
@@ -156,7 +157,7 @@ const TabPanel = ({ children, value, index, ...other }) => {
     );
 }
 
-const AdaptersWarningDialog = ({ message, func }) => {
+const AdaptersWarningDialog = ({ message, func, dateFormat, themeType,themeName }) => {
     const classes = useStyles();
 
     const [open, setOpen] = useState(true);
@@ -173,8 +174,8 @@ const AdaptersWarningDialog = ({ message, func }) => {
     const handleChangeAccordion = panel => (event, isExpanded) =>
         setExpanded(isExpanded ? panel : false);
 
-    const black = Utils.getThemeName() === 'dark' || Utils.getThemeName() === 'blue';
-    return <ThemeProvider theme={theme(Utils.getThemeName())}>
+    const black = themeType === 'dark';
+    return <ThemeProvider theme={theme(themeName)}>
         <Dialog
             onClose={onClose}
             open={open}
@@ -198,7 +199,7 @@ const AdaptersWarningDialog = ({ message, func }) => {
                                 icon={<Status name={name} />}
                                 {...a11yProps(idx)} />
                             )}
-                            {/* <Tab
+                            <Tab
                                 disabled={disabled.indexOf('memIssues') !== -1}
                                 label={'memIssues'}
                                 icon={<Status name={'memIssues'} />} />
@@ -221,7 +222,7 @@ const AdaptersWarningDialog = ({ message, func }) => {
                             <Tab
                                 disabled={disabled.indexOf('remoteHostErrors') !== -1}
                                 label={'remoteHostErrors'}
-                                icon={<Status name={'remoteHostErrors'} />} /> */}
+                                icon={<Status name={'remoteHostErrors'} />} />
                         </Tabs>
                     </AppBar>
                     {Object.keys(message).map((name, idx) => <TabPanel
@@ -249,7 +250,7 @@ const AdaptersWarningDialog = ({ message, func }) => {
                                     {message[name].instances[nameInst].messages.map(el =>
                                         <Typography key={el.ts} component="div" className={classes.message}>
                                             <div>{el.message}</div>
-                                            <div className={classes.silver}>{new Date(el.ts).toLocaleDateString(I18n.getLanguage())}</div>
+                                            <div className={classes.silver}>{Utils.formatDate(new Date(el.ts), dateFormat)}</div>
                                         </Typography>)}
                                 </AccordionDetails>
                             </Accordion>
@@ -286,11 +287,11 @@ const AdaptersWarningDialog = ({ message, func }) => {
     </ThemeProvider >;
 }
 
-export const adaptersWarningDialogFunc = (message, func) => {
+export const adaptersWarningDialogFunc = (message, dateFormat, themeType,themeName, func) => {
     if (!node) {
         node = document.createElement('div');
         node.id = 'renderModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<AdaptersWarningDialog message={message} func={func} />, node);
+    return ReactDOM.render(<AdaptersWarningDialog message={message} themeName={themeName} themeType={themeType} dateFormat={dateFormat} func={func} />, node);
 }

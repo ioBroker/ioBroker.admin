@@ -474,7 +474,13 @@ class App extends Router {
         }
         if (Object.keys(result.system.categories).length) {
             setTimeout(() => {
-                adaptersWarningDialogFunc(result.system.categories, (name) => socket.getRawSocket().emit('sendToHost', currentHost, 'clearNotifications', { category: name }))
+                adaptersWarningDialogFunc(
+                    result.system.categories,
+                    this.state.systemConfig.common.dateFormat,
+                    this.state.themeType,
+                    this.state.themeName,
+                    (name) => socket.getRawSocket().emit('sendToHost', currentHost, 'clearNotifications', { category: name })
+                    )
             }, 5000);
         }
     }

@@ -1065,7 +1065,7 @@ function quality2text(q) {
     return text + (custom ? '|0x' + (custom >> 16).toString(16).toUpperCase() : '') + ' [0x' + q.toString(16).toUpperCase() + ']';
 }
 
-function formatDate(dateObj) {
+function formatDate(dateObj, dateFormat) {
     //return dateObj.getFullYear() + '-' +
     //    ('0' + (dateObj.getMonth() + 1).toString(10)).slice(-2) + '-' +
     //    ('0' + (dateObj.getDate()).toString(10)).slice(-2) + ' ' +
