@@ -5,6 +5,10 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 
+import InfoIcon from '@material-ui/icons/Info';
+import WarningIcon from '@material-ui/icons/Warning';
+import CancelIcon from '@material-ui/icons/Cancel';
+
 import I18n from '@iobroker/adapter-react/i18n';
 import { DialogTitle, makeStyles, ThemeProvider, Typography } from '@material-ui/core';
 
@@ -18,10 +22,12 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         height: 'auto',
-        display: 'flex'
+        display: 'flex',
+        borderRadius: 4
     },
     paper: {
-        maxWidth: 1000
+        maxWidth: 1000,
+        width: '100%'
     },
     overflowHidden: {
         display: 'flex',
@@ -29,8 +35,52 @@ const useStyles = makeStyles((theme) => ({
     pre: {
         overflow: 'auto',
         margin: 20,
+        '& p': {
+            fontSize: 18,
+        }
+    },
+    blockInfo: {
+        right: 20,
+        top: 10,
+        position: 'absolute',
+        display: 'flex',
+        alignItems: 'center',
+        color: 'silver'
+    },
+    img: {
+        marginLeft: 10,
+        width: 45,
+        height: 45,
+        margin: 'auto 0',
+        position: 'relative',
+        '&:after': {
+            content: '""',
+            position: 'absolute',
+            zIndex: 2,
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'url("img/no-image.png") 100% 100% no-repeat',
+            backgroundSize: 'cover',
+            backgroundColor: '#fff',
+        }
     }
 }));
+
+const Status = ({ name, ...props }) => {
+    switch (name) {
+        case "warning":
+            return <WarningIcon style={{ color: '#ffca00' }} {...props} />
+        case "info":
+            return <InfoIcon style={{ color: '#007cff' }} {...props} />
+        case "danger":
+            return <CancelIcon style={{ color: '#ff2f2f' }} {...props} />
+        default:
+            return <InfoIcon style={{ color: '#007cff' }} {...props} />
+    }
+}
+
 const NewsAdminDialog = ({ newsArr, current, func }) => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
@@ -69,6 +119,11 @@ const NewsAdminDialog = ({ newsArr, current, func }) => {
             open={open}
             classes={{ paper: classes.paper }}
         >
+            <div className={classes.blockInfo}>
+                {new Date(newsArr[indexArr].created).toLocaleDateString(I18n.getLanguage())}
+                <Status className={classes.img} name={newsArr[indexArr].class} />
+            </div>
+            <DialogTitle>{I18n.t("News")}</DialogTitle>
             <DialogTitle>{newsArr[indexArr].title[I18n.getLanguage()]}</DialogTitle>
             <DialogContent className={classes.overflowHidden} dividers>
                 <div className={classes.root}>

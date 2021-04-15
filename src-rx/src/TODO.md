@@ -1,8 +1,6 @@
 # Todo
 
 ## Settings
-- Allow set the expert mode in settings
-  - Save expert mode in session storage
   
 ## Info
 - Request info one time in a day and show new information
@@ -14,9 +12,16 @@
   - Title of the dialog: You have unread news
   - Buttons of the dialog: "Acknowledge"
   - Subscribe on `admin.X.info.newsFeed` and test on update
+  - start news check with 5 sec delay
 
 - Support of notifications: https://github.com/ioBroker/ioBroker.js-controller/pull/1153 
   - system.host.HOSTNAME.notifications
+  - this.props.socket.getRawSocket().emit('sendToHost', host, 'getNotifications', {}, notifications =>);
+  - this.props.socket.getRawSocket().emit('sendToHost', host, 'clearNotifications', {category: name}, 
+  notifications =>);
+  - start notifications check with 4 sec delay
+  - Read notifications by host change
+
 
 ## Adapters
 - Adapters - Use readme renderer from www.iobroker.net (BF)
@@ -39,13 +44,9 @@
   - Integrate https://react-dropzone.js.org/#!/Doka for image upload
   
 ## Files
-<!-- - File viewer can show: json, js, ts, md, css, html -->
-- Edit file ACL for "adapter" or "instance" (All folders of the first level)
-<!-- - Edit files (by pressing button "Edit" opened edit mode) : json, js, txt, html (only in expert mode)// 
-not editable -->
+- File viewer can show: json, js, ts, md, css, html (use ace aditor for viewing too)
   
 ## Hosts
-<!-- - Read getRepository and compare js-controller with all hosts and show number of hosts that could be updated on the drawer -->
 
 ## Users
 - Do not allow edit of user ID
@@ -61,7 +62,7 @@ not editable -->
 
 ## JSON config - Admin settings dialog (index_m.html)
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)
-
+- comport selector (BF)
 <!-- - json editor as control -->
 
 <!-- - Write jsonCustom for:

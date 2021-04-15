@@ -57,6 +57,8 @@ import HostSelectors from './components/HostSelectors';
 import { Hidden } from '@material-ui/core';
 import { expertModeDialogFunc } from './dialogs/ExpertModeDialog';
 import { newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
+import { forEach } from 'lodash-es';
+import { adaptersWarningDialogFunc } from './dialogs/AdaptersWarningDialog';
 
 // Tabs
 const Adapters = React.lazy(() => import('./tabs/Adapters'));
@@ -421,9 +423,14 @@ class App extends Router {
                     this.subscribeOnHostsStatus();
 
                     newState.expertMode = window.sessionStorage.getItem('App.expertMode') === 'true' || !!newState.systemConfig.common.expertMode;
-                    console.log(newState)
 
-                    this.getNews();
+
+                    this.findNewsInstance()
+                        .then(instance => this.socket.subscribeState(`admin.${instance}.info.newsFeed`, this.getNews(instance)))
+
+                    this.socket.getRawSocket().emit('sendToHost', newState.currentHost, 'getNotifications', {}, notifications => {
+                        this.getAdaptersWarning(notifications, this.socket, newState.currentHost);
+                    });
 
                     this.setState(newState, () => this.setCurrentTabTitle());
 
@@ -446,51 +453,40 @@ class App extends Router {
         }
     }
 
-    getNews = async () => {
-        // newsAdminDialogFunc
-        //    const result = await fetch('https://github.com/ioBroker/ioBroker.docs/blob/master/info/news.json');
-
-        const newsFeed = await this.socket.getState(`system.adapter.admin.0.info.newsFeed`);
-        const lastNewsId = await this.socket.getState(`system.adapter.admin.0.info.lastNewsId`);
-        if (!newsFeed) {
-            const newNewsFeed = {
-                common: {
-                    name: "newsFeed",
-                    desc: "Manually created",
-                    "role": "",
-                    type: "object",
-                    "read": true,
-                    "write": true,
-                    "def": false
-                },
-                type: "state"
+    findNewsInstance = () => {
+        let count = 0;
+        const maxCount = 200;
+        return new Promise(async (resolve) => {
+            for (count; count < maxCount; count++) {
+                let adminAlive = await this.socket.getState(`system.adapter.admin.${count}.alive`);
+                if (adminAlive && adminAlive.val) {
+                    resolve(count);
+                    break;
+                }
             }
-            await this.socket.extendObject('system.adapter.admin.0.info.newsFeed', newNewsFeed);
-            await this.socket.setState(`system.adapter.admin.0.info.newsFeed`, '[]');
-        }
-        if (!lastNewsId) {
-            const newLastNewsId = {
-                common: {
-                    name: "lastNewsId",
-                    desc: "Manually created",
-                    "role": "",
-                    type: "object",
-                    "read": true,
-                    "write": true,
-                    "def": false
-                },
-                type: "state"
-            }
-            await this.socket.extendObject('system.adapter.admin.0.info.lastNewsId', newLastNewsId);
-            await this.socket.setState(`system.adapter.admin.0.info.lastNewsId`, '');
+            resolve(0);
+        })
+    }
 
+    getAdaptersWarning = ({ result }, socket, currentHost) => {
+        if (!result || !result.system) {
+            return;
         }
-        if (newsFeed && JSON.parse(newsFeed?.val).length && lastNewsId) {
-            const checkNews = JSON.parse(newsFeed?.val)?.find(el => el.id > lastNewsId?.val || !lastNewsId?.val);
+        if (Object.keys(result.system.categories).length) {
+            setTimeout(() => {
+                adaptersWarningDialogFunc(result.system.categories, (name) => socket.getRawSocket().emit('sendToHost', currentHost, 'clearNotifications', { category: name }))
+            }, 5000);
+        }
+    }
+
+    getNews = (instance) => async (name, newsFeed) => {
+        const lastNewsId = await this.socket.getState(`admin.${instance}.info.newsLastId`);
+        if (newsFeed && JSON.parse(newsFeed?.val).length) {
+            const checkNews = JSON.parse(newsFeed?.val)?.find(el => el.id === lastNewsId?.val || !lastNewsId?.val);
             if (checkNews) {
-                newsAdminDialogFunc(JSON.parse(newsFeed.val), lastNewsId.val, (id) => {
-                    this.socket.setState(`system.adapter.admin.0.info.lastNewsId`, id);
-                })
+                newsAdminDialogFunc(JSON.parse(newsFeed.val), lastNewsId?.val, (id) => {
+                    this.socket.setState(`admin.${instance}.info.newsLastId`, id);
+                });
             }
         }
     }
@@ -1102,11 +1098,11 @@ class App extends Router {
                 <Login t={I18n.t} />
             </ThemeProvider>;
         } else
-        if (!this.state.ready) {
-            return <ThemeProvider theme={this.state.theme}>
-                <Loader theme={this.state.themeType} />
-            </ThemeProvider>;
-        }
+            if (!this.state.ready) {
+                return <ThemeProvider theme={this.state.theme}>
+                    <Loader theme={this.state.themeType} />
+                </ThemeProvider>;
+            }
 
         const { classes } = this.props;
         const small = this.props.width === 'xs' || this.props.width === 'sm';
