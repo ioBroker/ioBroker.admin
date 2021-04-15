@@ -26,6 +26,7 @@ import ConfigPassword from './ConfigPassword';
 import ConfigStaticHeader from './ConfigStaticHeader';
 import ConfigStaticDivider from './ConfigStaticDivider';
 import ConfigSetState from './ConfigSetState';
+import ConfigJsonEditor from './ConfigJsonEditor';
 
 //import ConfigTabs from "./ConfigTabs";
 // import { Paper } from '@material-ui/core';
@@ -55,6 +56,7 @@ const components = {
     header: ConfigStaticHeader,
     divider: ConfigStaticDivider,
     setState: ConfigSetState,
+    jsonEditor: ConfigJsonEditor
 };
 
 const styles = theme => ({

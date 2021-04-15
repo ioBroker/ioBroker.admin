@@ -381,6 +381,7 @@ const CardHosts = ({
         socket.subscribeState(`${_id}.diskFree`, warningFunc);
         socket.subscribeState(`${_id}.diskSize`, warningFunc);
         socket.subscribeState(`${_id}.diskWarning`, warningFunc);
+
         return () => {
             socket.unsubscribeObject(`${_id}.inputCount`, eventsInputFunc);
             socket.unsubscribeObject(`${_id}.outputCount`, eventsOutputFunc);
@@ -394,7 +395,8 @@ const CardHosts = ({
             socket.unsubscribeObject(`${_id}.diskWarning`, warningFunc);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [_id, socket, classes])
+    }, [_id, socket, classes]);
+
     const [focused, setFocused] = useState(false);
 
     return <Card key={_id} className={clsx(classes.root, hidden ? classes.hidden : '')}>

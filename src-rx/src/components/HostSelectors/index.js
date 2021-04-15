@@ -8,6 +8,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import I18n from '@iobroker/adapter-react/i18n';
 import Icon from '@iobroker/adapter-react/Components/Icon';
 import Utils from '@iobroker/adapter-react/Components/Utils';
+import clsx from 'clsx';
 
 const styles = theme => ({
     img: {
@@ -32,9 +33,31 @@ const styles = theme => ({
             backgroundColor: '#fff',
         }
     },
+    button: {
+        maxWidth: 300,
+    },
+    name: {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
+    },
+    width: {
+        width: '100%'
+    },
+    '@media screen and (max-width: 710px)': {
+        name: {
+            display: 'none'
+        },
+        width: {
+            width: 'auto'
+        },
+        imgButton: {
+            marginRight: 0,
+        }
+    },
 })
 
-export default withStyles(styles)(function HostSelectors({ classes, disabled, socket, currentHost, setCurrentHost , expertMode}) {
+export default withStyles(styles)(function HostSelectors({ classes, disabled, socket, currentHost, setCurrentHost, expertMode }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const [hosts, setHosts] = useState([]);
     const [alive, setAlive] = useState({});
@@ -74,21 +97,23 @@ export default withStyles(styles)(function HostSelectors({ classes, disabled, so
     }
 
     return <div>
-        <Button style={{
+        <Button className={classes.button} style={{
             background: hostSelect?.common?.color || 'none',
             borderColor: hostSelect?.common?.color ? Utils.invertColor(hostSelect.common.color) : 'none'
         }} title={I18n.t('Host selection')} variant={disabled || hosts.length < 2 ? 'text' : 'outlined'} disabled={disabled || hosts.length < 2} aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
             <div
+                className={classes.width}
                 style={{
                     display: 'flex',
-                    color: hostSelect?.common?.color ? Utils.invertColor(hostSelect.common.color) : 'none',
+                    color: hostSelect?.common?.color ? Utils.invertColor(hostSelect.common.color, true) : 'none',
                     alignItems: 'center',
                 }}>
                 <Icon
-                    className={classes.img}
+                    className={clsx(classes.img, classes.imgButton)}
                     src={hostSelect?.common?.icon || 'img/no-image.png'}
                 />
-                {hostSelect?.common?.name}
+                <div className={classes.name}>{hostSelect?.common?.name}</div>
+
             </div>
         </Button>
         <Menu
@@ -107,7 +132,7 @@ export default withStyles(styles)(function HostSelectors({ classes, disabled, so
                     onClick={(el) => handleCloseItem(el, idx)}>
                     <div style={{
                         display: 'flex',
-                        color: (color && Utils.invertColor(color)) || 'inherit',
+                        color: (color && Utils.invertColor(color, true)) || 'inherit',
                         alignItems: 'center',
                     }}>
                         <Icon

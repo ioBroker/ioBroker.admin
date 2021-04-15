@@ -262,7 +262,7 @@ class Drawer extends Component {
                     });
                 }
 
-                const READY_TO_USE = ['tab-intro', 'tab-adapters', 'tab-instances', 'tab-logs', 'tab-files', 'tab-objects','tab-hosts', 'tab-users', 'tab-enums'];
+                const READY_TO_USE = ['tab-intro', 'tab-adapters', 'tab-instances', 'tab-logs', 'tab-files', 'tab-objects', 'tab-hosts', 'tab-users', 'tab-enums'];
                 // DEV ONLY
                 let tabs = Object.keys(tabsInfo).filter(name => READY_TO_USE.includes(name));
 
@@ -363,7 +363,7 @@ class Drawer extends Component {
             if (!editList && !tab.visible) {
                 return null
             }
-            return <a href={`/#${tab.name}`} style={{color:'inherit',textDecoration: 'none'}}  key={tab.name}>
+            return <a href={`/#${tab.name}`} style={{ color: 'inherit', textDecoration: 'none' }} key={tab.name}>
                 <DragWrapper
                     canDrag={editList}
                     iconJSX={!!tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <img alt="" className={classes.icon} src={tab.icon} />}
@@ -401,12 +401,27 @@ class Drawer extends Component {
                         icon={!!tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <img alt="" className={classes.icon} src={tab.icon} />}
                         text={tab.title}
                         selected={currentTab === tab.name}
-                        badgeContent={tab.name === 'tab-logs' ? logErrors || logWarnings : 0}
-                        badgeColor={tab.name === 'tab-logs' ? (logErrors ? 'error' : 'warn') : ''}
+                        badgeContent={this.badge(tab).content}
+                        badgeColor={this.badge(tab).color}
                     />
                 </DragWrapper>
             </a>;
         });
+    }
+
+    badge = (tab) => {
+        const { stateContext: { logErrors, logWarnings, hostsUpdate, adaptersUpdate } } = this.context;
+        switch (tab.name) {
+            case "tab-logs":
+                return ({ content: logErrors || logWarnings || 0, color: (logErrors ? 'error' : 'warn') || '' });
+            case "tab-adapters":
+                return ({ content: adaptersUpdate || 0, color: 'primary' });
+            case "tab-hosts":
+                return ({ content: hostsUpdate || 0, color: 'primary' });
+            default:
+                return ({ content: 0, color: '' });
+
+        }
     }
 
     render() {

@@ -1,10 +1,10 @@
-import {Component} from 'react';
+import { Component } from 'react';
 
-import {MapContainer as LeafletMap, TileLayer} from 'react-leaflet';
-import {OpenStreetMapProvider} from 'leaflet-geosearch';
+import { MapContainer as LeafletMap, TileLayer } from 'react-leaflet';
+import { OpenStreetMapProvider } from 'leaflet-geosearch';
 
 import withWidth from '@material-ui/core/withWidth';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -179,7 +179,7 @@ class MainSettingsDialog extends Component {
             {
                 id: 'defaultHistory',
                 title: 'Default History',
-                values: [{id: '', title: this.props.t('None')}, ...this.props.histories.map(history => {
+                values: [{ id: '', title: this.props.t('None') }, ...this.props.histories.map(history => {
                     return {
                         id: history,
                         title: history
@@ -196,6 +196,12 @@ class MainSettingsDialog extends Component {
                         title: name
                     }
                 })
+            },
+            {
+                id: 'expertMode',
+                title: 'Expert mode',
+                values: [{ id: true, title: 'on' }, { id: false, title: 'off (default)' }]
+
             }
         ];
     }
@@ -203,7 +209,7 @@ class MainSettingsDialog extends Component {
     onMap = map => {
         this.map = map;
         const center = [
-            this.props.data.common.latitude  ? this.props.data.common.latitude  : 50,
+            this.props.data.common.latitude ? this.props.data.common.latitude : 50,
             this.props.data.common.longitude ? this.props.data.common.longitude : 10
         ];
 
@@ -226,7 +232,7 @@ class MainSettingsDialog extends Component {
     }
 
     getSelect(e, i) {
-        const {classes} = this.props;
+        const { classes } = this.props;
         const value = this.props.data.common[e.id];
         const items = e.values.map((elem, index) => <MenuItem value={elem.id} key={index}>
             {e.translate ? this.props.t(elem.title || elem.id) : elem.title || elem.id}
@@ -240,7 +246,7 @@ class MainSettingsDialog extends Component {
                 <Select
                     className={classes.formControl}
                     id={e.id}
-                    value={value}
+                    value={value === undefined ? !!value : value}
                     onChange={evt => this.handleChange(evt, i)}
                     displayEmpty
                 >
@@ -256,7 +262,7 @@ class MainSettingsDialog extends Component {
                 text={this.props.t('confirm_change_repo')}
                 onClose={result => {
                     const value = this.state.confirmValue;
-                    this.setState({confirm: false, confirmValue: null}, () => {
+                    this.setState({ confirm: false, confirmValue: null }, () => {
                         if (result) {
                             this.doChange('activeRepo', value);
                         }
@@ -269,7 +275,7 @@ class MainSettingsDialog extends Component {
     }
 
     getCounters = () => {
-        const {classes} = this.props;
+        const { classes } = this.props;
         const items = countries.map((elem, index) => <MenuItem value={elem.name} key={index}>
             {this.props.t(elem.name)}
         </MenuItem>);
@@ -309,7 +315,7 @@ class MainSettingsDialog extends Component {
         this.onChangeText(evt, 'city');
         const provider = new OpenStreetMapProvider();
 
-        provider.search({query: evt.target.value})
+        provider.search({ query: evt.target.value })
             .then(results => {
                 if (results[0]) {
                     setTimeout(() => {
@@ -330,7 +336,7 @@ class MainSettingsDialog extends Component {
         const id = this.getSettings()[selectId].id;
 
         if (id === 'activeRepo' && value !== 'stable' && value !== 'default') {
-            this.setState({confirm: true, confirmValue: value});
+            this.setState({ confirm: true, confirmValue: value });
         } else {
             this.doChange(id, value);
         }
@@ -344,20 +350,20 @@ class MainSettingsDialog extends Component {
 
     onMarkerDragend = evt => {
         const ll = evt.target._latlng;
-        this.doChange('latitude',  ll.lat);
+        this.doChange('latitude', ll.lat);
         this.doChange('longitude', ll.lng);
     }
 
     render() {
-        const {classes} = this.props;
+        const { classes } = this.props;
         const selectors = this.getSettings().map((e, i) => this.getSelect(e, i));
 
         const center = [
-            this.props.data.common.latitude  ? this.props.data.common.latitude  : 50,
+            this.props.data.common.latitude ? this.props.data.common.latitude : 50,
             this.props.data.common.longitude ? this.props.data.common.longitude : 10
         ];
 
-        const {zoom} = this.state;
+        const { zoom } = this.state;
         return <div className={classes.tabPanel}>
             {this.renderConfirmDialog()}
             <Grid container spacing={6}>
@@ -366,7 +372,7 @@ class MainSettingsDialog extends Component {
                         {selectors}
                     </Grid>
                 </Grid>
-                <Grid item lg={6} md={12} style={{width: '100%'}}>
+                <Grid item lg={6} md={12} style={{ width: '100%' }}>
                     <LeafletMap
                         center={center}
                         zoom={zoom}

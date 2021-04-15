@@ -54,6 +54,9 @@ import HostsWorker from './components/HostsWorker';
 import Login from './login/Login';
 import { ContextWrapper } from './components/ContextWrapper';
 import HostSelectors from './components/HostSelectors';
+import { Hidden } from '@material-ui/core';
+import { expertModeDialogFunc } from './dialogs/ExpertModeDialog';
+import { newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
 
 // Tabs
 const Adapters = React.lazy(() => import('./tabs/Adapters'));
@@ -163,6 +166,7 @@ const styles = theme => ({
     },
     avatarNotVisible: {
         opacity: 0,
+        marginLeft: 5,
         transition: 'opacity 0.3s'
     },
     avatarVisible: {
@@ -189,6 +193,11 @@ const styles = theme => ({
     performed: {
         color: '#388e3c',
         animation: '0.2s linear infinite alternate $myEffect2',
+    },
+    wrapperButtons: {
+        display: 'flex',
+        marginRight: 'auto',
+        overflowY: 'auto'
     },
     '@keyframes myEffect2': {
         '0%': {
@@ -275,7 +284,7 @@ class App extends Router {
 
                 allTabs: null,
 
-                expertMode: window.localStorage.getItem('App.expertMode') === 'true',
+                expertMode: false,
 
                 states: {},
                 hosts: [],
@@ -407,7 +416,14 @@ class App extends Router {
                         }
                     }
 
+                    this.getUpdateData(newState.currentHost, newState.hosts);
+
                     this.subscribeOnHostsStatus();
+
+                    newState.expertMode = window.sessionStorage.getItem('App.expertMode') === 'true' || !!newState.systemConfig.common.expertMode;
+                    console.log(newState)
+
+                    this.getNews();
 
                     this.setState(newState, () => this.setCurrentTabTitle());
 
@@ -416,9 +432,9 @@ class App extends Router {
                     if (!this.logsHandlerRegistered) {
                         this.logsHandlerRegistered = true;
                         this.logsWorker.registerErrorCountHandler(logErrors =>
-                            (this.state.currentTab.tab !== 'tab-logs' || (this.state.currentTab.tab === 'tab-logs' && this.context.stateContext.logErrors)) && this.context.setStateContext({logErrors}));
+                            (this.state.currentTab.tab !== 'tab-logs' || (this.state.currentTab.tab === 'tab-logs' && this.context.stateContext.logErrors)) && this.context.setStateContext({ logErrors }));
                         this.logsWorker.registerWarningCountHandler(logWarnings =>
-                            (this.state.currentTab.tab !== 'tab-logs' || (this.state.currentTab.tab === 'tab-logs' && this.context.stateContext.logWarnings)) && this.context.setStateContext({logWarnings}));
+                            (this.state.currentTab.tab !== 'tab-logs' || (this.state.currentTab.tab === 'tab-logs' && this.context.stateContext.logWarnings)) && this.context.setStateContext({ logWarnings }));
                     }
                 },
                 //onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
@@ -428,6 +444,61 @@ class App extends Router {
                 }
             });
         }
+    }
+
+    getNews = async () => {
+        // newsAdminDialogFunc
+        //    const result = await fetch('https://github.com/ioBroker/ioBroker.docs/blob/master/info/news.json');
+
+        const newsFeed = await this.socket.getState(`system.adapter.admin.0.info.newsFeed`);
+        const lastNewsId = await this.socket.getState(`system.adapter.admin.0.info.lastNewsId`);
+        if (!newsFeed) {
+            const newNewsFeed = {
+                common: {
+                    name: "newsFeed",
+                    desc: "Manually created",
+                    "role": "",
+                    type: "object",
+                    "read": true,
+                    "write": true,
+                    "def": false
+                },
+                type: "state"
+            }
+            await this.socket.extendObject('system.adapter.admin.0.info.newsFeed', newNewsFeed);
+            await this.socket.setState(`system.adapter.admin.0.info.newsFeed`, '[]');
+        }
+        if (!lastNewsId) {
+            const newLastNewsId = {
+                common: {
+                    name: "lastNewsId",
+                    desc: "Manually created",
+                    "role": "",
+                    type: "object",
+                    "read": true,
+                    "write": true,
+                    "def": false
+                },
+                type: "state"
+            }
+            await this.socket.extendObject('system.adapter.admin.0.info.lastNewsId', newLastNewsId);
+            await this.socket.setState(`system.adapter.admin.0.info.lastNewsId`, '');
+
+        }
+        if (newsFeed && JSON.parse(newsFeed?.val).length && lastNewsId) {
+            const checkNews = JSON.parse(newsFeed?.val)?.find(el => el.id > lastNewsId?.val || !lastNewsId?.val);
+            if (checkNews) {
+                newsAdminDialogFunc(JSON.parse(newsFeed.val), lastNewsId.val, (id) => {
+                    this.socket.setState(`system.adapter.admin.0.info.lastNewsId`, id);
+                })
+            }
+        }
+    }
+
+    getUpdateData = async (currentHost, hosts) => {
+        const repository = await this.socket.getRepository(currentHost, { update: false });
+        const installed = await this.socket.getInstalled(currentHost, { update: false })
+        this.context.setStateContext({ hosts, repository, installed });
     }
 
     logsWorkerChanged = (currentHost) => {
@@ -553,14 +624,14 @@ class App extends Router {
                 const objects = prevState.objects;
                 objects[id] = obj;
 
-                return {objects};
+                return { objects };
             });
         } else {
             this.setState(prevState => {
                 const objects = prevState.objects;
                 delete objects[id];
 
-                return {objects};
+                return { objects };
             });
         }
     }
@@ -642,10 +713,10 @@ class App extends Router {
     getCurrentTab() {
         if (this.state && this.state.currentTab && this.state.currentTab.tab) {
             if (this.state.currentTab.tab === 'tab-adapters') {
-                const small   = this.props.width === 'xs' || this.props.width === 'sm';
+                const small = this.props.width === 'xs' || this.props.width === 'sm';
                 const compact = !small && (this.state.drawerState === DrawerStates.compact);
-                const opened  = !small && (this.state.drawerState === DrawerStates.opened);
-                const closed  = small || (this.state.drawerState === DrawerStates.closed);
+                const opened = !small && (this.state.drawerState === DrawerStates.opened);
+                const closed = small || (this.state.drawerState === DrawerStates.closed);
 
                 return <Suspense fallback={<Connecting />}>
                     <Adapters
@@ -662,9 +733,9 @@ class App extends Router {
                         t={I18n.t}
                         lang={I18n.getLanguage()}
                         expertMode={this.state.expertMode}
-                        executeCommand={(cmd,cb)=>this.executeCommand(cmd,cb)}
+                        executeCommand={(cmd, cb) => this.executeCommand(cmd, cb)}
                         commandRunning={this.state.commandRunning}
-                        onSetCommandRunning={commandRunning => this.setState({commandRunning})}
+                        onSetCommandRunning={commandRunning => this.setState({ commandRunning })}
 
                         menuOpened={opened}
                         menuClosed={closed}
@@ -672,27 +743,27 @@ class App extends Router {
                     />
                 </Suspense>;
             } else if (this.state.currentTab.tab === 'tab-instances') {
-                    return <Suspense fallback={<Connecting />}>
-                        <Instances
-                            key="instances"
-                            menuPadding={this.state.drawerState === DrawerStates.closed ? 0 : (this.state.drawerState === DrawerStates.opened ? DRAWER_FULL_WIDTH : DRAWER_COMPACT_WIDTH)}
-                            socket={this.socket}
-                            lang={I18n.getLanguage()}
-                            protocol={this.state.protocol}
-                            hostname={this.state.hostname}
-                            themeName={this.state.themeName}
-                            themeType={this.state.themeType}
-                            theme={this.state.theme}
-                            expertMode={this.state.expertMode}
-                            idHost={this.state.hosts.find(({ common: { name } }) => name === this.state.currentHostName)._id}
-                            currentHostName={this.state.currentHostName}
-                            t={I18n.t}
-                            width={this.props.width}
-                            configStored={value => this.allStored(value)}
-                            executeCommand={cmd => this.executeCommand(cmd)}
-                            inBackgroundCommand={this.state.commandError || this.state.performed}
-                        />
-                    </Suspense>;
+                return <Suspense fallback={<Connecting />}>
+                    <Instances
+                        key="instances"
+                        menuPadding={this.state.drawerState === DrawerStates.closed ? 0 : (this.state.drawerState === DrawerStates.opened ? DRAWER_FULL_WIDTH : DRAWER_COMPACT_WIDTH)}
+                        socket={this.socket}
+                        lang={I18n.getLanguage()}
+                        protocol={this.state.protocol}
+                        hostname={this.state.hostname}
+                        themeName={this.state.themeName}
+                        themeType={this.state.themeType}
+                        theme={this.state.theme}
+                        expertMode={this.state.expertMode}
+                        idHost={this.state.hosts.find(({ common: { name } }) => name === this.state.currentHostName)._id}
+                        currentHostName={this.state.currentHostName}
+                        t={I18n.t}
+                        width={this.props.width}
+                        configStored={value => this.allStored(value)}
+                        executeCommand={cmd => this.executeCommand(cmd)}
+                        inBackgroundCommand={this.state.commandError || this.state.performed}
+                    />
+                </Suspense>;
             } else if (this.state.currentTab.tab === 'tab-intro') {
                 return <Suspense fallback={<Connecting />}>
                     <Intro
@@ -766,7 +837,7 @@ class App extends Router {
                         socket={this.socket}
                     />
                 </Suspense>;
-            }  else if (this.state.currentTab.tab === 'tab-hosts') {
+            } else if (this.state.currentTab.tab === 'tab-hosts') {
                 return <Suspense fallback={<Connecting />}>
                     <Hosts
                         menuPadding={this.state.drawerState === DrawerStates.closed ? 0 : (this.state.drawerState === DrawerStates.opened ? DRAWER_FULL_WIDTH : DRAWER_COMPACT_WIDTH)}
@@ -950,7 +1021,7 @@ class App extends Router {
         });
     }
 
-    executeCommand(cmd,callBack = false) {
+    executeCommand(cmd, callBack = false) {
         this.setState({
             cmd,
             cmdDialog: true,
@@ -964,7 +1035,7 @@ class App extends Router {
             cmdDialog: false,
             commandError: false,
             performed: false,
-            callBack:false
+            callBack: false
         });
     }
 
@@ -982,7 +1053,7 @@ class App extends Router {
     renderCommandDialog() {
         return this.state.cmd ?
             <CommandDialog
-                onSetCommandRunning={commandRunning => this.setState({commandRunning})}
+                onSetCommandRunning={commandRunning => this.setState({ commandRunning })}
                 onClose={() => this.closeCmdDialog()}
                 visible={this.state.cmdDialog}
                 callBack={this.state.callBack}
@@ -1012,10 +1083,10 @@ class App extends Router {
         </ConfirmDialog>;*/
 
         return this.state.dataNotStoredDialog && <ConfirmDialog
-            title={ I18n.t('Please confirm') }
-            text={ I18n.t('Some data are not stored. Discard?') }
-            ok={ I18n.t('Ok') }
-            cancel={ I18n.t('Cancel') }
+            title={I18n.t('Please confirm')}
+            text={I18n.t('Some data are not stored. Discard?')}
+            ok={I18n.t('Ok')}
+            cancel={I18n.t('Cancel')}
             onClose={isYes =>
                 isYes ? this.confirmDataNotStored() : this.confirmDataNotStored()}
         />;
@@ -1030,8 +1101,7 @@ class App extends Router {
             return <ThemeProvider theme={this.state.theme}>
                 <Login t={I18n.t} />
             </ThemeProvider>;
-        }
-
+        } else
         if (!this.state.ready) {
             return <ThemeProvider theme={this.state.theme}>
                 <Loader theme={this.state.themeType} />
@@ -1063,70 +1133,80 @@ class App extends Router {
                         >
                             <MenuIcon />
                         </IconButton>
-                        <IconButton>
-                            <VisibilityIcon />
-                        </IconButton>
-                        <IconButton onClick={() => Router.doNavigate(null, 'system')}>
-                            <BuildIcon />
-                        </IconButton>
-                        <IconButton onClick={() => this.toggleTheme()}>
-                            {this.state.themeName === 'dark' && <Brightness4Icon />}
-                            {this.state.themeName === 'blue' && <Brightness5Icon />}
-                            {this.state.themeName === 'colored' && <Brightness6Icon />}
-                            {this.state.themeName === 'light' && <Brightness7Icon />}
-                        </IconButton>
-                        {/*This will be removed later to settings, to not allow so easy to enable it*/}
-                        <IconButton
-                            onClick={() => {
-                                window.localStorage.setItem('App.expertMode', !this.state.expertMode);
-                                this.setState({ expertMode: !this.state.expertMode });
-                                this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode','*');
-                            }}
-                            style={{color: this.state.expertMode ? '#BB0000' : 'inherit'}}
-                            color="default"
-                        >
-                            <ExpertIcon
-                                title={I18n.t('Toggle expert mode')}
-                                glowColor={this.state.theme.palette.secondary.main}
-                                active={this.state.expertMode}
-                                className={clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
-                            />
-                        </IconButton>
-                        {/*This will be removed later to settings, to not allow so easy to edit it*/}
-                        {this.state.expertMode &&
-                            <IconButton onClick={() => Router.doNavigate(null, 'base')}>
-                                <BuildIcon className={classes.baseSettingsButton} />
+                        <div className={classes.wrapperButtons}>
+                            <IconButton>
+                                <VisibilityIcon />
                             </IconButton>
-                        }
-                        <HostSelectors
-                            expertMode={this.state.expertMode}
-                            socket={this.socket}
-                            currentHost={this.state.currentHost}
-                            setCurrentHost={(hostName, host) => {
-                                this.setState({
-                                    currentHostName: hostName,
-                                    currentHost: host
-                                }, () => {
-                                    this.logsWorkerChanged(host);
-                                    window.localStorage.setItem('App.currentHost', host);
-                                });
-                            }}
-                            disabled={
-                                this.state.currentTab.tab !== 'tab-instances' &&
-                                this.state.currentTab.tab !== 'tab-adapters' &&
-                                this.state.currentTab.tab !== 'tab-logs'
+                            <IconButton onClick={() => Router.doNavigate(null, 'system')}>
+                                <BuildIcon />
+                            </IconButton>
+                            <IconButton onClick={() => this.toggleTheme()}>
+                                {this.state.themeName === 'dark' && <Brightness4Icon />}
+                                {this.state.themeName === 'blue' && <Brightness5Icon />}
+                                {this.state.themeName === 'colored' && <Brightness6Icon />}
+                                {this.state.themeName === 'light' && <Brightness7Icon />}
+                            </IconButton>
+                            {/*This will be removed later to settings, to not allow so easy to enable it*/}
+                            <IconButton
+                                onClick={() => {
+                                    if (!!this.state.systemConfig.common.expertMode === !this.state.expertMode) {
+                                        window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
+                                        this.setState({ expertMode: !this.state.expertMode });
+                                        this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
+                                    } else {
+                                        expertModeDialogFunc(this.state.expertMode, () => {
+                                            window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
+                                            this.setState({ expertMode: !this.state.expertMode });
+                                            this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
+                                        }, () => Router.doNavigate(null, 'system'))
+                                    }
+                                }}
+                                style={{ color: this.state.expertMode ? '#BB0000' : 'inherit' }}
+                                color="default"
+                            >
+                                <ExpertIcon
+                                    title={I18n.t('Toggle expert mode')}
+                                    glowColor={this.state.theme.palette.secondary.main}
+                                    active={this.state.expertMode}
+                                    className={clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
+                                />
+                            </IconButton>
+                            {/*This will be removed later to settings, to not allow so easy to edit it*/}
+                            {this.state.expertMode &&
+                                <IconButton onClick={() => Router.doNavigate(null, 'base')}>
+                                    <BuildIcon className={classes.baseSettingsButton} />
+                                </IconButton>
                             }
-                        />
-                        <Typography variant="h6" className={classes.title} style={{ flexGrow: 1 }} />
-                        {this.state.cmd && !this.state.cmdDialog && <IconButton onClick={() => this.setState({ cmdDialog: true })}>
-                            <PictureInPictureAltIcon className={this.state.commandError ? classes.errorCmd : this.state.performed ? classes.performed : classes.cmd} />
-                        </IconButton>}
+                            <HostSelectors
+                                expertMode={this.state.expertMode}
+                                socket={this.socket}
+                                currentHost={this.state.currentHost}
+                                setCurrentHost={(hostName, host) => {
+                                    this.setState({
+                                        currentHostName: hostName,
+                                        currentHost: host
+                                    }, () => {
+                                        this.logsWorkerChanged(host);
+                                        window.localStorage.setItem('App.currentHost', host);
+                                    });
+                                }}
+                                disabled={
+                                    this.state.currentTab.tab !== 'tab-instances' &&
+                                    this.state.currentTab.tab !== 'tab-adapters' &&
+                                    this.state.currentTab.tab !== 'tab-logs'
+                                }
+                            />
+                            <Typography variant="h6" className={classes.title} style={{ flexGrow: 1 }} />
+                            {this.state.cmd && !this.state.cmdDialog && <IconButton onClick={() => this.setState({ cmdDialog: true })}>
+                                <PictureInPictureAltIcon className={this.state.commandError ? classes.errorCmd : this.state.performed ? classes.performed : classes.cmd} />
+                            </IconButton>}
+                        </div>
                         {/* Show host selector */}
 
                         <Grid container className={clsx(this.state.drawerState !== 0 && classes.avatarVisible, classes.avatarNotVisible)} spacing={1} alignItems="center" style={{ width: 'initial' }}>
-                            <Grid item>
+                            <Hidden xsDown>
                                 <Typography>admin</Typography>
-                            </Grid>
+                            </Hidden>
                             <Grid item>
                                 <Avatar className={clsx((this.state.themeName === 'colored' || this.state.themeName === 'blue') && classes.logoWhite)} alt="ioBroker" src="img/no-image.png" />
                             </Grid>
@@ -1159,9 +1239,9 @@ class App extends Router {
                     square
                     className={
                         clsx(classes.content, {
-                            [classes.contentMargin]:        !small && this.state.drawerState !== DrawerStates.compact,
+                            [classes.contentMargin]: !small && this.state.drawerState !== DrawerStates.compact,
                             [classes.contentMarginCompact]: !small && this.state.drawerState !== DrawerStates.opened,
-                            [classes.contentShift]:         !small && this.state.drawerState !== DrawerStates.closed
+                            [classes.contentShift]: !small && this.state.drawerState !== DrawerStates.closed
                         })
                     }
                 >

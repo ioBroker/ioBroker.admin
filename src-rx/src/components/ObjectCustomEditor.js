@@ -179,6 +179,7 @@ class ObjectCustomEditor extends Component {
             return Promise.resolve(null);
         } else {
             if (ad.common?.jsonCustom) {
+                debugger
                 return this.props.socket.readFile(adapter + '.admin', 'jsonCustom.json')
                     .then(json => {
                         try {

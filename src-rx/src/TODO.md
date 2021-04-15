@@ -22,6 +22,15 @@
 - Adapters - Use readme renderer from www.iobroker.net (BF)
 - Show number of possible updates on "Adapters" in menu on the left (impossible ?)
 
+## Wizard
+- Theme switcher
+
+## Discovery
+- todo
+
+## Logs
+- Redesign - very much space for nothing
+
 ## Instances
 
 ## Objects
@@ -29,17 +38,14 @@
 - Add in object edit the possibility to set color and icon (icon could be uploaded as base64 and may not be bigger than 5k) and use it for text color. Add possibility to scale the images.
   - Integrate https://react-dropzone.js.org/#!/Doka for image upload
   
-## Objects - Custom editor
-- edit config by JSON
-  
 ## Files
 <!-- - File viewer can show: json, js, ts, md, css, html -->
 - Edit file ACL for "adapter" or "instance" (All folders of the first level)
-- Edit files (by pressing button "Edit" opened edit mode) : json, js, txt, html (only in expert mode)// 
-not editable
+<!-- - Edit files (by pressing button "Edit" opened edit mode) : json, js, txt, html (only in expert mode)// 
+not editable -->
   
 ## Hosts
-- extend hostsWorker to detect updates of hosts
+<!-- - Read getRepository and compare js-controller with all hosts and show number of hosts that could be updated on the drawer -->
 
 ## Users
 - Do not allow edit of user ID
@@ -48,24 +54,18 @@ not editable
 - Easy admin mode
 
 ## After all is done
-- Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io)
+- Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io) (BF)
 
 ## Login and authentication
-- check and implement id needed
+- check and implement if needed
 
 ## JSON config - Admin settings dialog (index_m.html)
-- write it with react (see [SCHEMA.md](SCHEMA.md))
-- Should work: admin, cloud, email
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)
 
-- room editor (multiple or single choose)
-- func editor (multiple or single choose)
-<!-- - chips (see javascript config) -->
-<!-- //- table!!! -->
-- json editor as control
+<!-- - json editor as control -->
 
-- Write jsonCustom for:
+<!-- - Write jsonCustom for:
   - lovelace
   - eventlist
   - mqtt-client
-  - ??
+  - ?? -->

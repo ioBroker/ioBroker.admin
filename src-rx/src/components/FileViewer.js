@@ -51,51 +51,48 @@ const styles = theme => ({
 });
 
 export const EXTENSIONS = {
-    images: ['png', 'jpg', 'svg', 'jpeg', 'jpg'],
+    images: ['png', 'jpg', 'svg', 'jpeg', 'jpg', 'bmp'],
     code: ['js', 'json', 'md'],
     txt: ['log', 'txt', 'html', 'css', 'xml'],
 };
 
-function getFileExtension(fileName) {
-    const pos = fileName.lastIndexOf('.');
-    if (pos !== -1) {
-        return fileName.substring(pos + 1).toLowerCase();
-    } else {
-        return null;
-    }
-}
-
 class FileViewer extends Component {
     constructor(props) {
         super(props);
-        this.ext = getFileExtension(this.props.href); // todo: replace later with Utils.getFileExtension
+        this.ext = Utils.getFileExtension(this.props.href);
 
         this.state = {
             text: null,
             code: null,
             editing: !!this.props.formatEditFile || false,
+            editingValue: null,
             copyPossible: EXTENSIONS.code.includes(this.ext) || EXTENSIONS.txt.includes(this.ext)
         };
         if (this.state.copyPossible) {
-            const myInit = {
-                mode: 'no-cors',
-                headers: {
-                    'Content-type': 'application/json'
-                }
-            };
-            const checkLocal = window.location.host !== 'localhost:3000';
-            fetch(checkLocal ? `http://localhost:8081/${this.props.href}` : this.props.href, checkLocal ? myInit : {})
-                .then(response => {
-                    return response.text()
-                })
-                .then(data => {
+            const parts = this.props.href.split('/');
+            parts.splice(0, 2);
+            const adapter = parts[0];
+            const name = parts.splice(1).join('/');
+            this.props.socket.readFile(adapter, name)
+                .then(el => {
                     if (EXTENSIONS.txt.includes(this.ext)) {
-                        this.setState({ text: data });
+                        this.setState({ text: el, editingValue: el });
                     } else if (EXTENSIONS.code.includes(this.ext)) {
-                        this.setState({ code: data });
+                        this.setState({ code: el, editingValue: el });
                     }
-                });
+                })
         }
+    }
+
+    writeFile64 = () => {
+        const parts = this.props.href.split('/');
+        const data = this.state.editingValue;
+        parts.splice(0, 2);
+        const adapter = parts[0];
+        const name = parts.splice(1).join('/');
+        this.props.socket.writeFile64(adapter, name, Buffer.from(data).toString("base64"))
+        .then(_=>this.props.onClose())
+
     }
 
     static getDerivedStateFromProps() {
@@ -144,8 +141,8 @@ class FileViewer extends Component {
                 width="100%"
                 height="100%"
                 theme={this.props.themeName === 'dark' ? 'clouds_midnight' : 'chrome'}
-                value={this.state.text || this.state.code}
-                // onChange={newValue => this.onChange(newValue)}
+                value={this.state.editingValue}
+                onChange={newValue => this.setState({ editingValue: newValue })}
                 name="UNIQUE_ID_OF_DIV"
                 fontSize={14}
                 setOptions={{
@@ -170,7 +167,7 @@ class FileViewer extends Component {
             aria-labelledby="form-dialog-title"
         >
             <div className={this.props.classes.dialogTitle}>
-                <DialogTitle id="form-dialog-title">{this.props.t(this.state.editing?'Edit: %s':'View: %s', this.props.href)}</DialogTitle>
+                <DialogTitle id="form-dialog-title">{this.props.t(this.state.editing ? 'Edit: %s' : 'View: %s', this.props.href)}</DialogTitle>
                 {EXTENSIONS.images.includes(this.ext) && <div>
                     <IconButton
                         color={'inherit'}
@@ -192,7 +189,14 @@ class FileViewer extends Component {
                         <CopyIcon />
                         {this.props.t('Copy content')}
                     </Button> : null}
-
+                {this.state.editing ?
+                    <Button
+                        disabled={this.state.editingValue === this.state.code || this.state.editingValue === this.state.text}
+                        variant="contained"
+                        onClick={this.writeFile64}
+                    >
+                        {this.props.t('Save')}
+                    </Button> : null}
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
