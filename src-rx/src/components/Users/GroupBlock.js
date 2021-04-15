@@ -48,7 +48,7 @@ function GroupBlock(props) {
                     <DeleteIcon/>
                 </IconButton>
         </div>
-        <CardContent>
+        <CardContent>{JSON.stringify(props.group.common.members)}
             <Typography gutterBottom variant="h5" component="h5" className={props.classes.userGroupTitle}>
                 {
                     props.group.common.icon 

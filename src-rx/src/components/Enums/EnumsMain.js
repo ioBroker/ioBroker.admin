@@ -43,7 +43,9 @@ class EnumsList extends Component {
     state = {
         enums: null,
         enumsTree: null,
-        selectedTab: null
+        selectedTab: null,
+        currentCategory: null,
+        search: ''
     }
 
     componentDidMount() {
@@ -85,7 +87,10 @@ class EnumsList extends Component {
             currentContainer.data = currentEnum;
         }
         console.log(enumsTree);
-        this.setState({enumsTree: enumsTree})
+        this.setState({
+            enumsTree: enumsTree, 
+            currentCategory: Object.keys(enumsTree.children.enum.children)[0]
+        })
     }
 
     addItemToEnum = (itemId, enumId) => {
@@ -101,7 +106,7 @@ class EnumsList extends Component {
 
     renderTree(container) {
         return <div style={{paddingLeft: '10px'}}>
-            {container.data ? <EnumBlock 
+            {container.data && (!this.state.search || container.data._id.includes(this.state.search)) ? <EnumBlock 
                 enum={container.data}
             /> : null}
             {Object.values(container.children).map(item => this.renderTree(item))}
@@ -113,10 +118,14 @@ class EnumsList extends Component {
             return 'loading';
         }
         return <>
+            <div><input value={this.state.search} onChange={e => this.setState({search: e.target.value})}/></div>
             <DndProvider backend={HTML5Backend}>
                 <Grid container>
                     <Grid md={6} item>
-                        {this.renderTree(this.state.enumsTree)}
+                        {Object.keys(this.state.enumsTree.children.enum.children).map(category => 
+                            <h2><span onClick={() => this.setState({currentCategory: category})}>{category}</span></h2>
+                        )}
+                        {this.renderTree(this.state.enumsTree.children.enum.children[this.state.currentCategory])}
                     </Grid>
                     <Grid md={6} item>
                         <DragObjectBrowser 
