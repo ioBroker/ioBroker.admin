@@ -20,12 +20,36 @@ import GroupDeleteDialog from './GroupDeleteDialog';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
 
+
+const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, .2)';
 const styles = theme => ({
-    userGroupCard: {
+   
+    canDrop:{
+        backgroundColor:theme.palette.background.default
+    } ,
+    userGroupCard2: {
+        border: "1px solid #FFF",
+        borderColor: theme.palette.divider, 
         margin:    10,
-        height: 140,
-        backgroundColor: "#EEE",
-        //transition: "all 300ms ease-out"
+        minHeight: 140,
+        backgroundColor: theme.palette.background.default,
+        color: theme.palette.text.primary,
+        transition: "all 200ms ease-out",
+        opacity:1,
+        overflow: "hidden",
+        '&:hover': {
+            overflowY: 'auto',
+            boxShadow: boxShadowHover
+        } 
+    },
+    userGroupCardSecondary:{
+        color: theme.palette.text.primary,
+        backgroundColor: theme.palette.success.light
+    },
+    userCardContent:
+    {
+        height:"100%",
+        opacity:1 
     },
     userGroupTitle: {
         display: 'inline-flex',
@@ -35,32 +59,56 @@ const styles = theme => ({
         display: 'inline-flex',
         margin: 4,
         padding: 4,
-        backgroundColor: theme.palette.grey[200],
-        color: 'black',
+        backgroundColor: theme.palette.background.paper,
+        border: "1px solid #FFF",
+        borderColor: theme.palette.text.hint, 
+        color: theme.palette.text.primary,
         alignItems: 'center',
     },
     icon: {
         maxHeight: 42,
         maxWidth: 42,
+        marginRight:5
     },
     right: {
         float: 'right',
     },
     left: {
         float: 'left',
+        marginRight:10
     },
     dialog: {
         padding: 10,
         display: 'flex',
         flexDirection: 'column',
-        height: 600,
-        width: 400,
+        
         maxWidth: '100vw',
         maxHeight: '100vh',
         overflow: 'auto',
+        padding:20
+    },
+    descriptionPanel: {
+        width: '100%',
+        backgroundColor: 'transparent',
+        marginBottom: 20,
+        marginTop: 20,
+        marginLeft: 20,
+        opacity: .75,
+        border: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        '& a': {
+            paddingLeft: 3,
+            color: theme.palette.type === 'dark' ? '#EEE' : '#111',
+
+        }
     },
     dialogPaper: {
-        overflowY: 'initial'
+        overflowY: 'initial',
+        display:"flex",
+        flexDirection:"column",
+        justifyContent:"center",
+        alignItems:"center"
     },
     colorPicker: {
         
@@ -71,6 +119,9 @@ const styles = theme => ({
     },
     mainDescription: {
         fontSize: '200%'
+    },
+    deleteDialog: {
+        padding: 20
     }
 });
 
@@ -301,7 +352,7 @@ class UsersList extends Component {
         }
         return <>
             <DndProvider backend={HTML5Backend}>
-                <div className={this.props.classes.mainDescription}>
+                <div className={this.props.classes.descriptionPanel}>
                     {this.props.t('You can drag users to groups.')}
                 </div>
                 <Grid container spacing={2}>

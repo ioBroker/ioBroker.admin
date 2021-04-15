@@ -1,4 +1,5 @@
 import { useDrop } from 'react-dnd';
+import clsx from 'clsx';
 import Color from 'color';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
@@ -20,23 +21,25 @@ function GroupBlock(props) {
             CanDrop: monitor.canDrop()
         }),
     }));
-    let textColor = !props.group.common.color || Color(props.group.common.color).hsl().object().l > 50 ? 'black' : 'white'; 
     let opacity =  .7; 
+    let backgroundColor = '';
     const isActive = CanDrop && isOver;
     if (isActive) {
         opacity = isCanDrop ? 1 : 0.125;
+        backgroundColor = props.classes.userGroupCardSecondary;
     }
     else if (CanDrop) {
         opacity = isCanDrop ? .75 : .25;
+
     }
     return <Card 
-        style={{ color: textColor, opacity }} 
+        style={{ opacity, overflow: "hidden" }} 
         ref={drop} 
-        className={props.classes.userGroupCard}
+        className={ clsx( props.classes.userGroupCard2, backgroundColor  ) }
     >
         <div 
             className={props.classes.right} 
-            style={{color: textColor}}
+            style={{ }}
         >
             <IconButton size="small" onClick={()=>{props.showGroupEditDialog(props.group, false)}}>
                 <EditIcon/>
@@ -55,7 +58,7 @@ function GroupBlock(props) {
                         ? 
                         <img alt="" className={props.classes.icon} src={props.group.common.icon}/> 
                         : 
-                        <GroupIcon/>
+                        <GroupIcon className={props.classes.icon} />
                 } 
                 <span>
                     {props.getName(props.group.common.name)}
@@ -86,16 +89,16 @@ function GroupBlock(props) {
                     let user = props.users.find(user => user._id === member);
                     return user 
                         ? 
-                        <Card key={i} className={props.classes.userGroupMember}>
+                        <Card key={i} variant="outlined" className={props.classes.userGroupMember}>
                          {
                             user.common.icon 
                             ? 
                             <img alt="" className={props.classes.icon} src={user.common.icon}/> 
                             : 
-                            <PersonIcon/>
+                            <PersonIcon className={props.classes.icon} />
                         }
                         {props.getName(user.common.name)} 
-                        <IconButton 
+                        <IconButton
                             size="small"
                             onClick={() => props.removeUserFromGroup(member, props.group._id)}
                         >

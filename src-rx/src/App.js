@@ -1106,6 +1106,10 @@ class App extends Router {
 
         const { classes } = this.props;
         const small = this.props.width === 'xs' || this.props.width === 'sm';
+
+        console.log( this.state.themeName )
+        console.log( this.state.theme )
+
         return <ThemeProvider theme={this.state.theme}>
             <Paper elevation={0} className={classes.root}>
                 <AppBar

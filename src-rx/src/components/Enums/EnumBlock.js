@@ -22,7 +22,7 @@ function EnumBlock(props) {
     return <Card ref={drop}>
         <h2>{props.enum._id}</h2>
         <div>
-            {props.enum.common.members}
+            {props.enum.common.members ? props.enum.common.members.map(member => <div>{member}</div>) : null}
         </div>
     </Card>
 }
