@@ -165,6 +165,8 @@ class Objects extends Component {
                 selected={this.state.selected}
                 name={this.state.name}
                 expertMode={this.props.expertMode}
+                isFloatComma={this.props.isFloatComma}
+                dateFormat={this.props.dateFormat}
                 t={this.t}
                 lang={this.props.lang}
                 themeName={this.props.themeName}
@@ -226,6 +228,8 @@ Objects.propTypes = {
     themeType: PropTypes.string,
     theme: PropTypes.object,
     expertMode: PropTypes.bool,
+    isFloatComma: PropTypes.bool,
+    dateFormat: PropTypes.string,
 };
 
 /** @type {typeof Objects} */

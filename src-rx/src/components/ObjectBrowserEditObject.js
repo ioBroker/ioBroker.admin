@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -297,6 +297,8 @@ class ObjectBrowserEditObject extends Component {
         return <DialogSelectID
             key="selectDialog"
             imagePrefix="."
+            dateFormat={this.props.dateFormat}
+            isFloatComma={this.props.isFloatComma}
             socket={this.props.socket}
             dialogName="aliasesEdit"
             title={this.props.t('Select for') + ' ' + this.props.obj._id}
@@ -596,6 +598,8 @@ ObjectBrowserEditObject.propTypes = {
     onClose: PropTypes.func.isRequired,
     dialogName: PropTypes.string,
     objects: PropTypes.object,
+    dateFormat: PropTypes.string,
+    isFloatComma: PropTypes.bool,
 
     t: PropTypes.func,
 };

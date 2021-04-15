@@ -80,7 +80,7 @@ class ObjectBrowserValue extends Component {
 
     onUpdate() {
         if (this.state.type === 'number') {
-            this.value = parseFloat(this.value) || 0;
+            this.value = parseFloat(this.value.replace(',', '.')) || 0;
         } else if (this.state.type === 'boolean') {
             this.value = this.value === true || this.value === 'true' || this.value === '1' || this.value === 'ON' || this.value === 'on';
         }

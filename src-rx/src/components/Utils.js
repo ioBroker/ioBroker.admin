@@ -629,6 +629,7 @@ class Utils {
 
                 const p = text.split(m[0]);
                 p[0] && result.push(<span key={'a' + (key++)}>{p[0]}</span>);
+                // eslint-disable-next-line
                 result.push(<a key={'a' + (key++)} href={href ? href[1] : ''} target={target ? target[1] : '_blank'} rel={rel ? rel[1] : ''}>{title ? title[1] : ''}</a>);
                 text = p[1];
                 m = text && text.match(/<a [^<]+<\/a>/);
@@ -994,7 +995,7 @@ class Utils {
             if (Array.isArray(mix)) {
                 for (k=0; k < mix.length; k++) {
                     if (mix[k]) {
-                        if (y = Utils._toVal(mix[k])) {
+                        if ((y = Utils._toVal(mix[k]))) {
                             str && (str += ' ');
                             str += y;
                         }
@@ -1026,8 +1027,8 @@ class Utils {
         let x;
         let str = '';
         while (i < arguments.length) {
-            if (tmp = arguments[i++]) {
-                if (x = Utils._toVal(tmp)) {
+            if ((tmp = arguments[i++])) {
+                if ((x = Utils._toVal(tmp))) {
                     str && (str += ' ');
                     str += x
                 }
@@ -1052,7 +1053,7 @@ class Utils {
      * @returns {'dark' | 'light'}
      */
     static getThemeType(themeName = '') {
-        themeName = themeName || window.localStorage && window.localStorage.getItem('App.themeName');
+        themeName = themeName || (window.localStorage && window.localStorage.getItem('App.themeName'));
         return themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light';
     }
 
@@ -1071,7 +1072,7 @@ class Utils {
      * @returns {string} the new theme name.
      */
     static toggleTheme(themeName) {
-        themeName = themeName || window.localStorage && window.localStorage.getItem('App.themeName');
+        themeName = themeName || (window.localStorage && window.localStorage.getItem('App.themeName'));
 
         // dark => blue => colored => light => dark
         const newThemeName = themeName === 'dark' ? 'blue' :
@@ -1133,31 +1134,31 @@ class Utils {
     }
 
     static formatDate(dateObj, dateFormat) {
-        //return dateObj.getFullYear() + '-' +
-        //    ('0' + (dateObj.getMonth() + 1).toString(10)).slice(-2) + '-' +
-        //    ('0' + (dateObj.getDate()).toString(10)).slice(-2) + ' ' +
-        //    ('0' + (dateObj.getHours()).toString(10)).slice(-2) + ':' +
-        //    ('0' + (dateObj.getMinutes()).toString(10)).slice(-2) + ':' +
-        //    ('0' + (dateObj.getSeconds()).toString(10)).slice(-2);
-        // Following implementation is 5 times faster
-        if (!dateObj) return '';
-    
-        let text = dateObj.getFullYear();
-        let v = dateObj.getMonth() + 1;
-        if (v < 10) {
-            text += '-0' + v;
-        } else {
-            text += '-' + v;
+        // format could be DD.MM.YYYY, YYYY.MM.DD or MM/DD/YYYY
+
+        if (!dateObj) {
+            return '';
         }
-    
-        v = dateObj.getDate();
-        if (v < 10) {
-            text += '-0' + v;
-        } else {
-            text += '-' + v;
+
+        let text;
+        let mm = dateObj.getMonth() + 1;
+        if (mm < 10) {
+            mm = '0' + mm;
         }
-    
-        v = dateObj.getHours();
+
+        let dd = dateObj.getDate();
+        if (dd < 10) {
+            dd = '0' + dd;
+        }
+
+        if (dateFormat === 'MM/DD/YYYY') {
+            text = mm + '/' + dd + '/' + dateObj.getFullYear();
+        } else {
+            text = dateObj.getFullYear() + '-' + mm + '-' + dd;
+        }
+
+        // time
+        let v = dateObj.getHours();
         if (v < 10) {
             text += ' 0' + v;
         } else {
@@ -1169,14 +1170,14 @@ class Utils {
         } else {
             text += ':' + v;
         }
-    
+
         v = dateObj.getSeconds();
         if (v < 10) {
             text += ':0' + v;
         } else {
             text += ':' + v;
         }
-    
+
         v = dateObj.getMilliseconds();
         if (v < 10) {
             text += '.00' + v;
@@ -1185,7 +1186,7 @@ class Utils {
         } else {
             text += '.' + v;
         }
-    
+
         return text;
     }
 

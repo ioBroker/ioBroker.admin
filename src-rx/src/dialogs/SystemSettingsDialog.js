@@ -1,6 +1,6 @@
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
-import {Component} from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 import Dialog from '@material-ui/core/Dialog';
@@ -230,7 +230,7 @@ class SystemSettingsDialog extends Component {
                 dataAux: 'diagData',
                 handle: type => this.onChangeDiagType(type)
             }
-        ]
+        ];
     }
 
     onChangeDiagType = type => {
@@ -249,8 +249,9 @@ class SystemSettingsDialog extends Component {
     }
 
     getDialogContent() {
-        if (this.state.loading)
+        if (this.state.loading) {
             return <LinearProgress/>;
+        }
 
         const tab = this.getTabs().filter(e => e.id === parseInt(this.props.currentTab.id, 10))[0] || this.getTabs()[0];
 
@@ -269,11 +270,11 @@ class SystemSettingsDialog extends Component {
                 themeType={this.props.themeType}
                 t={this.props.t}
             />
-        </div>
+        </div>;
     }
 
     onTab = (event, newTab) => {
-        Router.doNavigate(null, 'system', newTab)
+        Router.doNavigate(null, 'system', newTab);
     }
 
     onChangedTab(id, data, idAux, dataAux) {
@@ -317,9 +318,9 @@ class SystemSettingsDialog extends Component {
             <DialogContent className={this.props.classes.content}>
                 <AppBar position="static" color="default">
                     <div className={this.props.classes.dialogTitle}>
-                        <Typography className="dialogName">
+                        {this.props.width !== 'xs' && this.props.width !== 'sm' && <Typography className="dialogName">
                             {this.props.t('Base settings')}
-                        </Typography>
+                        </Typography>}
                         <Tabs
                             className={this.props.classes.tab}
                             indicatorColor="primary"
@@ -339,7 +340,6 @@ class SystemSettingsDialog extends Component {
                             <CloseIcon/>
                         </IconButton>
                     </div>
-
                 </AppBar>
                 {this.getDialogContent()}
                 {this.renderConfirmDialog()}
@@ -374,6 +374,7 @@ SystemSettingsDialog.propTypes = {
     themeType: PropTypes.string,
     onClose: PropTypes.func.isRequired,
     currentTab: PropTypes.object,
+    width: PropTypes.string,
 };
 
 export default withWidth()(withStyles(styles)(SystemSettingsDialog));

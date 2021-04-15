@@ -43,7 +43,7 @@ import Slider from '@material-ui/core/Slider';
 import Typography from '@material-ui/core/Typography';
 
 // own
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import Utils from './Utils'; // @iobroker/adapter-react/Components/Utils
 import TabContainer from './TabContainer';
 import TabContent from './TabContent';
 import TabHeader from './TabHeader';
@@ -1065,64 +1065,7 @@ function quality2text(q) {
     return text + (custom ? '|0x' + (custom >> 16).toString(16).toUpperCase() : '') + ' [0x' + q.toString(16).toUpperCase() + ']';
 }
 
-function formatDate(dateObj, dateFormat) {
-    //return dateObj.getFullYear() + '-' +
-    //    ('0' + (dateObj.getMonth() + 1).toString(10)).slice(-2) + '-' +
-    //    ('0' + (dateObj.getDate()).toString(10)).slice(-2) + ' ' +
-    //    ('0' + (dateObj.getHours()).toString(10)).slice(-2) + ':' +
-    //    ('0' + (dateObj.getMinutes()).toString(10)).slice(-2) + ':' +
-    //    ('0' + (dateObj.getSeconds()).toString(10)).slice(-2);
-    // Following implementation is 5 times faster
-    if (!dateObj) return '';
-
-    let text = dateObj.getFullYear();
-    let v = dateObj.getMonth() + 1;
-    if (v < 10) {
-        text += '-0' + v;
-    } else {
-        text += '-' + v;
-    }
-
-    v = dateObj.getDate();
-    if (v < 10) {
-        text += '-0' + v;
-    } else {
-        text += '-' + v;
-    }
-
-    v = dateObj.getHours();
-    if (v < 10) {
-        text += ' 0' + v;
-    } else {
-        text += ' ' + v;
-    }
-    v = dateObj.getMinutes();
-    if (v < 10) {
-        text += ':0' + v;
-    } else {
-        text += ':' + v;
-    }
-
-    v = dateObj.getSeconds();
-    if (v < 10) {
-        text += ':0' + v;
-    } else {
-        text += ':' + v;
-    }
-
-    v = dateObj.getMilliseconds();
-    if (v < 10) {
-        text += '.00' + v;
-    } else if (v < 100) {
-        text += '.0' + v;
-    } else {
-        text += '.' + v;
-    }
-
-    return text;
-}
-
-function formatValue(id, state, obj, texts) {
+function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
     const states = getStates(obj);
     const isCommon = obj.common;
 
@@ -1131,6 +1074,9 @@ function formatValue(id, state, obj, texts) {
     const type = typeof v;
     if (type === 'number') {
         v = (Math.round(v * 100000000) / 100000000); // remove 4.00000000000000001
+        if (isFloatComma) {
+            v = v.toString().replace('.', ',');
+        }
     } else if (type === 'object') {
         v = JSON.stringify(v);
     } else if (type !== 'string') {
@@ -1159,16 +1105,24 @@ function formatValue(id, state, obj, texts) {
             valFull.push({ t: texts.ack, v: state.ack.toString() });
         }
         if (state.ts) {
-            valFull.push({ t: texts.ts, v: state.ts ? formatDate(new Date(state.ts)) : '' });
+            valFull.push({ t: texts.ts, v: state.ts ? Utils.formatDate(new Date(state.ts), dateFormat) : '' });
         }
         if (state.lc) {
-            valFull.push({ t: texts.lc, v: state.lc ? formatDate(new Date(state.lc)) : '' });
+            valFull.push({ t: texts.lc, v: state.lc ? Utils.formatDate(new Date(state.lc), dateFormat) : '' });
         }
         if (state.from) {
-            valFull.push({ t: texts.from, v: state.from || '' });
+            let from = (state.from || '');
+            if (from.startsWith('system.adapter.')) {
+                from = from.substring(15);
+            }
+            valFull.push({ t: texts.from, v: from });
         }
         if (state.user) {
-            valFull.push({ t: texts.user, v: state.user || '' });
+            let user = (state.user || '');
+            if (user.startsWith('system.user.')) {
+                user = user.substring(12);
+            }
+            valFull.push({ t: texts.user, v: user });
         }
         valFull.push({ t: texts.quality, v: quality2text(state.q || 0), nbr: true });
     }
@@ -3050,7 +3004,7 @@ class ObjectBrowser extends Component {
         const state = this.states[id];
         let info = item.data.state;
         if (!info) {
-            info = item.data.state = item.data.state || formatValue(id, state, item.data.obj, this.texts);
+            info = item.data.state = item.data.state || formatValue(id, state, item.data.obj, this.texts, this.props.dateFormat, this.props.isFloatComma);
 
             info.valFull = info.valFull.map(item => [
                 <div className={classes.cellValueTooltipTitle} key={item.t}>{item.t}:</div>,
@@ -3548,7 +3502,7 @@ class ObjectBrowser extends Component {
         }
         item.data.obj?.from && newValueTitle.push(this.texts.objectChangedFrom   + ' ' + item.data.obj.from.replace(/^system\.adapter\.|^system\./, ''));
         item.data.obj?.user && newValueTitle.push(this.texts.objectChangedBy     + ' ' + item.data.obj.user.replace(/^system\.user\./, ''));
-        item.data.obj?.ts   && newValueTitle.push(this.texts.objectChangedByUser + ' ' + formatDate(new Date(item.data.obj.ts)));
+        item.data.obj?.ts   && newValueTitle.push(this.texts.objectChangedByUser + ' ' + Utils.formatDate(new Date(item.data.obj.ts), this.props.dateFormat));
 
         const alias = id.startsWith('alias.') && item.data.obj?.common?.alias?.id ?
             <div
@@ -3648,8 +3602,8 @@ class ObjectBrowser extends Component {
                 <>
                     {this.columnsVisibility.changedFrom ? <div className={classes.cellName} style={{ width: this.columnsVisibility.changedFrom }} title={newValueTitle.join('\n')}>{checkVisibleObjectType && this.states[id]?.from ? newValue : null}</div> : null}
                     {this.columnsVisibility.qualityCode ? <div className={classes.cellName} style={{ width: this.columnsVisibility.qualityCode }}>{checkVisibleObjectType ? quality2text(this.states[id]?.q || 0) : null}</div> : null}
-                    {this.columnsVisibility.timestamp   ? <div className={classes.cellName} style={{ width: this.columnsVisibility.timestamp }}>{checkVisibleObjectType && this.states[id]?.ts ? formatDate(new Date(this.states[id].ts)) : null}</div> : null}
-                    {this.columnsVisibility.lastChange  ? <div className={classes.cellName} style={{ width: this.columnsVisibility.lastChange }}>{checkVisibleObjectType && this.states[id]?.lc ? formatDate(new Date(this.states[id].lc)) : null}</div> : null}
+                    {this.columnsVisibility.timestamp   ? <div className={classes.cellName} style={{ width: this.columnsVisibility.timestamp }}>{checkVisibleObjectType && this.states[id]?.ts ? Utils.formatDate(new Date(this.states[id].ts), this.props.dateFormat) : null}</div> : null}
+                    {this.columnsVisibility.lastChange  ? <div className={classes.cellName} style={{ width: this.columnsVisibility.lastChange }}>{checkVisibleObjectType && this.states[id]?.lc ? Utils.formatDate(new Date(this.states[id].lc), this.props.dateFormat) : null}</div> : null}
                 </>
             }
             {this.adapterColumns.map(it => <div className={classes.cellAdapter} style={{ width: this.columnsVisibility[it.id] }} key={it.id} title={it.adapter + ' => ' + it.pathText}>{this.renderCustomValue(obj, it, item)}</div>)}
@@ -3996,6 +3950,8 @@ class ObjectBrowser extends Component {
             obj={this.objects[this.state.editObjectDialog]}
             roleArray={this.info.roles}
             objects={this.objects}
+            dateFormat={this.props.dateFormat}
+            isFloatComma={this.props.isFloatComma}
             themeName={this.props.themeName}
             socket={this.props.socket}
             dialogName={this.props.dialogName}
@@ -4137,6 +4093,8 @@ ObjectBrowser.propTypes = {
     notEditable: PropTypes.bool,
     foldersFirst: PropTypes.bool,
     disableColumnSelector: PropTypes.bool,
+    isFloatComma: PropTypes.bool,
+    dateFormat: PropTypes.string,
 
     // components
     objectCustomDialog: PropTypes.oneOfType([

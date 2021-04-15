@@ -84,6 +84,8 @@ ConfigTabs.propTypes = {
     instance: PropTypes.number,
     commandRunning: PropTypes.bool,
     onCommandRunning: PropTypes.func,
+    dateFormat: PropTypes.string,
+    isFloatComma: PropTypes.bool,
 
     customObj: PropTypes.object,
     instanceObj: PropTypes.object,

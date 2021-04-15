@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -8,6 +8,7 @@ import I18n from '@iobroker/adapter-react/i18n';
 
 import ConfigTabs from './ConfigTabs';
 import ConfigPanel from './ConfigPanel';
+import DialogSelectID from "@iobroker/adapter-react/Dialogs/SelectID";
 
 const styles = theme => ({
     root: {
@@ -221,6 +222,8 @@ class JsonConfigComponent extends Component {
                 schema={item}
                 systemConfig={this.state.systemConfig}
                 customs={this.props.customs}
+                dateFormat={this.props.dateFormat}
+                isFloatComma={this.props.isFloatComma}
 
                 custom={this.props.custom}
                 customObj={this.props.customObj}
@@ -244,6 +247,8 @@ class JsonConfigComponent extends Component {
                 schema={item}
                 systemConfig={this.state.systemConfig}
                 customs={this.props.customs}
+                dateFormat={this.props.dateFormat}
+                isFloatComma={this.props.isFloatComma}
 
                 custom={this.props.custom}
                 customObj={this.props.customObj}
@@ -277,6 +282,8 @@ JsonConfigComponent.propTypes = {
     custom: PropTypes.bool, // is the customs settings must be shown
     customObj: PropTypes.object,
     instanceObj: PropTypes.object,
+    dateFormat: PropTypes.string,
+    isFloatComma: PropTypes.bool,
 
     themeType: PropTypes.string,
     themeName: PropTypes.string,

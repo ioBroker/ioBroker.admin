@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
+
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import { DialogTitle, makeStyles, ThemeProvider, Typography } from '@material-ui/core';
 
 import InfoIcon from '@material-ui/icons/Info';
 import WarningIcon from '@material-ui/icons/Warning';
 import CancelIcon from '@material-ui/icons/Cancel';
 
 import I18n from '@iobroker/adapter-react/i18n';
-import { DialogTitle, makeStyles, ThemeProvider, Typography } from '@material-ui/core';
-
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 
@@ -70,23 +70,24 @@ const useStyles = makeStyles((theme) => ({
 
 const Status = ({ name, ...props }) => {
     switch (name) {
-        case "warning":
-            return <WarningIcon style={{ color: '#ffca00' }} {...props} />
-        case "info":
-            return <InfoIcon style={{ color: '#007cff' }} {...props} />
-        case "danger":
-            return <CancelIcon style={{ color: '#ff2f2f' }} {...props} />
+        case 'warning':
+            return <WarningIcon style={{ color: '#ffca00' }} {...props} />;
+        case 'info':
+            return <InfoIcon style={{ color: '#007cff' }} {...props} />;
+        case 'danger':
+            return <CancelIcon style={{ color: '#ff2f2f' }} {...props} />;
         default:
-            return <InfoIcon style={{ color: '#007cff' }} {...props} />
+            return <InfoIcon style={{ color: '#007cff' }} {...props} />;
     }
 }
 
-const NewsAdminDialog = ({ newsArr, current, func }) => {
+const NewsAdminDialog = ({ newsArr, current, callback, themeType, themeName }) => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
     const [id, setId] = useState(current);
     const [last, setLast] = useState(false);
     const [indexArr, setIndexArr] = useState(0);
+
     useEffect(() => {
         const item = newsArr.find(el => el.id === id);
         if (item) {
@@ -106,34 +107,37 @@ const NewsAdminDialog = ({ newsArr, current, func }) => {
             setId(newsArr[0].id);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [last])
+    }, [last]);
+
     const onClose = () => {
         // setOpen(false);
         setLast(!last)
-        func(id);
-    }
-    const black = Utils.getThemeName() === 'dark' || Utils.getThemeName() === 'blue';
-    return <ThemeProvider theme={theme(Utils.getThemeName())}>
+        callback(id);
+    };
+
+    const lang = I18n.getLanguage();
+    const text = (newsArr[indexArr].content[lang] || newsArr[indexArr].content.en).replace(/='([^']*)'/g, '="$1"');
+
+    return <ThemeProvider theme={theme(themeName)}>
         <Dialog
             onClose={onClose}
             open={open}
             classes={{ paper: classes.paper }}
         >
             <div className={classes.blockInfo}>
-                {new Date(newsArr[indexArr].created).toLocaleDateString(I18n.getLanguage())}
+                {new Date(newsArr[indexArr].created).toLocaleDateString(lang)}
                 <Status className={classes.img} name={newsArr[indexArr].class} />
             </div>
-            <DialogTitle>{I18n.t("News")}</DialogTitle>
+            <DialogTitle>{I18n.t('You have unread news!')}</DialogTitle>
             <DialogTitle>{newsArr[indexArr].title[I18n.getLanguage()]}</DialogTitle>
             <DialogContent className={classes.overflowHidden} dividers>
                 <div className={classes.root}>
                     <div className={classes.pre}>
                         <Typography
-                            style={black ? { color: 'black' } : null}
+                            style={themeType === 'dark' ? { color: 'black' } : null}
                             variant="body2"
-                            color="textSecondary"
                             component="p">
-                            {newsArr[indexArr].content[I18n.getLanguage()]}
+                            {Utils.renderTextWithA(text)}
                         </Typography>
                     </div>
                 </div>
@@ -151,11 +155,11 @@ const NewsAdminDialog = ({ newsArr, current, func }) => {
     </ThemeProvider>;
 }
 
-export const newsAdminDialogFunc = (newsArr, current, func) => {
+export const newsAdminDialogFunc = (newsArr, current, themeName, themeType, callback) => {
     if (!node) {
         node = document.createElement('div');
         node.id = 'renderModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<NewsAdminDialog newsArr={newsArr} current={current} func={func} />, node);
+    return ReactDOM.render(<NewsAdminDialog newsArr={newsArr} themeName={themeName} themeType={themeType} current={current} callback={callback} />, node);
 }

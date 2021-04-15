@@ -85,7 +85,7 @@ function getElevations(color, overlay) {
  * @param {string} type
  * @returns {import('./types').Theme}
  */
-export default type => {
+const Theme = type => {
     let theme;
     if (type === 'dark') {
         theme = {
@@ -102,6 +102,7 @@ export default type => {
                 secondary: {
                     main: '#436a93'
                 },
+                expert: '#14bb00',
                 text: {
                     primary: '#ffffff',
                     secondary: '#ffffff'
@@ -141,6 +142,7 @@ export default type => {
                 secondary: {
                     main: '#436a93'
                 },
+                expert: '#14bb00',
                 text: {
                     primary: '#ffffff',
                     secondary: '#ffffff'
@@ -175,7 +177,8 @@ export default type => {
                 },
                 secondary: {
                     main: '#164477'
-                }
+                },
+                expert: '#96fc96'
             },
             overrides: {
                 MuiAppBar: {
@@ -205,7 +208,8 @@ export default type => {
                 },
                 secondary: {
                     main: '#164477'
-                }
+                },
+                expert: '#14bb00'
             },
             overrides: {
                 MuiLink: {
@@ -236,4 +240,6 @@ export default type => {
     };
 
     return createMuiTheme(theme);
-}
+};
+
+export default Theme;

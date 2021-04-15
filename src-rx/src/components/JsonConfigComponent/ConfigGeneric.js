@@ -312,6 +312,8 @@ ConfigGeneric.propTypes = {
     common: PropTypes.object,
     adapterName: PropTypes.string,
     instance: PropTypes.number,
+    dateFormat: PropTypes.string,
+    isFloatComma: PropTypes.bool,
 
     customObj: PropTypes.object,
     instanceObj: PropTypes.object,

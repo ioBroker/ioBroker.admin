@@ -68,6 +68,8 @@ class Config extends Component {
                 socket={this.props.socket}
                 themeName={this.props.themeName}
                 themeType={this.props.themeType}
+                dateFormat={this.props.dateFormat}
+                isFloatComma={this.props.isFloatComma}
                 t={this.props.t}
             />;
         } else {
@@ -108,7 +110,9 @@ Config.propTypes = {
     socket: PropTypes.object,
     themeName: PropTypes.string,
     themeType: PropTypes.string,
-    t: PropTypes.func
+    t: PropTypes.func,
+    isFloatComma: PropTypes.bool,
+    dateFormat: PropTypes.string,
 };
 
 export default withStyles(styles)(Config);

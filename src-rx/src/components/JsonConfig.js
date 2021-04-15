@@ -112,6 +112,8 @@ class JsonConfig extends Router {
                 themeType={this.props.themeType}
                 adapterName={this.props.adapterName}
                 instance={this.props.instance}
+                isFloatComma={this.props.isFloatComma}
+                dateFormat={this.props.dateFormat}
 
                 schema={this.state.schema}
                 common={this.state.common}
@@ -143,6 +145,8 @@ JsonConfig.propTypes = {
     menuPadding: PropTypes.number,
     adapterName: PropTypes.string,
     instance: PropTypes.number,
+    isFloatComma: PropTypes.bool,
+    dateFormat: PropTypes.string,
 
     socket: PropTypes.object,
 

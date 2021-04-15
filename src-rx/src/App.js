@@ -12,6 +12,9 @@ import { PROGRESS } from './components/Connection';
 import Loader from '@iobroker/adapter-react/Components/Loader';
 import I18n from '@iobroker/adapter-react/i18n';
 import Router from '@iobroker/adapter-react/Components/Router';
+import Utils from '@iobroker/adapter-react/Components/Utils';
+import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
+import theme from './Theme'; // @iobroker/adapter-react/Theme
 
 // @material-ui/core
 import AppBar from '@material-ui/core/AppBar';
@@ -27,17 +30,13 @@ import Typography from '@material-ui/core/Typography';
 import MenuIcon from '@material-ui/icons/Menu';
 import BuildIcon from '@material-ui/icons/Build';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import ExpertIcon from '@iobroker/adapter-react/Components/ExpertIcon';
+import ExpertIcon from './helpers/IconExpert'//'@iobroker/adapter-react/Components/ExpertIcon';
 
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import Brightness5Icon from '@material-ui/icons/Brightness5';
 import Brightness6Icon from '@material-ui/icons/Brightness6';
 import Brightness7Icon from '@material-ui/icons/Brightness7';
 import PictureInPictureAltIcon from '@material-ui/icons/PictureInPictureAlt';
-
-import i18n from '@iobroker/adapter-react/i18n';
-import Utils from '@iobroker/adapter-react/Components/Utils';
-import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 
 import CommandDialog from './dialogs/CommandDialog';
 import Drawer from './components/Drawer';
@@ -47,7 +46,6 @@ import Connecting from './components/Connecting';
 import WizardDialog from './dialogs/WizardDialog';
 import BaseSettingsDialog from './dialogs/BaseSettingsDialog';
 import SystemSettingsDialog from './dialogs/SystemSettingsDialog';
-import theme from './Theme';
 import LogsWorker from './components/LogsWorker';
 import InstancesWorker from './components/InstancesWorker';
 import HostsWorker from './components/HostsWorker';
@@ -57,7 +55,6 @@ import HostSelectors from './components/HostSelectors';
 import { Hidden } from '@material-ui/core';
 import { expertModeDialogFunc } from './dialogs/ExpertModeDialog';
 import { newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
-import { forEach } from 'lodash-es';
 import { adaptersWarningDialogFunc } from './dialogs/AdaptersWarningDialog';
 
 // Tabs
@@ -485,14 +482,13 @@ class App extends Router {
         }
     }
 
-    getNews = (instance) => async (name, newsFeed) => {
+    getNews = instance => async (name, newsFeed) => {
         const lastNewsId = await this.socket.getState(`admin.${instance}.info.newsLastId`);
         if (newsFeed && JSON.parse(newsFeed?.val).length) {
             const checkNews = JSON.parse(newsFeed?.val)?.find(el => el.id === lastNewsId?.val || !lastNewsId?.val);
             if (checkNews) {
-                newsAdminDialogFunc(JSON.parse(newsFeed.val), lastNewsId?.val, (id) => {
-                    this.socket.setState(`admin.${instance}.info.newsLastId`, id);
-                });
+                newsAdminDialogFunc(JSON.parse(newsFeed.val), lastNewsId?.val, this.state.themeName, this.state.themeType, id =>
+                    this.socket.setState(`admin.${instance}.info.newsLastId`, {val: id, ack: true}));
             }
         }
     }
@@ -760,6 +756,8 @@ class App extends Router {
                         idHost={this.state.hosts.find(({ common: { name } }) => name === this.state.currentHostName)._id}
                         currentHostName={this.state.currentHostName}
                         t={I18n.t}
+                        dateFormat={this.state.systemConfig.common.dateFormat}
+                        isFloatComma={this.state.systemConfig.common.isFloatComma}
                         width={this.props.width}
                         configStored={value => this.allStored(value)}
                         executeCommand={cmd => this.executeCommand(cmd)}
@@ -837,6 +835,8 @@ class App extends Router {
                         expertMode={this.state.expertMode}
                         lang={I18n.getLanguage()}
                         socket={this.socket}
+                        dateFormat={this.state.systemConfig.common.dateFormat}
+                        isFloatComma={this.state.systemConfig.common.isFloatComma}
                     />
                 </Suspense>;
             } else if (this.state.currentTab.tab === 'tab-hosts') {
@@ -930,6 +930,7 @@ class App extends Router {
 
     getSystemSettingsDialog() {
         return <SystemSettingsDialog
+            width={this.props.width}
             currentHost={this.state.currentHost}
             themeName={this.state.themeName}
             themeType={this.state.themeType}
@@ -1059,7 +1060,7 @@ class App extends Router {
                 onClose={() => this.closeCmdDialog()}
                 visible={this.state.cmdDialog}
                 callBack={this.state.callBack}
-                header={i18n.t('Command')}
+                header={I18n.t('Command')}
                 onInBackground={() => this.setState({ cmdDialog: false })}
                 cmd={this.state.cmd}
                 errorFunc={() => this.setState({ commandError: true })}
@@ -1077,11 +1078,11 @@ class App extends Router {
         /*return <ConfirmDialog
             onClose={() => this.closeDataNotStoredDialog()}
             open={this.state.dataNotStoredDialog}
-            header={i18n.t('Please confirm')}
+            header={I18n.t('Please confirm')}
             onConfirm={() => this.confirmDataNotStored()}
-            confirmText={i18n.t('Ok')}
+            confirmText={I18n.t('Ok')}
         >
-            {i18n.t('Some data are not stored. Discard?')}
+            {I18n.t('Some data are not stored. Discard?')}
         </ConfirmDialog>;*/
 
         return this.state.dataNotStoredDialog && <ConfirmDialog
@@ -1156,14 +1157,14 @@ class App extends Router {
                                         this.setState({ expertMode: !this.state.expertMode });
                                         this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
                                     } else {
-                                        expertModeDialogFunc(this.state.expertMode, () => {
+                                        expertModeDialogFunc(this.state.expertMode, this.state.themeType, () => {
                                             window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
                                             this.setState({ expertMode: !this.state.expertMode });
                                             this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
-                                        }, () => Router.doNavigate(null, 'system'))
+                                        }, () => Router.doNavigate(null, 'system'));
                                     }
                                 }}
-                                style={{ color: this.state.expertMode ? '#BB0000' : 'inherit' }}
+                                style={{ color: this.state.expertMode ? this.state.theme.palette.expert : undefined }}
                                 color="default"
                             >
                                 <ExpertIcon

@@ -27,6 +27,8 @@ import ConfigStaticHeader from './ConfigStaticHeader';
 import ConfigStaticDivider from './ConfigStaticDivider';
 import ConfigSetState from './ConfigSetState';
 import ConfigJsonEditor from './ConfigJsonEditor';
+import DialogSelectID from "@iobroker/adapter-react/Dialogs/SelectID";
+import React from "react";
 
 //import ConfigTabs from "./ConfigTabs";
 // import { Paper } from '@material-ui/core';
@@ -109,6 +111,8 @@ class ConfigPanel extends ConfigGeneric {
                 onError={this.props.onError}
                 onChange={this.props.onChange}
                 customs={this.props.customs}
+                dateFormat={this.props.dateFormat}
+                isFloatComma={this.props.isFloatComma}
 
                 customObj={this.props.customObj}
                 instanceObj={this.props.instanceObj}
@@ -154,6 +158,8 @@ ConfigPanel.propTypes = {
     instance: PropTypes.number,
     commandRunning: PropTypes.bool,
     onCommandRunning: PropTypes.func,
+    dateFormat: PropTypes.string,
+    isFloatComma: PropTypes.bool,
 
     customObj: PropTypes.object,
     instanceObj: PropTypes.object,

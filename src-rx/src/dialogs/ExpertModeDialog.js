@@ -11,6 +11,7 @@ import { DialogTitle, IconButton, makeStyles, ThemeProvider, Typography } from '
 
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
+import ExpertIcon from '../helpers/IconExpert'//'@iobroker/adapter-react/Components/ExpertIcon';
 
 let node = null;
 
@@ -19,7 +20,10 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         height: 'auto',
-        display: 'flex'
+        display: 'flex',
+        borderRadius: 4,
+        fontSize: 16,
+        fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif'
     },
     paper: {
         maxWidth: 1000
@@ -30,9 +34,13 @@ const useStyles = makeStyles((theme) => ({
     pre: {
         overflow: 'auto',
         margin: 20,
+    },
+    text: {
+        fontSize: 16
     }
 }));
-const ExpertModeDialog = ({ boolSettings, func, buttonIcon }) => {
+
+const ExpertModeDialog = ({ boolSettings, func, buttonIcon, themeType }) => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
 
@@ -41,34 +49,34 @@ const ExpertModeDialog = ({ boolSettings, func, buttonIcon }) => {
         func();
         document.body.removeChild(node);
         node = null;
-    }
-    const black = Utils.getThemeName() === 'dark' || Utils.getThemeName() === 'blue';
+    };
+
     return <ThemeProvider theme={theme(Utils.getThemeName())}>
         <Dialog
             onClose={onClose}
             open={open}
             classes={{ paper: classes.paper }}
         >
-            <DialogTitle>{I18n.t('Expert mode')}</DialogTitle>
+            <DialogTitle><ExpertIcon style={{marginRight: 8}}/>{I18n.t('Expert mode')}</DialogTitle>
             <DialogContent className={classes.overflowHidden} dividers>
                 <div className={classes.root}>
-                    <div className={classes.pre}>
+                    <div className={classes.pre} style={{color: themeType === 'dark' ? '#111': null}}>
                         <Typography
-                            style={black ? { color: 'black' } : null}
+                            className={classes.text}
                             variant="body2"
-                            color="textSecondary"
                             component="p">
-                            {I18n.t(boolSettings ? 'Will turn off only for the current session' : 'Will turn on only for the current session')}
+                            {I18n.t(boolSettings ? I18n.t('Now the expert mode will be deactivated only during this browser session.') : I18n.t('Now the expert mode will be active only during this browser session.'))}
                         </Typography>
                         <Typography
-                            style={black ? { color: 'black' } : null}
+                            className={classes.text}
                             variant="body2"
-                            color="textSecondary"
                             component="p">
-                            {I18n.t('If you want forever, go to settings')}
+                            {I18n.t('If you need to save the mode all the time, you can do this in the system settings.')}
                         </Typography>
+                        {I18n.t('Use this button:')}
                         <IconButton
-                            style={black ? { color: 'black' } : null}
+                            color="primary"
+                            style={{color: themeType === 'dark' ? '#111': null}}
                             size="small"
                             onClick={() => {
                                 onClose();
@@ -92,11 +100,11 @@ const ExpertModeDialog = ({ boolSettings, func, buttonIcon }) => {
     </ThemeProvider>;
 }
 
-export const expertModeDialogFunc = (boolSettings, func, buttonIcon) => {
+export const expertModeDialogFunc = (boolSettings, themeType, func, buttonIcon, ) => {
     if (!node) {
         node = document.createElement('div');
         node.id = 'renderModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<ExpertModeDialog buttonIcon={buttonIcon} boolSettings={boolSettings} func={func} />, node);
+    return ReactDOM.render(<ExpertModeDialog themeType={themeType} buttonIcon={buttonIcon} boolSettings={boolSettings} func={func} />, node);
 }

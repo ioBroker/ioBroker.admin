@@ -915,6 +915,8 @@ class Instances extends Component {
                         width={this.props.width}
                         t={this.t}
                         configStored={this.props.configStored}
+                        dateFormat={this.props.dateFormat}
+                        isFloatComma={this.props.isFloatComma}
                     />
                 </Paper>;
             }
@@ -1034,6 +1036,8 @@ Instances.propTypes = {
     systemLang: PropTypes.string,
     width: PropTypes.string,
     menuPadding: PropTypes.number,
+    isFloatComma: PropTypes.bool,
+    dateFormat: PropTypes.string,
 };
 
 export default withWidth()(withStyles(styles)(Instances));
