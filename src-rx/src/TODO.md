@@ -8,18 +8,9 @@
   
 ## Info
 - Request info one time in a day and show new information
-  - admin.X.info.newsFeed => JSON https://github.com/ioBroker/ioBroker.docs/blob/master/info/news.json
-  - admin.X.info.lastNewsId => consists of last read news
-  - IF the user presses OK => So delete acknowledged news from the list.
-  - Subscribe on `admin.X.info.newsFeed` and test on update
-  - start news check with 5 sec delay
-
   - news could have the attribute "img" and if it is present, so show it at the top of the dialog
   - news could have the attribute "link" if it presents so show the button with "linkTitle"
-  <!-- - Title of the dialog: You have unread news -->
-  <!-- - Buttons of the dialog: "Acknowledge" -->
-
-
+  
 <!-- - Support of notifications: https://github.com/ioBroker/ioBroker.js-controller/pull/1153 
   - system.host.HOSTNAME.notifications -->
   <!-- - this.props.socket.getRawSocket().emit('sendToHost', host, 'getNotifications', {}, notifications =>);
@@ -66,12 +57,10 @@
 - Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io) (BF)
 
 ## Login and authentication
-- check and implement if needed
+- layout
 
 ## JSON config - Admin settings dialog (index_m.html)
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)
-- comport selector (BF)
-<!-- - json editor as control -->
 
 <!-- - Write jsonCustom for:
   - lovelace

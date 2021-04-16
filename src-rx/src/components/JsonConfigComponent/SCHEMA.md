@@ -39,28 +39,28 @@ const schema = {
                 // all labels, texts, helps can be multilanguage or just strings
                 
                 // all types could have:
-                //  !- sm - width in 1/12 of screen on small screen
-                //  !- md - width in 1/12 of screen on middle screens
-                //  !- lg - width in 1/12 of screen on large screens
-                //  !- xs - width in 1/12 of screen on very small screens
-                //  - width - width in px (if number) or string (%, rem, em) 
-                //  !- newLine - should be shown from new line
+                //  - sm - width in 1/12 of screen on small screen
+                //  - md - width in 1/12 of screen on middle screens
+                //  - lg - width in 1/12 of screen on large screens
+                //  - xs - width in 1/12 of screen on very small screens
+                //  !- width - width in px (if number) or string (%, rem, em) 
+                //  - newLine - should be shown from new line
                 //  - label - String or object like {en: 'Name', ru: 'Имя'}
-                //  !- hidden - JS function that could use native.attributes for calculation
+                //  - hidden - JS function that could use native.attributes for calculation
                 //  - hideOnlyControl - if hidden the place will be shown, but no control
-                //  !- disabled - JS function that could use native.attributes for calculation
-                //  - helpLink - href to help
-                //  ! - help - help text (multi-language)
-                //  ! - icon - base64 svg
-                //  - encrypted - is value encrypted or not (of course only for texts)
+                //  - disabled - JS function that could use native.attributes for calculation
+                //  !- helpLink - href to help
+                //  - help - help text (multi-language)
+                //  - icon - base64 svg
+                //  ! - encrypted - is value encrypted or not (of course only for texts)
                 //    - if encrypted, use __encrypted__ value for show and if was changed, encrypt it with socket.encrypt 
-                //  !- style - css style (default)
-                //  !- darkStyle - css style for dark mode
-                //  !- validator - JS function: true no error, false - error
-                //  !- tooltip - optional tooltip
+                //  - style - css style (default)
+                //  - darkStyle - css style for dark mode
+                //  - validator - JS function: true no error, false - error
+                //  - tooltip - optional tooltip
                 //  - default - default value
                 //  - placeholder - placeholder (for text mostly)
-                //  !- confirm
+                //  - confirm
                 //     - condition - JS function: true show confirm dialog
                 //     - text
                 //     - title
@@ -69,44 +69,47 @@ const schema = {
                 //     - type - info, warning, error, none
                 
                 // possible types:
-                // !- tabs
+                // - tabs
                 
-                // !- tab
-                //  - icon - tab can have icon (base64)
+                // - tab
+                //   - icon - tab can have icon (base64)
+                //   - label
                 
-                // !- text*
+                // - text
                 
-                // !- number* (min, max)
+                // - number
+                //    - min
+                //    - max
                 
-                // !- color*
+                // - color
                 
-                // !- checkbox**
+                // - checkbox
                 
-                // - slider               
+                // !- slider               
                 //   - min (default 0)
                 //   - max (default 100)
                 //   - step (default 1)
                 
-                // !- ip - bind address
+                // - ip - bind address
                 //   - listenOnAllPorts - add 0.0.0.0 to option
                 //   - onlyIp4 - show only IP4 addresses
                 //   - onlyIp6 - show only IP6 addresses
                 
-                // !- user - Select user from system.user. (With color and icon)
+                // - user - Select user from system.user. (With color and icon)
                 //   - short - no system.user.
                 
-                // - room - Select room from enum.room (With color and icon)
+                // !- room - Select room from enum.room (With color and icon)
                 //   - short - no system.room.
                 //   - use this.props.socket.getEnums('room')
                 
-                // - func - Select function from enum.func (With color and icon)
+                // !- func - Select function from enum.func (With color and icon)
                 //   - short - no system.func.
                 //   - use this.props.socket.getEnums('func')
 
-                // !- select* 
+                // - select 
                 //   - options - [{label: {en: "option 1"}, value: 1}, ...]
                 
-                // - icon - base64
+                // !- icon - base64
                 //   - maxSize
                 //   - maxWidth
                 //   - maxHeight
@@ -133,26 +136,26 @@ const schema = {
                 //   - crop - if true, allow user to crop the image
                 //   - square - width must be equal to height or crop must allow only square as shape
                 
-                // - file - saves file (not image) as file of adapter.0 object
+                // !- file - saves file (not image) as file of adapter.0 object
                 //   - filename - name of file
                 
                 // - oid - object ID - show it with name, color and icon
                 //   - types: ['channel', 'device', ...] (only "state" by default)
                 
-                // !- password (repeat - if repeat password must be shown with the same width settings)
+                // - password (repeat - if repeat password must be shown with the same width settings)
                 //   - repeat password must be compared with password
                 //   - visible: true if allow view of password
                 
-                // !- instance
+                // - instance
                 //  - adapter - name of adapter
                 //  - allowDeactivate - if true. Additional option "deactivate" is shown
                 
                 // - chips - user can enter word and it will be added (see cloud => services => White list)
                 
-                // - alive - just indication if the instance is alive and it could be used in "hidden" and "disabled" (will not be saved in config)
+                // !- alive - just indication if the instance is alive and it could be used in "hidden" and "disabled" (will not be saved in config)
                 //   - just text: Instance is running, Instance is not running
                 
-                // !- pattern* - read only field with pattern like 'https://${data.ip}:${data.port}' (will not be saved in config)                
+                // - pattern* - read only field with pattern like 'https://${data.ip}:${data.port}' (will not be saved in config)                
                 //  - text input - read only that shows pattern
                 //  - copyToClipboard - if true - show button
                 //  - pattern - my pattern
@@ -171,18 +174,18 @@ const schema = {
                 //    - val: '${data.myText}_test' or number. Type must be detected automatically and convertaion done too
                 //    - okText: Alert that will be shown by pressing the button
 
-                // !- staticText - static text like description
+                // - staticText - static text like description
                 //    - text - multi-language text
                 
-                // !- staticLink - static link
+                // - staticLink - static link
                 //    - text - multi-language text
                 //    - href - link
                 
-                // !- staticImage - static image
+                // - staticImage - static image
                 //    - href - optional HTTP link
                 //    - src - name of picture (from admin directory)
                 
-                // - coordinates ?
+                // !- coordinates ?
                 
                 // - table - table with items that could be deleted, added, movedUP, moved Down
                 //   - items:   [{type: see above, width: px or %, title: {en: 'header'}, attr: 'name', filter: false, sort: true}]
@@ -192,14 +195,14 @@ const schema = {
                 // - json - json editor 
                 //   - height in px or % or em
                 
-                // !- language 
+                // - language 
                 //   - system (allow the usage of the system language from system.config as default)
                 
-                // !- certificate
+                // - certificate
                 //   - certType: public, private, chained
                 //   - see https://github.com/ioBroker/ioBroker.admin/blob/master/src/js/adapter-settings.js#L324
                                 
-                // !- custom
+                //!- custom
                 //  - component - Component name that will be provided via props, like componentInstancesEditor
                 
                 // - divider - horizontal line
@@ -209,6 +212,41 @@ const schema = {
                 // - header
                 //   - text
                 //   - size 1-5 => h1-h5
+                
+                // - comPort
+                //   - filter (as regex)
+                //     to use this option, your adapter must implement listUart message
+                //        adapter.on('message', obj => {
+                //            if (obj) {
+                //                switch (obj.command) {
+                //                    case 'listUart':
+                //                        if (obj.callback) {
+                //                            try {
+                //                                const serialport = require('serialport');
+                //                                if (serialport) {
+                //                                    // read all found serial ports
+                //                                    serialport.list()
+                //                                        .then(ports => {
+                //                                            adapter.log.info('List of port: ' + JSON.stringify(ports));
+                //                                            adapter.sendTo(obj.from, obj.command, ports, obj.callback);
+                //                                        })
+                //                                        .catch(e => {
+                //                                            adapter.sendTo(obj.from, obj.command, [], obj.callback);
+                //                                            adapter.log.error(e)
+                //                                        });
+                //                                } else {
+                //                                    adapter.log.warn('Module serialport is not available');
+                //                                    adapter.sendTo(obj.from, obj.command, [{comName: 'Not available'}], obj.callback);
+                //                                }
+                //                            } catch (e) {
+                //                                adapter.sendTo(obj.from, obj.command, [{comName: 'Not available'}], obj.callback);
+                //                            }
+                //                        }
+                //    
+                //                        break;
+                //                }
+                //            }
+                //        });
             }
         },
         tab2: {

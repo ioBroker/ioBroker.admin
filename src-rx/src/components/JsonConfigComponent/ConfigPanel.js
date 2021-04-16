@@ -27,7 +27,7 @@ import ConfigStaticHeader from './ConfigStaticHeader';
 import ConfigStaticDivider from './ConfigStaticDivider';
 import ConfigSetState from './ConfigSetState';
 import ConfigJsonEditor from './ConfigJsonEditor';
-import DialogSelectID from "@iobroker/adapter-react/Dialogs/SelectID";
+import ConfigComPort from './ConfigComPort';
 import React from "react";
 
 //import ConfigTabs from "./ConfigTabs";
@@ -58,7 +58,8 @@ const components = {
     header: ConfigStaticHeader,
     divider: ConfigStaticDivider,
     setState: ConfigSetState,
-    jsonEditor: ConfigJsonEditor
+    jsonEditor: ConfigJsonEditor,
+    comPort: ConfigComPort,
 };
 
 const styles = theme => ({
