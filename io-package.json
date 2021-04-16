@@ -1,7 +1,6 @@
 {
     "common": {
         "name": "admin",
-        "title": "Admin",
         "version": "5.0.2",
         "news": {
             "5.0.2": {

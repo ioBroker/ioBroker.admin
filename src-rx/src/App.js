@@ -56,6 +56,7 @@ import { Hidden } from '@material-ui/core';
 import { expertModeDialogFunc } from './dialogs/ExpertModeDialog';
 import { newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
 import { adaptersWarningDialogFunc } from './dialogs/AdaptersWarningDialog';
+import EasyMode from "./tabs/EasyMode";
 
 // Tabs
 const Adapters = React.lazy(() => import('./tabs/Adapters'));
@@ -382,68 +383,84 @@ class App extends Router {
                         });
                     }
                 },
-                onReady: async (objects, scripts) => {
+                onReady: async objects => {
                     I18n.setLanguage(this.socket.systemLang);
-                    // create Workers
-                    this.logsWorker = this.logsWorker || new LogsWorker(this.socket, 1000);
-                    this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
-                    this.hostsWorker = this.hostsWorker || new HostsWorker(this.socket);
+                    this.socket.getIsEasyModeStrict()
+                        .then(async isStrict => {
+                            if (isStrict) {
+                                this.socket.getEasyMode()
+                                    .then(config => {
+                                        this.setState({
+                                            lang: this.socket.systemLang,
+                                            ready: true,
+                                            strictEasyMode: true,
+                                            easyModeConfigs: config.configs,
+                                            objects,
+                                        });
+                                    })
+                            } else {
+                                // create Workers
+                                this.logsWorker      = this.logsWorker      || new LogsWorker(this.socket, 1000);
+                                this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
+                                this.hostsWorker     = this.hostsWorker     || new HostsWorker(this.socket);
 
-                    const newState = {
-                        lang: this.socket.systemLang,
-                        ready: true,
-                        objects,
-                    };
+                                const newState = {
+                                    lang: this.socket.systemLang,
+                                    ready: true,
+                                    objects,
+                                };
 
-                    try {
-                        newState.systemConfig = await this.socket.getSystemConfig();
-                        newState.wizard = !newState.systemConfig.common.licenseConfirmed;
-                    } catch (error) {
-                        console.log(error);
-                    }
+                                try {
+                                    newState.systemConfig = await this.socket.getSystemConfig();
+                                    newState.wizard = !newState.systemConfig.common.licenseConfirmed;
+                                } catch (error) {
+                                    console.log(error);
+                                }
 
-                    newState.hosts = await this.socket.getHosts();
+                                newState.hosts = await this.socket.getHosts();
 
-                    if (!this.state.currentHost) {
-                        const currentHost = window.localStorage.getItem('App.currentHost');
-                        if (currentHost && newState.hosts.find(({ _id }) => _id === currentHost)) {
-                            newState.currentHost = newState.hosts.find(({ _id }) => _id === currentHost)._id;
-                            newState.currentHostName = newState.hosts.find(({ _id }) => _id === currentHost).common.name;
-                        } else {
-                            newState.currentHost = newState.hosts[0]._id;
-                            newState.currentHostName = newState.hosts[0].common.name;
-                        }
-                    }
+                                if (!this.state.currentHost) {
+                                    const currentHost = window.localStorage.getItem('App.currentHost');
+                                    if (currentHost && newState.hosts.find(({ _id }) => _id === currentHost)) {
+                                        newState.currentHost = newState.hosts.find(({ _id }) => _id === currentHost)._id;
+                                        newState.currentHostName = newState.hosts.find(({ _id }) => _id === currentHost).common.name;
+                                    } else {
+                                        newState.currentHost = newState.hosts[0]._id;
+                                        newState.currentHostName = newState.hosts[0].common.name;
+                                    }
+                                }
 
-                    this.getUpdateData(newState.currentHost, newState.hosts);
+                                this.getUpdateData(newState.currentHost, newState.hosts);
 
-                    this.subscribeOnHostsStatus();
+                                this.subscribeOnHostsStatus();
 
-                    newState.expertMode = window.sessionStorage.getItem('App.expertMode') === 'true' || !!newState.systemConfig.common.expertMode;
+                                newState.expertMode = window.sessionStorage.getItem('App.expertMode') === 'true' || !!newState.systemConfig.common.expertMode;
 
-                    // Give some time for communication
-                    setTimeout(() =>
-                        this.findNewsInstance()
-                            .then(instance => this.socket.subscribeState(`admin.${instance}.info.newsFeed`, this.getNews(instance))),
-                    5000);
+                                // Give some time for communication
+                                setTimeout(() =>
+                                        this.findNewsInstance()
+                                            .then(instance => this.socket.subscribeState(`admin.${instance}.info.newsFeed`, this.getNews(instance))),
+                                    5000);
 
-                    // Give some time for communication
-                    setTimeout(() =>
-                        this.socket.getNotifications(newState.currentHost)
-                            .then(notifications => this.getAdaptersWarning(notifications, this.socket, newState.currentHost)),
-                        3000);
+                                // Give some time for communication
+                                setTimeout(() =>
+                                        this.socket.getNotifications(newState.currentHost)
+                                            .then(notifications => this.getAdaptersWarning(notifications, this.socket, newState.currentHost)),
+                                    3000);
 
-                    this.setState(newState, () => this.setCurrentTabTitle());
+                                this.setState(newState, () => this.setCurrentTabTitle());
 
-                    this.logsWorkerChanged(this.state.currentHost);
+                                this.logsWorkerChanged(this.state.currentHost);
 
-                    if (!this.logsHandlerRegistered) {
-                        this.logsHandlerRegistered = true;
-                        this.logsWorker.registerErrorCountHandler(logErrors =>
-                            (this.state.currentTab.tab !== 'tab-logs' || (this.state.currentTab.tab === 'tab-logs' && this.context.stateContext.logErrors)) && this.context.setStateContext({ logErrors }));
-                        this.logsWorker.registerWarningCountHandler(logWarnings =>
-                            (this.state.currentTab.tab !== 'tab-logs' || (this.state.currentTab.tab === 'tab-logs' && this.context.stateContext.logWarnings)) && this.context.setStateContext({ logWarnings }));
-                    }
+                                if (!this.logsHandlerRegistered) {
+                                    this.logsHandlerRegistered = true;
+                                    this.logsWorker.registerErrorCountHandler(logErrors =>
+                                        (this.state.currentTab.tab !== 'tab-logs' || (this.state.currentTab.tab === 'tab-logs' && this.context.stateContext.logErrors)) && this.context.setStateContext({ logErrors }));
+                                    this.logsWorker.registerWarningCountHandler(logWarnings =>
+                                        (this.state.currentTab.tab !== 'tab-logs' || (this.state.currentTab.tab === 'tab-logs' && this.context.stateContext.logWarnings)) && this.context.setStateContext({ logWarnings }));
+                                }
+                            }
+                        });
                 },
                 //onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
                 onError: error => {
@@ -1098,27 +1115,22 @@ class App extends Router {
         />;
     }
 
-    renderHostSelector() {
-
-    }
-
     render() {
         if (this.state.login) {
             return <ThemeProvider theme={this.state.theme}>
                 <Login t={I18n.t} />
             </ThemeProvider>;
         } else
-            if (!this.state.ready) {
-                return <ThemeProvider theme={this.state.theme}>
-                    <Loader theme={this.state.themeType} />
-                </ThemeProvider>;
-            }
+        if (!this.state.ready) {
+            return <ThemeProvider theme={this.state.theme}>
+                <Loader theme={this.state.themeType} />
+            </ThemeProvider>;
+        } else if (this.state.strictEasyMode || this.state.currentTab.tab === 'easy') {
+            return <EasyMode configs={this.state.easyModeConfigs} socket={this.socket} t={I18n.t}/>;
+        }
 
         const { classes } = this.props;
         const small = this.props.width === 'xs' || this.props.width === 'sm';
-
-        console.log( this.state.themeName )
-        console.log( this.state.theme )
 
         return <ThemeProvider theme={this.state.theme}>
             <Paper elevation={0} className={classes.root}>
