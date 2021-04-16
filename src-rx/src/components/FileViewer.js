@@ -91,7 +91,7 @@ class FileViewer extends Component {
         const adapter = parts[0];
         const name = parts.splice(1).join('/');
         this.props.socket.writeFile64(adapter, name, Buffer.from(data).toString("base64"))
-        .then(_=>this.props.onClose())
+            .then(_ => this.props.onClose())
 
     }
 
@@ -123,27 +123,16 @@ class FileViewer extends Component {
                 }}
                 className={clsx(this.props.classes.img, this.props.getClassBackgroundImage())}
                 src={this.props.href} alt={this.props.href} />;
-        } else if (this.state.code !== null && !this.state.editing) {
-            return <TextField
-                className={this.props.classes.textarea}
-                multiline
-                value={this.state.code}
-                readOnly={true} />;
-        } else if (this.state.text !== null && !this.state.editing) {
-            return <TextField
-                className={this.props.classes.textarea}
-                value={this.state.text}
-                multiline
-                readOnly={true} />;
-        } else if (this.state.editing) {
+        } else if (this.state.code !== null || this.state.text !== null || this.state.editing) {
             return <AceEditor
                 mode={this.getEditFile(this.props.formatEditFile)}
                 width="100%"
                 height="100%"
                 theme={this.props.themeName === 'dark' ? 'clouds_midnight' : 'chrome'}
-                value={this.state.editingValue}
+                value={this.state.editingValue || this.state.code || this.state.text}
                 onChange={newValue => this.setState({ editingValue: newValue })}
                 name="UNIQUE_ID_OF_DIV"
+                readOnly={!this.state.editing}
                 fontSize={14}
                 setOptions={{
                     enableBasicAutocompletion: true,

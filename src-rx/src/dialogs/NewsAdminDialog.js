@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import { DialogTitle, makeStyles, ThemeProvider, Typography } from '@material-ui/core';
+import { CardMedia, DialogTitle, Link, makeStyles, ThemeProvider, Typography } from '@material-ui/core';
 
 import InfoIcon from '@material-ui/icons/Info';
 import WarningIcon from '@material-ui/icons/Warning';
@@ -65,6 +65,28 @@ const useStyles = makeStyles((theme) => ({
             backgroundSize: 'cover',
             backgroundColor: '#fff',
         }
+    },
+    img2: {
+        width: 70,
+        height: 70,
+        margin: '10px 0',
+        borderRadius: 4,
+        position: 'relative',
+        '&:after': {
+            content: '""',
+            position: 'absolute',
+            zIndex: 2,
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'url("img/no-image.png") 100% 100% no-repeat',
+            backgroundSize: 'cover',
+            backgroundColor: '#fff',
+        }
+    },
+    link:{
+        margin: '10px 0',
     }
 }));
 
@@ -133,12 +155,23 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, themeName }) =
             <DialogContent className={classes.overflowHidden} dividers>
                 <div className={classes.root}>
                     <div className={classes.pre}>
+                        {newsArr[indexArr]?.img &&
+                            <CardMedia className={classes.img2} component="img" image={newsArr[indexArr].img} />}
                         <Typography
                             style={themeType === 'dark' ? { color: 'black' } : null}
                             variant="body2"
                             component="p">
                             {Utils.renderTextWithA(text)}
                         </Typography>
+                        {newsArr[indexArr]?.link &&
+                            <Button
+                                variant="contained"
+                                autoFocus
+                                className={classes.link}
+                                onClick={() => window.open(newsArr[indexArr].link, '_blank')}
+                                color="primary">
+                                {newsArr[indexArr].linkTitle ? newsArr[indexArr].linkTitle[lang] ? newsArr[indexArr].linkTitle[lang] : newsArr[indexArr].linkTitle : I18n.t('Link')}
+                            </Button>}
                     </div>
                 </div>
             </DialogContent>

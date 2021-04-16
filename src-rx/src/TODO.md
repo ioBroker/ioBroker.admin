@@ -8,14 +8,14 @@
   
 ## Info
 - Request info one time in a day and show new information
-  - admin.X.info.newsFeed => JSON https://github.com/ioBroker/ioBroker.docs/blob/master/info/news.json
-  - admin.X.info.lastNewsId => consists of last read news
+  <!-- - admin.X.info.newsFeed => JSON https://github.com/ioBroker/ioBroker.docs/blob/master/info/news.json -->
+  <!-- - admin.X.info.lastNewsId => consists of last read news -->
   - IF the user presses OK => So delete acknowledged news from the list.
-  - Subscribe on `admin.X.info.newsFeed` and test on update
+  <!-- - Subscribe on `admin.X.info.newsFeed` and test on update -->
   - start news check with 5 sec delay
 
-  - news could have the attribute "img" and if it is present, so show it at the top of the dialog
-  - news could have the attribute "link" if it presents so show the button with "linkTitle"
+  <!-- - news could have the attribute "img" and if it is present, so show it at the top of the dialog
+  - news could have the attribute "link" if it presents so show the button with "linkTitle" -->
   <!-- - Title of the dialog: You have unread news -->
   <!-- - Buttons of the dialog: "Acknowledge" -->
 
@@ -52,7 +52,7 @@
 - make formatDate accept settings about date format
 
 ## Files
-- File viewer can show: json, js, ts, md, css, html (use ace aditor for viewing too)
+<!-- - File viewer can show: json, js, ts, md, css, html (use ace aditor for viewing too) -->
   
 ## Hosts
 
