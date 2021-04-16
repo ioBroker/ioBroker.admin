@@ -1102,7 +1102,7 @@ class App extends Router {
     }
 
     render() {
-        if (this.state.login) {
+        if (!this.state.login) {
             return <ThemeProvider theme={this.state.theme}>
                 <Login t={I18n.t} />
             </ThemeProvider>;

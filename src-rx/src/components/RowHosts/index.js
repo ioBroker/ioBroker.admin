@@ -5,7 +5,6 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import clsx from 'clsx';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import { green, red } from '@material-ui/core/colors';
 import EditIcon from '@material-ui/icons/Edit';
 import CachedIcon from '@material-ui/icons/Cached';
 import PropTypes from "prop-types";

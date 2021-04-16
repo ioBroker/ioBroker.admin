@@ -1,9 +1,9 @@
 # Todo
  - Move logout button to menu . Always last and not orderable
- - Remove in mobile view from instances the RAM info
- - Files. layout in mobile is broken
+ <!-- - Remove in mobile view from instances the RAM info -->
+ <!-- - Files. layout in mobile is broken -->
  - Files. Make from copy content just "Copy" on mobile mode
- - Files. Title rtl + elipsis
+ <!-- - Files. Title rtl + elipsis -->
 ## Settings
   
 ## Info

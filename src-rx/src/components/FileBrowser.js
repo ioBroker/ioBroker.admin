@@ -53,7 +53,7 @@ import NoImage from '@iobroker/adapter-react/assets/no_icon.svg';
 import IconClosed from '@iobroker/adapter-react/icons/IconClosed';
 import IconOpen from '@iobroker/adapter-react/icons/IconOpen';
 import clsx from 'clsx';
-import { Tooltip } from '@material-ui/core';
+import { Hidden, Tooltip } from '@material-ui/core';
 
 const ROW_HEIGHT = 32;
 const BUTTON_WIDTH = 32;
@@ -226,6 +226,7 @@ const styles = theme => ({
         display: 'inline-block',
         width: BUTTON_WIDTH,
         height: ROW_HEIGHT,
+        minWidth:BUTTON_WIDTH,
         verticalAlign: 'top',
         padding: 0,
         '& span': {
@@ -240,6 +241,7 @@ const styles = theme => ({
     itemAclButtonTable: {
         width: BUTTON_WIDTH,
         height: ROW_HEIGHT,
+        minWidth:BUTTON_WIDTH,
         verticalAlign: 'top',
         padding: 0,
         fontSize: 12,
@@ -249,6 +251,7 @@ const styles = theme => ({
         display: 'inline-block',
         width: BUTTON_WIDTH,
         height: ROW_HEIGHT,
+        minWidth:BUTTON_WIDTH,
         verticalAlign: 'top',
         padding: 0,
         '& svg': {
@@ -351,7 +354,16 @@ const styles = theme => ({
     },
     backgroundImageColored: {
         background: 'silver'
-    }
+    },
+    '@media screen and (max-width: 500px)': {
+        itemNameTable: {
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            textAlign: 'end',
+            direction: 'rtl'
+        }
+    },
 });
 
 const USER_DATA = '0_userdata.0';
@@ -701,12 +713,16 @@ class FileBrowser extends Component {
             <div className={Utils.clsx(this.props.classes['itemName' + this.state.viewType], this.props.classes['itemNameFolder' + this.state.viewType])}
             >{item.name === USER_DATA ? this.props.t('ra_User files') : item.name}</div>
 
-            {<div className={this.props.classes['itemSize' + this.state.viewType]}>{this.state.viewType === TABLE && this.state.folders[item.id] ? this.state.folders[item.id].length : ''}</div>}
+            <Hidden xsDown>
+                {<div className={this.props.classes['itemSize' + this.state.viewType]}>{this.state.viewType === TABLE && this.state.folders[item.id] ? this.state.folders[item.id].length : ''}</div>}
+            </Hidden>
 
-            {this.state.viewType === TABLE ? this.formatAcl(item.acl) : null}
-
-            {this.state.viewType === TABLE && this.props.expertMode && <div className={this.props.classes['itemDeleteButton' + this.state.viewType]} />}
-
+            <Hidden xsDown>
+                {this.state.viewType === TABLE ? this.formatAcl(item.acl) : null}
+            </Hidden>
+            <Hidden xsDown>
+                {this.state.viewType === TABLE && this.props.expertMode && <div className={this.props.classes['itemDeleteButton' + this.state.viewType]} />}
+            </Hidden>
             {this.state.viewType === TABLE && this.props.allowDownload ? <div className={this.props.classes['itemDownloadButton' + this.state.viewType]} /> : null}
 
             {this.state.viewType === TABLE && this.props.allowDelete && this.state.folders[item.id] && this.state.folders[item.id].length && (this.state.expertMode || item.id.startsWith(USER_DATA) || item.id.startsWith('vis.0/')) ?
@@ -868,10 +884,9 @@ class FileBrowser extends Component {
                 :
                 this.getFileIcon(ext)}
             <div className={this.props.classes['itemName' + this.state.viewType]}>{item.name}</div>
-            {this.formatSize(item.size)}
-            {this.state.viewType === TABLE ? this.formatAcl(item.acl) : null}
-            {this.state.viewType === TABLE && this.props.expertMode && this.getEditFile(ext) ?
-
+            <Hidden xsDown>{this.formatSize(item.size)}</Hidden>
+            <Hidden xsDown>{this.state.viewType === TABLE ? this.formatAcl(item.acl) : null}</Hidden>
+            <Hidden xsDown>{this.state.viewType === TABLE && this.props.expertMode && this.getEditFile(ext) ?
                 <IconButton aria-label="delete"
                     onClick={(e) => {
                         e.stopPropagation();
@@ -890,6 +905,7 @@ class FileBrowser extends Component {
                 </IconButton>
                 :
                 <div className={this.props.classes['itemDeleteButton' + this.state.viewType]} />}
+                </Hidden>
             {this.state.viewType === TABLE && this.props.allowDownload ? <IconButton
                 download
                 href={this.imagePrefix + item.id}

@@ -18,7 +18,7 @@ function Copyright() {
         color="textSecondary"
         align="center"
     >
-        { (window.loginMotto || 'Discover awesome.') + ' ' }
+        {(window.loginMotto || 'Discover awesome.') + ' '}
         <Link
             color="inherit"
             href="https://www.iobroker.net/"
@@ -29,15 +29,25 @@ function Copyright() {
         </Link>
     </Typography>;
 }
+const boxShadow = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
 const useStyles = makeStyles(theme => ({
-    root:{
-        padding: 0,
-        marginTop: theme.spacing(8)
+    root: {
+        padding: 10,
+        margin: 'auto',
+        display: 'flex',
+        height: '100%',
+        alignItems: 'center'
     },
     paper: {
         background: theme.palette.background.paper + (theme.palette.background.paper.length < 7 ? 'd' : 'dd'),
-        padding: theme.spacing(3)
+        padding: theme.spacing(3),
+        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        maxHeight: 460,
+        boxShadow
     },
     avatar: {
         margin: theme.spacing(1),
@@ -59,6 +69,9 @@ const useStyles = makeStyles(theme => ({
         color: '#fff',
         borderRadius: 4,
         fontSize: 16,
+    },
+    wrapperContent: {
+        margin: '10px 0'
     }
 }));
 
@@ -68,32 +81,33 @@ export default function Login(props) {
 
     const action = `${window.location.port === '3000' ? window.location.protocol + '//' + window.location.hostname + ':8081' : ''}/login?${window.location.port === '3000' ? 'dev&' : ''}href=${window.location.hash}`;
 
-    if (window.login !== 'true') {
-        debugger;
-        window.location = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
-    }
+    // if (window.login !== 'true') {
+    //     debugger;
+    //     window.location = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
+    // }
 
-    return <Container component="main" maxWidth="xs" className={ classes.root }>
-        <Paper className={ classes.paper }>
+    return <Container component="main" maxWidth="xs" className={classes.root}>
+        <Paper className={classes.paper}>
             <Grid
                 container
                 direction="column"
                 alignItems="center"
+            // className={classes.wrapperContent}
             >
-                { window.loginHideLogo && window.loginHideLogo === 'false' &&
-                    <Avatar className={ classes.avatar } src="img/logo.png" />
+                {window.loginHideLogo && window.loginHideLogo === 'false' &&
+                    <Avatar className={classes.avatar} src="img/logo.png" />
                 }
                 <Typography component="h1" variant="h5">
-                    { props.t('loginTitle') }
+                    {props.t('loginTitle')}
                 </Typography>
-                { window.location.search.indexOf('error') !== -1 &&
-                    <div className={ classes.alert }>
-                        { props.t('wrongPassword') }
+                {window.location.search.indexOf('error') !== -1 &&
+                    <div className={classes.alert}>
+                        {props.t('wrongPassword')}
                     </div>
                 }
                 <form
-                    className={ classes.form }
-                    action={ action }
+                    className={classes.form}
+                    action={action}
                     method="post"
                 >
                     <TextField
@@ -102,7 +116,7 @@ export default function Login(props) {
                         required
                         fullWidth
                         id="username"
-                        label={ props.t('enterLogin') }
+                        label={props.t('enterLogin')}
                         name="username"
                         autoComplete="username"
                         autoFocus
@@ -113,28 +127,28 @@ export default function Login(props) {
                         required
                         fullWidth
                         name="password"
-                        label={ props.t('enterPassword') }
+                        label={props.t('enterPassword')}
                         type="password"
                         id="password"
                         autoComplete="current-password"
                     />
                     <FormControlLabel
-                        control={ <Checkbox id="stayloggedin" name="stayloggedin" value="on" color="primary" /> }
-                        label={ props.t('Stay signed in') }
+                        control={<Checkbox id="stayloggedin" name="stayloggedin" value="on" color="primary" />}
+                        label={props.t('Stay signed in')}
                     />
-                    <input id="origin" type="hidden" name="origin" value={ window.location.search.replace('&error', '') }/>
+                    <input id="origin" type="hidden" name="origin" value={window.location.search.replace('&error', '')} />
                     <Button
                         type="submit"
                         fullWidth
                         variant="contained"
                         color="primary"
-                        className={ classes.submit }
+                        className={classes.submit}
                     >
-                        { props.t('login') }
+                        {props.t('login')}
                     </Button>
                 </form>
             </Grid>
-            <Box mt={ 8 }>
+            <Box mt={8}>
                 <Copyright />
             </Box>
         </Paper>
