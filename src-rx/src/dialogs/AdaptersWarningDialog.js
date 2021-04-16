@@ -14,7 +14,7 @@ import WarningIcon from '@material-ui/icons/Warning';
 import CancelPresentationIcon from '@material-ui/icons/CancelPresentation';
 
 import I18n from '@iobroker/adapter-react/i18n';
-import { Accordion, AccordionDetails, AccordionSummary, AppBar, Box, CardMedia, DialogTitle, makeStyles, Tab, Tabs, ThemeProvider, Typography } from '@material-ui/core';
+import { Accordion, AccordionDetails, AccordionSummary, AppBar, Box, CardMedia, makeStyles, Tab, Tabs, ThemeProvider, Typography } from '@material-ui/core';
 
 import theme from '@iobroker/adapter-react/Theme';
 //import Utils from '@iobroker/adapter-react/Components/Utils';
@@ -283,6 +283,7 @@ const AdaptersWarningDialog = ({ message, func, dateFormat, themeType, themeName
                                 variant="contained"
                                 autoFocus
                                 disabled={disabled.indexOf(name) !== -1}
+                                style={disabled.indexOf(name) !== -1?{background:'silver'}:null}
                                 onClick={() => {
                                     func(name);
                                     setDisabled([...disabled, name]);
