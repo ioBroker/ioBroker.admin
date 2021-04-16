@@ -1,10 +1,9 @@
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 import Avatar from '@material-ui/core/Avatar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
-import Container from '@material-ui/core/Container';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
@@ -12,27 +11,10 @@ import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { Component, createRef } from "react";
+import { Component } from "react";
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from "prop-types";
 
-function Copyright() {
-    return <Typography
-        variant="body2"
-        color="textSecondary"
-        align="center"
-    >
-        {(window.loginMotto || 'Discover awesome.') + ' '}
-        <Link
-            color="inherit"
-            href="https://www.iobroker.net/"
-            rel="noopener noreferrer"
-            target="_blank"
-        >
-            ioBroker
-        </Link>
-    </Typography>;
-}
 const boxShadow = '0 4px 7px 5px rgb(0 0 0 / 14%), 0 3px 1px 1px rgb(0 0 0 / 12%), 0 1px 5px 0 rgb(0 0 0 / 20%)';
 
 const styles = theme => ({
@@ -52,7 +34,7 @@ const styles = theme => ({
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        maxHeight: 400,
+        maxHeight: 500,
         maxWidth: 380,
         boxShadow
     },
@@ -82,6 +64,9 @@ const styles = theme => ({
     },
     marginTop: {
         marginTop: 'auto'
+    },
+    progress: {
+        textAlign: 'center'
     }
 });
 
@@ -163,7 +148,7 @@ class Login extends Component {
                             label={this.props.t('Stay signed in')}
                         />
                         <input id="origin" type="hidden" name="origin" value={window.location.search.replace('&error', '')} />
-                        {this.state.inProcess ? <CircularProgress /> : <Button
+                        {this.state.inProcess ? <div className={classes.progress}><CircularProgress /> </div> : <Button
                             type="submit"
                             onClick={() => this.setState({ inProcess: true })}
                             fullWidth
