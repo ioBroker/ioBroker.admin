@@ -420,10 +420,12 @@ class App extends Router {
                     this.subscribeOnHostsStatus();
 
                     newState.expertMode = window.sessionStorage.getItem('App.expertMode') === 'true' || !!newState.systemConfig.common.expertMode;
-                    console.log('newState',newState)
 
-                    this.findNewsInstance()
-                        .then(instance => this.socket.subscribeState(`admin.${instance}.info.newsFeed`, this.getNews(instance)))
+                    // Give some time for communication
+                    setTimeout(() =>
+                        this.findNewsInstance()
+                            .then(instance => this.socket.subscribeState(`admin.${instance}.info.newsFeed`, this.getNews(instance))),
+                    5000);
 
                     // Give some time for communication
                     setTimeout(() =>
@@ -453,18 +455,17 @@ class App extends Router {
     }
 
     findNewsInstance = () => {
-        let count = 0;
         const maxCount = 200;
-        return new Promise(async (resolve) => {
-            for (count; count < maxCount; count++) {
-                let adminAlive = await this.socket.getState(`system.adapter.admin.${count}.alive`);
+        return new Promise(async resolve => {
+            for (let instance = 0; instance < maxCount; instance++) {
+                let adminAlive = await this.socket.getState(`system.adapter.admin.${instance}.alive`);
                 if (adminAlive && adminAlive.val) {
-                    resolve(count);
+                    resolve(instance);
                     break;
                 }
             }
             resolve(0);
-        })
+        });
     }
 
     getAdaptersWarning = async ({ result }, socket, currentHost) => {
