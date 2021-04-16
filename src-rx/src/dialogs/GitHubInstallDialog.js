@@ -57,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 1000
     }
 }));
+
 const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstance, t }) => {
     if (!t) {
         t = I18n.t

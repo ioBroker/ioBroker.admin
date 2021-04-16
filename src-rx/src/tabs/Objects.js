@@ -193,6 +193,7 @@ class Objects extends Component {
                 objectEditOfAccessControl
                 modalNewObject={context =>
                     <ObjectAddNewContent
+                        objects={context.objects}
                         open={context.state.modalNewObj}
                         extendObject={(id, data) => context.extendObject(id, data)}
                         selected={context.state.selected[0]}

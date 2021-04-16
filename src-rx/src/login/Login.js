@@ -1,4 +1,7 @@
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import withWidth from '@material-ui/core/withWidth';
 
 import Avatar from '@material-ui/core/Avatar';
 import Box from '@material-ui/core/Box';
@@ -11,9 +14,6 @@ import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { Component } from "react";
-import withWidth from "@material-ui/core/withWidth";
-import PropTypes from "prop-types";
 
 const boxShadow = '0 4px 7px 5px rgb(0 0 0 / 14%), 0 3px 1px 1px rgb(0 0 0 / 12%), 0 1px 5px 0 rgb(0 0 0 / 20%)';
 
@@ -77,6 +77,8 @@ class Login extends Component {
         this.state = {
             inProcess: false,
         };
+
+        this.formRef = React.createRef();
     }
 
     render() {
@@ -107,6 +109,7 @@ class Login extends Component {
                         </div>
                     }
                     <form
+                        ref={this.formRef}
                         className={classes.form}
                         action={action}
                         method="post"
@@ -150,7 +153,10 @@ class Login extends Component {
                         <input id="origin" type="hidden" name="origin" value={window.location.search.replace('&error', '')} />
                         {this.state.inProcess ? <div className={classes.progress}><CircularProgress /> </div> : <Button
                             type="submit"
-                            onClick={() => this.setState({ inProcess: true })}
+                            onClick={() => {
+                                this.setState({ inProcess: true });
+                                this.formRef.current.submit();
+                            }}
                             fullWidth
                             variant="contained"
                             color="primary"

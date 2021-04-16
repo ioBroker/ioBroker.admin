@@ -417,7 +417,7 @@ const RowHosts = ({
                         >
                             <EditIcon />
                         </IconButton>
-                        <Tooltip title={t('Auto restart')}>
+                        <Tooltip title={t('Restart host')}>
                             <IconButton onClick={(e) => {
                                 executeCommand();
                                 e.stopPropagation();

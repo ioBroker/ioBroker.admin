@@ -1,7 +1,7 @@
 {
   "name": "iobroker.admin",
   "description": "The adapter opens a webserver for the ioBroker admin UI.",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "contributors": [
     "bluefox <dogafox@gmail.com>",
     "apollon77",
@@ -34,7 +34,7 @@
     "passport-local": "^1.0.0",
     "passport.socketio": "^3.7.0",
     "request": "^2.88.2",
-    "semver": "^7.3.4",
+    "semver": "^7.3.5",
     "ws": "^7.4.1"
   },
   "devDependencies": {

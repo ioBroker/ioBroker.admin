@@ -10,7 +10,6 @@ import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 import copy from '@iobroker/adapter-react/Components/copy-to-clipboard';
 import withStyles from '@material-ui/core/styles/withStyles';
-import { useDrag } from 'react-dnd'
 
 import IconButton from '@material-ui/core/IconButton';
 import withWidth from '@material-ui/core/withWidth';
@@ -1320,12 +1319,13 @@ const SCREEN_WIDTHS = {
     },
 };
 
-const DraggableObject = (props) => {
+const DraggableObject = props => {
     let dragSettings = { ...props.dragSettings };
     dragSettings.item = props.item;
+    const useDrag = props.useDrag;
     const [{ isDragging }, dragRef] = useDrag(dragSettings);
 
-    return <div ref={dragRef}>{props.children}</div>
+    return <div ref={dragRef} style={{backgroundColor: isDragging ? 'rgba(100,152,255,0.1)' : undefined}}>{props.children}</div>;
 }
 
 /**
@@ -1507,6 +1507,8 @@ class ObjectBrowser extends Component {
             aclGroup_write_state:     props.t('ra_aclGroup_write_state'),
             aclEveryone_read_object:  props.t('ra_aclEveryone_read_object'),
             aclEveryone_read_state:   props.t('ra_aclEveryone_read_state'),
+            aclEveryone_write_object: props.t('ra_aclEveryone_write_object'),
+            aclEveryone_write_state:  props.t('ra_aclEveryone_write_state'),
         };
 
         this.calculateColumnsVisibility();
@@ -2683,18 +2685,20 @@ class ObjectBrowser extends Component {
                         <LooksOneIcon color={this.state.statesView ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip>}
-                {this.props.objectAddBoolean && <Tooltip title={this.props.t('ra_Add new child object to selected parent')}>
-                    <IconButton onClick={() => {
-                        if (this.state.selected.length) {
-                            this.setState({ modalNewObj: true });
-                        } else {
-                            this.setState({ toast: this.props.t('ra_please select object') });
-                        }
-                    }}>
-                        <AddIcon />
-                    </IconButton>
-                </Tooltip>
+
+                {this.props.objectAddBoolean ?
+                    (!this.state.selected.length || (this.objects[this.state.selected[0]] && this.objects[this.state.selected[0]].type === 'state') || (!this.props.expertMode && !this.state.selected[0].startsWith('alias.0') && !this.state.selected[0].startsWith('0_userdata')) ?
+                        <IconButton disabled><AddIcon /></IconButton>
+                        :
+                        <Tooltip title={this.props.t('ra_Add new child object to selected parent')}>
+                            <IconButton onClick={() =>
+                                this.setState({ modalNewObj: true })}
+                            >
+                                <AddIcon />
+                            </IconButton>
+                        </Tooltip>) : null
                 }
+
                 {this.props.objectImportExport &&
                     <Tooltip title={this.props.t('ra_Add objects tree from JSON file')}>
                         <IconButton onClick={() => {
@@ -3151,7 +3155,7 @@ class ObjectBrowser extends Component {
                                 name = item.name;
                                 icon = item.icon;
                             } else {
-                                id = item;
+                                id   = item;
                                 name = item;
                             }
                             const labelId = `checkbox-list-label-${id}`;
@@ -3636,7 +3640,7 @@ class ObjectBrowser extends Component {
         counter = counter || { count: 0 };
         let leaf = this.renderLeaf(root, isExpanded, classes, counter);
         if (this.props.dragEnabled) {
-            leaf = <DraggableObject item={root} dragSettings={this.props.dragSettings}>{leaf}</DraggableObject>;
+            leaf = <DraggableObject item={root} dragSettings={this.props.dragSettings} useDrag={this.props.useDrag}>{leaf}</DraggableObject>;
         }
         root.data.id && items.push(leaf);
 
@@ -3744,7 +3748,7 @@ class ObjectBrowser extends Component {
             }
         } else {
             this.columnsVisibility = {
-                id: columnsWidths.id || SCREEN_WIDTHS[this.props.width].idWidth,
+                id:   columnsWidths.id || SCREEN_WIDTHS[this.props.width].idWidth,
                 name: columns.includes('name') ? columnsWidths.name || WIDTHS.name || SCREEN_WIDTHS.xl.widths.name : 0,
                 type: columns.includes('type') ? columnsWidths.type || WIDTHS.type || SCREEN_WIDTHS.xl.widths.type : 0,
                 role: columns.includes('role') ? columnsWidths.role || WIDTHS.role || SCREEN_WIDTHS.xl.widths.role : 0,
@@ -4121,6 +4125,7 @@ ObjectBrowser.propTypes = {
     columns: PropTypes.array, // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
     dragSettings: PropTypes.object,
     dragEnabled: PropTypes.bool,
+    useDrag: PropTypes.func,
 };
 
 /** @type {typeof ObjectBrowser} */

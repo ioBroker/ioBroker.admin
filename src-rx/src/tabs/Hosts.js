@@ -396,8 +396,8 @@ const Hosts = ({
                     </div>
                     <div className={classes.tabFlex}>
                         {/*<div className={clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Title:')}</div>*/}
-                        <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>{t('CPU')}</div>
-                        <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>{t('RAM')}</div>
+                        <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>CPU</div>
+                        <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>RAM</div>
                         <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>{t('Uptime')}</div>
                         <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{t('Available')}</div>
                         <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{t('Installed')}</div>

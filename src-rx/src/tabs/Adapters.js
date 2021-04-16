@@ -6,6 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 import {
     Grid,
+    Button,
     IconButton,
     LinearProgress,
     Table,
@@ -21,6 +22,10 @@ import {
     ListItemText,
     Hidden
 } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 import CloudOffIcon from '@material-ui/icons/CloudOff';
 import FolderIcon from '@material-ui/icons/Folder';
@@ -60,6 +65,7 @@ import Router from '@iobroker/adapter-react/Components/Router';
 import AdaptersUpdaterDialog from "../dialogs/AdaptersUpdaterDialog";
 import PropTypes from "prop-types";
 import clsx from 'clsx';
+import MessageDialog from "@iobroker/adapter-react/Dialogs/Message";
 
 const WIDTHS = {
     emptyBlock: 50,
@@ -172,7 +178,7 @@ const styles = theme => ({
         opacity: 0.4,
         color: theme.palette.type === 'dark' ? '#aad5ff' : '#007fff'
     },
-    counte: {
+    counters: {
         marginRight: 10,
         minWidth: 120,
         display: 'flex',
@@ -185,7 +191,8 @@ const styles = theme => ({
     },
     infoAdapters: {
         fontSize: 10,
-        color: 'silver'
+        color: 'silver',
+        cursor: 'pointer'
     },
     greenText: {
         color: '#00a005d1'
@@ -232,6 +239,7 @@ class Adapters extends Component {
             filteredList: null,
             showUpdater: false,
             descWidth: 300,
+            showStatistics: false,
         };
 
         this.rebuildSupported = false;
@@ -1105,8 +1113,31 @@ class Adapters extends Component {
             return document.body.scrollWidth - SUM - 50 + 15;
         }
     }
+    getStatistics() {
+        if (this.state.showStatistics) {
+
+            return <Dialog
+                open={true}
+                onClose={() => this.setState({showStatistics: false})}
+            >
+                <DialogTitle>{this.t('Statistics')}</DialogTitle>
+                <DialogContent style={{fontSize: 16}}>
+                    <div className={this.props.classes.counters}>{this.t('Total adapters')}: <span style={{paddingLeft: 6, fontWeight: 'bold'}}>{this.allAdapters}</span></div>
+                    <div className={this.props.classes.counters}>{this.t('Installed adapters')}: <span style={{paddingLeft: 6, fontWeight: 'bold'}}>{this.installedAdapters}</span></div>
+                    <div className={this.props.classes.counters}>{this.t('Last month updated adapters')}: <span style={{paddingLeft: 6, fontWeight: 'bold'}}>{this.updateAdapters}</span></div>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant="contained" onClick={() => this.setState({showStatistics: false})} color="primary" autoFocus>
+                        <CloseIcon/>{this.props.t('Close')}
+                    </Button>
+                </DialogActions>
+            </Dialog>;
+        } else {
+            return null;
+        }
+    }
+
     render() {
-        console.log(this.state.repository)
         if (!this.state.init) {
             return <LinearProgress />;
         }
@@ -1238,11 +1269,11 @@ class Adapters extends Component {
                 }
                 <div className={classes.grow} />
                 <Hidden only={['xs','sm']} >
-                    <div className={classes.infoAdapters}>
-                        <div className={clsx(classes.counte, classes.greenText)}>{this.t('Select adapters')}<div ref={this.countRef} ></div></div>
-                        <div className={clsx(classes.counte)}>{this.t('All adapters')}<div>{this.allAdapters}</div></div>
-                        <div className={clsx(classes.counte)}>{this.t('Installed adapters')}<div>{this.installedAdapters}</div></div>
-                        <div className={clsx(classes.counte)}>{this.t('Update adapters last month')}<div>{this.updateAdapters}</div></div>
+                    <div className={classes.infoAdapters} onClick={() => this.setState({showStatistics: true})}>
+                        <div className={clsx(classes.counters, classes.greenText)}>{this.t('Selected adapters')}<div ref={this.countRef} /></div>
+                        <div className={classes.counters}>{this.t('Total adapters')}:<div>{this.allAdapters}</div></div>
+                        <div className={classes.counters}>{this.t('Installed adapters')}:<div>{this.installedAdapters}</div></div>
+                        <div className={classes.counters}>{this.t('Last month updated adapters')}:<div>{this.updateAdapters}</div></div>
                     </div>
                 </Hidden>
             </TabHeader>
@@ -1282,6 +1313,7 @@ class Adapters extends Component {
             </TabContent>}
 
             {this.getUpdater()}
+            {this.getStatistics()}
 
             {!this.state.viewMode && <div style={{
                 display: 'flex',

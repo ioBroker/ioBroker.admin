@@ -25,7 +25,7 @@ import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
 import SubscriptionsIcon from '@material-ui/icons/Subscriptions';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
-import LogoutIcon from '../helpers/IconLogout'//'@iobroker/adapter-react/Components/LogoutIcon';
+import LogoutIcon from '@iobroker/adapter-react/icons/IconLogout';
 
 // import CodeIcon from '@material-ui/icons/Code';
 // import AcUnitIcon from '@material-ui/icons/AcUnit';

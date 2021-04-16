@@ -20,13 +20,14 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
+import { Hidden, Tooltip } from '@material-ui/core';
 
 import ErrorDialog from '@iobroker/adapter-react/Dialogs/Error';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import TextInputDialog from '@iobroker/adapter-react/Dialogs/TextInput';
-//import FileViewer from '@iobroker/adapter-react/Components/FileViewer';
-import FileViewer from './FileViewer';
 import { EXTENSIONS } from '@iobroker/adapter-react/Components/FileViewer';
+import FileViewer from './FileViewer';
+//import FileViewer from '@iobroker/adapter-react/Components/FileViewer';
 
 // Icons
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -48,18 +49,15 @@ import IconBack from '@material-ui/icons/ArrowBack';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Brightness5Icon from '@material-ui/icons/Brightness6';
 
-import ExpertIcon from '@iobroker/adapter-react/Components/ExpertIcon';
+import ExpertIcon from '@iobroker/adapter-react/icons/IconExpert';
 import NoImage from '@iobroker/adapter-react/assets/no_icon.svg';
 import IconClosed from '@iobroker/adapter-react/icons/IconClosed';
 import IconOpen from '@iobroker/adapter-react/icons/IconOpen';
-import clsx from 'clsx';
-import { Hidden, Tooltip } from '@material-ui/core';
 
-const ROW_HEIGHT = 32;
+const ROW_HEIGHT   = 32;
 const BUTTON_WIDTH = 32;
-
-const TILE_HEIGHT = 120;
-const TILE_WIDTH = 64;
+const TILE_HEIGHT  = 120;
+const TILE_WIDTH   = 64;
 
 const NOT_FOUND = 'Not found';
 
@@ -226,7 +224,7 @@ const styles = theme => ({
         display: 'inline-block',
         width: BUTTON_WIDTH,
         height: ROW_HEIGHT,
-        minWidth:BUTTON_WIDTH,
+        minWidth: BUTTON_WIDTH,
         verticalAlign: 'top',
         padding: 0,
         '& span': {
@@ -251,7 +249,7 @@ const styles = theme => ({
         display: 'inline-block',
         width: BUTTON_WIDTH,
         height: ROW_HEIGHT,
-        minWidth:BUTTON_WIDTH,
+        minWidth: BUTTON_WIDTH,
         verticalAlign: 'top',
         padding: 0,
         '& svg': {
@@ -443,7 +441,7 @@ class FileBrowser extends Component {
             deleteItem: '',
             marked: [],
             viewer: '',
-            formatEditFile:'',
+            formatEditFile: '',
             path: selected,
             selected,
             errorText: '',
@@ -556,17 +554,17 @@ class FileBrowser extends Component {
                     let userData = null;
                     objs.forEach(obj => {
                         const item = {
-                            id: obj._id,
-                            name: obj._id,
+                            id:     obj._id,
+                            name:   obj._id,
                             title: (obj.common && obj.common.name) || obj._id,
-                            meta: true,
-                            from: obj.from,
-                            ts: obj.ts,
-                            color: obj.common && obj.common.color,
-                            icon: obj.common && obj.common.icon,
+                            meta:   true,
+                            from:   obj.from,
+                            ts:     obj.ts,
+                            color:  obj.common && obj.common.color,
+                            icon:   obj.common && obj.common.icon,
                             folder: true,
-                            acl: obj.acl,
-                            level: 0
+                            acl:    obj.acl,
+                            level:  0
                         };
                         if (item.id === USER_DATA) {
                             // user data must be first
@@ -589,8 +587,8 @@ class FileBrowser extends Component {
                     }
                 });
         } else {
-            const parts = folderId.split('/');
-            const level = parts.length;
+            const parts   = folderId.split('/');
+            const level   = parts.length;
             const adapter = parts.shift();
             const relPath = parts.join('/');
 
@@ -599,13 +597,13 @@ class FileBrowser extends Component {
                     const _folders = [];
                     files.forEach(file => {
                         const item = {
-                            id: folderId + '/' + file.file,
-                            ext: Utils.getFileExtension(file.file),
-                            folder: file.isDir,
-                            name: file.file,
-                            size: file.stats && file.stats.size,
+                            id:       folderId + '/' + file.file,
+                            ext:      Utils.getFileExtension(file.file),
+                            folder:   file.isDir,
+                            name:     file.file,
+                            size:     file.stats && file.stats.size,
                             modified: file.modifiedAt,
-                            acl: file.acl,
+                            acl:      file.acl,
                             level
                         };
                         _folders.push(item);
@@ -666,7 +664,6 @@ class FileBrowser extends Component {
                 .then(folders =>
                     this.setState({ folders, path: folder, currentDir: folder, selected: folder, pathFocus: false }, () => this.props.onSelect && this.props.onSelect('')));
         } else {
-
             this.setState({ currentDir: folder, selected: folder, path: folder, pathFocus: false }, () => this.props.onSelect && this.props.onSelect(''));
         }
     }
@@ -878,7 +875,7 @@ class FileBrowser extends Component {
             {EXTENSIONS.images.includes(ext) ?
                 <img
                     onError={e => { e.target.onerror = null; e.target.src = NoImage }}
-                    className={clsx(this.props.classes['itemImage' + this.state.viewType], this.getClassBackgroundImage())}
+                    className={Utils.clsx(this.props.classes['itemImage' + this.state.viewType], this.getClassBackgroundImage())}
                     src={this.imagePrefix + item.id} alt={item.name}
                 />
                 :
@@ -947,7 +944,7 @@ class FileBrowser extends Component {
             folderId !== '/' &&
             !this.state.expertMode &&
             folderId !== USER_DATA && !folderId.startsWith(USER_DATA) &&
-            folderId !== 'vis.0' && !folderId.startsWith('vis.0/')
+            folderId !== 'vis.0'   && !folderId.startsWith('vis.0/')
         ) {
             return null;
         }
@@ -962,7 +959,7 @@ class FileBrowser extends Component {
                 this.state.folders[folderId].forEach(item => {
                     if (!this.state.expertMode &&
                         item.id !== USER_DATA && !item.id.startsWith(USER_DATA) &&
-                        item.id !== 'vis.0' && !item.id.startsWith('vis.0/')
+                        item.id !== 'vis.0'   && !item.id.startsWith('vis.0/')
                     ) {
                         return;
                     }
@@ -1076,11 +1073,10 @@ class FileBrowser extends Component {
                 className={this.props.classes.menuButton}
                 color={'inherit'}
                 aria-label="upload file"
-                onClick={() => {
-                    this.setState({ uploadFile: true })
-                }}
+                onClick={() =>
+                    this.setState({uploadFile: true})}
             ><UploadIcon /></IconButton> : null}
-            <Tooltip title={this.props.t('background image')}>
+            <Tooltip title={this.props.t('Background image')}>
                 <IconButton
                     color={'inherit'}
                     edge="start"
@@ -1204,7 +1200,7 @@ class FileBrowser extends Component {
 
                             reader.onabort = () => console.log('file reading was aborted');
                             reader.onerror = () => console.log('file reading has failed');
-                            reader.onload = () => {
+                            reader.onload  = () => {
                                 let parentFolder = this.findFirstFolder(this.state.selected);
 
                                 if (!parentFolder) {
@@ -1372,7 +1368,7 @@ class FileBrowser extends Component {
 
     renderBreadcrumb() {
         const parts = this.state.selected.startsWith('/') ? this.state.selected.split('/') : ('/' + this.state.selected).split('/');
-        let p = [];
+        const p = [];
         return parts.map((part, i) => {
             part && p.push(part);
             const path = p.join('/');
@@ -1408,6 +1404,7 @@ class FileBrowser extends Component {
         if (!this.props.ready) {
             return <LinearProgress key={this.props.key ? this.props.key + '_c' : 'c'} />;
         }
+
         return <div key={this.props.key} style={this.props.style} className={Utils.clsx(this.props.classes.root, this.props.className)}>
             {this.props.showToolbar ? this.renderToolbar() : null}
             {this.state.viewType === TILE ? this.renderPath() : null}

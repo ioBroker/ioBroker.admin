@@ -21,7 +21,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import I18n from '@iobroker/adapter-react/i18n';
 
 import theme from '@iobroker/adapter-react/Theme';
-import Utils from '../components/Utils';
+import Utils from '@iobroker/adapter-react/Components/Utils';
 
 let node = null;
 

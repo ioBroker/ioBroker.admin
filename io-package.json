@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.2",
+        "version": "5.0.3",
         "news": {
+            "5.0.3": {
+                "en": "Admin5: Many new features implemented",
+                "de": "Admin5: Viele neue Funktionen implementiert",
+                "ru": "Admin5: реализовано много новых функций",
+                "pt": "Admin5: Muitos novos recursos implementados",
+                "nl": "Admin5: Veel nieuwe functies geïmplementeerd",
+                "fr": "Admin5: de nombreuses nouvelles fonctionnalités implémentées",
+                "it": "Admin5: molte nuove funzionalità implementate",
+                "es": "Admin5: muchas funciones nuevas implementadas",
+                "pl": "Admin5: Zaimplementowano wiele nowych funkcji",
+                "zh-cn": "Admin5：已实现许多新功能"
+            },
             "5.0.2": {
                 "en": "Merged the changes from admin4",
                 "de": "Die Änderungen von admin4 wurden zusammengeführt",

@@ -8,7 +8,6 @@ import I18n from '@iobroker/adapter-react/i18n';
 
 import ConfigTabs from './ConfigTabs';
 import ConfigPanel from './ConfigPanel';
-import DialogSelectID from "@iobroker/adapter-react/Dialogs/SelectID";
 
 const styles = theme => ({
     root: {

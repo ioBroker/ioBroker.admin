@@ -1,5 +1,6 @@
 # Todo
  - Move logout button to menu . Always last and not orderable
+- rating
 ## Settings
   
 ## Info

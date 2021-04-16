@@ -875,11 +875,10 @@ class Instances extends Component {
             return ({ [value]: !state[value] });
         });
 
-    changeCompactGroup = value =>
-        this.setState(state => {
-            window.localStorage.setItem(`Instances.filterCompactGroup`, JSON.stringify(value));
-            return { filterCompactGroup: value };
-        });
+    changeCompactGroup = filterCompactGroup => {
+        window.localStorage.setItem(`Instances.filterCompactGroup`, JSON.stringify(filterCompactGroup));
+        this.setState({filterCompactGroup});
+    };
 
     handleFilterChange(event) {
         this.typingTimer && clearTimeout(this.typingTimer);
