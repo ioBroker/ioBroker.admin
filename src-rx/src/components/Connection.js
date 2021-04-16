@@ -1146,6 +1146,10 @@ class Connection {
      * @returns {Promise<{name: string; type: 'public' | 'private' | 'chained'}[]>}
      */
     getCertificates(update) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+
         if (this._promises.cert && !update) {
             return this._promises.cert;
         }
@@ -1329,6 +1333,9 @@ class Connection {
      * @returns {Promise<void>}
      */
     deleteFile(adapter, fileName) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
@@ -1343,6 +1350,9 @@ class Connection {
      * @returns {Promise<ioBroker.Object[]>}
      */
     getHosts(update) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         if (!update && this._promises.hosts) {
             return this._promises.hosts;
         }
@@ -1374,6 +1384,9 @@ class Connection {
      * @returns {Promise<ioBroker.Object[]>}
      */
     getUsers(update) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         if (!update && this._promises.users) {
             return this._promises.users;
         }
@@ -1404,6 +1417,9 @@ class Connection {
      * @returns {Promise<ioBroker.Object[]>}
      */
     getGroups(update) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         if (!update && this._promises.groups) {
             return this._promises.groups;
         }
@@ -1435,6 +1451,9 @@ class Connection {
      * @returns {Promise<any>}
      */
     getHostInfo(host, update) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         if (!host.startsWith('system.host.')) {
             host += 'system.host.' + host;
         }
@@ -1481,6 +1500,9 @@ class Connection {
      * @returns {Promise<any>}
      */
     getRepository(host, args, update) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         if (!update && this._promises.repo) {
             return this._promises.repo;
         }
@@ -1526,6 +1548,9 @@ class Connection {
      * @returns {Promise<any>}
      */
     getInstalled(host, update) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         if (!update && this._promises.installed) {
             return this._promises.installed;
         }
@@ -1572,6 +1597,9 @@ class Connection {
      * @returns {Promise<void>}
      */
     cmdExec(host, cmd, cmdId) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
@@ -1632,6 +1660,9 @@ class Connection {
      * @returns {Promise<any>}
      */
     readBaseSettings(host) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         return this.checkFeatureSupported('CONTROLLER_READWRITE_BASE_SETTINGS')
             .then(result => {
                 if (result) {
@@ -1674,6 +1705,9 @@ class Connection {
      * @returns {Promise<any>}
      */
     writeBaseSettings(host, config) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         return this.checkFeatureSupported('CONTROLLER_READWRITE_BASE_SETTINGS')
             .then(result => {
                 if (result) {
@@ -1715,6 +1749,9 @@ class Connection {
      * @returns {Promise<any>}
      */
     restartController(host) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         return new Promise((resolve, reject) => {
             this._socket.emit('sendToHost', host, 'restartController', null, error => {
                 error ? reject(error) : resolve(true);
@@ -1729,6 +1766,9 @@ class Connection {
      * @returns {Promise<any>}
      */
     getDiagData(host, typeOfDiag) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         return new Promise(resolve => {
             this._socket.emit('sendToHost', host, 'getDiagData', typeOfDiag, result =>
                 resolve(result));
@@ -1845,6 +1885,9 @@ class Connection {
      * @returns {Promise<void>}
      */
     changePassword(user, password) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         return new Promise((resolve, reject) =>
             this._socket.emit('changePassword', user, password, err =>
                 err ? reject(err) : resolve()));
@@ -1857,6 +1900,9 @@ class Connection {
      * @returns {Promise<string[]>}
      */
     getIpAddresses(host, update) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         if (!host.startsWith('system.host.')) {
             host = 'system.host.' + host;
         }
@@ -1868,7 +1914,6 @@ class Connection {
             .then(obj => obj && obj.common ? obj.common.address || [] : []);
 
         return this._promises['IPs_' + host];
-
     }
 
     /**
@@ -1878,6 +1923,9 @@ class Connection {
      * @returns {Promise<any[<name, address, family>]>}
      */
     getHostByIp(ipOrHostName, update) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         if (ipOrHostName.startsWith('system.host.')) {
             ipOrHostName = ipOrHostName.replace(/^system\.host\./, '');
         }
@@ -1918,6 +1966,9 @@ class Connection {
      * @returns {Promise<string>}
      */
     encrypt(text) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         return new Promise((resolve, reject) =>
             this._socket.emit('encrypt', text, (err, text) =>
                 err ? reject(err) : resolve(text)));
@@ -1929,6 +1980,9 @@ class Connection {
      * @returns {Promise<string>}
      */
     decrypt(encryptedText) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         return new Promise((resolve, reject) =>
             this._socket.emit('decrypt', encryptedText, (err, text) =>
                 err ? reject(err) : resolve(text)));
@@ -1982,6 +2036,9 @@ class Connection {
      * @returns {Promise<{entries: array}>}
      */
     chmodFile(adapter, filename, options) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
@@ -1999,6 +2056,9 @@ class Connection {
      * @returns {Promise<{entries: array}>}
      */
     chownFile(adapter, filename, options) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
@@ -2008,6 +2068,12 @@ class Connection {
                 err ? reject(err) : resolve({entries, id})));
     }
 
+    /**
+     * Check if the file exists
+     * @param {string} [adapter] adapter name
+     * @param {string} [filename] file name with full path. it could be like vis.0/*
+     * @returns {Promise<boolean>}
+     */
     fileExists(adapter, filename) {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
@@ -2016,6 +2082,43 @@ class Connection {
         return new Promise((resolve, reject) =>
             this._socket.emit('fileExists', adapter, filename, (err, exists) =>
                 err ? reject(err) : resolve(exists)));
+    }
+
+    /**
+     * Get the alarm notifications from a host (only for admin connection).
+     * @param {string} host
+     * @param {string} [category] - optional
+     * @returns {Promise<any>}
+     */
+    getNotifications(host, category) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise(resolve =>
+            this._socket.emit('sendToHost', host, 'getNotifications', {category}, notifications =>
+                resolve(notifications)));
+    }
+    /**
+     * Clear the alarm notifications on a host (only for admin connection).
+     * @param {string} host
+     * @param {string} [category] - optional
+     * @returns {Promise<any>}
+     */
+    clearNotifications(host, category) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise(resolve =>
+            this._socket.emit('sendToHost', host, 'clearNotifications', {category}, notifications =>
+                resolve(notifications)));
     }
 }
 

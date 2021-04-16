@@ -425,9 +425,11 @@ class App extends Router {
                     this.findNewsInstance()
                         .then(instance => this.socket.subscribeState(`admin.${instance}.info.newsFeed`, this.getNews(instance)))
 
-                    this.socket.getRawSocket().emit('sendToHost', newState.currentHost, 'getNotifications', {}, notifications => {
-                        this.getAdaptersWarning(notifications, this.socket, newState.currentHost);
-                    });
+                    // Give some time for communication
+                    setTimeout(() =>
+                        this.socket.getNotifications(newState.currentHost)
+                            .then(notifications => this.getAdaptersWarning(notifications, this.socket, newState.currentHost)),
+                        3000);
 
                     this.setState(newState, () => this.setCurrentTabTitle());
 
@@ -471,16 +473,14 @@ class App extends Router {
         }
         if (Object.keys(result.system.categories).length) {
             const instances = await socket.getAdapterInstances(false);
-            setTimeout(() => {
-                adaptersWarningDialogFunc(
-                    result.system.categories,
-                    this.state.systemConfig.common.dateFormat,
-                    this.state.themeType,
-                    this.state.themeName,
-                    instances,
-                    (name) => socket.getRawSocket().emit('sendToHost', currentHost, 'clearNotifications', { category: name })
-                    )
-            }, 5000);
+            adaptersWarningDialogFunc(
+                result.system.categories,
+                this.state.systemConfig.common.dateFormat,
+                this.state.themeType,
+                this.state.themeName,
+                instances,
+                name => socket.clearNotifications(currentHost, name)
+            );
         }
     }
 
@@ -1193,6 +1193,10 @@ class App extends Router {
                                     }, () => {
                                         this.logsWorkerChanged(host);
                                         window.localStorage.setItem('App.currentHost', host);
+
+                                        // read notifications from host
+                                        this.socket.getNotifications(host)
+                                            .then(notifications => this.getAdaptersWarning(notifications, this.socket, host));
                                     });
                                 }}
                                 disabled={
