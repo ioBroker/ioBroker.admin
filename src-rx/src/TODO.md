@@ -1,9 +1,5 @@
 # Todo
  - Move logout button to menu . Always last and not orderable
- <!-- - Remove in mobile view from instances the RAM info -->
- <!-- - Files. layout in mobile is broken -->
- - Files. Make from copy content just "Copy" on mobile mode
- <!-- - Files. Title rtl + elipsis -->
 ## Settings
   
 ## Info
@@ -42,7 +38,6 @@
 - Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io) (BF)
 
 ## Login and authentication
-- layout
 
 ## JSON config - Admin settings dialog (index_m.html)
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)

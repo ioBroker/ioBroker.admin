@@ -2120,6 +2120,30 @@ class Connection {
             this._socket.emit('sendToHost', host, 'clearNotifications', {category}, notifications =>
                 resolve(notifications)));
     }
+
+    getIsEasyModeStrict() {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getIsEasyModeStrict', (error, isStrict) =>
+                error ? reject(error) : resolve(isStrict)));
+    }
+
+    getEasyMode() {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getEasyMode', (error, config) =>
+                error ? reject(error) : resolve(config)));
+    }
 }
 
 Connection.Connection = {
