@@ -14,7 +14,6 @@ import I18n from '@iobroker/adapter-react/i18n';
 
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { FaSignOutAlt as LogoutIcon } from 'react-icons/fa';
 import AppsIcon from '@material-ui/icons/Apps';
 import InfoIcon from '@material-ui/icons/Info';
 import StoreIcon from '@material-ui/icons/Store';
@@ -26,6 +25,7 @@ import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
 import SubscriptionsIcon from '@material-ui/icons/Subscriptions';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
+import LogoutIcon from '../helpers/IconLogout'//'@iobroker/adapter-react/Components/LogoutIcon';
 
 // import CodeIcon from '@material-ui/icons/Code';
 // import AcUnitIcon from '@material-ui/icons/AcUnit';
