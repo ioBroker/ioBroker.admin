@@ -16,15 +16,15 @@
 
   - news could have the attribute "img" and if it is present, so show it at the top of the dialog
   - news could have the attribute "link" if it presents so show the button with "linkTitle"
-  - Title of the dialog: You have unread news
-  - Buttons of the dialog: "Acknowledge"
+  <!-- - Title of the dialog: You have unread news -->
+  <!-- - Buttons of the dialog: "Acknowledge" -->
 
 
-- Support of notifications: https://github.com/ioBroker/ioBroker.js-controller/pull/1153 
-  - system.host.HOSTNAME.notifications
-  - this.props.socket.getRawSocket().emit('sendToHost', host, 'getNotifications', {}, notifications =>);
+<!-- - Support of notifications: https://github.com/ioBroker/ioBroker.js-controller/pull/1153 
+  - system.host.HOSTNAME.notifications -->
+  <!-- - this.props.socket.getRawSocket().emit('sendToHost', host, 'getNotifications', {}, notifications =>);
   - this.props.socket.getRawSocket().emit('sendToHost', host, 'clearNotifications', {category: name}, 
-  notifications =>);
+  notifications =>); -->
   - start notifications check with 4 sec delay
   - Read notifications by host change
 

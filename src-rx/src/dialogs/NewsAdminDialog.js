@@ -148,7 +148,7 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, themeName }) =
                     autoFocus
                     onClick={onClose}
                     color="primary">
-                    {I18n.t('Ok')}
+                    {I18n.t('Acknowledge')}
                 </Button>
             </DialogActions>
         </Dialog>

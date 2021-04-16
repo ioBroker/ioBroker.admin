@@ -14,7 +14,7 @@ import WarningIcon from '@material-ui/icons/Warning';
 import CancelPresentationIcon from '@material-ui/icons/CancelPresentation';
 
 import I18n from '@iobroker/adapter-react/i18n';
-import { Accordion, AccordionDetails, AccordionSummary, AppBar, Box, DialogTitle, makeStyles, Tab, Tabs, ThemeProvider, Typography } from '@material-ui/core';
+import { Accordion, AccordionDetails, AccordionSummary, AppBar, Box, CardMedia, DialogTitle, makeStyles, Tab, Tabs, ThemeProvider, Typography } from '@material-ui/core';
 
 import theme from '@iobroker/adapter-react/Theme';
 //import Utils from '@iobroker/adapter-react/Components/Utils';
@@ -86,7 +86,8 @@ const useStyles = makeStyles((theme) => ({
     message: {
         justifyContent: 'space-between',
         display: 'flex',
-        width: '100%'
+        width: '100%',
+        alignItems: 'center'
     },
     column: {
         flexDirection: 'column'
@@ -106,9 +107,37 @@ const useStyles = makeStyles((theme) => ({
         paddingBottom: 5,
         position: 'sticky',
         bottom: 0,
-        background: 'white'
+        background: 'white',
+        zIndex: 3
+    },
+    terminal: {
+        fontFamily: 'monospace',
+        fontSize: 14,
+        marginLeft: 20
+    },
+    img2: {
+        width: 25,
+        height: 25,
+        marginRight: 10,
+        margin: 'auto 0',
+        position: 'relative',
+        '&:after': {
+            content: '""',
+            position: 'absolute',
+            zIndex: 2,
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'url("img/no-image.png") 100% 100% no-repeat',
+            backgroundSize: 'cover',
+            backgroundColor: '#fff',
+        }
+    },
+    heading: {
+        display: 'flex',
+        alignItems: 'center'
     }
-
 }));
 
 const Status = ({ name, ...props }) => {
@@ -127,6 +156,13 @@ const Status = ({ name, ...props }) => {
             return <CancelIcon style={{ color: '#ffca00' }} {...props} />
         case "remoteHostErrors":
             return <SettingsRemoteIcon style={{ color: '#ffca00' }} {...props} />
+        case "heading":
+            return <WarningIcon style={{
+                color: '#ffca00',
+                fontSize: 36,
+                marginLeft: 25,
+                marginRight: 10
+            }} {...props} />
         default:
             return <WarningIcon style={{ color: '#ffca00' }} {...props} />
     }
@@ -157,7 +193,7 @@ const TabPanel = ({ children, value, index, ...other }) => {
     );
 }
 
-const AdaptersWarningDialog = ({ message, func, dateFormat, themeType,themeName }) => {
+const AdaptersWarningDialog = ({ message, func, dateFormat, themeType, themeName, instances }) => {
     const classes = useStyles();
 
     const [open, setOpen] = useState(true);
@@ -181,7 +217,7 @@ const AdaptersWarningDialog = ({ message, func, dateFormat, themeType,themeName 
             open={open}
             classes={{ paper: classes.paper }}
         >
-            <DialogTitle>{I18n.t("Adapters warning")}</DialogTitle>
+            <h2 className={classes.heading}><Status name="heading" />{I18n.t("Adapter warnings")}</h2>
             <DialogContent className={clsx(classes.flex, classes.overflowHidden)} dividers>
                 <div className={classes.root}>
                     <AppBar position="static" color="default">
@@ -190,39 +226,16 @@ const AdaptersWarningDialog = ({ message, func, dateFormat, themeType,themeName 
                             onChange={handleChange}
                             variant="scrollable"
                             scrollButtons="on"
-                            indicatorColor="primary"
+                            indicatorColor={black?"primary":"secondary"}
                             textColor="primary"
                         >
                             {Object.keys(message).map((name, idx) => <Tab
+                                style={black ? null : { color: 'white' }}
                                 disabled={disabled.indexOf(name) !== -1}
                                 key={name} label={I18n.t(name)}
                                 icon={<Status name={name} />}
                                 {...a11yProps(idx)} />
                             )}
-                            <Tab
-                                disabled={disabled.indexOf('memIssues') !== -1}
-                                label={'memIssues'}
-                                icon={<Status name={'memIssues'} />} />
-                            <Tab
-                                disabled={disabled.indexOf('fsIoErrors') !== -1}
-                                label={'fsIoErrors'}
-                                icon={<Status name={'fsIoErrors'} />} />
-                            <Tab
-                                disabled={disabled.indexOf('noDiskSpace') !== -1}
-                                label={'noDiskSpace'}
-                                icon={<Status name={'noDiskSpace'} />} />
-                            <Tab
-                                disabled={disabled.indexOf('accessErrors') !== -1}
-                                label={'accessErrors'}
-                                icon={<Status name={'accessErrors'} />} />
-                            <Tab
-                                disabled={disabled.indexOf('nonExistingFileErrors') !== -1}
-                                label={'nonExistingFileErrors'}
-                                icon={<Status name={'nonExistingFileErrors'} />} />
-                            <Tab
-                                disabled={disabled.indexOf('remoteHostErrors') !== -1}
-                                label={'remoteHostErrors'}
-                                icon={<Status name={'remoteHostErrors'} />} />
                         </Tabs>
                     </AppBar>
                     {Object.keys(message).map((name, idx) => <TabPanel
@@ -238,22 +251,31 @@ const AdaptersWarningDialog = ({ message, func, dateFormat, themeType,themeName 
                             {message[name].description[I18n.getLanguage()]}
                         </div>
                         <div>
-                            {Object.keys(message[name].instances).map((nameInst) => <Accordion key={nameInst} expanded={expanded === `${name}-${nameInst}`} onChange={handleChangeAccordion(`${name}-${nameInst}`)}>
-                                <AccordionSummary
-                                    expandIcon={<ExpandMoreIcon />}
-                                    aria-controls="panel1bh-content"
-                                    id="panel1bh-header"
-                                >
-                                    <Typography className={classes.heading}>{nameInst}</Typography>
-                                </AccordionSummary>
-                                <AccordionDetails className={classes.column}>
-                                    {message[name].instances[nameInst].messages.map(el =>
-                                        <Typography key={el.ts} component="div" className={classes.message}>
-                                            <div>{el.message}</div>
-                                            <div className={classes.silver}>{Utils.formatDate(new Date(el.ts), dateFormat)}</div>
-                                        </Typography>)}
-                                </AccordionDetails>
-                            </Accordion>
+                            {Object.keys(message[name].instances).map((nameInst) => {
+                                const currentInstance = instances.find(el => el._id === nameInst);
+                                let icon = 'img/no-image.png';
+                                if (currentInstance) {
+                                    icon = currentInstance.common.icon ? 'adapter/' + currentInstance.common.name + '/' + currentInstance.common.icon : 'img/no-image.png';
+                                }
+                                return <Accordion style={black ? null : { background: '#c0c0c052' }} key={nameInst} expanded={expanded === `${name}-${nameInst}`} onChange={handleChangeAccordion(`${name}-${nameInst}`)}>
+                                    <AccordionSummary
+                                        expandIcon={<ExpandMoreIcon />}
+                                        aria-controls="panel1bh-content"
+                                        id="panel1bh-header"
+                                    >
+                                        <Typography className={classes.heading}>
+                                            <CardMedia className={classes.img2} component="img" image={icon} />
+                                            {nameInst.replace(/^system\.adapter\./, '')}</Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails className={classes.column}>
+                                        {message[name].instances[nameInst].messages.map(el =>
+                                            <Typography key={el.ts} component="div" className={classes.message}>
+                                                <div className={classes.terminal}>{el.message}</div>
+                                                <div className={classes.silver}>{Utils.formatDate(new Date(el.ts), dateFormat)}</div>
+                                            </Typography>)}
+                                    </AccordionDetails>
+                                </Accordion>
+                            }
                             )}
                         </div>
                         <div className={classes.button}>
@@ -266,7 +288,7 @@ const AdaptersWarningDialog = ({ message, func, dateFormat, themeType,themeName 
                                     setDisabled([...disabled, name]);
                                 }}
                                 color="primary">
-                                {I18n.t('Accept')}
+                                {I18n.t('Acknowledge')}
                             </Button>
                         </div>
                     </TabPanel>
@@ -287,11 +309,11 @@ const AdaptersWarningDialog = ({ message, func, dateFormat, themeType,themeName 
     </ThemeProvider >;
 }
 
-export const adaptersWarningDialogFunc = (message, dateFormat, themeType,themeName, func) => {
+export const adaptersWarningDialogFunc = (message, dateFormat, themeType, themeName, instances, func) => {
     if (!node) {
         node = document.createElement('div');
         node.id = 'renderModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<AdaptersWarningDialog message={message} themeName={themeName} themeType={themeType} dateFormat={dateFormat} func={func} />, node);
+    return ReactDOM.render(<AdaptersWarningDialog instances={instances} message={message} themeName={themeName} themeType={themeType} dateFormat={dateFormat} func={func} />, node);
 }

@@ -420,7 +420,7 @@ class App extends Router {
                     this.subscribeOnHostsStatus();
 
                     newState.expertMode = window.sessionStorage.getItem('App.expertMode') === 'true' || !!newState.systemConfig.common.expertMode;
-
+                    console.log('newState',newState)
 
                     this.findNewsInstance()
                         .then(instance => this.socket.subscribeState(`admin.${instance}.info.newsFeed`, this.getNews(instance)))
@@ -465,17 +465,19 @@ class App extends Router {
         })
     }
 
-    getAdaptersWarning = ({ result }, socket, currentHost) => {
+    getAdaptersWarning = async ({ result }, socket, currentHost) => {
         if (!result || !result.system) {
             return;
         }
         if (Object.keys(result.system.categories).length) {
+            const instances = await socket.getAdapterInstances(false);
             setTimeout(() => {
                 adaptersWarningDialogFunc(
                     result.system.categories,
                     this.state.systemConfig.common.dateFormat,
                     this.state.themeType,
                     this.state.themeName,
+                    instances,
                     (name) => socket.getRawSocket().emit('sendToHost', currentHost, 'clearNotifications', { category: name })
                     )
             }, 5000);
