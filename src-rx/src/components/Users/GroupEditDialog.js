@@ -4,7 +4,7 @@ import Dialog from '@material-ui/core/Dialog';
 import Box from '@material-ui/core/Box';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
-import CheckBox from '@material-ui/core/CheckBox';
+import Checkbox from '@material-ui/core/Checkbox';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
@@ -26,14 +26,14 @@ function PermsTab(props) {
     }
 
     return <div key="PermsTab">
-        {mapObject(props.group.common.acl, (block, blockKey) => 
+        {mapObject(props.group.common.acl, (block, blockKey) =>
             <Fragment key={blockKey}>
                 <h4>{props.t(blockKey)}</h4>
-                {mapObject(block, (perm, permKey) => 
+                {mapObject(block, (perm, permKey) =>
                     <FormControlLabel
                         key={permKey}
-                        control={<CheckBox 
-                            disabled={props.group.common.dontDelete} 
+                        control={<Checkbox
+                            disabled={props.group.common.dontDelete}
                             checked={perm}
                             onChange={e=>{
                                 let newData = props.group;
@@ -79,9 +79,9 @@ function GroupEditDialog(props) {
     }
 
     let mainTab = <div key="MainTab">
-        <UsersTextField 
-            label="Name" 
-            t={props.t} 
+        <UsersTextField
+            label="Name"
+            t={props.t}
             value={ props.group.common.name }
             onChange={e=>{
                 let newData = props.group;
@@ -92,9 +92,9 @@ function GroupEditDialog(props) {
             icon={TextFieldsIcon}
             classes={props.classes}
         />
-        <UsersTextField 
-            label="ID edit" 
-            t={props.t} 
+        <UsersTextField
+            label="ID edit"
+            t={props.t}
             disabled={props.group.common.dontDelete}
             value={ props.group._id.split('.')[props.group._id.split('.').length-1] }
             onChange={e=>{
@@ -107,17 +107,17 @@ function GroupEditDialog(props) {
             icon={LocalOfferIcon}
             classes={props.classes}
         />
-        <UsersTextField 
-            label="ID preview" 
-            t={props.t} 
+        <UsersTextField
+            label="ID preview"
+            t={props.t}
             disabled
             value={ props.group._id }
             icon={PageviewIcon}
             classes={props.classes}
         />
-        <UsersTextField 
-            label="Description" 
-            t={props.t} 
+        <UsersTextField
+            label="Description"
+            t={props.t}
             value={ props.group.common.desc }
             onChange={e=>{
                 let newData = props.group;
@@ -127,9 +127,9 @@ function GroupEditDialog(props) {
             icon={DescriptionIcon}
             classes={props.classes}
         />
-        <UsersFileInput 
-            label="Icon" 
-            t={props.t} 
+        <UsersFileInput
+            label="Icon"
+            t={props.t}
             value={ props.group.common.icon }
             onChange={fileblob=>{
                 let newData = props.group;
@@ -140,9 +140,9 @@ function GroupEditDialog(props) {
             icon={ImageIcon}
             classes={props.classes}
         />
-        <UsersColorPicker 
-            label="Color" 
-            t={props.t} 
+        <UsersColorPicker
+            label="Color"
+            t={props.t}
             value={ props.group.common.color }
             previewClassName={props.classes.iconPreview}
             onChange={color=>{
