@@ -1184,5 +1184,7 @@
   "Adapter warnings": "Adapterwarnungen",
   "restartLoop": "Zyklisches Starten",
   "ECharts": "ECharts",
-  "Running command": "Befehl ausführen"
+  "Running command": "Befehl ausführen",
+  "Now the expert mode will be deactivated only during this browser session.": "Jetzt wird der Expertenmodus nur während dieser Browsersitzung deaktiviert.",
+  "allow set of compact groups": "Erlaube die Einstellung von Kompaktgruppen"
 }

@@ -1184,5 +1184,7 @@
   "Adapter warnings": "适配器警告",
   "restartLoop": "重新启动循环",
   "ECharts": "ECharts",
-  "Running command": "运行命令"
+  "Running command": "运行命令",
+  "Now the expert mode will be deactivated only during this browser session.": "现在，仅在此浏览器会话期间将停用专家模式。",
+  "allow set of compact groups": "允许一组紧凑组"
 }

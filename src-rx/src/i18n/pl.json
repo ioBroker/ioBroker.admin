@@ -1184,5 +1184,7 @@
   "Adapter warnings": "Ostrzeżenia dotyczące adapterów",
   "restartLoop": "Zrestartuj pętlę",
   "ECharts": "ECharts",
-  "Running command": "Uruchomione polecenie"
+  "Running command": "Uruchomione polecenie",
+  "Now the expert mode will be deactivated only during this browser session.": "Teraz tryb eksperta zostanie wyłączony tylko podczas tej sesji przeglądarki.",
+  "allow set of compact groups": "Zezwalaj na zestaw grup kompaktowych"
 }

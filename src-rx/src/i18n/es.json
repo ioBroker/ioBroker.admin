@@ -1184,5 +1184,7 @@
   "Adapter warnings": "Advertencias del adaptador",
   "restartLoop": "Reiniciar bucle",
   "ECharts": "ECharts",
-  "Running command": "Comando de ejecución"
+  "Running command": "Comando de ejecución",
+  "Now the expert mode will be deactivated only during this browser session.": "Ahora, el modo experto se desactivará solo durante esta sesión del navegador.",
+  "allow set of compact groups": "Permitir el conjunto de los grupos compactos"
 }

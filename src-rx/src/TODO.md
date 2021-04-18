@@ -1,6 +1,18 @@
 # Todo
  - Move logout button to menu . Always last and not orderable
 - rating
+
+## Bugs
+- No restart after system settings changed. (At least after the language changed it must be reloaded)
+- Number on drawer is not corresponding with actual number of updatable adapters
+- Tooltips: https://github.com/ioBroker/ioBroker.admin/issues/687
+- The version will not be automatically updated: https://github.com/ioBroker/ioBroker.admin/issues/688
+- Adapter => Filter installed adapters => The button has no primary color if active: https://github.com/ioBroker/ioBroker.admin/issues/689
+- Update log level if changed: https://github.com/ioBroker/ioBroker.admin/issues/690
+- Show button (in non expert mode) for state with role button: https://github.com/ioBroker/ioBroker.admin/issues/701
+- Deleting of objects: All / only one is swapped: https://github.com/ioBroker/ioBroker.admin/issues/681
+- Install from git does not work: https://github.com/ioBroker/ioBroker.admin/issues/694
+
 ## Settings
   
 ## Info

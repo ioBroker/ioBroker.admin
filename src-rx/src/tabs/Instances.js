@@ -105,7 +105,8 @@ const styles = theme => ({
     iframe: {
         height: '100%',
         width: '100%',
-        border: 0
+        border: 0,
+        backgroundColor: '#FFF',
     },
     silly: {
 
@@ -365,7 +366,9 @@ class Instances extends Component {
             }
             return 0;
         });
+
         let compactGroupCount = 0;
+
         instances.forEach(obj => {
             const common = obj ? obj.common : null;
             const objId = obj._id.split('.');
@@ -378,7 +381,7 @@ class Instances extends Component {
             instance.obj = obj;
             instance.compact = !!common.compact;
             instance.host = common.host;
-            instance.name = common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en || '' : common.title;
+            instance.name = common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en || common.title || '' : common.title;
             instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
             let links = common.localLinks || common.localLink || '';
             if (links && typeof links === 'string') {
@@ -574,14 +577,27 @@ class Instances extends Component {
         return obj?.common?.schedule ? obj.common.schedule : '';
     }
 
-    isName = (id) => {
+    getName = id => {
         const obj = this.objects[id];
-        return !obj?.common?.title || (obj?.common?.titleLang && obj?.common?.titleLang.en === obj?.common?.title) ? obj?.common?.titleLang[this.props.lang] || obj?.common?.titleLang.en : obj?.common?.title;
+        if (!obj || !obj.common) {
+            return '';
+        }
+        if (obj.common.titleLang) {
+            if (typeof obj.common.titleLang === 'string') {
+                return obj.common.titleLang;
+            } else {
+                return obj.common.titleLang[this.props.lang] || obj.common.titleLang.en;
+            }
+        } else {
+            return obj.common.title || '';
+        }
     }
+
     isModeSchedule = (id) => {
         const obj = this.objects[id];
         return (obj?.common?.mode && obj?.common?.mode === 'schedule') || false;
     }
+
     isLogLevel = (id) => {
         const obj = this.objects[id];
         return obj?.common?.loglevel;
@@ -668,7 +684,7 @@ class Instances extends Component {
             const compact = this.isCompact(id);
             const connectedToHost = this.isConnectedToHost(id);
             const connected = this.isConnected(id);
-            const name = this.isName(id);
+            const name = this.getName(id);
             const logLevel = this.isLogLevel(id);
             const loglevelIcon = this.getLogLevelIcon(instance.loglevel);
             const checkCompact = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
@@ -701,7 +717,7 @@ class Instances extends Component {
                 this.extendObject('system.adapter.' + instance.id, { common: { disableDataReporting: !!currentSentry } });
 
             const setName = value =>
-                this.extendObject('system.adapter.' + instance.id, { common: { title: value } });
+                this.extendObject('system.adapter.' + instance.id, { common: { titleLang: value } });
 
             const setLogLevel = value =>
                 this.extendObject('system.adapter.' + instance.id, { common: { loglevel: value } });

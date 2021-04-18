@@ -58,6 +58,27 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+// some older browsers do not have flat
+if (!Array.prototype.flat) {
+    Object.defineProperty(Array.prototype, 'flat', {
+        configurable: true,
+        value: function flat () {
+            const depth = isNaN(arguments[0]) ? 1 : Number(arguments[0]);
+
+            return depth ? Array.prototype.reduce.call(this, function (acc, cur) {
+                if (Array.isArray(cur)) {
+                    acc.push.apply(acc, flat.call(cur, depth - 1));
+                } else {
+                    acc.push(cur);
+                }
+
+                return acc;
+            }, []) : Array.prototype.slice.call(this);
+        },
+        writable: true
+    });
+}
+
 const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstance, t }) => {
     if (!t) {
         t = I18n.t
@@ -69,17 +90,24 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
     const [url, setUrl] = useState('');
     const [value, setValue] = useState(0);
     // eslint-disable-next-line array-callback-return
-    const array = useCallback(() => categories.map(category => category.adapters).sort().flat().map(el => {
-        const adapter = repository[el]
-        if (!adapter?.controller) {
-            return ({
-                value: el, name: `${adapter?.name} [${(adapter.meta || '')
-                    .replace('https://raw.githubusercontent.com/', '')
-                    .substr(0, (adapter.meta || '').replace('https://raw.githubusercontent.com/', '')
-                        .indexOf('/'))}]`
-            });
-        }
-    }).sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0), [categories, repository]);
+    const array = useCallback(() =>
+        categories
+            .map(category => category.adapters)
+            .sort()
+            .flat()
+            .map(el => {
+                const adapter = repository[el]
+                if (!adapter?.controller) {
+                    return ({
+                        value: el, name: `${adapter?.name} [${(adapter.meta || '')
+                            .replace('https://raw.githubusercontent.com/', '')
+                            .substr(0, (adapter.meta || '').replace('https://raw.githubusercontent.com/', '')
+                                .indexOf('/'))}]`
+                    });
+                }
+            })
+            .sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0),
+        [categories, repository]);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);

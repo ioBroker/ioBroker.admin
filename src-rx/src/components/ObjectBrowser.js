@@ -2107,8 +2107,7 @@ class ObjectBrowser extends Component {
             this.subscribes.push(id);
             console.log('+ subscribe ' + id);
             if (!this.pausedSubscribes) {
-                this.props.socket.subscribeState(id, this.onStateChange)
-                    .catch(e => window.alert('Cannot subscribe state: ' + e));
+                this.props.socket.subscribeState(id, this.onStateChange);
             }
         }
     }
@@ -2877,15 +2876,13 @@ class ObjectBrowser extends Component {
 
         item.data.aclTooltip = item.data.aclTooltip || this.renderTooltipAccessControl(item.data.obj.acl);
 
+        const acl = item.data.obj.acl ? (item.data.obj.type === 'state' ? item.data.obj.acl.state : item.data.obj.acl.object) : 0;
+
         return [
             this.props.expertMode && this.props.objectEditOfAccessControl ? <Tooltip key="acl" title={item.data.aclTooltip}><IconButton className={classes.cellButtonMinWidth} onClick={() =>
                 this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })
             }>
-                <div className={classes.aclText}>{Number(item.data.obj.type === 'state' ?
-                    item.data.obj.acl.state ?
-                        item.data.obj.acl.state :
-                        item.data.obj.acl.object :
-                    item.data.obj.acl.object).toString(16)}</div>
+                <div className={classes.aclText}>{Number(acl).toString(16)}</div>
             </IconButton></Tooltip> : <div key="aclEmpty" className={classes.cellButtonMinWidth} />,
             <IconButton
                 key="edit"

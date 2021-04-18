@@ -337,7 +337,7 @@ const InstanceCard = ({
                 applyDisabled={openDialogText || openDialogMemoryLimit}
                 textInput={openDialogText || openDialogMemoryLimit}
                 defaultValue={openDialogText ? name : openDialogMemoryLimit ? memoryLimitMB : ''}
-                onApply={(value) => {
+                onApply={value => {
                     if (openDialogSelect) {
                         setLogLevel(select)
                         setOpenDialogSelect(false);
