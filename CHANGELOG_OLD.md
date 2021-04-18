@@ -1,3 +1,6 @@
+## 4.2.0 (2021-01-08)
+* (bluefox) Support of new Let's Encrypt (only with js-controller 3.2.x)
+
 ## 4.1.13 (2021-01-08)
 * (bluefox) Support of new Let's Encrypt (only with js-controller 3.2.x)
 

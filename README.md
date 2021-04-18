@@ -95,6 +95,9 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 -->
 
 ## Changelog
+### 5.0.4 (2021-04-18)
+* (bluefox) Admin5: Fixed many bugs
+
 ### 5.0.3 (2021-04-17)
 * (bluefox) Admin5: Many new features implemented
 
@@ -106,9 +109,6 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 
 ### 4.2.1 (2021-01-12)
 * (Apollon77) Also allow pre-prelease versions for dependency checks
-
-### 4.2.0 (2021-01-08)
-* (bluefox) Support of new Let's Encrypt (only with js-controller 3.2.x)
 
 ## License
 

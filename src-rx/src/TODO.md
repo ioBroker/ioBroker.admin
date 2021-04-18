@@ -12,6 +12,7 @@
 - Show button (in non expert mode) for state with role button: https://github.com/ioBroker/ioBroker.admin/issues/701
 - Deleting of objects: All / only one is swapped: https://github.com/ioBroker/ioBroker.admin/issues/681
 - Install from git does not work: https://github.com/ioBroker/ioBroker.admin/issues/694
+- Ask "Discard data?" if instance config not saved
 
 ## Settings
   
