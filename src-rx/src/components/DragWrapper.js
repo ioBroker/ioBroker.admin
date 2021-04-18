@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import { findCard, moveCard } from '../../helpers/cardSort';
+import { findCard, moveCard } from '../helpers/cardSort';
 const style = {
     cursor: 'move',
 };

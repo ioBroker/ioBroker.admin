@@ -15,12 +15,12 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 
 import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 
-import BaseSettingsSystem from '../components/BaseSettingsSystem';
-import BaseSettingsMultihost from '../components/BaseSettingsMultihost';
-import BaseSettingsObjects from '../components/BaseSettingsObjects';
-import BaseSettingsStates from '../components/BaseSettingsStates';
-import BaseSettingsLog from '../components/BaseSettingsLog';
-import BaseSettingsPlugins from '../components/BaseSettingsPlugins';
+import BaseSettingsSystem from '../components/BaseSettings/BaseSettingsSystem';
+import BaseSettingsMultihost from '../components/BaseSettings/BaseSettingsMultihost';
+import BaseSettingsObjects from '../components/BaseSettings/BaseSettingsObjects';
+import BaseSettingsStates from '../components/BaseSettings/BaseSettingsStates';
+import BaseSettingsLog from '../components/BaseSettings/BaseSettingsLog';
+import BaseSettingsPlugins from '../components/BaseSettings/BaseSettingsPlugins';
 
 // icons
 import CheckIcon from '@material-ui/icons/Check';

@@ -14,7 +14,7 @@ class Utils {
     static namespace = NAMESPACE;
     static INSTANCES = 'instances';
     static dateFormat = ['DD', 'MM'];
-    static FORBIDDEN_CHARS = /[\][*,;'"`<>\\?]/g;
+    static FORBIDDEN_CHARS = /[^._\-/ :!#$%&()+=@^{}|~\p{Ll}\p{Lu}\p{Nd}]+/gu;
 
     /**
      * Capitalize words.

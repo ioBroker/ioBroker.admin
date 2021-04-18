@@ -237,7 +237,7 @@ let diskFreeCache = 1;
 let diskSizeCache = 1;
 let diskWarningCache = 1;
 
-const RowHosts = ({
+const HostRow = ({
     name,
     classes,
     image,
@@ -449,9 +449,9 @@ const RowHosts = ({
     </div>
 }
 
-RowHosts.propTypes = {
+HostRow.propTypes = {
     t: PropTypes.func,
     systemConfig: PropTypes.object,
 };
 
-export default withStyles(styles)(RowHosts);
+export default withStyles(styles)(HostRow);

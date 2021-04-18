@@ -14,6 +14,7 @@ import I18n from '@iobroker/adapter-react/i18n';
 import Router from '@iobroker/adapter-react/Components/Router';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
+import Icon from '@iobroker/adapter-react/Components/Icon';
 import theme from './Theme'; // @iobroker/adapter-react/Theme
 
 // @material-ui/core
@@ -37,6 +38,7 @@ import Brightness5Icon from '@material-ui/icons/Brightness5';
 import Brightness6Icon from '@material-ui/icons/Brightness6';
 import Brightness7Icon from '@material-ui/icons/Brightness7';
 import PictureInPictureAltIcon from '@material-ui/icons/PictureInPictureAlt';
+import UserIcon from '@material-ui/icons/Person';
 
 import CommandDialog from './dialogs/CommandDialog';
 import Drawer from './components/Drawer';
@@ -56,7 +58,7 @@ import { Hidden } from '@material-ui/core';
 import { expertModeDialogFunc } from './dialogs/ExpertModeDialog';
 import { newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
 import { adaptersWarningDialogFunc } from './dialogs/AdaptersWarningDialog';
-import EasyMode from "./tabs/EasyMode";
+import EasyMode from './tabs/EasyMode';
 
 // Tabs
 const Adapters = React.lazy(() => import('./tabs/Adapters'));
@@ -167,7 +169,8 @@ const styles = theme => ({
     avatarNotVisible: {
         opacity: 0,
         marginLeft: 5,
-        transition: 'opacity 0.3s'
+        transition: 'opacity 0.3s',
+        width: 'initial'
     },
     avatarVisible: {
         opacity: 1
@@ -208,6 +211,32 @@ const styles = theme => ({
             opacity: 0.7,
             transform: 'translateX(-2%)'
         }
+    },
+
+    flexGrow: {
+        flexGrow: 2,
+    },
+    userBadge: {
+        lineHeight: '48px'
+    },
+    userIcon: {
+        borderRadius: 4,
+        width: 48,
+        height: 48,
+        verticalAlign: 'middle',
+    },
+    userText: {
+        verticalAlign: 'middle',
+        fontSize: 16,
+        maxWidth: 100,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        display: 'inline-block'
+    },
+    userBackground: {
+        borderRadius: 4,
+        backgroundColor: theme.palette.type === 'dark' ? '#EEE' : '#222',
+        padding: 3,
     }
 });
 
@@ -297,6 +326,7 @@ class App extends Router {
                 subscribesObjects: {},
                 subscribesLogs: 0,
                 systemConfig: null,
+                user: null, // Logged in user
 
                 objects: {},
 
@@ -348,6 +378,22 @@ class App extends Router {
     setUnsavedData(hasUnsavedData) {
         if (hasUnsavedData !== this.state.unsavedDataInDialog) {
             this.setState({ unsavedDataInDialog: hasUnsavedData });
+        }
+    }
+
+    // If the background color must be inverted. Depends on current theme.
+    mustInvertBackground(color) {
+        if (!color) {
+            return false;
+        } else {
+            const invertedColor = Utils.invertColor(color, true);
+            if (invertedColor === '#FFFFFF' && this.state.themeType === 'dark') {
+                return true;
+            } else
+            if (invertedColor === '#000000' && this.state.themeType === 'light') {
+                return true;
+            }
+            return false;
         }
     }
 
@@ -435,6 +481,36 @@ class App extends Router {
                                 this.subscribeOnHostsStatus();
 
                                 newState.expertMode = window.sessionStorage.getItem('App.expertMode') === 'true' || !!newState.systemConfig.common.expertMode;
+
+                                // Read user and show him
+                                if (this.socket.isSecure) {
+                                    this.socket.getCurrentUser()
+                                        .then(user => {
+                                            this.socket.getObject('system.user.' + user)
+                                                .then(userObj => {
+                                                    this.setState({user: {
+                                                        id: userObj._id,
+                                                        name: Utils.getObjectNameFromObj(userObj, this.socket.systemLang),
+                                                        color: userObj.common.color,
+                                                        icon: userObj.common.icon,
+                                                        invertBackground: this.mustInvertBackground(userObj.common.color)
+                                                    }});
+                                                })
+                                        });
+                                } else {
+                                    // simulate
+                                    this.socket.getObject('system.user.admin')
+                                        .then(userObj =>
+                                            this.setState({
+                                                user: {
+                                                    id: userObj._id,
+                                                    name: Utils.getObjectNameFromObj(userObj, this.socket.systemLang),
+                                                    color: userObj.common.color,
+                                                    icon: userObj.common.icon,
+                                                    invertBackground: this.mustInvertBackground(userObj.common.color)
+                                                }
+                                            }));
+                                }
 
                                 // Give some time for communication
                                 setTimeout(() =>
@@ -1094,6 +1170,18 @@ class App extends Router {
             /> : null;
     }
 
+    renderLoggedUser() {
+        if (this.state.user && this.props.width !== 'xs' && this.props.width !== 'sm') {
+            return <div title={this.state.user.id} className={clsx(this.props.classes.userBadge, this.state.user.invertBackground && this.props.classes.userBackground)}>
+                {this.state.user.icon ? <Icon src={this.state.user.icon} className={this.props.classes.userIcon}/>
+                    : <UserIcon className={this.props.classes.userIcon}/>}
+                <div style={{color: this.state.user.color || undefined}} className={this.props.classes.userText}>{this.state.user.name}</div>
+            </div>
+        } else {
+            return null;
+        }
+    }
+
     renderConfirmDialog() {
         /*return <ConfirmDialog
             onClose={() => this.closeDataNotStoredDialog()}
@@ -1218,21 +1306,24 @@ class App extends Router {
                                     this.state.currentTab.tab !== 'tab-logs'
                                 }
                             />
-                            <Typography variant="h6" className={classes.title} style={{ flexGrow: 1 }} />
+                            <div className={classes.flexGrow} />
                             {this.state.cmd && !this.state.cmdDialog && <IconButton onClick={() => this.setState({ cmdDialog: true })}>
                                 <PictureInPictureAltIcon className={this.state.commandError ? classes.errorCmd : this.state.performed ? classes.performed : classes.cmd} />
                             </IconButton>}
                         </div>
-                        {/* Show host selector */}
 
-                        <Grid container className={clsx(this.state.drawerState !== 0 && classes.avatarVisible, classes.avatarNotVisible)} spacing={1} alignItems="center" style={{ width: 'initial' }}>
-                            <Hidden xsDown>
-                                <Typography>admin</Typography>
-                            </Hidden>
-                            <Grid item>
-                                <Avatar className={clsx((this.state.themeName === 'colored' || this.state.themeName === 'blue') && classes.logoWhite)} alt="ioBroker" src="img/no-image.png" />
+                        {this.renderLoggedUser()}
+                        {this.state.drawerState !== 0 &&
+                            <Grid container className={clsx(this.state.drawerState !== 0 && classes.avatarVisible, classes.avatarNotVisible)} spacing={1} alignItems="center">
+                                {(!this.state.user || this.props.width === 'xs' || this.props.width === 'sm') &&
+                                    <Hidden xsDown>
+                                        <Typography>admin</Typography>
+                                    </Hidden>}
+                                <Grid item>
+                                    <Avatar className={clsx((this.state.themeName === 'colored' || this.state.themeName === 'blue') && classes.logoWhite)} alt="ioBroker" src="img/no-image.png" />
+                                </Grid>
                             </Grid>
-                        </Grid>
+                        }
                     </Toolbar>
                 </AppBar>
                 <DndProvider backend={!small ? HTML5Backend : TouchBackend}>

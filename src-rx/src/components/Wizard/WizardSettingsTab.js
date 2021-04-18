@@ -26,7 +26,7 @@ import Paper from  '@material-ui/core/Paper';
 
 //Icons
 import {FaCrosshairs as GeoIcon} from 'react-icons/all';
-import PinSVG from '../assets/pin.svg';
+import PinSVG from '../../assets/pin.svg';
 
 const TOOLBAR_HEIGHT = 64;
 const SETTINGS_WIDTH = 300;

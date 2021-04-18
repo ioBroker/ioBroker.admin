@@ -1174,5 +1174,15 @@
   "New device": "新装置",
   "New folder": "新建文件夹",
   "Datapoint": "数据点",
-  "State type": "状态类型"
+  "State type": "状态类型",
+  "Use this button:": "使用此按钮：",
+  "If you need to save the mode all the time, you can do this in the system settings.": "如果您需要一直保存模式，则可以在系统设置中执行此操作。",
+  "Now the expert mode will be active only during this browser session.": "现在，专家模式将仅在此浏览器会话期间处于活动状态。",
+  "Adapter cannot request the exactly device status and the status will be guessed on the last sent command": "适配器无法请求确切的设备状态，并且将在最后发送的命令中猜测该状态",
+  "climate_group": "limate",
+  "time-and-date_group": "时间和日期",
+  "Adapter warnings": "适配器警告",
+  "restartLoop": "重新启动循环",
+  "ECharts": "ECharts",
+  "Running command": "运行命令"
 }

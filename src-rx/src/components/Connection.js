@@ -2152,6 +2152,19 @@ class Connection {
             this._socket.emit('getEasyMode', (error, config) =>
                 error ? reject(error) : resolve(config)));
     }
+
+    /**
+     * Read current user
+     * @returns {Promise<string>}
+     */
+    getCurrentUser() {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise(resolve =>
+            this._socket.emit('authEnabled', (isSecure, user) =>
+                resolve(user)));
+    }
 }
 
 Connection.Connection = {

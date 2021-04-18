@@ -24,7 +24,7 @@ import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import CloseIcon from '@material-ui/icons/Close';
 import ViewCompactIcon from '@material-ui/icons/ViewCompact';
 import ScheduleIcon from '@material-ui/icons/Schedule';
-import SettingsIcon from '@material-ui/icons/Settings';
+import SettingsIcon from '@material-ui/icons/Lens';
 
 import amber from '@material-ui/core/colors/amber';
 import blue from '@material-ui/core/colors/blue';
@@ -39,9 +39,9 @@ import Utils from '../Utils';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
-import CardInstances from '../components/CardInstances';
+import InstanceCard from '../components/Instances/InstanceCard';
 import CustomSelectButton from '../components/CustomSelectButton';
-import RowInstances from '../components/RowInstances';
+import InstanceRow from '../components/Instances/InstanceRow';
 import sentry from '../assets/sentry.svg'
 
 const styles = theme => ({
@@ -510,22 +510,26 @@ class Instances extends Component {
         Router.doNavigate('tab-instances', 'config', instance);
     }
 
-    getInstanceState = (id) => {
+    getInstanceState = id => {
         const obj = this.objects[id];
         const instance = this.state.instances[id];
         const common = obj ? obj.common : null;
         const mode = common?.mode || '';
         let state = mode === 'daemon' ? 'green' : 'blue';
 
+        if (id === 'system.adapter.mqtt-client.0') {
+            console.log('A');
+        }
+
         if (common && common.enabled && (!common.webExtension || !obj.native.webInstance || mode === 'daemon')) {
-            const alive = this.states[id + '.alive'];
-            const connected = this.states[id + '.connected'];
+            const alive      = this.states[id + '.alive'];
+            const connected  = this.states[id + '.connected'];
             const connection = this.states[instance.id + '.info.connection'];
 
             if (!connected?.val || !alive?.val) {
                 state = mode === 'daemon' ? 'red' : 'blue';
             }
-            if (!connection?.val) {
+            if (connection && !connection?.val) {
                 state = state === 'red' ? 'red' : 'orange';
             }
         } else {
@@ -714,7 +718,7 @@ class Instances extends Component {
 
             return ({
                 render: this.state.viewMode ?
-                    <CardInstances
+                    <InstanceCard
                         t={this.t}
                         key={instance.id}
                         name={name}
@@ -752,7 +756,7 @@ class Instances extends Component {
                         memoryLimitMB={memoryLimitMB}
                         setMemoryLimitMB={setMemoryLimitMB}
                     /> :
-                    <RowInstances
+                    <InstanceRow
                         idx={idx}
                         t={this.t}
                         key={instance.id}

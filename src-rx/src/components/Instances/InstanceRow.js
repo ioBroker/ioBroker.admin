@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
 import { Accordion, AccordionDetails, AccordionSummary, Avatar, Badge, Button, CardMedia, FormControl, Grid, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from "@material-ui/core";
-import { amber, blue, green, grey, red } from '@material-ui/core/colors';
+import { amber, blue, green, grey, red, orange } from '@material-ui/core/colors';
 
 import RefreshIcon from '@material-ui/icons/Refresh';
 import BuildIcon from '@material-ui/icons/Build';
@@ -24,7 +24,7 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import I18n from '@iobroker/adapter-react/i18n';
 import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
 
-import InstanceInfo from '../InstanceInfo';
+import InstanceInfo from './InstanceInfo';
 import State from '../State';
 import CustomModal from '../CustomModal';
 
@@ -45,6 +45,9 @@ const styles = theme => ({
         '&:hover': {
             boxShadow: boxShadowHover
         }
+    },
+    row: {
+        paddingLeft: 8,
     },
     imageBlock: {
         background: 'silver',
@@ -174,8 +177,9 @@ const styles = theme => ({
         visibility: 'hidden'
     },
     button: {
-        padding: '5px',
-        transition: 'opacity 0.2s'
+        padding: 5,
+        transition: 'opacity 0.2s',
+        height: 34
     },
     visibility: {
         opacity: 0
@@ -192,6 +196,12 @@ const styles = theme => ({
             backgroundColor: red[200]
         }
     },
+    instanceName: {
+        fontSize: 16,
+        paddingLeft: 32,
+        paddingBottom: 5,
+        fontWeight: 'bold'
+    },
     cardContent: {
         marginTop: 16,
         paddingTop: 0
@@ -199,6 +209,13 @@ const styles = theme => ({
     smallAvatar: {
         width: theme.spacing(3),
         height: theme.spacing(3)
+    },
+    statusIndicator: {
+        marginTop: 10,
+    },
+    instanceIcon: {
+        height: 42,
+        width: 42,
     },
     table: {
         minWidth: 650,
@@ -216,17 +233,26 @@ const styles = theme => ({
         height: theme.spacing(2),
         borderRadius: '100%'
     },
+
     green: {
-        backgroundColor: green[700]
+        //backgroundColor: green[700]
+        color: green[700]
     },
     red: {
-        backgroundColor: red[700]
+        //backgroundColor: red[700]
+        color: red[700]
     },
     grey: {
-        backgroundColor: grey[700]
+        //backgroundColor: grey[700]
+        color: grey[700]
     },
     blue: {
-        backgroundColor: blue[700]
+        //backgroundColor: blue[700]
+        color: '#0055a9'//blue[700]
+    },
+    orange: {
+        //backgroundColor: orange[700]
+        color: orange[400]
     },
     transparent: {
         color: 'transparent',
@@ -312,12 +338,13 @@ const styles = theme => ({
         display: 'flex',
     },
     secondaryHeading: {
-        maxWidth: 250,
+        maxWidth: 220,
+        fontSize: 12,
     },
     secondaryHeadingDiv: {
         display: 'flex',
         alignItems: 'center',
-        minWidth: 250
+        minWidth: 200
     },
     secondaryHeadingDivDiv: {
         whiteSpace: 'nowrap',
@@ -347,7 +374,8 @@ const styles = theme => ({
     },
     gridStyle: {
         display: 'flex',
-        minWidth: 200,
+        minWidth: 270,
+        lineHeight: '42px',
         justifyContent: 'space-around'
     },
     wrapperAvatar: {
@@ -356,11 +384,13 @@ const styles = theme => ({
     instanceId: {
         overflow: 'hidden',
         alignSelf: 'center',
+        fontSize: 16,
         marginLeft: 5,
-        maxWidth: 130,
+        maxWidth: 150,
         minWidth: 100,
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
+        flexGrow: 2,
     },
     marginLeft: {
         marginLeft: 5
@@ -408,7 +438,7 @@ const styles = theme => ({
         backgroundColor: 'rgba(0, 255, 0, 0.15)'
     }
 });
-const RowInstances = ({
+const InstanceRow = ({
     name,
     classes,
     expertMode,
@@ -459,6 +489,7 @@ const RowInstances = ({
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
     const [openDialogMemoryLimit, setOpenDialogMemoryLimit] = useState(false);
     const [select, setSelect] = useState(logLevel);
+
     const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
 
     const customModal =
@@ -517,8 +548,12 @@ const RowInstances = ({
                 </Select>
             </FormControl>}
             {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
-        </CustomModal>: null;
+        </CustomModal> : null;
+
     const [visibleEdit, handlerEdit] = useState(false);
+
+    const state = getInstanceState(id);
+
     return <Accordion key={key} square
         expanded={expanded === instance.id}
         onChange={() => {
@@ -533,6 +568,7 @@ const RowInstances = ({
             handleChange(instance.id);
         }}>
         <AccordionSummary
+            classes={{root: classes.row}}
             className={clsx(
                 (!connectedToHost || !alive) && (idx % 2 === 0 ? classes.instanceStateNotAlive1 : classes.instanceStateNotAlive2),
                 connectedToHost && alive && connected === false && (idx % 2 === 0 ? classes.instanceStateAliveNotConnected1 : classes.instanceStateAliveNotConnected2),
@@ -542,12 +578,12 @@ const RowInstances = ({
             {customModal}
             {(openDialogCron || openDialogSchedule) && <ComplexCron
                 title={
-                    (openDialogCron && t('Edit restart rule for %s', instance.id)) ||
+                    (openDialogCron     && t('Edit restart rule for %s', instance.id)) ||
                     (openDialogSchedule && t('Edit schedule rule for %s', instance.id))
                 }
                 cron={openDialogCron ? getRestartSchedule(id) : getSchedule(id)}
                 language={I18n.getLanguage()}
-                onOk={(cron) => {
+                onOk={cron => {
                     if (openDialogCron) {
                         setRestartSchedule(cron);
                     } else if (openDialogSchedule) {
@@ -560,36 +596,27 @@ const RowInstances = ({
                     } else if (openDialogSchedule) {
                         setOpenDialogSchedule(false);
                     }
-
                 }}
             />}
             <Grid container spacing={1} alignItems="center" direction="row" wrap="nowrap">
                 <div className={classes.gridStyle}>
                     <Avatar className={clsx(
                         classes.smallAvatar,
-                        instance.mode === 'daemon' || instance.mode === 'schedule' ? classes[getInstanceState(id)] : classes.transparent
+                        classes.statusIndicator,
+                        instance.mode === 'daemon' || instance.mode === 'schedule' ? classes[state] : classes.transparent
                     )}>
                         {getModeIcon(instance.mode)}
                     </Avatar>
-                    {expertMode &&
-                        <Tooltip title={t('loglevel') + ' ' + instance.loglevel}>
-                            <Avatar className={clsx(classes.smallAvatar, classes[instance.loglevel])}>
-                                {loglevelIcon}
-                            </Avatar>
-                        </Tooltip>
-                    }
-                    <div className={clsx(classes.displayFlex, classes.wrapperAvatar)}>
-                        <Badge color="secondary" variant="dot" invisible={!instance.compactMode}>
-                            <Avatar
-                                variant="square"
-                                alt={instance.id}
-                                src={instance.image}
-                                className={classes.smallAvatar}
-                            />
-                        </Badge>
-                        <div className={classes.instanceId}>
-                            {instance.id}
-                        </div>
+                    <Badge color="secondary" variant="dot" invisible={!instance.compactMode}>
+                        <Avatar
+                            variant="square"
+                            alt={instance.id}
+                            src={instance.image}
+                            className={classes.instanceIcon}
+                        />
+                    </Badge>
+                    <div className={classes.instanceId}>
+                        {instance.id}
                     </div>
                 </div>
                 <Typography className={classes.secondaryHeading} component="div">
@@ -628,6 +655,13 @@ const RowInstances = ({
                             </div>
                         </InstanceInfo>
                     </div>
+                }
+                {expertMode &&
+                <Tooltip title={t('loglevel') + ' ' + instance.loglevel}>
+                    <Avatar className={clsx(classes.smallAvatar, classes[instance.loglevel])}>
+                        {loglevelIcon}
+                    </Avatar>
+                </Tooltip>
                 }
                 <Grid item className={classes.hidden1050}>
                     <InstanceInfo
@@ -719,8 +753,9 @@ const RowInstances = ({
             <Grid container direction="row">
                 <Grid item container direction="row" xs={10}>
                     <Grid item container direction="column" xs={12} sm={6} md={4}>
-                        <State state={connectedToHost} >{t('Connected to host')}</State>
-                        <State state={alive} >{t('Heartbeat')}</State>
+                        <span className={classes.instanceName}>{instance.id}</span>
+                        { instance.mode === 'daemon' && <State state={connectedToHost} >{t('Connected to host')}</State>}
+                        { instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
                         {connected !== null &&
                             <State state={connected}>
                                 {t('Connected to %s', instance.adapter)}
@@ -887,7 +922,7 @@ const RowInstances = ({
     </Accordion >;
 }
 
-RowInstances.propTypes = {
+InstanceRow.propTypes = {
     /**
      * Link and text
      * {link: 'https://example.com', text: 'example.com'}
@@ -896,4 +931,4 @@ RowInstances.propTypes = {
 };
 
 
-export default withStyles(styles)(RowInstances);
+export default withStyles(styles)(InstanceRow);

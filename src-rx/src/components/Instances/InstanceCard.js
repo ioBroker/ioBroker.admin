@@ -16,7 +16,7 @@ import PauseIcon from '@material-ui/icons/Pause';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import I18n from '@iobroker/adapter-react/i18n';
 import { green, red } from '@material-ui/core/colors';
-import InstanceInfo from '../InstanceInfo';
+import InstanceInfo from './InstanceInfo';
 import State from '../State';
 import sentry from '../../assets/sentry.svg';
 import CustomModal from '../CustomModal';
@@ -89,7 +89,7 @@ const styles = theme => ({
 
     collapse: {
         height: '100%',
-        backgroundColor: 'silver',
+        backgroundColor: theme.palette.type === 'dark' ? '#4a4a4a' : '#d4d4d4',
         position: 'absolute',
         width: '100%',
         zIndex: 3,
@@ -225,7 +225,7 @@ const styles = theme => ({
         position: 'sticky',
         right: 0,
         top: 0,
-        background: 'silver',
+        background: theme.palette.type === 'dark' ? '#4a4a4a' : '#d4d4d4',
         zIndex: 2
     },
     addCompact: {
@@ -251,7 +251,7 @@ const styles = theme => ({
         justifyContent: 'space-between'
     },
     instanceStateNotAlive1: {
-        backgroundColor: 'rgba(192, 192, 192, 0.4)'
+        backgroundColor: 'rgba(192, 192, 192, 0.7)'
     },
     /*instanceStateNotAlive2: {
         backgroundColor: 'rgb(192 192 192 / 15%)'
@@ -269,7 +269,7 @@ const styles = theme => ({
         backgroundColor: 'rgb(0 255 0 / 14%)'
     }*/
 });
-const CardInstances = ({
+const InstanceCard = ({
     name,
     classes,
     image,
@@ -422,8 +422,8 @@ const CardInstances = ({
                             </Select>
                         </FormControl>
                     </div>}
-                    <State state={connectedToHost} >{t('Connected to host')}</State>
-                    <State state={alive} >{t('Heartbeat')}</State>
+                    { instance.mode === 'daemon' && <State state={connectedToHost} >{t('Connected to host')}</State>}
+                    { instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
                     {connected !== null &&
                         <State state={connected}>{t('Connected to %s', instance.adapter)}</State>
                     }
@@ -677,7 +677,7 @@ const CardInstances = ({
     </Card>
 }
 
-CardInstances.propTypes = {
+InstanceCard.propTypes = {
     /**
      * Link and text
      * {link: 'https://example.com', text: 'example.com'}
@@ -685,4 +685,4 @@ CardInstances.propTypes = {
     t: PropTypes.func,
 };
 
-export default withStyles(styles)(CardInstances);
+export default withStyles(styles)(InstanceCard);

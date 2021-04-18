@@ -976,7 +976,7 @@
   "Limit RAM size for controller": "Ограничить размер ОЗУ для контроллера",
   "Show warning im log if RAM less than": "Показывать предупреждение im log, если ОЗУ меньше",
   "Show error in log if RAM less than": "Показать ошибку в журнале, если ОЗУ меньше, чем",
-  "Allow slave connections": "Разрешить соединения от других хостов (slaves)",
+  "Allow slave connections": "Разрешить соединения от других хостов (secondary)",
   "With password": "С паролем",
   "Ask password by connection establishment": "Запросить пароль при установлении соединения",
   "Multi-host password": "Пароль для нескольких хостов",
@@ -1178,5 +1178,15 @@
   "New device": "Новое устройство",
   "New folder": "Новая папка",
   "Datapoint": "Datapoint",
-  "State type": "Тип состояния"
+  "State type": "Тип состояния",
+  "Use this button:": "Используйте эту кнопку:",
+  "If you need to save the mode all the time, you can do this in the system settings.": "Если вам нужно постоянно сохранять режим, вы можете сделать это в настройках системы.",
+  "Now the expert mode will be active only during this browser session.": "Теперь экспертный режим будет активен только во время этого сеанса браузера.",
+  "Adapter cannot request the exactly device status and the status will be guessed on the last sent command": "Драйвер не может запросить точный статус устройства, и статус будет угадан по последней отправленной команде.",
+  "climate_group": "Климат",
+  "time-and-date_group": "Время и дата",
+  "Adapter warnings": "Предупреждения драйверов",
+  "restartLoop": "Цикл перезапуска",
+  "ECharts": "ECharts",
+  "Running command": "Бегущая команда"
 }

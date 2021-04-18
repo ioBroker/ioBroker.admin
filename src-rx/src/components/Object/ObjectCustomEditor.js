@@ -17,10 +17,10 @@ import DialogError from '@iobroker/adapter-react/Dialogs/Error';
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import '../assets/materialize.css';
+import '../../assets/materialize.css';
 
 // Icons
-import JsonConfigComponent from './JsonConfigComponent';
+import JsonConfigComponent from '../JsonConfigComponent';
 
 const styles = theme => ({
     paper: {

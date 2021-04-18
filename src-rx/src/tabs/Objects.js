@@ -24,9 +24,9 @@ import IconDeleteAll from '@material-ui/icons/Delete';
 import ObjectBrowser from '../components/ObjectBrowser';
 import ObjectCustomDialog from '../dialogs/ObjectCustomDialog';
 import Router from '@iobroker/adapter-react/Components/Router';
-import ObjectBrowserValue from '../components/ObjectBrowserValue';
-import ObjectBrowserEditObject from '../components/ObjectBrowserEditObject';
-import ObjectBrowserEditRole from '../components/ObjectBrowserEditRole';
+import ObjectBrowserValue from '../components/Object/ObjectBrowserValue';
+import ObjectBrowserEditObject from '../components/Object/ObjectBrowserEditObject';
+import ObjectBrowserEditRole from '../components/Object/ObjectBrowserEditRole';
 import ObjectAddNewContent from '../dialogs/ObjectAddNewContent';
 import ObjectEditOfAccessControl from '../dialogs/ObjectEditOfAccessControl';
 

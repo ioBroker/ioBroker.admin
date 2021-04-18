@@ -5,6 +5,7 @@ import { FormControl, InputLabel, MenuItem, Select, TextField } from '@material-
 import AddIcon from '@material-ui/icons/AddBox';
 
 import I18n from '@iobroker/adapter-react/i18n';
+import Utils from '../components/Utils'; // @iobroker/adapter-react/i18n
 
 import CustomModal from '../components/CustomModal';
 
@@ -60,15 +61,13 @@ const ObjectAddNewContent = ({ onClose, onApply, open, selected, extendObject, o
         }
     }
 
-    const FORBIDDEN_CHARS = /[^._\-/ :!#$%&()+=@^{}|~\p{Ll}\p{Lu}\p{Nd}]+/gu;
-
     const [name, setName] = useState(names.state);
     const [type, setType] = useState('state');
     const [stateType, setStateType] = useState('object');
     const [unique, setUnique] = useState(!objects[buildId(names.state)]);
 
     function buildId(name) {
-        return name.toString().replace(FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_');
+        return name.toString().replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_');
     }
 
     return <CustomModal

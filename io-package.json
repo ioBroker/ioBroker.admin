@@ -2,6 +2,18 @@
     "common": {
         "name": "admin",
         "version": "5.0.3",
+        "titleLang": {
+            "en": "Admin",
+            "de": "Admin",
+            "ru": "Админ",
+            "pt": "Admin",
+            "pl": "Admin",
+            "fr": "Admin",
+            "nl": "Admin",
+            "it": "Admin",
+            "es": "Admin",
+            "zh-cn": "Admin"
+        },
         "news": {
             "5.0.3": {
                 "en": "Admin5: Many new features implemented",

@@ -1,7 +1,7 @@
 import { Button, Menu, MenuItem, makeStyles } from '@material-ui/core';
 import React, { useState,  } from 'react';
 
-import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
+import MaterialDynamicIcon from '../helpers/MaterialDynamicIcon';
 
 const useStyles = makeStyles(theme => ({
     button: {

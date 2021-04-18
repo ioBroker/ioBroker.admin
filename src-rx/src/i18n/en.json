@@ -1174,5 +1174,15 @@
   "New device": "New device",
   "New folder": "New folder",
   "Datapoint": "Datapoint",
-  "State type": "State type"
+  "State type": "State type",
+  "Use this button:": "Use this button:",
+  "If you need to save the mode all the time, you can do this in the system settings.": "If you need to save the mode all the time, you can do this in the system settings.",
+  "Now the expert mode will be active only during this browser session.": "Now the expert mode will be active only during this browser session.",
+  "Adapter cannot request the exactly device status and the status will be guessed on the last sent command": "Adapter cannot request the exactly device status and the status will be guessed on the last sent command",
+  "climate_group": "Сlimate",
+  "time-and-date_group": "Time and date",
+  "Adapter warnings": "Adapter warnings",
+  "restartLoop": "Restart loop",
+  "ECharts": "ECharts",
+  "Running command": "Running command"
 }

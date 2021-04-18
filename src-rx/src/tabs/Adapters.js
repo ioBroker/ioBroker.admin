@@ -1,7 +1,8 @@
 /* eslint-disable array-callback-return */
 import { Component, Fragment, createRef } from 'react';
 import Semver from 'semver';
-
+import PropTypes from "prop-types";
+import clsx from 'clsx';
 import { withStyles } from '@material-ui/core/styles';
 
 import {
@@ -37,35 +38,26 @@ import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import UpdateIcon from '@material-ui/icons/Update';
 import StarIcon from '@material-ui/icons/Star';
 import CloseIcon from '@material-ui/icons/Close';
-
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 
-import {
-    blue,
-    green
-} from '@material-ui/core/colors';
+import {blue, green} from '@material-ui/core/colors';
+
+import Router from '@iobroker/adapter-react/Components/Router';
 
 import AdapterDeletionDialog from '../dialogs/AdapterDeletionDialog';
 import AdapterInfoDialog from '../dialogs/AdapterInfoDialog';
 import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
 import AddInstanceDialog from '../dialogs/AddInstanceDialog';
-
 import AdapterRow from '../components/AdapterRow';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
-
 import AdapterTile from '../components/AdapterTile';
 import CustomSelectButton from '../components/CustomSelectButton';
 import GitHubInstallDialog from '../dialogs/GitHubInstallDialog';
 import { licenseDialogFunc } from '../dialogs/LicenseDialog';
 import CustomModal from '../components/CustomModal';
-
-import Router from '@iobroker/adapter-react/Components/Router';
-import AdaptersUpdaterDialog from "../dialogs/AdaptersUpdaterDialog";
-import PropTypes from "prop-types";
-import clsx from 'clsx';
-import MessageDialog from "@iobroker/adapter-react/Dialogs/Message";
+import AdaptersUpdaterDialog from '../dialogs/AdaptersUpdaterDialog';
 
 const WIDTHS = {
     emptyBlock: 50,
@@ -191,7 +183,7 @@ const styles = theme => ({
     },
     infoAdapters: {
         fontSize: 10,
-        color: 'silver',
+        color: theme.palette.type === 'dark' ? '#9c9c9c' : '#333',
         cursor: 'pointer'
     },
     greenText: {
@@ -200,9 +192,7 @@ const styles = theme => ({
 });
 
 class Adapters extends Component {
-
     constructor(props) {
-
         super(props);
 
         this.state = {
@@ -308,12 +298,12 @@ class Adapters extends Component {
             const currentHost = this.props.currentHost;
 
             try {
-                const hostDataProm = this.props.socket.getHostInfo(currentHost);
-                const repositoryProm = this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: updateRepo }, updateRepo);
-                const installedProm = this.props.socket.getInstalled(currentHost, updateRepo);
-                const instancesProm = this.props.socket.getAdapterInstances(updateRepo);
-                const rebuildProm = this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD');
-                const objectsProm = this.props.socket.getForeignObjects('system.adapter.*', 'adapter');
+                const hostDataProm = this.props.socket.getHostInfo(currentHost).catch(e => window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`));
+                const repositoryProm = this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: updateRepo }, updateRepo).catch(e => window.alert('Cannot getRepository: ' + e));
+                const installedProm = this.props.socket.getInstalled(currentHost, updateRepo).catch(e => window.alert('Cannot getInstalled: ' + e));
+                const instancesProm = this.props.socket.getAdapterInstances(updateRepo).catch(e => window.alert('Cannot getAdapterInstances: ' + e));
+                const rebuildProm = this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD').catch(e => window.alert('Cannot checkFeatureSupported: ' + e));
+                const objectsProm = this.props.socket.getForeignObjects('system.adapter.*', 'adapter').catch(e => window.alert('Cannot read system.adapters.*: ' + e));
 
                 const [hostData, repository, installed, instances, rebuild, objects] = await Promise.all(
                     [
@@ -350,9 +340,9 @@ class Adapters extends Component {
                         }
                     }
                 });
+
                 const now = Date.now();
                 Object.keys(repository).forEach(value => {
-
                     const adapter = repository[value];
                     if (adapter.keywords) {
                         adapter.keywords = adapter.keywords.map(word => word.toLowerCase());
@@ -395,7 +385,6 @@ class Adapters extends Component {
                 });
 
                 Object.keys(instances).forEach(value => {
-
                     const instance = instances[value];
                     const name = instance.common.name;
                     const enabled = instance.common.enabled;
@@ -1113,6 +1102,7 @@ class Adapters extends Component {
             return document.body.scrollWidth - SUM - 50 + 15;
         }
     }
+
     getStatistics() {
         if (this.state.showStatistics) {
 

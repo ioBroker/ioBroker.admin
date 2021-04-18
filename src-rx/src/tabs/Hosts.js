@@ -16,9 +16,9 @@ import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
 import {useStateLocal} from '../helpers/hooks/useStateLocal';
-import CardHosts from '../components/CardHosts';
-import RowHosts from '../components/RowHosts';
-import HostEdit from '../components/HostEdit';
+import HostCard from '../components/Hosts/HostCard';
+import HostRow from '../components/Hosts/HostRow';
+import HostEdit from '../components/Hosts/HostEdit';
 import {Skeleton} from '@material-ui/lab';
 import {JsControllerDialogFunc} from '../dialogs/JsControllerDialog';
 import clsx from 'clsx';
@@ -260,7 +260,7 @@ const Hosts = ({
                                                           native: {os: {platform}},
                                                       }, idx
         ) => ({
-            renderCard: <CardHosts
+            renderCard: <HostCard
                 systemConfig={systemConfig}
                 key={_id}
                 setEditDialog={() => setEditDialog({
@@ -285,7 +285,7 @@ const Hosts = ({
                 t={t}
                 _id={_id}
             />,
-            renderRow: <RowHosts
+            renderRow: <HostRow
                 systemConfig={systemConfig}
                 key={_id}
                 setEditDialog={() => setEditDialog({

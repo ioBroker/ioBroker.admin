@@ -25,12 +25,10 @@
   - Integrate https://react-dropzone.js.org/#!/Doka for image uploa
 
 ## Files
-<!-- - File viewer can show: json, js, ts, md, css, html (use ace aditor for viewing too) -->
   
 ## Hosts
 
 ## Users
-- Do not allow edit of user ID
 
 ## Easy mode
 - Easy admin mode
@@ -43,8 +41,8 @@
 ## JSON config - Admin settings dialog (index_m.html)
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)
 
-<!-- - Write jsonCustom for:
+Write jsonCustom for:
   - lovelace
   - eventlist
   - mqtt-client
-  - ?? -->
+  - ?? 

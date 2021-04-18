@@ -15,7 +15,7 @@ import IconCheck from '@material-ui/icons/Check';
 import AddIcon from '@material-ui/icons/Add';
 
 import { Tooltip } from '@material-ui/core';
-import UploadImage from './UploadImage';
+import UploadImage from '../UploadImage';
 
 const styles = theme => ({
     error: {

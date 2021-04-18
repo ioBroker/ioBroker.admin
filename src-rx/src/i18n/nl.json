@@ -1174,5 +1174,15 @@
   "New device": "Nieuw apparaat",
   "New folder": "Nieuwe map",
   "Datapoint": "Data punt",
-  "State type": "Staatstype"
+  "State type": "Staatstype",
+  "Use this button:": "Gebruik deze knop:",
+  "If you need to save the mode all the time, you can do this in the system settings.": "Als u de modus altijd moet opslaan, kunt u dit doen in de systeeminstellingen.",
+  "Now the expert mode will be active only during this browser session.": "Nu is de expertmodus alleen actief tijdens deze browsersessie.",
+  "Adapter cannot request the exactly device status and the status will be guessed on the last sent command": "Adapter kan niet de exacte apparaatstatus opvragen en de status wordt geraden op basis van het laatst verzonden commando",
+  "climate_group": "Сlimate",
+  "time-and-date_group": "Tijd en datum",
+  "Adapter warnings": "Adapterwaarschuwingen",
+  "restartLoop": "Herstart de lus",
+  "ECharts": "ECharts",
+  "Running command": "Commando uitvoeren"
 }

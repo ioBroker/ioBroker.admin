@@ -36,12 +36,13 @@ const styles = theme => ({
         }
     },
     imageBlock: {
-        background: 'silver',
+        background: theme.palette.type === 'dark' ? '#848484' : '#c0c0c0',
         minHeight: 60,
         display: 'flex',
         padding: '0 10px 0 10px',
         position: 'relative',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        color: '#000'
     },
     img: {
         width: 45,
@@ -77,7 +78,6 @@ const styles = theme => ({
     greenText: {
         color: theme.palette.success.dark,
     },
-
     collapse: {
         height: '100%',
         backgroundColor: 'silver',
@@ -156,7 +156,7 @@ const styles = theme => ({
         verticalAlign: 'middle',
         paddingLeft: 8,
         paddingTop: 16,
-        color: theme.palette.type === 'dark' ? '#333' : '#555'
+        color: theme.palette.type === 'dark' ? '#333' : '#333'
     },
     description: {
         color: theme.palette.type === 'dark' ? '#222' : 'inherit'

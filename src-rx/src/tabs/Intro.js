@@ -55,6 +55,9 @@ const styles = theme => ({
     },
     bold: {
         fontWeight: 'bold'
+    },
+    container: {
+        overflowY: 'auto'
     }
 });
 
@@ -586,31 +589,29 @@ class Intro extends Component {
 
         const { classes } = this.props;
 
-        return (
-            <TabContainer
-                elevation={0}
-                overflow="visible"
-            >
-                <Snackbar
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                    }}
-                    open={this.state.openSnackBar}
-                    autoHideDuration={3000}
-                    onClose={() => this.setState({ openSnackBar: false })}
-                    message={this.t('copied')}
-                />
-                <TabContent>
-                    <Grid container spacing={2}>
-                        {this.getInstancesCards()}
-                        {this.getLinkCards()}
-                    </Grid>
-                    {this.getButtons(classes)}
-                    {this.editLinkCard()}
-                </TabContent>
-            </TabContainer>
-        );
+        return <TabContainer
+            elevation={0}
+            overflow="visible"
+        >
+            <Snackbar
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                open={this.state.openSnackBar}
+                autoHideDuration={3000}
+                onClose={() => this.setState({ openSnackBar: false })}
+                message={this.t('copied')}
+            />
+            <TabContent classes={{root: classes.container}}>
+                <Grid container spacing={2}>
+                    {this.getInstancesCards()}
+                    {this.getLinkCards()}
+                </Grid>
+                {this.getButtons(classes)}
+                {this.editLinkCard()}
+            </TabContent>
+        </TabContainer>;
     }
 }
 

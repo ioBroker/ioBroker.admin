@@ -1174,5 +1174,15 @@
   "New device": "Nuovo dispositivo",
   "New folder": "Nuova cartella",
   "Datapoint": "Datapoint",
-  "State type": "Tipo di stato"
+  "State type": "Tipo di stato",
+  "Use this button:": "Usa questo pulsante:",
+  "If you need to save the mode all the time, you can do this in the system settings.": "Se è necessario salvare la modalità tutto il tempo, è possibile farlo nelle impostazioni di sistema.",
+  "Now the expert mode will be active only during this browser session.": "Ora la modalità esperto sarà attiva solo durante questa sessione del browser.",
+  "Adapter cannot request the exactly device status and the status will be guessed on the last sent command": "L'adattatore non può richiedere esattamente lo stato del dispositivo e lo stato verrà indovinato sull'ultimo comando inviato",
+  "climate_group": "Сlimate",
+  "time-and-date_group": "Ora e data",
+  "Adapter warnings": "Avvertenze sull'adattatore",
+  "restartLoop": "Riavvia il ciclo",
+  "ECharts": "ECharts",
+  "Running command": "Comando in esecuzione"
 }

@@ -269,7 +269,7 @@ let diskFreeCache = 1;
 let diskSizeCache = 1;
 let diskWarningCache = 1;
 
-const CardHosts = ({
+const HostCard = ({
     name,
     classes,
     image,
@@ -481,9 +481,9 @@ const CardHosts = ({
     </Card>;
 }
 
-CardHosts.propTypes = {
+HostCard.propTypes = {
     t: PropTypes.func,
     systemConfig: PropTypes.object,
 };
 
-export default withStyles(styles)(CardHosts);
+export default withStyles(styles)(HostCard);
