@@ -1566,7 +1566,8 @@ class ObjectBrowser extends Component {
                             if (!state || !state.val) {
                                 this.defaultHistory = '';
                             }
-                        });
+                        })
+                        .catch(e => window.alert('Cannot get state: ' + e));
                 }
             })
             .then(() => this.getAdditionalColumns())
@@ -1648,7 +1649,7 @@ class ObjectBrowser extends Component {
      * Called when component is unmounted.
      */
     componentWillUnmount() {
-        this.props.socket.unsubscribeObject('*', this.onObjectChange);
+        this.props.socket.unsubscribeObject('*', this.onObjectChange)
 
         // remove all subscribes
         this.subscribes.forEach(pattern => {
@@ -1663,7 +1664,12 @@ class ObjectBrowser extends Component {
      * Called when component is mounted.
      */
     async refreshComponent() {
-        await this.props.socket.unsubscribeObject('*', this.onObjectChange);
+        try {
+            await this.props.socket.unsubscribeObject('*', this.onObjectChange);
+        } catch (e) {
+            window.alert('Cannot unsubscribe object: ' + e);
+        }
+
         // remove all subscribes
         this.subscribes.forEach(async pattern => {
             console.log('- unsubscribe ' + pattern);
@@ -1922,7 +1928,8 @@ class ObjectBrowser extends Component {
                     columnsForAdmin = this.parseObjectForAdmins(columnsForAdmin, obj));
 
                 return columnsForAdmin;
-            });
+            })
+            .catch(e => window.alert('Cannot get adapters: ' + e));
     }
 
     /**
@@ -2100,7 +2107,8 @@ class ObjectBrowser extends Component {
             this.subscribes.push(id);
             console.log('+ subscribe ' + id);
             if (!this.pausedSubscribes) {
-                this.props.socket.subscribeState(id, this.onStateChange);
+                this.props.socket.subscribeState(id, this.onStateChange)
+                    .catch(e => window.alert('Cannot subscribe state: ' + e));
             }
         }
     }

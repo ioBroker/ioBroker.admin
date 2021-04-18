@@ -225,7 +225,6 @@ class Command extends Component {
     }
 
     colorize(text, maxLength) {
-
         const pattern = ['error', 'warn', 'info'];
         const regExp = new RegExp(pattern.join('|'), 'i');
 
@@ -233,8 +232,7 @@ class Command extends Component {
             text = text.substring(0, maxLength);
         }
 
-        if (text.search(regExp) >= 0) {
-
+        if (text.search(regExp)) {
             const result = [];
             const { classes } = this.props;
 
@@ -309,7 +307,7 @@ class Command extends Component {
                 >
                     {this.colorize(this.state.log[this.state.log.length - 1])}
                 </Typography>
-                <Typography component="div" style={{ width: 180 }}>
+                <Typography component="div" style={{ width: 250 }}>
                     <Grid component="label" container alignItems="center" spacing={1}>
                         <Grid item>{this.props.t('less')}</Grid>
                         <Grid item>

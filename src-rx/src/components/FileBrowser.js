@@ -585,7 +585,8 @@ class FileBrowser extends Component {
                     } else {
                         return _newFolders;
                     }
-                });
+                })
+                .catch(e => window.alert('Cannot read meta items: ' + e));
         } else {
             const parts   = folderId.split('/');
             const level   = parts.length;
@@ -618,7 +619,8 @@ class FileBrowser extends Component {
                     } else {
                         return _newFolders;
                     }
-                });
+                })
+                .catch(e => window.alert('Cannot read dir: ' + e));
         }
     }
 
@@ -1160,7 +1162,8 @@ class FileBrowser extends Component {
     uploadFile(fileName, data) {
         const parts = fileName.split('/');
         const adapter = parts.shift();
-        return this.props.socket.writeFile64(adapter, parts.join('/'), data);
+        return this.props.socket.writeFile64(adapter, parts.join('/'), data)
+            .catch(e => window.alert('Cannot write file: ' + e));
     }
 
     findFirstFolder(id) {
@@ -1255,7 +1258,8 @@ class FileBrowser extends Component {
             const parts = id.split('/');
             const adapter = parts.shift();
             if (parts.length) {
-                return this.props.socket.deleteFile(adapter, parts.join('/'));
+                return this.props.socket.deleteFile(adapter, parts.join('/'))
+                    .catch(e => window.alert('Cannot delete file: ' + e));
             } else {
                 return Promise.resolve();
             }

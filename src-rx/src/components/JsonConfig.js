@@ -52,11 +52,13 @@ class JsonConfig extends Router {
                 } catch (e) {
                     window.alert('Cannot parse json config!');
                 }
-            });
+            })
+            .catch(e => window.alert('Cannot read file: ' + e));
     }
 
     getInstanceObject() {
-        return this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`);
+        return this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`)
+            .catch(e => window.alert('Cannot read instance object: ' + e));
     }
 
     renderConfirmDialog() {
@@ -83,7 +85,11 @@ class JsonConfig extends Router {
                 }
             }
 
-            await this.props.socket.setObject(obj._id, obj);
+            try {
+                await this.props.socket.setObject(obj._id, obj);
+            } catch (e) {
+                window.alert('Cannot set object: ' + e);
+            }
 
             this.setState({changed: false, data: obj.native, updateData: this.state.updateData + 1}, () =>
                 close && Router.doNavigate(null));

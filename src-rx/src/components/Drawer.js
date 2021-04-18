@@ -286,7 +286,11 @@ class Drawer extends Component {
                         tabs,
                     }, async () => {
                         newObj.common['tabsVisible'] = tabs.map(({ name, order, visible }) => ({ name, order, visible }));
-                        await this.props.socket.setSystemConfig(newObj).then(el => console.log('ok'));
+                        try {
+                            await this.props.socket.setSystemConfig(newObj).then(el => console.log('ok'));
+                        } catch (e) {
+                            window.alert('Cannot set system config: ' + e);
+                        }
                     });
                 } else {
                     let newTabs = newObj.common['tabsVisible'].map(({ name, visible }) => {
@@ -346,9 +350,19 @@ class Drawer extends Component {
         let newObjCopy = JSON.parse(JSON.stringify(systemConfig));
         newObjCopy.common['tabsVisible'] = newTabs.map(({ name, order, visible }) => ({ name, order, visible }));
         if (idx !== undefined) {
-            this.setState({ tabs: newTabs }, async () => await socket.setSystemConfig(newObjCopy).then(el => console.log('ok')))
+            this.setState({ tabs: newTabs }, async () => {
+                try {
+                    await socket.setSystemConfig(newObjCopy).then(el => console.log('ok'));
+                } catch (e) {
+                    window.alert('Cannot set system config: ' + e);
+                }
+            });
         } else {
-            await socket.setSystemConfig(newObjCopy).then(el => console.log('ok'))
+            try {
+                await socket.setSystemConfig(newObjCopy).then(el => console.log('ok'));
+            } catch (e) {
+                window.alert('Cannot set system config: ' + e);
+            }
         }
     }
 

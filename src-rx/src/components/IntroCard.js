@@ -232,7 +232,8 @@ class IntroCard extends Component {
                         if (result && result.data && this.cameraRef.current) {
                             this.cameraRef.current.src = 'data:image/jpeg;base64,' + result.data;
                         }
-                    });
+                    })
+                    .catch(e => window.alert('Cannot send to instance: ' + e));
             }
         }
     }

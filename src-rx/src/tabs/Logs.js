@@ -237,9 +237,7 @@ class Logs extends Component {
                 }
             });
 
-        this.words = {
-
-        }
+        this.words = {};
     }
 
     componentDidMount() {
@@ -336,7 +334,6 @@ class Logs extends Component {
     }
 
     getLogFiles() {
-
         const { classes } = this.props;
 
         return this.state.logFiles.map(entry => {
@@ -362,13 +359,10 @@ class Logs extends Component {
     }
 
     getSeverities() {
-
         const severities = [];
 
         for (const i in this.severities) {
-            severities.push(
-                <MenuItem value={i} key={i}>{i}</MenuItem>
-            );
+            severities.push(<MenuItem value={i} key={i}>{i}</MenuItem>);
         }
 
         return severities;
@@ -392,9 +386,8 @@ class Logs extends Component {
 
         sources.sort();
 
-        return sources.map(source => (
-            <MenuItem value={source} key={source}>{source === '1' ? this.t('Source') : source}</MenuItem>
-        ));
+        return sources.map(source =>
+            <MenuItem value={source} key={source}>{source === '1' ? this.t('Source') : source}</MenuItem>);
     }
 
     getRows() {
@@ -409,7 +402,7 @@ class Logs extends Component {
             let message = row.message;
             let id = '';
 
-            const regExp = new RegExp(row.from.replace('.', '\\.') + ' \\(\\d+\\) ', 'g');
+            const regExp = new RegExp(row.from.replace('.', '\\.').replace(')', '\\)').replace('(', '\\(') + ' \\(\\d+\\) ', 'g');
             const matches = message.match(regExp);
 
             if (matches) {
@@ -466,6 +459,7 @@ class Logs extends Component {
                 }, 1000);
             }
         }
+
         return rows;
     }
 
@@ -497,132 +491,124 @@ class Logs extends Component {
 
     render() {
         if (!this.state.logs) {
-            return <LinearProgress />
+            return <LinearProgress />;
         }
         const { classes } = this.props;
 
         const pauseChild = !this.state.pause ? <PauseIcon /> :
             <Typography className={classes.pauseCount}>{this.state.logs.length - this.state.pause}</Typography>;
 
-        return (
-            <TabContainer>
-                <TabHeader>
-                    <IconButton
-                        onClick={() => this.props.logsWorker &&
-                            this.props.logsWorker.getLogs(true).then(results => {
-                                const logs = results.logs;
-                                const logSize = results.logSize;
-                                this.setState({ logs: [...logs], logSize });
-                            })}
-                    >
-                        <RefreshIcon />
-                    </IconButton>
-                    <IconButton
-                        className={classes.pauseButton}
-                        onClick={() => this.handleLogPause()}
-                    >
-                        {pauseChild}
-                    </IconButton>
-                    <IconButton
-                        onClick={() => this.clearLog()}
-                    >
-                        <DeleteIcon />
-                    </IconButton>
-                    <IconButton
-                        onClick={() => this.openLogDelete()}
-                    >
-                        <DeleteForeverIcon />
-                    </IconButton>
-                    <div className={classes.grow} />
-                    {this.state.logFiles.length > 0 &&
-                        <div>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                startIcon={<SaveAltIcon />}
-                                onClick={event => this.openLogDownload(event)}
-                            >
-                                {this.t('Download log')}
-                            </Button>
-                            <Menu
-                                id="simple-menu"
-                                anchorEl={this.state.logDownloadDialog}
-                                keepMounted
-                                open={Boolean(this.state.logDownloadDialog)}
-                                onClose={() => this.closeLogDownload()}
-                            >
-                                {this.getLogFiles()}
-                            </Menu>
-                        </div>
-                    }
-                    <div className={classes.grow} />
-                    <Typography
-                        variant="body2"
-                        className={classes.logSize}
-                    >
-                        {`${this.t('Log size:')} ${this.state.logSize || '-'}`}
-                    </Typography>
-                </TabHeader>
-                <TabContent>
-                    <TableContainer className={classes.container}>
-                        <Table stickyHeader size="small" className={classes.table}>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell className={classes.source}>
-                                        <FormControl className={classes.formControl}>
-                                            <InputLabel id="source-label" />
-                                            <Select
-                                                labelId="source-label"
-                                                value={this.state.source}
-                                                onChange={event => this.handleSourceChange(event)}
-                                            >
-                                                {
-                                                    this.getSources()
-                                                }
-                                            </Select>
-                                        </FormControl>
-                                    </TableCell>
-                                    <TableCell className={classes.pid}>
-                                        <TextField disabled label={this.t('PID')} className={classes.header} />
-                                    </TableCell>
-                                    <TableCell className={classes.timestamp}>
-                                        <TextField disabled label={this.t('Time')} className={classes.header} />
-                                    </TableCell>
-                                    <TableCell className={classes.severity}>
-                                        <FormControl className={classes.formControl}>
-                                            <InputLabel id="severity-label" />
-                                            <Select
-                                                labelId="severity-label"
-                                                value={this.state.severity}
-                                                onChange={event => this.handleSeverityChange(event)}
-                                            >
-                                                {
-                                                    this.getSeverities()
-                                                }
-                                            </Select>
-                                        </FormControl>
-                                    </TableCell>
-                                    <TableCell className={classes.message}>
-                                        <FormControl className={classes.formControl}>
-                                            <TextField
-                                                label={this.t('Message')}
-                                                onChange={event => this.handleMessageChange(event)}
-                                            />
-                                        </FormControl>
-                                    </TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {
-                                    this.getRows()
-                                }
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </TabContent>
-                { this.renderClearDialog()}
-            </TabContainer>
-        );
+        return <TabContainer>
+            <TabHeader>
+                <IconButton
+                    onClick={() => this.props.logsWorker &&
+                        this.props.logsWorker.getLogs(true).then(results => {
+                            const logs = results.logs;
+                            const logSize = results.logSize;
+                            this.setState({ logs: [...logs], logSize });
+                        })}
+                >
+                    <RefreshIcon />
+                </IconButton>
+                <IconButton
+                    className={classes.pauseButton}
+                    onClick={() => this.handleLogPause()}
+                >
+                    {pauseChild}
+                </IconButton>
+                <IconButton
+                    onClick={() => this.clearLog()}
+                >
+                    <DeleteIcon />
+                </IconButton>
+                <IconButton
+                    onClick={() => this.openLogDelete()}
+                >
+                    <DeleteForeverIcon />
+                </IconButton>
+                <div className={classes.grow} />
+                {this.state.logFiles.length > 0 &&
+                    <div>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<SaveAltIcon />}
+                            onClick={event => this.openLogDownload(event)}
+                        >
+                            {this.t('Download log')}
+                        </Button>
+                        <Menu
+                            id="simple-menu"
+                            anchorEl={this.state.logDownloadDialog}
+                            keepMounted
+                            open={Boolean(this.state.logDownloadDialog)}
+                            onClose={() => this.closeLogDownload()}
+                        >
+                            {this.getLogFiles()}
+                        </Menu>
+                    </div>
+                }
+                <div className={classes.grow} />
+                <Typography
+                    variant="body2"
+                    className={classes.logSize}
+                >
+                    {`${this.t('Log size:')} ${this.state.logSize || '-'}`}
+                </Typography>
+            </TabHeader>
+            <TabContent>
+                <TableContainer className={classes.container}>
+                    <Table stickyHeader size="small" className={classes.table}>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell className={classes.source}>
+                                    <FormControl className={classes.formControl}>
+                                        <InputLabel id="source-label" />
+                                        <Select
+                                            labelId="source-label"
+                                            value={this.state.source}
+                                            onChange={event => this.handleSourceChange(event)}
+                                        >
+                                            {this.getSources()}
+                                        </Select>
+                                    </FormControl>
+                                </TableCell>
+                                <TableCell className={classes.pid}>
+                                    <TextField disabled label={this.t('PID')} className={classes.header} />
+                                </TableCell>
+                                <TableCell className={classes.timestamp}>
+                                    <TextField disabled label={this.t('Time')} className={classes.header} />
+                                </TableCell>
+                                <TableCell className={classes.severity}>
+                                    <FormControl className={classes.formControl}>
+                                        <InputLabel id="severity-label" />
+                                        <Select
+                                            labelId="severity-label"
+                                            value={this.state.severity}
+                                            onChange={event => this.handleSeverityChange(event)}
+                                        >
+                                            {this.getSeverities()}
+                                        </Select>
+                                    </FormControl>
+                                </TableCell>
+                                <TableCell className={classes.message}>
+                                    <FormControl className={classes.formControl}>
+                                        <TextField
+                                            label={this.t('Message')}
+                                            onChange={event => this.handleMessageChange(event)}
+                                        />
+                                    </FormControl>
+                                </TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {this.getRows()}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </TabContent>
+            { this.renderClearDialog()}
+        </TabContainer>;
     }
 }
 

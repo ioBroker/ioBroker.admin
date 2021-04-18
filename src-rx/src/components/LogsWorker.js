@@ -272,7 +272,8 @@ class LogsWorker {
                 this.warnings && this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
 
                 this.resolve({logs: this.logs, logSize});
-            });
+            })
+            .catch(e => window.alert('Cannot get logs: ' + e));
 
         return this.promise;
     }

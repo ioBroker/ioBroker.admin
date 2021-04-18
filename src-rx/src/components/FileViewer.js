@@ -82,7 +82,8 @@ class FileViewer extends Component {
                     } else if (EXTENSIONS.code.includes(this.ext)) {
                         this.setState({ code: el, editingValue: el });
                     }
-                });
+                })
+                .catch(e => window.alert('Cannot read file: ' + e));
         }
     }
 
@@ -93,7 +94,8 @@ class FileViewer extends Component {
         const adapter = parts[0];
         const name = parts.splice(1).join('/');
         this.props.socket.writeFile64(adapter, name, Buffer.from(data).toString('base64'))
-            .then(_ => this.props.onClose());
+            .then(_ => this.props.onClose())
+            .catch(e => window.alert('Cannot write file: ' + e));
     }
 
     getEditFile(ext) {
