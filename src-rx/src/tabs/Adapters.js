@@ -27,6 +27,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Rating from '@material-ui/lab/Rating';
 
 import CloudOffIcon from '@material-ui/icons/CloudOff';
 import FolderIcon from '@material-ui/icons/Folder';
@@ -49,10 +50,10 @@ import AdapterInfoDialog from '../dialogs/AdapterInfoDialog';
 import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
 import AddInstanceDialog from '../dialogs/AddInstanceDialog';
 import AdapterRow from '../components/AdapterRow';
+import AdapterTile from '../components/AdapterTile';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
-import AdapterTile from '../components/AdapterTile';
 import CustomSelectButton from '../components/CustomSelectButton';
 import GitHubInstallDialog from '../dialogs/GitHubInstallDialog';
 import { licenseDialogFunc } from '../dialogs/LicenseDialog';
@@ -188,6 +189,9 @@ const styles = theme => ({
     },
     greenText: {
         color: '#00a005d1'
+    },
+    rating: {
+        marginBottom: 20,
     }
 });
 
@@ -230,6 +234,7 @@ class Adapters extends Component {
             showUpdater: false,
             descWidth: 300,
             showStatistics: false,
+            showSetRating: null,
         };
 
         this.rebuildSupported = false;
@@ -243,6 +248,7 @@ class Adapters extends Component {
         this.allAdapters = 0;
         this.installedAdapters = 0;
         this.updateAdapters = 0;
+        this.uuid = '';
     }
 
     translate = (word, arg1, arg2) => {
@@ -304,17 +310,21 @@ class Adapters extends Component {
                 const instancesProm = this.props.socket.getAdapterInstances(updateRepo).catch(e => window.alert('Cannot getAdapterInstances: ' + e));
                 const rebuildProm = this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD').catch(e => window.alert('Cannot checkFeatureSupported: ' + e));
                 const objectsProm = this.props.socket.getForeignObjects('system.adapter.*', 'adapter').catch(e => window.alert('Cannot read system.adapters.*: ' + e));
+                const ratingsProm = this.props.socket.getRatings(false).catch(e => window.alert('Cannot read ratings: ' + e));
 
-                const [hostData, repository, installed, instances, rebuild, objects] = await Promise.all(
+                const [hostData, repository, installed, instances, rebuild, objects, ratings] = await Promise.all(
                     [
                         hostDataProm,
                         repositoryProm,
                         installedProm,
                         instancesProm,
                         rebuildProm,
-                        objectsProm
+                        objectsProm,
+                        ratingsProm
                     ]
                 );
+                this.uuid = ratings.uuid;
+
                 // console.log('objects', hostData, instancesProm)
                 this.rebuildSupported = rebuild || false;
 
@@ -354,6 +364,8 @@ class Adapters extends Component {
                     ) {
                         updateAvailable.push(value);
                     }
+
+                    adapter.rating = ratings[value];
 
                     if (!adapter.controller) {
                         const type = adapter.type;
@@ -563,8 +575,7 @@ class Adapters extends Component {
         }
     }
 
-    getDependencies = (value) => {
-
+    getDependencies = value => {
         const adapter = this.state.repository[value];
         let result = [];
 
@@ -620,7 +631,6 @@ class Adapters extends Component {
     }
 
     rightDependencies(value) {
-
         const adapter = this.state.repository[value];
         let result = true;
 
@@ -665,7 +675,6 @@ class Adapters extends Component {
     }
 
     rightOs(value) {
-
         const adapter = this.state.repository[value];
 
         if (adapter) {
@@ -712,8 +721,48 @@ class Adapters extends Component {
         }, () => cb && cb());
     }
 
-    getNews(value, all = false) {
+    showSetRatingDialog(adapter, version) {
+        fetch('https://rating.iobroker.net/adapter/' + adapter + '?uuid=' + this.uuid)
+            .then(res => res.json())
+            .then(votings => {
+                this.setState({showSetRating: {adapter, votings, version}});
+            });
+    }
 
+    renderSetRatingDialog() {
+        if (this.state.showSetRating) {
+            const votings = this.state.showSetRating.votings.rating;
+            const versions = Object.keys(votings);
+            versions.sort((a, b) => votings[a].ts > votings[b].ts ? -1 : (votings[a].ts < votings[b].ts ? 1 : 0));
+            let item;
+            if (versions.length) {
+                item = votings[versions[0]];
+            }
+            return <Dialog
+                open={true}
+                onClose={() => this.setState({showSetRating: null})}
+            >
+                <DialogTitle>{this.t('Review') + ' ' + this.state.showSetRating.adapter + '@' + this.state.showSetRating.version}</DialogTitle>
+                <DialogContent style={{textAlign: 'center'}}>
+                    <Rating
+                        className={this.props.classes.rating}
+                        name={this.state.showSetRating.adapter}
+                        defaultValue={item ? item.r : 0}
+                        size="large"
+                        onChange={(event, newValue) => {
+                            this.setAdapterRating(this.state.showSetRating.adapter, this.state.showSetRating.version, newValue)
+                                .then(() => this.setState({showSetRating: null}));
+                        }}
+                    />
+                    {item ? <div>{this.t('You voted for %s on %s', versions[0], new Date(item.ts).toLocaleDateString())}</div> : null}
+                </DialogContent>
+            </Dialog>;
+        } else {
+            return null;
+        }
+    }
+
+    getNews(value, all = false) {
         const adapter = this.state.repository[value];
         const installed = this.state.installed[value];
         const news = [];
@@ -880,6 +929,8 @@ class Adapters extends Component {
                 sentry={cached.sentry}
                 rebuild={this.rebuildSupported}
                 commandRunning={this.props.commandRunning}
+                rating={adapter.rating}
+                onSetRating={installed && installed.version ? () => this.showSetRatingDialog(value, installed.version) : null}
 
                 onAddInstance={() => licenseDialogFunc(adapter.license === 'MIT', () => this.addInstance(value), adapter.extIcon.split('/master')[0] + '/master/LICENSE')}//
                 onDeletion={() => this.openAdapterDeletionDialog(value)}
@@ -1017,6 +1068,23 @@ class Adapters extends Component {
         }
     }
 
+    setAdapterRating(adapter, version, rating) {
+        return fetch('https://rating.iobroker.net/vote', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            redirect: 'follow',
+            body: JSON.stringify({uuid: this.uuid, adapter, version, rating})
+        })
+            .then(res => res.json())
+            .then(update => {
+                window.alert(this.t('Vote: ') + adapter + '@' + version + '=' + rating);
+                const repository = JSON.parse(JSON.stringify(this.state.repository));
+                repository[adapter].rating = update;
+                this.setState({repository});
+            })
+            .catch(e => window.alert('Cannot vote: ' + e));
+    }
+
     getTiles() {
         if (!this.cache.listOfVisibleAdapter) {
             this.buildCache();
@@ -1063,6 +1131,8 @@ class Adapters extends Component {
                     rightOs={cached.rightOs}
                     sentry={cached.sentry}
                     rebuild={this.rebuildSupported}
+                    rating={adapter.rating}
+                    onSetRating={installed && installed.version ? () => this.showSetRatingDialog(value, installed.version) : null}
 
                     onAddInstance={() => licenseDialogFunc(adapter.license === 'MIT', () => this.addInstance(value), adapter.extIcon.split('/master')[0] + '/master/LICENSE')}//
                     onDeletion={() => this.openAdapterDeletionDialog(value)}
@@ -1304,6 +1374,7 @@ class Adapters extends Component {
 
             {this.getUpdater()}
             {this.getStatistics()}
+            {this.renderSetRatingDialog()}
 
             {!this.state.viewMode && <div style={{
                 display: 'flex',

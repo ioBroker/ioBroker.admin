@@ -375,6 +375,8 @@ AdapterRow.propTypes = {
     updateAvailable: PropTypes.bool,
     version: PropTypes.string,
     commandRunning: PropTypes.bool,
+    rating: PropTypes.object,
+    onSetRating: PropTypes.func,
 };
 
 export default withStyles(styles)(AdapterRow);

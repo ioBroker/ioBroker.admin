@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardMedia, Fab, IconButton, Tooltip, Typography } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
+import PropTypes from 'prop-types';
+
+import Rating from '@material-ui/lab/Rating';
+
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import RefreshIcon from '@material-ui/icons/Refresh';
-import clsx from 'clsx';
 import AddIcon from '@material-ui/icons/Add';
 import AddToPhotosIcon from '@material-ui/icons/AddToPhotos';
 import BuildIcon from '@material-ui/icons/Build';
@@ -15,7 +19,6 @@ import CloudOffIcon from '@material-ui/icons/CloudOff';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import RemoveIcon from '@material-ui/icons/Remove';
-import PropTypes from "prop-types";
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -213,6 +216,12 @@ const styles = theme => ({
     },
     marginLeft5: {
         marginLeft: 5
+    },
+    rating: {
+        marginTop: 20,
+    },
+    ratingSet: {
+        cursor: 'pointer'
     }
 });
 const AdapterTile = ({
@@ -242,7 +251,9 @@ const AdapterTile = ({
     openInstallVersionDialog,
     dataSource,
     t,
-    commandRunning
+    commandRunning,
+    rating,
+    onSetRating
 }) => {
     const [openCollapse, setCollapse] = useState(false);
     const [focused, setFocused] = useState(false);
@@ -324,6 +335,16 @@ const AdapterTile = ({
             />
             {!stat && !versionDate ? <div className={classes.adapter}>{adapter}</div> : null}
             <div className={classes.versionDate}>{stat || versionDate}</div>
+            {!stat && !versionDate ? <div onClick={onSetRating ? () => onSetRating() : undefined} className={clsx(classes.rating, onSetRating && classes.ratingSet)}>
+                <Rating
+                    name={adapter}
+                    precision={0.5}
+                    size="small"
+                    readOnly
+                    title={rating?.rating ? t('Number of votes') + ': ' + rating.rating.c : t('No or too few data')}
+                    value={rating?.rating ? rating.rating.r : 0}
+                />
+            </div> : null}
             <Fab
                 onMouseOut={() => setFocused(false)}
                 onMouseOver={() => setFocused(true)}
@@ -382,7 +403,11 @@ const AdapterTile = ({
         </CardContent>
     </Card>;
 }
+
 AdapterTile.propTypes = {
     commandRunning: PropTypes.bool,
+    rating: PropTypes.object,
+    onSetRating: PropTypes.func,
 };
+
 export default withStyles(styles)(AdapterTile);

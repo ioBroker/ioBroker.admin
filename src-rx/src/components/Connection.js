@@ -2165,6 +2165,21 @@ class Connection {
             this._socket.emit('authEnabled', (isSecure, user) =>
                 resolve(user)));
     }
+    /**
+     * Read adapter ratings
+     * @returns {Promise<any>}
+     */
+    getRatings(update) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getRatings', update, (err, ratings) =>
+                err ? reject(err) : resolve(ratings)));
+    }
 }
 
 Connection.Connection = {
