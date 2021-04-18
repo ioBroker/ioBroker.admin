@@ -1342,7 +1342,8 @@ class Adapters extends Component {
                 t={this.t}
                 open={this.state.gitHubInstallDialog}
                 categories={this.state.categories}
-                addInstance={(value, debug, customUrl) => this.addInstance(value, this.state.addInstanceId, debug, customUrl)}
+                installFromUrl={(value, debug, customUrl) =>
+                    this.addInstance(value, undefined, debug, customUrl)}
                 repository={this.state.repository}
                 onClose={() => { this.setState({ gitHubInstallDialog: false }) }}
             />

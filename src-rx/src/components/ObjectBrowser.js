@@ -71,6 +71,7 @@ import PublishIcon from '@material-ui/icons/Publish';
 import AddIcon from '@material-ui/icons/Add';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import LooksOneIcon from '@material-ui/icons/LooksOne';
+import PressButtonIcon from '@material-ui/icons/RoomService';
 
 import IconExpert from '@iobroker/adapter-react/icons/IconExpert';
 import IconAdapter from '@iobroker/adapter-react/icons/IconAdapter';
@@ -331,6 +332,12 @@ const styles = theme => ({
     cellValue: {
         display: 'inline-block',
         verticalAlign: 'top'
+    },
+    cellValueButton: {
+        marginTop: 5,
+        '&:active': {
+            transform: 'scale(0.8)'
+        }
     },
     cellAdapter: {
         display: 'inline-block',
@@ -856,9 +863,10 @@ function buildTree(objects, options) {
                         parent:     croot,
                         icon:       getSelectIdIcon(objects, id, imagePrefix) || getSystemIcon(objects, id, 0, imagePrefix),
                         id,
-                        hasCustoms: obj.common && obj.common.custom && Object.keys(obj.common.custom).length,
+                        hasCustoms: obj.common?.custom && Object.keys(obj.common.custom).length,
                         level:      parts.length - 1,
                         generated:  false,
+                        button:     obj.type === 'state' && obj.common?.role?.startsWith('button') && obj.common?.write !== false,
                     }
                 };
 
@@ -3036,6 +3044,11 @@ class ObjectBrowser extends Component {
             ];
         }
 
+        let val = info.valText;
+        if (!this.props.expertMode && item.data.button) {
+            val = <PressButtonIcon className={this.props.classes.cellValueButton}/>;
+        }
+
         return <Tooltip
             key="value"
             title={info.valFull}
@@ -3043,7 +3056,7 @@ class ObjectBrowser extends Component {
             onOpen={() => this.readHistory(id)}
         >
             <div style={info.style} className={classes.cellValueText} >
-                {info.valText}
+                {val}
             </div>
         </Tooltip>;
     }
@@ -3436,7 +3449,9 @@ class ObjectBrowser extends Component {
 
         // icon
         let iconFolder;
-        if (item.children) {
+        let itemType = item.data.obj?.type;
+
+        if (item.children || itemType === 'folder' || itemType === 'device' || itemType === 'channel' || itemType === 'meta') {
             iconFolder = isExpanded ? <IconOpen
                 className={classes.cellIdIconFolder}
                 onClick={() => this.toggleExpanded(id)}
@@ -3490,9 +3505,9 @@ class ObjectBrowser extends Component {
             console.log(item.data.funcs);
         }*/
 
-        const valueEditable = !this.props.notEditable && item.data.obj?.type === 'state' && (this.props.expertMode || item.data.obj?.common?.write !== false);
-        const enumEditable = !this.props.notEditable && (this.props.expertMode || item.data.obj?.type === 'state' || item.data.obj?.type === 'channel' || item.data.obj?.type === 'device');
-        const checkVisibleObjectType = this.state.statesView && (item.data.obj?.type === 'state' || item.data.obj?.type === 'channel' || item.data.obj?.type === 'device');
+        const valueEditable = !this.props.notEditable && itemType === 'state' && (this.props.expertMode || item.data.obj?.common?.write !== false);
+        const enumEditable = !this.props.notEditable && (this.props.expertMode || itemType === 'state' || itemType === 'channel' || itemType === 'device');
+        const checkVisibleObjectType = this.state.statesView && (itemType === 'state' || itemType === 'channel' || itemType === 'device');
         let newValue = '';
         let newValueTitle = [];
         if (checkVisibleObjectType) {
@@ -3616,10 +3631,16 @@ class ObjectBrowser extends Component {
                 </>
             }
             {this.adapterColumns.map(it => <div className={classes.cellAdapter} style={{ width: this.columnsVisibility[it.id] }} key={it.id} title={it.adapter + ' => ' + it.pathText}>{this.renderCustomValue(obj, it, item)}</div>)}
-            {this.columnsVisibility.val ? <div className={classes.cellValue} style={{ width: this.columnsVisibility.val, cursor: valueEditable ? 'text' : 'default' }} onClick={valueEditable ? () => {
+            {this.columnsVisibility.val ? <div className={classes.cellValue} style={{ width: this.columnsVisibility.val, cursor: valueEditable ? (item.data.button ? 'grab' : 'text') : 'default' }} onClick={valueEditable ? () => {
                 if (!item.data.obj || !this.states) {
                     return null;
                 }
+
+                // in non expert mode control button directly
+                if (!this.props.expertMode && item.data.button) {
+                    return this.props.socket.setState(id, true);
+                }
+
                 this.edit = {
                     val: this.states[id] ? this.states[id].val : '',
                     q:   0,

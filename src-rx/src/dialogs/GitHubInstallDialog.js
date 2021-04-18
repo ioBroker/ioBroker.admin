@@ -79,9 +79,9 @@ if (!Array.prototype.flat) {
     });
 }
 
-const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstance, t }) => {
+const GitHubInstallDialog = ({ categories, repository, onClose, open, installFromUrl, t }) => {
     if (!t) {
-        t = I18n.t
+        t = I18n.t;
     }
     const classes = useStyles();
     const theme = useTheme();
@@ -89,6 +89,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
     const [debug, setDebug] = useState(false);
     const [url, setUrl] = useState('');
     const [value, setValue] = useState(0);
+
     // eslint-disable-next-line array-callback-return
     const array = useCallback(() =>
         categories
@@ -109,15 +110,13 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
             .sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0),
         [categories, repository]);
 
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
+    const handleChange = (event, newValue) => setValue(newValue);
 
     const closeInit = () => {
         setAutocompleteValue(null);
         setDebug(false);
         setValue(0);
-        setUrl('')
+        setUrl('');
     };
 
     return <Dialog
@@ -132,10 +131,9 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
                         value={value}
                         onChange={handleChange}
                         variant="fullWidth"
-                        aria-label="full width tabs example"
                     >
-                        <Tab label="From github" {...a11yProps(0)} />
-                        <Tab label="Custom" {...a11yProps(1)} />
+                        <Tab label={t('From github')} {...a11yProps(0)} />
+                        <Tab label={t('Custom')} {...a11yProps(1)} />
                     </Tabs>
                 </AppBar>
                 <div style={{
@@ -170,7 +168,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
                             getOptionSelected={(option, value) => option.name === value.name}
                             onChange={(_, e) => setAutocompleteValue(e)}
                             options={array()}
-                            getOptionLabel={(option) => option.name}
+                            getOptionLabel={option => option.name}
                             renderInput={(params) => <TextField {...params} label={I18n.t('Select adapter')} />}
                         /></div>
                     <div style={{
@@ -190,8 +188,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
                             value={url}
                             onChange={event => setUrl(event.target.value)}
                             InputProps={{
-                                endAdornment: (
-                                    url ? <InputAdornment position="end">
+                                endAdornment: url ? <InputAdornment position="end">
                                         <IconButton
                                             size="small"
                                             onClick={() => setUrl('')}
@@ -199,7 +196,6 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
                                             <CloseIcon />
                                         </IconButton>
                                     </InputAdornment> : null
-                                ),
                             }}
                         />
                     </div>
@@ -232,9 +228,9 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, addInstanc
                 autoFocus
                 onClick={() => {
                     if (value === 0) {
-                        addInstance(autocompleteValue.value, debug, false);
+                        installFromUrl(autocompleteValue.value, debug, true);
                     } else {
-                        addInstance(url, debug, true);
+                        installFromUrl(url, debug, true);
                     }
                     onClose();
                     closeInit();

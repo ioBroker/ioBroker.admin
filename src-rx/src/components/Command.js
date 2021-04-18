@@ -243,18 +243,18 @@ class Command extends Component {
                 if (pos > 0) {
                     const part = text.substring(0, pos);
 
-                    result.push(part);
+                    result.push(<span key={result.length}>{part}</span>);
                     text = text.replace(part, '');
                 }
 
                 const part = text.substr(0, match.length);
 
-                result.push(<span className={classes[match.toLowerCase()]}>{part}</span>);
+                result.push(<span key={result.length} className={classes[match.toLowerCase()]}>{part}</span>);
                 text = text.replace(part, '');
             }
 
             if (text.length > 0) {
-                result.push(text);
+                result.push(<span key={result.length}>{text}</span>);
             }
 
             return result;
