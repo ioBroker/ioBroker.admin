@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Config from '../dialogs/Config';
 import EasyModeCard from '../components/EasyModeCard';
-import { AppBar, CardMedia, Paper, Toolbar } from '@material-ui/core';
+import { AppBar, CardMedia, CircularProgress, Paper, Toolbar } from '@material-ui/core';
 
 import clsx from 'clsx';
 import ToggleThemeMenu from '../components/ToggleThemeMenu';
@@ -62,13 +62,23 @@ const styles = theme => ({
 });
 
 class EasyMode extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            configs: this.props.configs
+        };
+        if (!this.props.configs) {
+            this.props.socket.getEasyMode()
+                .then(config => this.setState({configs: config.configs}));
+        }
+    }
+
     render() {
         const {
             classes,
             t,
             themeName,
             toggleTheme,
-            configs,
             navigate,
             location,
             socket,
@@ -79,8 +89,14 @@ class EasyMode extends Component {
             dateFormat,
             configStored
         } = this.props;
+        const configs = this.state.configs;
+        if (!configs) {
+            return <CircularProgress />;
+        }
+
         const tab = location.id;
         const currentInstance = configs.find(({ id }) => id === tab);
+        console.log(configs)
         return <Paper className={classes.wrapperEasyMode}>
             <AppBar
                 color="default"
@@ -121,9 +137,9 @@ class EasyMode extends Component {
         </Paper>;
     }
 }
-EasyMode.defaultProps = {
-    configs: []
-}
+// EasyMode.defaultProps = {
+//     configs: []
+// }
 
 EasyMode.propTypes = {
     configs: PropTypes.array,
