@@ -335,13 +335,16 @@ const AdapterTile = ({
             />
             {!stat && !versionDate ? <div className={classes.adapter}>{adapter}</div> : null}
             <div className={classes.versionDate}>{stat || versionDate}</div>
-            {!stat && !versionDate ? <div onClick={onSetRating ? () => onSetRating() : undefined} className={clsx(classes.rating, onSetRating && classes.ratingSet)}>
+            {!stat && !versionDate ? <div
+                onClick={onSetRating ? () => onSetRating() : undefined}
+                className={clsx(classes.rating, onSetRating && classes.ratingSet)}
+                title={rating?.title}
+            >
                 <Rating
                     name={adapter}
                     precision={0.5}
                     size="small"
                     readOnly
-                    title={rating?.rating ? t('Number of votes') + ': ' + rating.rating.c : t('No or too few data')}
                     value={rating?.rating ? rating.rating.r : 0}
                 />
             </div> : null}

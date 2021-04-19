@@ -1,3 +1,4 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -28,7 +29,7 @@ import ConfigStaticDivider from './ConfigStaticDivider';
 import ConfigSetState from './ConfigSetState';
 import ConfigJsonEditor from './ConfigJsonEditor';
 import ConfigComPort from './ConfigComPort';
-import React from "react";
+import ConfigTopic from './ConfigTopic';
 
 //import ConfigTabs from "./ConfigTabs";
 // import { Paper } from '@material-ui/core';
@@ -60,6 +61,7 @@ const components = {
     setState: ConfigSetState,
     jsonEditor: ConfigJsonEditor,
     comPort: ConfigComPort,
+    topic: ConfigTopic,
 };
 
 const styles = theme => ({
@@ -72,7 +74,7 @@ const styles = theme => ({
         height: 'calc(100vh - 230px) !important',
         width: 'auto !important',
         overflowY: 'auto',
-
+        paddingBottom: theme.spacing(1)
     },
     padding: {
         padding: 10,

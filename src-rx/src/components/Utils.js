@@ -1265,6 +1265,24 @@ class Utils {
         }
         return text;
     }
+
+    /**
+     * Generate the json file on the file for download.
+     * @param {string} filename file name
+     * @returns {object} json structure (not stringified)
+     */
+    static generateFile(filename, json) {
+        let el = document.createElement('a');
+        el.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(json, null, 2)));
+        el.setAttribute('download', filename);
+
+        el.style.display = 'none';
+        document.body.appendChild(el);
+
+        el.click();
+
+        document.body.removeChild(el);
+    }
 }
 
 export default Utils;

@@ -933,6 +933,8 @@ class Instances extends Component {
                         theme={this.props.theme}
                         width={this.props.width}
                         t={this.t}
+                        lang={this.props.lang}
+                        icon={instance.image}
                         configStored={this.props.configStored}
                         dateFormat={this.props.dateFormat}
                         isFloatComma={this.props.isFloatComma}
@@ -1047,6 +1049,7 @@ Instances.propTypes = {
      */
     ready: PropTypes.bool,
     t: PropTypes.func,
+    lang: PropTypes.string,
     expertMode: PropTypes.bool,
     hostname: PropTypes.string,
     protocol: PropTypes.string,

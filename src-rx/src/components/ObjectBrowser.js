@@ -88,7 +88,7 @@ import IconClearFilter from '@iobroker/adapter-react/icons/IconClearFilter';
 
 const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
-const ITEM_LEVEL = ROW_HEIGHT;
+const ITEM_LEVEL = 16;
 const SMALL_BUTTON_SIZE = 20;
 const COLOR_NAME_SYSTEM = '#ff6d69';
 const COLOR_NAME_SYSTEM_ADAPTER = '#5773ff';

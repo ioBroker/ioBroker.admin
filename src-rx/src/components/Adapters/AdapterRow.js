@@ -39,7 +39,7 @@ import {
     green,
     red
 } from '@material-ui/core/colors';
-import MaterialDynamicIcon from '../helpers/MaterialDynamicIcon';
+import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 
 const styles = theme => ({
     smallAvatar: {

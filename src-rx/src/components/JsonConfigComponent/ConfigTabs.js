@@ -38,7 +38,7 @@ class ConfigTabs extends ConfigGeneric {
             }}>
                 {Object.keys(items).map(name => {
                     const disabled = this.execute(items[name].disabled, false);
-                    return <Tab disabled={disabled} key={name} value={name} label={this.getText(items[name].label)} />
+                    return <Tab wrapped disabled={disabled} key={name} value={name} label={this.getText(items[name].label)} />
                 })}
             </Tabs>
             {<ConfigPanel

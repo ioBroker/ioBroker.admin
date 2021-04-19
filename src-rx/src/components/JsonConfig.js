@@ -13,11 +13,30 @@ import I18n from '@iobroker/adapter-react/i18n';
 import JsonConfigComponent from './JsonConfigComponent';
 import ConfigCustomEasyAccess from './JsonConfigComponent/ConfigCustomEasyAccess';
 import ConfigGeneric from "./JsonConfigComponent/ConfigGeneric";
+import Tooltip from "@material-ui/core/Tooltip";
+import Fab from "@material-ui/core/Fab";
+import PublishIcon from "@material-ui/icons/Publish";
+import Utils from './Utils';
 
 const styles = {
+    root: {
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+        position: 'relative',
+    },
     scroll: {
         height: 'calc(100% - 48px - 48px)',
         overflowY: 'auto'
+    },
+    exportImportButtons: {
+        position: 'absolute',
+        top: 5,
+        right: 0,
+        zIndex: 3,
+    },
+    button: {
+        marginRight: 5
     }
 };
 
@@ -42,6 +61,53 @@ class JsonConfig extends Router {
                     JsonConfigComponent.loadI18n(this.props.socket, schema?.i18n, this.props.adapterName)
                         .then(() =>
                             this.setState({schema, data: obj.native, common: obj.common}))));
+    }
+
+    /**
+     * @private
+     * @param {object} evt
+     */
+    handleFileSelect = evt => {
+        let f = evt.target.files[0];
+        if (f) {
+            let r = new FileReader();
+            r.onload = async e => {
+                let contents = e.target.result;
+                try {
+                    let json = JSON.parse(contents);
+                    this.setState({data: json});
+                } catch (err) {
+                    window.alert(I18n.t('Failed to parse JSON file'));
+                }
+            };
+            r.readAsText(f);
+        } else {
+            window.alert(I18n.t('Failed to open JSON File'));
+        }
+    }
+
+    getExportImportButtons() {
+        return <div className={this.props.classes.exportImportButtons}>
+            <Tooltip title={this.props.t('Import settings from JSON file')}>
+                <Fab size="small" classes={{root: this.props.classes.button}} onClick={() => {
+                    const input = document.createElement('input');
+                    input.setAttribute('type', 'file');
+                    input.setAttribute('id', 'files');
+                    input.setAttribute('opacity', 0);
+                    input.addEventListener('change', e => this.handleFileSelect(e), false);
+                    input.click();
+                }}>
+                    <PublishIcon />
+                </Fab>
+            </Tooltip>
+            <Tooltip title={this.props.t('Export setting to JSON file')}>
+                <Fab size="small" classes={{root: this.props.classes.button}} onClick={() => {
+                    Utils.generateFile(this.props.adapterName + '.' + this.props.instance + '.json', this.state.data);
+                }}>
+                    <PublishIcon style={{ transform: 'rotate(180deg)' }} />
+                </Fab>
+            </Tooltip>
+        </div>;
     }
 
     getConfigFile() {
@@ -108,8 +174,9 @@ class JsonConfig extends Router {
             return <LinearProgress />;
         }
 
-        return <>
+        return <div className={this.props.classes.root}>
             {this.renderConfirmDialog()}
+            {this.getExportImportButtons()}
             <JsonConfigComponent
                 className={ classes.scroll }
                 socket={this.props.socket}
@@ -135,7 +202,7 @@ class JsonConfig extends Router {
             <SaveCloseButtons
                 isIFrame={false}
                 dense={true}
-                paddingLeft={this.props.menuPadding}
+                paddingLeft={0}
                 theme={this.state.theme}
                 noTextOnButtons={this.props.width === 'xs' || this.props.width === 'sm' || this.props.width === 'md'}
                 changed={this.state.error || this.state.changed}
@@ -143,7 +210,7 @@ class JsonConfig extends Router {
                 onSave={async close => await this.onSave(true, close)}
                 onClose={async () => await this.onSave(false)}
             />
-        </>;
+        </div>;
     }
 }
 

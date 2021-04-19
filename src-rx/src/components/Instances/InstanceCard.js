@@ -172,7 +172,8 @@ const styles = theme => ({
     },
     button: {
         padding: '5px',
-        transition: 'opacity 0.2s'
+        transition: 'opacity 0.2s',
+        height: 34,
     },
     visibility: {
         opacity: 0

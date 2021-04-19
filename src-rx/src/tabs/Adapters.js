@@ -49,8 +49,8 @@ import AdapterDeletionDialog from '../dialogs/AdapterDeletionDialog';
 import AdapterInfoDialog from '../dialogs/AdapterInfoDialog';
 import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
 import AddInstanceDialog from '../dialogs/AddInstanceDialog';
-import AdapterRow from '../components/AdapterRow';
-import AdapterTile from '../components/AdapterTile';
+import AdapterRow from '../components/Adapters/AdapterRow';
+import AdapterTile from '../components/Adapters/AdapterTile';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
@@ -310,7 +310,7 @@ class Adapters extends Component {
                 const instancesProm = this.props.socket.getAdapterInstances(updateRepo).catch(e => window.alert('Cannot getAdapterInstances: ' + e));
                 const rebuildProm = this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD').catch(e => window.alert('Cannot checkFeatureSupported: ' + e));
                 const objectsProm = this.props.socket.getForeignObjects('system.adapter.*', 'adapter').catch(e => window.alert('Cannot read system.adapters.*: ' + e));
-                const ratingsProm = this.props.socket.getRatings(false).catch(e => window.alert('Cannot read ratings: ' + e));
+                const ratingsProm = this.props.socket.getRatings(updateRepo).catch(e => window.alert('Cannot read ratings: ' + e));
 
                 const [hostData, repository, installed, instances, rebuild, objects, ratings] = await Promise.all(
                     [
@@ -366,6 +366,14 @@ class Adapters extends Component {
                     }
 
                     adapter.rating = ratings[value];
+                    if (adapter.rating && adapter.rating.rating) {
+                        adapter.rating.title = [
+                            `Total rating: ${adapter.rating.rating.r} (${adapter.rating.rating.c} ${this.t('votes')})`,
+                            (_installed && _installed.version && adapter.rating[installed.version]) ? `Rating for ${installed.version}: ${adapter.rating[installed.version].r} (${adapter.rating[installed.version].c} ${this.t('votes')})` : ''
+                        ].filter(i => i).join('\n');
+                    } else {
+                        adapter.rating = {title: this.t('No rating or too few data')};
+                    }
 
                     if (!adapter.controller) {
                         const type = adapter.type;
@@ -750,8 +758,12 @@ class Adapters extends Component {
                         defaultValue={item ? item.r : 0}
                         size="large"
                         onChange={(event, newValue) => {
-                            this.setAdapterRating(this.state.showSetRating.adapter, this.state.showSetRating.version, newValue)
-                                .then(() => this.setState({showSetRating: null}));
+                            if (newValue !== item?.r) {
+                                this.setAdapterRating(this.state.showSetRating.adapter, this.state.showSetRating.version, newValue)
+                                    .then(() => this.setState({showSetRating: null}));
+                            } else {
+                                this.setState({showSetRating: null});
+                            }
                         }}
                     />
                     {item ? <div>{this.t('You voted for %s on %s', versions[0], new Date(item.ts).toLocaleDateString())}</div> : null}

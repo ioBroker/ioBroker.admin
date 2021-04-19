@@ -179,7 +179,6 @@ class ObjectCustomEditor extends Component {
             return Promise.resolve(null);
         } else {
             if (ad.common?.jsonCustom) {
-                debugger
                 return this.props.socket.readFile(adapter + '.admin', 'jsonCustom.json')
                     .then(json => {
                         try {
@@ -209,7 +208,7 @@ class ObjectCustomEditor extends Component {
         const defaultValues = {enabled: false};
         const adapter = instance.split('.')[0];
 
-        if (this.jsonConfigs[adapter]) {
+        if (this.jsonConfigs[adapter] && !this.jsonConfigs[adapter].disabled) {
             const items = this.jsonConfigs[adapter].json.items;
 
             items && Object.keys(items).filter(attr => items[attr])
@@ -241,6 +240,10 @@ class ObjectCustomEditor extends Component {
 
         // calculate common settings
         this.props.customsInstances.forEach(inst => {
+            const adapter = inst.split('.')[0];
+            if (this.jsonConfigs[adapter] && this.jsonConfigs[adapter].disabled) {
+                return;
+            }
             commons[inst] = {};
             ids.forEach(id => {
                 const customObj = objects[id];
@@ -311,6 +314,12 @@ class ObjectCustomEditor extends Component {
         const enabled = this.state.newValues[instance] !== undefined && (!this.state.newValues[instance] || this.state.newValues[instance].enabled !== undefined) ? !!(this.state.newValues[instance] && this.state.newValues[instance].enabled) : (this.state.newValues[instance] === null ? false : this.commonConfig[instance].enabled);
         const isIndeterminate = Array.isArray(enabled) && (!this.state.newValues[instance] || this.state.newValues[instance].enabled === undefined);
 
+        const disabled = this.jsonConfigs[adapter] && this.jsonConfigs[adapter].json?.disabled;
+
+        if (disabled && this.jsonConfigs[adapter].json.hidden) {
+            return null;
+        }
+
         return <Accordion
             key={ instance }
             id={ 'Accordion_' + instance }
@@ -344,6 +353,7 @@ class ObjectCustomEditor extends Component {
                         control={<Checkbox
                             indeterminate={ isIndeterminate }
                             checked={ !!enabled }
+                            disabled={disabled}
                             onChange={e => {
                                 const newValues = JSON.parse(JSON.stringify(this.state.newValues));
 
@@ -364,7 +374,7 @@ class ObjectCustomEditor extends Component {
                     />
                 </div>
                 <div className={this.props.classes.customControls}>
-                    {enabled || isIndeterminate ?
+                    {!disabled && (enabled || isIndeterminate) ?
                         <JsonConfigComponent
                             instanceObj={instanceObj}
                             customObj={customObj}
@@ -395,6 +405,13 @@ class ObjectCustomEditor extends Component {
                                     this.props.onChange && this.props.onChange(this.state.hasChanges));
                             }}
                         /> : null}
+
+                    {disabled && this.jsonConfigs[adapter].json.help ?
+                        (typeof this.jsonConfigs[adapter].json.help === 'object' ?
+                            this.jsonConfigs[adapter].json.help[this.props.lang] ||
+                            this.jsonConfigs[adapter].json.help.en
+                            :
+                            this.props.t(this.jsonConfigs[adapter].json.help)) : null}
                 </div>
             </AccordionDetails>
         </Accordion>;
