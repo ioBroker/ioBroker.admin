@@ -7,8 +7,8 @@
 - The version will not be automatically updated: https://github.com/ioBroker/ioBroker.admin/issues/688
 - Adapter => Filter installed adapters => The button has no primary color if active: https://github.com/ioBroker/ioBroker.admin/issues/689
 - Update log level if changed: https://github.com/ioBroker/ioBroker.admin/issues/690
-- Deleting of objects: All / only one is swapped: https://github.com/ioBroker/ioBroker.admin/issues/681
 - Ask "Discard data?" if instance config not saved
+- After some adapter with tab (like event list, node.red, ...) installed it must automaticall appear in drawer
 
 ## Settings
   
@@ -41,6 +41,11 @@
 ## Users
 ## Easy mode
 <!-- - Easy admin mode -->
+- If not strict mode, show button back to admin
+- By clicking on ioBroker logo => #easy
+- Show admin tabs: 
+   - config => JsonConfig(jsonConfig: true),  index_m.html (materialize: true), index.html
+   - admin => tab_m.html (materialize: true), tab_html
 
 ## After all is done
 - Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io) (BF)

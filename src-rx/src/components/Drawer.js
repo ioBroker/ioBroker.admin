@@ -479,7 +479,7 @@ class Drawer extends Component {
                 <List className={classes.list}>
                     {this.getNavigationItems()}
                     {this.props.isSecure &&
-                        <DrawerItem onClick={this.props.onLogout} text={this.props.t('logout')} icon={<LogoutIcon />} />
+                        <DrawerItem onClick={this.props.onLogout} text={this.props.t('Logout')} icon={<LogoutIcon />} />
                     }
                 </List>
                 {this.props.state === STATES.opened && <div style={{
