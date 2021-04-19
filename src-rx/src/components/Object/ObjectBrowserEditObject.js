@@ -35,7 +35,7 @@ import I18n from '@iobroker/adapter-react/i18n';
 import copy from "@iobroker/adapter-react/Components/copy-to-clipboard";
 import { FormControl, InputLabel, MenuItem, Select, Tooltip } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
-import UploadImage from './UploadImage';
+import UploadImage from '../UploadImage';
 
 
 const styles = theme => ({

@@ -23,7 +23,7 @@ import IconCheck from '@material-ui/icons/Check';
 import IconCancel from '@material-ui/icons/Close';
 
 import I18n from '@iobroker/adapter-react/i18n';
-import LicenseTexts from './LicenseTexts';
+import LicenseTexts from '../LicenseTexts';
 
 const TOOLBAR_HEIGHT = 64;
 

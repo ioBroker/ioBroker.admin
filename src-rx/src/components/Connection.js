@@ -1647,7 +1647,6 @@ class Connection {
 
         this._promises['supportedFeatures_' + feature] = new Promise((resolve, reject) =>
             this._socket.emit('checkFeatureSupported', feature, (err, features) => {
-                console.log(features);
                 err ? reject(err) : resolve(features)
             }));
 
@@ -2102,6 +2101,7 @@ class Connection {
             this._socket.emit('sendToHost', host, 'getNotifications', {category}, notifications =>
                 resolve(notifications)));
     }
+
     /**
      * Clear the alarm notifications on a host (only for admin connection).
      * @param {string} host
@@ -2121,6 +2121,10 @@ class Connection {
                 resolve(notifications)));
     }
 
+    /**
+     * Read if only easy mode is allowed  (only for admin connection).
+     * @returns {Promise<boolean>}
+     */
     getIsEasyModeStrict() {
         if (Connection.isWeb()) {
             return Promise.reject('Allowed only in admin');
@@ -2133,6 +2137,10 @@ class Connection {
                 error ? reject(error) : resolve(isStrict)));
     }
 
+    /**
+     * Read easy mode configuration (only for admin connection).
+     * @returns {Promise<any>}
+     */
     getEasyMode() {
         if (Connection.isWeb()) {
             return Promise.reject('Allowed only in admin');
@@ -2143,6 +2151,34 @@ class Connection {
         return new Promise((resolve, reject) =>
             this._socket.emit('getEasyMode', (error, config) =>
                 error ? reject(error) : resolve(config)));
+    }
+
+    /**
+     * Read current user
+     * @returns {Promise<string>}
+     */
+    getCurrentUser() {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise(resolve =>
+            this._socket.emit('authEnabled', (isSecure, user) =>
+                resolve(user)));
+    }
+    /**
+     * Read adapter ratings
+     * @returns {Promise<any>}
+     */
+    getRatings(update) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getRatings', update, (err, ratings) =>
+                err ? reject(err) : resolve(ratings)));
     }
 }
 

@@ -10,7 +10,6 @@ import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 import copy from '@iobroker/adapter-react/Components/copy-to-clipboard';
 import withStyles from '@material-ui/core/styles/withStyles';
-import { useDrag } from 'react-dnd'
 
 import IconButton from '@material-ui/core/IconButton';
 import withWidth from '@material-ui/core/withWidth';
@@ -72,6 +71,7 @@ import PublishIcon from '@material-ui/icons/Publish';
 import AddIcon from '@material-ui/icons/Add';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import LooksOneIcon from '@material-ui/icons/LooksOne';
+import PressButtonIcon from '@material-ui/icons/RoomService';
 
 import IconExpert from '@iobroker/adapter-react/icons/IconExpert';
 import IconAdapter from '@iobroker/adapter-react/icons/IconAdapter';
@@ -332,6 +332,12 @@ const styles = theme => ({
     cellValue: {
         display: 'inline-block',
         verticalAlign: 'top'
+    },
+    cellValueButton: {
+        marginTop: 5,
+        '&:active': {
+            transform: 'scale(0.8)'
+        }
     },
     cellAdapter: {
         display: 'inline-block',
@@ -857,9 +863,10 @@ function buildTree(objects, options) {
                         parent:     croot,
                         icon:       getSelectIdIcon(objects, id, imagePrefix) || getSystemIcon(objects, id, 0, imagePrefix),
                         id,
-                        hasCustoms: obj.common && obj.common.custom && Object.keys(obj.common.custom).length,
+                        hasCustoms: obj.common?.custom && Object.keys(obj.common.custom).length,
                         level:      parts.length - 1,
                         generated:  false,
+                        button:     obj.type === 'state' && obj.common?.role?.startsWith('button') && obj.common?.write !== false,
                     }
                 };
 
@@ -1320,12 +1327,13 @@ const SCREEN_WIDTHS = {
     },
 };
 
-const DraggableObject = (props) => {
+const DraggableObject = props => {
     let dragSettings = { ...props.dragSettings };
     dragSettings.item = props.item;
+    const useDrag = props.useDrag;
     const [{ isDragging }, dragRef] = useDrag(dragSettings);
 
-    return <div ref={dragRef}>{props.children}</div>
+    return <div ref={dragRef} style={{backgroundColor: isDragging ? 'rgba(100,152,255,0.1)' : undefined}}>{props.children}</div>;
 }
 
 /**
@@ -1507,6 +1515,8 @@ class ObjectBrowser extends Component {
             aclGroup_write_state:     props.t('ra_aclGroup_write_state'),
             aclEveryone_read_object:  props.t('ra_aclEveryone_read_object'),
             aclEveryone_read_state:   props.t('ra_aclEveryone_read_state'),
+            aclEveryone_write_object: props.t('ra_aclEveryone_write_object'),
+            aclEveryone_write_state:  props.t('ra_aclEveryone_write_state'),
         };
 
         this.calculateColumnsVisibility();
@@ -1564,7 +1574,8 @@ class ObjectBrowser extends Component {
                             if (!state || !state.val) {
                                 this.defaultHistory = '';
                             }
-                        });
+                        })
+                        .catch(e => window.alert('Cannot get state: ' + e));
                 }
             })
             .then(() => this.getAdditionalColumns())
@@ -1646,7 +1657,7 @@ class ObjectBrowser extends Component {
      * Called when component is unmounted.
      */
     componentWillUnmount() {
-        this.props.socket.unsubscribeObject('*', this.onObjectChange);
+        this.props.socket.unsubscribeObject('*', this.onObjectChange)
 
         // remove all subscribes
         this.subscribes.forEach(pattern => {
@@ -1661,7 +1672,12 @@ class ObjectBrowser extends Component {
      * Called when component is mounted.
      */
     async refreshComponent() {
-        await this.props.socket.unsubscribeObject('*', this.onObjectChange);
+        try {
+            await this.props.socket.unsubscribeObject('*', this.onObjectChange);
+        } catch (e) {
+            window.alert('Cannot unsubscribe object: ' + e);
+        }
+
         // remove all subscribes
         this.subscribes.forEach(async pattern => {
             console.log('- unsubscribe ' + pattern);
@@ -1920,7 +1936,8 @@ class ObjectBrowser extends Component {
                     columnsForAdmin = this.parseObjectForAdmins(columnsForAdmin, obj));
 
                 return columnsForAdmin;
-            });
+            })
+            .catch(e => window.alert('Cannot get adapters: ' + e));
     }
 
     /**
@@ -2683,18 +2700,20 @@ class ObjectBrowser extends Component {
                         <LooksOneIcon color={this.state.statesView ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip>}
-                {this.props.objectAddBoolean && <Tooltip title={this.props.t('ra_Add new child object to selected parent')}>
-                    <IconButton onClick={() => {
-                        if (this.state.selected.length) {
-                            this.setState({ modalNewObj: true });
-                        } else {
-                            this.setState({ toast: this.props.t('ra_please select object') });
-                        }
-                    }}>
-                        <AddIcon />
-                    </IconButton>
-                </Tooltip>
+
+                {this.props.objectAddBoolean ?
+                    (!this.state.selected.length || (this.objects[this.state.selected[0]] && this.objects[this.state.selected[0]].type === 'state') || (!this.props.expertMode && !this.state.selected[0].startsWith('alias.0') && !this.state.selected[0].startsWith('0_userdata')) ?
+                        <IconButton disabled><AddIcon /></IconButton>
+                        :
+                        <Tooltip title={this.props.t('ra_Add new child object to selected parent')}>
+                            <IconButton onClick={() =>
+                                this.setState({ modalNewObj: true })}
+                            >
+                                <AddIcon />
+                            </IconButton>
+                        </Tooltip>) : null
                 }
+
                 {this.props.objectImportExport &&
                     <Tooltip title={this.props.t('ra_Add objects tree from JSON file')}>
                         <IconButton onClick={() => {
@@ -2865,15 +2884,13 @@ class ObjectBrowser extends Component {
 
         item.data.aclTooltip = item.data.aclTooltip || this.renderTooltipAccessControl(item.data.obj.acl);
 
+        const acl = item.data.obj.acl ? (item.data.obj.type === 'state' ? item.data.obj.acl.state : item.data.obj.acl.object) : 0;
+
         return [
             this.props.expertMode && this.props.objectEditOfAccessControl ? <Tooltip key="acl" title={item.data.aclTooltip}><IconButton className={classes.cellButtonMinWidth} onClick={() =>
                 this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })
             }>
-                <div className={classes.aclText}>{Number(item.data.obj.type === 'state' ?
-                    item.data.obj.acl.state ?
-                        item.data.obj.acl.state :
-                        item.data.obj.acl.object :
-                    item.data.obj.acl.object).toString(16)}</div>
+                <div className={classes.aclText}>{Number(acl).toString(16)}</div>
             </IconButton></Tooltip> : <div key="aclEmpty" className={classes.cellButtonMinWidth} />,
             <IconButton
                 key="edit"
@@ -3027,6 +3044,11 @@ class ObjectBrowser extends Component {
             ];
         }
 
+        let val = info.valText;
+        if (!this.props.expertMode && item.data.button) {
+            val = <PressButtonIcon className={this.props.classes.cellValueButton}/>;
+        }
+
         return <Tooltip
             key="value"
             title={info.valFull}
@@ -3034,7 +3056,7 @@ class ObjectBrowser extends Component {
             onOpen={() => this.readHistory(id)}
         >
             <div style={info.style} className={classes.cellValueText} >
-                {info.valText}
+                {val}
             </div>
         </Tooltip>;
     }
@@ -3151,7 +3173,7 @@ class ObjectBrowser extends Component {
                                 name = item.name;
                                 icon = item.icon;
                             } else {
-                                id = item;
+                                id   = item;
                                 name = item;
                             }
                             const labelId = `checkbox-list-label-${id}`;
@@ -3427,7 +3449,9 @@ class ObjectBrowser extends Component {
 
         // icon
         let iconFolder;
-        if (item.children) {
+        let itemType = item.data.obj?.type;
+
+        if (item.children || itemType === 'folder' || itemType === 'device' || itemType === 'channel' || itemType === 'meta') {
             iconFolder = isExpanded ? <IconOpen
                 className={classes.cellIdIconFolder}
                 onClick={() => this.toggleExpanded(id)}
@@ -3481,9 +3505,9 @@ class ObjectBrowser extends Component {
             console.log(item.data.funcs);
         }*/
 
-        const valueEditable = !this.props.notEditable && item.data.obj?.type === 'state' && (this.props.expertMode || item.data.obj?.common?.write !== false);
-        const enumEditable = !this.props.notEditable && (this.props.expertMode || item.data.obj?.type === 'state' || item.data.obj?.type === 'channel' || item.data.obj?.type === 'device');
-        const checkVisibleObjectType = this.state.statesView && (item.data.obj?.type === 'state' || item.data.obj?.type === 'channel' || item.data.obj?.type === 'device');
+        const valueEditable = !this.props.notEditable && itemType === 'state' && (this.props.expertMode || item.data.obj?.common?.write !== false);
+        const enumEditable = !this.props.notEditable && (this.props.expertMode || itemType === 'state' || itemType === 'channel' || itemType === 'device');
+        const checkVisibleObjectType = this.state.statesView && (itemType === 'state' || itemType === 'channel' || itemType === 'device');
         let newValue = '';
         let newValueTitle = [];
         if (checkVisibleObjectType) {
@@ -3607,10 +3631,16 @@ class ObjectBrowser extends Component {
                 </>
             }
             {this.adapterColumns.map(it => <div className={classes.cellAdapter} style={{ width: this.columnsVisibility[it.id] }} key={it.id} title={it.adapter + ' => ' + it.pathText}>{this.renderCustomValue(obj, it, item)}</div>)}
-            {this.columnsVisibility.val ? <div className={classes.cellValue} style={{ width: this.columnsVisibility.val, cursor: valueEditable ? 'text' : 'default' }} onClick={valueEditable ? () => {
+            {this.columnsVisibility.val ? <div className={classes.cellValue} style={{ width: this.columnsVisibility.val, cursor: valueEditable ? (item.data.button ? 'grab' : 'text') : 'default' }} onClick={valueEditable ? () => {
                 if (!item.data.obj || !this.states) {
                     return null;
                 }
+
+                // in non expert mode control button directly
+                if (!this.props.expertMode && item.data.button) {
+                    return this.props.socket.setState(id, true);
+                }
+
                 this.edit = {
                     val: this.states[id] ? this.states[id].val : '',
                     q:   0,
@@ -3636,7 +3666,7 @@ class ObjectBrowser extends Component {
         counter = counter || { count: 0 };
         let leaf = this.renderLeaf(root, isExpanded, classes, counter);
         if (this.props.dragEnabled) {
-            leaf = <DraggableObject item={root} dragSettings={this.props.dragSettings}>{leaf}</DraggableObject>;
+            leaf = <DraggableObject item={root} dragSettings={this.props.dragSettings} useDrag={this.props.useDrag}>{leaf}</DraggableObject>;
         }
         root.data.id && items.push(leaf);
 
@@ -3744,7 +3774,7 @@ class ObjectBrowser extends Component {
             }
         } else {
             this.columnsVisibility = {
-                id: columnsWidths.id || SCREEN_WIDTHS[this.props.width].idWidth,
+                id:   columnsWidths.id || SCREEN_WIDTHS[this.props.width].idWidth,
                 name: columns.includes('name') ? columnsWidths.name || WIDTHS.name || SCREEN_WIDTHS.xl.widths.name : 0,
                 type: columns.includes('type') ? columnsWidths.type || WIDTHS.type || SCREEN_WIDTHS.xl.widths.type : 0,
                 role: columns.includes('role') ? columnsWidths.role || WIDTHS.role || SCREEN_WIDTHS.xl.widths.role : 0,
@@ -4121,6 +4151,7 @@ ObjectBrowser.propTypes = {
     columns: PropTypes.array, // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
     dragSettings: PropTypes.object,
     dragEnabled: PropTypes.bool,
+    useDrag: PropTypes.func,
 };
 
 /** @type {typeof ObjectBrowser} */

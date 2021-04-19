@@ -33,24 +33,22 @@ class State extends Component {
     }
 
     render() {
-        return (
-            <Grid
-                item
-                container
-                alignItems="center"
-                direction="row"
-                spacing={ 1 }
-            >
-                <Grid item>
-                    { this.getIcon() }
-                </Grid>
-                <Grid item>
-                    <Typography>
-                        { this.props.children }
-                    </Typography>
-                </Grid>
+        return <Grid
+            item
+            container
+            alignItems="center"
+            direction="row"
+            spacing={ 1 }
+        >
+            <Grid item>
+                { this.getIcon() }
             </Grid>
-        );
+            <Grid item>
+                <Typography>
+                    { this.props.children }
+                </Typography>
+            </Grid>
+        </Grid>;
     }
 }
 

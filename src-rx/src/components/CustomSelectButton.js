@@ -1,14 +1,26 @@
-import { Button, Menu, MenuItem } from '@material-ui/core';
-import React, { useState } from 'react';
-import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
+import { Button, Menu, MenuItem, makeStyles } from '@material-ui/core';
+import React, { useState,  } from 'react';
+
+import MaterialDynamicIcon from '../helpers/MaterialDynamicIcon';
+
+const useStyles = makeStyles(theme => ({
+    button: {
+        marginLeft: 10,
+        marginRight: 10
+    },
+    icon: {
+        marginRight: 5
+    }
+}));
 
 const CustomSelectButton = ({ arrayItem, onClick, value, contained, icons, t, translateSuffix }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     translateSuffix = translateSuffix || '';
+    const classes = useStyles();
 
     return <>
         <Button
-            style={{ marginLeft: 10, marginRight: 10 }}
+            className={classes.button}
             variant={contained ? 'contained' : 'outlined'}
             color="primary"
             onClick={e => setAnchorEl(e.currentTarget)}>
@@ -32,14 +44,16 @@ const CustomSelectButton = ({ arrayItem, onClick, value, contained, icons, t, tr
                         onClick(name);
                         setAnchorEl(null);
                     }}>
-                    {icons && <MaterialDynamicIcon objIconBool iconName={name} style={{ marginRight: 5 }} />}{typeof name === 'number' ? name : t(name + translateSuffix)}
+                    {icons && <MaterialDynamicIcon objIconBool iconName={name} className={classes.icon} />}{typeof name === 'number' ? name : t(name + translateSuffix)}
                 </MenuItem>
             })}
         </Menu>
     </>
 }
+
 CustomSelectButton.defaultProps = {
     icons: false,
     translateSuffix: '',
 };
+
 export default CustomSelectButton;

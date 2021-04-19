@@ -1,8 +1,44 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.2",
+        "version": "5.0.4",
+        "titleLang": {
+            "en": "Admin",
+            "de": "Admin",
+            "ru": "Админ",
+            "pt": "Admin",
+            "pl": "Admin",
+            "fr": "Admin",
+            "nl": "Admin",
+            "it": "Admin",
+            "es": "Admin",
+            "zh-cn": "Admin"
+        },
         "news": {
+            "5.0.4": {
+                "en": "Admin5: Fixed many bugs",
+                "de": "Admin5: Viele Fehler behoben",
+                "ru": "Admin5: Исправлено множество ошибок",
+                "pt": "Admin5: muitos bugs corrigidos",
+                "nl": "Admin5: Veel bugs opgelost",
+                "fr": "Admin5: Correction de nombreux bugs",
+                "it": "Admin5: risolti molti bug",
+                "es": "Admin5: se corrigieron muchos errores",
+                "pl": "Admin5: Naprawiono wiele błędów",
+                "zh-cn": "Admin5：修复了许多错误"
+            },
+            "5.0.3": {
+                "en": "Admin5: Many new features implemented",
+                "de": "Admin5: Viele neue Funktionen implementiert",
+                "ru": "Admin5: реализовано много новых функций",
+                "pt": "Admin5: Muitos novos recursos implementados",
+                "nl": "Admin5: Veel nieuwe functies geïmplementeerd",
+                "fr": "Admin5: de nombreuses nouvelles fonctionnalités implémentées",
+                "it": "Admin5: molte nuove funzionalità implementate",
+                "es": "Admin5: muchas funciones nuevas implementadas",
+                "pl": "Admin5: Zaimplementowano wiele nowych funkcji",
+                "zh-cn": "Admin5：已实现许多新功能"
+            },
             "5.0.2": {
                 "en": "Merged the changes from admin4",
                 "de": "Die Änderungen von admin4 wurden zusammengeführt",

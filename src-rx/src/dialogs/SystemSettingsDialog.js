@@ -126,7 +126,8 @@ class SystemSettingsDialog extends Component {
                 this.originalCertificates = JSON.stringify(systemCertificates);
                 newState.systemCertificates = systemCertificates;
                 this.setState(newState);
-            });
+            })
+            .catch(e => window.alert('Cannot read settings: ' + e));
     }
 
     renderConfirmDialog() {

@@ -28,7 +28,7 @@ import IconHttp from '@material-ui/icons/Language';
 import IconFile from '@material-ui/icons/InsertDriveFile';
 import IconSyslog from '@material-ui/icons/Computer';
 import IconStream from '@material-ui/icons/Send';
-import IconSeq from '../assets/seq.png';
+import IconSeq from '../../assets/seq.png';
 
 const styles = theme => ({
     paper: {

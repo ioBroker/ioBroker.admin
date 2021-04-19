@@ -15,7 +15,7 @@ import IconCheck from '@material-ui/icons/Check';
 import AddIcon from '@material-ui/icons/Add';
 
 import { Tooltip } from '@material-ui/core';
-import UploadImage from './UploadImage';
+import UploadImage from '../UploadImage';
 
 const styles = theme => ({
     error: {
@@ -173,12 +173,12 @@ class HostEdit extends Component {
                 className={classes.buttonAdd}
                 variant="contained"
                 color="secondary"
-                onClick={cb}><AddIcon />{t('add %s', nameKey)}</Button>
+                onClick={cb}><AddIcon />{t('Add ' + nameKey)}</Button>
         </div>
     }
     buttonRemoveKey(nameKey, cb) {
         const { t, classes } = this.props;
-        return <Tooltip title={t('Remove %s', nameKey)}><div className={classes.close} onClick={cb} /></Tooltip>
+        return <Tooltip title={t('Remove ' + nameKey)}><div className={classes.close} onClick={cb} /></Tooltip>
     }
     renderCommonEdit() {
         try {
@@ -187,7 +187,7 @@ class HostEdit extends Component {
             const { classes, t } = this.props;
             return <div className={classes.commonTabWrapper}>
                 <div className={classes.commonWrapper}>
-                    {typeof json.common.title !== "undefined" ?
+                    {typeof json.common.title !== 'undefined' ?
                         <TextField
                             disabled={disabled}
                             label={t('title')}
@@ -198,7 +198,7 @@ class HostEdit extends Component {
                         /> :
                         this.buttonAddKey('title', () => this.setCommonItem(json, 'title', ''))
                     }
-                    {typeof json.common.color !== "undefined" ?
+                    {typeof json.common.color !== 'undefined' ?
                         <div className={classes.flex}>
                             <TextField
                                 disabled={disabled}
@@ -212,7 +212,7 @@ class HostEdit extends Component {
                         this.buttonAddKey('color', () => this.setCommonItem(json, 'color', ''))
                     }
                 </div>
-                {typeof json.common.icon !== "undefined" ?
+                {typeof json.common.icon !== 'undefined' ?
                     <div className={classes.flexDrop}>
                         <UploadImage
                             disabled={disabled}
@@ -248,7 +248,7 @@ class HostEdit extends Component {
             aria-labelledby="edit-value-dialog-title"
             aria-describedby="edit-value-dialog-description"
         >
-            <DialogTitle id="edit-value-dialog-title">{this.props.t('Edit host:')} <span className={this.props.classes.id}>{this.props.obj._id}</span></DialogTitle>
+            <DialogTitle id="edit-value-dialog-title">{this.props.t('Edit host settings')}: <span className={this.props.classes.id}>{this.props.obj._id}</span></DialogTitle>
             <DialogContent>
                 {
                     this.renderCommonEdit()

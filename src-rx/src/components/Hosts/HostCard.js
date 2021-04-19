@@ -1,14 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Card, CardContent, CardMedia, Fab, IconButton, Tooltip, Typography } from "@material-ui/core";
+import clsx from 'clsx';
+import PropTypes from 'prop-types';
+import { Card, CardContent, CardMedia, Fab, IconButton, Tooltip, Typography } from '@material-ui/core';
+
 import { withStyles } from '@material-ui/core/styles';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import RefreshIcon from '@material-ui/icons/Refresh';
-import clsx from 'clsx';
 import DeleteIcon from '@material-ui/icons/Delete';
-
 import EditIcon from '@material-ui/icons/Edit';
 import CachedIcon from '@material-ui/icons/Cached';
-import PropTypes from "prop-types";
+
 import Utils from '@iobroker/adapter-react/Components/Utils';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
@@ -268,7 +269,7 @@ let diskFreeCache = 1;
 let diskSizeCache = 1;
 let diskWarningCache = 1;
 
-const CardHosts = ({
+const HostCard = ({
     name,
     classes,
     image,
@@ -464,7 +465,7 @@ const CardHosts = ({
                         <EditIcon />
                     </IconButton>
 
-                    <Tooltip title={t('Auto restart')}>
+                    <Tooltip title={t('Restart host')}>
                         <IconButton onClick={executeCommand}>
                             <CachedIcon />
                         </IconButton>
@@ -480,9 +481,9 @@ const CardHosts = ({
     </Card>;
 }
 
-CardHosts.propTypes = {
+HostCard.propTypes = {
     t: PropTypes.func,
     systemConfig: PropTypes.object,
 };
 
-export default withStyles(styles)(CardHosts);
+export default withStyles(styles)(HostCard);

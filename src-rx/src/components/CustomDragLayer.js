@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useDragLayer } from 'react-dnd';
-import DrawerItem from '../DrawerItem';
+import DrawerItem from './DrawerItem';
 import { withStyles } from '@material-ui/core/styles';
 
 const layerStyles = {

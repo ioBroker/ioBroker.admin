@@ -11,7 +11,7 @@ import { DialogTitle, IconButton, makeStyles, ThemeProvider, Typography } from '
 
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
-import ExpertIcon from '../helpers/IconExpert'//'@iobroker/adapter-react/Components/ExpertIcon';
+import ExpertIcon from '@iobroker/adapter-react/icons/IconExpert';
 
 let node = null;
 

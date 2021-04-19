@@ -46,7 +46,7 @@ import Utils from '@iobroker/adapter-react/Components/Utils';
 
 // icons
 import {FaChartLine as SplitLineIcon} from 'react-icons/fa';
-import EchartsIcon from '../assets/echarts.png';
+import EchartsIcon from '../../assets/echarts.png';
 
 const localeMap = {
     en: enLocale,

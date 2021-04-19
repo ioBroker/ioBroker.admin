@@ -117,6 +117,9 @@ const styles = theme => ({
     marginLeft5: {
         marginLeft: 5
     },
+    marginRight5: {
+        marginRight: 5
+    },
     flex: {
         display: 'flex'
     },
@@ -197,7 +200,7 @@ class AdapterRow extends Component {
                 </TableCell>
                 <TableCell>
                     <div className={clsx(classes.nameDiv, isCategory && classes.categoryName)}>
-                        <MaterialDynamicIcon objIconBool iconName={categoryName} className={classes.marginLeft5} />
+                        <MaterialDynamicIcon objIconBool iconName={categoryName} className={classes.marginRight5} />
                         {name}
                     </div>
                 </TableCell>
@@ -372,6 +375,8 @@ AdapterRow.propTypes = {
     updateAvailable: PropTypes.bool,
     version: PropTypes.string,
     commandRunning: PropTypes.bool,
+    rating: PropTypes.object,
+    onSetRating: PropTypes.func,
 };
 
 export default withStyles(styles)(AdapterRow);

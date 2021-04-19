@@ -113,6 +113,7 @@ Config.propTypes = {
     t: PropTypes.func,
     isFloatComma: PropTypes.bool,
     dateFormat: PropTypes.string,
+    className: PropTypes.string,
 };
 
 export default withStyles(styles)(Config);

@@ -1,6 +1,6 @@
 import { Component } from 'react';
 
-import { DndProvider, useDrop } from 'react-dnd'
+import { DndProvider, useDrop, useDrag } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
 import ObjectBrowser from '../../components/ObjectBrowser';
@@ -29,8 +29,9 @@ const DragObjectBrowser = (props) => {
         type: 'object',
         end: onDragEnd
     }
-    return <ObjectBrowser 
-        t={props.t} 
+    return <ObjectBrowser
+        t={props.t}
+        useDrag={useDrag}
         socket={props.socket}
         types={['state', 'channel', 'device']}
         lang={props.lang}
@@ -65,7 +66,7 @@ class EnumsList extends Component {
             children: {},
             id: ''
         };
-        
+
         for (let i in enums) {
             let id = enums[i]._id;
             let currentEnum = enums[i];
@@ -88,7 +89,7 @@ class EnumsList extends Component {
         }
         console.log(enumsTree);
         this.setState({
-            enumsTree: enumsTree, 
+            enumsTree: enumsTree,
             currentCategory: Object.keys(enumsTree.children.enum.children)[0]
         })
     }
@@ -106,7 +107,7 @@ class EnumsList extends Component {
 
     renderTree(container) {
         return <div style={{paddingLeft: '10px'}}>
-            {container.data && (!this.state.search || container.data._id.includes(this.state.search)) ? <EnumBlock 
+            {container.data && (!this.state.search || container.data._id.includes(this.state.search)) ? <EnumBlock
                 enum={container.data}
             /> : null}
             {Object.values(container.children).map(item => this.renderTree(item))}
@@ -122,13 +123,13 @@ class EnumsList extends Component {
             <DndProvider backend={HTML5Backend}>
                 <Grid container>
                     <Grid md={6} item>
-                        {Object.keys(this.state.enumsTree.children.enum.children).map(category => 
+                        {Object.keys(this.state.enumsTree.children.enum.children).map(category =>
                             <h2><span onClick={() => this.setState({currentCategory: category})}>{category}</span></h2>
                         )}
                         {this.renderTree(this.state.enumsTree.children.enum.children[this.state.currentCategory])}
                     </Grid>
                     <Grid md={6} item>
-                        <DragObjectBrowser 
+                        <DragObjectBrowser
                             addItemToEnum={this.addItemToEnum}
                             {...this.props}
                         />

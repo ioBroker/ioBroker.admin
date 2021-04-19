@@ -103,11 +103,15 @@ class ConfigGeneric extends Component {
                 this.setState({ confirmDialog: false}, () => {
                     if (isOk) {
                         const data = JSON.parse(JSON.stringify(this.props.data));
+                        if (this.state.confirmDepAttr) {
+                            ConfigGeneric.setValue(data, this.state.confirmDepAttr, this.state.confirmDepNewValue);
+                        }
+
                         ConfigGeneric.setValue(data, this.state.confirmAttr, this.state.confirmNewValue);
-                        this.setState({confirmDialog: false, confirmNewValue: null, confirmAttr: null, confirmOldValue: null, confirmData: null}, () =>
+                        this.setState({confirmDialog: false, confirmDepAttr: null, confirmDepNewValue: null, confirmNewValue: null, confirmAttr: null, confirmOldValue: null, confirmData: null}, () =>
                             this.props.onChange(data));
                     } else {
-                        this.setState({confirmDialog: false, confirmNewValue: null, confirmAttr: null, confirmOldValue: null, confirmData: null});
+                        this.setState({confirmDialog: false, confirmDepAttr: null, confirmDepNewValue: null, confirmNewValue: null, confirmAttr: null, confirmOldValue: null, confirmData: null});
                     }
                 })
             }
@@ -140,8 +144,10 @@ class ConfigGeneric extends Component {
                         if (this.execute(dep.confirm.condition, false, data)) {
                             return this.setState({
                                 confirmDialog: true,
-                                confirmNewValue: val,
-                                confirmAttr: dep.attr,
+                                confirmNewValue: newValue,
+                                confirmAttr: attr,
+                                confirmDepNewValue: val,
+                                confirmDepAttr: dep.attr,
                                 confirmData: dep.confirm,
                             });
                         }

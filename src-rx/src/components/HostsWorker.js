@@ -5,7 +5,8 @@ class HostsWorker {
         this.objectChangeHandlerBound = this.objectChangeHandler.bind(this);
         this.connectionHandlerBound   = this.connectionHandler.bind(this);
         socket.registerConnectionHandler(this.connectionHandlerBound);
-        socket.subscribeObject('system.host.*', this.objectChangeHandlerBound);
+        socket.subscribeObject('system.host.*', this.objectChangeHandlerBound)
+            .catch(e => window.alert('Cannot subscribe on object: ' + e));
         this.connected = this.socket.isConnected();
         this.objects = {};
     }
@@ -54,7 +55,7 @@ class HostsWorker {
             this.connected = false;
         }
     }
-    
+
     registerHandler(cb) {
         this.handlers.includes(cb) && this.handlers.push(cb);
     }

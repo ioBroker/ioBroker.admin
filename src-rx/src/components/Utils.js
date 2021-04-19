@@ -4,7 +4,7 @@
  * MIT License
  *
  **/
-
+import React from 'react';
 import I18n from '@iobroker/adapter-react/i18n';
 
 const NAMESPACE = 'material';
@@ -14,7 +14,7 @@ class Utils {
     static namespace = NAMESPACE;
     static INSTANCES = 'instances';
     static dateFormat = ['DD', 'MM'];
-    static FORBIDDEN_CHARS = /[\][*,;'"`<>\\?]/g;
+    static FORBIDDEN_CHARS = /[^._\-/ :!#$%&()+=@^{}|~\p{Ll}\p{Lu}\p{Nd}]+/gu;
 
     /**
      * Capitalize words.
@@ -589,7 +589,7 @@ class Utils {
                             now = new Date(year, a[1] - 1, a[0]);
                         }
                     } else
-                        // DD MM
+                    // DD MM
                     if (Utils.dateFormat[0][0] === 'D' && Utils.dateFormat[1][0] === 'M') {
                         now = new Date(year, a[1] - 1, a[0]);
                         if (Math.abs(now.getTime - Date.now()) > 3600000 * 24 * 10) {

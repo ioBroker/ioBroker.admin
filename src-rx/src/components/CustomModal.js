@@ -18,23 +18,34 @@ const styles = theme => ({
     overflowHidden: {
         display: 'flex',
         overflow: 'hidden'
+    },
+    titleIcon: {
+        marginRight: 5,
     }
 });
 
-const CustomModal = ({ title, progress, applyDisabled, applyButton, classes, open, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue, overflowHidden }) => {
+const CustomModal = ({ title, fullWidth, maxWidth, progress, icon, applyDisabled, applyButton, classes, open, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue, overflowHidden }) => {
     const [value, setValue] = useState(defaultValue);
     useEffect(() => {
         setValue(defaultValue);
     }, [defaultValue]);
+
+    let Icon = null;
+
+    if (icon) {
+        Icon = icon;
+    }
+
     return <Dialog
         open={open}
-        maxWidth="md"
+        maxWidth={maxWidth || 'md'}
+        fullWidth={!!fullWidth}
         disableEscapeKeyDown={false}
         onClose={onClose}
         classes={{ paper: classes.modalDialog, /*paper: classes.background*/ }}
         className={classes.modalWrapper}
     >
-        {title && <DialogTitle>{title}</DialogTitle>}
+        {title && <DialogTitle>{icon ? <Icon className={classes.titleIcon}/> : null}{title}</DialogTitle>}
         <DialogContent className={clsx(overflowHidden ? classes.overflowHidden : null)}>
             {textInput && <TextField
                 // className={className}
@@ -73,12 +84,15 @@ CustomModal.defaultProps = {
 };
 
 CustomModal.propTypes = {
+    icon: PropTypes.object,
     open: PropTypes.bool,
     onClose: PropTypes.func,
     children: PropTypes.any,
     titleButtonClose: PropTypes.string,
     titleButtonApply: PropTypes.string,
-    onApply: PropTypes.func
+    onApply: PropTypes.func,
+    fullWidth: PropTypes.bool,
+    maxWidth: PropTypes.string,
 };
 
 export default withStyles(styles)(CustomModal);
