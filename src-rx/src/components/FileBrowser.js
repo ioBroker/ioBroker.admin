@@ -539,10 +539,19 @@ class FileBrowser extends Component {
         });
     }
 
-    processBrowseList() {
+    processBrowseList(level) {
         if (!this.browseListRunning && this.browseList.length) {
             this.browseListRunning = true;
-            this.setState({queueLength: this.browseList.length});
+            if (this.browseList.length > 10) {
+                // not too often
+                if (!(this.browseList.length % 10)) {
+                    this.setState({queueLength: this.browseList.length});
+                }
+            } else {
+                this.setState({queueLength: this.browseList.length});
+            }
+            
+            this.browseList[0].processing = true;
             this.props.socket.readDir(this.browseList[0].adapter, this.browseList[0].relPath)
                 .then(files => {
                     const item = this.browseList.shift();
@@ -554,7 +563,11 @@ class FileBrowser extends Component {
                     resolve(files);
                     this.browseListRunning = false;
                     if (this.browseList.length) {
-                        setTimeout(() => this.processBrowseList(), 0);
+                        if (level < 5) {
+                            this.processBrowseList(level + 1);
+                        } else {
+                            setTimeout(() => this.processBrowseList(0), 0);
+                        }
                     } else {
                         this.setState({queueLength: 0});
                     }
@@ -569,7 +582,11 @@ class FileBrowser extends Component {
                     reject(e);
                     this.browseListRunning = false;
                     if (this.browseList.length) {
-                        setTimeout(() => this.processBrowseList(), 0);
+                        if (level < 5) {
+                            this.processBrowseList(level + 1);
+                        } else {
+                            setTimeout(() => this.processBrowseList(0), 0);
+                        }
                     } else {
                         this.setState({queueLength: 0});
                     }
@@ -1065,8 +1082,8 @@ class FileBrowser extends Component {
         } else {
             return <div style={{position: 'relative'}}>
                 <CircularProgress key={folderId} color="secondary" size={24}/>
-                <div style={{position: 'asolute', zIndex: 2, top: 5, width: '100%', textAlign: 'center'}} >{this.state.queueLength}</div>
-            </div>
+                <div style={{position: 'absolute', zIndex: 2, top: 4, width: 24, textAlign: 'center'}} >{this.state.queueLength}</div>
+            </div>;
         }
     }
 
