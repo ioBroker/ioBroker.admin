@@ -314,11 +314,6 @@ class Drawer extends Component {
                 <div className={clsx(classes.avatarBlock, state === 0 && classes.avatarVisible, classes.avatarNotVisible)}>
                     <Avatar className={clsx((this.props.themeName === 'colored' || this.props.themeName === 'blue') && classes.logoWhite, classes.logoSize)} alt="ioBroker" src="img/no-image.png" />
                 </div>
-                { this.props.isSecure &&
-                    <IconButton title={this.props.logoutTitle} onClick={this.props.onLogout}>
-                        <LogoutIcon className={classes.logout} />
-                    </IconButton>
-                }
                 <IconButton onClick={() => {
                     if (this.isSwipeable() || this.props.state === STATES.compact) {
                         this.props.onStateChange(STATES.closed);
@@ -469,6 +464,9 @@ class Drawer extends Component {
                 {this.getHeader()}
                 <List className={classes.list}>
                     {this.getNavigationItems()}
+                    {this.props.isSecure &&
+                        <DrawerItem onClick={this.props.onLogout} text={this.props.t('logout')} icon={<LogoutIcon />} />
+                    }
                 </List>
                 {this.props.state === STATES.opened && <div style={{
                     position: 'sticky',

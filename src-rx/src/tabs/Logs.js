@@ -51,9 +51,13 @@ const styles = theme => ({
     table: {
         tableLayout: 'fixed',
         minWidth: 960,
+        '& td,th':{
+            padding:'3px 4px'
+        },
         '& td:nth-of-type(5)': {
             overflow: 'hidden',
-            whiteSpace: 'nowrap'
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis'
         }
     },
     row: {
@@ -80,13 +84,13 @@ const styles = theme => ({
         width: 230
     },
     pid: {
-        width: 100
+        width: 55
     },
     timestamp: {
-        width: 220
+        width: 175
     },
     severity: {
-        width: 110
+        width: 80
     },
     message: {
         minWidth: 300

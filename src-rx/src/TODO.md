@@ -1,5 +1,5 @@
 # Todo
- - Move logout button to menu . Always last and not orderable
+ <!-- - Move logout button to menu . Always last and not orderable -->
 ## Settings
   
 ## Info
@@ -8,13 +8,14 @@
 - Adapters - Use readme renderer from www.iobroker.net (BF)
 
 ## Wizard
-- Theme switcher
+<!-- - Theme switcher -->
 
 ## Discovery
 - todo
 
 ## Logs
-- Redesign - very much space for nothing
+<!-- - Redesign - very much space for nothing -->
+- PID hide/show, default hidden
 
 ## Instances
 
@@ -24,15 +25,12 @@
   - Integrate https://react-dropzone.js.org/#!/Doka for image uploa
 
 ## Files
-<!-- - File viewer can show: json, js, ts, md, css, html (use ace aditor for viewing too) -->
-  
+- Instead of modal dialog with "OK" about cannor read, replace it with window.alert  
 ## Hosts
 
 ## Users
-- Do not allow edit of user ID
-
 ## Easy mode
-- Easy admin mode
+<!-- - Easy admin mode -->
 
 ## After all is done
 - Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io) (BF)
@@ -41,9 +39,3 @@
 
 ## JSON config - Admin settings dialog (index_m.html)
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)
-
-<!-- - Write jsonCustom for:
-  - lovelace
-  - eventlist
-  - mqtt-client
-  - ?? -->

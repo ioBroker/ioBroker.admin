@@ -57,6 +57,7 @@ import { expertModeDialogFunc } from './dialogs/ExpertModeDialog';
 import { newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
 import { adaptersWarningDialogFunc } from './dialogs/AdaptersWarningDialog';
 import EasyMode from "./tabs/EasyMode";
+import ToggleThemeMenu from './components/ToggleThemeMenu';
 
 // Tabs
 const Adapters = React.lazy(() => import('./tabs/Adapters'));
@@ -400,9 +401,9 @@ class App extends Router {
                                     })
                             } else {
                                 // create Workers
-                                this.logsWorker      = this.logsWorker      || new LogsWorker(this.socket, 1000);
+                                this.logsWorker = this.logsWorker || new LogsWorker(this.socket, 1000);
                                 this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
-                                this.hostsWorker     = this.hostsWorker     || new HostsWorker(this.socket);
+                                this.hostsWorker = this.hostsWorker || new HostsWorker(this.socket);
 
                                 const newState = {
                                     lang: this.socket.systemLang,
@@ -438,14 +439,14 @@ class App extends Router {
 
                                 // Give some time for communication
                                 setTimeout(() =>
-                                        this.findNewsInstance()
-                                            .then(instance => this.socket.subscribeState(`admin.${instance}.info.newsFeed`, this.getNews(instance))),
+                                    this.findNewsInstance()
+                                        .then(instance => this.socket.subscribeState(`admin.${instance}.info.newsFeed`, this.getNews(instance))),
                                     5000);
 
                                 // Give some time for communication
                                 setTimeout(() =>
-                                        this.socket.getNotifications(newState.currentHost)
-                                            .then(notifications => this.getAdaptersWarning(notifications, this.socket, newState.currentHost)),
+                                    this.socket.getNotifications(newState.currentHost)
+                                        .then(notifications => this.getAdaptersWarning(notifications, this.socket, newState.currentHost)),
                                     3000);
 
                                 this.setState(newState, () => this.setCurrentTabTitle());
@@ -508,7 +509,7 @@ class App extends Router {
             const checkNews = JSON.parse(newsFeed?.val)?.find(el => el.id === lastNewsId?.val || !lastNewsId?.val);
             if (checkNews) {
                 newsAdminDialogFunc(JSON.parse(newsFeed.val), lastNewsId?.val, this.state.themeName, this.state.themeType, id =>
-                    this.socket.setState(`admin.${instance}.info.newsLastId`, {val: id, ack: true}));
+                    this.socket.setState(`admin.${instance}.info.newsLastId`, { val: id, ack: true }));
             }
         }
     }
@@ -614,13 +615,17 @@ class App extends Router {
     /**
      * Changes the current theme
      */
-    toggleTheme() {
+    toggleTheme(currentThemeName) {
         const themeName = this.state.themeName;
 
         // dark => blue => colored => light => dark
-        const newThemeName = themeName === 'dark' ? 'blue' :
+        let newThemeName = themeName === 'dark' ? 'blue' :
             (themeName === 'blue' ? 'colored' :
                 (themeName === 'colored' ? 'light' : 'dark'));
+
+        if (currentThemeName) {
+            newThemeName = currentThemeName;
+        }
 
         Utils.setThemeName(newThemeName);
 
@@ -1116,21 +1121,38 @@ class App extends Router {
     }
 
     render() {
+        const { classes } = this.props;
+        const small = this.props.width === 'xs' || this.props.width === 'sm';
         if (this.state.login) {
             return <ThemeProvider theme={this.state.theme}>
                 <Login t={I18n.t} />
             </ThemeProvider>;
         } else
-        if (!this.state.ready) {
-            return <ThemeProvider theme={this.state.theme}>
-                <Loader theme={this.state.themeType} />
-            </ThemeProvider>;
-        } else if (this.state.strictEasyMode || this.state.currentTab.tab === 'easy') {
-            return <EasyMode configs={this.state.easyModeConfigs} socket={this.socket} t={I18n.t}/>;
-        }
+            if (!this.state.ready) {
+                return <ThemeProvider theme={this.state.theme}>
+                    <Loader theme={this.state.themeType} />
+                </ThemeProvider>;
+            } else if (this.state.strictEasyMode || this.state.currentTab.tab === 'easy') {
+                return <ThemeProvider theme={this.state.theme}>
+                    {!this.state.connected && <Connecting />}
+                    <EasyMode
+                        navigate={Router.doNavigate}
+                        location={this.state.currentTab}
+                        toggleTheme={this.toggleTheme.bind(this)}
+                        themeName={this.state.themeName}
+                        themeType={this.state.themeType}
+                        theme={this.state.theme}
+                        width={this.props.width}
+                        configs={this.state.easyModeConfigs}
+                        socket={this.socket}
+                        configStored={value => this.allStored(value)}
+                        isFloatComma={this.state.systemConfig?.common.isFloatComma}
+                        dateFormat={this.state.systemConfig?.common.dateFormat}
+                        t={I18n.t}
+                    />
+                </ThemeProvider>;
+            }
 
-        const { classes } = this.props;
-        const small = this.props.width === 'xs' || this.props.width === 'sm';
 
         return <ThemeProvider theme={this.state.theme}>
             <Paper elevation={0} className={classes.root}>
@@ -1158,12 +1180,10 @@ class App extends Router {
                             <IconButton onClick={() => Router.doNavigate(null, 'system')}>
                                 <BuildIcon />
                             </IconButton>
-                            <IconButton onClick={() => this.toggleTheme()}>
-                                {this.state.themeName === 'dark' && <Brightness4Icon />}
-                                {this.state.themeName === 'blue' && <Brightness5Icon />}
-                                {this.state.themeName === 'colored' && <Brightness6Icon />}
-                                {this.state.themeName === 'light' && <Brightness7Icon />}
-                            </IconButton>
+                            <ToggleThemeMenu
+                                toggleTheme={this.toggleTheme.bind(this)}
+                                themeName={this.state.themeName}
+                                t={I18n.t} />
                             {/*This will be removed later to settings, to not allow so easy to enable it*/}
                             <IconButton
                                 onClick={() => {
