@@ -2849,8 +2849,8 @@ class ObjectBrowser extends Component {
                 }
             });
         }
-        arrayTooltipText.push(<span key="group">{this.texts.ownerGroup + ': ' + acl.ownerGroup.replace('system.group.', '')}</span>);
-        arrayTooltipText.push(<span key="owner">{this.texts.ownerUser  + ': ' + acl.owner.replace('system.user.', '')}</span>);
+        arrayTooltipText.push(<span key="group">{this.texts.ownerGroup + ': ' + (acl.ownerGroup || '').replace('system.group.', '')}</span>);
+        arrayTooltipText.push(<span key="owner">{this.texts.ownerUser  + ': ' + (acl.owner || '').replace('system.user.', '')}</span>);
         funcRenderStateObject();
         if (acl.state) {
             funcRenderStateObject('state');

@@ -148,6 +148,11 @@ const styles = theme => ({
     },
     contrast0: {
         filter: 'contrast(0%)'
+    },
+    compactButtons: {
+        display: 'inline-block',
+        borderRadius: 4,
+        border: '1px gray dotted'
     }
 });
 
@@ -554,7 +559,7 @@ class Instances extends Component {
 
     isCompact(id) {
         const obj = this.objects[id];
-        return obj?.common?.compact || null;
+        return obj?.common?.runAsCompactMode || false;
     }
 
     isCompactGroupCheck = (id) => {
@@ -677,22 +682,23 @@ class Instances extends Component {
 
     getPanels() {
         let list = Object.keys(this.state.instances).map((id, idx) => {
-            const instance = this.state.instances[id];
-            const running = this.isRunning(id);
-            const alive = this.isAlive(id);
-            const compactGroup = this.isCompactGroup(id);
-            const compact = this.isCompact(id);
+            const instance        = this.state.instances[id];
+            const running         = this.isRunning(id);
+            const alive           = this.isAlive(id);
+            const compactGroup    = this.isCompactGroup(id);
+            const compact         = this.isCompact(id);
+            const supportCompact  = instance?.common?.compact || false;
             const connectedToHost = this.isConnectedToHost(id);
-            const connected = this.isConnected(id);
-            const name = this.getName(id);
-            const logLevel = this.isLogLevel(id);
-            const loglevelIcon = this.getLogLevelIcon(instance.loglevel);
-            const checkCompact = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
-            const inputOutput = this.getInputOutput(id);
-            const mode = this.isModeSchedule(id);
+            const connected       = this.isConnected(id);
+            const name            = this.getName(id);
+            const logLevel        = this.isLogLevel(id);
+            const loglevelIcon    = this.getLogLevelIcon(instance.loglevel);
+            const checkCompact    = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
+            const inputOutput     = this.getInputOutput(id);
+            const mode            = this.isModeSchedule(id);
 
             const setCompact = () =>
-                this.extendObject('system.adapter.' + instance.id, { common: { compact: !compact } });
+                this.extendObject('system.adapter.' + instance.id, { common: { runAsCompactMode: !compact } });
 
             const setRestartSchedule = value =>
                 this.extendObject('system.adapter.' + instance.id, { common: { restartSchedule: value } });
@@ -704,12 +710,13 @@ class Instances extends Component {
                             value === 'default' ? 1 : parseInt(value, 10)
                     }
                 });
+
                 if (this.state.compactGroupCount < value) {
                     this.setState({ compactGroupCount: value });
                 }
             }
 
-            const checkSentry = this.isSentryCheck(instance.adapter);
+            const checkSentry   = this.isSentryCheck(instance.adapter);
             const currentSentry = this.isSentry(id);
             const memoryLimitMB = this.isMemoryLimitMB(id);
 
@@ -724,6 +731,7 @@ class Instances extends Component {
 
             const setSchedule = value =>
                 this.extendObject('system.adapter.' + instance.id, { common: { schedule: value } });
+
             const setMemoryLimitMB = value =>
                 this.extendObject('system.adapter.' + instance.id, { common: { memoryLimitMB: value } });
 
@@ -744,6 +752,7 @@ class Instances extends Component {
                         compactGroupCount={this.state.compactGroupCount}
                         compactGroup={compactGroup}
                         compact={compact}
+                        supportCompact={supportCompact}
                         setCompact={setCompact}
                         setCompactGroup={setCompactGroup}
                         checkCompact={checkCompact}
@@ -782,6 +791,7 @@ class Instances extends Component {
                         running={running}
                         compactGroupCount={this.state.compactGroupCount}
                         compactGroup={compactGroup}
+                        supportCompact={supportCompact}
                         compact={compact}
                         getInstanceState={this.getInstanceState}
                         getModeIcon={this.getModeIcon}
@@ -967,11 +977,11 @@ class Instances extends Component {
                         <RefreshIcon />
                     </IconButton>
                 </Tooltip>
-                <Tooltip title={this.t('Show instances only for current host')}>
+                {this.props.hosts.length > 1 ? <Tooltip title={this.t('Show instances only for current host')}>
                     <IconButton onClick={() => this.changeSetStateBool('importantDevices')}>
                         <DevicesIcon color={this.state.importantDevices ? 'primary' : 'inherit'} />
                     </IconButton>
-                </Tooltip>
+                </Tooltip> : null}
                 <Tooltip title={this.t('Show only running instances')}>
                     <IconButton onClick={() => this.changeSetStateBool('playArrow')}>
                         <PlayArrowIcon color={this.state.playArrow ? 'primary' : 'inherit'} />
@@ -990,20 +1000,21 @@ class Instances extends Component {
                         />
                     </IconButton>
                 </Tooltip>}
-                {this.props.expertMode && this.state.compact && <Tooltip title={this.t('allow set of compact groups')}>
-                    <ViewCompactIcon style={{ margin: 10 }} color="primary" />
-                </Tooltip>}
-                {this.props.expertMode && this.state.compact &&
+                {this.props.expertMode && this.state.compact ? <div className={classes.compactButtons}>
+                    <Tooltip title={this.t('allow set of compact groups')}>
+                        <ViewCompactIcon style={{ margin: 10 }} color="primary" />
+                    </Tooltip>
                     <CustomSelectButton
-                        t={this.t}
-                        arrayItem={[
-                            { name: 'All' },
-                            { name: 'controller' },
-                            { name: 'default' },
-                            ...Array(this.state.compactGroupCount - 1).fill().map((_, idx) => ({ name: idx + 2 }))
-                        ]}
-                        onClick={value => this.changeCompactGroup(value)}
-                        value={this.state.filterCompactGroup} />}
+                            t={this.t}
+                            arrayItem={[
+                                { name: 'All' },
+                                { name: 'controller' },
+                                { name: 'default' },
+                                ...Array(this.state.compactGroupCount - 1).fill().map((_, idx) => ({ name: idx + 2 }))
+                            ]}
+                            onClick={value => this.changeCompactGroup(value)}
+                            value={this.state.filterCompactGroup} />
+                </div> : null}
                 <div className={classes.grow} />
                 <TextField
                     inputRef={this.inputRef}
@@ -1052,6 +1063,7 @@ Instances.propTypes = {
     lang: PropTypes.string,
     expertMode: PropTypes.bool,
     hostname: PropTypes.string,
+    hosts: PropTypes.array,
     protocol: PropTypes.string,
     socket: PropTypes.object,
     themeName: PropTypes.string,

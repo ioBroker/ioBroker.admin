@@ -1,18 +1,8 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-
-import I18n from '@iobroker/adapter-react/i18n';
-import Utils from '@iobroker/adapter-react/Components/Utils';
-
 import ConfigGeneric from './ConfigGeneric';
-import Icon from "@iobroker/adapter-react/Components/Icon";
-import React from "react";
 import {TextField} from "@material-ui/core";
 
 const styles = theme => ({

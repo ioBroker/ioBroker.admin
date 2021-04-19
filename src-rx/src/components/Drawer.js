@@ -8,7 +8,6 @@ import clsx from 'clsx';
 import { Avatar, Drawer as MaterialDrawer } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
-import DrawerItem from './DrawerItem';
 
 import I18n from '@iobroker/adapter-react/i18n';
 
@@ -40,6 +39,7 @@ import CustomDragLayer from './CustomDragLayer';
 import { ContextWrapper } from './ContextWrapper';
 import CustomPopper from './CustomPopper';
 import CustomTab from '../tabs/CustomTab';
+import DrawerItem from './DrawerItem';
 
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
@@ -306,7 +306,6 @@ class Drawer extends Component {
     }
 
     getHeader() {
-
         const { classes, state } = this.props;
 
         return (
@@ -418,18 +417,17 @@ class Drawer extends Component {
         });
     }
 
-    badge = (tab) => {
+    badge = tab => {
         const { stateContext: { logErrors, logWarnings, hostsUpdate, adaptersUpdate } } = this.context;
         switch (tab.name) {
-            case "tab-logs":
-                return ({ content: logErrors || logWarnings || 0, color: (logErrors ? 'error' : 'warn') || '' });
-            case "tab-adapters":
-                return ({ content: adaptersUpdate || 0, color: 'primary' });
-            case "tab-hosts":
-                return ({ content: hostsUpdate || 0, color: 'primary' });
+            case 'tab-logs':
+                return { content: logErrors || logWarnings || 0, color: (logErrors ? 'error' : 'warn') || '' };
+            case 'tab-adapters':
+                return { content: adaptersUpdate || 0, color: 'primary' };
+            case 'tab-hosts':
+                return { content: hostsUpdate || 0, color: 'primary' };
             default:
-                return ({ content: 0, color: '' });
-
+                return { content: 0, color: '' };
         }
     }
 

@@ -21,58 +21,61 @@ const styles = theme => ({
 /*
 to use this option, your adapter must implement listUart message
 
-    adapter.on('message', obj => {
-        if (obj) {
-            switch (obj.command) {
-                case 'listUart':
-                    if (obj.callback) {
-                        try {
-                            const serialport = require('serialport');
-                            if (serialport) {
-                                // read all found serial ports
-                                serialport.list()
-                                    .then(ports => {
-                                        adapter.log.info('List of port: ' + JSON.stringify(ports));
-                                        adapter.sendTo(obj.from, obj.command, ports, obj.callback);
-                                    })
-                                    .catch(e => {
-                                        adapter.sendTo(obj.from, obj.command, [], obj.callback);
-                                        adapter.log.error(e)
-                                    });
-                            } else {
-                                adapter.log.warn('Module serialport is not available');
-                                adapter.sendTo(obj.from, obj.command, [{comName: 'Not available'}], obj.callback);
-                            }
-                        } catch (e) {
-                            adapter.sendTo(obj.from, obj.command, [{comName: 'Not available'}], obj.callback);
-                        }
-                    }
+adapter.on('message', obj => {
+   if (obj) {
+       switch (obj.command) {
+           case 'command':
+               if (obj.callback) {
+                   try {
+                       const serialport = require('serialport');
+                       if (serialport) {
+                           // read all found serial ports
+                           serialport.list()
+                               .then(ports => {
+                                   adapter.log.info('List of port: ' + JSON.stringify(ports));
+                                   adapter.sendTo(obj.from, obj.command, ports.map(item =>
+                                        ({label: item.path, value: item.path})), obj.callback);
+                               })
+                               .catch(e => {
+                                   adapter.sendTo(obj.from, obj.command, [], obj.callback);
+                                   adapter.log.error(e)
+                               });
+                       } else {
+                           adapter.log.warn('Module serialport is not available');
+                           adapter.sendTo(obj.from, obj.command, [{label: 'Not available', value: ''}], obj.callback);
+                       }
+                   } catch (e) {
+                       adapter.sendTo(obj.from, obj.command, [{label: 'Not available', value: ''}], obj.callback);
+                   }
+               }
 
-                    break;
-            }
-        }
-    });
+               break;
+       }
+   }
+});
  */
 
-class ConfigComPort extends ConfigGeneric {
+class ConfigListSendTo extends ConfigGeneric {
     componentDidMount() {
         super.componentDidMount();
         if (this.props.alive) {
-            this.props.socket.sendTo(this.props.adapterName + '.' + this.props.instance, 'listUart', null)
-                .then(list => {
-                    list = list || [];
-                    const notAvailable = list.find(item => item.comName === 'Not available');
-                    if (!notAvailable) {
-                        if (this.props.schema.filter) {
-                            const filter = new RegExp(this.props.schema.filter);
-                            list = list.filter(item => item && filter.exec(item.path));
-                        }
-                        list = list.map(item => ({name: item.comName ? `${item.comName} [${item.path}]` : item.path, value: item.path}));
-                    } else {
-                        list = [];
-                    }
+            let data = this.props.schema.data;
+            if (data === undefined && this.props.schema.jsonData) {
+                data = this.getPattern(this.props.schema.jsonData, {}, this.props.data);
+                try {
+                    data = JSON.parse(data);
+                } catch (e) {
+                    console.error('Cannot parse json data: ' + data);
+                }
+            }
 
-                    this.setState({list, notAvailable});
+            if (data === undefined) {
+                data = null;
+            }
+
+            this.props.socket.sendTo(this.props.adapterName + '.' + this.props.instance, this.props.schema.command || 'send', data)
+                .then(list => {
+                    this.setState({list});
                 });
         } else {
             const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
@@ -109,11 +112,11 @@ class ConfigComPort extends ConfigGeneric {
                     error={!!error}
                     disabled={!!disabled}
                     value={value}
-                    renderValue={val => item?.name || val}
+                    renderValue={val => item?.label || val}
                     onChange={e => this.onChange(this.props.attr, e.target.value)}
                 >
                     {this.state.list.map((item, i) =>
-                        <MenuItem key={i} value={item.value}>{item.name}</MenuItem>)}
+                        <MenuItem key={i} value={item.value}>{item.label}</MenuItem>)}
                 </Select>
                 {this.props.schema.help ? <FormHelperText>{this.getText(this.props.schema.help)}</FormHelperText> : null}
             </FormControl>;
@@ -121,7 +124,7 @@ class ConfigComPort extends ConfigGeneric {
     }
 }
 
-ConfigComPort.propTypes = {
+ConfigListSendTo.propTypes = {
     socket: PropTypes.object.isRequired,
     themeType: PropTypes.string,
     themeName: PropTypes.string,
@@ -136,4 +139,4 @@ ConfigComPort.propTypes = {
     onChange: PropTypes.func,
 };
 
-export default withStyles(styles)(ConfigComPort);
+export default withStyles(styles)(ConfigListSendTo);

@@ -24,7 +24,7 @@ const styles = theme => ({
     }
 });
 
-const CustomModal = ({ title, fullWidth, maxWidth, progress, icon, applyDisabled, applyButton, classes, open, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue, overflowHidden }) => {
+const CustomModal = ({ title, fullWidth, help, maxWidth, progress, icon, applyDisabled, applyButton, classes, open, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue, overflowHidden }) => {
     const [value, setValue] = useState(defaultValue);
     useEffect(() => {
         setValue(defaultValue);
@@ -60,6 +60,7 @@ const CustomModal = ({ title, fullWidth, maxWidth, progress, icon, applyDisabled
                 // customValue
             />}
             {children}
+            {help ? <div>{help}</div> : null}
         </DialogContent>
         <DialogActions>
             {applyButton && <Button disabled={progress || (applyDisabled && defaultValue === value)} onClick={() => onApply(textInput ? value : '')} variant="contained" color="primary">
@@ -80,7 +81,8 @@ CustomModal.defaultProps = {
     applyDisabled: false,
     titleButtonClose: 'Cancel',
     titleButtonApply: 'Ok',
-    overflowHidden: false
+    overflowHidden: false,
+    help: ''
 };
 
 CustomModal.propTypes = {
@@ -93,6 +95,7 @@ CustomModal.propTypes = {
     onApply: PropTypes.func,
     fullWidth: PropTypes.bool,
     maxWidth: PropTypes.string,
+    help: PropTypes.string,
 };
 
 export default withStyles(styles)(CustomModal);

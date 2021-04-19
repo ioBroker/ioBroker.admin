@@ -28,7 +28,7 @@ import ConfigStaticHeader from './ConfigStaticHeader';
 import ConfigStaticDivider from './ConfigStaticDivider';
 import ConfigSetState from './ConfigSetState';
 import ConfigJsonEditor from './ConfigJsonEditor';
-import ConfigComPort from './ConfigComPort';
+import ConfigListSendTo from './ConfigListSendTo';
 import ConfigTopic from './ConfigTopic';
 
 //import ConfigTabs from "./ConfigTabs";
@@ -60,7 +60,7 @@ const components = {
     divider: ConfigStaticDivider,
     setState: ConfigSetState,
     jsonEditor: ConfigJsonEditor,
-    comPort: ConfigComPort,
+    listSendTo: ConfigListSendTo,
     topic: ConfigTopic,
 };
 

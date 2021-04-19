@@ -10,6 +10,7 @@ const InstanceInfo = props => {
     return <Grid
         item
         container
+        title={props.icon ? '' : props.tooltip || ''}
         alignItems="center"
         direction="row"
         spacing={ 1 }

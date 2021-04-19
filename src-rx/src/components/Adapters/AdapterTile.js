@@ -360,9 +360,9 @@ const AdapterTile = ({
             <div className={classes.cardContentFlex}>
                 {!isCategory &&
                     (connectionType === 'cloud' ?
-                        <Tooltip title={t('Adapter does not use the cloud for these devices/service')}><CloudIcon /></Tooltip> :
+                        <Tooltip title={t('Adapter requires the specific cloud access for these devices/service')}><CloudIcon /></Tooltip> :
                         connectionType === 'local' ?
-                            <Tooltip title={t('Adapter requires the specific cloud access for these devices/service')}><CloudOffIcon /></Tooltip> : '')
+                            <Tooltip title={t('Adapter does not use the cloud for these devices/service')}><CloudOffIcon /></Tooltip> : '')
                 }
                 {
                     dataSource && <div className={classes.marginLeft5}>{(

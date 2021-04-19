@@ -240,9 +240,9 @@ class AdapterRow extends Component {
                 <TableCell>
                     <div className={classes.flex}>
                         {connectionType === 'cloud' ?
-                            <Tooltip title={this.props.t('Adapter does not use the cloud for these devices/service')}><CloudIcon /></Tooltip> :
+                            <Tooltip title={this.props.t('Adapter requires the specific cloud access for these devices/service')}><CloudIcon /></Tooltip> :
                             (connectionType === 'local' ?
-                                <Tooltip title={this.props.t('Adapter requires the specific cloud access for these devices/service')}><CloudOffIcon /></Tooltip> : connectionType)
+                                <Tooltip title={this.props.t('Adapter does not use the cloud for these devices/service')}><CloudOffIcon /></Tooltip> : connectionType)
                         }
                         {dataSource && <div  className={classes.marginLeft5}>{(
                             dataSource === 'poll' ?

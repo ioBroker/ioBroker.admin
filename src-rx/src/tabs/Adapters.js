@@ -304,13 +304,13 @@ class Adapters extends Component {
             const currentHost = this.props.currentHost;
 
             try {
-                const hostDataProm = this.props.socket.getHostInfo(currentHost).catch(e => window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`));
+                const hostDataProm   = this.props.socket.getHostInfo(currentHost).catch(e => window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`));
                 const repositoryProm = this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: updateRepo }, updateRepo).catch(e => window.alert('Cannot getRepository: ' + e));
-                const installedProm = this.props.socket.getInstalled(currentHost, updateRepo).catch(e => window.alert('Cannot getInstalled: ' + e));
-                const instancesProm = this.props.socket.getAdapterInstances(updateRepo).catch(e => window.alert('Cannot getAdapterInstances: ' + e));
-                const rebuildProm = this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD').catch(e => window.alert('Cannot checkFeatureSupported: ' + e));
-                const objectsProm = this.props.socket.getForeignObjects('system.adapter.*', 'adapter').catch(e => window.alert('Cannot read system.adapters.*: ' + e));
-                const ratingsProm = this.props.socket.getRatings(updateRepo).catch(e => window.alert('Cannot read ratings: ' + e));
+                const installedProm  = this.props.socket.getInstalled(currentHost, updateRepo).catch(e => window.alert('Cannot getInstalled: ' + e));
+                const instancesProm  = this.props.socket.getAdapterInstances(updateRepo).catch(e => window.alert('Cannot getAdapterInstances: ' + e));
+                const rebuildProm    = this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD').catch(e => window.alert('Cannot checkFeatureSupported: ' + e));
+                const objectsProm    = this.props.socket.getForeignObjects('system.adapter.*', 'adapter').catch(e => window.alert('Cannot read system.adapters.*: ' + e));
+                const ratingsProm    = this.props.socket.getRatings(updateRepo).catch(e => window.alert('Cannot read ratings: ' + e));
 
                 const [hostData, repository, installed, instances, rebuild, objects, ratings] = await Promise.all(
                     [
@@ -349,6 +349,8 @@ class Adapters extends Component {
                             repository[value].version = '';
                         }
                     }
+                    adapter.count = 0;
+                    adapter.enabled = 0;
                 });
 
                 const now = Date.now();
@@ -405,11 +407,11 @@ class Adapters extends Component {
                 });
 
                 Object.keys(instances).forEach(value => {
-                    const instance = instances[value];
-                    const name = instance.common.name;
-                    const enabled = instance.common.enabled;
+                    const instance    = instances[value];
+                    const name        = instance.common.name;
+                    const enabled     = instance.common.enabled;
                     let installedFrom = instance.common.installedFrom;
-                    const inst = installed[name];
+                    const inst        = installed[name];
                     let nonNpmVersion = false;
 
                     if (installedFrom && installedFrom.search(/^iobroker.*?@\d+.\d+.\d+.*$/) === -1) {
@@ -418,18 +420,10 @@ class Adapters extends Component {
                     }
 
                     if (inst) {
-                        if (inst.count) {
-                            inst.count++;
-                        } else {
-                            inst.count = 1;
-                        }
+                        inst.count++;
 
                         if (enabled) {
-                            if (inst.enabled) {
-                                inst.enabled++;
-                            } else {
-                                inst.enabled = 1;
-                            }
+                            inst.enabled++;
                         }
 
                         if (nonNpmVersion) {
@@ -449,13 +443,14 @@ class Adapters extends Component {
                         a.translation > b.translation ? 1 : 0;
                 });*/
 
-                const list = JSON.parse(window.localStorage.getItem('Adapters.list'));
-                const viewMode = JSON.parse(window.localStorage.getItem('Adapters.viewMode'));
-                const updateList = JSON.parse(window.localStorage.getItem('Adapters.updateList'));
-                const installedList = JSON.parse(window.localStorage.getItem('Adapters.installedList'));
+                const list            = JSON.parse(window.localStorage.getItem('Adapters.list'));
+                const viewMode        = JSON.parse(window.localStorage.getItem('Adapters.viewMode'));
+                const updateList      = JSON.parse(window.localStorage.getItem('Adapters.updateList'));
+                const installedList   = JSON.parse(window.localStorage.getItem('Adapters.installedList'));
                 const categoriesTiles = window.localStorage.getItem('Adapters.categoriesTiles') || 'All';
-                const filterTiles = window.localStorage.getItem('Adapters.filterTiles') || 'A-Z';
-                this.allAdapters = Object.keys(repository).length - 1;
+                const filterTiles     = window.localStorage.getItem('Adapters.filterTiles') || 'A-Z';
+                this.allAdapters      = Object.keys(repository).length - 1;
+
                 this.setState({
                     filterTiles,
                     categoriesTiles,

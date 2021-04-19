@@ -1,3 +1,6 @@
+## 4.2.1 (2021-01-12)
+* (Apollon77) Also allow pre-prelease versions for dependency checks
+
 ## 4.2.0 (2021-01-08)
 * (bluefox) Support of new Let's Encrypt (only with js-controller 3.2.x)
 

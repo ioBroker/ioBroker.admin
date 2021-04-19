@@ -500,7 +500,7 @@ class App extends Router {
                                         });
                                 } else {
                                     // simulate
-                                    this.socket.getObject('system.user.admin')
+                                    /*this.socket.getObject('system.user.admin')
                                         .then(userObj =>
                                             this.setState({
                                                 user: {
@@ -510,7 +510,7 @@ class App extends Router {
                                                     icon: userObj.common.icon,
                                                     invertBackground: this.mustInvertBackground(userObj.common.color)
                                                 }
-                                            }));
+                                            }));*/
                                 }
 
                                 // Give some time for communication
@@ -850,6 +850,7 @@ class App extends Router {
                         lang={I18n.getLanguage()}
                         protocol={this.state.protocol}
                         hostname={this.state.hostname}
+                        hosts={this.state.hosts}
                         themeName={this.state.themeName}
                         themeType={this.state.themeType}
                         theme={this.state.theme}

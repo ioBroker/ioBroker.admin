@@ -60,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
 
 // some older browsers do not have flat
 if (!Array.prototype.flat) {
+    // eslint-disable-next-line
     Object.defineProperty(Array.prototype, 'flat', {
         configurable: true,
         value: function flat () {
@@ -99,14 +100,17 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
             .map(el => {
                 const adapter = repository[el]
                 if (!adapter?.controller) {
-                    return ({
+                    return {
                         value: el, name: `${adapter?.name} [${(adapter.meta || '')
                             .replace('https://raw.githubusercontent.com/', '')
                             .substr(0, (adapter.meta || '').replace('https://raw.githubusercontent.com/', '')
                                 .indexOf('/'))}]`
-                    });
+                    };
+                } else {
+                    return null;
                 }
             })
+            .filter(it => it)
             .sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0),
         [categories, repository]);
 

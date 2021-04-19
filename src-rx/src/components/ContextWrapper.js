@@ -4,7 +4,6 @@ import React, {
     useState,
 } from 'react';
 
-
 export const ContextWrapper = createContext();
 
 export const ContextWrapperProvider = ({ children }) => {
@@ -17,9 +16,11 @@ export const ContextWrapperProvider = ({ children }) => {
         repository: null,
         installed: null
     });
-    const setStateContext = (obj) => {
-        setState(prevState => (Object.keys(prevState).length === Object.keys(obj).length ? { ...obj } : { ...prevState, ...obj }));
+
+    const setStateContext = obj => {
+        setState(prevState => Object.keys(prevState).length === Object.keys(obj).length ? { ...obj } : { ...prevState, ...obj });
     };
+
     useEffect(() => {
         if (stateContext.hosts) {
             const jsControllerVersion = stateContext.repository['js-controller'].version;
@@ -29,19 +30,25 @@ export const ContextWrapperProvider = ({ children }) => {
                     count++
                 }
             });
-            setStateContext({ hostsUpdate: count })
+            setStateContext({ hostsUpdate: count });
         }
+
         if (stateContext.installed) {
             let count = 0;
             Object.keys(stateContext.installed).forEach(element => {
-                if (element !== 'js-controller' && element !== 'hosts' && stateContext.installed[element]?.version !== stateContext.repository[element]?.version) {
-                    count++
+                if (element !== 'js-controller' &&
+                    element !== 'hosts' &&
+                    stateContext.installed[element]?.version !== stateContext.repository[element]?.version
+                ) {
+                    count++;
                 }
-            })
-            setStateContext({ adaptersUpdate: count })
+            });
+
+            setStateContext({ adaptersUpdate: count });
         }
 
-    }, [stateContext.hosts, stateContext.installed, stateContext.repository])
+    }, [stateContext.hosts, stateContext.installed, stateContext.repository]);
+
     return <ContextWrapper.Provider value={{ stateContext, setStateContext }}>
         {children}
     </ContextWrapper.Provider>;

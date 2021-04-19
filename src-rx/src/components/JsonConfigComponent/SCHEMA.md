@@ -95,12 +95,14 @@ Possible types:
   Text input with read only flag, that shows pattern.
 
 - `sendto` - button that sends request to instance (https://github.com/iobroker-community-adapters/ioBroker.email/blob/master/admin/index_m.html#L128)
-   - command - (Default 'send')
-   - data: {subject1: '${data.subject}, options1: {host: '${data.host}'}}
-   - result: {result1: {en: 'A'}, result2: {en: 'B'}}
-   - error: {error1: {en: 'E'}, error2: {en: 'E2'}}
-   - this.props.socket.sendTo(adapterName.instance, command || 'send', 
-   - variant: contained, outlined, ''
+  - `command` - (Default 'send')
+  - `jsonData` - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`  
+  - `data` - `{"subject1": 1, "data": "static"}`
+  - `result` - `{result1: {en: 'A'}, result2: {en: 'B'}}`
+  - `error` - `{error1: {en: 'E'}, error2: {en: 'E2'}}`
+  - `variant` -  contained, outlined, ''
+    
+    `this.props.socket.sendTo(adapterName.instance, command || 'send', data, result => {});`
 
 - `setState` - button that set instance's state
    - `id` - 'info.test'
@@ -144,15 +146,18 @@ Possible types:
   - `text`
   - `size` - 1-5 => h1-h5
 
-- `comPort`
-  - `filter` - as regex
+- `listSendTo`
+  - `command` - sendto command
+  - `data` - data for send to command, could be as JS pattern. null is default. (see sendTo)
+  - `!manual` - allow manual editing. Without drop down  
+  - `noTranslation` - do not translate label of selects  
     To use this option, your adapter must implement listUart message:
-    
+    The result of command must be an array in form `[{value: 1, label: 'one'}]`
 ```
 adapter.on('message', obj => {
    if (obj) {
        switch (obj.command) {
-           case 'listUart':
+           case 'command':
                if (obj.callback) {
                    try {
                        const serialport = require('serialport');
@@ -161,7 +166,7 @@ adapter.on('message', obj => {
                            serialport.list()
                                .then(ports => {
                                    adapter.log.info('List of port: ' + JSON.stringify(ports));
-                                   adapter.sendTo(obj.from, obj.command, ports, obj.callback);
+                                   adapter.sendTo(obj.from, obj.command, ports.map(item => ({label: item.path, value: item.path})), obj.callback);
                                })
                                .catch(e => {
                                    adapter.sendTo(obj.from, obj.command, [], obj.callback);
@@ -169,10 +174,10 @@ adapter.on('message', obj => {
                                });
                        } else {
                            adapter.log.warn('Module serialport is not available');
-                           adapter.sendTo(obj.from, obj.command, [{comName: 'Not available'}], obj.callback);
+                           adapter.sendTo(obj.from, obj.command, [{label: 'Not available', value: ''}], obj.callback);
                        }
                    } catch (e) {
-                       adapter.sendTo(obj.from, obj.command, [{comName: 'Not available'}], obj.callback);
+                       adapter.sendTo(obj.from, obj.command, [{label: 'Not available', value: ''}], obj.callback);
                    }
                }
 
@@ -205,6 +210,7 @@ All types could have:
 - `default` - default value
 - `defaultFunc` - JS function to calculate default value  
 - `placeholder` - placeholder (for text control)
+- `noTranslation` - do not translate selects or other options (not for help, label or placeholder)  
 - `confirm`
    - `condition` - JS function: true show confirm dialog
    - `text` - text of confirmation dialog

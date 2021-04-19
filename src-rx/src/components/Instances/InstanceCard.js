@@ -295,6 +295,7 @@ const InstanceCard = ({
     compactGroupCount,
     setCompact,
     compact,
+    supportCompact,
     checkSentry,
     currentSentry,
     setSentry,
@@ -389,7 +390,7 @@ const InstanceCard = ({
                     <div className={classes.close} onClick={() => setCollapse(false)} />
                 </div>
                 <Typography gutterBottom component={'span'} variant={'body2'}>
-                    {expertMode && checkCompact && compact && <div className={classes.displayFlex}>
+                    {supportCompact && expertMode && checkCompact && compact && <div className={classes.displayFlex}>
                         <FormControl className={classes.addCompact} variant="outlined" >
                             <InputLabel htmlFor="outlined-age-native-simple">{t('compact groups')}</InputLabel>
                             <Select
@@ -428,12 +429,27 @@ const InstanceCard = ({
                     {connected !== null &&
                         <State state={connected}>{t('Connected to %s', instance.adapter)}</State>
                     }
-                    <InstanceInfo icon={<InfoIcon />} tooltip={t('Installed')}>
-                        {instance.version}
+                    <InstanceInfo tooltip={t('Installed')}>
+                        v {instance.version}
                     </InstanceInfo>
                     <InstanceInfo icon={<MemoryIcon />} tooltip={t('RAM usage')}>
                         {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
                     </InstanceInfo>
+                    {expertMode &&
+                        <div className={classes.displayFlex}>
+                            <InstanceInfo icon={<ImportExportIcon />} tooltip={t('events')}>
+                                <div className={classes.displayFlex}>
+                                    <Tooltip title={t('input events')}>
+                                        <div className={classes.marginRight5}>⇥{inputOutput.stateInput}</div>
+                                    </Tooltip>
+                                    /
+                                    <Tooltip title={t('output events')}>
+                                        <div className={classes.marginLeft5}>↦{inputOutput.stateOutput}</div>
+                                    </Tooltip>
+                                </div>
+                            </InstanceInfo>
+                        </div>
+                    }
                     {expertMode && <div className={classes.displayFlex}>
                         <InstanceInfo
                             icon={<MemoryIcon className={classes.memoryIcon} />}
@@ -491,21 +507,6 @@ const InstanceCard = ({
                             </IconButton>
                         </div>
                     }
-                    {expertMode &&
-                        <div className={classes.displayFlex}>
-                            <InstanceInfo icon={<ImportExportIcon />} tooltip={t('events')}>
-                                <div className={classes.displayFlex}>
-                                    <Tooltip title={t('input events')}>
-                                        <div className={classes.marginRight5}>⇥${inputOutput.stateInput}</div>
-                                    </Tooltip>
-                                /
-                                <Tooltip title={t('output events')}>
-                                        <div className={classes.marginLeft5}>↦${inputOutput.stateOutput}</div>
-                                    </Tooltip>
-                                </div>
-                            </InstanceInfo>
-                        </div>
-                    }
                     <Hidden smUp>
                         <IconButton
                             size="small"
@@ -542,7 +543,7 @@ const InstanceCard = ({
                         </IconButton>
                     </Tooltip>
                 </div>}
-                {expertMode && checkCompact && <div className={classes.displayFlex}>
+                {supportCompact && expertMode && checkCompact && <div className={classes.displayFlex}>
                     <Tooltip title={t('compact groups')}>
                         <IconButton
                             size="small"

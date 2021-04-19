@@ -461,6 +461,7 @@ const InstanceRow = ({
     compactGroupCount,
     setCompact,
     compact,
+    supportCompact,
     getInstanceState,
     getModeIcon,
     expanded,
@@ -503,6 +504,7 @@ const InstanceRow = ({
                 (openDialogDelete && t('Please confirm')) ||
                 (openDialogMemoryLimit && t('Edit memory limit rule for %s', instance.id))
             }
+            help={openDialogMemoryLimit && t('Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)')}
             open={true}
             applyDisabled={openDialogText || openDialogMemoryLimit}
             textInput={openDialogText || openDialogMemoryLimit}
@@ -607,18 +609,64 @@ const InstanceRow = ({
                     )}>
                         {getModeIcon(instance.mode)}
                     </Avatar>
-                    <Badge color="secondary" variant="dot" invisible={!instance.compactMode}>
+                    {/*<Badge color="secondary" variant="dot" invisible={!instance.compactMode}>
                         <Avatar
                             variant="square"
                             alt={instance.id}
                             src={instance.image}
                             className={classes.instanceIcon}
                         />
-                    </Badge>
+                    </Badge>*/}
                     <div className={classes.instanceId}>
                         {instance.id}
                     </div>
                 </div>
+                <IconButton
+                    size="small"
+                    onClick={e => {
+                        e.stopPropagation();
+                        extendObject('system.adapter.' + instance.id, { common: { enabled: !running } });
+                    }}
+                    onFocus={event => event.stopPropagation()}
+                    className={clsx(classes.button, instance.canStart ?
+                        (running ? classes.enabled : classes.disabled) : classes.hide)}
+                >
+                    {running ? <PauseIcon /> : <PlayArrowIcon />}
+                </IconButton>
+                <Hidden xsDown>
+                    <IconButton
+                        size="small"
+                        className={clsx(classes.button,!instance.config && classes.visibility)}
+                        onClick={() => openConfig(id)}
+                    >
+                        <BuildIcon />
+                    </IconButton>
+                </Hidden>
+                <IconButton
+                    size="small"
+                    onClick={event => {
+                        extendObject('system.adapter.' + instance.id, {});
+                        event.stopPropagation();
+                    }}
+                    onFocus={event => event.stopPropagation()}
+                    className={clsx(classes.button, !instance.canStart && classes.hide)}
+                    disabled={!running}
+                >
+                    <RefreshIcon />
+                </IconButton>
+                <IconButton
+                    size="small"
+                    className={clsx(classes.button, (!instance.link || !instance.link[0]) && classes.hide)}
+                    disabled={!running}
+                    onClick={event => {
+                        window.open(instance.link, '_blank');
+                        event.stopPropagation();
+                    }}
+                    onFocus={event => event.stopPropagation()}
+                >
+                    <InputIcon />
+                </IconButton>
+
                 <Typography className={classes.secondaryHeading} component="div">
                     <div
                     onMouseMove={() => handlerEdit(true)}
@@ -677,9 +725,9 @@ const InstanceRow = ({
                     <IconButton
                         size="small"
                         className={clsx(classes.button, expertMode && checkSentry ? null : classes.hide)}
-                        onClick={(event) => {
+                        onClick={e => {
+                            e.stopPropagation();
                             setSentry();
-                            event.stopPropagation();
                         }}
                     >
                         <CardMedia
@@ -690,64 +738,18 @@ const InstanceRow = ({
                     </IconButton>
                 </Tooltip>
             </div>
-            <Tooltip title={t('compact groups')}>
+            {supportCompact ? <Tooltip title={t('compact groups')}>
                 <IconButton
                     size="small"
                     className={clsx(classes.button, expertMode && checkCompact ? null : classes.hide)}
-                    onClick={(event) => {
+                    onClick={e=> {
+                        e.stopPropagation();
                         setCompact();
-                        event.stopPropagation();
                     }}
                 >
                     <ViewCompactIcon color={compact ? 'primary' : 'inherit'} />
                 </IconButton>
-            </Tooltip>
-
-            <IconButton
-                size="small"
-                onClick={event => {
-                    extendObject('system.adapter.' + instance.id, { common: { enabled: !running } });
-                    event.stopPropagation();
-                }}
-                onFocus={event => event.stopPropagation()}
-                className={clsx(classes.button, instance.canStart ?
-                    (running ? classes.enabled : classes.disabled) : classes.hide)}
-            >
-                {running ? <PauseIcon /> : <PlayArrowIcon />}
-            </IconButton>
-            <Hidden xsDown>
-                <IconButton
-                    size="small"
-                    className={clsx(classes.button,!instance.config && classes.visibility)}
-                    onClick={() => openConfig(id)}
-                >
-                    <BuildIcon />
-                </IconButton>
-            </Hidden>
-            <IconButton
-                size="small"
-                onClick={event => {
-                    extendObject('system.adapter.' + instance.id, {});
-                    event.stopPropagation();
-                }}
-                onFocus={event => event.stopPropagation()}
-                className={clsx(classes.button, !instance.canStart && classes.hide)}
-                disabled={!running}
-            >
-                <RefreshIcon />
-            </IconButton>
-            <IconButton
-                size="small"
-                className={clsx(classes.button, (!instance.link || !instance.link[0]) && classes.hide)}
-                disabled={!running}
-                onClick={event => {
-                    window.open(instance.link, '_blank');
-                    event.stopPropagation();
-                }}
-                onFocus={event => event.stopPropagation()}
-            >
-                <InputIcon />
-            </IconButton>
+            </Tooltip> : null}
         </AccordionSummary>
         <AccordionDetails>
             <Grid container direction="row">
@@ -763,8 +765,8 @@ const InstanceRow = ({
                         }
                     </Grid>
                     <Grid container item direction="column" xs={12} sm={6} md={4}>
-                        <InstanceInfo icon={<InfoIcon />} tooltip={t('Installed')}>
-                            {instance.version}
+                        <InstanceInfo tooltip={t('Installed')}>
+                            v {instance.version}
                         </InstanceInfo>
                     </Grid>
                     <Grid container item direction="column" xs={12} sm={6} md={4} className={classes.paddingRight200}>
@@ -848,16 +850,16 @@ const InstanceRow = ({
                             <IconButton
                                 size="small"
                                 className={classes.button}
-                                onClick={(event) => {
+                                onClick={e => {
+                                    e.stopPropagation();
                                     setOpenDialogMemoryLimit(true);
-                                    event.stopPropagation();
                                 }}
                             >
                                 <EditIcon />
                             </IconButton>
                         </div>
                         }
-                        {expertMode && checkCompact && compact && <div className={classes.selectWrapper}>
+                        {expertMode && checkCompact && compact && supportCompact && <div className={classes.selectWrapper}>
                             <ViewCompactIcon className={classes.marginRight} color="inherit" />
                             <FormControl className={classes.formControl2}  variant="outlined" >
                                 <InputLabel htmlFor="outlined-age-native-simple">{t('compact groups')}</InputLabel>
