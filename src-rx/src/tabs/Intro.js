@@ -55,6 +55,9 @@ const styles = theme => ({
     },
     bold: {
         fontWeight: 'bold'
+    },
+    container: {
+        overflowY: 'auto'
     }
 });
 
@@ -531,24 +534,25 @@ class Intro extends Component {
     }
 
     getHostDescriptionAll(id) {
-
         const { classes } = this.props;
         const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
-        console.log(hostData)
-        return [(<ul>
-            {
-                hostData && typeof hostData === 'object' && Object.keys(hostData).map(value => <li key={value}>
-                    {hostData && typeof hostData === 'object' ?
-                        <span>
-                            <span className={classes.bold}>{this.t(value)}: </span>
-                            {(formatInfo[value] ? formatInfo[value](hostData[value], this.t) : hostData[value] || '--')}
-                        </span>
-                        :
-                        <Skeleton />
-                    }
-                </li>)
-            }
-        </ul>), hostData && typeof hostData === 'object' && Object.keys(hostData).reduce((acom, item) => acom + `${this.t(item)}:${(formatInfo[item] ? formatInfo[item](hostData[item], this.t) : hostData[item] || '--')}\n`)
+
+        return [
+            <ul>
+                {
+                    hostData && typeof hostData === 'object' && Object.keys(hostData).map(value => <li key={value}>
+                        {hostData && typeof hostData === 'object' ?
+                            <span>
+                                <span className={classes.bold}>{this.t(value)}: </span>
+                                {(formatInfo[value] ? formatInfo[value](hostData[value], this.t) : hostData[value] || '--')}
+                            </span>
+                            :
+                            <Skeleton />
+                        }
+                    </li>)
+                }
+            </ul>,
+            hostData && typeof hostData === 'object' && Object.keys(hostData).reduce((acom, item) => acom + `${this.t(item)}:${(formatInfo[item] ? formatInfo[item](hostData[item], this.t) : hostData[item] || '--')}\n`)
         ];
     }
 
@@ -571,9 +575,8 @@ class Intro extends Component {
                     hosts,
                     introLinks: systemConfig && systemConfig.native && systemConfig.native.introLinks ? systemConfig.native.introLinks : []
                 });
-                console.log('hosts',hosts)
                 // hosts data could last a long time, so show some results to user now and then get the info about hosts
-                return this.getHostsData(hosts)
+                return this.getHostsData(hosts);
             })
             .then(hostsData =>
                 this.setState({ hostsData }));
@@ -586,31 +589,29 @@ class Intro extends Component {
 
         const { classes } = this.props;
 
-        return (
-            <TabContainer
-                elevation={0}
-                overflow="visible"
-            >
-                <Snackbar
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                    }}
-                    open={this.state.openSnackBar}
-                    autoHideDuration={3000}
-                    onClose={() => this.setState({ openSnackBar: false })}
-                    message={this.t('copied')}
-                />
-                <TabContent>
-                    <Grid container spacing={2}>
-                        {this.getInstancesCards()}
-                        {this.getLinkCards()}
-                    </Grid>
-                    {this.getButtons(classes)}
-                    {this.editLinkCard()}
-                </TabContent>
-            </TabContainer>
-        );
+        return <TabContainer
+            elevation={0}
+            overflow="visible"
+        >
+            <Snackbar
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                open={this.state.openSnackBar}
+                autoHideDuration={3000}
+                onClose={() => this.setState({ openSnackBar: false })}
+                message={this.t('copied')}
+            />
+            <TabContent classes={{root: classes.container}}>
+                <Grid container spacing={2}>
+                    {this.getInstancesCards()}
+                    {this.getLinkCards()}
+                </Grid>
+                {this.getButtons(classes)}
+                {this.editLinkCard()}
+            </TabContent>
+        </TabContainer>;
     }
 }
 

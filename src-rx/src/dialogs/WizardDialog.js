@@ -19,11 +19,11 @@ import clsx from 'clsx';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import CheckIcon from '@material-ui/icons/Check';
 
-import WizardPasswordTab from '../components/WizardPasswordTab';
-import WizardLicenseTab from '../components/WizardLicenseTab';
+import WizardPasswordTab from '../components/Wizard/WizardPasswordTab';
+import WizardLicenseTab from '../components/Wizard/WizardLicenseTab';
 import WizardFinishImage from '../assets/wizard-finish.jpg';
 import WizardWelcomeImage from '../assets/wizard-welcome.jpg';
-import WizardSettingsTab from '../components/WizardSettingsTab';
+import WizardSettingsTab from '../components/Wizard/WizardSettingsTab';
 import Logo from '../assets/logo.png';
 
 const TOOLBAR_HEIGHT = 64;

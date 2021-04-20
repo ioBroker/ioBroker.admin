@@ -63,7 +63,7 @@ class CommandDialog extends Component {
             maxWidth="md"
         >
             <DialogTitle>
-                {this.state.progressText || this.props.t('Run Command')}
+                {this.state.progressText || this.props.t('Running command')}
                 <IconButton className={classes.closeButton} onClick={this.props.onClose}>
                     <CloseIcon />
                 </IconButton>

@@ -43,6 +43,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
+import { Tooltip } from '@material-ui/core';
 
 const styles = theme => ({
     container: {
@@ -51,9 +52,13 @@ const styles = theme => ({
     table: {
         tableLayout: 'fixed',
         minWidth: 960,
+        '& td,th': {
+            padding: '3px 4px'
+        },
         '& td:nth-of-type(5)': {
             overflow: 'hidden',
-            whiteSpace: 'nowrap'
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis'
         }
     },
     row: {
@@ -80,13 +85,13 @@ const styles = theme => ({
         width: 230
     },
     pid: {
-        width: 100
+        width: 55
     },
     timestamp: {
-        width: 220
+        width: 175
     },
     severity: {
-        width: 110
+        width: 80
     },
     message: {
         minWidth: 300
@@ -129,6 +134,13 @@ const styles = theme => ({
     downloadEntry: {
         display: 'flex',
         justifyContent: 'space-between'
+    },
+    pidSize: {
+        fontSize: 14,
+        width: 24,
+        height: 24,
+        display: 'flex',
+        alignItems: 'center'
     }
 });
 
@@ -166,7 +178,8 @@ class Logs extends Component {
             logs: null,
             logSize: null,
             pause: 0,
-            pauseCount: 0
+            pauseCount: 0,
+            pid: JSON.parse(window.localStorage.getItem('Logs.pid')) || false
         };
 
         this.severities = {
@@ -237,9 +250,7 @@ class Logs extends Component {
                 }
             });
 
-        this.words = {
-
-        }
+        this.words = {};
     }
 
     componentDidMount() {
@@ -336,7 +347,6 @@ class Logs extends Component {
     }
 
     getLogFiles() {
-
         const { classes } = this.props;
 
         return this.state.logFiles.map(entry => {
@@ -362,13 +372,10 @@ class Logs extends Component {
     }
 
     getSeverities() {
-
         const severities = [];
 
         for (const i in this.severities) {
-            severities.push(
-                <MenuItem value={i} key={i}>{i}</MenuItem>
-            );
+            severities.push(<MenuItem value={i} key={i}>{i}</MenuItem>);
         }
 
         return severities;
@@ -392,9 +399,8 @@ class Logs extends Component {
 
         sources.sort();
 
-        return sources.map(source => (
-            <MenuItem value={source} key={source}>{source === '1' ? this.t('Source') : source}</MenuItem>
-        ));
+        return sources.map(source =>
+            <MenuItem value={source} key={source}>{source === '1' ? this.t('Source') : source}</MenuItem>);
     }
 
     getRows() {
@@ -409,7 +415,7 @@ class Logs extends Component {
             let message = row.message;
             let id = '';
 
-            const regExp = new RegExp(row.from.replace('.', '\\.') + ' \\(\\d+\\) ', 'g');
+            const regExp = new RegExp(row.from.replace('.', '\\.').replace(')', '\\)').replace('(', '\\(') + ' \\(\\d+\\) ', 'g');
             const matches = message.match(regExp);
 
             if (matches) {
@@ -432,11 +438,11 @@ class Logs extends Component {
                     <TableCell>
                         {row.from}
                     </TableCell>
-                    <TableCell
+                    {this.state.pid && <TableCell
                         className={classes[severity]}
                     >
                         {id}
-                    </TableCell>
+                    </TableCell>}
                     <TableCell
                         className={classes[severity]}
                     >
@@ -466,6 +472,7 @@ class Logs extends Component {
                 }, 1000);
             }
         }
+
         return rows;
     }
 
@@ -495,18 +502,24 @@ class Logs extends Component {
         </Dialog>;
     }
 
+    changePid() {
+        let pid = !this.state.pid;
+        window.localStorage.setItem('Logs.pid', JSON.stringify(pid));
+        this.setState({ pid });
+    }
+
     render() {
         if (!this.state.logs) {
-            return <LinearProgress />
+            return <LinearProgress />;
         }
         const { classes } = this.props;
 
         const pauseChild = !this.state.pause ? <PauseIcon /> :
             <Typography className={classes.pauseCount}>{this.state.logs.length - this.state.pause}</Typography>;
 
-        return (
-            <TabContainer>
-                <TabHeader>
+        return <TabContainer>
+            <TabHeader>
+                <Tooltip title={this.props.t('Refresh log')}>
                     <IconButton
                         onClick={() => this.props.logsWorker &&
                             this.props.logsWorker.getLogs(true).then(results => {
@@ -517,112 +530,120 @@ class Logs extends Component {
                     >
                         <RefreshIcon />
                     </IconButton>
+                </Tooltip>
+                <Tooltip title={this.props.t('Pause output')}>
                     <IconButton
                         className={classes.pauseButton}
                         onClick={() => this.handleLogPause()}
                     >
                         {pauseChild}
                     </IconButton>
+                </Tooltip>
+                <Tooltip title={this.props.t('Clear log')}>
                     <IconButton
                         onClick={() => this.clearLog()}
                     >
                         <DeleteIcon />
                     </IconButton>
+                </Tooltip>
+                <Tooltip title={this.props.t('Clear on disk permanent')}>
                     <IconButton
                         onClick={() => this.openLogDelete()}
                     >
                         <DeleteForeverIcon />
                     </IconButton>
-                    <div className={classes.grow} />
-                    {this.state.logFiles.length > 0 &&
-                        <div>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                startIcon={<SaveAltIcon />}
-                                onClick={event => this.openLogDownload(event)}
-                            >
-                                {this.t('Download log')}
-                            </Button>
-                            <Menu
-                                id="simple-menu"
-                                anchorEl={this.state.logDownloadDialog}
-                                keepMounted
-                                open={Boolean(this.state.logDownloadDialog)}
-                                onClose={() => this.closeLogDownload()}
-                            >
-                                {this.getLogFiles()}
-                            </Menu>
-                        </div>
-                    }
-                    <div className={classes.grow} />
-                    <Typography
-                        variant="body2"
-                        className={classes.logSize}
+                </Tooltip>
+                <Tooltip title={this.props.t('PID hide/show')}>
+                    <IconButton
+                        onClick={() => this.changePid()}
+                        color={!this.state.pid ? "default" : "primary"}
                     >
-                        {`${this.t('Log size:')} ${this.state.logSize || '-'}`}
-                    </Typography>
-                </TabHeader>
-                <TabContent>
-                    <TableContainer className={classes.container}>
-                        <Table stickyHeader size="small" className={classes.table}>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell className={classes.source}>
-                                        <FormControl className={classes.formControl}>
-                                            <InputLabel id="source-label" />
-                                            <Select
-                                                labelId="source-label"
-                                                value={this.state.source}
-                                                onChange={event => this.handleSourceChange(event)}
-                                            >
-                                                {
-                                                    this.getSources()
-                                                }
-                                            </Select>
-                                        </FormControl>
-                                    </TableCell>
-                                    <TableCell className={classes.pid}>
-                                        <TextField disabled label={this.t('PID')} className={classes.header} />
-                                    </TableCell>
-                                    <TableCell className={classes.timestamp}>
-                                        <TextField disabled label={this.t('Time')} className={classes.header} />
-                                    </TableCell>
-                                    <TableCell className={classes.severity}>
-                                        <FormControl className={classes.formControl}>
-                                            <InputLabel id="severity-label" />
-                                            <Select
-                                                labelId="severity-label"
-                                                value={this.state.severity}
-                                                onChange={event => this.handleSeverityChange(event)}
-                                            >
-                                                {
-                                                    this.getSeverities()
-                                                }
-                                            </Select>
-                                        </FormControl>
-                                    </TableCell>
-                                    <TableCell className={classes.message}>
-                                        <FormControl className={classes.formControl}>
-                                            <TextField
-                                                label={this.t('Message')}
-                                                onChange={event => this.handleMessageChange(event)}
-                                            />
-                                        </FormControl>
-                                    </TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {
-                                    this.getRows()
-                                }
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </TabContent>
-                { this.renderClearDialog()}
-            </TabContainer>
-        );
+                        <div className={classes.pidSize}>{this.props.t('PID')}</div>
+                    </IconButton>
+                </Tooltip>
+                <div className={classes.grow} />
+                {this.state.logFiles.length > 0 &&
+                    <div>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<SaveAltIcon />}
+                            onClick={event => this.openLogDownload(event)}
+                        >
+                            {this.t('Download log')}
+                        </Button>
+                        <Menu
+                            id="simple-menu"
+                            anchorEl={this.state.logDownloadDialog}
+                            keepMounted
+                            open={Boolean(this.state.logDownloadDialog)}
+                            onClose={() => this.closeLogDownload()}
+                        >
+                            {this.getLogFiles()}
+                        </Menu>
+                    </div>
+                }
+                <div className={classes.grow} />
+                <Typography
+                    variant="body2"
+                    className={classes.logSize}
+                >
+                    {`${this.t('Log size:')} ${this.state.logSize || '-'}`}
+                </Typography>
+            </TabHeader>
+            <TabContent>
+                <TableContainer className={classes.container}>
+                    <Table stickyHeader size="small" className={classes.table}>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell className={classes.source}>
+                                    <FormControl className={classes.formControl}>
+                                        <InputLabel id="source-label" />
+                                        <Select
+                                            labelId="source-label"
+                                            value={this.state.source}
+                                            onChange={event => this.handleSourceChange(event)}
+                                        >
+                                            {this.getSources()}
+                                        </Select>
+                                    </FormControl>
+                                </TableCell>
+                                {this.state.pid && <TableCell className={classes.pid}>
+                                    <TextField disabled label={this.t('PID')} className={classes.header} />
+                                </TableCell>}
+                                <TableCell className={classes.timestamp}>
+                                    <TextField disabled label={this.t('Time')} className={classes.header} />
+                                </TableCell>
+                                <TableCell className={classes.severity}>
+                                    <FormControl className={classes.formControl}>
+                                        <InputLabel id="severity-label" />
+                                        <Select
+                                            labelId="severity-label"
+                                            value={this.state.severity}
+                                            onChange={event => this.handleSeverityChange(event)}
+                                        >
+                                            {this.getSeverities()}
+                                        </Select>
+                                    </FormControl>
+                                </TableCell>
+                                <TableCell className={classes.message}>
+                                    <FormControl className={classes.formControl}>
+                                        <TextField
+                                            label={this.t('Message')}
+                                            onChange={event => this.handleMessageChange(event)}
+                                        />
+                                    </FormControl>
+                                </TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {this.getRows()}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </TabContent>
+            {this.renderClearDialog()}
+        </TabContainer>;
     }
 }
 

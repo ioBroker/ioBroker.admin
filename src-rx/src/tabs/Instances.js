@@ -10,7 +10,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import TableCell from '@material-ui/core/TableCell';
 import Tooltip from '@material-ui/core/Tooltip';
 import Paper from '@material-ui/core/Paper';
-import { CardMedia, InputAdornment, TextField } from '@material-ui/core';
+import { CardMedia, Hidden, InputAdornment, TextField } from '@material-ui/core';
 
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -24,7 +24,7 @@ import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import CloseIcon from '@material-ui/icons/Close';
 import ViewCompactIcon from '@material-ui/icons/ViewCompact';
 import ScheduleIcon from '@material-ui/icons/Schedule';
-import SettingsIcon from '@material-ui/icons/Settings';
+import SettingsIcon from '@material-ui/icons/Lens';
 
 import amber from '@material-ui/core/colors/amber';
 import blue from '@material-ui/core/colors/blue';
@@ -39,9 +39,9 @@ import Utils from '../Utils';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
-import CardInstances from '../components/CardInstances';
+import InstanceCard from '../components/Instances/InstanceCard';
 import CustomSelectButton from '../components/CustomSelectButton';
-import RowInstances from '../components/RowInstances';
+import InstanceRow from '../components/Instances/InstanceRow';
 import sentry from '../assets/sentry.svg'
 
 const styles = theme => ({
@@ -105,7 +105,8 @@ const styles = theme => ({
     iframe: {
         height: '100%',
         width: '100%',
-        border: 0
+        border: 0,
+        backgroundColor: '#FFF',
     },
     silly: {
 
@@ -365,7 +366,9 @@ class Instances extends Component {
             }
             return 0;
         });
+
         let compactGroupCount = 0;
+
         instances.forEach(obj => {
             const common = obj ? obj.common : null;
             const objId = obj._id.split('.');
@@ -378,7 +381,7 @@ class Instances extends Component {
             instance.obj = obj;
             instance.compact = !!common.compact;
             instance.host = common.host;
-            instance.name = common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en || '' : common.title;
+            instance.name = common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en || common.title || '' : common.title;
             instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
             let links = common.localLinks || common.localLink || '';
             if (links && typeof links === 'string') {
@@ -510,22 +513,26 @@ class Instances extends Component {
         Router.doNavigate('tab-instances', 'config', instance);
     }
 
-    getInstanceState = (id) => {
+    getInstanceState = id => {
         const obj = this.objects[id];
         const instance = this.state.instances[id];
         const common = obj ? obj.common : null;
         const mode = common?.mode || '';
         let state = mode === 'daemon' ? 'green' : 'blue';
 
+        if (id === 'system.adapter.mqtt-client.0') {
+            console.log('A');
+        }
+
         if (common && common.enabled && (!common.webExtension || !obj.native.webInstance || mode === 'daemon')) {
-            const alive = this.states[id + '.alive'];
-            const connected = this.states[id + '.connected'];
+            const alive      = this.states[id + '.alive'];
+            const connected  = this.states[id + '.connected'];
             const connection = this.states[instance.id + '.info.connection'];
 
             if (!connected?.val || !alive?.val) {
                 state = mode === 'daemon' ? 'red' : 'blue';
             }
-            if (!connection?.val) {
+            if (connection && !connection?.val) {
                 state = state === 'red' ? 'red' : 'orange';
             }
         } else {
@@ -570,14 +577,27 @@ class Instances extends Component {
         return obj?.common?.schedule ? obj.common.schedule : '';
     }
 
-    isName = (id) => {
+    getName = id => {
         const obj = this.objects[id];
-        return !obj?.common?.title || (obj?.common?.titleLang && obj?.common?.titleLang.en === obj?.common?.title) ? obj?.common?.titleLang[this.props.lang] || obj?.common?.titleLang.en : obj?.common?.title;
+        if (!obj || !obj.common) {
+            return '';
+        }
+        if (obj.common.titleLang) {
+            if (typeof obj.common.titleLang === 'string') {
+                return obj.common.titleLang;
+            } else {
+                return obj.common.titleLang[this.props.lang] || obj.common.titleLang.en;
+            }
+        } else {
+            return obj.common.title || '';
+        }
     }
+
     isModeSchedule = (id) => {
         const obj = this.objects[id];
         return (obj?.common?.mode && obj?.common?.mode === 'schedule') || false;
     }
+
     isLogLevel = (id) => {
         const obj = this.objects[id];
         return obj?.common?.loglevel;
@@ -664,9 +684,9 @@ class Instances extends Component {
             const compact = this.isCompact(id);
             const connectedToHost = this.isConnectedToHost(id);
             const connected = this.isConnected(id);
-            const name = this.isName(id);
+            const name = this.getName(id);
             const logLevel = this.isLogLevel(id);
-            const loglevelIcon = this.getLogLevelIcon(instance.loglevel);
+            const loglevelIcon = this.getLogLevelIcon(logLevel);
             const checkCompact = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
             const inputOutput = this.getInputOutput(id);
             const mode = this.isModeSchedule(id);
@@ -697,7 +717,7 @@ class Instances extends Component {
                 this.extendObject('system.adapter.' + instance.id, { common: { disableDataReporting: !!currentSentry } });
 
             const setName = value =>
-                this.extendObject('system.adapter.' + instance.id, { common: { title: value } });
+                this.extendObject('system.adapter.' + instance.id, { common: { titleLang: value } });
 
             const setLogLevel = value =>
                 this.extendObject('system.adapter.' + instance.id, { common: { loglevel: value } });
@@ -714,7 +734,7 @@ class Instances extends Component {
 
             return ({
                 render: this.state.viewMode ?
-                    <CardInstances
+                    <InstanceCard
                         t={this.t}
                         key={instance.id}
                         name={name}
@@ -752,7 +772,7 @@ class Instances extends Component {
                         memoryLimitMB={memoryLimitMB}
                         setMemoryLimitMB={setMemoryLimitMB}
                     /> :
-                    <RowInstances
+                    <InstanceRow
                         idx={idx}
                         t={this.t}
                         key={instance.id}
@@ -875,11 +895,10 @@ class Instances extends Component {
             return ({ [value]: !state[value] });
         });
 
-    changeCompactGroup = value =>
-        this.setState(state => {
-            window.localStorage.setItem(`Instances.filterCompactGroup`, JSON.stringify(value));
-            return { filterCompactGroup: value };
-        });
+    changeCompactGroup = filterCompactGroup => {
+        window.localStorage.setItem(`Instances.filterCompactGroup`, JSON.stringify(filterCompactGroup));
+        this.setState({filterCompactGroup});
+    };
 
     handleFilterChange(event) {
         this.typingTimer && clearTimeout(this.typingTimer);
@@ -914,7 +933,11 @@ class Instances extends Component {
                         theme={this.props.theme}
                         width={this.props.width}
                         t={this.t}
+                        lang={this.props.lang}
+                        icon={instance.image}
                         configStored={this.props.configStored}
+                        dateFormat={this.props.dateFormat}
+                        isFloatComma={this.props.isFloatComma}
                     />
                 </Paper>;
             }
@@ -1005,8 +1028,10 @@ class Instances extends Component {
                     }}
                 />
                 <div className={classes.grow} />
-                {this.state.hostData &&
-                    `${this.t('Disk free')}: ${Math.round(this.state.hostData['Disk free'] / (this.state.hostData['Disk size'] / 100))}%, ${this.t('Total RAM usage')}: ${this.state.mem} Mb / ${this.t('Free')}: ${this.state.percent}% = ${this.state.memFree} Mb [${this.t('Host')}: ${this.props.currentHostName} - ${this.state.processes} ${this.t('processes')}]`}
+                <Hidden xsDown>
+                    {this.state.hostData &&
+                        `${this.t('Disk free')}: ${Math.round(this.state.hostData['Disk free'] / (this.state.hostData['Disk size'] / 100))}%, ${this.t('Total RAM usage')}: ${this.state.mem} Mb / ${this.t('Free')}: ${this.state.percent}% = ${this.state.memFree} Mb [${this.t('Host')}: ${this.props.currentHostName} - ${this.state.processes} ${this.t('processes')}]`}
+                </Hidden>
             </TabHeader>
             <TabContent overflow="auto">
                 <div className={this.state.viewMode ? classes.cards : ''}>
@@ -1024,6 +1049,7 @@ Instances.propTypes = {
      */
     ready: PropTypes.bool,
     t: PropTypes.func,
+    lang: PropTypes.string,
     expertMode: PropTypes.bool,
     hostname: PropTypes.string,
     protocol: PropTypes.string,
@@ -1034,6 +1060,8 @@ Instances.propTypes = {
     systemLang: PropTypes.string,
     width: PropTypes.string,
     menuPadding: PropTypes.number,
+    isFloatComma: PropTypes.bool,
+    dateFormat: PropTypes.string,
 };
 
 export default withWidth()(withStyles(styles)(Instances));

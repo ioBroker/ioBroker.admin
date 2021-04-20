@@ -12,7 +12,7 @@ import Grid from '@material-ui/core/Grid';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Toolbar  from '@material-ui/core/Toolbar';
 
-import AdaptersUpdater from '../components/AdaptersUpdater';
+import AdaptersUpdater from '../components/Adapters/AdaptersUpdater';
 import Command from '../components/Command';
 
 const styles = theme => ({

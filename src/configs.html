@@ -421,11 +421,13 @@
 </div>
 <script>
     var config = '%%CONFIG%%';
-    try {
-        config = JSON.parse(config);
-    } catch (e) {
-        console.error('Cannot parse "' + config + '"');
-        config = [];
+    if (typeof config === 'string') {
+        try {
+            config = JSON.parse(config);
+        } catch (e) {
+            console.error('Cannot parse "' + config + '"');
+            config = [];
+        }
     }
 
     function showTiles() {

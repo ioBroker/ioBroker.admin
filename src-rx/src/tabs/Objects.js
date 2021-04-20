@@ -24,9 +24,9 @@ import IconDeleteAll from '@material-ui/icons/Delete';
 import ObjectBrowser from '../components/ObjectBrowser';
 import ObjectCustomDialog from '../dialogs/ObjectCustomDialog';
 import Router from '@iobroker/adapter-react/Components/Router';
-import ObjectBrowserValue from '../components/ObjectBrowserValue';
-import ObjectBrowserEditObject from '../components/ObjectBrowserEditObject';
-import ObjectBrowserEditRole from '../components/ObjectBrowserEditRole';
+import ObjectBrowserValue from '../components/Object/ObjectBrowserValue';
+import ObjectBrowserEditObject from '../components/Object/ObjectBrowserEditObject';
+import ObjectBrowserEditRole from '../components/Object/ObjectBrowserEditRole';
 import ObjectAddNewContent from '../dialogs/ObjectAddNewContent';
 import ObjectEditOfAccessControl from '../dialogs/ObjectEditOfAccessControl';
 
@@ -165,6 +165,8 @@ class Objects extends Component {
                 selected={this.state.selected}
                 name={this.state.name}
                 expertMode={this.props.expertMode}
+                isFloatComma={this.props.isFloatComma}
+                dateFormat={this.props.dateFormat}
                 t={this.t}
                 lang={this.props.lang}
                 themeName={this.props.themeName}
@@ -191,6 +193,7 @@ class Objects extends Component {
                 objectEditOfAccessControl
                 modalNewObject={context =>
                     <ObjectAddNewContent
+                        objects={context.objects}
                         open={context.state.modalNewObj}
                         extendObject={(id, data) => context.extendObject(id, data)}
                         selected={context.state.selected[0]}
@@ -226,6 +229,8 @@ Objects.propTypes = {
     themeType: PropTypes.string,
     theme: PropTypes.object,
     expertMode: PropTypes.bool,
+    isFloatComma: PropTypes.bool,
+    dateFormat: PropTypes.string,
 };
 
 /** @type {typeof Objects} */

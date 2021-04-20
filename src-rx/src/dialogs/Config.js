@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 
 import PropTypes from 'prop-types';
 
@@ -6,14 +6,19 @@ import { withStyles } from '@material-ui/core/styles';
 
 import AppBar from '@material-ui/core/AppBar';
 import Paper from '@material-ui/core/Paper';
+import Fab from '@material-ui/core/Fab';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import Router from '@iobroker/adapter-react/Components/Router';
+import Icon from '@iobroker/adapter-react/Components/Icon';
 
 import JsonConfig from '../components/JsonConfig';
 
-const styles = {
+import HelpIcon from '@material-ui/icons/Help';
+
+const styles = theme => ({
     root: {
         height: '100%',
         display: 'flex',
@@ -23,8 +28,19 @@ const styles = {
     scroll: {
         height: '100%',
         overflowY: 'auto'
+    },
+    instanceIcon: {
+        width: 42,
+        height: 42,
+        marginRight: theme.spacing(2),
+        verticalAlign: 'middle'
+    },
+    button: {
+        marginRight: 5,
+        width: 36,
+        height: 36,
     }
-};
+});
 
 class Config extends Component {
 
@@ -57,6 +73,26 @@ class Config extends Component {
         }
     }
 
+    renderHelpButton() {
+        if (this.props.jsonConfig) {
+            return <div style={{display: 'inline-block', position: 'absolute', right: 0, top: 5}}>
+                <Tooltip size="small" title={this.props.t('Show help for this adapter')}>
+                    <Fab classes={{root: this.props.classes.button}} onClick={() => {
+                        let lang = this.props.lang;
+                        if (lang !== 'en' && lang !== 'de' && lang !== 'ru' && lang !== 'zh-cn') {
+                            lang = 'en';
+                        }
+                        window.open(`https://www.iobroker.net/#${lang}/adapters/adapterref/iobroker.${this.props.adapter}/README.md`, 'help');
+                    }}>
+                        <HelpIcon />
+                    </Fab>
+                </Tooltip>
+            </div>;
+        } else {
+            return null;
+        }
+    }
+
     getConfigurator() {
         if (this.props.jsonConfig) {
             return <JsonConfig
@@ -68,6 +104,8 @@ class Config extends Component {
                 socket={this.props.socket}
                 themeName={this.props.themeName}
                 themeType={this.props.themeType}
+                dateFormat={this.props.dateFormat}
+                isFloatComma={this.props.isFloatComma}
                 t={this.props.t}
             />;
         } else {
@@ -89,8 +127,11 @@ class Config extends Component {
                 <AppBar color="default" position="static">
                     <Toolbar variant="dense">
                         <Typography variant="h6" color="inherit">
+                            {this.props.jsonConfig ? <Icon src={this.props.icon} className={this.props.classes.instanceIcon}/>
+                                : null}
                             {`${this.props.t('Instance settings')}: ${this.props.adapter}.${this.props.instance}`}
                         </Typography>
+                        {this.renderHelpButton()}
                     </Toolbar>
                 </AppBar>
                 { this.getConfigurator() }
@@ -108,7 +149,13 @@ Config.propTypes = {
     socket: PropTypes.object,
     themeName: PropTypes.string,
     themeType: PropTypes.string,
-    t: PropTypes.func
+    t: PropTypes.func,
+    isFloatComma: PropTypes.bool,
+    dateFormat: PropTypes.string,
+    className: PropTypes.string,
+    icon: PropTypes.string,
+    readme: PropTypes.string,
+    lang: PropTypes.string,
 };
 
 export default withStyles(styles)(Config);

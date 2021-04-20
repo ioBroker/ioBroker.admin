@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
-import CheckBox from '@material-ui/core/CheckBox';
+import Checkbox from '@material-ui/core/Checkbox';
 import PersonIcon from '@material-ui/icons/Person';
 import GroupIcon from '@material-ui/icons/Group';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -15,7 +15,7 @@ function UserBlock(props) {
     const [{ isDragging }, dragRef, preview] = useDrag(
         {
             type: 'user',
-            item: {user_id: props.user._id}, 
+            item: {user_id: props.user._id},
             end: (item, monitor) => {
                 const dropResult = monitor.getDropResult();
                 if (item && dropResult) {
@@ -52,10 +52,10 @@ function UserBlock(props) {
                     disabled={props.user.common.dontDelete} 
                     onChange={e => {
                         props.socket.extendObject(
-                            props.user._id, 
-                            { common: { 
-                                enabled: !props.user.common.enabled 
-                            } 
+                            props.user._id,
+                            { common: {
+                                enabled: !props.user.common.enabled
+                            }
                         }).then(()=>
                             props.updateData()
                         );
@@ -78,7 +78,11 @@ function UserBlock(props) {
             <CardContent>
                 <Typography gutterBottom component="div" className={props.classes.userGroupTitle}>
                     {
+<<<<<<< .mine
                         props.user.common.icon 
+=======
+                        props.user.common.icon
+>>>>>>> .theirs
                             ? 
                             <span
                                 className={ props.classes.icon }

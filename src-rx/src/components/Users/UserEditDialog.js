@@ -17,6 +17,7 @@ import ColorLensIcon from '@material-ui/icons/ColorLens';
 import ImageIcon from '@material-ui/icons/Image';
 
 import {UsersTextField, UsersColorPicker, UsersFileInput} from './Fields';
+import Utils from '../Utils';
 
 function UserEditDialog(props) {
     let [originalId, setOriginalId] = useState(null);
@@ -43,6 +44,13 @@ function UserEditDialog(props) {
             canSave = false;
         }
     }
+
+    const getShortId = _id => {
+        return _id.split('.').pop();
+    };
+
+    const name2Id = name =>
+        name.replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_').toLowerCase();
 
     return <Dialog PaperProps={{className: props.classes.dialogPaper}} open={props.open} onClose={props.onClose}>
         <DialogTitle className={props.classes.dialogTitle} style={{padding:12}} >

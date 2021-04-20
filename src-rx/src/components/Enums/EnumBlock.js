@@ -1,4 +1,4 @@
-import { useDrop } from 'react-dnd';
+import { useDrop, useDrag } from 'react-dnd';
 import Color from 'color';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
@@ -12,19 +12,37 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 function EnumBlock(props) {
     const [{ canDrop, isOver }, drop] = useDrop(() => ({
-        accept: 'object',
+        accept: ['object', 'enum'],
         drop: () => ({ enum_id: props.enum._id }),
         collect: (monitor) => ({
             isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),
         }),
     }));
-    return <Card ref={drop}>
-        <h2>{props.enum._id}</h2>
-        <div>
-            {props.enum.common.members}
-        </div>
-    </Card>
+
+    const [{ isDragging }, dragRef] = useDrag(
+        {
+            type: 'enum',
+            item: {enum_id: props.enum._id}, 
+            end: (item, monitor) => {
+                const dropResult = monitor.getDropResult();
+                props.moveEnum(item.enum_id, dropResult.enum_id);
+            },
+            collect: (monitor) => ({
+                isDragging: monitor.isDragging(),
+                handlerId: monitor.getHandlerId(),
+            }),
+        }
+    );
+    
+    return <div ref={drop}>
+        <Card ref={dragRef}>
+            <h2>{props.enum._id}</h2>
+            <div>
+                {props.enum.common.members ? props.enum.common.members.map(member => <div key={member}>{member}</div>) : null}
+            </div>
+        </Card>
+    </div>
 }
 
 export default EnumBlock;

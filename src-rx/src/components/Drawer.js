@@ -14,7 +14,6 @@ import I18n from '@iobroker/adapter-react/i18n';
 
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { FaSignOutAlt as LogoutIcon } from 'react-icons/fa';
 import AppsIcon from '@material-ui/icons/Apps';
 import InfoIcon from '@material-ui/icons/Info';
 import StoreIcon from '@material-ui/icons/Store';
@@ -26,6 +25,7 @@ import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
 import SubscriptionsIcon from '@material-ui/icons/Subscriptions';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
+import LogoutIcon from '@iobroker/adapter-react/icons/IconLogout';
 
 // import CodeIcon from '@material-ui/icons/Code';
 // import AcUnitIcon from '@material-ui/icons/AcUnit';
@@ -286,7 +286,11 @@ class Drawer extends Component {
                         tabs,
                     }, async () => {
                         newObj.common['tabsVisible'] = tabs.map(({ name, order, visible }) => ({ name, order, visible }));
-                        await this.props.socket.setSystemConfig(newObj).then(el => console.log('ok'));
+                        try {
+                            await this.props.socket.setSystemConfig(newObj).then(el => console.log('ok'));
+                        } catch (e) {
+                            window.alert('Cannot set system config: ' + e);
+                        }
                     });
                 } else {
                     let newTabs = newObj.common['tabsVisible'].map(({ name, visible }) => {
@@ -312,13 +316,10 @@ class Drawer extends Component {
                 !this.isSwipeable() && this.props.state !== STATES.opened && classes.headerCompact
             )}>
                 <div className={clsx(classes.avatarBlock, state === 0 && classes.avatarVisible, classes.avatarNotVisible)}>
-                    <Avatar className={clsx((this.props.themeName === 'colored' || this.props.themeName === 'blue') && classes.logoWhite, classes.logoSize)} alt="ioBroker" src="img/no-image.png" />
+                    <a href="/#easy" style={{ color: 'inherit', textDecoration: 'none' }}>
+                        <Avatar className={clsx((this.props.themeName === 'colored' || this.props.themeName === 'blue') && classes.logoWhite, classes.logoSize)} alt="ioBroker" src="img/no-image.png" />
+                    </a>
                 </div>
-                { this.props.isSecure &&
-                    <IconButton title={this.props.logoutTitle} onClick={this.props.onLogout}>
-                        <LogoutIcon className={classes.logout} />
-                    </IconButton>
-                }
                 <IconButton onClick={() => {
                     if (this.isSwipeable() || this.props.state === STATES.compact) {
                         this.props.onStateChange(STATES.closed);
@@ -346,9 +347,19 @@ class Drawer extends Component {
         let newObjCopy = JSON.parse(JSON.stringify(systemConfig));
         newObjCopy.common['tabsVisible'] = newTabs.map(({ name, order, visible }) => ({ name, order, visible }));
         if (idx !== undefined) {
-            this.setState({ tabs: newTabs }, async () => await socket.setSystemConfig(newObjCopy).then(el => console.log('ok')))
+            this.setState({ tabs: newTabs }, async () => {
+                try {
+                    await socket.setSystemConfig(newObjCopy).then(el => console.log('ok'));
+                } catch (e) {
+                    window.alert('Cannot set system config: ' + e);
+                }
+            });
         } else {
-            await socket.setSystemConfig(newObjCopy).then(el => console.log('ok'))
+            try {
+                await socket.setSystemConfig(newObjCopy).then(el => console.log('ok'));
+            } catch (e) {
+                window.alert('Cannot set system config: ' + e);
+            }
         }
     }
 
@@ -442,6 +453,9 @@ class Drawer extends Component {
                 {this.getHeader()}
                 <List>
                     {this.getNavigationItems()}
+                    {this.props.isSecure &&
+                        <DrawerItem onClick={this.props.onLogout} text={this.props.t('Logout')} icon={<LogoutIcon />} />
+                    }
                 </List>
                 {this.props.state === STATES.opened && <div style={{
                     position: 'sticky',
@@ -469,6 +483,9 @@ class Drawer extends Component {
                 {this.getHeader()}
                 <List className={classes.list}>
                     {this.getNavigationItems()}
+                    {this.props.isSecure &&
+                        <DrawerItem onClick={this.props.onLogout} text={this.props.t('Logout')} icon={<LogoutIcon />} />
+                    }
                 </List>
                 {this.props.state === STATES.opened && <div style={{
                     position: 'sticky',

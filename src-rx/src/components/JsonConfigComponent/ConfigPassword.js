@@ -74,6 +74,10 @@ class ConfigPassword extends ConfigGeneric {
             disabled={!!disabled}
             onChange={e => this.onChangePassword(e.target.value)}
             label={this.getText(this.props.schema.label)}
+            inputProps={{
+                autoComplete: 'new-password',
+                form: {autoComplete: 'off'},
+            }}
             helperText={this.state._notEqual ? I18n.t('Passwords are not equal!') : this.getText(this.props.schema.help)}
             InputProps={{endAdornment: this.state.value && this.state.value !== PASSWORD_PLACEHOLDER ? <InputAdornment position='end'>
                     <IconButton
@@ -100,6 +104,10 @@ class ConfigPassword extends ConfigGeneric {
                 disabled={!!disabled}
                 onChange={e => this.onChangePassword(undefined, e.target.value)}
                 label={`${this.getText(this.props.schema.label)} (${I18n.t('repeat')})`}
+                inputProps={{
+                    autoComplete: 'new-password',
+                    form: {autoComplete: 'off'},
+                }}
                 helperText={this.state._notEqual ? I18n.t('Passwords are not equal!') : this.getText(this.props.schema.help)}
                 InputProps={{endAdornment: this.state._repeat && this.state._repeat !== PASSWORD_PLACEHOLDER ? <InputAdornment position='end'>
                         <IconButton

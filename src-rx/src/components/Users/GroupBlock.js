@@ -12,12 +12,15 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 function GroupBlock(props) {
+    function canMeDropClosure(monitor) {
+        return canMeDrop( monitor, props );
+    }
     const [{ CanDrop, isOver, isCanDrop }, drop] = useDrop(() => ({
         accept: 'user',
         drop: () => ({ group_id: props.group._id }),
+        canDrop: (item, monitor) => canMeDrop(monitor, props),
         collect: (monitor, item) => ({
             isOver: monitor.isOver(),
-            isCanDrop: !!( monitor.canDrop() && canMeDrop( monitor, props ) ),
             CanDrop: monitor.canDrop()
         }),
     }));
@@ -146,18 +149,13 @@ export default GroupBlock;
 
 export function canMeDrop(monitor, props )
 {
-    //console.log( monitor.getItem().user_id ); 
-    //console.log( props.group.common.members );
+    console.log( monitor.getItem().user_id ); 
+    console.log( props.group.common.members );
     // console.log( props.group.common.members.filter(e => e == monitor.getItem().user_id).length == 0 );
-    if (props.group.common.members) {
-        return !props.group.common.members.includes(monitor.getItem().user_id);
-    } else {
-        return true;
-    }
-    // return Array.isArray(props.group.common.members) 
-    //     ?
-    //     props.group.common.members.filter(e => e == monitor.getItem().user_id).length == 0
-    //     :
-    //     props.group.common.members == monitor.getItem().user_id
+    return props.group.common.members
+        ?
+        !props.group.common.members.includes(monitor.getItem().user_id)
+        :
+        true
 
 }

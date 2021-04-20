@@ -71,7 +71,7 @@ class ConfigJsonEditor extends ConfigGeneric {
                         width="100%"
                         height="100%"
                         onChange={newValue => this.setState({ value: newValue })}
-                        name="UNIQUE_ID_OF_DIV"
+                        name="ConfigJsonEditor"
                         fontSize={14}
                         setOptions={{
                             enableBasicAutocompletion: true,
