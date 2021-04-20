@@ -171,7 +171,7 @@ class Drawer extends Component {
 
         this.instances = null;
 
-        this.getTabs();
+        // this.getTabs();
     }
 
     instanceChangedHandler(changes) {
@@ -307,7 +307,7 @@ class Drawer extends Component {
 
     getHeader() {
 
-        const { classes, state } = this.props;
+        const { classes, state, handleNavigation } = this.props;
 
         return (
             <div className={clsx(
@@ -316,8 +316,8 @@ class Drawer extends Component {
                 !this.isSwipeable() && this.props.state !== STATES.opened && classes.headerCompact
             )}>
                 <div className={clsx(classes.avatarBlock, state === 0 && classes.avatarVisible, classes.avatarNotVisible)}>
-                    <a href="/#easy" style={{ color: 'inherit', textDecoration: 'none' }}>
-                        <Avatar className={clsx((this.props.themeName === 'colored' || this.props.themeName === 'blue') && classes.logoWhite, classes.logoSize)} alt="ioBroker" src="img/no-image.png" />
+                    <a href="/#easy" onClick={event=>event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
+                        <Avatar onClick={()=>handleNavigation('easy')} className={clsx((this.props.themeName === 'colored' || this.props.themeName === 'blue') && classes.logoWhite, classes.logoSize)} alt="ioBroker" src="img/no-image.png" />
                     </a>
                 </div>
                 <IconButton onClick={() => {
@@ -374,7 +374,7 @@ class Drawer extends Component {
             if (!editList && !tab.visible) {
                 return null
             }
-            return <a href={`/#${tab.name}`} style={{ color: 'inherit', textDecoration: 'none' }} key={tab.name}>
+            return <a onClick={event=>event.preventDefault()} href={`/#${tab.name}`} style={{ color: 'inherit', textDecoration: 'none' }} key={tab.name}>
                 <DragWrapper
                     canDrag={editList}
                     iconJSX={!!tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <img alt="" className={classes.icon} src={tab.icon} />}

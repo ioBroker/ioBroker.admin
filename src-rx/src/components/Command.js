@@ -330,6 +330,10 @@ class Command extends Component {
     }
 }
 
+Command.defaultProps = {
+    onSetCommandRunning: ()=>{}
+};
+
 Command.propTypes = {
     noSpacing: PropTypes.bool,
     currentHost: PropTypes.string.isRequired,

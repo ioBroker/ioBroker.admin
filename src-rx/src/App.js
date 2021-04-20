@@ -1195,14 +1195,13 @@ class App extends Router {
         >
             {I18n.t('Some data are not stored. Discard?')}
         </ConfirmDialog>;*/
-
         return this.state.dataNotStoredDialog && <ConfirmDialog
             title={I18n.t('Please confirm')}
             text={I18n.t('Some data are not stored. Discard?')}
             ok={I18n.t('Ok')}
             cancel={I18n.t('Cancel')}
             onClose={isYes =>
-                isYes ? this.confirmDataNotStored() : this.confirmDataNotStored()}
+                isYes ? this.confirmDataNotStored() : this.closeDataNotStoredDialog()}
         />;
     }
 
@@ -1348,8 +1347,8 @@ class App extends Router {
                                         <Typography>admin</Typography>
                                     </Hidden>}
                                 <Grid item>
-                                    <a href="/#easy" style={{ color: 'inherit', textDecoration: 'none' }}>
-                                        <Avatar className={clsx((this.state.themeName === 'colored' || this.state.themeName === 'blue') && classes.logoWhite)} alt="ioBroker" src="img/no-image.png" />
+                                    <a href="/#easy" onClick={event=>event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
+                                        <Avatar onClick={()=>this.handleNavigation('easy')} className={clsx((this.state.themeName === 'colored' || this.state.themeName === 'blue') && classes.logoWhite)} alt="ioBroker" src="img/no-image.png" />
                                     </a>
                                 </Grid>
                             </Grid>
