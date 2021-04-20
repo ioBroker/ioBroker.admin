@@ -3,6 +3,7 @@ import React, {
     useEffect,
     useState,
 } from 'react';
+import semver from 'semver';
 
 export const ContextWrapper = createContext();
 
@@ -38,7 +39,9 @@ export const ContextWrapperProvider = ({ children }) => {
             Object.keys(stateContext.installed).forEach(element => {
                 if (element !== 'js-controller' &&
                     element !== 'hosts' &&
-                    stateContext.installed[element]?.version !== stateContext.repository[element]?.version
+                    stateContext.installed[element]?.version &&
+                    stateContext.repository[element]?.version &&
+                    semver.gt(stateContext.repository[element]?.version, stateContext.installed[element]?.version)
                 ) {
                     count++;
                 }

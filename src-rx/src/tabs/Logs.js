@@ -82,7 +82,7 @@ const styles = theme => ({
         color: grey[500]
     },
     source: {
-        width: 230
+        width: 200
     },
     pid: {
         width: 55
@@ -553,7 +553,7 @@ class Logs extends Component {
                         <DeleteForeverIcon />
                     </IconButton>
                 </Tooltip>
-                <Tooltip title={this.props.t('PID hide/show')}>
+                <Tooltip title={this.props.t('Show/hide PID')}>
                     <IconButton
                         onClick={() => this.changePid()}
                         color={!this.state.pid ? "default" : "primary"}

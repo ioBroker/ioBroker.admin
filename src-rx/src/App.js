@@ -1260,12 +1260,12 @@ class App extends Router {
                             <MenuIcon />
                         </IconButton>
                         <div className={classes.wrapperButtons}>
-                            <Tooltip title={I18n.t('Device discovery')}>
+                            <Tooltip title={I18n.t('Discovery devices')}>
                                 <IconButton>
                                     <VisibilityIcon />
                                 </IconButton>
                             </Tooltip>
-                            <Tooltip title={I18n.t('System')}>
+                            <Tooltip title={I18n.t('System settings')}>
                                 <IconButton onClick={() => Router.doNavigate(null, 'system')}>
                                     <BuildIcon />
                                 </IconButton>
@@ -1304,7 +1304,7 @@ class App extends Router {
                             </Tooltip>
                             {/*This will be removed later to settings, to not allow so easy to edit it*/}
                             {this.state.expertMode &&
-                                <Tooltip title={I18n.t('Base settings')}>
+                                <Tooltip title={I18n.t('Host Base Settings')}>
                                     <IconButton onClick={() => Router.doNavigate(null, 'base')}>
                                         <BuildIcon className={classes.baseSettingsButton} />
                                     </IconButton>

@@ -19,7 +19,7 @@ import {
 import AddIcon from '@material-ui/icons/Add';
 import AddToPhotosIcon from '@material-ui/icons/AddToPhotos';
 import BugReportIcon from '@material-ui/icons/BugReport';
-import BuildIcon from '@material-ui/icons/Build';
+import BuildIcon from '@material-ui/icons/RotateRight';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import CloudIcon from '@material-ui/icons/Cloud';
 import CloudOffIcon from '@material-ui/icons/CloudOff';
@@ -142,6 +142,12 @@ class AdapterRow extends Component {
             alignItems="center"
             spacing={1}
         >
+            
+            <Grid item>
+                {installedVersion +
+                    (installedCount ? ` (${installedCount}${installedCount !== enabledCount ? '~' : ''})` : '')
+                }
+            </Grid>
             { installedFrom &&
                 <Grid item container>
                     <Tooltip title={t('Non-NPM-Version: ') + installedFrom}>
@@ -152,11 +158,6 @@ class AdapterRow extends Component {
                     </Tooltip>
                 </Grid>
             }
-            <Grid item>
-                {installedVersion +
-                    (installedCount ? ` (${installedCount}${installedCount !== enabledCount ? '~' : ''})` : '')
-                }
-            </Grid>
         </Grid>;
     }
 

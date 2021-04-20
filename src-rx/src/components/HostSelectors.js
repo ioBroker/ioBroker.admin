@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { withStyles } from '@material-ui/core';
+import { Tooltip, withStyles } from '@material-ui/core';
 
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
@@ -103,7 +103,7 @@ export default withStyles(styles)(function HostSelectors({ classes, disabled, so
         return null;
     }
 
-    return <div>
+    return <div><Tooltip title={I18n.t('Change current host')}>
         <Button className={classes.button} style={{
             background: hostSelect?.common?.color || 'none',
             borderColor: hostSelect?.common?.color ? Utils.invertColor(hostSelect.common.color) : 'none'
@@ -123,6 +123,7 @@ export default withStyles(styles)(function HostSelectors({ classes, disabled, so
 
             </div>
         </Button>
+    </Tooltip>
         <Menu
             id="simple-menu"
             anchorEl={anchorEl}

@@ -5,10 +5,8 @@ class InstancesWorker {
         this.resolve = null;
         this.promise = new Promise(resolve => this.resolve = resolve);
 
-        this.objectChangeHandlerBound = this.objectChangeHandler.bind(this);
-        this.connectionHandlerBound = this.connectionHandler.bind(this);
-        socket.registerConnectionHandler(this.connectionHandlerBound);
-        socket.subscribeObject('system.adapter.*', this.objectChangeHandlerBound)
+        socket.registerConnectionHandler(this.connectionHandler);
+        socket.subscribeObject('system.adapter.*', this.objectChangeHandler)
             .catch(e => window.alert('Cannot subscribe on object: ' + e));
         this.connected = this.socket.isConnected();
 
@@ -18,7 +16,7 @@ class InstancesWorker {
         this.objects = null;
     }
 
-    objectChangeHandler(id, obj) {
+    objectChangeHandler = (id, obj) => {
         // if instance
         if (id.match(/^system\.adapter\.[^.]+\.\d+$/)) {
             let type;
@@ -50,7 +48,7 @@ class InstancesWorker {
 
             this.handlers.forEach(cb => cb([{ id, obj, type, oldObj }]));
         }
-    }
+    };
 
     // be careful with this object. Do not change them.
     getInstances(update) {
@@ -83,7 +81,7 @@ class InstancesWorker {
             .catch(e => window.alert('Cannot get adapter instances: ' + e));
     }
 
-    connectionHandler(isConnected) {
+    connectionHandler = isConnected => {
         if (isConnected && !this.connected) {
             this.connected = true;
             this._readInstances(true);

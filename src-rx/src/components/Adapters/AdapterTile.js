@@ -10,7 +10,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import AddIcon from '@material-ui/icons/Add';
 import AddToPhotosIcon from '@material-ui/icons/AddToPhotos';
-import BuildIcon from '@material-ui/icons/Build';
+import BuildIcon from '@material-ui/icons/RotateRight';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import HelpIcon from '@material-ui/icons/Help';
 import PublishIcon from '@material-ui/icons/Publish';

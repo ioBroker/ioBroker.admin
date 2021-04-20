@@ -1,5 +1,5 @@
-import { Button, Menu, MenuItem, makeStyles } from '@material-ui/core';
-import React, { useState,  } from 'react';
+import { Button, Menu, MenuItem, makeStyles, Tooltip } from '@material-ui/core';
+import React, { useState, } from 'react';
 
 import MaterialDynamicIcon from '../helpers/MaterialDynamicIcon';
 
@@ -13,19 +13,21 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const CustomSelectButton = ({ arrayItem, onClick, value, contained, icons, t, translateSuffix }) => {
+const CustomSelectButton = ({ arrayItem, title, onClick, value, contained, buttonIcon, icons, t, translateSuffix }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     translateSuffix = translateSuffix || '';
     const classes = useStyles();
 
     return <>
-        <Button
-            className={classes.button}
-            variant={contained ? 'contained' : 'outlined'}
-            color="primary"
-            onClick={e => setAnchorEl(e.currentTarget)}>
-            {value}
-        </Button>
+        <Tooltip title={title || ''}>
+            <Button
+                className={classes.button}
+                variant={contained ? 'contained' : 'outlined'}
+                color="primary"
+                onClick={e => setAnchorEl(e.currentTarget)}>
+                {buttonIcon || null}{value}
+            </Button>
+        </Tooltip>
         <Menu
             anchorEl={anchorEl}
             keepMounted

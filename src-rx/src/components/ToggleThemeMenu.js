@@ -25,7 +25,7 @@ export default function ToggleThemeMenu({ themeName, toggleTheme, t }) {
     return (
         <div>
 
-            <Tooltip title={t('Theme')}>
+            <Tooltip title={t('Change color theme')}>
                 <IconButton onClick={handleClick}>
                     {themeName === 'dark' && <Brightness4Icon />}
                     {themeName === 'blue' && <Brightness5Icon />}

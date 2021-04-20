@@ -30,7 +30,6 @@ const styles = theme => ({
     img: {
         width: 60,
         height: 60,
-        cursor: 'pointer',
         position: 'relative',
         borderRadius: 60,
     },
@@ -61,6 +60,9 @@ const styles = theme => ({
     },
     IconButtons:{
         display:'flex'
+    },
+    logoPointer: {
+        cursor: 'pointer'
     }
 });
 
@@ -68,7 +70,8 @@ class EasyMode extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            configs: this.props.configs
+            configs: this.props.configs,
+            strictMode: !this.props.configs,
         };
         if (!this.props.configs) {
             this.props.socket.getEasyMode()
@@ -110,11 +113,11 @@ class EasyMode extends Component {
             >
                 <Toolbar className={classes.toolBar}>
                     <div className={classes.wrapperHeader}>
-                        <CardMedia onClick={() => navigate(null)} className={clsx(classes.img, themeName === 'colored' && classes.logoWhite)} component="img" image={'img/no-image.png'} />
+                        <CardMedia onClick={this.state.strictMode ? () => navigate('tab-intro') : null} className={clsx(classes.img, themeName === 'colored' && classes.logoWhite, !this.state.strictMode && classes.logoPointer)} component="img" image={'img/no-image.png'} />
                         <div className={classes.headerName}>{t('Easy Admin')}</div>
                     </div>
                     <div className={classes.IconButtons}>
-                        {systemConfig && <IconButton onClick={()=>window.history.back()}>
+                        {this.state.strictMode && <IconButton onClick={()=>navigate('tab-intro')}>
                             <ArrowBackIcon />
                         </IconButton>}
                         <ToggleThemeMenu t={t} toggleTheme={toggleTheme} themeName={themeName} />

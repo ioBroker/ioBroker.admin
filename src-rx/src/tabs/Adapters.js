@@ -1241,7 +1241,7 @@ class Adapters extends Component {
                         {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
                     </IconButton>
                 </Tooltip>
-                <Tooltip title={this.t('Update adapter information')}>
+                <Tooltip title={this.t('Update view')}>
                     <IconButton onClick={() => this.getAdaptersInfo(true)}>
                         <RefreshIcon />
                     </IconButton>
@@ -1263,25 +1263,25 @@ class Adapters extends Component {
                     </IconButton>
                 </Tooltip>}
 
-                <Tooltip title={this.t('Filter local connection type')}>
+                {/*<Tooltip title={this.t('Filter local connection type')}>
                     <IconButton onClick={() => this.toggleConnectionTypeFilter()}>
                         <CloudOffIcon color={this.state.filterConnectionType ? 'primary' : 'inherit'} />
                     </IconButton>
-                </Tooltip>
+                 </Tooltip>*/}
                 {this.state.updateList ?
                     <IconButton
                         disabled={true}>
                         <StarIcon color="primary" style={{ opacity: 0.3 }} />
                     </IconButton>
                     :
-                    <Tooltip title={this.t('installed adapters')}>
+                    <Tooltip title={this.t('Filter installed adapters')}>
                         <IconButton
                             onClick={() => this.changeInstalledList()}>
                             <StarIcon color={this.state.installedList ? 'primary' : 'inherit'} />
                         </IconButton>
                     </Tooltip>
                 }
-                <Tooltip title={this.t('adapter with updates')}>
+                <Tooltip title={this.t('Filter adapter with updates')}>
                     <IconButton onClick={() => this.changeUpdateList()}>
                         <UpdateIcon color={this.state.updateList ? 'primary' : 'inherit'} />
                     </IconButton>
@@ -1303,7 +1303,7 @@ class Adapters extends Component {
                 <div className={classes.grow} />
                 <TextField
                     inputRef={this.inputRef}
-                    label={this.t('Filter')}
+                    label={this.t('Filter by name')}
                     defaultValue=""
                     onChange={event => this.handleFilterChange(event)}
                     InputProps={{

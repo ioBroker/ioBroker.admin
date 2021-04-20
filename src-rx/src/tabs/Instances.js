@@ -411,7 +411,7 @@ class Instances extends Component {
             instance.mode = common.mode || null;
             instance.loglevel = common.loglevel || null;
             instance.adapter = common.name || null;
-            instance.version = common.installedVersion || null;
+            
 
             formatted[obj._id] = instance;
         });
@@ -470,20 +470,26 @@ class Instances extends Component {
     };
 
     onObjectChange = (id, obj) => {
-        if (this.objects[id]) {
-            if (obj) {
-                this.objects[id] = obj;
-            } else {
-                delete this.objects[id];
+        let instanceChanged = false;
+        if (obj) {
+            this.objects[id] = obj;
+            if (this.objects[id].type === 'instance') {
+                instanceChanged = true;
             }
         } else if (this.objects[id]) {
+            if (this.objects[id].type === 'instance') {
+                instanceChanged = true;
+            }
             delete this.objects[id];
         }
+
         if (!this.objectsUpdateTimer) {
-            this.objectsUpdateTimer = setTimeout(() => {
+            this.objectsUpdateTimer = setTimeout(_instanceChanged => {
+                _instanceChanged && console.log('Update versions');
+
                 this.objectsUpdateTimer = null;
                 this.forceUpdate();
-            }, 300);
+            }, 300, instanceChanged);
         }
     };
 
@@ -530,8 +536,8 @@ class Instances extends Component {
         }
 
         if (common && common.enabled && (!common.webExtension || !obj.native.webInstance || mode === 'daemon')) {
-            const alive      = this.states[id + '.alive'];
-            const connected  = this.states[id + '.connected'];
+            const alive = this.states[id + '.alive'];
+            const connected = this.states[id + '.connected'];
             const connection = this.states[instance.id + '.info.connection'];
 
             if (!connected?.val || !alive?.val) {
@@ -562,7 +568,7 @@ class Instances extends Component {
         return obj?.common?.runAsCompactMode || false;
     }
 
-    isCompactGroupCheck = (id) => {
+    isCompactGroupCheck = id => {
         const obj = this.adapters.find(({ _id }) => _id === `system.adapter.${id}`);
         return obj?.common?.compact || false;
     }
@@ -682,20 +688,20 @@ class Instances extends Component {
 
     getPanels() {
         let list = Object.keys(this.state.instances).map((id, idx) => {
-            const instance        = this.state.instances[id];
-            const running         = this.isRunning(id);
-            const alive           = this.isAlive(id);
-            const compactGroup    = this.isCompactGroup(id);
-            const compact         = this.isCompact(id);
-            const supportCompact  = instance?.common?.compact || false;
+            const instance = this.state.instances[id];
+            const running = this.isRunning(id);
+            const alive = this.isAlive(id);
+            const compactGroup = this.isCompactGroup(id);
+            const compact = this.isCompact(id);
+            const supportCompact = instance?.common?.compact || false;
             const connectedToHost = this.isConnectedToHost(id);
-            const connected       = this.isConnected(id);
-            const name            = this.getName(id);
-            const logLevel        = this.isLogLevel(id);
+            const connected = this.isConnected(id);
+            const name = this.getName(id);
+            const logLevel = this.isLogLevel(id);
             const loglevelIcon = this.getLogLevelIcon(logLevel);
-            const checkCompact    = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
-            const inputOutput     = this.getInputOutput(id);
-            const mode            = this.isModeSchedule(id);
+            const checkCompact = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
+            const inputOutput = this.getInputOutput(id);
+            const mode = this.isModeSchedule(id);
 
             const setCompact = () =>
                 this.extendObject('system.adapter.' + instance.id, { common: { runAsCompactMode: !compact } });
@@ -716,7 +722,7 @@ class Instances extends Component {
                 }
             }
 
-            const checkSentry   = this.isSentryCheck(instance.adapter);
+            const checkSentry = this.isSentryCheck(instance.adapter);
             const currentSentry = this.isSentry(id);
             const memoryLimitMB = this.isMemoryLimitMB(id);
 
@@ -869,14 +875,16 @@ class Instances extends Component {
     }
 
     handleChange = (panel) => {
-        this.setState((prevState) => ({
+        this.setState(prevState => ({
             expanded: prevState.expanded !== panel ? panel : null
         }));
     }
+
     async getHostsData() {
         this.props.socket.getHostInfo(this.props.idHost)
             .catch(error => {
-                return error;
+                window.alert('Cannot read host information: ' + error);
+                return {};
             })
             .then(hostData => this.setState({ hostData }));
 
@@ -907,7 +915,7 @@ class Instances extends Component {
 
     changeCompactGroup = filterCompactGroup => {
         window.localStorage.setItem(`Instances.filterCompactGroup`, JSON.stringify(filterCompactGroup));
-        this.setState({filterCompactGroup});
+        this.setState({ filterCompactGroup });
     };
 
     handleFilterChange(event) {
@@ -987,7 +995,7 @@ class Instances extends Component {
                         <PlayArrowIcon color={this.state.playArrow ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip>
-                {this.props.expertMode && <Tooltip title="sentry">
+                {false && this.props.expertMode && <Tooltip title="sentry">
                     <IconButton
                         size="small"
                         className={classes.button}
@@ -1000,21 +1008,20 @@ class Instances extends Component {
                         />
                     </IconButton>
                 </Tooltip>}
-                {this.props.expertMode && this.state.compact ? <div className={classes.compactButtons}>
-                    <Tooltip title={this.t('allow set of compact groups')}>
-                        <ViewCompactIcon style={{ margin: 10 }} color="primary" />
-                    </Tooltip>
+                {this.props.expertMode && this.state.compact ?
                     <CustomSelectButton
-                            t={this.t}
-                            arrayItem={[
-                                { name: 'All' },
-                                { name: 'controller' },
-                                { name: 'default' },
-                                ...Array(this.state.compactGroupCount - 1).fill().map((_, idx) => ({ name: idx + 2 }))
-                            ]}
-                            onClick={value => this.changeCompactGroup(value)}
-                            value={this.state.filterCompactGroup} />
-                </div> : null}
+                        title={this.t('Filter specific compact group')}
+                        t={this.t}
+                        arrayItem={[
+                            { name: 'All' },
+                            { name: 'controller' },
+                            { name: 'default' },
+                            ...Array(this.state.compactGroupCount - 1).fill().map((_, idx) => ({ name: idx + 2 }))
+                        ]}
+                        buttonIcon={<ViewCompactIcon style={{ marginRight: 4 }} color="primary" />}
+                        onClick={value => this.changeCompactGroup(value)}
+                        value={this.state.filterCompactGroup} />
+                    : null}
                 <div className={classes.grow} />
                 <TextField
                     inputRef={this.inputRef}
