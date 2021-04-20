@@ -109,10 +109,23 @@ function patchIndex() {
         if (fs.existsSync(dest + '/index.html')) {
             let code = fs.readFileSync(dest + '/index.html').toString('utf8');
             // replace code
+            code = code.replace(/<script>const script=document[^<]+<\/script>/, `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./lib/js/socket.io.js"></script>`);
             code = code.replace(/<script>var script=document[^<]+<\/script>/, `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./lib/js/socket.io.js"></script>`);
             fs.writeFileSync(dest + '/index.html', code);
+            resolve();
+        } else {
+            // wait till finished
+            setTimeout(() => {
+                if (fs.existsSync(dest + '/index.html')) {
+                    let code = fs.readFileSync(dest + '/index.html').toString('utf8');
+                    // replace code
+                    code = code.replace(/<script>const script=document[^<]+<\/script>/, `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./lib/js/socket.io.js"></script>`);
+                    code = code.replace(/<script>var script=document[^<]+<\/script>/, `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./lib/js/socket.io.js"></script>`);
+                    fs.writeFileSync(dest + '/index.html', code);
+                }
+                resolve();
+            }, 2000);
         }
-        resolve();
     });
 }
 

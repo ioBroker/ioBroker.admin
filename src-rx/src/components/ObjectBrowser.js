@@ -1408,7 +1408,7 @@ class ObjectBrowser extends Component {
 
         if (props.router) {
             const location = props.router.getLocation();
-            if (location.id && location.dialog === 'custom') {
+            if (location.id && location.dialog === 'customs') {
                 customDialog = [location.id];
                 this.pauseSubscribe(true);
             }
@@ -2781,7 +2781,7 @@ class ObjectBrowser extends Component {
             <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
                 {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t('ra_States')}: ${Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length}`}
             </div>
-            {this.props.objectEditBoolean && 
+            {this.props.objectEditBoolean &&
             <Tooltip title={this.props.t('ra_Edit custom config')}>
             <IconButton onClick={() => {
                 // get all visible states
@@ -2943,7 +2943,7 @@ class ObjectBrowser extends Component {
                     window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', id);
 
                     this.pauseSubscribe(true);
-                    this.props.router && this.props.router.doNavigate(null, 'custom', id);
+                    this.props.router && this.props.router.doNavigate(null, 'customs', id);
                     this.setState({ customDialog: [id] });
                 }}
             >

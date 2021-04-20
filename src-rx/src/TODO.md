@@ -29,14 +29,14 @@ Issues Admin5 Collection #1
     ] OR ... a comma-separated list like 192.168.178.119,192.168.178.128,192.168.178.129
   * (BF) Objects/States redis: family should be a selection with values 0 (auto), 4 (IPv4) or 6 (IPv6)
   * Log: Move the "+" buttons to bottom of the page
-  * Log: Change accordeon title of log entries to other background color
+  * Log: Change accordion title of log entries to other background color
 
 * Adapter
   * Tile view: add Github logo (in front of installed version)
   * List view: Remove "Bugreport icon" on adapter logo and add as Sentry icon after the
     cloud/connection-type logos
-  * Tile view: Add sentry icon if sentry plugin is used aside the cloud/conntype logos
-  * List view: Increase size of Adapter Logos (apdding 0, size 32)
+  * Tile view: Add sentry icon if sentry plugin is used aside the cloud/conn-type logos
+  * List view: Increase size of Adapter Logos (padding 0, size 32)
   * Both views: Update All dialog: move select all/none to right to be "over" the other checkboxes
   * List view: Custom Install warnings (both tabs) - add some more space on top of "Warning" text
 
@@ -46,7 +46,7 @@ Issues Admin5 Collection #1
   * List/Tile view: Edit memory Limit for instance Dialog: Add info text: The default memory limit is 512MB on 32-bit systems, and 1GB on 64-bit systems. The limit can be raised with this setting to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)"
   * Both views: Compact group: move configuration to own dialog with info text: "For each compact group one separate process is started. Define in which group this instance will run."
    - common.compact (if compact available), common.runAsCompactMode (default false) - if compact mode enabled, compactGroup 0 - x, only other 2 on true
-  * Both views: (onyl expert mode) Add "common.tier" selection as dialog with infotext: "Tiers define the order of adapters when the
+  * Both views: (only expert mode) Add "common.tier" selection as dialog with infotext: "Tiers define the order of adapters when the
     system starts.". Tiers: 
     - "1: Logic adapters", 
     - "2: Data provider adapters", 
@@ -78,7 +78,7 @@ Issues Admin5 Collection #1
 ## Objects
 - Decode quality code to text (BF)
 - Add in object edit the possibility to set color and icon (icon could be uploaded as base64 and may not be bigger than 5k) and use it for text color. Add possibility to scale the images.
-  - Integrate https://react-dropzone.js.org/#!/Doka for image uploa
+  - Integrate https://react-dropzone.js.org/#!/Doka for image upload
 
 ## Files
 ## Hosts
@@ -96,3 +96,4 @@ Issues Admin5 Collection #1
 
 ## JSON config - Admin settings dialog (index_m.html)
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)
+- Table, move items up and down if add/delete possible 

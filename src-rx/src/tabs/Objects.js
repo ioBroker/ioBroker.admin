@@ -13,8 +13,6 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Snackbar from '@material-ui/core/Snackbar';
-//import Checkbox from '@material-ui/core/Checkbox';
-//import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 // icons
 import IconCancel from '@material-ui/icons/Close';

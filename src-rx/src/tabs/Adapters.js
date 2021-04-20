@@ -29,7 +29,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Rating from '@material-ui/lab/Rating';
 
-import CloudOffIcon from '@material-ui/icons/CloudOff';
+// import CloudOffIcon from '@material-ui/icons/CloudOff';
 import FolderIcon from '@material-ui/icons/Folder';
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -247,7 +247,7 @@ class Adapters extends Component {
         this.listOfVisibleAdapterLength = 0;
         this.allAdapters = 0;
         this.installedAdapters = 0;
-        this.updateAdapters = 0;
+        this.recentUpdatedAdapters = 0;
         this.uuid = '';
     }
 
@@ -304,25 +304,14 @@ class Adapters extends Component {
             const currentHost = this.props.currentHost;
 
             try {
-                const hostDataProm   = this.props.socket.getHostInfo(currentHost).catch(e => window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`));
-                const repositoryProm = this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: updateRepo }, updateRepo).catch(e => window.alert('Cannot getRepository: ' + e));
-                const installedProm  = this.props.socket.getInstalled(currentHost, updateRepo).catch(e => window.alert('Cannot getInstalled: ' + e));
-                const instancesProm  = this.props.socket.getAdapterInstances(updateRepo).catch(e => window.alert('Cannot getAdapterInstances: ' + e));
-                const rebuildProm    = this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD').catch(e => window.alert('Cannot checkFeatureSupported: ' + e));
-                const objectsProm    = this.props.socket.getForeignObjects('system.adapter.*', 'adapter').catch(e => window.alert('Cannot read system.adapters.*: ' + e));
-                const ratingsProm    = this.props.socket.getRatings(updateRepo).catch(e => window.alert('Cannot read ratings: ' + e));
+                const hostData   = await this.props.socket.getHostInfo(currentHost).catch(e => window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`));
+                const repository = await this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: updateRepo }, updateRepo).catch(e => window.alert('Cannot getRepository: ' + e));
+                const installed  = await this.props.socket.getInstalled(currentHost, updateRepo).catch(e => window.alert('Cannot getInstalled: ' + e));
+                const instances  = await this.props.socket.getAdapterInstances(updateRepo).catch(e => window.alert('Cannot getAdapterInstances: ' + e));
+                const rebuild    = await this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD').catch(e => window.alert('Cannot checkFeatureSupported: ' + e));
+                const objects    = await this.props.socket.getForeignObjects('system.adapter.*', 'adapter').catch(e => window.alert('Cannot read system.adapters.*: ' + e));
+                const ratings    = await this.props.socket.getRatings(updateRepo).catch(e => window.alert('Cannot read ratings: ' + e));
 
-                const [hostData, repository, installed, instances, rebuild, objects, ratings] = await Promise.all(
-                    [
-                        hostDataProm,
-                        repositoryProm,
-                        installedProm,
-                        instancesProm,
-                        rebuildProm,
-                        objectsProm,
-                        ratingsProm
-                    ]
-                );
                 this.uuid = ratings.uuid;
 
                 // console.log('objects', hostData, instancesProm)
@@ -340,7 +329,7 @@ class Adapters extends Component {
                     const adapter = installed[value];
                     const _obj = objects['system.adapter.' + value];
                     if (_obj?.common?.ignoreVersion) {
-                        adapter.ignoreVersion = _obj?.common?.ignoreVersion;
+                        adapter.ignoreVersion = _obj.common.ignoreVersion;
                     }
 
                     if (!adapter.controller && value !== 'hosts') {
@@ -360,6 +349,7 @@ class Adapters extends Component {
                         adapter.keywords = adapter.keywords.map(word => word.toLowerCase());
                     }
                     const _installed = installed[value];
+
                     if (_installed &&
                         _installed.ignoreVersion !== adapter.version &&
                         Adapters.updateAvailable(_installed.version, adapter.version)
@@ -383,7 +373,7 @@ class Adapters extends Component {
 
                         const daysAgo = Math.round((now - new Date(adapter.versionDate).getTime()) / 86400000);
                         if (daysAgo <= 31) {
-                            this.updateAdapters++
+                            this.recentUpdatedAdapters++
                         }
                         if (installed[value]) {
                             this.installedAdapters++
@@ -1191,7 +1181,7 @@ class Adapters extends Component {
                 <DialogContent style={{ fontSize: 16 }}>
                     <div className={this.props.classes.counters}>{this.t('Total adapters')}: <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.allAdapters}</span></div>
                     <div className={this.props.classes.counters}>{this.t('Installed adapters')}: <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.installedAdapters}</span></div>
-                    <div className={this.props.classes.counters}>{this.t('Last month updated adapters')}: <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.updateAdapters}</span></div>
+                    <div className={this.props.classes.counters}>{this.t('Last month updated adapters')}: <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.recentUpdatedAdapters}</span></div>
                 </DialogContent>
                 <DialogActions>
                     <Button variant="contained" onClick={() => this.setState({ showStatistics: false })} color="primary" autoFocus>
@@ -1346,7 +1336,7 @@ class Adapters extends Component {
                         <div className={clsx(classes.counters, classes.greenText)}>{this.t('Selected adapters')}<div ref={this.countRef} /></div>
                         <div className={classes.counters}>{this.t('Total adapters')}:<div>{this.allAdapters}</div></div>
                         <div className={classes.counters}>{this.t('Installed adapters')}:<div>{this.installedAdapters}</div></div>
-                        <div className={classes.counters}>{this.t('Last month updated adapters')}:<div>{this.updateAdapters}</div></div>
+                        <div className={classes.counters}>{this.t('Last month updated adapters')}:<div>{this.recentUpdatedAdapters}</div></div>
                     </div>
                 </Hidden>
             </TabHeader>

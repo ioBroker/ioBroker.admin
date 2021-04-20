@@ -7,7 +7,7 @@ class InstancesWorker {
 
         socket.registerConnectionHandler(this.connectionHandler);
         socket.subscribeObject('system.adapter.*', this.objectChangeHandler)
-            .catch(e => window.alert('Cannot subscribe on object: ' + e));
+            .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
         this.connected = this.socket.isConnected();
 
         // read instances

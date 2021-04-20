@@ -443,9 +443,9 @@ class App extends Router {
                                     })
                             } else {
                                 // create Workers
-                                this.logsWorker = this.logsWorker || new LogsWorker(this.socket, 1000);
+                                this.logsWorker      = this.logsWorker      || new LogsWorker(this.socket, 1000);
                                 this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
-                                this.hostsWorker = this.hostsWorker || new HostsWorker(this.socket);
+                                this.hostsWorker     = this.hostsWorker     || new HostsWorker(this.socket);
 
                                 const newState = {
                                     lang: this.socket.systemLang,
@@ -473,7 +473,7 @@ class App extends Router {
                                     }
                                 }
 
-                                this.getUpdateData(newState.currentHost, newState.hosts);
+                                this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
 
                                 this.subscribeOnHostsStatus();
 
@@ -588,9 +588,17 @@ class App extends Router {
         }
     }
 
-    getUpdateData = async (currentHost, hosts) => {
+    readRepoAndInstalledInfo = async (currentHost, hosts) => {
         const repository = await this.socket.getRepository(currentHost, { update: false });
-        const installed = await this.socket.getInstalled(currentHost, { update: false })
+        const installed  = await this.socket.getInstalled(currentHost, { update: false });
+        const adapters   = await this.socket.getAdapters(); // we need information about ignored versions
+
+        adapters.forEach(adapter => {
+            if (installed[adapter?.common?.name] && adapter.common?.ignoreVersion) {
+                installed[adapter.common.name].ignoreVersion = adapter.common.ignoreVersion;
+            }
+        });
+
         this.context.setStateContext({ hosts, repository, installed });
     }
 
@@ -601,7 +609,7 @@ class App extends Router {
     onHostStatusChanged = (id, state) => {
         const host = this.state.hosts.find(_id => id + '.alive' === id);
         if (host) {
-            console.log('Current status ' + id + ': ' + state?.val);
+            console.log(`Current status ${id}: ${state?.val}`);
         }
     };
 
@@ -612,7 +620,7 @@ class App extends Router {
 
     componentWillUnmount() {
         window.removeEventListener('hashchange', () => this.onHashChanged(), false);
-        // unsubscibe
+        // unsubscribe
         // this.state.hosts.forEach
         // this.socket.unsubscribeState(id + '.alive', this.onHostStatusChanged);
     }

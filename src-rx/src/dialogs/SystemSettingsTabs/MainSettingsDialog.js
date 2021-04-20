@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import { MapContainer as LeafletMap, TileLayer } from 'react-leaflet';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
@@ -16,7 +17,6 @@ import Utils from '../../Utils';
 import countries from '../../assets/json/countries';
 
 import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
-import PropTypes from "prop-types";
 
 const styles = theme => ({
     tabPanel: {
