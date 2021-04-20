@@ -477,7 +477,11 @@ class App extends Router {
 
                                 this.subscribeOnHostsStatus();
 
+<<<<<<< .mine
+                    newState.expertMode = window.sessionStorage.getItem('App.expertMode') === 'true' || !!newState.systemConfig.common.expertMode;
+=======
                                 newState.expertMode = window.sessionStorage.getItem('App.expertMode') === 'true' || !!newState.systemConfig.common.expertMode;
+>>>>>>> .theirs
 
                                 // Read user and show him
                                 if (this.socket.isSecure) {
@@ -1240,6 +1244,15 @@ class App extends Router {
             }
 
 
+<<<<<<< .mine
+       // console.log( this.state.themeName )
+       // console.log( this.state.theme )
+
+=======
+
+
+
+>>>>>>> .theirs
         return <ThemeProvider theme={this.state.theme}>
             <Paper elevation={0} className={classes.root}>
                 <AppBar

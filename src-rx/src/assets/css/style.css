@@ -85,7 +85,10 @@ tbody > .float_row:nth-of-type(2n+1) {
     max-width: 40px !important;
     max-height: 40px !important;
 }
-
+.CP_container > div
+{
+    position:absolute!important;
+}
 @media screen and (max-width: 993px) {
     .sendData-grid {
         height: calc(100% - 1rem);

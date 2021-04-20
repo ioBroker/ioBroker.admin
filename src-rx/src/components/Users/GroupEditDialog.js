@@ -1,6 +1,10 @@
 import { useState, useEffect, Fragment } from 'react'
 
 import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
@@ -25,29 +29,31 @@ function PermsTab(props) {
         });
     }
 
-    return <div key="PermsTab">
-        {mapObject(props.group.common.acl, (block, blockKey) =>
-            <Fragment key={blockKey}>
-                <h4>{props.t(blockKey)}</h4>
-                {mapObject(block, (perm, permKey) =>
-                    <FormControlLabel
-                        key={permKey}
-                        control={<Checkbox
-                            disabled={props.group.common.dontDelete}
-                            checked={perm}
-                            onChange={e=>{
-                                let newData = props.group;
-                                newData.common.acl[blockKey][permKey] = e.target.checked;
-                                props.change(newData);
-                            }}
-                        />}
-                        label={props.t(permKey)}
-                        labelPlacement="top"
-                    />
-                )}
-            </Fragment>
-        )}
-    </div>
+    return <Grid  container spacing={4} className={props.classes.dialog} key="PermsTab">
+        {
+            mapObject(props.group.common.acl, (block, blockKey) => 
+                <Grid item xs={12} md={12} key={blockKey}>
+                    <h4>{props.t(blockKey)}</h4>
+                    {mapObject(block, (perm, permKey) => 
+                        <FormControlLabel
+                            key={permKey}
+                            control={<CheckBox 
+                                disabled={props.group.common.dontDelete} 
+                                checked={perm}
+                                onChange={e=>{
+                                    let newData = props.group;
+                                    newData.common.acl[blockKey][permKey] = e.target.checked;
+                                    props.change(newData);
+                                }}
+                            />}
+                            label={props.t(permKey)}
+                            labelPlacement="top"
+                        />
+                    )}
+                </Grid>
+            )
+        }
+    </Grid>
 }
 
 function GroupEditDialog(props) {
@@ -77,98 +83,131 @@ function GroupEditDialog(props) {
             canSave = false;
         }
     }
-
-    let mainTab = <div key="MainTab">
-        <UsersTextField
-            label="Name"
-            t={props.t}
-            value={ props.group.common.name }
-            onChange={e=>{
-                let newData = props.group;
-                newData.common.name = e.target.value;
-                props.change(newData);
-            }}
-            autoComplete="off"
-            icon={TextFieldsIcon}
-            classes={props.classes}
+    console.log( props.group.common );
+    let description = props.group.common.description[ props.lang ] 
+        ? 
+        props.group.common.description[ props.lang ]
+        : 
+        props.group.common.description;
+    let name = props.group.common.name[ props.lang ] 
+        ? 
+        props.group.common.name[ props.lang ]
+        : 
+        props.group.common.name;
+    let mainTab = <Grid  container spacing={4} className={props.classes.dialog}>
+        <Grid item xs={12} md={6}> 
+            <UsersTextField 
+                label="Name" 
+                t={props.t} 
+                value={ name }
+                onChange={e=>{
+                    let newData = props.group;
+                    newData.common.name = e.target.value;
+                    props.change(newData);
+                }}
+                autoComplete="off"
+                icon={TextFieldsIcon}
+                classes={props.classes}
+            />
+        </Grid>
+         <Grid item xs={12} md={6}>
+            <UsersTextField 
+                label="ID edit" 
+                t={props.t} 
+                disabled={props.group.common.dontDelete}
+                value={ props.group._id.split('.')[props.group._id.split('.').length-1] }
+                onChange={e=>{
+                    let newData = props.group;
+                    let idArray = props.group._id.split('.');
+                    idArray[idArray.length-1] = e.target.value.replaceAll('.', '_');
+                    newData._id = idArray.join('.');
+                    props.change(newData);
+                }}
+                icon={LocalOfferIcon}
+                classes={props.classes}
+            />
+        </Grid>
+        <Grid item xs={12} md={6}>
+            <UsersTextField 
+                label="ID preview" 
+                t={props.t} 
+                disabled
+                value={ props.group._id }
+                icon={PageviewIcon}
+                classes={props.classes}
         />
-        <UsersTextField
-            label="ID edit"
-            t={props.t}
-            disabled={props.group.common.dontDelete}
-            value={ props.group._id.split('.')[props.group._id.split('.').length-1] }
-            onChange={e=>{
-                let newData = props.group;
-                let idArray = props.group._id.split('.');
-                idArray[idArray.length-1] = e.target.value.replaceAll('.', '_');
-                newData._id = idArray.join('.');
-                props.change(newData);
-            }}
-            icon={LocalOfferIcon}
-            classes={props.classes}
-        />
-        <UsersTextField
-            label="ID preview"
-            t={props.t}
-            disabled
-            value={ props.group._id }
-            icon={PageviewIcon}
-            classes={props.classes}
-        />
-        <UsersTextField
-            label="Description"
-            t={props.t}
-            value={ props.group.common.desc }
-            onChange={e=>{
-                let newData = props.group;
-                newData.common.desc = e.target.value;
-                props.change(newData);
-            }}
-            icon={DescriptionIcon}
-            classes={props.classes}
-        />
-        <UsersFileInput
-            label="Icon"
-            t={props.t}
-            value={ props.group.common.icon }
-            onChange={fileblob=>{
-                let newData = props.group;
-                newData.common.icon = fileblob;
-                props.change(newData);
-            }}
-            previewClassName={props.classes.iconPreview}
-            icon={ImageIcon}
-            classes={props.classes}
-        />
-        <UsersColorPicker
-            label="Color"
-            t={props.t}
-            value={ props.group.common.color }
-            previewClassName={props.classes.iconPreview}
-            onChange={color=>{
-                let newData = props.group;
-                newData.common.color = color;
-                props.change(newData);
-            }}
-            icon={ColorLensIcon}
-            className={props.classes.colorPicker}
-        />
-    </div>;
+        </Grid>
+        <Grid item xs={12} md={6}>
+            <UsersTextField 
+                label="Description" 
+                t={props.t} 
+                value={ description }
+                onChange={e=>{
+                    let newData = props.group;
+                    newData.common.description = e.target.value;
+                    props.change(newData);
+                }}
+                icon={DescriptionIcon}
+                classes={props.classes}
+            />
+        </Grid>
+        <Grid item xs={12} md={6}>
+            <UsersFileInput 
+                label="Icon" 
+                t={props.t} 
+                value={ props.group.common.icon }
+                onChange={fileblob=>{
+                    let newData = props.group;
+                    newData.common.icon = fileblob;
+                    props.change(newData);
+                }}
+                previewClassName={props.classes.iconPreview}
+                icon={ImageIcon}
+                classes={props.classes}
+            />
+        </Grid>
+        <Grid item xs={12} md={6}>
+            <UsersColorPicker 
+                label="Color" 
+                t={props.t} 
+                value={ props.group.common.color }
+                previewClassName={props.classes.iconPreview}
+                onChange={color=>{
+                    let newData = props.group;
+                    newData.common.color = color;
+                    props.change(newData);
+                }}
+                icon={ColorLensIcon}
+                className={props.classes.colorPicker}
+                classes={props.classes}
+            />
+        </Grid>
+    </Grid>;
 
     let selectedTab = [mainTab, PermsTab(props)][tab];
 
     return <Dialog PaperProps={{className: props.classes.dialogPaper}} open={props.open} onClose={props.onClose}>
-        <Box className={props.classes.dialog}>
-            <Tabs value={tab} onChange={(e, newTab) => setTab(newTab)}>
+        <DialogTitle className={props.classes.dialogTitle}>
+            <Tabs 
+                variant="fullWidth" 
+                value={tab} 
+                onChange={(e, newTab) => setTab(newTab)}
+            >
                 <Tab label={props.t('Main')} value={0} />
                 <Tab label={props.t('Permissions')} value={1} />
             </Tabs>
-            {selectedTab}
+        </DialogTitle>
+        <DialogContent> 
+            
+            { selectedTab }
             <div>
-                <Button onClick={()=>props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>Save</Button>
-                <Button onClick={props.onClose}>Cancel</Button>
-            </div>
-        </Box>
+                
+            </div> 
+        </DialogContent>
+        <DialogActions className={props.classes.dialogActions} >
+            <Button onClick={()=>props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>Save</Button>
+            <Button onClick={props.onClose}>Cancel</Button>
+        </DialogActions>
     </Dialog>;
 }
 
