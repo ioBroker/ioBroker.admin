@@ -191,8 +191,8 @@ class JsonConfigComponent extends Component {
     buildDependencies(schema) {
         const attrs = this.flatten(schema);
         Object.keys(attrs).forEach(attr => {
-            if (attrs[attr].dependsOn) {
-                attrs[attr].dependsOn.forEach(dep => {
+            if (attrs[attr].confirm?.alsoDependsOn) {
+                attrs[attr].confirm?.alsoDependsOn.forEach(dep => {
                     attrs[dep].depends = attrs[dep].depends || [];
                     const depObj = {...attrs[attr], attr};
                     if (depObj.confirm) {

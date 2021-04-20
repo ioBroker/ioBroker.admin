@@ -95,6 +95,9 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 -->
 
 ## Changelog
+### 5.0.6 (2021-04-20)
+* (bluefox) Admin5: Fixed many bugs
+
 ### 5.0.5 (2021-04-20)
 * (bluefox) Admin5: Fixed many bugs
 
@@ -106,9 +109,6 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 
 ### 5.0.2 (2020-12-26)
 * (bluefox) Merged the changes from admin4
-
-### 5.0.0 (2020-09_23)
-* (bluefox) The tile view implemented for the file browser
 
 ## License
 

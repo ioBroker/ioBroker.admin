@@ -1,3 +1,6 @@
+## 5.0.0 (2020-09_23)
+* (bluefox) The tile view implemented for the file browser
+
 ## 4.2.1 (2021-01-12)
 * (Apollon77) Also allow pre-prelease versions for dependency checks
 

@@ -6,10 +6,12 @@ All labels, texts, help texts can be multi-language or just strings.
 ## Possible control types
 Possible types:
 
-- `tabs` - Tabs with items.
-- `tab`
+- `tabs` - Tabs with items
+  - `items` - Object with panels `{"tab1": {}, "tab2": {}...}`
+- `panel` - Tab with items
   - `icon` - tab can have icon (base64)
   - `label` - Label of tab
+  - `items` - Object `{"attr1": {}, "attr2": {}}...`
 
 - `text` - Text component
 
@@ -73,7 +75,7 @@ Possible types:
 - `!file` - saves file (not image) as file of adapter.0 object
   - `filename` - name of file
 
-- `oid` - object ID - show it with name, color and icon
+- `objectId` - object ID - show it with name, color and icon
   - `types` - Array of possible types: ['channel', 'device', ...] (has only `state` by default)
 
 - `password` (repeat - if repeat password must be shown with the same width settings)
@@ -212,12 +214,13 @@ All types could have:
 - `placeholder` - placeholder (for text control)
 - `noTranslation` - do not translate selects or other options (not for help, label or placeholder)  
 - `confirm`
-   - `condition` - JS function: true show confirm dialog
-   - `text` - text of confirmation dialog
-   - `title` - title of confirmation dialog
-   - `ok` - Text for OK button
-   - `cancel` - Text for Cancel button
-   - `type` - One of: `info`, `warning`, `error`, `none`
+  - `condition` - JS function: true show confirm dialog
+  - `text` - text of confirmation dialog
+  - `title` - title of confirmation dialog
+  - `ok` - Text for OK button
+  - `cancel` - Text for Cancel button
+  - `type` - One of: `info`, `warning`, `error`, `none`
+  - `alsoDependsOn` - array with attributes, to check the condition by these attributes too
 
 ```
 {
