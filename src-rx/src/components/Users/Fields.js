@@ -12,14 +12,21 @@ import ColorPicker from './ColorPicker';
 
 export function UsersTextField(props) {
     let Icon = props.icon;
-    return <div>{Icon ? <Icon/> : null}
+    return <div className={props.classes.formContainer}>
+        {
+            Icon 
+                ? 
+                <Icon className={ props.classes.formIcon } /> 
+                : 
+                null
+        }
         <FormControl className={props.classes.formControl}>
             <InputLabel shrink>
                 { props.t(props.label)}
             </InputLabel>
             <TextField
                 autoComplete={props.autoComplete}
-                label={ props.t(props.label)}
+                
                 value={props.value}
                 onChange={props.onChange}
                 disabled={props.disabled}
@@ -35,7 +42,14 @@ export function UsersTextField(props) {
 
 let UsersColorPicker = function (props) {
     let Icon = props.icon;
-    return <div>{Icon ? <Icon/> : null}
+    return <div className="CP_container">
+        {
+            Icon 
+                ? 
+                <Icon className={ props.classes.formIcon } /> 
+                : 
+                null
+        }
         <ColorPicker
             variant="standard"
             label={props.t(props.label)}
@@ -44,17 +58,20 @@ let UsersColorPicker = function (props) {
                 style: {backgroundColor: props.value}
             }}
             InputProps={{
-                endAdornment: !props.disabled && props.value ?
+                endAdornment: !props.disabled && props.value 
+                    ?
                     <IconButton
                         size="small"
                         onClick={() => props.onChange('')}>
                         <ClearIcon />
                     </IconButton>
-                    : undefined,
+                    : 
+                    undefined,
             }}
             onChange={props.onChange}
             InputLabelProps={{shrink: true}}
             value={props.value || ''}
+            style={{position:"absolute"}}
         />
     </div>;
 };
@@ -81,34 +98,43 @@ let UsersFileInput = function (props) {
       }, []); // eslint-disable-line react-hooks/exhaustive-deps
       const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
 
-      return <div>{Icon ? <Icon/> : null}<FormControl className={props.classes.formControl}>
-        <InputLabel shrink>
-            { props.t(props.label)}
-        </InputLabel>
-        <div>
-            {props.value ?
-                <>
-                    <img alt="" className={props.previewClassName} src={props.value}/>
-                    <IconButton
-                        size="small"
-                        onClick={() => props.onChange('')}
-                    >
-                        <ClearIcon/>
-                    </IconButton>
-                </>
-            :
+      return <div className={props.classes.formContainer}>
+        {
+            Icon
+                ? 
+                <Icon className={ props.classes.formIcon }/> 
+                : 
                 null
-            }
-            <div {...getRootProps()} style={{display: 'inline-block'}}>
-            <input {...getInputProps()} />
-            {
-                isDragActive ?
-                <p>Drop the files here ...</p> :
-                <p>Drag 'n' drop some files here, or click to select files</p>
-            }
+        }
+        <FormControl className={props.classes.formControl} style={{padding: 3}}>
+            <InputLabel shrink>
+                { props.t(props.label)}
+            </InputLabel>
+            <div className={ props.classes.formContainer }>
+                {props.value ?
+                    <>
+                        <img alt="" className={props.previewClassName} src={props.value}/>
+                        <IconButton
+                            size="small"
+                            onClick={() => props.onChange('')}
+                        >
+                            <ClearIcon/>
+                        </IconButton>
+                    </>
+                :
+                    null
+                }
+                <div {...getRootProps()} style={{display: 'inline-block'}}>
+                <input {...getInputProps()} />
+                {
+                    isDragActive ?
+                    <p>Drop the files here ...</p> :
+                    <p>Drag 'n' drop some files here, or click to select files</p>
+                }
+                </div>
             </div>
-        </div>
-    </FormControl></div>;
+        </FormControl>
+    </div>;
 };
 
 export {UsersFileInput};

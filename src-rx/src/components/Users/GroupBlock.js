@@ -31,9 +31,21 @@ function GroupBlock(props) {
     else if (CanDrop) {
         opacity = isCanDrop ? .75 : .25;
 
+    } 
+    let textColor = props.group.common.color && Color(props.group.common.color).hsl().object().l < 50 
+        ?
+        '#FFFFFF' 
+        : 
+        '#000000';
+
+    let style = { opacity, overflow: "hidden", color: textColor  };
+    if( props.group.common.color )
+    {
+        style.backgroundColor = props.group.common.color;
     }
+
     return <Card 
-        style={{ opacity, overflow: "hidden" }} 
+        style={ style } 
         ref={drop} 
         className={ clsx( props.classes.userGroupCard2, backgroundColor  ) }
     >
@@ -42,39 +54,47 @@ function GroupBlock(props) {
             style={{ }}
         >
             <IconButton size="small" onClick={()=>{props.showGroupEditDialog(props.group, false)}}>
-                <EditIcon/>
+                <EditIcon style={{ color: textColor }} />
             </IconButton>
             <IconButton 
                 size="small" 
                 onClick={()=>{props.showGroupDeleteDialog(props.group)}} 
-                disabled={props.group.common.dontDelete}>
-                    <DeleteIcon/>
-                </IconButton>
+                disabled={props.group.common.dontDelete}
+            >
+                <DeleteIcon style={{ color: textColor }} />
+            </IconButton>
         </div>
         <CardContent>
-            <Typography gutterBottom variant="h5" component="h5" className={props.classes.userGroupTitle}>
+            <Typography gutterBottom component="div" className={props.classes.userGroupTitle}>
                 {
                     props.group.common.icon 
-                        ? 
-                        <img alt="" className={props.classes.icon} src={props.group.common.icon}/> 
+                        ?                         
+                        <span
+                            className={ props.classes.icon }
+                            style={{ backgroundImage: "url(" + props.group.common.icon + ")" }}
+                        />
                         : 
                         <GroupIcon className={props.classes.icon} />
                 } 
-                <span>
-                    {props.getName(props.group.common.name)}
-                </span>
-                <span>
-                    {props.getName(props.group._id)}
-                </span>
-                {
-                    props.group.common.desc !== '' 
-                        ? 
+                <div>
+                    <div>
+                        <span className={props.classes.userGroupUserName}>
+                            {props.getName(props.group.common.name)}
+                        </span>
                         <span>
-                            {props.group.common.desc}
-                        </span> 
-                        : 
-                        null
-                }
+                            {props.getName(props.group._id)}
+                        </span>
+                     </div>
+                    {
+                        props.group.common.desc !== '' 
+                            ? 
+                            <span>
+                                {props.group.common.desc}
+                            </span> 
+                            : 
+                            null
+                    }
+                </div>
             </Typography>
             {
                 props.group.common.members.length 
@@ -89,11 +109,19 @@ function GroupBlock(props) {
                     let user = props.users.find(user => user._id === member);
                     return user 
                         ? 
-                        <Card key={i} variant="outlined" className={props.classes.userGroupMember}>
+                        <Card
+                        key={i}
+                        variant="outlined"
+                        className={props.classes.userGroupMember}
+                        style={{ color: textColor, borderColor: textColor + "40" }}
+                    >
                          {
                             user.common.icon 
-                            ? 
-                            <img alt="" className={props.classes.icon} src={user.common.icon}/> 
+                            ?                         
+                            <span
+                                className={ props.classes.icon }
+                                style={{ backgroundImage: "url(" + user.common.icon + ")" }}
+                            />
                             : 
                             <PersonIcon className={props.classes.icon} />
                         }
@@ -102,7 +130,7 @@ function GroupBlock(props) {
                             size="small"
                             onClick={() => props.removeUserFromGroup(member, props.group._id)}
                         >
-                            <ClearIcon/>
+                            <ClearIcon style={{ color: textColor }} />
                         </IconButton>
                     </Card> 
                     : 
@@ -118,13 +146,18 @@ export default GroupBlock;
 
 export function canMeDrop(monitor, props )
 {
-    // console.log( monitor.getItem().user_id ); 
-    // console.log( props.group.common );
+    //console.log( monitor.getItem().user_id ); 
+    //console.log( props.group.common.members );
     // console.log( props.group.common.members.filter(e => e == monitor.getItem().user_id).length == 0 );
-    return Array.isArray(props.group.common.members) 
-        ?
-        props.group.common.members.filter(e => e == monitor.getItem().user_id).length == 0
-        :
-        props.group.common.members == monitor.getItem().user_id
+    if (props.group.common.members) {
+        return !props.group.common.members.includes(monitor.getItem().user_id);
+    } else {
+        return true;
+    }
+    // return Array.isArray(props.group.common.members) 
+    //     ?
+    //     props.group.common.members.filter(e => e == monitor.getItem().user_id).length == 0
+    //     :
+    //     props.group.common.members == monitor.getItem().user_id
 
 }
