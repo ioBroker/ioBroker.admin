@@ -550,7 +550,7 @@ class FileBrowser extends Component {
             } else {
                 this.setState({queueLength: this.browseList.length});
             }
-            
+
             this.browseList[0].processing = true;
             this.props.socket.readDir(this.browseList[0].adapter, this.browseList[0].relPath)
                 .then(files => {
