@@ -33,10 +33,6 @@ import BuildIcon from '@material-ui/icons/Build';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import ExpertIcon from '@iobroker/adapter-react/icons/IconExpert';
 
-import Brightness4Icon from '@material-ui/icons/Brightness4';
-import Brightness5Icon from '@material-ui/icons/Brightness5';
-import Brightness6Icon from '@material-ui/icons/Brightness6';
-import Brightness7Icon from '@material-ui/icons/Brightness7';
 import PictureInPictureAltIcon from '@material-ui/icons/PictureInPictureAlt';
 import UserIcon from '@material-ui/icons/Person';
 
@@ -54,7 +50,7 @@ import HostsWorker from './components/HostsWorker';
 import Login from './login/Login';
 import { ContextWrapper } from './components/ContextWrapper';
 import HostSelectors from './components/HostSelectors';
-import { Hidden } from '@material-ui/core';
+import { Hidden, Tooltip } from '@material-ui/core';
 import { expertModeDialogFunc } from './dialogs/ExpertModeDialog';
 import { newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
 import { adaptersWarningDialogFunc } from './dialogs/AdaptersWarningDialog';
@@ -391,9 +387,9 @@ class App extends Router {
             if (invertedColor === '#FFFFFF' && this.state.themeType === 'dark') {
                 return true;
             } else
-            if (invertedColor === '#000000' && this.state.themeType === 'light') {
-                return true;
-            }
+                if (invertedColor === '#000000' && this.state.themeType === 'light') {
+                    return true;
+                }
             return false;
         }
     }
@@ -489,13 +485,15 @@ class App extends Router {
                                         .then(user => {
                                             this.socket.getObject('system.user.' + user)
                                                 .then(userObj => {
-                                                    this.setState({user: {
-                                                        id: userObj._id,
-                                                        name: Utils.getObjectNameFromObj(userObj, this.socket.systemLang),
-                                                        color: userObj.common.color,
-                                                        icon: userObj.common.icon,
-                                                        invertBackground: this.mustInvertBackground(userObj.common.color)
-                                                    }});
+                                                    this.setState({
+                                                        user: {
+                                                            id: userObj._id,
+                                                            name: Utils.getObjectNameFromObj(userObj, this.socket.systemLang),
+                                                            color: userObj.common.color,
+                                                            icon: userObj.common.icon,
+                                                            invertBackground: this.mustInvertBackground(userObj.common.color)
+                                                        }
+                                                    });
                                                 })
                                         });
                                 } else {
@@ -1179,9 +1177,9 @@ class App extends Router {
     renderLoggedUser() {
         if (this.state.user && this.props.width !== 'xs' && this.props.width !== 'sm') {
             return <div title={this.state.user.id} className={clsx(this.props.classes.userBadge, this.state.user.invertBackground && this.props.classes.userBackground)}>
-                {this.state.user.icon ? <Icon src={this.state.user.icon} className={this.props.classes.userIcon}/>
-                    : <UserIcon className={this.props.classes.userIcon}/>}
-                <div style={{color: this.state.user.color || undefined}} className={this.props.classes.userText}>{this.state.user.name}</div>
+                {this.state.user.icon ? <Icon src={this.state.user.icon} className={this.props.classes.userIcon} />
+                    : <UserIcon className={this.props.classes.userIcon} />}
+                <div style={{ color: this.state.user.color || undefined }} className={this.props.classes.userText}>{this.state.user.name}</div>
             </div>
         } else {
             return null;
@@ -1198,14 +1196,13 @@ class App extends Router {
         >
             {I18n.t('Some data are not stored. Discard?')}
         </ConfirmDialog>;*/
-
         return this.state.dataNotStoredDialog && <ConfirmDialog
             title={I18n.t('Please confirm')}
             text={I18n.t('Some data are not stored. Discard?')}
             ok={I18n.t('Ok')}
             cancel={I18n.t('Cancel')}
             onClose={isYes =>
-                isYes ? this.confirmDataNotStored() : this.confirmDataNotStored()}
+                isYes ? this.confirmDataNotStored() : this.closeDataNotStoredDialog()}
         />;
     }
 
@@ -1237,11 +1234,11 @@ class App extends Router {
                         configStored={value => this.allStored(value)}
                         isFloatComma={this.state.systemConfig?.common.isFloatComma}
                         dateFormat={this.state.systemConfig?.common.dateFormat}
+                        systemConfig={this.state.systemConfig}
                         t={I18n.t}
                     />
                 </ThemeProvider>;
             }
-
 
         return <ThemeProvider theme={this.state.theme}>
             <Paper elevation={0} className={classes.root}>
@@ -1263,46 +1260,55 @@ class App extends Router {
                             <MenuIcon />
                         </IconButton>
                         <div className={classes.wrapperButtons}>
-                            <IconButton>
-                                <VisibilityIcon />
-                            </IconButton>
-                            <IconButton onClick={() => Router.doNavigate(null, 'system')}>
-                                <BuildIcon />
-                            </IconButton>
+                            <Tooltip title={I18n.t('Device discovery')}>
+                                <IconButton>
+                                    <VisibilityIcon />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title={I18n.t('System')}>
+                                <IconButton onClick={() => Router.doNavigate(null, 'system')}>
+                                    <BuildIcon />
+                                </IconButton>
+                            </Tooltip>
                             <ToggleThemeMenu
                                 toggleTheme={this.toggleTheme.bind(this)}
                                 themeName={this.state.themeName}
                                 t={I18n.t} />
                             {/*This will be removed later to settings, to not allow so easy to enable it*/}
-                            <IconButton
-                                onClick={() => {
-                                    if (!!this.state.systemConfig.common.expertMode === !this.state.expertMode) {
-                                        window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
-                                        this.setState({ expertMode: !this.state.expertMode });
-                                        this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
-                                    } else {
-                                        expertModeDialogFunc(this.state.expertMode, this.state.themeType, () => {
+
+                            <Tooltip title={I18n.t('Toggle expert mode')}>
+                                <IconButton
+                                    onClick={() => {
+                                        if (!!this.state.systemConfig.common.expertMode === !this.state.expertMode) {
                                             window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
                                             this.setState({ expertMode: !this.state.expertMode });
                                             this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
-                                        }, () => Router.doNavigate(null, 'system'));
-                                    }
-                                }}
-                                style={{ color: this.state.expertMode ? this.state.theme.palette.expert : undefined }}
-                                color="default"
-                            >
-                                <ExpertIcon
-                                    title={I18n.t('Toggle expert mode')}
-                                    glowColor={this.state.theme.palette.secondary.main}
-                                    active={this.state.expertMode}
-                                    className={clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
-                                />
-                            </IconButton>
+                                        } else {
+                                            expertModeDialogFunc(this.state.expertMode, this.state.themeType, () => {
+                                                window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
+                                                this.setState({ expertMode: !this.state.expertMode });
+                                                this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
+                                            }, () => Router.doNavigate(null, 'system'));
+                                        }
+                                    }}
+                                    style={{ color: this.state.expertMode ? this.state.theme.palette.expert : undefined }}
+                                    color="default"
+                                >
+                                    <ExpertIcon
+                                        title={I18n.t('Toggle expert mode')}
+                                        glowColor={this.state.theme.palette.secondary.main}
+                                        active={this.state.expertMode}
+                                        className={clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
+                                    />
+                                </IconButton>
+                            </Tooltip>
                             {/*This will be removed later to settings, to not allow so easy to edit it*/}
                             {this.state.expertMode &&
-                                <IconButton onClick={() => Router.doNavigate(null, 'base')}>
-                                    <BuildIcon className={classes.baseSettingsButton} />
-                                </IconButton>
+                                <Tooltip title={I18n.t('Base settings')}>
+                                    <IconButton onClick={() => Router.doNavigate(null, 'base')}>
+                                        <BuildIcon className={classes.baseSettingsButton} />
+                                    </IconButton>
+                                </Tooltip>
                             }
                             <HostSelectors
                                 expertMode={this.state.expertMode}
@@ -1341,7 +1347,9 @@ class App extends Router {
                                         <Typography>admin</Typography>
                                     </Hidden>}
                                 <Grid item>
-                                    <Avatar className={clsx((this.state.themeName === 'colored' || this.state.themeName === 'blue') && classes.logoWhite)} alt="ioBroker" src="img/no-image.png" />
+                                    <a href="/#easy" onClick={event=>event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
+                                        <Avatar onClick={()=>this.handleNavigation('easy')} className={clsx((this.state.themeName === 'colored' || this.state.themeName === 'blue') && classes.logoWhite)} alt="ioBroker" src="img/no-image.png" />
+                                    </a>
                                 </Grid>
                             </Grid>
                         }

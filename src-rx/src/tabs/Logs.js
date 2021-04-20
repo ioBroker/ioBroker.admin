@@ -43,6 +43,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
+import { Tooltip } from '@material-ui/core';
 
 const styles = theme => ({
     container: {
@@ -51,8 +52,8 @@ const styles = theme => ({
     table: {
         tableLayout: 'fixed',
         minWidth: 960,
-        '& td,th':{
-            padding:'3px 4px'
+        '& td,th': {
+            padding: '3px 4px'
         },
         '& td:nth-of-type(5)': {
             overflow: 'hidden',
@@ -133,6 +134,13 @@ const styles = theme => ({
     downloadEntry: {
         display: 'flex',
         justifyContent: 'space-between'
+    },
+    pidSize: {
+        fontSize: 14,
+        width: 24,
+        height: 24,
+        display: 'flex',
+        alignItems: 'center'
     }
 });
 
@@ -170,7 +178,8 @@ class Logs extends Component {
             logs: null,
             logSize: null,
             pause: 0,
-            pauseCount: 0
+            pauseCount: 0,
+            pid: JSON.parse(window.localStorage.getItem('Logs.pid')) || false
         };
 
         this.severities = {
@@ -429,11 +438,11 @@ class Logs extends Component {
                     <TableCell>
                         {row.from}
                     </TableCell>
-                    <TableCell
+                    {this.state.pid && <TableCell
                         className={classes[severity]}
                     >
                         {id}
-                    </TableCell>
+                    </TableCell>}
                     <TableCell
                         className={classes[severity]}
                     >
@@ -493,6 +502,12 @@ class Logs extends Component {
         </Dialog>;
     }
 
+    changePid() {
+        let pid = !this.state.pid;
+        window.localStorage.setItem('Logs.pid', JSON.stringify(pid));
+        this.setState({ pid });
+    }
+
     render() {
         if (!this.state.logs) {
             return <LinearProgress />;
@@ -504,32 +519,48 @@ class Logs extends Component {
 
         return <TabContainer>
             <TabHeader>
-                <IconButton
-                    onClick={() => this.props.logsWorker &&
-                        this.props.logsWorker.getLogs(true).then(results => {
-                            const logs = results.logs;
-                            const logSize = results.logSize;
-                            this.setState({ logs: [...logs], logSize });
-                        })}
-                >
-                    <RefreshIcon />
-                </IconButton>
-                <IconButton
-                    className={classes.pauseButton}
-                    onClick={() => this.handleLogPause()}
-                >
-                    {pauseChild}
-                </IconButton>
-                <IconButton
-                    onClick={() => this.clearLog()}
-                >
-                    <DeleteIcon />
-                </IconButton>
-                <IconButton
-                    onClick={() => this.openLogDelete()}
-                >
-                    <DeleteForeverIcon />
-                </IconButton>
+                <Tooltip title={this.props.t('Refresh log')}>
+                    <IconButton
+                        onClick={() => this.props.logsWorker &&
+                            this.props.logsWorker.getLogs(true).then(results => {
+                                const logs = results.logs;
+                                const logSize = results.logSize;
+                                this.setState({ logs: [...logs], logSize });
+                            })}
+                    >
+                        <RefreshIcon />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title={this.props.t('Pause output')}>
+                    <IconButton
+                        className={classes.pauseButton}
+                        onClick={() => this.handleLogPause()}
+                    >
+                        {pauseChild}
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title={this.props.t('Clear log')}>
+                    <IconButton
+                        onClick={() => this.clearLog()}
+                    >
+                        <DeleteIcon />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title={this.props.t('Clear on disk permanent')}>
+                    <IconButton
+                        onClick={() => this.openLogDelete()}
+                    >
+                        <DeleteForeverIcon />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title={this.props.t('PID hide/show')}>
+                    <IconButton
+                        onClick={() => this.changePid()}
+                        color={!this.state.pid ? "default" : "primary"}
+                    >
+                        <div className={classes.pidSize}>{this.props.t('PID')}</div>
+                    </IconButton>
+                </Tooltip>
                 <div className={classes.grow} />
                 {this.state.logFiles.length > 0 &&
                     <div>
@@ -577,9 +608,9 @@ class Logs extends Component {
                                         </Select>
                                     </FormControl>
                                 </TableCell>
-                                <TableCell className={classes.pid}>
+                                {this.state.pid && <TableCell className={classes.pid}>
                                     <TextField disabled label={this.t('PID')} className={classes.header} />
-                                </TableCell>
+                                </TableCell>}
                                 <TableCell className={classes.timestamp}>
                                     <TextField disabled label={this.t('Time')} className={classes.header} />
                                 </TableCell>
@@ -611,7 +642,7 @@ class Logs extends Component {
                     </Table>
                 </TableContainer>
             </TabContent>
-            { this.renderClearDialog()}
+            {this.renderClearDialog()}
         </TabContainer>;
     }
 }

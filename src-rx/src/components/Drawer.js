@@ -306,28 +306,29 @@ class Drawer extends Component {
     }
 
     getHeader() {
-        const { classes, state } = this.props;
 
-        return (
-            <div className={clsx(
-                classes.header,
-                this.props.state === STATES.opened && this.props.isSecure && classes.headerLogout,
-                !this.isSwipeable() && this.props.state !== STATES.opened && classes.headerCompact
-            )}>
-                <div className={clsx(classes.avatarBlock, state === 0 && classes.avatarVisible, classes.avatarNotVisible)}>
-                    <Avatar className={clsx((this.props.themeName === 'colored' || this.props.themeName === 'blue') && classes.logoWhite, classes.logoSize)} alt="ioBroker" src="img/no-image.png" />
-                </div>
-                <IconButton onClick={() => {
-                    if (this.isSwipeable() || this.props.state === STATES.compact) {
-                        this.props.onStateChange(STATES.closed);
-                    } else {
-                        this.props.onStateChange(STATES.compact)
-                    }
-                }}>
-                    <ChevronLeftIcon />
-                </IconButton>
+        const { classes, state, handleNavigation } = this.props;
+
+        return <div className={clsx(
+            classes.header,
+            this.props.state === STATES.opened && this.props.isSecure && classes.headerLogout,
+            !this.isSwipeable() && this.props.state !== STATES.opened && classes.headerCompact
+        )}>
+            <div className={clsx(classes.avatarBlock, state === 0 && classes.avatarVisible, classes.avatarNotVisible)}>
+                <a href="/#easy" onClick={event=>event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
+                    <Avatar onClick={() => handleNavigation('easy')} className={clsx((this.props.themeName === 'colored' || this.props.themeName === 'blue') && classes.logoWhite, classes.logoSize)} alt="ioBroker" src="img/no-image.png" />
+                </a>
             </div>
-        );
+            <IconButton onClick={() => {
+                if (this.isSwipeable() || this.props.state === STATES.compact) {
+                    this.props.onStateChange(STATES.closed);
+                } else {
+                    this.props.onStateChange(STATES.compact)
+                }
+            }}>
+                <ChevronLeftIcon />
+            </IconButton>
+        </div>;
     }
 
     isSwipeable() {
@@ -371,7 +372,7 @@ class Drawer extends Component {
             if (!editList && !tab.visible) {
                 return null
             }
-            return <a href={`/#${tab.name}`} style={{ color: 'inherit', textDecoration: 'none' }} key={tab.name}>
+            return <a onClick={event=>event.preventDefault()} href={`/#${tab.name}`} style={{ color: 'inherit', textDecoration: 'none' }} key={tab.name}>
                 <DragWrapper
                     canDrag={editList}
                     iconJSX={!!tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <img alt="" className={classes.icon} src={tab.icon} />}
@@ -417,17 +418,18 @@ class Drawer extends Component {
         });
     }
 
-    badge = tab => {
+    badge = (tab) => {
         const { stateContext: { logErrors, logWarnings, hostsUpdate, adaptersUpdate } } = this.context;
         switch (tab.name) {
-            case 'tab-logs':
-                return { content: logErrors || logWarnings || 0, color: (logErrors ? 'error' : 'warn') || '' };
-            case 'tab-adapters':
-                return { content: adaptersUpdate || 0, color: 'primary' };
-            case 'tab-hosts':
-                return { content: hostsUpdate || 0, color: 'primary' };
+            case "tab-logs":
+                return ({ content: logErrors || logWarnings || 0, color: (logErrors ? 'error' : 'warn') || '' });
+            case "tab-adapters":
+                return ({ content: adaptersUpdate || 0, color: 'primary' });
+            case "tab-hosts":
+                return ({ content: hostsUpdate || 0, color: 'primary' });
             default:
-                return { content: 0, color: '' };
+                return ({ content: 0, color: '' });
+
         }
     }
 
@@ -449,6 +451,9 @@ class Drawer extends Component {
                 {this.getHeader()}
                 <List>
                     {this.getNavigationItems()}
+                    {this.props.isSecure &&
+                        <DrawerItem onClick={this.props.onLogout} text={this.props.t('Logout')} icon={<LogoutIcon />} />
+                    }
                 </List>
                 {this.props.state === STATES.opened && <div style={{
                     position: 'sticky',

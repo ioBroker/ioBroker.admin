@@ -270,6 +270,7 @@ class AdapterRow extends Component {
                         alignItems="center"
                     >
                         {!commandRunning && updateAvailable ?
+                            <Tooltip title={this.props.t('Update')}>
                             <div
                                 onClick={this.props.onUpdate}
                                 className={classes.buttonUpdate}>
@@ -280,6 +281,7 @@ class AdapterRow extends Component {
                                     <RefreshIcon />
                                 </IconButton>{this.props.version}
                             </div>
+                            </Tooltip>
                             :
                             this.props.version
                         }
@@ -287,6 +289,7 @@ class AdapterRow extends Component {
                 </TableCell>
                 <TableCell>{this.props.license}</TableCell>
                 <TableCell>
+                <Tooltip title={this.props.t('Add instance')}>
                     <IconButton
                         size="small"
                         className={!rightOs ? classes.hidden : ''}
@@ -294,13 +297,17 @@ class AdapterRow extends Component {
                     >
                         <AddIcon />
                     </IconButton>
+                    </Tooltip>
+                    <Tooltip title={this.props.t('Readme')}>
                     <IconButton
                         size="small"
                         onClick={this.props.onInfo}
                     >
                         <HelpIcon />
                     </IconButton>
+                    </Tooltip>
                     {this.props.expertMode &&
+                        <Tooltip title={this.props.t('Upload')}>
                         <IconButton
                             size="small"
                             disabled={commandRunning}
@@ -309,7 +316,9 @@ class AdapterRow extends Component {
                         >
                             <PublishIcon />
                         </IconButton>
+                        </Tooltip>
                     }
+                    <Tooltip title={this.props.t('Delete adapter')}>
                     <IconButton
                         size="small"
                         disabled={commandRunning}
@@ -318,7 +327,9 @@ class AdapterRow extends Component {
                     >
                         <DeleteForeverIcon />
                     </IconButton>
+                    </Tooltip>
                     {this.props.expertMode &&
+                        <Tooltip title={this.props.t('Install a specific version')}>
                         <IconButton
                             size="small"
                             disabled={commandRunning}
@@ -327,8 +338,10 @@ class AdapterRow extends Component {
                         >
                             <AddToPhotosIcon />
                         </IconButton>
+                        </Tooltip>
                     }
                     {this.props.rebuild && this.props.expertMode &&
+                        <Tooltip title={this.props.t('Rebuild')}>
                         <IconButton
                             size="small"
                             disabled={commandRunning}
@@ -337,6 +350,7 @@ class AdapterRow extends Component {
                         >
                             <BuildIcon />
                         </IconButton>
+                        </Tooltip>
                     }
                 </TableCell>
             </TableRow>;

@@ -570,7 +570,7 @@ const InstanceRow = ({
             handleChange(instance.id);
         }}>
         <AccordionSummary
-            classes={{root: classes.row}}
+            classes={{ root: classes.row }}
             className={clsx(
                 (!connectedToHost || !alive) && (idx % 2 === 0 ? classes.instanceStateNotAlive1 : classes.instanceStateNotAlive2),
                 connectedToHost && alive && connected === false && (idx % 2 === 0 ? classes.instanceStateAliveNotConnected1 : classes.instanceStateAliveNotConnected2),
@@ -674,6 +674,7 @@ const InstanceRow = ({
                     onMouseLeave={() => handlerEdit(false)}
                     className={classes.secondaryHeadingDiv}>
                         <div className={classes.secondaryHeadingDivDiv}>{name}</div>
+                        <Tooltip title={t('Edit')}>
                         <IconButton
                             size="small"
                             className={clsx(classes.button, !visibleEdit && classes.visibility)}
@@ -684,6 +685,7 @@ const InstanceRow = ({
                         >
                             <EditIcon />
                         </IconButton>
+                        </Tooltip>
                     </div>
                 </Typography>
                 {expertMode &&
@@ -705,8 +707,8 @@ const InstanceRow = ({
                     </div>
                 }
                 {expertMode &&
-                <Tooltip title={t('loglevel') + ' ' + instance.loglevel}>
-                    <Avatar className={clsx(classes.smallAvatar, classes[instance.loglevel])}>
+                    <Tooltip title={t('loglevel') + ' ' + logLevel}>
+                        <Avatar className={clsx(classes.smallAvatar, classes[logLevel])}>
                         {loglevelIcon}
                     </Avatar>
                 </Tooltip>
@@ -750,14 +752,67 @@ const InstanceRow = ({
                     <ViewCompactIcon color={compact ? 'primary' : 'inherit'} />
                 </IconButton>
             </Tooltip> : null}
+            <Tooltip title={t(!running ? 'Deactivated. Click to start.' : 'Activated. Click to stop.')}>
+                <IconButton
+                    size="small"
+                    onClick={event => {
+                        extendObject('system.adapter.' + instance.id, { common: { enabled: !running } });
+                        event.stopPropagation();
+                    }}
+                    onFocus={event => event.stopPropagation()}
+                    className={clsx(classes.button, instance.canStart ?
+                        (running ? classes.enabled : classes.disabled) : classes.hide)}
+                >
+                    {running ? <PauseIcon /> : <PlayArrowIcon />}
+                </IconButton>
+            </Tooltip>
+            <Hidden xsDown>
+                <Tooltip title={t('Settings')}>
+                    <IconButton
+                        size="small"
+                        className={clsx(classes.button, !instance.config && classes.visibility)}
+                        onClick={() => openConfig(id)}
+                    >
+                        <BuildIcon />
+                    </IconButton>
+                </Tooltip>
+            </Hidden>
+            <Tooltip title={t('Reload')}>
+                <IconButton
+                    size="small"
+                    onClick={event => {
+                        extendObject('system.adapter.' + instance.id, {});
+                        event.stopPropagation();
+                    }}
+                    onFocus={event => event.stopPropagation()}
+                    className={clsx(classes.button, !instance.canStart && classes.hide)}
+                    disabled={!running}
+                >
+                    <RefreshIcon />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title={t('Open web page of adapter')}>
+                <IconButton
+                    size="small"
+                    className={clsx(classes.button, (!instance.link || !instance.link[0]) && classes.hide)}
+                    disabled={!running}
+                    onClick={event => {
+                        window.open(instance.link, '_blank');
+                        event.stopPropagation();
+                    }}
+                    onFocus={event => event.stopPropagation()}
+                >
+                    <InputIcon />
+                </IconButton>
+            </Tooltip>
         </AccordionSummary>
         <AccordionDetails>
             <Grid container direction="row">
                 <Grid item container direction="row" xs={10}>
                     <Grid item container direction="column" xs={12} sm={6} md={4}>
                         <span className={classes.instanceName}>{instance.id}</span>
-                        { instance.mode === 'daemon' && <State state={connectedToHost} >{t('Connected to host')}</State>}
-                        { instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
+                        {instance.mode === 'daemon' && <State state={connectedToHost} >{t('Connected to host')}</State>}
+                        {instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
                         {connected !== null &&
                             <State state={connected}>
                                 {t('Connected to %s', instance.adapter)}
@@ -774,6 +829,7 @@ const InstanceRow = ({
                             <InstanceInfo icon={loglevelIcon} tooltip={t('loglevel')}>
                                 {logLevel}
                             </InstanceInfo>
+                            <Tooltip title={t('Edit')}>
                             <IconButton
                                 size="small"
                                 className={classes.button}
@@ -784,6 +840,7 @@ const InstanceRow = ({
                             >
                                 <EditIcon />
                             </IconButton>
+                            </Tooltip>
                         </div>}
                         {expertMode &&
                             <div className={classes.visible1250}>
@@ -809,6 +866,7 @@ const InstanceRow = ({
                             <InstanceInfo icon={<ScheduleIcon />} tooltip={t('schedule_group')}>
                                 {getSchedule(id) || '-'}
                             </InstanceInfo>
+                            <Tooltip title={t('Edit')}>
                             <IconButton
                                 size="small"
                                 className={classes.button}
@@ -819,6 +877,7 @@ const InstanceRow = ({
                             >
                                 <EditIcon />
                             </IconButton>
+                            </Tooltip>
                         </div>}
                         {expertMode && (instance.mode === 'daemon') &&
                             <div className={classes.displayFlex}>
@@ -828,6 +887,7 @@ const InstanceRow = ({
                                 >
                                     {getRestartSchedule(id) || '-'}
                                 </InstanceInfo>
+                                <Tooltip title={t('Edit')}>
                                 <IconButton
                                     size="small"
                                     className={classes.button}
@@ -838,6 +898,7 @@ const InstanceRow = ({
                                 >
                                     <EditIcon />
                                 </IconButton>
+                                </Tooltip>
                             </div>
                         }
                         {expertMode && <div className={classes.displayFlex}>
@@ -847,6 +908,7 @@ const InstanceRow = ({
                             >
                                 {(memoryLimitMB ? memoryLimitMB : '-.--') + ' MB'}
                             </InstanceInfo>
+                            <Tooltip title={t('Edit')}>
                             <IconButton
                                 size="small"
                                 className={classes.button}
@@ -857,6 +919,7 @@ const InstanceRow = ({
                             >
                                 <EditIcon />
                             </IconButton>
+                            </Tooltip>
                         </div>
                         }
                         {expertMode && checkCompact && compact && supportCompact && <div className={classes.selectWrapper}>
@@ -899,6 +962,7 @@ const InstanceRow = ({
                 <Grid item container direction="column" xs={2}>
                     <Grid item>
                         <Hidden smUp>
+                            <Tooltip title={t('Settings')}>
                             <IconButton
                                 size="small"
                                 className={classes.button}
@@ -906,7 +970,9 @@ const InstanceRow = ({
                             >
                                 <BuildIcon />
                             </IconButton>
+                            </Tooltip>
                         </Hidden>
+                        <Tooltip title={t('Delete')}>
                         <IconButton
                             size="small"
                             className={classes.button}
@@ -917,6 +983,7 @@ const InstanceRow = ({
                         >
                             <DeleteIcon />
                         </IconButton>
+                        </Tooltip>
                     </Grid>
                 </Grid>
             </Grid>

@@ -692,7 +692,7 @@ class Instances extends Component {
             const connected       = this.isConnected(id);
             const name            = this.getName(id);
             const logLevel        = this.isLogLevel(id);
-            const loglevelIcon    = this.getLogLevelIcon(instance.loglevel);
+            const loglevelIcon = this.getLogLevelIcon(logLevel);
             const checkCompact    = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
             const inputOutput     = this.getInputOutput(id);
             const mode            = this.isModeSchedule(id);

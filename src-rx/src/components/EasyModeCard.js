@@ -52,13 +52,15 @@ const styles = theme => ({
     adapter: {
         width: '100%',
         fontWeight: 'bold',
-        fontSize: 16,
+        fontSize: 15,
         verticalAlign: 'middle',
         marginTop: 'auto',
         borderTop: '1px solid silver',
-        padding: 20,
+        padding: '20px 4px',
         textAlign: 'center',
         textTransform: 'uppercase',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
         color: '#ffab40'
     },
     instanceStateNotAlive1: {
@@ -67,7 +69,8 @@ const styles = theme => ({
     wrapperDesc: {
         display: 'flex',
         flexDirection: 'column',
-        width: '100%'
+        width: '100%',
+        overflow: 'hidden'
     },
     desc: {
         padding: 20,

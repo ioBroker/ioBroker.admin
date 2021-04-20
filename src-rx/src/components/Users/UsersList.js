@@ -55,20 +55,36 @@ const styles = theme => ({
         display: 'inline-flex',
         alignItems: 'center',
     },
+    userGroupUserName: {
+        fontWeight: 900,
+        padding: 5
+    },
+    userGroupUserID : {
+        opacity:0.7,
+        padding: 5
+    },
+    userName: {
+        fontSize: 12,
+        fontWeight: 700,
+        marginLeft: 30,
+        opacity: 0.7
+    },
     userGroupMember: {
         display: 'inline-flex',
         margin: 4,
         padding: 4,
-        backgroundColor: theme.palette.background.paper,
+        backgroundColor: "#00000010",
         border: "1px solid #FFF",
         borderColor: theme.palette.text.hint, 
         color: theme.palette.text.primary,
         alignItems: 'center',
     },
     icon: {
-        maxHeight: 42,
-        maxWidth: 42,
-        marginRight:5
+        height: 32,
+        width: 32,
+        marginRight:5,
+        backgroundSize: "cover",
+        backgroundPosition:"center"
     },
     right: {
         float: 'right',
@@ -78,14 +94,30 @@ const styles = theme => ({
         marginRight:10
     },
     dialog: {
-        padding: 10,
-        display: 'flex',
-        flexDirection: 'column',
+        padding: 10, 
         
         maxWidth: '100vw',
         maxHeight: '100vh',
-        overflow: 'auto',
-        padding:20
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        padding: 0
+    }, 
+    flex : {
+        display: "flex" 
+    },
+    formControl : {
+        display: "flex",
+        padding: 24,
+        flexGrow: 1000
+    },
+    formContainer : {
+        display: "flex",
+        justifyContent:"center",
+        alignItems:"center"
+    },
+    formIcon : {
+        margin: 10,
+        opacity: 0.6
     },
     descriptionPanel: {
         width: '100%',
@@ -103,15 +135,31 @@ const styles = theme => ({
 
         }
     },
+    dialogTitle: {
+        borderBottom: "1px solid #00000020",
+        padding : 0,
+        width:"100%"
+    },
+    dialogActions: {
+        borderTop: "1px solid #00000020", 
+        width:"100%"
+    },
     dialogPaper: {
         overflowY: 'initial',
         display:"flex",
         flexDirection:"column",
         justifyContent:"center",
-        alignItems:"center"
+        alignItems:"center",
+        width: "calc(100% - 100px)",
+        height: "calc(100% - 100px)",
+        maxWidth: 800,
+        maxHeight:  "100%"
+    },
+    dialogPaperMini : {
+        maxHeight: 300
     },
     colorPicker: {
-        
+        position:"absolute"
     },  
     iconPreview: {
         maxHeight: 40,
@@ -430,6 +478,7 @@ class UsersList extends Component {
                     classes={this.props.classes}
                     change={this.changeGroupFormData}
                     saveData={this.saveGroup}
+                    lang={this.props.lang}
                 />
                 <UserDeleteDialog 
                     open={!!this.state.userDeleteDialog} 

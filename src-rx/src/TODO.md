@@ -1,14 +1,14 @@
 # Todo
  <!-- - Move logout button to menu . Always last and not orderable -->
 ## Bugs
-- No restart after system settings changed. (At least after the language changed it must be reloaded)
+<!-- - No restart after system settings changed. (At least after the language changed it must be reloaded) -->
 - Number on drawer is not corresponding with actual number of updatable adapters
-- Tooltips: https://github.com/ioBroker/ioBroker.admin/issues/687
-- The version will not be automatically updated: https://github.com/ioBroker/ioBroker.admin/issues/688
-- Adapter => Filter installed adapters => The button has no primary color if active: https://github.com/ioBroker/ioBroker.admin/issues/689
-- Update log level if changed: https://github.com/ioBroker/ioBroker.admin/issues/690
-- Ask "Discard data?" if instance config not saved
-- After some adapter with tab (like event list, node.red, ...) installed it must automaticall appear in drawer
+<!-- - Tooltips: https://github.com/ioBroker/ioBroker.admin/issues/687 -->
+<!-- - The version will not be automatically updated: https://github.com/ioBroker/ioBroker.admin/issues/688 -->
+<!-- - Adapter => Filter installed adapters => The button has no primary color if active: https://github.com/ioBroker/ioBroker.admin/issues/689 -->
+<!-- - Update log level if changed: https://github.com/ioBroker/ioBroker.admin/issues/690 -->
+<!-- - Ask "Discard data?" if instance config not saved -->
+<!-- - After some adapter with tab (like event list, node.red, ...) installed it must automaticall appear in drawer -->
 
 
 Issues Admin5 Collection #1
@@ -81,7 +81,7 @@ Issues Admin5 Collection #1
 
 ## Logs
 <!-- - Redesign - very much space for nothing -->
-- PID hide/show, default hidden
+<!-- - PID hide/show, default hidden -->
 
 ## Instances
 
@@ -97,8 +97,8 @@ Issues Admin5 Collection #1
 ## Users
 ## Easy mode
 <!-- - Easy admin mode -->
-- If not strict mode, show button back to admin
-- By clicking on ioBroker logo => #easy
+<!-- - If not strict mode, show button back to admin -->
+<!-- - By clicking on ioBroker logo => #easy -->
 - Show admin tabs: 
    - config => JsonConfig(jsonConfig: true),  index_m.html (materialize: true), index.html
    - admin => tab_m.html (materialize: true), tab_html

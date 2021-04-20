@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Config from '../dialogs/Config';
 import EasyModeCard from '../components/EasyModeCard';
-import { AppBar, CardMedia, CircularProgress, Paper, Toolbar } from '@material-ui/core';
-
+import { AppBar, CardMedia, CircularProgress, IconButton, Paper, Toolbar } from '@material-ui/core';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import clsx from 'clsx';
 import ToggleThemeMenu from '../components/ToggleThemeMenu';
 
@@ -59,6 +59,9 @@ const styles = theme => ({
         width: '100%',
         border: 0
     },
+    IconButtons:{
+        display:'flex'
+    }
 });
 
 class EasyMode extends Component {
@@ -69,9 +72,10 @@ class EasyMode extends Component {
         };
         if (!this.props.configs) {
             this.props.socket.getEasyMode()
-                .then(config => this.setState({configs: config.configs}));
+                .then(config => this.setState({ configs: config.configs }));
         }
     }
+    //                 src={`adapter/${this.props.adapter}/${this.props.materialize ? 'index.html' : 'tab.html'}?${this.props.instance}&react=${this.props.themeName}`}>
 
     render() {
         const {
@@ -87,7 +91,8 @@ class EasyMode extends Component {
             width,
             isFloatComma,
             dateFormat,
-            configStored
+            configStored,
+            systemConfig
         } = this.props;
         const configs = this.state.configs;
         if (!configs) {
@@ -108,7 +113,12 @@ class EasyMode extends Component {
                         <CardMedia onClick={() => navigate(null)} className={clsx(classes.img, themeName === 'colored' && classes.logoWhite)} component="img" image={'img/no-image.png'} />
                         <div className={classes.headerName}>{t('Easy Admin')}</div>
                     </div>
-                    <ToggleThemeMenu t={t} toggleTheme={toggleTheme} themeName={themeName}/>
+                    <div className={classes.IconButtons}>
+                        {systemConfig && <IconButton onClick={()=>window.history.back()}>
+                            <ArrowBackIcon />
+                        </IconButton>}
+                        <ToggleThemeMenu t={t} toggleTheme={toggleTheme} themeName={themeName} />
+                    </div>
                 </Toolbar>
             </AppBar>
             {currentInstance ?
@@ -117,7 +127,7 @@ class EasyMode extends Component {
                         className={classes.iframe}
                         adapter={currentInstance.id.split('.')[0]}
                         instance={currentInstance.id.split('.')[1]}
-                        jsonConfig={currentInstance.config}
+                        jsonConfig={currentInstance.jsonConfig}
                         socket={socket}
                         themeName={themeName}
                         themeType={themeType}
