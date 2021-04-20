@@ -46,7 +46,7 @@ function UserBlock(props) {
     >
         <div className={props.classes.userCardContent}>
             <div className={props.classes.right}>
-                <CheckBox 
+                <Checkbox
                     checked={props.user.common.enabled} 
                     style={{ color: textColor }} 
                     disabled={props.user.common.dontDelete} 
@@ -78,11 +78,7 @@ function UserBlock(props) {
             <CardContent>
                 <Typography gutterBottom component="div" className={props.classes.userGroupTitle}>
                     {
-<<<<<<< .mine
-                        props.user.common.icon 
-=======
                         props.user.common.icon
->>>>>>> .theirs
                             ? 
                             <span
                                 className={ props.classes.icon }
