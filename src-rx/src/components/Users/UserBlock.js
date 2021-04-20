@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
-import CheckBox from '@material-ui/core/CheckBox';
+import Checkbox from '@material-ui/core/Checkbox';
 import PersonIcon from '@material-ui/icons/Person';
 import GroupIcon from '@material-ui/icons/Group';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -15,7 +15,7 @@ function UserBlock(props) {
     const [{ isDragging }, dragRef] = useDrag(
         {
             type: 'user',
-            item: {user_id: props.user._id}, 
+            item: {user_id: props.user._id},
             end: (item, monitor) => {
                 const dropResult = monitor.getDropResult();
                 if (item && dropResult) {
@@ -30,22 +30,22 @@ function UserBlock(props) {
     );
     const opacity = isDragging ? 0.4 : 1;
     let textColor = !props.user.common.color || Color(props.user.common.color).hsl().object().l > 50 ? 'black' : 'white';
-    return <Card 
-        style={{ cursor: 'grab', opacity, overflow: "hidden" }} 
-        className={props.classes.userGroupCard2} 
+    return <Card
+        style={{ cursor: 'grab', opacity, overflow: "hidden" }}
+        className={props.classes.userGroupCard2}
         ref={dragRef}
     >
         <div className={props.classes.userCardContent}>
             <div className={props.classes.right}>
-                <CheckBox 
-                    checked={props.user.common.enabled} 
-                    disabled={props.user.common.dontDelete} 
+                <Checkbox
+                    checked={props.user.common.enabled}
+                    disabled={props.user.common.dontDelete}
                     onChange={e => {
                         props.socket.extendObject(
-                            props.user._id, 
-                            { common: { 
-                                enabled: !props.user.common.enabled 
-                            } 
+                            props.user._id,
+                            { common: {
+                                enabled: !props.user.common.enabled
+                            }
                         }).then(()=>
                             props.updateData()
                         );
@@ -57,10 +57,10 @@ function UserBlock(props) {
             <CardContent>
                 <Typography gutterBottom variant="h5" component="h5" className={props.classes.userGroupTitle}>
                     {
-                        props.user.common.icon 
-                            ? 
-                            <img alt="" className={props.classes.icon} src={props.user.common.icon}/> 
-                            : 
+                        props.user.common.icon
+                            ?
+                            <img alt="" className={props.classes.icon} src={props.user.common.icon}/>
+                            :
                             <PersonIcon className={props.classes.icon} />
                         }
                     <span>{props.getName(props.user.common.name)}</span>
@@ -75,10 +75,10 @@ function UserBlock(props) {
                         group.common.members && group.common.members.includes(props.user._id) ?
                         <Card key={group._id}  variant="outlined" className={props.classes.userGroupMember}>
                             {
-                                group.common.icon 
-                                    ? 
-                                    <img alt="" className={props.classes.icon} src={group.common.icon}/> 
-                                    : 
+                                group.common.icon
+                                    ?
+                                    <img alt="" className={props.classes.icon} src={group.common.icon}/>
+                                    :
                                     <GroupIcon className={props.classes.icon} />
                                 }
                             {props.getName(group.common.name)}

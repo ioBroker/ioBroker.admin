@@ -163,7 +163,7 @@ class MainSettingsDialog extends Component {
             },
             {
                 id: 'isFloatComma',
-                title: 'Date Float comma sign',
+                title: 'Float divider sign',
                 translate: true,
                 values: [
                     {

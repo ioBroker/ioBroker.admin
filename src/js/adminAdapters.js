@@ -1005,8 +1005,15 @@ function Adapters(main) {
                     let desc  = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
                     desc = desc || '';
                     desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
+
+
+
                     let title = obj.titleLang || obj.title;
                     title = typeof title === 'object' ? (title[systemLang] || title.en) : title;
+
+                    if (adapter === 'admin') {
+                        console.log(JSON.stringify(obj))
+                    }
 
                     that.data[adapter] = {
                         image:      icon ? '<img onerror="this.src=\'img/info-big.png\';" src="' + icon + '" class="adapter-table-icon" />' : '',
@@ -1065,13 +1072,13 @@ function Adapters(main) {
                         }
                         that.tree[iGroup].children.push({
                             icon:     icon,
-                            title:    that.data[adapter].title || adapter,
+                            title:    that.data[adapter].name || adapter,
                             key:      adapter
                         });
                     } else {
                         that.tree.push({
                             icon:     icon,
-                            title:    that.data[adapter].title || adapter,
+                            title:    that.data[adapter].name || adapter,
                             key:      adapter
                         });
                     }
@@ -1151,7 +1158,7 @@ function Adapters(main) {
                                 igroup = that.tree.length - 1;
                             }
                             that.tree[igroup].children.push({
-                                title:    that.data[adapter].title || adapter,
+                                title:    that.data[adapter].name || adapter,
                                 icon:     obj.extIcon,
                                 desc:     showUploadProgress(group),
                                 key:      adapter
@@ -1159,7 +1166,7 @@ function Adapters(main) {
                         } else {
                             that.tree.push({
                                 icon:     obj.extIcon,
-                                title:    that.data[adapter].title || adapter,
+                                title:    that.data[adapter].name || adapter,
                                 key:      adapter
                             });
                         }

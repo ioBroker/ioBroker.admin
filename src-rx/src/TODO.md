@@ -1,71 +1,56 @@
 # Todo
+ <!-- - Move logout button to menu . Always last and not orderable -->
+## Bugs
+- No restart after system settings changed. (At least after the language changed it must be reloaded)
+- Number on drawer is not corresponding with actual number of updatable adapters
+- Tooltips: https://github.com/ioBroker/ioBroker.admin/issues/687
+- The version will not be automatically updated: https://github.com/ioBroker/ioBroker.admin/issues/688
+- Adapter => Filter installed adapters => The button has no primary color if active: https://github.com/ioBroker/ioBroker.admin/issues/689
+- Update log level if changed: https://github.com/ioBroker/ioBroker.admin/issues/690
+- Ask "Discard data?" if instance config not saved
+- After some adapter with tab (like event list, node.red, ...) installed it must automaticall appear in drawer
 
 ## Settings
-- Allow set the expert mode in settings
-  - Save expert mode in session storage
   
 ## Info
-- Request info one time in a day and show new information
-  - admin.X.info.newsFeed => JSON https://github.com/ioBroker/ioBroker.docs/blob/master/info/news.json
-  - admin.X.info.lastNewsId => consists of last read news
-  - IF the user presses OK => So delete acknowledged news from the list.
-  - news could have the attribute "img" and if it is present, so show it at the top of the dialog
-  - news could have the attribute "link" if it presents so show the button with "linkTitle"
-  - Title of the dialog: You have unread news
-  - Buttons of the dialog: "Acknowledge"
-  - Subscribe on `admin.X.info.newsFeed` and test on update
-
-- Support of notifications: https://github.com/ioBroker/ioBroker.js-controller/pull/1153 
-  - system.host.HOSTNAME.notifications
 
 ## Adapters
 - Adapters - Use readme renderer from www.iobroker.net (BF)
-- Show number of possible updates on "Adapters" in menu on the left (impossible ?)
 
 ## Wizard
-- Theme switcher
+<!-- - Theme switcher -->
 
 ## Discovery
 - todo
 
 ## Logs
-- Redesign - very much space for nothing
+<!-- - Redesign - very much space for nothing -->
+- PID hide/show, default hidden
 
 ## Instances
 
 ## Objects
 - Decode quality code to text (BF)
 - Add in object edit the possibility to set color and icon (icon could be uploaded as base64 and may not be bigger than 5k) and use it for text color. Add possibility to scale the images.
-  - Integrate https://react-dropzone.js.org/#!/Doka for image upload
-  
+  - Integrate https://react-dropzone.js.org/#!/Doka for image uploa
+
 ## Files
-<!-- - File viewer can show: json, js, ts, md, css, html -->
-- Edit file ACL for "adapter" or "instance" (All folders of the first level)
-<!-- - Edit files (by pressing button "Edit" opened edit mode) : json, js, txt, html (only in expert mode)// 
-not editable -->
-  
+- Instead of modal dialog with "OK" about cannor read, replace it with window.alert  
 ## Hosts
-<!-- - Read getRepository and compare js-controller with all hosts and show number of hosts that could be updated on the drawer -->
 
 ## Users
-- Do not allow edit of user ID
-
 ## Easy mode
-- Easy admin mode
+<!-- - Easy admin mode -->
+- If not strict mode, show button back to admin
+- By clicking on ioBroker logo => #easy
+- Show admin tabs: 
+   - config => JsonConfig(jsonConfig: true),  index_m.html (materialize: true), index.html
+   - admin => tab_m.html (materialize: true), tab_html
 
 ## After all is done
 - Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io) (BF)
 
 ## Login and authentication
-- check and implement if needed
 
 ## JSON config - Admin settings dialog (index_m.html)
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)
-
-<!-- - json editor as control -->
-
-<!-- - Write jsonCustom for:
-  - lovelace
-  - eventlist
-  - mqtt-client
-  - ?? -->

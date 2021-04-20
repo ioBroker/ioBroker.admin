@@ -21,9 +21,9 @@ import CloseIcon from '@material-ui/icons/Close';
 import SaveIcon from '@material-ui/icons/Save';
 
 
-import ObjectCustomEditor from '../components/ObjectCustomEditor';
-import ObjectHistoryData from '../components/ObjectHistoryData';
-import ObjectChart from '../components/ObjectChart';
+import ObjectCustomEditor from '../components/Object/ObjectCustomEditor';
+import ObjectHistoryData from '../components/Object/ObjectHistoryData';
+import ObjectChart from '../components/Object/ObjectChart';
 
 const styles = theme => ({
     dialog: {

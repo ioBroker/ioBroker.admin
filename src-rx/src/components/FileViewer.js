@@ -2,13 +2,20 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import withWidth from '@material-ui/core/withWidth';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
+
+import AceEditor from 'react-ace';
+import 'ace-builds/src-noconflict/mode-json';
+import 'ace-builds/src-noconflict/theme-clouds_midnight';
+import 'ace-builds/src-noconflict/theme-chrome';
+import 'ace-builds/src-noconflict/ext-language_tools'
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import TextField from '@material-ui/core/TextField';
+import { IconButton } from '@material-ui/core';
 
 import NoImage from '@iobroker/adapter-react/assets/no_icon.svg';
 import Utils from '@iobroker/adapter-react/Components/Utils';
@@ -17,13 +24,7 @@ import Utils from '@iobroker/adapter-react/Components/Utils';
 import { FaCopy as CopyIcon } from 'react-icons/fa';
 import Brightness5Icon from '@material-ui/icons/Brightness6';
 import CloseIcon from '@material-ui/icons/Close';
-import clsx from 'clsx';
-import { IconButton } from '@material-ui/core';
-import AceEditor from 'react-ace';
-import 'ace-builds/src-noconflict/mode-json';
-import 'ace-builds/src-noconflict/theme-clouds_midnight';
-import 'ace-builds/src-noconflict/theme-chrome';
-import 'ace-builds/src-noconflict/ext-language_tools'
+import SaveIcon from '@material-ui/icons/Save';
 
 const styles = theme => ({
     dialog: {
@@ -52,8 +53,8 @@ const styles = theme => ({
 
 export const EXTENSIONS = {
     images: ['png', 'jpg', 'svg', 'jpeg', 'jpg', 'bmp'],
-    code: ['js', 'json', 'md'],
-    txt: ['log', 'txt', 'html', 'css', 'xml'],
+    code:   ['js', 'json', 'md'],
+    txt:    ['log', 'txt', 'html', 'css', 'xml'],
 };
 
 class FileViewer extends Component {
@@ -68,6 +69,7 @@ class FileViewer extends Component {
             editingValue: null,
             copyPossible: EXTENSIONS.code.includes(this.ext) || EXTENSIONS.txt.includes(this.ext)
         };
+
         if (this.state.copyPossible) {
             const parts = this.props.href.split('/');
             parts.splice(0, 2);
@@ -81,6 +83,7 @@ class FileViewer extends Component {
                         this.setState({ code: el, editingValue: el });
                     }
                 })
+                .catch(e => window.alert('Cannot read file: ' + e));
         }
     }
 
@@ -90,27 +93,23 @@ class FileViewer extends Component {
         parts.splice(0, 2);
         const adapter = parts[0];
         const name = parts.splice(1).join('/');
-        this.props.socket.writeFile64(adapter, name, Buffer.from(data).toString("base64"))
-        .then(_=>this.props.onClose())
-
-    }
-
-    static getDerivedStateFromProps() {
-
+        this.props.socket.writeFile64(adapter, name, Buffer.from(data).toString('base64'))
+            .then(_ => this.props.onClose())
+            .catch(e => window.alert('Cannot write file: ' + e));
     }
 
     getEditFile(ext) {
         switch (ext) {
             case 'json':
-                return "json";
+                return 'json';
             case 'js':
-                return "javascript";
+                return 'javascript';
             case 'html':
-                return "html";
+                return 'html';
             case 'txt':
-                return "html";
+                return 'html';
             default:
-                return "json";
+                return 'json';
         }
     }
 
@@ -123,27 +122,16 @@ class FileViewer extends Component {
                 }}
                 className={clsx(this.props.classes.img, this.props.getClassBackgroundImage())}
                 src={this.props.href} alt={this.props.href} />;
-        } else if (this.state.code !== null && !this.state.editing) {
-            return <TextField
-                className={this.props.classes.textarea}
-                multiline
-                value={this.state.code}
-                readOnly={true} />;
-        } else if (this.state.text !== null && !this.state.editing) {
-            return <TextField
-                className={this.props.classes.textarea}
-                value={this.state.text}
-                multiline
-                readOnly={true} />;
-        } else if (this.state.editing) {
+        } else if (this.state.code !== null || this.state.text !== null || this.state.editing) {
             return <AceEditor
                 mode={this.getEditFile(this.props.formatEditFile)}
                 width="100%"
                 height="100%"
                 theme={this.props.themeName === 'dark' ? 'clouds_midnight' : 'chrome'}
-                value={this.state.editingValue}
+                value={this.state.editingValue || this.state.code || this.state.text}
                 onChange={newValue => this.setState({ editingValue: newValue })}
                 name="UNIQUE_ID_OF_DIV"
+                readOnly={!this.state.editing}
                 fontSize={14}
                 setOptions={{
                     enableBasicAutocompletion: true,
@@ -160,14 +148,14 @@ class FileViewer extends Component {
             classes={{ scrollPaper: this.props.classes.dialog, paper: this.props.classes.paper }}
             scroll="paper"
             key={this.props.key}
-            open={this.props.href}
+            open={!!this.props.href}
             onClose={() => this.props.onClose()}
             fullWidth={true}
             maxWidth="xl"
             aria-labelledby="form-dialog-title"
         >
             <div className={this.props.classes.dialogTitle}>
-                <DialogTitle id="form-dialog-title">{this.props.t(this.state.editing ? 'Edit: %s' : 'View: %s', this.props.href)}</DialogTitle>
+                <DialogTitle id="form-dialog-title">{this.props.t(this.state.editing ? 'Edit' : 'View') + ': ' + this.props.href}</DialogTitle>
                 {EXTENSIONS.images.includes(this.ext) && <div>
                     <IconButton
                         color={'inherit'}
@@ -184,7 +172,6 @@ class FileViewer extends Component {
             <DialogActions>
                 {this.state.copyPossible ?
                     <Button
-                        variant="contained"
                         onClick={e => Utils.copyToClipboard(this.state.text || this.state.code, e)} >
                         <CopyIcon />
                         {this.props.t('Copy content')}
@@ -195,6 +182,7 @@ class FileViewer extends Component {
                         variant="contained"
                         onClick={this.writeFile64}
                     >
+                        <SaveIcon />
                         {this.props.t('Save')}
                     </Button> : null}
                 <Button

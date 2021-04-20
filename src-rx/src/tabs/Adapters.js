@@ -1,11 +1,13 @@
 /* eslint-disable array-callback-return */
 import { Component, Fragment, createRef } from 'react';
 import Semver from 'semver';
-
+import PropTypes from "prop-types";
+import clsx from 'clsx';
 import { withStyles } from '@material-ui/core/styles';
 
 import {
     Grid,
+    Button,
     IconButton,
     LinearProgress,
     Table,
@@ -21,6 +23,11 @@ import {
     ListItemText,
     Hidden
 } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Rating from '@material-ui/lab/Rating';
 
 import CloudOffIcon from '@material-ui/icons/CloudOff';
 import FolderIcon from '@material-ui/icons/Folder';
@@ -32,34 +39,26 @@ import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import UpdateIcon from '@material-ui/icons/Update';
 import StarIcon from '@material-ui/icons/Star';
 import CloseIcon from '@material-ui/icons/Close';
-
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 
-import {
-    blue,
-    green
-} from '@material-ui/core/colors';
+import {blue, green} from '@material-ui/core/colors';
+
+import Router from '@iobroker/adapter-react/Components/Router';
 
 import AdapterDeletionDialog from '../dialogs/AdapterDeletionDialog';
 import AdapterInfoDialog from '../dialogs/AdapterInfoDialog';
 import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
 import AddInstanceDialog from '../dialogs/AddInstanceDialog';
-
-import AdapterRow from '../components/AdapterRow';
+import AdapterRow from '../components/Adapters/AdapterRow';
+import AdapterTile from '../components/Adapters/AdapterTile';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
-
-import AdapterTile from '../components/AdapterTile';
 import CustomSelectButton from '../components/CustomSelectButton';
 import GitHubInstallDialog from '../dialogs/GitHubInstallDialog';
 import { licenseDialogFunc } from '../dialogs/LicenseDialog';
 import CustomModal from '../components/CustomModal';
-
-import Router from '@iobroker/adapter-react/Components/Router';
-import AdaptersUpdaterDialog from "../dialogs/AdaptersUpdaterDialog";
-import PropTypes from "prop-types";
-import clsx from 'clsx';
+import AdaptersUpdaterDialog from '../dialogs/AdaptersUpdaterDialog';
 
 const WIDTHS = {
     emptyBlock: 50,
@@ -172,7 +171,7 @@ const styles = theme => ({
         opacity: 0.4,
         color: theme.palette.type === 'dark' ? '#aad5ff' : '#007fff'
     },
-    counte: {
+    counters: {
         marginRight: 10,
         minWidth: 120,
         display: 'flex',
@@ -185,17 +184,19 @@ const styles = theme => ({
     },
     infoAdapters: {
         fontSize: 10,
-        color: 'silver'
+        color: theme.palette.type === 'dark' ? '#9c9c9c' : '#333',
+        cursor: 'pointer'
     },
     greenText: {
         color: '#00a005d1'
+    },
+    rating: {
+        marginBottom: 20,
     }
 });
 
 class Adapters extends Component {
-
     constructor(props) {
-
         super(props);
 
         this.state = {
@@ -232,6 +233,8 @@ class Adapters extends Component {
             filteredList: null,
             showUpdater: false,
             descWidth: 300,
+            showStatistics: false,
+            showSetRating: null,
         };
 
         this.rebuildSupported = false;
@@ -245,6 +248,7 @@ class Adapters extends Component {
         this.allAdapters = 0;
         this.installedAdapters = 0;
         this.updateAdapters = 0;
+        this.uuid = '';
     }
 
     translate = (word, arg1, arg2) => {
@@ -300,23 +304,27 @@ class Adapters extends Component {
             const currentHost = this.props.currentHost;
 
             try {
-                const hostDataProm = this.props.socket.getHostInfo(currentHost);
-                const repositoryProm = this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: updateRepo }, updateRepo);
-                const installedProm = this.props.socket.getInstalled(currentHost, updateRepo);
-                const instancesProm = this.props.socket.getAdapterInstances(updateRepo);
-                const rebuildProm = this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD');
-                const objectsProm = this.props.socket.getForeignObjects('system.adapter.*', 'adapter');
+                const hostDataProm = this.props.socket.getHostInfo(currentHost).catch(e => window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`));
+                const repositoryProm = this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: updateRepo }, updateRepo).catch(e => window.alert('Cannot getRepository: ' + e));
+                const installedProm = this.props.socket.getInstalled(currentHost, updateRepo).catch(e => window.alert('Cannot getInstalled: ' + e));
+                const instancesProm = this.props.socket.getAdapterInstances(updateRepo).catch(e => window.alert('Cannot getAdapterInstances: ' + e));
+                const rebuildProm = this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD').catch(e => window.alert('Cannot checkFeatureSupported: ' + e));
+                const objectsProm = this.props.socket.getForeignObjects('system.adapter.*', 'adapter').catch(e => window.alert('Cannot read system.adapters.*: ' + e));
+                const ratingsProm = this.props.socket.getRatings(updateRepo).catch(e => window.alert('Cannot read ratings: ' + e));
 
-                const [hostData, repository, installed, instances, rebuild, objects] = await Promise.all(
+                const [hostData, repository, installed, instances, rebuild, objects, ratings] = await Promise.all(
                     [
                         hostDataProm,
                         repositoryProm,
                         installedProm,
                         instancesProm,
                         rebuildProm,
-                        objectsProm
+                        objectsProm,
+                        ratingsProm
                     ]
                 );
+                this.uuid = ratings.uuid;
+
                 // console.log('objects', hostData, instancesProm)
                 this.rebuildSupported = rebuild || false;
 
@@ -342,9 +350,9 @@ class Adapters extends Component {
                         }
                     }
                 });
+
                 const now = Date.now();
                 Object.keys(repository).forEach(value => {
-
                     const adapter = repository[value];
                     if (adapter.keywords) {
                         adapter.keywords = adapter.keywords.map(word => word.toLowerCase());
@@ -355,6 +363,16 @@ class Adapters extends Component {
                         Adapters.updateAvailable(_installed.version, adapter.version)
                     ) {
                         updateAvailable.push(value);
+                    }
+
+                    adapter.rating = ratings[value];
+                    if (adapter.rating && adapter.rating.rating) {
+                        adapter.rating.title = [
+                            `Total rating: ${adapter.rating.rating.r} (${adapter.rating.rating.c} ${this.t('votes')})`,
+                            (_installed && _installed.version && adapter.rating[installed.version]) ? `Rating for ${installed.version}: ${adapter.rating[installed.version].r} (${adapter.rating[installed.version].c} ${this.t('votes')})` : ''
+                        ].filter(i => i).join('\n');
+                    } else {
+                        adapter.rating = {title: this.t('No rating or too few data')};
                     }
 
                     if (!adapter.controller) {
@@ -387,7 +405,6 @@ class Adapters extends Component {
                 });
 
                 Object.keys(instances).forEach(value => {
-
                     const instance = instances[value];
                     const name = instance.common.name;
                     const enabled = instance.common.enabled;
@@ -566,8 +583,7 @@ class Adapters extends Component {
         }
     }
 
-    getDependencies = (value) => {
-
+    getDependencies = value => {
         const adapter = this.state.repository[value];
         let result = [];
 
@@ -623,7 +639,6 @@ class Adapters extends Component {
     }
 
     rightDependencies(value) {
-
         const adapter = this.state.repository[value];
         let result = true;
 
@@ -668,7 +683,6 @@ class Adapters extends Component {
     }
 
     rightOs(value) {
-
         const adapter = this.state.repository[value];
 
         if (adapter) {
@@ -715,8 +729,52 @@ class Adapters extends Component {
         }, () => cb && cb());
     }
 
-    getNews(value, all = false) {
+    showSetRatingDialog(adapter, version) {
+        fetch('https://rating.iobroker.net/adapter/' + adapter + '?uuid=' + this.uuid)
+            .then(res => res.json())
+            .then(votings => {
+                this.setState({showSetRating: {adapter, votings, version}});
+            });
+    }
 
+    renderSetRatingDialog() {
+        if (this.state.showSetRating) {
+            const votings = this.state.showSetRating.votings.rating;
+            const versions = Object.keys(votings);
+            versions.sort((a, b) => votings[a].ts > votings[b].ts ? -1 : (votings[a].ts < votings[b].ts ? 1 : 0));
+            let item;
+            if (versions.length) {
+                item = votings[versions[0]];
+            }
+            return <Dialog
+                open={true}
+                onClose={() => this.setState({showSetRating: null})}
+            >
+                <DialogTitle>{this.t('Review') + ' ' + this.state.showSetRating.adapter + '@' + this.state.showSetRating.version}</DialogTitle>
+                <DialogContent style={{textAlign: 'center'}}>
+                    <Rating
+                        className={this.props.classes.rating}
+                        name={this.state.showSetRating.adapter}
+                        defaultValue={item ? item.r : 0}
+                        size="large"
+                        onChange={(event, newValue) => {
+                            if (newValue !== item?.r) {
+                                this.setAdapterRating(this.state.showSetRating.adapter, this.state.showSetRating.version, newValue)
+                                    .then(() => this.setState({showSetRating: null}));
+                            } else {
+                                this.setState({showSetRating: null});
+                            }
+                        }}
+                    />
+                    {item ? <div>{this.t('You voted for %s on %s', versions[0], new Date(item.ts).toLocaleDateString())}</div> : null}
+                </DialogContent>
+            </Dialog>;
+        } else {
+            return null;
+        }
+    }
+
+    getNews(value, all = false) {
         const adapter = this.state.repository[value];
         const installed = this.state.installed[value];
         const news = [];
@@ -883,6 +941,8 @@ class Adapters extends Component {
                 sentry={cached.sentry}
                 rebuild={this.rebuildSupported}
                 commandRunning={this.props.commandRunning}
+                rating={adapter.rating}
+                onSetRating={installed && installed.version ? () => this.showSetRatingDialog(value, installed.version) : null}
 
                 onAddInstance={() => licenseDialogFunc(adapter.license === 'MIT', () => this.addInstance(value), adapter.extIcon.split('/master')[0] + '/master/LICENSE')}//
                 onDeletion={() => this.openAdapterDeletionDialog(value)}
@@ -1020,6 +1080,23 @@ class Adapters extends Component {
         }
     }
 
+    setAdapterRating(adapter, version, rating) {
+        return fetch('https://rating.iobroker.net/vote', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            redirect: 'follow',
+            body: JSON.stringify({uuid: this.uuid, adapter, version, rating})
+        })
+            .then(res => res.json())
+            .then(update => {
+                window.alert(this.t('Vote: ') + adapter + '@' + version + '=' + rating);
+                const repository = JSON.parse(JSON.stringify(this.state.repository));
+                repository[adapter].rating = update;
+                this.setState({repository});
+            })
+            .catch(e => window.alert('Cannot vote: ' + e));
+    }
+
     getTiles() {
         if (!this.cache.listOfVisibleAdapter) {
             this.buildCache();
@@ -1066,6 +1143,8 @@ class Adapters extends Component {
                     rightOs={cached.rightOs}
                     sentry={cached.sentry}
                     rebuild={this.rebuildSupported}
+                    rating={adapter.rating}
+                    onSetRating={installed && installed.version ? () => this.showSetRatingDialog(value, installed.version) : null}
 
                     onAddInstance={() => licenseDialogFunc(adapter.license === 'MIT', () => this.addInstance(value), adapter.extIcon.split('/master')[0] + '/master/LICENSE')}//
                     onDeletion={() => this.openAdapterDeletionDialog(value)}
@@ -1105,8 +1184,32 @@ class Adapters extends Component {
             return document.body.scrollWidth - SUM - 50 + 15;
         }
     }
+
+    getStatistics() {
+        if (this.state.showStatistics) {
+
+            return <Dialog
+                open={true}
+                onClose={() => this.setState({showStatistics: false})}
+            >
+                <DialogTitle>{this.t('Statistics')}</DialogTitle>
+                <DialogContent style={{fontSize: 16}}>
+                    <div className={this.props.classes.counters}>{this.t('Total adapters')}: <span style={{paddingLeft: 6, fontWeight: 'bold'}}>{this.allAdapters}</span></div>
+                    <div className={this.props.classes.counters}>{this.t('Installed adapters')}: <span style={{paddingLeft: 6, fontWeight: 'bold'}}>{this.installedAdapters}</span></div>
+                    <div className={this.props.classes.counters}>{this.t('Last month updated adapters')}: <span style={{paddingLeft: 6, fontWeight: 'bold'}}>{this.updateAdapters}</span></div>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant="contained" onClick={() => this.setState({showStatistics: false})} color="primary" autoFocus>
+                        <CloseIcon/>{this.props.t('Close')}
+                    </Button>
+                </DialogActions>
+            </Dialog>;
+        } else {
+            return null;
+        }
+    }
+
     render() {
-        console.log(this.state.repository)
         if (!this.state.init) {
             return <LinearProgress />;
         }
@@ -1238,11 +1341,11 @@ class Adapters extends Component {
                 }
                 <div className={classes.grow} />
                 <Hidden only={['xs','sm']} >
-                    <div className={classes.infoAdapters}>
-                        <div className={clsx(classes.counte, classes.greenText)}>{this.t('Select adapters')}<div ref={this.countRef} ></div></div>
-                        <div className={clsx(classes.counte)}>{this.t('All adapters')}<div>{this.allAdapters}</div></div>
-                        <div className={clsx(classes.counte)}>{this.t('Installed adapters')}<div>{this.installedAdapters}</div></div>
-                        <div className={clsx(classes.counte)}>{this.t('Update adapters last month')}<div>{this.updateAdapters}</div></div>
+                    <div className={classes.infoAdapters} onClick={() => this.setState({showStatistics: true})}>
+                        <div className={clsx(classes.counters, classes.greenText)}>{this.t('Selected adapters')}<div ref={this.countRef} /></div>
+                        <div className={classes.counters}>{this.t('Total adapters')}:<div>{this.allAdapters}</div></div>
+                        <div className={classes.counters}>{this.t('Installed adapters')}:<div>{this.installedAdapters}</div></div>
+                        <div className={classes.counters}>{this.t('Last month updated adapters')}:<div>{this.updateAdapters}</div></div>
                     </div>
                 </Hidden>
             </TabHeader>
@@ -1282,6 +1385,8 @@ class Adapters extends Component {
             </TabContent>}
 
             {this.getUpdater()}
+            {this.getStatistics()}
+            {this.renderSetRatingDialog()}
 
             {!this.state.viewMode && <div style={{
                 display: 'flex',
@@ -1320,7 +1425,8 @@ class Adapters extends Component {
                 t={this.t}
                 open={this.state.gitHubInstallDialog}
                 categories={this.state.categories}
-                addInstance={(value, debug, customUrl) => this.addInstance(value, this.state.addInstanceId, debug, customUrl)}
+                installFromUrl={(value, debug, customUrl) =>
+                    this.addInstance(value, undefined, debug, customUrl)}
                 repository={this.state.repository}
                 onClose={() => { this.setState({ gitHubInstallDialog: false }) }}
             />

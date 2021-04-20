@@ -4,14 +4,14 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import * as Sentry from '@sentry/browser';
 import * as SentryIntegrations from '@sentry/integrations';
 
-import theme from '@iobroker/adapter-react/Theme';
+import theme from './Theme'; // @iobroker/adapter-react/Theme
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import App from './App';
 
 import './index.css';
 import { ContextWrapperProvider } from './components/ContextWrapper';
 
-window.adapterName = 'scenes';
+window.adapterName = 'admin';
 
 console.log('iobroker.' + window.adapterName + '@' + version);
 let themeName = Utils.getThemeName();

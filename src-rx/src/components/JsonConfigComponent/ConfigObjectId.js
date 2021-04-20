@@ -1,3 +1,4 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -65,6 +66,8 @@ class ConfigObjectId extends ConfigGeneric {
             </div>
             {showSelectId ? <DialogSelectID
                 imagePrefix="../.."
+                dateFormat={this.props.dateFormat}
+                isFloatComma={this.props.isFloatComma}
                 dialogName={'admin.' + this.props.adapterName}
                 themeType={this.props.themeType}
                 socket={socket}
@@ -90,6 +93,8 @@ ConfigObjectId.propTypes = {
     schema: PropTypes.object,
     onError: PropTypes.func,
     onChange: PropTypes.func,
+    dateFormat: PropTypes.string,
+    isFloatComma: PropTypes.bool,
 };
 
 export default withStyles(styles)(ConfigObjectId);

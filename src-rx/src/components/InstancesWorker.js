@@ -8,7 +8,8 @@ class InstancesWorker {
         this.objectChangeHandlerBound = this.objectChangeHandler.bind(this);
         this.connectionHandlerBound   = this.connectionHandler.bind(this);
         socket.registerConnectionHandler(this.connectionHandlerBound);
-        socket.subscribeObject('system.adapter.*', this.objectChangeHandlerBound);
+        socket.subscribeObject('system.adapter.*', this.objectChangeHandlerBound)
+            .catch(e => window.alert('Cannot subscribe on object: ' + e));
         this.connected = this.socket.isConnected();
 
         // read instances
@@ -78,7 +79,8 @@ class InstancesWorker {
                 objects.forEach(obj => this.objects[obj._id] = obj);
                 this.resolve(this.objects);
                 this.resolve = null;
-            });
+            })
+            .catch(e => window.alert('Cannot get adapter instances: ' + e));
     }
 
     connectionHandler(isConnected) {
@@ -89,7 +91,7 @@ class InstancesWorker {
             this.connected = false;
         }
     }
-    
+
     registerHandler(cb) {
         this.handlers.includes(cb) && this.handlers.push(cb);
     }
@@ -105,7 +107,8 @@ class InstancesWorker {
                 this.objects = {};
                 objects.forEach(obj => this.objects[obj._id] = obj);
                 this.handlers.forEach(cb => cb(objects.map(obj => ({id: obj._id, obj, type: 'new'}))));
-            });
+            })
+            .catch(e => window.alert('Cannot get adapter instances: ' + e));
     }
 }
 

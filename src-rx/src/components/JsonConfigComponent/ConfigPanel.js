@@ -1,3 +1,4 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -27,6 +28,8 @@ import ConfigStaticHeader from './ConfigStaticHeader';
 import ConfigStaticDivider from './ConfigStaticDivider';
 import ConfigSetState from './ConfigSetState';
 import ConfigJsonEditor from './ConfigJsonEditor';
+import ConfigComPort from './ConfigComPort';
+import ConfigTopic from './ConfigTopic';
 
 //import ConfigTabs from "./ConfigTabs";
 // import { Paper } from '@material-ui/core';
@@ -56,7 +59,9 @@ const components = {
     header: ConfigStaticHeader,
     divider: ConfigStaticDivider,
     setState: ConfigSetState,
-    jsonEditor: ConfigJsonEditor
+    jsonEditor: ConfigJsonEditor,
+    comPort: ConfigComPort,
+    topic: ConfigTopic,
 };
 
 const styles = theme => ({
@@ -69,7 +74,7 @@ const styles = theme => ({
         height: 'calc(100vh - 230px) !important',
         width: 'auto !important',
         overflowY: 'auto',
-
+        paddingBottom: theme.spacing(1)
     },
     padding: {
         padding: 10,
@@ -109,6 +114,8 @@ class ConfigPanel extends ConfigGeneric {
                 onError={this.props.onError}
                 onChange={this.props.onChange}
                 customs={this.props.customs}
+                dateFormat={this.props.dateFormat}
+                isFloatComma={this.props.isFloatComma}
 
                 customObj={this.props.customObj}
                 instanceObj={this.props.instanceObj}
@@ -154,6 +161,8 @@ ConfigPanel.propTypes = {
     instance: PropTypes.number,
     commandRunning: PropTypes.bool,
     onCommandRunning: PropTypes.func,
+    dateFormat: PropTypes.string,
+    isFloatComma: PropTypes.bool,
 
     customObj: PropTypes.object,
     instanceObj: PropTypes.object,

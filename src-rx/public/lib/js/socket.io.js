@@ -1,6 +1,6 @@
 /*!
  * ioBroker WebSockets
- * Copyright 2020, bluefox <dogafox@gmail.com>
+ * Copyright 2020-2021, bluefox <dogafox@gmail.com>
  * Released under the MIT License.
  * v 0.2.1 (2020_10_16)
  */
@@ -57,7 +57,7 @@ function SocketClient () {
 
     this.log = {
         debug: text => DEBUG && console.log(`[${new Date().toISOString()}] ${text}`),
-        warn: text => console.warn(`[${new Date().toISOString()}] ${text}`),
+        warn:  text => console.warn(`[${new Date().toISOString()}] ${text}`),
         error: text => console.error(`[${new Date().toISOString()}] ${text}`),
     };
 

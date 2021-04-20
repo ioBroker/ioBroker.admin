@@ -4,7 +4,7 @@
  * MIT License
  *
  **/
-
+import React from 'react';
 import I18n from '@iobroker/adapter-react/i18n';
 
 const NAMESPACE = 'material';
@@ -14,7 +14,7 @@ class Utils {
     static namespace = NAMESPACE;
     static INSTANCES = 'instances';
     static dateFormat = ['DD', 'MM'];
-    static FORBIDDEN_CHARS = /[\][*,;'"`<>\\?]/g;
+    static FORBIDDEN_CHARS = /[^._\-/ :!#$%&()+=@^{}|~\p{Ll}\p{Lu}\p{Nd}]+/gu;
 
     /**
      * Capitalize words.
@@ -589,7 +589,7 @@ class Utils {
                             now = new Date(year, a[1] - 1, a[0]);
                         }
                     } else
-                        // DD MM
+                    // DD MM
                     if (Utils.dateFormat[0][0] === 'D' && Utils.dateFormat[1][0] === 'M') {
                         now = new Date(year, a[1] - 1, a[0]);
                         if (Math.abs(now.getTime - Date.now()) > 3600000 * 24 * 10) {
@@ -629,6 +629,7 @@ class Utils {
 
                 const p = text.split(m[0]);
                 p[0] && result.push(<span key={'a' + (key++)}>{p[0]}</span>);
+                // eslint-disable-next-line
                 result.push(<a key={'a' + (key++)} href={href ? href[1] : ''} target={target ? target[1] : '_blank'} rel={rel ? rel[1] : ''}>{title ? title[1] : ''}</a>);
                 text = p[1];
                 m = text && text.match(/<a [^<]+<\/a>/);
@@ -994,7 +995,7 @@ class Utils {
             if (Array.isArray(mix)) {
                 for (k=0; k < mix.length; k++) {
                     if (mix[k]) {
-                        if (y = Utils._toVal(mix[k])) {
+                        if ((y = Utils._toVal(mix[k]))) {
                             str && (str += ' ');
                             str += y;
                         }
@@ -1026,8 +1027,8 @@ class Utils {
         let x;
         let str = '';
         while (i < arguments.length) {
-            if (tmp = arguments[i++]) {
-                if (x = Utils._toVal(tmp)) {
+            if ((tmp = arguments[i++])) {
+                if ((x = Utils._toVal(tmp))) {
                     str && (str += ' ');
                     str += x
                 }
@@ -1052,7 +1053,7 @@ class Utils {
      * @returns {'dark' | 'light'}
      */
     static getThemeType(themeName = '') {
-        themeName = themeName || window.localStorage && window.localStorage.getItem('App.themeName');
+        themeName = themeName || (window.localStorage && window.localStorage.getItem('App.themeName'));
         return themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light';
     }
 
@@ -1071,7 +1072,7 @@ class Utils {
      * @returns {string} the new theme name.
      */
     static toggleTheme(themeName) {
-        themeName = themeName || window.localStorage && window.localStorage.getItem('App.themeName');
+        themeName = themeName || (window.localStorage && window.localStorage.getItem('App.themeName'));
 
         // dark => blue => colored => light => dark
         const newThemeName = themeName === 'dark' ? 'blue' :
@@ -1130,6 +1131,63 @@ class Utils {
         } else {
             return null;
         }
+    }
+
+    static formatDate(dateObj, dateFormat) {
+        // format could be DD.MM.YYYY, YYYY.MM.DD or MM/DD/YYYY
+
+        if (!dateObj) {
+            return '';
+        }
+
+        let text;
+        let mm = dateObj.getMonth() + 1;
+        if (mm < 10) {
+            mm = '0' + mm;
+        }
+
+        let dd = dateObj.getDate();
+        if (dd < 10) {
+            dd = '0' + dd;
+        }
+
+        if (dateFormat === 'MM/DD/YYYY') {
+            text = mm + '/' + dd + '/' + dateObj.getFullYear();
+        } else {
+            text = dateObj.getFullYear() + '-' + mm + '-' + dd;
+        }
+
+        // time
+        let v = dateObj.getHours();
+        if (v < 10) {
+            text += ' 0' + v;
+        } else {
+            text += ' ' + v;
+        }
+        v = dateObj.getMinutes();
+        if (v < 10) {
+            text += ':0' + v;
+        } else {
+            text += ':' + v;
+        }
+
+        v = dateObj.getSeconds();
+        if (v < 10) {
+            text += ':0' + v;
+        } else {
+            text += ':' + v;
+        }
+
+        v = dateObj.getMilliseconds();
+        if (v < 10) {
+            text += '.00' + v;
+        } else if (v < 100) {
+            text += '.0' + v;
+        } else {
+            text += '.' + v;
+        }
+
+        return text;
     }
 
     static MDtext2link(text) {
@@ -1206,6 +1264,24 @@ class Utils {
             m.forEach(doc => text = text.replace(doc, ''));
         }
         return text;
+    }
+
+    /**
+     * Generate the json file on the file for download.
+     * @param {string} filename file name
+     * @returns {object} json structure (not stringified)
+     */
+    static generateFile(filename, json) {
+        let el = document.createElement('a');
+        el.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(json, null, 2)));
+        el.setAttribute('download', filename);
+
+        el.style.display = 'none';
+        document.body.appendChild(el);
+
+        el.click();
+
+        document.body.removeChild(el);
     }
 }
 

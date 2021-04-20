@@ -3,9 +3,9 @@
 /* jshint -W097 */
 /* jshint strict: false */
 /*
- MIT, Copyright 2014-2020 bluefox <dogafox@gmail.com>, soef <soef@gmx.net>
+ MIT, Copyright 2014-2021 bluefox <dogafox@gmail.com>, soef <soef@gmx.net>
 
- version: 1.1.7 (2020.01.06)
+ version: 1.1.8 (2021.03.17)
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -2404,7 +2404,7 @@ function filterChanged(e) {
                             }
 
                             if (isCommon && isCommon.type === 'file') {
-                                data.webServer = data.webServer || (window.location.protocol + '//' + window.location.hostname + ':8082');
+                                data.webServer = data.webServer || (window.location.protocol + '//' + window.location.hostname + ':' + (window.location.port || 80));
 
                                 // link
                                 $elem.html('<a href="' + data.webServer + '/state/' + encodeURIComponent(node.key) + '" target="_blank">' + data.webServer + '/state/' + node.key + '</a>')
@@ -2528,7 +2528,7 @@ function filterChanged(e) {
                             }
 
                             if (isCommon && isCommon.type === 'file') {
-                                data.webServer = data.webServer || (window.location.protocol + '//' + window.location.hostname + ':8082');
+                                data.webServer = data.webServer || (window.location.protocol + '//' + window.location.hostname + ':' + (window.location.port || 80));
 
                                 // link
                                 $elem.html('<a href="' + data.webServer + '/state/' + encodeURIComponent(node.key) + '" target="_blank">' + data.webServer + '/state/' + node.key + '</a>')

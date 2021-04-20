@@ -105,7 +105,7 @@ const ObjectRights = ({ value, disabled, setValue, t, differentValues, applyToCh
                                     disabled={disabled}
                                     checked={bool}
                                     color={mask & obj.valueNum ? 'primary' : 'secondary'}
-                                    indeterminate={mask & obj.valueNum}
+                                    indeterminate={!!(mask & obj.valueNum)}
                                     style={mask & obj.valueNum ? { opacity: 0.5 } : null}
                                     onChange={e => {
                                         if (mask & obj.valueNum) {

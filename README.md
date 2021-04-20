@@ -14,12 +14,12 @@ User interface for configuration and administration of ioBroker.
 
 ## Using common.localLink
 - %ip% - ioBroker ip address (address of the admin)
-- %secure% or %protocol% - read from native.secure the value and use http or https
-- %web_protocol% - looking for the first instance of web (e.g. web.0) and get "native.secure" from "system.adapter.web.0"
+- %secure% or %protocol% - read from `native.secure` the value and use http or https
+- %web_protocol% - looking for the first instance of web (e.g. web.0) and get `native.secure` from `system.adapter.web.0`
 - %instance% - instance of the adapter
-- %someField% - get someField from "native" of this adapter instance
-- %web.0_bind% - get native.bind from "system.adapter.web.0"
-- %native_someField% - get someField from "native" of this adapter instance
+- %someField% - get someField from `native` of this adapter instance
+- %web.0_bind% - get native.bind from `system.adapter.web.0`
+- %native_someField% - get someField from `native` of this adapter instance
 
 ## Scheduled restart
 Some adapters re not stable or connection disappear after one or two days.
@@ -42,7 +42,7 @@ If you just enable the using of certificates and will not activate an automatic 
 
 If the automatic update is activated the instance will try to request certificates from Let’s Encrypt and will automatically update it.
 
-The certificates will be first requested when the given domain address will be accessed. E.g you have "sub.domain.com" as address, when you try to access https://sub.domain.com the certificates will be first requested and it can last a little before first answer will come.
+The certificates will be first requested when the given domain address will be accessed. E.g. you have "sub.domain.com" as address, when you try to access https://sub.domain.com the certificates will be first requested and it can last a little before first answer will come.
 
 The issuing of certificates is rather complex procedure, but if you will follow the explanation you will easy get free certificates.
 
@@ -50,7 +50,7 @@ Description:
 
 1. The new account will be created with given email address (you must set it up in system settings)
 2. Some random key will be created as password for the account.
-3. After the account is created the system starts on port 80 the small web site to confirm the domain.
+3. After the account is created the system starts on port 80 the small website to confirm the domain.
 4. Let's encrypt use **always** port **80** to check the domain.
 5. If port 80 is occupied by other service see point 4.
 6. After the small web server is up the request to get certificates for given domains (system settings) will be sent to the Let's encrypt server.
@@ -67,7 +67,7 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 **Let's encrypt works only from node.js version>=4.5**
 
 ## Simple instance's settings page
-The user have the possibility to limit the access to the instance configuration dialog.
+The user has the possibility to limit the access to the instance configuration dialog.
 For that the option "Allow access only to specific instances" must be activated.
 It could be found on the "Access to instances" tab.
 Additionally the allowed instances should be selected in the appeared configuration table.
@@ -87,6 +87,7 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/devices/light-bulb.svg" height="48" /> - Icons made by [Vectors Market](https://www.flaticon.com/authors/vectors-market) from [Flaticon](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
 - <img src="src/img/rooms/garage.svg" height="48" /> - designed by [Pause08](https://www.flaticon.com/authors/Pause08) from [Flaticon](https://www.flaticon.com/)
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
+<!-- remove this chapter after admin5 release -->
 
 <!--
 	Placeholder for the next version (at the beginning of the line):
@@ -94,6 +95,12 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 -->
 
 ## Changelog
+### 5.0.4 (2021-04-18)
+* (bluefox) Admin5: Fixed many bugs
+
+### 5.0.3 (2021-04-17)
+* (bluefox) Admin5: Many new features implemented
+
 ### 5.0.2 (2020-12-26)
 * (bluefox) Merged the changes from admin4
 
@@ -102,25 +109,6 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 
 ### 4.2.1 (2021-01-12)
 * (Apollon77) Also allow pre-prelease versions for dependency checks
-
-### 4.2.0 (2021-01-08)
-* (bluefox) Support of new Let's Encrypt (only with js-controller 3.2.x)
-
-### 4.1.13 (2021-01-08)
-* (bluefox) Support of new Let's Encrypt (only with js-controller 3.2.x)
-
-### 4.1.12 (2020-12-12)
-* (bluefox) Corrected the error with empty names in enums
-
-### 4.1.11 (2020-11-22)
-* (theimo1221) Prevent Duplicate Event Handling on Dropdown Checkboxes
-* (paul53) fix Objects dialog
-
-### 4.1.10 (2020-10-08)
-* (bluefox) Corrected the icons of the custom tabs. 
-
-### 4.1.8 (2020-09-03)
-* (bluefox) Fixed editing of the objects with % sign in the ID. 
 
 ## License
 
