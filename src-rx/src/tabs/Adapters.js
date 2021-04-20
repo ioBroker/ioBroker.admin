@@ -41,7 +41,7 @@ import StarIcon from '@material-ui/icons/Star';
 import CloseIcon from '@material-ui/icons/Close';
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 
-import {blue, green} from '@material-ui/core/colors';
+import { blue, green } from '@material-ui/core/colors';
 
 import Router from '@iobroker/adapter-react/Components/Router';
 
@@ -372,7 +372,7 @@ class Adapters extends Component {
                             (_installed && _installed.version && adapter.rating[installed.version]) ? `Rating for ${installed.version}: ${adapter.rating[installed.version].r} (${adapter.rating[installed.version].c} ${this.t('votes')})` : ''
                         ].filter(i => i).join('\n');
                     } else {
-                        adapter.rating = {title: this.t('No rating or too few data')};
+                        adapter.rating = { title: this.t('No rating or too few data') };
                     }
 
                     if (!adapter.controller) {
@@ -506,7 +506,7 @@ class Adapters extends Component {
                     return this.setState({ addInstanceError: true });
                 }
             }
-            this.props.executeCommand(`${customUrl ? 'url' : 'add'} ${adapter} ${instance ? instance + ' ' : ''}--host ${this.props.currentHostName} ${debug ? '--debug' : ''}`,true);
+            this.props.executeCommand(`${customUrl ? 'url' : 'add'} ${adapter} ${instance ? instance + ' ' : ''}--host ${this.props.currentHostName} ${debug ? '--debug' : ''}`, true);
         }
     }
 
@@ -733,7 +733,7 @@ class Adapters extends Component {
         fetch('https://rating.iobroker.net/adapter/' + adapter + '?uuid=' + this.uuid)
             .then(res => res.json())
             .then(votings => {
-                this.setState({showSetRating: {adapter, votings, version}});
+                this.setState({ showSetRating: { adapter, votings, version } });
             });
     }
 
@@ -748,10 +748,10 @@ class Adapters extends Component {
             }
             return <Dialog
                 open={true}
-                onClose={() => this.setState({showSetRating: null})}
+                onClose={() => this.setState({ showSetRating: null })}
             >
                 <DialogTitle>{this.t('Review') + ' ' + this.state.showSetRating.adapter + '@' + this.state.showSetRating.version}</DialogTitle>
-                <DialogContent style={{textAlign: 'center'}}>
+                <DialogContent style={{ textAlign: 'center' }}>
                     <Rating
                         className={this.props.classes.rating}
                         name={this.state.showSetRating.adapter}
@@ -760,9 +760,9 @@ class Adapters extends Component {
                         onChange={(event, newValue) => {
                             if (newValue !== item?.r) {
                                 this.setAdapterRating(this.state.showSetRating.adapter, this.state.showSetRating.version, newValue)
-                                    .then(() => this.setState({showSetRating: null}));
+                                    .then(() => this.setState({ showSetRating: null }));
                             } else {
-                                this.setState({showSetRating: null});
+                                this.setState({ showSetRating: null });
                             }
                         }}
                     />
@@ -1083,16 +1083,16 @@ class Adapters extends Component {
     setAdapterRating(adapter, version, rating) {
         return fetch('https://rating.iobroker.net/vote', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             redirect: 'follow',
-            body: JSON.stringify({uuid: this.uuid, adapter, version, rating})
+            body: JSON.stringify({ uuid: this.uuid, adapter, version, rating })
         })
             .then(res => res.json())
             .then(update => {
                 window.alert(this.t('Vote: ') + adapter + '@' + version + '=' + rating);
                 const repository = JSON.parse(JSON.stringify(this.state.repository));
                 repository[adapter].rating = update;
-                this.setState({repository});
+                this.setState({ repository });
             })
             .catch(e => window.alert('Cannot vote: ' + e));
     }
@@ -1190,17 +1190,17 @@ class Adapters extends Component {
 
             return <Dialog
                 open={true}
-                onClose={() => this.setState({showStatistics: false})}
+                onClose={() => this.setState({ showStatistics: false })}
             >
                 <DialogTitle>{this.t('Statistics')}</DialogTitle>
-                <DialogContent style={{fontSize: 16}}>
-                    <div className={this.props.classes.counters}>{this.t('Total adapters')}: <span style={{paddingLeft: 6, fontWeight: 'bold'}}>{this.allAdapters}</span></div>
-                    <div className={this.props.classes.counters}>{this.t('Installed adapters')}: <span style={{paddingLeft: 6, fontWeight: 'bold'}}>{this.installedAdapters}</span></div>
-                    <div className={this.props.classes.counters}>{this.t('Last month updated adapters')}: <span style={{paddingLeft: 6, fontWeight: 'bold'}}>{this.updateAdapters}</span></div>
+                <DialogContent style={{ fontSize: 16 }}>
+                    <div className={this.props.classes.counters}>{this.t('Total adapters')}: <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.allAdapters}</span></div>
+                    <div className={this.props.classes.counters}>{this.t('Installed adapters')}: <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.installedAdapters}</span></div>
+                    <div className={this.props.classes.counters}>{this.t('Last month updated adapters')}: <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.updateAdapters}</span></div>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="contained" onClick={() => this.setState({showStatistics: false})} color="primary" autoFocus>
-                        <CloseIcon/>{this.props.t('Close')}
+                    <Button variant="contained" onClick={() => this.setState({ showStatistics: false })} color="primary" autoFocus>
+                        <CloseIcon />{this.props.t('Close')}
                     </Button>
                 </DialogActions>
             </Dialog>;
@@ -1241,12 +1241,16 @@ class Adapters extends Component {
                 </Grid>
             }
             <TabHeader>
-                <IconButton onClick={() => this.changeViewMode()}>
-                    {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
-                </IconButton>
-                <IconButton onClick={() => this.getAdaptersInfo(true)}>
-                    <RefreshIcon />
-                </IconButton>
+                <Tooltip title={this.t('Change view mode')}>
+                    <IconButton onClick={() => this.changeViewMode()}>
+                        {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title={this.t('Update adapter information')}>
+                    <IconButton onClick={() => this.getAdaptersInfo(true)}>
+                        <RefreshIcon />
+                    </IconButton>
+                </Tooltip>
                 {this.state.viewMode && !this.state.list && <><Tooltip title={this.t('expand all')}>
                     <IconButton onClick={() => this.expandAll()}>
                         <FolderOpenIcon />
@@ -1278,7 +1282,7 @@ class Adapters extends Component {
                     <Tooltip title={this.t('installed adapters')}>
                         <IconButton
                             onClick={() => this.changeInstalledList()}>
-                            <StarIcon color={this.state.updateList ? 'primary' : 'inherit'} />
+                            <StarIcon color={this.state.installedList ? 'primary' : 'inherit'} />
                         </IconButton>
                     </Tooltip>
                 }
@@ -1295,9 +1299,11 @@ class Adapters extends Component {
                 </Tooltip>}
 
                 {this.props.expertMode &&
-                    <IconButton onClick={() => this.setState({ gitHubInstallDialog: true })}>
-                        <GithubIcon />
-                    </IconButton>
+                    <Tooltip title={this.t('Install from custom URL')}>
+                        <IconButton onClick={() => this.setState({ gitHubInstallDialog: true })}>
+                            <GithubIcon />
+                        </IconButton>
+                    </Tooltip>
                 }
                 <div className={classes.grow} />
                 <TextField
@@ -1340,8 +1346,8 @@ class Adapters extends Component {
                         value={this.state.filterTiles} />
                 }
                 <div className={classes.grow} />
-                <Hidden only={['xs','sm']} >
-                    <div className={classes.infoAdapters} onClick={() => this.setState({showStatistics: true})}>
+                <Hidden only={['xs', 'sm']} >
+                    <div className={classes.infoAdapters} onClick={() => this.setState({ showStatistics: true })}>
                         <div className={clsx(classes.counters, classes.greenText)}>{this.t('Selected adapters')}<div ref={this.countRef} /></div>
                         <div className={classes.counters}>{this.t('Total adapters')}:<div>{this.allAdapters}</div></div>
                         <div className={classes.counters}>{this.t('Installed adapters')}:<div>{this.installedAdapters}</div></div>

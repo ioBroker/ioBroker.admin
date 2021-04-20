@@ -952,7 +952,7 @@ class FileBrowser extends Component {
         }
 
         // tile
-        if (this.state.folders[folderId]) {
+        if (this.state.folders && this.state.folders[folderId]) {
             if (this.state.viewType === TILE) {
                 const res = [];
                 if (folderId && folderId !== '/') {

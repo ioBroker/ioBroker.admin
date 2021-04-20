@@ -494,46 +494,46 @@ const InstanceRow = ({
 
     const customModal =
         openDialogSelect ||
-        openDialogText   ||
-        openDialogDelete ||
-        openDialogMemoryLimit ? <CustomModal
-            title={
-                (openDialogText && t('Enter title for %s', instance.id)) ||
-                (openDialogSelect && t('Edit log level rule for %s', instance.id)) ||
-                (openDialogDelete && t('Please confirm')) ||
-                (openDialogMemoryLimit && t('Edit memory limit rule for %s', instance.id))
-            }
-            open={true}
-            applyDisabled={openDialogText || openDialogMemoryLimit}
-            textInput={openDialogText || openDialogMemoryLimit}
-            defaultValue={openDialogText ? name : openDialogMemoryLimit ? memoryLimitMB : ''}
-            onApply={(value) => {
-                if (openDialogSelect) {
-                    setLogLevel(select)
-                    setOpenDialogSelect(false);
-                } else if (openDialogText) {
-                    setName(value);
-                    setOpenDialogText(false);
-                } else if (openDialogDelete) {
-                    setOpenDialogDelete(false);
-                    deletedInstances();
-                } else if (openDialogMemoryLimit) {
-                    setMemoryLimitMB(value)
-                    setOpenDialogMemoryLimit(false);
+            openDialogText ||
+            openDialogDelete ||
+            openDialogMemoryLimit ? <CustomModal
+                title={
+                    (openDialogText && t('Enter title for %s', instance.id)) ||
+                    (openDialogSelect && t('Edit log level rule for %s', instance.id)) ||
+                    (openDialogDelete && t('Please confirm')) ||
+                    (openDialogMemoryLimit && t('Edit memory limit rule for %s', instance.id))
                 }
-            }}
-            onClose={() => {
-                if (openDialogSelect) {
-                    setSelect(logLevel);
-                    setOpenDialogSelect(false);
-                } else if (openDialogText) {
-                    setOpenDialogText(false);
-                } else if (openDialogDelete) {
-                    setOpenDialogDelete(false);
-                } else if (openDialogMemoryLimit) {
-                    setOpenDialogMemoryLimit(false);
-                }
-            }}>
+                open={true}
+                applyDisabled={openDialogText || openDialogMemoryLimit}
+                textInput={openDialogText || openDialogMemoryLimit}
+                defaultValue={openDialogText ? name : openDialogMemoryLimit ? memoryLimitMB : ''}
+                onApply={(value) => {
+                    if (openDialogSelect) {
+                        setLogLevel(select)
+                        setOpenDialogSelect(false);
+                    } else if (openDialogText) {
+                        setName(value);
+                        setOpenDialogText(false);
+                    } else if (openDialogDelete) {
+                        setOpenDialogDelete(false);
+                        deletedInstances();
+                    } else if (openDialogMemoryLimit) {
+                        setMemoryLimitMB(value)
+                        setOpenDialogMemoryLimit(false);
+                    }
+                }}
+                onClose={() => {
+                    if (openDialogSelect) {
+                        setSelect(logLevel);
+                        setOpenDialogSelect(false);
+                    } else if (openDialogText) {
+                        setOpenDialogText(false);
+                    } else if (openDialogDelete) {
+                        setOpenDialogDelete(false);
+                    } else if (openDialogMemoryLimit) {
+                        setOpenDialogMemoryLimit(false);
+                    }
+                }}>
             {openDialogSelect && <FormControl className={classes.formControl} variant="outlined" >
                 <InputLabel htmlFor="outlined-age-native-simple">{t('log level')}</InputLabel>
                 <Select
@@ -557,18 +557,18 @@ const InstanceRow = ({
     return <Accordion key={key} square
         expanded={expanded === instance.id}
         onChange={() => {
-            if (openDialogCron     ||
+            if (openDialogCron ||
                 openDialogSchedule ||
-                openDialogSelect   ||
-                openDialogText     ||
-                openDialogDelete   ||
+                openDialogSelect ||
+                openDialogText ||
+                openDialogDelete ||
                 openDialogMemoryLimit) {
                 return;
             }
             handleChange(instance.id);
         }}>
         <AccordionSummary
-            classes={{root: classes.row}}
+            classes={{ root: classes.row }}
             className={clsx(
                 (!connectedToHost || !alive) && (idx % 2 === 0 ? classes.instanceStateNotAlive1 : classes.instanceStateNotAlive2),
                 connectedToHost && alive && connected === false && (idx % 2 === 0 ? classes.instanceStateAliveNotConnected1 : classes.instanceStateAliveNotConnected2),
@@ -578,7 +578,7 @@ const InstanceRow = ({
             {customModal}
             {(openDialogCron || openDialogSchedule) && <ComplexCron
                 title={
-                    (openDialogCron     && t('Edit restart rule for %s', instance.id)) ||
+                    (openDialogCron && t('Edit restart rule for %s', instance.id)) ||
                     (openDialogSchedule && t('Edit schedule rule for %s', instance.id))
                 }
                 cron={openDialogCron ? getRestartSchedule(id) : getSchedule(id)}
@@ -621,21 +621,23 @@ const InstanceRow = ({
                 </div>
                 <Typography className={classes.secondaryHeading} component="div">
                     <div
-                    onMouseMove={() => handlerEdit(true)}
-                    onMouseEnter={() => handlerEdit(true)}
-                    onMouseLeave={() => handlerEdit(false)}
-                    className={classes.secondaryHeadingDiv}>
+                        onMouseMove={() => handlerEdit(true)}
+                        onMouseEnter={() => handlerEdit(true)}
+                        onMouseLeave={() => handlerEdit(false)}
+                        className={classes.secondaryHeadingDiv}>
                         <div className={classes.secondaryHeadingDivDiv}>{name}</div>
-                        <IconButton
-                            size="small"
-                            className={clsx(classes.button, !visibleEdit && classes.visibility)}
-                            onClick={event => {
-                                setOpenDialogText(true);
-                                event.stopPropagation();
-                            }}
-                        >
-                            <EditIcon />
-                        </IconButton>
+                        <Tooltip title={t('Edit')}>
+                            <IconButton
+                                size="small"
+                                className={clsx(classes.button, !visibleEdit && classes.visibility)}
+                                onClick={event => {
+                                    setOpenDialogText(true);
+                                    event.stopPropagation();
+                                }}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        </Tooltip>
                     </div>
                 </Typography>
                 {expertMode &&
@@ -657,11 +659,11 @@ const InstanceRow = ({
                     </div>
                 }
                 {expertMode &&
-                <Tooltip title={t('loglevel') + ' ' + instance.loglevel}>
-                    <Avatar className={clsx(classes.smallAvatar, classes[instance.loglevel])}>
-                        {loglevelIcon}
-                    </Avatar>
-                </Tooltip>
+                    <Tooltip title={t('loglevel') + ' ' + logLevel}>
+                        <Avatar className={clsx(classes.smallAvatar, classes[logLevel])}>
+                            {loglevelIcon}
+                        </Avatar>
+                    </Tooltip>
                 }
                 <Grid item className={classes.hidden1050}>
                     <InstanceInfo
@@ -702,60 +704,67 @@ const InstanceRow = ({
                     <ViewCompactIcon color={compact ? 'primary' : 'inherit'} />
                 </IconButton>
             </Tooltip>
-
-            <IconButton
-                size="small"
-                onClick={event => {
-                    extendObject('system.adapter.' + instance.id, { common: { enabled: !running } });
-                    event.stopPropagation();
-                }}
-                onFocus={event => event.stopPropagation()}
-                className={clsx(classes.button, instance.canStart ?
-                    (running ? classes.enabled : classes.disabled) : classes.hide)}
-            >
-                {running ? <PauseIcon /> : <PlayArrowIcon />}
-            </IconButton>
-            <Hidden xsDown>
+            <Tooltip title={t(!running ? 'Deactivated. Click to start.' : 'Activated. Click to stop.')}>
                 <IconButton
                     size="small"
-                    className={clsx(classes.button,!instance.config && classes.visibility)}
-                    onClick={() => openConfig(id)}
+                    onClick={event => {
+                        extendObject('system.adapter.' + instance.id, { common: { enabled: !running } });
+                        event.stopPropagation();
+                    }}
+                    onFocus={event => event.stopPropagation()}
+                    className={clsx(classes.button, instance.canStart ?
+                        (running ? classes.enabled : classes.disabled) : classes.hide)}
                 >
-                    <BuildIcon />
+                    {running ? <PauseIcon /> : <PlayArrowIcon />}
                 </IconButton>
+            </Tooltip>
+            <Hidden xsDown>
+                <Tooltip title={t('Settings')}>
+                    <IconButton
+                        size="small"
+                        className={clsx(classes.button, !instance.config && classes.visibility)}
+                        onClick={() => openConfig(id)}
+                    >
+                        <BuildIcon />
+                    </IconButton>
+                </Tooltip>
             </Hidden>
-            <IconButton
-                size="small"
-                onClick={event => {
-                    extendObject('system.adapter.' + instance.id, {});
-                    event.stopPropagation();
-                }}
-                onFocus={event => event.stopPropagation()}
-                className={clsx(classes.button, !instance.canStart && classes.hide)}
-                disabled={!running}
-            >
-                <RefreshIcon />
-            </IconButton>
-            <IconButton
-                size="small"
-                className={clsx(classes.button, (!instance.link || !instance.link[0]) && classes.hide)}
-                disabled={!running}
-                onClick={event => {
-                    window.open(instance.link, '_blank');
-                    event.stopPropagation();
-                }}
-                onFocus={event => event.stopPropagation()}
-            >
-                <InputIcon />
-            </IconButton>
+            <Tooltip title={t('Reload')}>
+                <IconButton
+                    size="small"
+                    onClick={event => {
+                        extendObject('system.adapter.' + instance.id, {});
+                        event.stopPropagation();
+                    }}
+                    onFocus={event => event.stopPropagation()}
+                    className={clsx(classes.button, !instance.canStart && classes.hide)}
+                    disabled={!running}
+                >
+                    <RefreshIcon />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title={t('Open web page of adapter')}>
+                <IconButton
+                    size="small"
+                    className={clsx(classes.button, (!instance.link || !instance.link[0]) && classes.hide)}
+                    disabled={!running}
+                    onClick={event => {
+                        window.open(instance.link, '_blank');
+                        event.stopPropagation();
+                    }}
+                    onFocus={event => event.stopPropagation()}
+                >
+                    <InputIcon />
+                </IconButton>
+            </Tooltip>
         </AccordionSummary>
         <AccordionDetails>
             <Grid container direction="row">
                 <Grid item container direction="row" xs={10}>
                     <Grid item container direction="column" xs={12} sm={6} md={4}>
                         <span className={classes.instanceName}>{instance.id}</span>
-                        { instance.mode === 'daemon' && <State state={connectedToHost} >{t('Connected to host')}</State>}
-                        { instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
+                        {instance.mode === 'daemon' && <State state={connectedToHost} >{t('Connected to host')}</State>}
+                        {instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
                         {connected !== null &&
                             <State state={connected}>
                                 {t('Connected to %s', instance.adapter)}
@@ -772,16 +781,18 @@ const InstanceRow = ({
                             <InstanceInfo icon={loglevelIcon} tooltip={t('loglevel')}>
                                 {logLevel}
                             </InstanceInfo>
-                            <IconButton
-                                size="small"
-                                className={classes.button}
-                                onClick={(event) => {
-                                    setOpenDialogSelect(true);
-                                    event.stopPropagation();
-                                }}
-                            >
-                                <EditIcon />
-                            </IconButton>
+                            <Tooltip title={t('Edit')}>
+                                <IconButton
+                                    size="small"
+                                    className={classes.button}
+                                    onClick={(event) => {
+                                        setOpenDialogSelect(true);
+                                        event.stopPropagation();
+                                    }}
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                            </Tooltip>
                         </div>}
                         {expertMode &&
                             <div className={classes.visible1250}>
@@ -807,16 +818,18 @@ const InstanceRow = ({
                             <InstanceInfo icon={<ScheduleIcon />} tooltip={t('schedule_group')}>
                                 {getSchedule(id) || '-'}
                             </InstanceInfo>
-                            <IconButton
-                                size="small"
-                                className={classes.button}
-                                onClick={(event) => {
-                                    setOpenDialogSchedule(true);
-                                    event.stopPropagation();
-                                }}
-                            >
-                                <EditIcon />
-                            </IconButton>
+                            <Tooltip title={t('Edit')}>
+                                <IconButton
+                                    size="small"
+                                    className={classes.button}
+                                    onClick={(event) => {
+                                        setOpenDialogSchedule(true);
+                                        event.stopPropagation();
+                                    }}
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                            </Tooltip>
                         </div>}
                         {expertMode && (instance.mode === 'daemon') &&
                             <div className={classes.displayFlex}>
@@ -826,16 +839,18 @@ const InstanceRow = ({
                                 >
                                     {getRestartSchedule(id) || '-'}
                                 </InstanceInfo>
-                                <IconButton
-                                    size="small"
-                                    className={classes.button}
-                                    onClick={(event) => {
-                                        setOpenDialogCron(true);
-                                        event.stopPropagation();
-                                    }}
-                                >
-                                    <EditIcon />
-                                </IconButton>
+                                <Tooltip title={t('Edit')}>
+                                    <IconButton
+                                        size="small"
+                                        className={classes.button}
+                                        onClick={(event) => {
+                                            setOpenDialogCron(true);
+                                            event.stopPropagation();
+                                        }}
+                                    >
+                                        <EditIcon />
+                                    </IconButton>
+                                </Tooltip>
                             </div>
                         }
                         {expertMode && <div className={classes.displayFlex}>
@@ -845,21 +860,23 @@ const InstanceRow = ({
                             >
                                 {(memoryLimitMB ? memoryLimitMB : '-.--') + ' MB'}
                             </InstanceInfo>
-                            <IconButton
-                                size="small"
-                                className={classes.button}
-                                onClick={(event) => {
-                                    setOpenDialogMemoryLimit(true);
-                                    event.stopPropagation();
-                                }}
-                            >
-                                <EditIcon />
-                            </IconButton>
+                            <Tooltip title={t('Edit')}>
+                                <IconButton
+                                    size="small"
+                                    className={classes.button}
+                                    onClick={(event) => {
+                                        setOpenDialogMemoryLimit(true);
+                                        event.stopPropagation();
+                                    }}
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                            </Tooltip>
                         </div>
                         }
                         {expertMode && checkCompact && compact && <div className={classes.selectWrapper}>
                             <ViewCompactIcon className={classes.marginRight} color="inherit" />
-                            <FormControl className={classes.formControl2}  variant="outlined" >
+                            <FormControl className={classes.formControl2} variant="outlined" >
                                 <InputLabel htmlFor="outlined-age-native-simple">{t('compact groups')}</InputLabel>
                                 <Select
                                     variant="standard"
@@ -897,24 +914,28 @@ const InstanceRow = ({
                 <Grid item container direction="column" xs={2}>
                     <Grid item>
                         <Hidden smUp>
+                            <Tooltip title={t('Settings')}>
+                                <IconButton
+                                    size="small"
+                                    className={classes.button}
+                                    onClick={() => openConfig(id)}
+                                >
+                                    <BuildIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </Hidden>
+                        <Tooltip title={t('Delete')}>
                             <IconButton
                                 size="small"
                                 className={classes.button}
-                                onClick={() => openConfig(id)}
+                                onClick={(event) => {
+                                    setOpenDialogDelete(true);
+                                    event.stopPropagation();
+                                }}
                             >
-                                <BuildIcon />
+                                <DeleteIcon />
                             </IconButton>
-                        </Hidden>
-                        <IconButton
-                            size="small"
-                            className={classes.button}
-                            onClick={(event) => {
-                                setOpenDialogDelete(true);
-                                event.stopPropagation();
-                            }}
-                        >
-                            <DeleteIcon />
-                        </IconButton>
+                        </Tooltip>
                     </Grid>
                 </Grid>
             </Grid>

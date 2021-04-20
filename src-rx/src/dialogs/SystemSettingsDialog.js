@@ -1,6 +1,6 @@
 import withWidth from '@material-ui/core/withWidth';
-import {withStyles} from '@material-ui/core/styles';
-import React, {Component} from 'react';
+import { withStyles } from '@material-ui/core/styles';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import Dialog from '@material-ui/core/Dialog';
@@ -72,7 +72,7 @@ class SystemSettingsDialog extends Component {
     }
 
     getSettings() {
-        const newState = {loading: false};
+        const newState = { loading: false };
         return this.props.socket.getObject('system.repositories')
             .then(systemRepositories => {
                 systemRepositories = JSON.parse(JSON.stringify(systemRepositories));
@@ -135,7 +135,7 @@ class SystemSettingsDialog extends Component {
             return <ConfirmDialog
                 text={this.props.t('Discard unsaved changes?')}
                 onClose={result =>
-                    this.setState({confirmExit: false}, () =>
+                    this.setState({ confirmExit: false }, () =>
                         result && this.props.onClose())}
             />;
         } else {
@@ -144,6 +144,7 @@ class SystemSettingsDialog extends Component {
     }
 
     onSave() {
+        console.log(this.state.systemConfig.common.language, JSON.parse(this.originalConfig).common.language)
         return this.props.socket.getSystemConfig(true)
             .then(systemConfig => {
                 systemConfig = systemConfig || {};
@@ -176,6 +177,9 @@ class SystemSettingsDialog extends Component {
                 // this.getSettings();
                 alert(this.props.t('Settings saved'));
                 this.props.onClose();
+                if (this.state.systemConfig.common.language !== JSON.parse(this.originalConfig).common.language) {
+                    window.location.reload();
+                }
             })
             .catch(e =>
                 window.alert(`Cannot save system configuration: ${e}`));
@@ -251,13 +255,13 @@ class SystemSettingsDialog extends Component {
 
     getDialogContent() {
         if (this.state.loading) {
-            return <LinearProgress/>;
+            return <LinearProgress />;
         }
 
         const tab = this.getTabs().filter(e => e.id === parseInt(this.props.currentTab.id, 10))[0] || this.getTabs()[0];
 
         const MyComponent = tab.component;
-        const {groups, users, histories} = this.state;
+        const { groups, users, histories } = this.state;
         return <div className={this.props.classes.tabPanel}>
             <MyComponent
                 onChange={(data, dataAux) => this.onChangedTab(tab.data, data, tab.dataAux, dataAux)}
@@ -279,7 +283,7 @@ class SystemSettingsDialog extends Component {
     }
 
     onChangedTab(id, data, idAux, dataAux) {
-        let state = {...this.state};
+        let state = { ...this.state };
         if (data) {
             state[id] = data;
         }
@@ -335,10 +339,10 @@ class SystemSettingsDialog extends Component {
                         <IconButton
                             edge="start"
                             color="inherit"
-                            onClick={() => changed ? this.setState({confirmExit: true}) : this.props.onClose()}
+                            onClick={() => changed ? this.setState({ confirmExit: true }) : this.props.onClose()}
                             aria-label="close"
                         >
-                            <CloseIcon/>
+                            <CloseIcon />
                         </IconButton>
                     </div>
                 </AppBar>
@@ -352,14 +356,14 @@ class SystemSettingsDialog extends Component {
                     onClick={() => this.onSave()}
                     color="primary"
                 >
-                    <CheckIcon/>
+                    <CheckIcon />
                     {this.props.t('Save')}
                 </Button>
                 <Button
                     variant="contained"
-                    onClick={() => changed ? this.setState({confirmExit: true}) : this.props.onClose()}
+                    onClick={() => changed ? this.setState({ confirmExit: true }) : this.props.onClose()}
                 >
-                    <CloseIcon/>
+                    <CloseIcon />
                     {changed ? this.props.t('Cancel') : this.props.t('Close')}
                 </Button>
             </DialogActions>
@@ -381,7 +385,7 @@ SystemSettingsDialog.propTypes = {
 export default withWidth()(withStyles(styles)(SystemSettingsDialog));
 
 function TabPanel(props) {
-    const {children, value, index, ...other} = props;
+    const { children, value, index, ...other } = props;
 
     return (
         <div

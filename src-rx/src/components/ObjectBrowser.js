@@ -2643,10 +2643,14 @@ class ObjectBrowser extends Component {
                 width: '100%',
                 alignItems: 'center'
             }}>
+
+                <Tooltip title={this.props.t('ra_Rebuild tree')}>
                 <IconButton onClick={() => this.refreshComponent()}>
                     <RefreshIcon />
                 </IconButton>
+                </Tooltip>
                 {this.props.showExpertButton &&
+                    <Tooltip title={this.props.t('ra_expertMode')}>
                     <IconButton
                         key="expertMode"
                         color={this.state.filter.expertMode ? 'secondary' : 'default'}
@@ -2654,29 +2658,37 @@ class ObjectBrowser extends Component {
                     >
                         <IconExpert />
                     </IconButton>
+                    </Tooltip>
                 }
                 {!this.props.disableColumnSelector &&
+                <Tooltip title={this.props.t('ra_Configure visible columns')}>
                     <IconButton
                         key="columnSelector"
                         onClick={() => this.setState({ columnsSelectorShow: true })}
                     >
                         <IconColumns />
                     </IconButton>
+                    </Tooltip>
                 }
                 {this.state.expandAllVisible &&
+                <Tooltip title={this.props.t('ra_Expand all nodes')}>
                     <IconButton
                         key="expandAll"
                         onClick={() => this.onExpandAll()}
                     >
                         <IconOpen />
                     </IconButton>
+                    </Tooltip>
                 }
+                <Tooltip title={this.props.t('ra_Collapse all nodes')}>
                 <IconButton
                     key="collapseAll"
                     onClick={() => this.onCollapseAll()}
                 >
                     <IconClosed />
                 </IconButton>
+                </Tooltip>
+                <Tooltip title={this.props.t('ra_Expand one step node')}>
                 <IconButton
                     key="expandVisible"
                     color="primary"
@@ -2686,6 +2698,8 @@ class ObjectBrowser extends Component {
                         <IconOpen />
                     </StyledBadge>
                 </IconButton>
+                </Tooltip>
+                <Tooltip title={this.props.t('ra_Collapse one step node')}>
                 <IconButton
                     key="collapseVisible"
                     color="primary"
@@ -2695,6 +2709,7 @@ class ObjectBrowser extends Component {
                         <IconClosed />
                     </StyledBadge>
                 </IconButton>
+                </Tooltip>
                 {this.props.objectStatesView && <Tooltip title={this.props.t('ra_Toggle the states view')}>
                     <IconButton onClick={() => this.onStatesViewVisible()}>
                         <LooksOneIcon color={this.state.statesView ? 'primary' : 'inherit'} />
@@ -2766,7 +2781,9 @@ class ObjectBrowser extends Component {
             <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
                 {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t('ra_States')}: ${Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length}`}
             </div>
-            {this.props.objectEditBoolean && <IconButton onClick={() => {
+            {this.props.objectEditBoolean && 
+            <Tooltip title={this.props.t('ra_Edit config')}>
+            <IconButton onClick={() => {
                 // get all visible states
                 const ids = getVisibleItems(this.root, 'state', this.objects);
 
@@ -2784,6 +2801,7 @@ class ObjectBrowser extends Component {
             }}>
                 <BuildIcon />
             </IconButton>
+            </Tooltip>
             }
         </div>;
     }

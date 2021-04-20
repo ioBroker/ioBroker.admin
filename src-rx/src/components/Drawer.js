@@ -316,7 +316,9 @@ class Drawer extends Component {
                 !this.isSwipeable() && this.props.state !== STATES.opened && classes.headerCompact
             )}>
                 <div className={clsx(classes.avatarBlock, state === 0 && classes.avatarVisible, classes.avatarNotVisible)}>
-                    <Avatar className={clsx((this.props.themeName === 'colored' || this.props.themeName === 'blue') && classes.logoWhite, classes.logoSize)} alt="ioBroker" src="img/no-image.png" />
+                    <a href="/#easy" style={{ color: 'inherit', textDecoration: 'none' }}>
+                        <Avatar className={clsx((this.props.themeName === 'colored' || this.props.themeName === 'blue') && classes.logoWhite, classes.logoSize)} alt="ioBroker" src="img/no-image.png" />
+                    </a>
                 </div>
                 <IconButton onClick={() => {
                     if (this.isSwipeable() || this.props.state === STATES.compact) {
@@ -451,6 +453,9 @@ class Drawer extends Component {
                 {this.getHeader()}
                 <List>
                     {this.getNavigationItems()}
+                    {this.props.isSecure &&
+                        <DrawerItem onClick={this.props.onLogout} text={this.props.t('Logout')} icon={<LogoutIcon />} />
+                    }
                 </List>
                 {this.props.state === STATES.opened && <div style={{
                     position: 'sticky',

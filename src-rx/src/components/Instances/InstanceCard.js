@@ -423,8 +423,8 @@ const InstanceCard = ({
                             </Select>
                         </FormControl>
                     </div>}
-                    { instance.mode === 'daemon' && <State state={connectedToHost} >{t('Connected to host')}</State>}
-                    { instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
+                    {instance.mode === 'daemon' && <State state={connectedToHost} >{t('Connected to host')}</State>}
+                    {instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
                     {connected !== null &&
                         <State state={connected}>{t('Connected to %s', instance.adapter)}</State>
                     }
@@ -441,38 +441,45 @@ const InstanceCard = ({
                         >
                             {(memoryLimitMB ? memoryLimitMB : '-.--') + ' MB'}
                         </InstanceInfo>
-                        <IconButton
-                            size="small"
-                            className={classes.button}
-                            onClick={() => setOpenDialogMemoryLimit(true)}
-                        >
-                            <EditIcon />
-                        </IconButton>
+                        <Tooltip title={t('Edit')}>
+                            <IconButton
+                                size="small"
+                                className={classes.button}
+                                onClick={() => setOpenDialogMemoryLimit(true)}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        </Tooltip>
                     </div>
                     }
                     {expertMode && <div className={classes.displayFlex}>
                         <InstanceInfo icon={loglevelIcon} tooltip={t('loglevel')}>
                             {logLevel}
                         </InstanceInfo>
-                        <IconButton
-                            size="small"
-                            className={classes.button}
-                            onClick={() => setOpenDialogSelect(true)}
-                        >
-                            <EditIcon />
-                        </IconButton>
+
+                        <Tooltip title={t('Edit')}>
+                            <IconButton
+                                size="small"
+                                className={classes.button}
+                                onClick={() => setOpenDialogSelect(true)}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        </Tooltip>
                     </div>}
                     {mode && <div className={classes.displayFlex}>
                         <InstanceInfo icon={<ScheduleIcon />} tooltip={t('schedule_group')}>
                             {getSchedule(id) || '-'}
                         </InstanceInfo>
-                        <IconButton
-                            size="small"
-                            className={classes.button}
-                            onClick={() => setOpenDialogSchedule(true)}
-                        >
-                            <EditIcon />
-                        </IconButton>
+                        <Tooltip title={t('Edit')}>
+                            <IconButton
+                                size="small"
+                                className={classes.button}
+                                onClick={() => setOpenDialogSchedule(true)}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        </Tooltip>
                     </div>}
                     {expertMode && (instance.mode === 'daemon') &&
                         <div className={classes.displayFlex}>
@@ -482,13 +489,15 @@ const InstanceCard = ({
                             >
                                 {getRestartSchedule(id) || '-'}
                             </InstanceInfo>
-                            <IconButton
-                                size="small"
-                                className={classes.button}
-                                onClick={() => setOpenDialogCron(true)}
-                            >
-                                <EditIcon />
-                            </IconButton>
+                            <Tooltip title={t('Edit')}>
+                                <IconButton
+                                    size="small"
+                                    className={classes.button}
+                                    onClick={() => setOpenDialogCron(true)}
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                            </Tooltip>
                         </div>
                     }
                     {expertMode &&
@@ -519,13 +528,15 @@ const InstanceCard = ({
             </CardContent>
             <div className={classes.footerBlock}>
                 <div className={classes.displayFlex}>
-                    <IconButton
-                        size="small"
-                        className={classes.button}
-                        onClick={() => setOpenDialogDelete(true)}
-                    >
-                        <DeleteIcon />
-                    </IconButton>
+                    <Tooltip title={t('Delete')}>
+                        <IconButton
+                            size="small"
+                            className={classes.button}
+                            onClick={() => setOpenDialogDelete(true)}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </Tooltip>
                 </div>
                 {expertMode && checkSentry && <div className={classes.displayFlex}>
                     <Tooltip title="sentry">
@@ -618,60 +629,71 @@ const InstanceCard = ({
                     onMouseLeave={() => handlerEdit(false)}
                     className={classes.displayFlex}>
                     {name}
-                    <IconButton
-                        size="small"
-                        className={clsx(classes.button, !visibleEdit && classes.visibility)}
-                        onClick={() => setOpenDialogText(true)}
-                    >
-                        <EditIcon />
-                    </IconButton></div>
+                    <Tooltip title={t('Edit')}>
+                        <IconButton
+                            size="small"
+                            className={clsx(classes.button, !visibleEdit && classes.visibility)}
+                            onClick={() => setOpenDialogText(true)}
+                        >
+                            <EditIcon />
+                        </IconButton>
+                    </Tooltip>
+                </div>
             </Typography>
             <div className={classes.marginTop10}>
                 <Typography component={'span'} className={classes.enableButton}>
-                    <IconButton
-                        size="small"
-                        onClick={event => {
-                            extendObject('system.adapter.' + instance.id, { common: { enabled: !running } });
-                            event.stopPropagation();
-                        }}
-                        onFocus={event => event.stopPropagation()}
-                        className={clsx(classes.button, instance.canStart ? (running ? classes.enabled : classes.disabled) : classes.hide)}
-                    >
-                        {running ? <PauseIcon /> : <PlayArrowIcon />}
-                    </IconButton>
-                    <Hidden xsDown>
+                    <Tooltip title={t(!running ? 'Deactivated. Click to start.' : 'Activated. Click to stop.')}>
                         <IconButton
                             size="small"
-                            className={clsx(classes.button,!instance.config && classes.visibility)}
-                            onClick={() => openConfig(id)}
+                            onClick={event => {
+                                extendObject('system.adapter.' + instance.id, { common: { enabled: !running } });
+                                event.stopPropagation();
+                            }}
+                            onFocus={event => event.stopPropagation()}
+                            className={clsx(classes.button, instance.canStart ? (running ? classes.enabled : classes.disabled) : classes.hide)}
                         >
-                            <BuildIcon />
+                            {running ? <PauseIcon /> : <PlayArrowIcon />}
                         </IconButton>
+                    </Tooltip>
+                    <Hidden xsDown>
+                        <Tooltip title={t('Settings')}>
+                            <IconButton
+                                size="small"
+                                className={clsx(classes.button, !instance.config && classes.visibility)}
+                                onClick={() => openConfig(id)}
+                            >
+                                <BuildIcon />
+                            </IconButton>
+                        </Tooltip>
                     </Hidden>
-                    <IconButton
-                        size="small"
-                        onClick={event => {
-                            extendObject('system.adapter.' + instance.id, {});
-                            event.stopPropagation();
-                        }}
-                        onFocus={event => event.stopPropagation()}
-                        className={clsx(classes.button, !instance.canStart && classes.hide)}
-                        disabled={!running}
-                    >
-                        <RefreshIcon />
-                    </IconButton>
-                    <IconButton
-                        size="small"
-                        className={clsx(classes.button, (!instance.link || !instance.link[0]) && classes.hide)}
-                        disabled={!running}
-                        onClick={event => {
-                            window.open(instance.link, '_blank');
-                            event.stopPropagation();
-                        }}
-                        onFocus={event => event.stopPropagation()}
-                    >
-                        <InputIcon />
-                    </IconButton>
+                    <Tooltip title={t('Reload')}>
+                        <IconButton
+                            size="small"
+                            onClick={event => {
+                                extendObject('system.adapter.' + instance.id, {});
+                                event.stopPropagation();
+                            }}
+                            onFocus={event => event.stopPropagation()}
+                            className={clsx(classes.button, !instance.canStart && classes.hide)}
+                            disabled={!running}
+                        >
+                            <RefreshIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title={t('Open web page of adapter')}>
+                        <IconButton
+                            size="small"
+                            className={clsx(classes.button, (!instance.link || !instance.link[0]) && classes.hide)}
+                            disabled={!running}
+                            onClick={event => {
+                                window.open(instance.link, '_blank');
+                                event.stopPropagation();
+                            }}
+                            onFocus={event => event.stopPropagation()}
+                        >
+                            <InputIcon />
+                        </IconButton>
+                    </Tooltip>
                 </Typography>
             </div>
         </CardContent>

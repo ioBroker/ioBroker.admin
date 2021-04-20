@@ -269,58 +269,70 @@ const AdapterTile = ({
                 </Typography>
             </CardContent>
             <div className={classes.footerBlock}>
-                <IconButton
-                    size="small"
-                    disabled={commandRunning}
-                    className={!rightOs ? classes.hidden : ''}
-                    onClick={rightOs ? onAddInstance : null}
-                >
-                    <AddIcon />
-                </IconButton>
-                <div className={classes.cardContentFlex}>
-                    <IconButton
-                        size="small"
-                        onClick={onInfo}
-                    >
-                        <HelpIcon />
-                    </IconButton>
-                    {expertMode &&
-                        <IconButton
-                            size="small"
-                            disabled={commandRunning}
-                            className={!installedVersion ? classes.hidden : ''}
-                            onClick={onUpload}
-                        >
-                            <PublishIcon />
-                        </IconButton>
-                    }
+                <Tooltip title={t('Add instance')}>
                     <IconButton
                         size="small"
                         disabled={commandRunning}
-                        className={!installedVersion ? classes.hidden : ''}
-                        onClick={onDeletion}
+                        className={!rightOs ? classes.hidden : ''}
+                        onClick={rightOs ? onAddInstance : null}
                     >
-                        <DeleteForeverIcon />
+                        <AddIcon />
                     </IconButton>
-                    {expertMode &&
+                </Tooltip>
+                <div className={classes.cardContentFlex}>
+                    <Tooltip title={t('Readme')}>
                         <IconButton
-                            disabled={commandRunning}
                             size="small"
-                            className={!installedVersion ? classes.hidden : ''}
-                            onClick={openInstallVersionDialog}
+                            onClick={onInfo}
                         >
-                            <AddToPhotosIcon />
+                            <HelpIcon />
                         </IconButton>
+                    </Tooltip>
+                    {expertMode &&
+                        <Tooltip title={t('Upload')}>
+                            <IconButton
+                                size="small"
+                                disabled={commandRunning}
+                                className={!installedVersion ? classes.hidden : ''}
+                                onClick={onUpload}
+                            >
+                                <PublishIcon />
+                            </IconButton>
+                        </Tooltip>
+                    }
+                    <Tooltip title={t('Delete adapter')}>
+                        <IconButton
+                            size="small"
+                            disabled={commandRunning}
+                            className={!installedVersion ? classes.hidden : ''}
+                            onClick={onDeletion}
+                        >
+                            <DeleteForeverIcon />
+                        </IconButton>
+                    </Tooltip>
+                    {expertMode &&
+                        <Tooltip title={t('Install a specific version')}>
+                            <IconButton
+                                disabled={commandRunning}
+                                size="small"
+                                className={!installedVersion ? classes.hidden : ''}
+                                onClick={openInstallVersionDialog}
+                            >
+                                <AddToPhotosIcon />
+                            </IconButton>
+                        </Tooltip>
                     }
                     {rebuild && expertMode &&
-                        <IconButton
-                            disabled={commandRunning}
-                            size="small"
-                            className={!installedVersion ? classes.hidden : ''}
-                            onClick={onRebuild}
-                        >
-                            <BuildIcon />
-                        </IconButton>
+                        <Tooltip title={t('Rebuild')}>
+                            <IconButton
+                                disabled={commandRunning}
+                                size="small"
+                                className={!installedVersion ? classes.hidden : ''}
+                                onClick={onRebuild}
+                            >
+                                <BuildIcon />
+                            </IconButton>
+                        </Tooltip>
                     }
                 </div>
             </div>
@@ -348,12 +360,14 @@ const AdapterTile = ({
                     value={rating?.rating ? rating.rating.r : 0}
                 />
             </div> : null}
-            <Fab
-                onMouseOut={() => setFocused(false)}
-                onMouseOver={() => setFocused(true)}
-                onClick={() => setCollapse((bool) => !bool)} className={classes.fab} color="primary" aria-label="add">
-                <MoreVertIcon />
-            </Fab>
+            <Tooltip title={t('Info')}>
+                <Fab
+                    onMouseOut={() => setFocused(false)}
+                    onMouseOver={() => setFocused(true)}
+                    onClick={() => setCollapse((bool) => !bool)} className={classes.fab} color="primary" aria-label="add">
+                    <MoreVertIcon />
+                </Fab>
+            </Tooltip>
         </div>
         <CardContent className={classes.cardContent2}>
             <Typography gutterBottom variant="h5" component="h5">{name}</Typography>
@@ -372,11 +386,11 @@ const AdapterTile = ({
                             </Tooltip> :
                             dataSource === 'push' ?
                                 <Tooltip title={t('The device or service delivers the new state actively')}>
-                                    <ArrowDownwardIcon className={classes.classPush}/>
+                                    <ArrowDownwardIcon className={classes.classPush} />
                                 </Tooltip> :
                                 dataSource === 'assumption' ?
                                     <Tooltip title={t('Adapter cannot request the exactly device status and the status will be guessed on the last sent command')}>
-                                        <RemoveIcon  className={classes.classAssumption} /></Tooltip> : null
+                                        <RemoveIcon className={classes.classAssumption} /></Tooltip> : null
                     )}</div>
                 }
             </div>
@@ -385,12 +399,15 @@ const AdapterTile = ({
                     <div>{t('Available version:')}</div>
                     <div className={clsx(updateAvailable && classes.greenText, classes.curdContentFlexCenter)} >
                         {!commandRunning && updateAvailable ?
-                            <div onClick={onUpdate} className={classes.buttonUpdate}><IconButton
-                                className={classes.buttonUpdateIcon}
-                                size="small"
-                            >
-                                <RefreshIcon />
-                            </IconButton>{version}</div> :
+
+                            <Tooltip title={t('Update')}>
+                                <div onClick={onUpdate} className={classes.buttonUpdate}><IconButton
+                                    className={classes.buttonUpdateIcon}
+                                    size="small"
+                                >
+                                    <RefreshIcon />
+                                </IconButton>{version}</div>
+                            </Tooltip> :
                             version
                         }</div>
                 </Typography>
