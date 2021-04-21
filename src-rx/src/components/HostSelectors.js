@@ -81,7 +81,7 @@ export default withStyles(styles)(function HostSelectors({ classes, disabled, so
             hostsArray = await socket.getHosts('');
             hostsArray.forEach(async ({ _id }) => {
                 let aliveValue = await socket.getState(`${_id}.alive`);
-                setAlive((prev) => ({ ...prev, [_id]: aliveValue.val === null ? false : aliveValue.val }));
+                setAlive(prev => ({ ...prev, [_id]: !aliveValue || aliveValue.val === null ? false : !!aliveValue.val }));
             });
         } catch (e) {
             window.alert('Cannot get hosts: ' + e);
