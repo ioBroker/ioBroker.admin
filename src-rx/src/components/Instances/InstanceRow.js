@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
-import { Accordion, AccordionDetails, AccordionSummary, Avatar, 
-    // Badge, 
+import { Accordion, AccordionDetails, AccordionSummary, Avatar,
+    // Badge,
     Button, CardMedia, FormControl, Grid, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from "@material-ui/core";
 import { amber, blue, green, grey, red, orange } from '@material-ui/core/colors';
 
@@ -517,9 +517,12 @@ const InstanceRow = ({
                     (openDialogDelete && t('Please confirm')) ||
                     (openDialogMemoryLimit && t('Edit memory limit rule for %s', instance.id)) ||
                     (openDialogCompact && t('Edit compact groups for %s', instance.id)) ||
-                    (openDialogSelectTier && t('Tiers define the order of adapters when the system starts. For %s', instance.id))
+                    (openDialogSelectTier && t('Set tier for %s', instance.id))
                 }
-                help={openDialogMemoryLimit && t('Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)')}
+                help={
+                    openDialogMemoryLimit && t('Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)') ||
+                    openDialogSelectTier && t('Tiers define the order of adapters when the system starts.')
+                }
                 open={true}
                 applyDisabled={openDialogText || openDialogMemoryLimit}
                 textInput={openDialogText || openDialogMemoryLimit}

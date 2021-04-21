@@ -8,7 +8,7 @@ if (location.pathname.match(/^\/admin\//)) {
 
 var systemConfig;
 var socket   = io.connect('/', {path: parts.join('/') + '/socket.io'});
-var query = window.location.search.replace(/^?/, '').split('&');
+var query    = window.location.search.replace(/^\?/, '').split('&');
 var instance = query[0];
 var common   = null; // common information of adapter
 var host     = null; // host object on which the adapter runs
@@ -17,8 +17,8 @@ var certs    = [];
 var adapter  = '';
 var onChangeSupported = false;
 var isMaterialize = false;
-var ___onChange = null;
-var systemSecret = 'Zgfr56gFe87jJOM';
+var ___onChange   = null;
+var systemSecret  = 'Zgfr56gFe87jJOM';
 var supportedFeatures = [
     'ADAPTER_AUTO_DECRYPT_NATIVE', // all native attributes, that are listed in an array `encryptedNative` in io-pack will be automatically decrypted and encrypted. Since js-controller 3.0
 ];

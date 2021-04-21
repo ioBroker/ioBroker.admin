@@ -710,7 +710,7 @@
   "desc": "Desc",
   "description": "Descrizione",
   "device": "Dispositivo",
-  "diag-note": "Abbiamo lavorato sodo per creare questo progetto. In cambio ci aspettiamo da voi alcune statistiche di utilizzo. <br> Ogni volta che la lista dell'adattatore viene aggiornata, vengono inviate le statistiche anonime. Rispettiamo la tua privacy, quindi non verranno trasmesse informazioni private. <br> Grazie!",
+  "diag-note": "Aiutaci a rendere ioBroker ancora migliore! <br> Consentire la trasmissione di statistiche anonime sull'utilizzo e rapporti sugli arresti anomali. L'ambito esatto dei dati inviati a iobroker.org durante l'aggiornamento dell'elenco degli adattatori può essere selezionato di seguito e viene mostrato nella panoramica a destra. I dati non contengono alcuna informazione personale e ci aiutano a stabilire le priorità per l'ulteriore sviluppo di ioBroker nell'interesse di tutti gli utenti e per poter correggere rapidamente gli errori che si verificano. <br> Mille grazie per aver supportato il nostro duro lavoro accettando la trasmissione dei dati statistici!\"",
   "edit": "Modificare",
   "edit enum": "Modifica enum",
   "edit enums": "Modifica enumerazioni",
@@ -1190,5 +1190,11 @@
   "Host Base Settings": "Impostazioni della base host",
   "Change color theme": "Cambia il tema del colore",
   "Change current host": "Cambia host attuale",
-  "Discovery devices": "Dispositivi di rilevamento"
+  "Discovery devices": "Dispositivi di rilevamento",
+  "Delete with children": "Elimina con i bambini",
+  "Delete one item": "Elimina un elemento",
+  "Delete object(s)": "Elimina oggetto/i",
+  "When enabled adapter instances can run in one or few processes to save RAM usage.": "Se abilitate, le istanze dell'adattatore possono essere eseguite in uno o pochi processi per risparmiare l'utilizzo della RAM.",
+  "When activated this host can be discovered by other iobroker installations in your network to become the master of a multihost system.": "Quando attivato, questo host può essere scoperto da altre installazioni di ioBroker nella tua rete per diventare il padrone di un sistema multihost.",
+  "Instance link %s": "Collegamento istanza %s"
 }

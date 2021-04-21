@@ -710,7 +710,7 @@
   "desc": "降序",
   "description": "描述",
   "device": "设备",
-  "diag-note": "我们努力创建这个项目。作为回报，我们期望您使用一些使用情况统计信息。<br>每次更新插件列表时，都会发送匿名统计信息。我们尊重您的隐私，因此不会传输任何私人信息。<br>谢谢！",
+  "diag-note": "帮助我们使ioBroker变得更好！ <br>允许传输匿名使用情况统计信息和崩溃报告。可以在下面选择更新适配器列表时发送到iobroker.org的数据的确切范围，并在右侧的概述中显示。数据不包含任何个人信息，有助于我们为所有用户的利益设定ioBroker进一步开发的优先级，并能够迅速纠正发生的错误。 <br>非常感谢您同意传输统计数据来支持我们的辛勤工作！",
   "edit": "编辑",
   "edit enum": "编辑分类",
   "edit enums": "编辑分类",
@@ -1190,5 +1190,11 @@
   "Host Base Settings": "主机库设置",
   "Change color theme": "更改颜色主题",
   "Change current host": "更改当前主机",
-  "Discovery devices": "发现设备"
+  "Discovery devices": "发现设备",
+  "Delete with children": "与孩子一起删除",
+  "Delete one item": "删除一项",
+  "Delete object(s)": "删除对象",
+  "When enabled adapter instances can run in one or few processes to save RAM usage.": "启用后，适配器实例可以在一个或几个进程中运行以节省RAM使用量。",
+  "When activated this host can be discovered by other iobroker installations in your network to become the master of a multihost system.": "激活后，该主机可以被网络中的其他ioBroker安装发现，成为多主机系统的主机。",
+  "Instance link %s": "实例链接%s"
 }

@@ -710,7 +710,7 @@
   "desc": "desc.",
   "description": "Descrição",
   "device": "aparelho",
-  "diag-note": "Trabalhamos duro para criar este projeto. Em troca, pedimos que nos envie as estatísticas de uso. <br> Nenhuma informação privada será enviada para ioBroker.net. Cada vez que a lista do adaptador é atualizada, as estatísticas anônimas também serão enviadas. <br>Obrigado!",
+  "diag-note": "Ajude-nos a tornar o ioBroker ainda melhor! <br> Permitir a transmissão de estatísticas de uso anônimas e relatórios de falhas. O escopo exato dos dados enviados ao iobroker.org ao atualizar a lista de adaptadores pode ser selecionado abaixo e é mostrado na visão geral à direita. Os dados não contêm informações pessoais e nos ajudam a definir as prioridades para o desenvolvimento futuro do ioBroker no interesse de todos os usuários e para poder corrigir rapidamente os erros que ocorrem. <br> Muito obrigado por apoiar nosso trabalho árduo, concordando com a transmissão dos dados estatísticos!",
   "edit": "editar",
   "edit enum": "editar enumeração",
   "edit enums": "Edite enumerações para",
@@ -1190,5 +1190,11 @@
   "Host Base Settings": "Configurações de base do host",
   "Change color theme": "Mudar o tema da cor",
   "Change current host": "Mudar o host atual",
-  "Discovery devices": "Dispositivos de descoberta"
+  "Discovery devices": "Dispositivos de descoberta",
+  "Delete with children": "Excluir com filhos",
+  "Delete one item": "Excluir um item",
+  "Delete object(s)": "Excluir objeto(s)",
+  "When enabled adapter instances can run in one or few processes to save RAM usage.": "Quando ativadas, as instâncias do adaptador podem ser executadas em um ou poucos processos para economizar o uso de RAM.",
+  "When activated this host can be discovered by other iobroker installations in your network to become the master of a multihost system.": "Quando ativado, esse host pode ser descoberto por outras instalações do ioBroker em sua rede para se tornar o mestre de um sistema multihost.",
+  "Instance link %s": "Link da instância %s"
 }

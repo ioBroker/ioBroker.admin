@@ -102,6 +102,9 @@ const styles = theme => ({
     notAliveInstance: {
         opacity: 0.5,
     },
+    customRange: {
+        color: theme.palette.primary.main
+    },
     splitLineButtonIcon: {
         marginRight: theme.spacing(1),
     },
@@ -995,7 +998,7 @@ class ObjectChart extends Component {
                     value={ this.state.relativeRange }
                     onChange={ e => this.setRelativeInterval(e.target.value) }
                 >
-                    <MenuItem key={ 'custom' } value={ 'absolute' } className={ classes.notAliveInstance }>{ this.props.t('custom range') }</MenuItem>
+                    <MenuItem key={ 'custom' } value={ 'absolute' } className={ classes.customRange }>{ this.props.t('custom range') }</MenuItem>
                     <MenuItem key={ '1'  } value={ 10 }            >{ this.props.t('last 10 minutes') }</MenuItem>
                     <MenuItem key={ '2'  } value={ 30 }            >{ this.props.t('last 30 minutes') }</MenuItem>
                     <MenuItem key={ '3'  } value={ 60 }            >{ this.props.t('last hour') }</MenuItem>

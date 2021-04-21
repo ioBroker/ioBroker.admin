@@ -589,16 +589,21 @@ class App extends Router {
     }
 
     readRepoAndInstalledInfo = (currentHost, hosts) => async () => {
-        const repository = await this.socket.getRepository(currentHost, { update: false });
-        const installed = await this.socket.getInstalled(currentHost, { update: false });
-        const adapters = await this.socket.getAdapters(); // we need information about ignored versions
+        try {
+            const repository = await this.socket.getRepository(currentHost, { update: false });
+            const installed = await this.socket.getInstalled(currentHost, { update: false });
+            const adapters = await this.socket.getAdapters(); // we need information about ignored versions
 
-        adapters.forEach(adapter => {
-            if (installed[adapter?.common?.name] && adapter.common?.ignoreVersion) {
-                installed[adapter.common.name].ignoreVersion = adapter.common.ignoreVersion;
-            }
-        });
-        this.context.setStateContext({ hosts, repository, installed });
+            adapters.forEach(adapter => {
+                if (installed[adapter?.common?.name] && adapter.common?.ignoreVersion) {
+                    installed[adapter.common.name].ignoreVersion = adapter.common.ignoreVersion;
+                }
+            });
+            this.context.setStateContext({ hosts, repository, installed });
+        } catch (e) {
+            window.alert('Cannot read repo information: ' + e);
+        }
+
     }
 
     logsWorkerChanged = (currentHost) => {

@@ -710,7 +710,7 @@
   "desc": "Beschreibung",
   "description": "Beschreibung",
   "device": "Gerät",
-  "diag-note": "Wir haben hart daran gearbeitet, dieses Projekt auf die Beine zu stellen. Als Gegenleistung bitten wir Sie, uns die Nutzungs-Statistik zu senden.<br>Es werden keine privaten Informationen zu ioBroker.org gesendet. Jedes mal, wenn die Adapterliste aktualisiert wird, wird auch die anonymisierte Statistik verschickt.<br>Vielen Dank!",
+  "diag-note": "Helfen Sie uns, ioBroker noch besser zu machen!<br>Gestatten Sie die Übermittlung anonymer Nutzungs-Statistiken und Absturzmeldungen. Den genauen Umfang der bei einer Aktualisierung der Adapterliste an iobroker.org gesendeten Daten ist unten wählbar und wird rechts in der Übersicht dargestellt. Die Daten enthalten keine persönlichen Informationen und helfen uns die Prioritäten für die Weiterentwicklung von ioBroker im Interesse aller Nutzer richtig zu setzen und auftretende Fehler schnell beheben zu können.<br>Vielen Dank für die Unterstützung unserer harten Arbeit durch die Zustimmung zur Übermittlung der Statisktikdaten!",
   "edit": "Ändern",
   "edit enum": "Aufzählung ändern",
   "edit enums": "Aufzählungen für bearbeiten",
@@ -1190,5 +1190,11 @@
   "Host Base Settings": "Host-Basiseinstellungen",
   "Change color theme": "Farbthema ändern",
   "Change current host": "Aktuellen Host ändern ",
-  "Discovery devices": "Erkennungsgeräte"
+  "Discovery devices": "Erkennungsgeräte",
+  "Delete with children": "Mit Kindern löschen",
+  "Delete one item": "Einen Eintrag löschen ",
+  "Delete object(s)": "Objekt(e) löschen",
+  "When enabled adapter instances can run in one or few processes to save RAM usage.": "Wenn diese Option aktiviert ist, können Adapterinstanzen in einem oder wenigen Prozessen ausgeführt werden, um die RAM-Nutzung zu sparen.",
+  "When activated this host can be discovered by other iobroker installations in your network to become the master of a multihost system.": "Bei Aktivierung kann dieser Host von anderen ioBroker-Installationen in Ihrem Netzwerk erkannt werden, um der Master eines Multihost-Systems zu werden.",
+  "Instance link %s": "Instanzlink %s"
 }

@@ -188,14 +188,14 @@ class Instances extends Component {
 
         this.columns = {
             instance: { onlyExpert: false },
-            actions: { onlyExpert: false },
-            title: { onlyExpert: false },
+            actions:  { onlyExpert: false },
+            title:    { onlyExpert: false },
             schedule: { onlyExpert: false },
-            restart: { onlyExpert: true },
-            log: { onlyExpert: true },
+            restart:  { onlyExpert: true },
+            log:      { onlyExpert: true },
             ramLimit: { onlyExpert: true },
-            events: { onlyExpert: true },
-            ram: { onlyExpert: false }
+            events:   { onlyExpert: true },
+            ram:      { onlyExpert: false }
         };
 
         this.promises = {};

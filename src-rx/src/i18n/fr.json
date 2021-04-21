@@ -710,7 +710,7 @@
   "desc": "description",
   "description": "description",
   "device": "dispositif",
-  "diag-note": "Nous avons travaillé dur pour créer ce projet. A charge de revanche, nous attendons de vous des statistiques sur l'utilisation.<br>Aucune information privée ne sera envoyée à ioBroker.net. Chaque fois que vous appuyez sur Mettre à jour la liste des adaptateurs, les statistiques anonymisées seront envoyées.<br>Merci!",
+  "diag-note": "Aidez-nous à rendre ioBroker encore meilleur! <br> Autorisez la transmission de statistiques d'utilisation anonymes et de rapports de plantage. L'étendue exacte des données envoyées à iobroker.org lors de la mise à jour de la liste des adaptateurs peut être sélectionnée ci-dessous et est indiquée dans l'aperçu à droite. Les données ne contiennent aucune information personnelle et nous aident à définir les priorités pour le développement ultérieur d'ioBroker dans l'intérêt de tous les utilisateurs et pour pouvoir corriger rapidement les erreurs qui se produisent. <br> Merci beaucoup d'avoir soutenu notre travail acharné en acceptant la transmission des données statistiques!",
   "edit": "modifier",
   "edit enum": "éditer enum",
   "edit enums": "Modifier les énumérations pour",
@@ -1190,5 +1190,11 @@
   "Host Base Settings": "Paramètres de la base hôte",
   "Change color theme": "Changer le thème de couleur",
   "Change current host": "Changer d'hôte actuel",
-  "Discovery devices": "Appareils de découverte"
+  "Discovery devices": "Appareils de découverte",
+  "Delete with children": "Supprimer avec les enfants",
+  "Delete one item": "Supprimer un élément",
+  "Delete object(s)": "Supprimer un ou plusieurs objets",
+  "When enabled adapter instances can run in one or few processes to save RAM usage.": "Lorsqu'elles sont activées, les instances d'adaptateur peuvent s'exécuter dans un ou plusieurs processus pour économiser l'utilisation de la RAM.",
+  "When activated this host can be discovered by other iobroker installations in your network to become the master of a multihost system.": "Lorsqu'il est activé, cet hôte peut être découvert par d'autres installations ioBroker de votre réseau pour devenir le maître d'un système multihôte.",
+  "Instance link %s": "Lien d'instance %s"
 }
