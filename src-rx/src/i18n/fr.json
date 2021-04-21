@@ -1186,5 +1186,9 @@
   "ECharts": "ECharts",
   "Running command": "Commande en cours d'exécution",
   "Now the expert mode will be deactivated only during this browser session.": "Désormais, le mode expert ne sera désactivé que pendant cette session du navigateur.",
-  "allow set of compact groups": "Autoriser l'ensemble des groupes compacts"
+  "allow set of compact groups": "Autoriser l'ensemble des groupes compacts",
+  "Host Base Settings": "Paramètres de la base hôte",
+  "Change color theme": "Changer le thème de couleur",
+  "Change current host": "Changer d'hôte actuel",
+  "Discovery devices": "Appareils de découverte"
 }

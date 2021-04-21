@@ -1186,5 +1186,9 @@
   "ECharts": "ECharts",
   "Running command": "运行命令",
   "Now the expert mode will be deactivated only during this browser session.": "现在，仅在此浏览器会话期间将停用专家模式。",
-  "allow set of compact groups": "允许一组紧凑组"
+  "allow set of compact groups": "允许一组紧凑组",
+  "Host Base Settings": "主机库设置",
+  "Change color theme": "更改颜色主题",
+  "Change current host": "更改当前主机",
+  "Discovery devices": "发现设备"
 }

@@ -8,7 +8,8 @@ if (location.pathname.match(/^\/admin\//)) {
 
 var systemConfig;
 var socket   = io.connect('/', {path: parts.join('/') + '/socket.io'});
-var instance = window.location.search.slice(1);
+var query = window.location.search.replace(/^?/, '').split('&');
+var instance = query[0];
 var common   = null; // common information of adapter
 var host     = null; // host object on which the adapter runs
 var changed  = false;
@@ -240,8 +241,10 @@ function preInit () {
     });
 
     // detect, that we are now in react container
-    if (window.location.search.indexOf('react=true') !== -1) {
-        $('.adapter-container').addClass('react');
+    for (var q = 0; q < query.length; q++) {
+        if (query[q].indexOf('react=') !== -1) {
+            $('.adapter-container').addClass('react-' + query[q].substring(6));
+        }
     }
 
     function saveSettings(native, common, callback) {
@@ -534,7 +537,7 @@ function prepareTooltips() {
 
         var buttonsText = '';
         if (common && common.readme) {
-            buttonsText += '   <a class="btn-floating btn-small waves-effect waves-light" href="' + common.readme +'" target="_blank">' +
+            buttonsText += '   <a class="btn-floating btn-small waves-effect waves-light" href="' + common.readme +'" target="_blank" rel="noreferrer">' +
                 '       <i class="material-icons">live_help</i>' +
                 '   </a>';
         }
@@ -641,7 +644,7 @@ function prepareTooltips() {
             }
 
             if (link) {
-                $('<a class="tooltip" href="' + link + '" title="' + (tooltip || systemDictionary.htooltip[systemLang]) + '" target="_blank"><i class="material-icons tooltip">live_help</i></a>').insertBefore($this);
+                $('<a class="tooltip" href="' + link + '" title="' + (tooltip || systemDictionary.htooltip[systemLang]) + '" target="_blank" rel="noreferrer"><i class="material-icons tooltip">live_help</i></a>').insertBefore($this);
             } else if (tooltip) {
                 $('<i class="material-icons tooltip" title="' + tooltip + '">help_outline</i>').insertBefore($this);
             }

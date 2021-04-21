@@ -1186,5 +1186,9 @@
   "ECharts": "ECharts",
   "Running command": "Running command",
   "Now the expert mode will be deactivated only during this browser session.": "Now the expert mode will be deactivated only during this browser session.",
-  "allow set of compact groups": "Allow set of the compact groups"
+  "allow set of compact groups": "Allow set of the compact groups",
+  "Host Base Settings": "Host Base Settings",
+  "Change color theme": "Change color theme",
+  "Change current host": "Change current host",
+  "Discovery devices": "Discovery devices"
 }

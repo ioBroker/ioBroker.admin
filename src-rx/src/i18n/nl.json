@@ -1186,5 +1186,9 @@
   "ECharts": "ECharts",
   "Running command": "Commando uitvoeren",
   "Now the expert mode will be deactivated only during this browser session.": "Nu wordt de expertmodus alleen tijdens deze browsersessie gedeactiveerd.",
-  "allow set of compact groups": "Sta set van de compacte groepen toe"
+  "allow set of compact groups": "Sta set van de compacte groepen toe",
+  "Host Base Settings": "Host Base-instellingen",
+  "Change color theme": "Verander het kleurenthema",
+  "Change current host": "Wijzig huidige host",
+  "Discovery devices": "Ontdekkingsapparaten"
 }

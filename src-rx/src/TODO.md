@@ -37,7 +37,11 @@ Issues Admin5 Collection #1
   * List view: Increase size of Adapter Logos (padding 0, size 32)
   * Both views: Update All dialog: move select all/none to right to be "over" the other checkboxes
   * List view: Custom Install warnings (both tabs) - add some more space on top of "Warning" text
-
+  * Repository Version info need to be updated on reload
+  * Rating dialog: Add info text: Rate how good this version of the adapter works on your system. You can vote for every new version.
+  * Rating dialog: add close button
+  * Add Rating in Listview below Adaptername
+  
 <!-- * Instances -->
   <!-- * Both views: (only expert mode) Add "common.tier" selection as dialog with infotext: "Tiers define the order of adapters when the
     system starts.". Tiers: 
@@ -46,6 +50,58 @@ Issues Admin5 Collection #1
     - "3: Other adapters". If
     common.tier is not 1 or 2 display as 3
     - If nothing set, show 3 -->
+  * If settings change for an adapter, the jump-link need to be updated
+  
+* Adapter Update Dialog: Only show "Dependency list" when at least one dep is not met
+* Objects
+  * Remove "Role" from "Edit Object dialog" when not state
+  * Objects ACL Edit Dialog - table layout need fixing (sometimes)
+  * Stateview: Headline "Quality Code" change to Quality
+  * Stateview: Check alignment headline Timestamp, lastchange and Value to data columns
+  * Filter for "Custom instance" not working
+  * State updates should get the green blink of the value
+  * State value color: Make "not-ack" red color lighter
+  * Use default acl in table if object/state ACT does not exist, instead of showing NaN
+  * Alias target do not jump to object - jump needs to open the tree
+  * Alias ID can be object with read and write properties. Show both alternatively or ignore this case on display
+  * Object editor Alias Tab: also allow to specify red/write ids
+  * Too long roles need to be cut in table (e.g. indicator.maintenance.unreach)
+  * Rename "Acknowledged flag" in State value tooltip to only "Acknowledge"
+  * Role in table should only be editable in expert mode
+  * Custom Edit History Data: Make "from" column wider (e.g. system.host.io-test)
+  * Custom Edit History Data: Selection "Custom range" should be not grey
+
+* Logs
+  * When entering Message filter show clear button
+
+* Hosts
+  * Remove color effect and make indicator narrow (3-4px) in tile view and list
+  * Line view: host color should be used
+  * Move "Host base settings dialog" to Hosts tab and leave as wrench, but only show in expert mode
+  * Add Notifications button with "bubble" to hosts list and allow open Notification dialog per host if something is there. Gray button out if no notifications exist for that host
+
+* Easy Mode
+  * Add padding at the page bottom
+
+* AdminSettings: Access to instances: add infotexts for  "Apply access rights" and "Allow access only"
+
+* General: Support the new io-package fields that replace materialize and materializeTab (but we need to be backward compatible)
+  common.adminUI: {
+  custom: 'json',
+  config: 'materialize',
+  tab: 'html'
+  }
+  
+* JSonConfig: Implement cron editor
+  * dependsOn -> alsoDependsOn und in confirm schieben
+
+* Installation Wizard
+  * Update License year for agreement
+  * Switch position of Buttons on "License agreement" page (Agree to right)
+  * Password Page: change color of "set Admin Password" button to primary
+  * Settings: Map position not shown initially, change save button to primary
+  * Finish Page: Have fun automating your home with <ioBroker-name logo>
+  * Finish-Page: Jump to "Adapter" page when clicking Finish
 
 
 ## Settings

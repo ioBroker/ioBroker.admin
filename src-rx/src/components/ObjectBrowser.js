@@ -785,15 +785,14 @@ function buildTree(objects, options) {
 
     for (let i = 0; i < ids.length; i++) {
         const id = ids[i];
+        if (!id) {
+            continue;
+        }
         const obj = objects[id];
         const parts = id.split('.');
 
         if (obj.type && !info.types.includes(obj.type)) {
             info.types.push(obj.type);
-        }
-
-        if (id.startsWith('alias')) {
-            console.log(id);
         }
 
         if (obj) {
@@ -1303,8 +1302,8 @@ const SCREEN_WIDTHS = {
             buttons: 120,
             changedFrom: 120,
             qualityCode: 100,
-            timestamp: 160,
-            lastChange: 160
+            timestamp: 165,
+            lastChange: 165
         }
     },
     ///////////////
@@ -1657,7 +1656,7 @@ class ObjectBrowser extends Component {
      * Called when component is unmounted.
      */
     componentWillUnmount() {
-        this.props.socket.unsubscribeObject('*', this.onObjectChange)
+        this.props.socket.unsubscribeObject('*', this.onObjectChange);
 
         // remove all subscribes
         this.subscribes.forEach(pattern => {
@@ -2645,70 +2644,70 @@ class ObjectBrowser extends Component {
             }}>
 
                 <Tooltip title={this.props.t('ra_Rebuild tree')}>
-                <IconButton onClick={() => this.refreshComponent()}>
-                    <RefreshIcon />
-                </IconButton>
+                    <IconButton onClick={() => this.refreshComponent()}>
+                        <RefreshIcon />
+                    </IconButton>
                 </Tooltip>
                 {this.props.showExpertButton &&
                     <Tooltip title={this.props.t('ra_expertMode')}>
-                    <IconButton
-                        key="expertMode"
-                        color={this.state.filter.expertMode ? 'secondary' : 'default'}
-                        onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
-                    >
-                        <IconExpert />
-                    </IconButton>
+                        <IconButton
+                            key="expertMode"
+                            color={this.state.filter.expertMode ? 'secondary' : 'default'}
+                            onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
+                        >
+                            <IconExpert />
+                        </IconButton>
                     </Tooltip>
                 }
                 {!this.props.disableColumnSelector &&
-                <Tooltip title={this.props.t('ra_Configure visible columns')}>
-                    <IconButton
-                        key="columnSelector"
-                        onClick={() => this.setState({ columnsSelectorShow: true })}
-                    >
-                        <IconColumns />
-                    </IconButton>
+                    <Tooltip title={this.props.t('ra_Configure visible columns')}>
+                        <IconButton
+                            key="columnSelector"
+                            onClick={() => this.setState({ columnsSelectorShow: true })}
+                        >
+                            <IconColumns />
+                        </IconButton>
                     </Tooltip>
                 }
                 {this.state.expandAllVisible &&
-                <Tooltip title={this.props.t('ra_Expand all nodes')}>
-                    <IconButton
-                        key="expandAll"
-                        onClick={() => this.onExpandAll()}
-                    >
-                        <IconOpen />
-                    </IconButton>
+                    <Tooltip title={this.props.t('ra_Expand all nodes')}>
+                        <IconButton
+                            key="expandAll"
+                            onClick={() => this.onExpandAll()}
+                        >
+                            <IconOpen />
+                        </IconButton>
                     </Tooltip>
                 }
                 <Tooltip title={this.props.t('ra_Collapse all nodes')}>
-                <IconButton
-                    key="collapseAll"
-                    onClick={() => this.onCollapseAll()}
-                >
-                    <IconClosed />
-                </IconButton>
+                    <IconButton
+                        key="collapseAll"
+                        onClick={() => this.onCollapseAll()}
+                    >
+                        <IconClosed />
+                    </IconButton>
                 </Tooltip>
                 <Tooltip title={this.props.t('ra_Expand one step node')}>
-                <IconButton
-                    key="expandVisible"
-                    color="primary"
-                    onClick={() => this.onExpandVisible()}
-                >
-                    <StyledBadge badgeContent={this.state.depth} color="secondary">
-                        <IconOpen />
-                    </StyledBadge>
-                </IconButton>
+                    <IconButton
+                        key="expandVisible"
+                        color="primary"
+                        onClick={() => this.onExpandVisible()}
+                    >
+                        <StyledBadge badgeContent={this.state.depth} color="secondary">
+                            <IconOpen />
+                        </StyledBadge>
+                    </IconButton>
                 </Tooltip>
                 <Tooltip title={this.props.t('ra_Collapse one step node')}>
-                <IconButton
-                    key="collapseVisible"
-                    color="primary"
-                    onClick={() => this.onCollapseVisible()}
-                >
-                    <StyledBadge badgeContent={this.state.depth} color="secondary">
-                        <IconClosed />
-                    </StyledBadge>
-                </IconButton>
+                    <IconButton
+                        key="collapseVisible"
+                        color="primary"
+                        onClick={() => this.onCollapseVisible()}
+                    >
+                        <StyledBadge badgeContent={this.state.depth} color="secondary">
+                            <IconClosed />
+                        </StyledBadge>
+                    </IconButton>
                 </Tooltip>
                 {this.props.objectStatesView && <Tooltip title={this.props.t('ra_Toggle the states view')}>
                     <IconButton onClick={() => this.onStatesViewVisible()}>
@@ -2783,24 +2782,24 @@ class ObjectBrowser extends Component {
             </div>
             {this.props.objectEditBoolean &&
             <Tooltip title={this.props.t('ra_Edit custom config')}>
-            <IconButton onClick={() => {
-                // get all visible states
-                const ids = getVisibleItems(this.root, 'state', this.objects);
+                <IconButton onClick={() => {
+                    // get all visible states
+                    const ids = getVisibleItems(this.root, 'state', this.objects);
 
-                if (ids.length) {
-                    this.pauseSubscribe(true);
+                    if (ids.length) {
+                        this.pauseSubscribe(true);
 
-                    if (ids.length === 1) {
-                        window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', this.state.selected[0]);
-                        this.props.router && this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
+                        if (ids.length === 1) {
+                            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', this.state.selected[0]);
+                            this.props.router && this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
+                        }
+                        this.setState({ customDialog: ids });
+                    } else {
+                        this.setState({ toast: this.props.t('ra_please select object') });
                     }
-                    this.setState({ customDialog: ids });
-                } else {
-                    this.setState({ toast: this.props.t('ra_please select object') });
-                }
-            }}>
-                <BuildIcon />
-            </IconButton>
+                }}>
+                    <BuildIcon />
+                </IconButton>
             </Tooltip>
             }
         </div>;
@@ -3546,6 +3545,7 @@ class ObjectBrowser extends Component {
         item.data.obj?.user && newValueTitle.push(this.texts.objectChangedBy     + ' ' + item.data.obj.user.replace(/^system\.user\./, ''));
         item.data.obj?.ts   && newValueTitle.push(this.texts.objectChangedByUser + ' ' + Utils.formatDate(new Date(item.data.obj.ts), this.props.dateFormat));
 
+        // TODO: id could be an object with {read: id, write: id}
         const alias = id.startsWith('alias.') && item.data.obj?.common?.alias?.id ?
             <div
                 onClick={e => {
@@ -3556,6 +3556,7 @@ class ObjectBrowser extends Component {
                 }}
                 className={classes.cellIdAlias}
             >→{item.data.obj?.common?.alias?.id}</div> : null;
+
         let checkColor = item.data?.obj?.common?.color;
         let invertBackground = 'none';
         if (checkColor && !this.state.selected.includes(id)) {
