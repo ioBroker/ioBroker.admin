@@ -978,10 +978,10 @@ const InstanceRow = ({
                                 </Tooltip>
                             </div>}
                         {expertMode && <div className={classes.displayFlex}>
-                            <InstanceInfo icon={<LowPriorityIcon className={classes.marginRight} color="inherit" />} tooltip={t('compact groups')}>
+                            <InstanceInfo icon={<LowPriorityIcon className={classes.marginRight} color="inherit" />} tooltip={t('Start order (tier)')}>
                                 {arrayTier.find(el => el.value === tier)?.desc || arrayTier[2]}
                             </InstanceInfo>
-                            <Tooltip title={t('Tier')}>
+                            <Tooltip title={t('Edit start order (tier)')}>
                                 <IconButton
                                     size="small"
                                     className={classes.button}

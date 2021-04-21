@@ -257,12 +257,13 @@ class Instances extends Component {
         return newState;
     }
 
-    getInstances = async (data) => {
+    getInstances = async data => {
+        console.log('GET INSTANCES');
         let instances = [];
         let instancesWorker = await this.props.instancesWorker.getInstances();
         Object.keys(instancesWorker).forEach(el => {
             instances.push(instancesWorker[el]);
-        })
+        });
         let memRssId = `system.host.${this.props.currentHostName}.memRss`;
         this.states[memRssId] = this.states[memRssId] || (await this.props.socket.getState(memRssId));
 
@@ -335,14 +336,13 @@ class Instances extends Component {
 
             formatted[obj._id] = instance;
         });
-        if (true) {
-            this.setState({
-                compactGroupCount,
-                processes,
-                mem: Math.round(mem),
-                instances: formatted
-            });
-        }
+
+        this.setState({
+            compactGroupCount,
+            processes,
+            mem: Math.round(mem),
+            instances: formatted
+        });
     }
 
     getParamsLocalAndPanel = async () => {
@@ -406,7 +406,7 @@ class Instances extends Component {
                     this.statesUpdateTimer = setTimeout(() => {
                         this.statesUpdateTimer = null;
                         this.forceUpdate();
-                    }, 300);
+                    }, 500);
                 }
             }
         }
