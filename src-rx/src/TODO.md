@@ -50,14 +50,12 @@ Issues Admin5 Collection #1
     - "3: Other adapters". If
     common.tier is not 1 or 2 display as 3
     - If nothing set, show 3 -->
-  * If settings change for an adapter, the jump-link need to be updated
   
 * Adapter Update Dialog: Only show "Dependency list" when at least one dep is not met
 * Objects
   * Remove "Role" from "Edit Object dialog" when not state
   * Objects ACL Edit Dialog - table layout need fixing (sometimes)
-  * Stateview: Headline "Quality Code" change to Quality
-  * Stateview: Check alignment headline Timestamp, lastchange and Value to data columns
+  * <!--Stateview: Check alignment headline Timestamp, lastchange and Value to data columns-->
   * Filter for "Custom instance" not working
   * State updates should get the green blink of the value
   * State value color: Make "not-ack" red color lighter
@@ -66,6 +64,7 @@ Issues Admin5 Collection #1
   * Alias ID can be object with read and write properties. Show both alternatively or ignore this case on display
   * Object editor Alias Tab: also allow to specify red/write ids
   * Too long roles need to be cut in table (e.g. indicator.maintenance.unreach)
+  * User can create a new role 
   * Rename "Acknowledged flag" in State value tooltip to only "Acknowledge"
   * Role in table should only be editable in expert mode
   * Custom Edit History Data: Make "from" column wider (e.g. system.host.io-test)
