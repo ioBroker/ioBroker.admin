@@ -1,9 +1,9 @@
 # Todo
  <!-- - Move logout button to menu . Always last and not orderable -->
 ## Bugs
-- Number on drawer is not corresponding with actual number of updatable adapters
+<!-- - Number on drawer is not corresponding with actual number of updatable adapters -->
 - The version will not be automatically updated: https://github.com/ioBroker/ioBroker.admin/issues/688
-- Update log level if changed: https://github.com/ioBroker/ioBroker.admin/issues/690
+<!-- - Update log level if changed: https://github.com/ioBroker/ioBroker.admin/issues/690 -->
 - Ask "Discard data?" if instance config not saved for json config
 
 
@@ -40,19 +40,19 @@ Issues Admin5 Collection #1
   * Both views: Update All dialog: move select all/none to right to be "over" the other checkboxes
   * List view: Custom Install warnings (both tabs) - add some more space on top of "Warning" text
 
-* Instances
-  * List view: order of instances strange (on my system admin.2 instance is above admin.0)
-  * List view: Action buttons "Start/stop", "settings", "restart" and "instance link" -> move to after instance name
-  * List/Tile view: Edit memory Limit for instance Dialog: Add info text: The default memory limit is 512MB on 32-bit systems, and 1GB on 64-bit systems. The limit can be raised with this setting to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)"
-  * Both views: Compact group: move configuration to own dialog with info text: "For each compact group one separate process is started. Define in which group this instance will run."
-   - common.compact (if compact available), common.runAsCompactMode (default false) - if compact mode enabled, compactGroup 0 - x, only other 2 on true
-  * Both views: (only expert mode) Add "common.tier" selection as dialog with infotext: "Tiers define the order of adapters when the
+<!-- * Instances -->
+  <!-- * List view: order of instances strange (on my system admin.2 instance is above admin.0) -->
+  <!-- * List view: Action buttons "Start/stop", "settings", "restart" and "instance link" -> move to after instance name -->
+  <!-- * List/Tile view: Edit memory Limit for instance Dialog: Add info text: The default memory limit is 512MB on 32-bit systems, and 1GB on 64-bit systems. The limit can be raised with this setting to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)" -->
+  <!-- * Both views: Compact group: move configuration to own dialog with info text: "For each compact group one separate process is started. Define in which group this instance will run." -->
+   <!-- - common.compact (if compact available), common.runAsCompactMode (default false) - if compact mode enabled, compactGroup 0 - x, only other 2 on true -->
+  <!-- * Both views: (only expert mode) Add "common.tier" selection as dialog with infotext: "Tiers define the order of adapters when the
     system starts.". Tiers: 
     - "1: Logic adapters", 
     - "2: Data provider adapters", 
     - "3: Other adapters". If
     common.tier is not 1 or 2 display as 3
-    - If nothing set, show 3
+    - If nothing set, show 3 -->
 
 
 ## Settings
@@ -72,8 +72,8 @@ Issues Admin5 Collection #1
 ## Logs
 - Toggle the PID => layout problem
 
-## Instances
-- use InstanceWorker and react on all objects if it type="instance"
+<!-- ## Instances
+- use InstanceWorker and react on all objects if it type="instance" -->
 
 ## Objects
 - Decode quality code to text (BF)
@@ -85,9 +85,9 @@ Issues Admin5 Collection #1
 
 ## Users
 ## Easy mode
-- Show admin tabs: 
+<!-- - Show admin tabs: 
    - config => JsonConfig(jsonConfig: true),  index_m.html (materialize: true), index.html
-   - admin => tab_m.html (materialize: true), tab_html
+   - admin => tab_m.html (materialize: true), tab_html -->
 
 ## After all is done
 - Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io) (BF)

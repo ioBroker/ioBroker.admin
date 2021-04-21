@@ -66,18 +66,18 @@ class Config extends Component {
     closeConfig(event) {
         if (event.data === 'close' || event.message === 'close') {
             Router.doNavigate('tab-instances');
-        } else if (event.data === 'change' || event.message === 'change' ) {
+        } else if (event.data === 'change' || event.message === 'change') {
             this.props.configStored(false);
-        } else if (event.data === 'nochange' || event.message === 'nochange' ) {
+        } else if (event.data === 'nochange' || event.message === 'nochange') {
             this.props.configStored(true);
         }
     }
 
     renderHelpButton() {
         if (this.props.jsonConfig) {
-            return <div style={{display: 'inline-block', position: 'absolute', right: 0, top: 5}}>
+            return <div style={{ display: 'inline-block', position: 'absolute', right: 0, top: 5 }}>
                 <Tooltip size="small" title={this.props.t('Show help for this adapter')}>
-                    <Fab classes={{root: this.props.classes.button}} onClick={() => {
+                    <Fab classes={{ root: this.props.classes.button }} onClick={() => {
                         let lang = this.props.lang;
                         if (lang !== 'en' && lang !== 'de' && lang !== 'ru' && lang !== 'zh-cn') {
                             lang = 'en';
@@ -112,7 +112,7 @@ class Config extends Component {
             return <iframe
                 title="config"
                 className={this.props.className}
-                src={`adapter/${this.props.adapter}/${this.props.materialize ? 'index_m.html' : ''}?${this.props.instance}&react=${this.props.themeName}`}>
+                src={`adapter/${this.props.adapter}/${this.props.tab ? 'tab_m.html' : this.props.tab !== undefined ? 'tab.html' : this.props.materialize ? 'index_m.html' : 'index.html'}?${this.props.instance}&react=${this.props.themeName}`}>
             </iframe>;
         }
     }
@@ -127,14 +127,14 @@ class Config extends Component {
                 <AppBar color="default" position="static">
                     <Toolbar variant="dense">
                         <Typography variant="h6" color="inherit">
-                            {this.props.jsonConfig ? <Icon src={this.props.icon} className={this.props.classes.instanceIcon}/>
+                            {this.props.jsonConfig ? <Icon src={this.props.icon} className={this.props.classes.instanceIcon} />
                                 : null}
                             {`${this.props.t('Instance settings')}: ${this.props.adapter}.${this.props.instance}`}
                         </Typography>
                         {this.renderHelpButton()}
                     </Toolbar>
                 </AppBar>
-                { this.getConfigurator() }
+                {this.getConfigurator()}
             </Paper>;
         }
     }
@@ -145,6 +145,7 @@ Config.propTypes = {
     adapter: PropTypes.string,
     instance: PropTypes.number,
     materialize: PropTypes.bool,
+    tab: PropTypes.bool,
     jsonConfig: PropTypes.bool,
     socket: PropTypes.object,
     themeName: PropTypes.string,

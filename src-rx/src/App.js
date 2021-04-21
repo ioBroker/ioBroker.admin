@@ -443,9 +443,9 @@ class App extends Router {
                                     })
                             } else {
                                 // create Workers
-                                this.logsWorker      = this.logsWorker      || new LogsWorker(this.socket, 1000);
+                                this.logsWorker = this.logsWorker || new LogsWorker(this.socket, 1000);
                                 this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
-                                this.hostsWorker     = this.hostsWorker     || new HostsWorker(this.socket);
+                                this.hostsWorker = this.hostsWorker || new HostsWorker(this.socket);
 
                                 const newState = {
                                     lang: this.socket.systemLang,
@@ -473,7 +473,7 @@ class App extends Router {
                                     }
                                 }
 
-                                this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
+                                this.instancesWorker.registerHandler(this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts));
 
                                 this.subscribeOnHostsStatus();
 
@@ -588,17 +588,16 @@ class App extends Router {
         }
     }
 
-    readRepoAndInstalledInfo = async (currentHost, hosts) => {
+    readRepoAndInstalledInfo = (currentHost, hosts) => async () => {
         const repository = await this.socket.getRepository(currentHost, { update: false });
-        const installed  = await this.socket.getInstalled(currentHost, { update: false });
-        const adapters   = await this.socket.getAdapters(); // we need information about ignored versions
+        const installed = await this.socket.getInstalled(currentHost, { update: false });
+        const adapters = await this.socket.getAdapters(); // we need information about ignored versions
 
         adapters.forEach(adapter => {
             if (installed[adapter?.common?.name] && adapter.common?.ignoreVersion) {
                 installed[adapter.common.name].ignoreVersion = adapter.common.ignoreVersion;
             }
         });
-
         this.context.setStateContext({ hosts, repository, installed });
     }
 
@@ -828,6 +827,7 @@ class App extends Router {
                         key="adapters"
                         theme={this.state.theme}
                         themeName={this.state.themeName}
+                        instancesWorker={this.instancesWorker}
                         themeType={this.state.themeType}
                         systemConfig={this.state.systemConfig}
                         socket={this.socket}
@@ -853,6 +853,7 @@ class App extends Router {
                         key="instances"
                         menuPadding={this.state.drawerState === DrawerStates.closed ? 0 : (this.state.drawerState === DrawerStates.opened ? DRAWER_FULL_WIDTH : DRAWER_COMPACT_WIDTH)}
                         socket={this.socket}
+                        instancesWorker={this.instancesWorker}
                         lang={I18n.getLanguage()}
                         protocol={this.state.protocol}
                         hostname={this.state.hostname}
@@ -1355,8 +1356,8 @@ class App extends Router {
                                         <Typography>admin</Typography>
                                     </Hidden>}
                                 <Grid item>
-                                    <a href="/#easy" onClick={event=>event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
-                                        <Avatar onClick={()=>this.handleNavigation('easy')} className={clsx((this.state.themeName === 'colored' || this.state.themeName === 'blue') && classes.logoWhite)} alt="ioBroker" src="img/no-image.png" />
+                                    <a href="/#easy" onClick={event => event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
+                                        <Avatar onClick={() => this.handleNavigation('easy')} className={clsx((this.state.themeName === 'colored' || this.state.themeName === 'blue') && classes.logoWhite)} alt="ioBroker" src="img/no-image.png" />
                                     </a>
                                 </Grid>
                             </Grid>

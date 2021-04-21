@@ -104,25 +104,27 @@ export default withStyles(styles)(function HostSelectors({ classes, disabled, so
     }
 
     return <div><Tooltip title={I18n.t('Change current host')}>
-        <Button className={classes.button} style={{
-            background: hostSelect?.common?.color || 'none',
-            borderColor: hostSelect?.common?.color ? Utils.invertColor(hostSelect.common.color) : 'none'
-        }} title={I18n.t('Host selection')} variant={disabled || hosts.length < 2 ? 'text' : 'outlined'} disabled={disabled || hosts.length < 2} aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-            <div
-                className={classes.width}
-                style={{
-                    display: 'flex',
-                    color: hostSelect?.common?.color ? Utils.invertColor(hostSelect.common.color, true) : 'none',
-                    alignItems: 'center',
-                }}>
-                <Icon
-                    className={clsx(classes.img, classes.imgButton)}
-                    src={hostSelect?.common?.icon || 'img/no-image.png'}
-                />
-                <div className={classes.name}>{hostSelect?.common?.name}</div>
+        <div>
+            <Button className={classes.button} style={{
+                background: hostSelect?.common?.color || 'none',
+                borderColor: hostSelect?.common?.color ? Utils.invertColor(hostSelect.common.color) : 'none'
+            }} variant={disabled || hosts.length < 2 ? 'text' : 'outlined'} disabled={disabled || hosts.length < 2} aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+                <div
+                    className={classes.width}
+                    style={{
+                        display: 'flex',
+                        color: hostSelect?.common?.color ? Utils.invertColor(hostSelect.common.color, true) : 'none',
+                        alignItems: 'center',
+                    }}>
+                    <Icon
+                        className={clsx(classes.img, classes.imgButton)}
+                        src={hostSelect?.common?.icon || 'img/no-image.png'}
+                    />
+                    <div className={classes.name}>{hostSelect?.common?.name}</div>
 
-            </div>
-        </Button>
+                </div>
+            </Button>
+        </div>
     </Tooltip>
         <Menu
             id="simple-menu"

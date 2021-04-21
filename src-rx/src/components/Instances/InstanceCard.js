@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import { Button, Card, CardContent, CardMedia, Fab, FormControl, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -7,7 +7,8 @@ import clsx from 'clsx';
 import BuildIcon from '@material-ui/icons/Build';
 import InputIcon from '@material-ui/icons/Input';
 import DeleteIcon from '@material-ui/icons/Delete';
-import InfoIcon from '@material-ui/icons/Info';
+// import InfoIcon from '@material-ui/icons/Info';
+import LowPriorityIcon from '@material-ui/icons/LowPriority';
 import MemoryIcon from '@material-ui/icons/Memory';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import ViewCompactIcon from '@material-ui/icons/ViewCompact';
@@ -270,7 +271,7 @@ const styles = theme => ({
         backgroundColor: 'rgb(0 255 0 / 14%)'
     }*/
 });
-const InstanceCard = ({
+const InstanceCard = memo(({
     name,
     classes,
     image,
@@ -309,7 +310,9 @@ const InstanceCard = ({
     deletedInstances,
     memoryLimitMB,
     setMemoryLimitMB,
-    t
+    t,
+    tier,
+    setTier
 }) => {
     const [openCollapse, setCollapse] = useState(false);
     const [mouseOver, setMouseOver] = useState(false);
@@ -321,10 +324,19 @@ const InstanceCard = ({
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
     const [openDialogMemoryLimit, setOpenDialogMemoryLimit] = useState(false);
     const [select, setSelect] = useState(logLevel);
+    const [openDialogCompact, setOpenDialogCompact] = useState(false);
+    const [selectCompact, setSelectCompact] = useState(compactGroup || 0);
+    const [selectCompactGroupCount, setSelectCompactGroupCount] = useState(compactGroupCount);
+    const [openDialogSelectTier, setOpenDialogSelectTier] = useState(false);
+    const [tierValue, setTierValue] = useState(tier);
+
     const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
+    const arrayTier = [{ value: 1, desc: "1: Logic adapters" }, { value: 2, desc: "2: Data provider adapters" }, { value: 3, desc: "3: Other adapters" }];
 
     const customModal =
-        openDialogSelect ||
+        openDialogSelectTier ||
+            openDialogCompact ||
+            openDialogSelect ||
             openDialogText ||
             openDialogDelete ||
             openDialogMemoryLimit ?
@@ -333,8 +345,11 @@ const InstanceCard = ({
                     (openDialogText && t('Enter title for %s', instance.id)) ||
                     (openDialogSelect && t('Edit log level rule for %s', instance.id)) ||
                     (openDialogDelete && t('Please confirm')) ||
-                    (openDialogMemoryLimit && t('Edit memory limit rule for %s', instance.id))
+                    (openDialogMemoryLimit && t('Edit memory limit rule for %s', instance.id)) ||
+                    (openDialogCompact && t('Edit compact groups for %s', instance.id)) ||
+                    (openDialogSelectTier && t('Tiers define the order of adapters when the system starts. For %s', instance.id))
                 }
+                help={openDialogMemoryLimit && t('Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)')}
                 open={true}
                 applyDisabled={openDialogText || openDialogMemoryLimit}
                 textInput={openDialogText || openDialogMemoryLimit}
@@ -352,6 +367,12 @@ const InstanceCard = ({
                     } else if (openDialogMemoryLimit) {
                         setMemoryLimitMB(value)
                         setOpenDialogMemoryLimit(false);
+                    } else if (openDialogCompact) {
+                        setCompactGroup(selectCompact);
+                        setOpenDialogCompact(false);
+                    } else if (openDialogSelectTier) {
+                        setTier(tierValue);
+                        setOpenDialogSelectTier(false);
                     }
                 }}
                 onClose={() => {
@@ -364,6 +385,13 @@ const InstanceCard = ({
                         setOpenDialogDelete(false);
                     } else if (openDialogMemoryLimit) {
                         setOpenDialogMemoryLimit(false);
+                    } else if (openDialogCompact) {
+                        setSelectCompact(compactGroup);
+                        setSelectCompactGroupCount(compactGroupCount);
+                        setOpenDialogCompact(false);
+                    } else if (openDialogSelectTier) {
+                        setTierValue(tier);
+                        setOpenDialogSelectTier(false);
                     }
                 }}>
                 {openDialogSelect && <FormControl className={classes.logLevel} variant="outlined" >
@@ -379,6 +407,52 @@ const InstanceCard = ({
                         </MenuItem>)}
                     </Select>
                 </FormControl>}
+                {openDialogCompact && <FormControl className={classes.addCompact} variant="outlined" >
+                    <InputLabel htmlFor="outlined-age-native-simple">{t('compact groups')}</InputLabel>
+                    <Select
+                        variant="standard"
+                        autoWidth
+                        onClose={e => setOpenSelect(false)}
+                        onOpen={e => setOpenSelect(true)}
+                        open={openSelect}
+                        value={selectCompact === 1 ? 'default' : selectCompact === '0' ? "controller" : !selectCompact ? 'default' : selectCompact || 'default'}
+                        onChange={el => setSelectCompact(el.target.value)}
+                    >
+                        <div onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }}
+                            className={classes.selectStyle}>
+                            <Button onClick={e => {
+                                setOpenSelect(false);
+                                setSelectCompact(selectCompactGroupCount + 1);
+                                setSelectCompactGroupCount(selectCompactGroupCount + 1);
+                            }} variant="outlined" stylevariable='outlined'>{t('Add compact group')}</Button>
+                        </div>
+                        <MenuItem value="controller">
+                            {t('with controller')}
+                        </MenuItem>
+                        <MenuItem value="default">
+                            {t('default group')}
+                        </MenuItem>
+                        {Array(selectCompactGroupCount - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
+                            {idx + 2}
+                        </MenuItem>)}
+                    </Select>
+                </FormControl>}
+                {openDialogSelectTier && <FormControl className={classes.logLevel} variant="outlined" >
+                    <InputLabel htmlFor="outlined-age-native-simple">{t('Tiers')}</InputLabel>
+                    <Select
+                        variant="standard"
+                        value={tierValue}
+                        fullWidth
+                        onChange={el => setTierValue(el.target.value)}
+                    >
+                        {arrayTier.map(el => <MenuItem key={el.value} value={el.value}>
+                            {t(el.desc)}
+                        </MenuItem>)}
+                    </Select>
+                </FormControl>}
                 {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
             </CustomModal>
             : null;
@@ -390,40 +464,6 @@ const InstanceCard = ({
                     <div className={classes.close} onClick={() => setCollapse(false)} />
                 </div>
                 <Typography gutterBottom component={'span'} variant={'body2'}>
-                    {supportCompact && expertMode && checkCompact && compact && <div className={classes.displayFlex}>
-                        <FormControl className={classes.addCompact} variant="outlined" >
-                            <InputLabel htmlFor="outlined-age-native-simple">{t('compact groups')}</InputLabel>
-                            <Select
-                                variant="standard"
-                                onClose={() => setOpenSelect(false)}
-                                onOpen={() => setOpenSelect(true)}
-                                open={openSelect}
-                                value={compactGroup === undefined ? 1 : compactGroup || '0'}
-                                fullWidth
-                                onChange={el => setCompactGroup(el.target.value)}
-                            >
-                                <div className={classes.addCompactButton}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                    }}>
-                                    <Button onClick={() => {
-                                        setOpenSelect(false);
-                                        setCompactGroup(compactGroupCount + 1);
-                                    }} variant="outlined" stylevariable='outlined'>{t('Add compact group')}</Button>
-                                </div>
-                                <MenuItem value='0'>
-                                    {t('with controller (0)')}
-                                </MenuItem>
-                                <MenuItem value={1}>
-                                    {t('default group (1)')}
-                                </MenuItem>
-                                {Array(compactGroupCount - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
-                                    {idx + 2}
-                                </MenuItem>)}
-                            </Select>
-                        </FormControl>
-                    </div>}
                     {instance.mode === 'daemon' && <State state={connectedToHost} >{t('Connected to host')}</State>}
                     {instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
                     {connected !== null &&
@@ -516,6 +556,41 @@ const InstanceCard = ({
                             </Tooltip>
                         </div>
                     }
+                    {expertMode && checkCompact && compact && supportCompact &&
+                        <div className={classes.displayFlex}>
+                            <InstanceInfo icon={<ViewCompactIcon className={classes.marginRight} color="inherit" />} tooltip={t('compact groups')}>
+                                {compactGroup === 1 ? 'default' : compactGroup === '0' ? "controller" : !compactGroup ? 'default' : compactGroup || 'default'}
+                            </InstanceInfo>
+                            <Tooltip title={t('Edit')}>
+                                <IconButton
+                                    size="small"
+                                    className={classes.button}
+                                    onClick={e => {
+                                        setOpenDialogCompact(true);
+                                        e.stopPropagation();
+                                    }}
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </div>}
+                    {expertMode && <div className={classes.displayFlex}>
+                        <InstanceInfo icon={<LowPriorityIcon className={classes.marginRight} color="inherit" />} tooltip={t('compact groups')}>
+                            {arrayTier.find(el=>el.value === tier)?.desc || arrayTier[2]}
+                        </InstanceInfo>
+                        <Tooltip title={t('Tier')}>
+                            <IconButton
+                                size="small"
+                                className={classes.button}
+                                onClick={e => {
+                                    setOpenDialogSelectTier(true);
+                                    e.stopPropagation();
+                                }}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </div>}
                     <Hidden smUp>
                         <IconButton
                             size="small"
@@ -643,8 +718,8 @@ const InstanceCard = ({
             </Typography>
             <div className={classes.marginTop10}>
                 <Typography component={'span'} className={classes.enableButton}>
-                    <Tooltip title={t(!running ? 'Deactivated. Click to start.' : 'Activated. Click to stop.')}>
-                        <IconButton
+                    <Tooltip title={t('Start/stop')}>
+                        <div><IconButton
                             size="small"
                             onClick={event => {
                                 extendObject('system.adapter.' + instance.id, { common: { enabled: !running } });
@@ -655,6 +730,7 @@ const InstanceCard = ({
                         >
                             {running ? <PauseIcon /> : <PlayArrowIcon />}
                         </IconButton>
+                        </div>
                     </Tooltip>
                     <Hidden xsDown>
                         <Tooltip title={t('Settings')}>
@@ -667,39 +743,43 @@ const InstanceCard = ({
                             </IconButton>
                         </Tooltip>
                     </Hidden>
-                    <Tooltip title={t('Reload')}>
-                        <IconButton
-                            size="small"
-                            onClick={event => {
-                                extendObject('system.adapter.' + instance.id, {});
-                                event.stopPropagation();
-                            }}
-                            onFocus={event => event.stopPropagation()}
-                            className={clsx(classes.button, !instance.canStart && classes.hide)}
-                            disabled={!running}
-                        >
-                            <RefreshIcon />
-                        </IconButton>
+                    <Tooltip title={t('Restart')}>
+                        <div>
+                            <IconButton
+                                size="small"
+                                onClick={event => {
+                                    extendObject('system.adapter.' + instance.id, {});
+                                    event.stopPropagation();
+                                }}
+                                onFocus={event => event.stopPropagation()}
+                                className={clsx(classes.button, !instance.canStart && classes.hide)}
+                                disabled={!running}
+                            >
+                                <RefreshIcon />
+                            </IconButton>
+                        </div>
                     </Tooltip>
-                    <Tooltip title={t('Open web page of adapter')}>
-                        <IconButton
-                            size="small"
-                            className={clsx(classes.button, (!instance.link || !instance.link[0]) && classes.hide)}
-                            disabled={!running}
-                            onClick={event => {
-                                window.open(instance.link, '_blank');
-                                event.stopPropagation();
-                            }}
-                            onFocus={event => event.stopPropagation()}
-                        >
-                            <InputIcon />
-                        </IconButton>
+                    <Tooltip title={t('Instance link %s', instance.id)}>
+                        <div>
+                            <IconButton
+                                size="small"
+                                className={clsx(classes.button, (!instance.link || !instance.link[0]) && classes.hide)}
+                                disabled={!running}
+                                onClick={event => {
+                                    window.open(instance.link, '_blank');
+                                    event.stopPropagation();
+                                }}
+                                onFocus={event => event.stopPropagation()}
+                            >
+                                <InputIcon />
+                            </IconButton>
+                        </div>
                     </Tooltip>
                 </Typography>
             </div>
         </CardContent>
     </Card>
-}
+})
 
 InstanceCard.propTypes = {
     /**
