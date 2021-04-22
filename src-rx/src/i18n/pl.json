@@ -710,7 +710,7 @@
   "desc": "desc",
   "description": "Opis",
   "device": "urządzenie",
-  "diag-note": "Ciężko pracowaliśmy, aby stworzyć ten projekt. W zamian spodziewamy się pewnych statystyk użytkowania. <br> Za każdym razem, gdy lista adapterów jest aktualizowana, wysyłane są anonimowe statystyki. Szanujemy twoją prywatność, więc żadne prywatne informacje nie będą przekazywane. <br> Dziękuję!",
+  "diag-note": "Pomóż nam ulepszyć ioBroker! <br> Zezwól na przesyłanie anonimowych statystyk użytkowania i raportów o awariach. Dokładny zakres danych wysyłanych do iobroker.org podczas aktualizacji listy adapterów można wybrać poniżej i pokazano w przeglądzie po prawej stronie. Dane nie zawierają żadnych danych osobowych i pomagają nam ustalić priorytety dla dalszego rozwoju ioBroker w interesie wszystkich użytkowników i pozwalają nam szybko naprawić występujące błędy. <br> Ogromne dzięki za wsparcie naszej ciężkiej pracy, wyrażając zgodę na przesyłanie danych statystycznych!",
   "edit": "edytować",
   "edit enum": "edytuj wyliczenie",
   "edit enums": "Edytuj wyliczenia dla",
@@ -1186,5 +1186,15 @@
   "ECharts": "ECharts",
   "Running command": "Uruchomione polecenie",
   "Now the expert mode will be deactivated only during this browser session.": "Teraz tryb eksperta zostanie wyłączony tylko podczas tej sesji przeglądarki.",
-  "allow set of compact groups": "Zezwalaj na zestaw grup kompaktowych"
+  "allow set of compact groups": "Zezwalaj na zestaw grup kompaktowych",
+  "Host Base Settings": "Ustawienia bazy hosta",
+  "Change color theme": "Zmień motyw kolorystyczny",
+  "Change current host": "Zmień obecnego hosta",
+  "Discovery devices": "Urządzenia wykrywające",
+  "Delete with children": "Usuń z dziećmi",
+  "Delete one item": "Usuń jedną pozycję",
+  "Delete object(s)": "Usuń obiekt(y)",
+  "When enabled adapter instances can run in one or few processes to save RAM usage.": "Gdy ta opcja jest włączona, instancje adaptera mogą działać w jednym lub kilku procesach, aby oszczędzać pamięć RAM.",
+  "When activated this host can be discovered by other iobroker installations in your network to become the master of a multihost system.": "Po aktywacji ten host może zostać wykryty przez inne instalacje ioBroker w Twojej sieci, aby stać się mistrzem systemu multihost.",
+  "Instance link %s": "Link do instancji %s"
 }

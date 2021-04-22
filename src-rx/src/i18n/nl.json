@@ -710,7 +710,7 @@
   "desc": "Beschrijving",
   "description": "Beschrijving",
   "device": "apparaat",
-  "diag-note": "We hebben hard gewerkt om dit project mogelijk te maken. Als equivalent verwachten we van u enkele statistieken over het gebruik. <br> Er zal geen persoonlijke informatie naar ioBroker.net worden verzonden. Telkens wanneer u op de update-adapterlijst klikt, worden de geanonimiseerde statistieken verzonden. <br> Dankjewel!",
+  "diag-note": "Help ons om ioBroker nog beter te maken! <br> Sta de verzending van anonieme gebruiksstatistieken en crashrapporten toe. De exacte omvang van de gegevens die naar iobroker.org worden gestuurd bij het bijwerken van de adapterlijst, kan hieronder worden geselecteerd en wordt weergegeven in het overzicht aan de rechterkant. De gegevens bevatten geen persoonlijke informatie en helpen ons om prioriteiten te stellen voor de verdere ontwikkeling van ioBroker in het belang van alle gebruikers en om snel voorkomende fouten te kunnen corrigeren. <br> Hartelijk dank voor uw steun aan ons harde werk door in te stemmen met de verzending van de statistische gegevens!",
   "edit": "bewerken",
   "edit enum": "bewerk enum",
   "edit enums": "Bewerk opsommingen voor",
@@ -1186,5 +1186,15 @@
   "ECharts": "ECharts",
   "Running command": "Commando uitvoeren",
   "Now the expert mode will be deactivated only during this browser session.": "Nu wordt de expertmodus alleen tijdens deze browsersessie gedeactiveerd.",
-  "allow set of compact groups": "Sta set van de compacte groepen toe"
+  "allow set of compact groups": "Sta set van de compacte groepen toe",
+  "Host Base Settings": "Host Base-instellingen",
+  "Change color theme": "Verander het kleurenthema",
+  "Change current host": "Wijzig huidige host",
+  "Discovery devices": "Ontdekkingsapparaten",
+  "Delete with children": "Verwijderen met kinderen",
+  "Delete one item": "Verwijder een item",
+  "Delete object(s)": "Object(en) verwijderen",
+  "When enabled adapter instances can run in one or few processes to save RAM usage.": "Indien ingeschakeld, kunnen adapterinstanties in een of enkele processen worden uitgevoerd om RAM-gebruik te besparen.",
+  "When activated this host can be discovered by other iobroker installations in your network to become the master of a multihost system.": "Indien geactiveerd, kan deze host worden ontdekt door andere ioBroker-installaties in uw netwerk om de meester te worden van een multihost-systeem.",
+  "Instance link %s": "Instantiekoppeling %s"
 }

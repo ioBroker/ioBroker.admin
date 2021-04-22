@@ -1,7 +1,12 @@
 /* This file is temporary here to speed-up the development of this component.
     Later it will be moved to adapter-react
  */
-
+/**
+ * Copyright 2020-2021, bluefox <dogafox@gmail.com>
+ *
+ * MIT License
+ *
+ **/
 import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
 import React, { Component } from 'react';
@@ -619,6 +624,7 @@ class FileBrowser extends Component {
                     const _folders = [];
                     let userData = null;
 
+                    // load only adapter.admin and not other meta files like hm-rpc.0.devices.blablabla
                     objs = objs.filter(obj => obj._id.split('.').length <= 2);
 
                     objs.forEach(obj => {
@@ -1456,7 +1462,7 @@ class FileBrowser extends Component {
                     <div key={this.state.selected + '_' + i} className={this.props.classes.pathDivBreadcrumbDir} onClick={e => this.changeFolder(e, path || '/')}>
                         {part || this.props.t('re_Root')}
                     </div>,
-                    <span key={this.state.selected + '_s_' + i} className={this.props.classes.pathDivBreadcrumbSlash}>></span>];
+                    <span key={this.state.selected + '_s_' + i} className={this.props.classes.pathDivBreadcrumbSlash}>{'>'}</span>];
             } else {
                 return <div key={this.state.selected + '_' + i} className={this.props.classes.pathDivBreadcrumbFile} onClick={() => this.setState({ pathFocus: true })}>{part}</div>;
             }

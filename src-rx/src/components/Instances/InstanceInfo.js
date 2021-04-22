@@ -23,9 +23,11 @@ const InstanceInfo = props => {
             }
         </Grid>
         <Grid item>
-            <Typography component="div">
-                { props.children }
-            </Typography>
+            <Tooltip title={ props.tooltip || '' }>
+                <Typography component="div">
+                    { props.children }
+                </Typography>
+            </Tooltip>
         </Grid>
     </Grid>;
 }

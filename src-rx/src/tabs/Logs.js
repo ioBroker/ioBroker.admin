@@ -66,6 +66,9 @@ const styles = theme => ({
             backgroundColor: theme.palette.background.default,
         },
     },
+    cell: {
+        verticalAlign: 'top'
+    },
     updatedRow: {
         animation: 'updated 1s',
     },
@@ -280,52 +283,36 @@ class Logs extends Component {
 
     clearLog() {
         this.props.logsWorker && this.props.logsWorker.clearLines();
-        this.setState({
-            logs: []
-        });
+        this.setState({logs: []});
         this.props.clearErrors();
     }
 
     handleMessageChange(event) {
-        this.setState({
-            message: event.target.value
-        });
+        this.setState({message: event.target.value});
     }
 
     handleSourceChange(event) {
-        this.setState({
-            source: event.target.value
-        });
+        this.setState({source: event.target.value});
     }
 
     handleSeverityChange(event) {
-        this.setState({
-            severity: event.target.value
-        });
+        this.setState({severity: event.target.value});
     }
 
     openLogDownload(event) {
-        this.setState({
-            logDownloadDialog: event.currentTarget
-        });
+        this.setState({logDownloadDialog: event.currentTarget});
     }
 
     closeLogDownload() {
-        this.setState({
-            logDownloadDialog: null
-        });
+        this.setState({logDownloadDialog: null});
     }
 
     openLogDelete() {
-        this.setState({
-            logDeleteDialog: true
-        });
+        this.setState({logDeleteDialog: true});
     }
 
     closeLogDelete() {
-        this.setState({
-            logDeleteDialog: false
-        });
+        this.setState({logDeleteDialog: false});
     }
 
     handleLogDelete() {
@@ -336,9 +323,7 @@ class Logs extends Component {
     }
 
     handleLogPause() {
-        this.setState({
-            pause: this.state.pause ? 0 : this.state.logs.length
-        });
+        this.setState({pause: this.state.pause ? 0 : this.state.logs.length});
     }
 
     openTab(path) {
@@ -350,24 +335,22 @@ class Logs extends Component {
         const { classes } = this.props;
 
         return this.state.logFiles.map(entry => {
-            return (
-                <MenuItem
-                    className={classes.downloadEntry}
-                    key={entry.name}
-                    onClick={() => {
-                        this.openTab(entry.path.fileName);
-                        this.closeLogDownload();
-                    }}
+            return <MenuItem
+                className={classes.downloadEntry}
+                key={entry.name}
+                onClick={() => {
+                    this.openTab(entry.path.fileName);
+                    this.closeLogDownload();
+                }}
+            >
+                { entry.name}
+                <Typography
+                    className={classes.downloadLogSize}
+                    variant="caption"
                 >
-                    { entry.name}
-                    <Typography
-                        className={classes.downloadLogSize}
-                        variant="caption"
-                    >
-                        {Utils.formatBytes(entry.path.size) || '-'}
-                    </Typography>
-                </MenuItem>
-            );
+                    {Utils.formatBytes(entry.path.size) || '-'}
+                </Typography>
+            </MenuItem>;
         });
     }
 
@@ -435,26 +418,20 @@ class Logs extends Component {
                     key={row.key}
                     hover
                 >
-                    <TableCell>
+                    <TableCell className={classes.cell}>
                         {row.from}
                     </TableCell>
-                    {this.state.pid && <TableCell
-                        className={classes[severity]}
-                    >
+                    {this.state.pid && <TableCell className={clsx(classes.cell, classes[severity])}>
                         {id}
                     </TableCell>}
-                    <TableCell
-                        className={classes[severity]}
-                    >
+                    <TableCell className={clsx(classes.cell, classes[severity])}>
                         {row.time}
                     </TableCell>
-                    <TableCell
-                        className={classes[severity]}
-                    >
+                    <TableCell className={clsx(classes.cell, classes[severity])}>
                         {row.severity}
                     </TableCell>
                     <TableCell
-                        className={classes[severity]}
+                        className={clsx(classes.cell, classes[severity])}
                         title={message}
                     >
                         {message}
@@ -468,7 +445,6 @@ class Logs extends Component {
                 this.lastRowRenderTimeout = setTimeout(() => {
                     this.lastRowRenderTimeout = null;
                     this.lastRowRender = Date.now();
-                    console.log('reset ' + Date.now())
                 }, 1000);
             }
         }
@@ -540,16 +516,12 @@ class Logs extends Component {
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.props.t('Clear log')}>
-                    <IconButton
-                        onClick={() => this.clearLog()}
-                    >
+                    <IconButton onClick={() => this.clearLog()}>
                         <DeleteIcon />
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.props.t('Clear on disk permanent')}>
-                    <IconButton
-                        onClick={() => this.openLogDelete()}
-                    >
+                    <IconButton onClick={() => this.openLogDelete()}>
                         <DeleteForeverIcon />
                     </IconButton>
                 </Tooltip>

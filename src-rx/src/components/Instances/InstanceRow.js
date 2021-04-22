@@ -3,14 +3,17 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
-import { Accordion, AccordionDetails, AccordionSummary, Avatar, Badge, Button, CardMedia, FormControl, Grid, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from "@material-ui/core";
+import { Accordion, AccordionDetails, AccordionSummary, Avatar,
+    // Badge,
+    Button, CardMedia, FormControl, Grid, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from "@material-ui/core";
 import { amber, blue, green, grey, red, orange } from '@material-ui/core/colors';
 
 import RefreshIcon from '@material-ui/icons/Refresh';
 import BuildIcon from '@material-ui/icons/Build';
 import InputIcon from '@material-ui/icons/Input';
 import DeleteIcon from '@material-ui/icons/Delete';
-import InfoIcon from '@material-ui/icons/Info';
+// import InfoIcon from '@material-ui/icons/Info';
+import LowPriorityIcon from '@material-ui/icons/LowPriority';
 import MemoryIcon from '@material-ui/icons/Memory';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import ViewCompactIcon from '@material-ui/icons/ViewCompact';
@@ -370,7 +373,7 @@ const styles = theme => ({
     formControl2: {
         marginBottom: 5,
         marginTop: 5,
-        width: 120
+        width: '100%',
     },
     gridStyle: {
         display: 'flex',
@@ -480,7 +483,9 @@ const InstanceRow = ({
     memoryLimitMB,
     setMemoryLimitMB,
     t,
-    idx
+    idx,
+    tier,
+    setTier
 }) => {
     const [openSelect, setOpenSelect] = useState(false);
     const [openDialogCron, setOpenDialogCron] = useState(false);
@@ -490,52 +495,78 @@ const InstanceRow = ({
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
     const [openDialogMemoryLimit, setOpenDialogMemoryLimit] = useState(false);
     const [select, setSelect] = useState(logLevel);
+    const [openDialogCompact, setOpenDialogCompact] = useState(false);
+    const [selectCompact, setSelectCompact] = useState(compactGroup || 0);
+    const [selectCompactGroupCount, setSelectCompactGroupCount] = useState(compactGroupCount);
+    const [openDialogSelectTier, setOpenDialogSelectTier] = useState(false);
+    const [tierValue, setTierValue] = useState(tier);
 
     const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
+    const arrayTier = [{ value: 1, desc: "1: Logic adapters" }, { value: 2, desc: "2: Data provider adapters" }, { value: 3, desc: "3: Other adapters" }];
 
     const customModal =
-        openDialogSelect ||
-        openDialogText   ||
-        openDialogDelete ||
-        openDialogMemoryLimit ? <CustomModal
-            title={
-                (openDialogText && t('Enter title for %s', instance.id)) ||
-                (openDialogSelect && t('Edit log level rule for %s', instance.id)) ||
-                (openDialogDelete && t('Please confirm')) ||
-                (openDialogMemoryLimit && t('Edit memory limit rule for %s', instance.id))
-            }
-            help={openDialogMemoryLimit && t('Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)')}
-            open={true}
-            applyDisabled={openDialogText || openDialogMemoryLimit}
-            textInput={openDialogText || openDialogMemoryLimit}
-            defaultValue={openDialogText ? name : openDialogMemoryLimit ? memoryLimitMB : ''}
-            onApply={value => {
-                if (openDialogSelect) {
-                    setLogLevel(select)
-                    setOpenDialogSelect(false);
-                } else if (openDialogText) {
-                    setName(value);
-                    setOpenDialogText(false);
-                } else if (openDialogDelete) {
-                    setOpenDialogDelete(false);
-                    deletedInstances();
-                } else if (openDialogMemoryLimit) {
-                    setMemoryLimitMB(value)
-                    setOpenDialogMemoryLimit(false);
+    openDialogSelectTier ||
+        openDialogCompact ||
+            openDialogSelect ||
+            openDialogText ||
+            openDialogDelete ||
+            openDialogMemoryLimit ? <CustomModal
+                title={
+                    (openDialogText && t('Enter title for %s', instance.id)) ||
+                    (openDialogSelect && t('Edit log level rule for %s', instance.id)) ||
+                    (openDialogDelete && t('Please confirm')) ||
+                    (openDialogMemoryLimit && t('Edit memory limit rule for %s', instance.id)) ||
+                    (openDialogCompact && t('Edit compact groups for %s', instance.id)) ||
+                    (openDialogSelectTier && t('Set tier for %s', instance.id))
                 }
-            }}
-            onClose={() => {
-                if (openDialogSelect) {
-                    setSelect(logLevel);
-                    setOpenDialogSelect(false);
-                } else if (openDialogText) {
-                    setOpenDialogText(false);
-                } else if (openDialogDelete) {
-                    setOpenDialogDelete(false);
-                } else if (openDialogMemoryLimit) {
-                    setOpenDialogMemoryLimit(false);
+                help={
+                    openDialogMemoryLimit && t('Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)') ||
+                    openDialogSelectTier && t('Tiers define the order of adapters when the system starts.')
                 }
-            }}>
+                open={true}
+                applyDisabled={openDialogText || openDialogMemoryLimit}
+                textInput={openDialogText || openDialogMemoryLimit}
+                defaultValue={openDialogText ? name : openDialogMemoryLimit ? memoryLimitMB : ''}
+                onApply={value => {
+                    if (openDialogSelect) {
+                        setLogLevel(select)
+                        setOpenDialogSelect(false);
+                    } else if (openDialogText) {
+                        setName(value);
+                        setOpenDialogText(false);
+                    } else if (openDialogDelete) {
+                        setOpenDialogDelete(false);
+                        deletedInstances();
+                    } else if (openDialogMemoryLimit) {
+                        setMemoryLimitMB(value);
+                        setOpenDialogMemoryLimit(false);
+                    } else if (openDialogCompact) {
+                        setCompactGroup(selectCompact);
+                        setOpenDialogCompact(false);
+                    }else if (openDialogSelectTier) {
+                        setTier(tierValue);
+                        setOpenDialogSelectTier(false);
+                    }
+                }}
+                onClose={() => {
+                    if (openDialogSelect) {
+                        setSelect(logLevel);
+                        setOpenDialogSelect(false);
+                    } else if (openDialogText) {
+                        setOpenDialogText(false);
+                    } else if (openDialogDelete) {
+                        setOpenDialogDelete(false);
+                    } else if (openDialogMemoryLimit) {
+                        setOpenDialogMemoryLimit(false);
+                    } else if (openDialogCompact) {
+                        setSelectCompact(compactGroup);
+                        setSelectCompactGroupCount(compactGroupCount);
+                        setOpenDialogCompact(false);
+                    }else if (openDialogSelectTier) {
+                        setTierValue(tier);
+                        setOpenDialogSelectTier(false);
+                    }
+                }}>
             {openDialogSelect && <FormControl className={classes.formControl} variant="outlined" >
                 <InputLabel htmlFor="outlined-age-native-simple">{t('log level')}</InputLabel>
                 <Select
@@ -549,6 +580,52 @@ const InstanceRow = ({
                     </MenuItem>)}
                 </Select>
             </FormControl>}
+            {openDialogCompact && <FormControl className={classes.formControl2} variant="outlined" >
+                <InputLabel htmlFor="outlined-age-native-simple">{t('compact groups')}</InputLabel>
+                <Select
+                    variant="standard"
+                    autoWidth
+                    onClose={e => setOpenSelect(false)}
+                    onOpen={e => setOpenSelect(true)}
+                    open={openSelect}
+                    value={selectCompact === 1 ? 'default' : selectCompact === '0' ? "controller" : !selectCompact ? 'default' : selectCompact || 'default'}
+                    onChange={el => setSelectCompact(el.target.value)}
+                >
+                    <div onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }}
+                        className={classes.selectStyle}>
+                        <Button onClick={e => {
+                            setOpenSelect(false);
+                            setSelectCompact(selectCompactGroupCount + 1);
+                            setSelectCompactGroupCount(selectCompactGroupCount + 1);
+                        }} variant="outlined" stylevariable='outlined'>{t('Add compact group')}</Button>
+                    </div>
+                    <MenuItem value="controller">
+                        {t('with controller')}
+                    </MenuItem>
+                    <MenuItem value="default">
+                        {t('default group')}
+                    </MenuItem>
+                    {Array(selectCompactGroupCount - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
+                        {idx + 2}
+                    </MenuItem>)}
+                </Select>
+            </FormControl>}
+            {openDialogSelectTier && <FormControl className={classes.formControl} variant="outlined" >
+                    <InputLabel htmlFor="outlined-age-native-simple">{t('Tiers')}</InputLabel>
+                    <Select
+                        variant="standard"
+                        value={tierValue}
+                        fullWidth
+                        onChange={el => setTierValue(el.target.value)}
+                    >
+                        {arrayTier.map(el => <MenuItem key={el.value} value={el.value}>
+                            {t(el.desc)}
+                        </MenuItem>)}
+                    </Select>
+                </FormControl>}
             {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
         </CustomModal> : null;
 
@@ -559,12 +636,14 @@ const InstanceRow = ({
     return <Accordion key={key} square
         expanded={expanded === instance.id}
         onChange={() => {
-            if (openDialogCron     ||
+            if (openDialogCron ||
                 openDialogSchedule ||
-                openDialogSelect   ||
-                openDialogText     ||
-                openDialogDelete   ||
-                openDialogMemoryLimit) {
+                openDialogSelect ||
+                openDialogText ||
+                openDialogDelete ||
+                openDialogMemoryLimit ||
+                openDialogCompact ||
+                openDialogSelectTier) {
                 return;
             }
             handleChange(instance.id);
@@ -580,7 +659,7 @@ const InstanceRow = ({
             {customModal}
             {(openDialogCron || openDialogSchedule) && <ComplexCron
                 title={
-                    (openDialogCron     && t('Edit restart rule for %s', instance.id)) ||
+                    (openDialogCron && t('Edit restart rule for %s', instance.id)) ||
                     (openDialogSchedule && t('Edit schedule rule for %s', instance.id))
                 }
                 cron={openDialogCron ? getRestartSchedule(id) : getSchedule(id)}
@@ -621,70 +700,84 @@ const InstanceRow = ({
                         {instance.id}
                     </div>
                 </div>
-                <IconButton
-                    size="small"
-                    onClick={e => {
-                        e.stopPropagation();
-                        extendObject('system.adapter.' + instance.id, { common: { enabled: !running } });
-                    }}
-                    onFocus={event => event.stopPropagation()}
-                    className={clsx(classes.button, instance.canStart ?
-                        (running ? classes.enabled : classes.disabled) : classes.hide)}
-                >
-                    {running ? <PauseIcon /> : <PlayArrowIcon />}
-                </IconButton>
+                <Tooltip title={t('Start/stop')}>
+                    <div>
+                        <IconButton
+                            size="small"
+                            onClick={event => {
+                                extendObject('system.adapter.' + instance.id, { common: { enabled: !running } });
+                                event.stopPropagation();
+                            }}
+                            onFocus={event => event.stopPropagation()}
+                            className={clsx(classes.button, instance.canStart ?
+                                (running ? classes.enabled : classes.disabled) : classes.hide)}
+                        >
+                            {running ? <PauseIcon /> : <PlayArrowIcon />}
+                        </IconButton>
+                    </div>
+                </Tooltip>
                 <Hidden xsDown>
-                    <IconButton
-                        size="small"
-                        className={clsx(classes.button,!instance.config && classes.visibility)}
-                        onClick={() => openConfig(id)}
-                    >
-                        <BuildIcon />
-                    </IconButton>
+                    <Tooltip title={t('Settings')}>
+                        <IconButton
+                            size="small"
+                            className={clsx(classes.button, !instance.config && classes.visibility)}
+                            onClick={() => openConfig(id)}
+                        >
+                            <BuildIcon />
+                        </IconButton>
+                    </Tooltip>
                 </Hidden>
-                <IconButton
-                    size="small"
-                    onClick={event => {
-                        extendObject('system.adapter.' + instance.id, {});
-                        event.stopPropagation();
-                    }}
-                    onFocus={event => event.stopPropagation()}
-                    className={clsx(classes.button, !instance.canStart && classes.hide)}
-                    disabled={!running}
-                >
-                    <RefreshIcon />
-                </IconButton>
-                <IconButton
-                    size="small"
-                    className={clsx(classes.button, (!instance.link || !instance.link[0]) && classes.hide)}
-                    disabled={!running}
-                    onClick={event => {
-                        window.open(instance.link, '_blank');
-                        event.stopPropagation();
-                    }}
-                    onFocus={event => event.stopPropagation()}
-                >
-                    <InputIcon />
-                </IconButton>
+                <Tooltip title={t('Restart')}>
+                    <div>
+                        <IconButton
+                            size="small"
+                            onClick={event => {
+                                extendObject('system.adapter.' + instance.id, {});
+                                event.stopPropagation();
+                            }}
+                            onFocus={event => event.stopPropagation()}
+                            className={clsx(classes.button, !instance.canStart && classes.hide)}
+                            disabled={!running}
+                        >
+                            <RefreshIcon />
+                        </IconButton>
+                    </div>
+                </Tooltip>
+                <Tooltip title={t('Instance link %s', instance.id)}>
+                    <div>
+                        <IconButton
+                            size="small"
+                            className={clsx(classes.button, (!instance.link || !instance.link[0]) && classes.hide)}
+                            disabled={!running}
+                            onClick={event => {
+                                window.open(instance.link, '_blank');
+                                event.stopPropagation();
+                            }}
+                            onFocus={event => event.stopPropagation()}
+                        >
+                            <InputIcon />
+                        </IconButton>
+                    </div>
+                </Tooltip>
 
                 <Typography className={classes.secondaryHeading} component="div">
                     <div
-                    onMouseMove={() => handlerEdit(true)}
-                    onMouseEnter={() => handlerEdit(true)}
-                    onMouseLeave={() => handlerEdit(false)}
-                    className={classes.secondaryHeadingDiv}>
+                        onMouseMove={() => handlerEdit(true)}
+                        onMouseEnter={() => handlerEdit(true)}
+                        onMouseLeave={() => handlerEdit(false)}
+                        className={classes.secondaryHeadingDiv}>
                         <div className={classes.secondaryHeadingDivDiv}>{name}</div>
                         <Tooltip title={t('Edit')}>
-                        <IconButton
-                            size="small"
-                            className={clsx(classes.button, !visibleEdit && classes.visibility)}
-                            onClick={event => {
-                                setOpenDialogText(true);
-                                event.stopPropagation();
-                            }}
-                        >
-                            <EditIcon />
-                        </IconButton>
+                            <IconButton
+                                size="small"
+                                className={clsx(classes.button, !visibleEdit && classes.visibility)}
+                                onClick={event => {
+                                    setOpenDialogText(true);
+                                    event.stopPropagation();
+                                }}
+                            >
+                                <EditIcon />
+                            </IconButton>
                         </Tooltip>
                     </div>
                 </Typography>
@@ -709,9 +802,9 @@ const InstanceRow = ({
                 {expertMode &&
                     <Tooltip title={t('loglevel') + ' ' + logLevel}>
                         <Avatar className={clsx(classes.smallAvatar, classes[logLevel])}>
-                        {loglevelIcon}
-                    </Avatar>
-                </Tooltip>
+                            {loglevelIcon}
+                        </Avatar>
+                    </Tooltip>
                 }
                 <Grid item className={classes.hidden1050}>
                     <InstanceInfo
@@ -744,7 +837,7 @@ const InstanceRow = ({
                 <IconButton
                     size="small"
                     className={clsx(classes.button, expertMode && checkCompact ? null : classes.hide)}
-                    onClick={e=> {
+                    onClick={e => {
                         e.stopPropagation();
                         setCompact();
                     }}
@@ -752,59 +845,6 @@ const InstanceRow = ({
                     <ViewCompactIcon color={compact ? 'primary' : 'inherit'} />
                 </IconButton>
             </Tooltip> : null}
-            <Tooltip title={t(!running ? 'Deactivated. Click to start.' : 'Activated. Click to stop.')}>
-                <IconButton
-                    size="small"
-                    onClick={event => {
-                        extendObject('system.adapter.' + instance.id, { common: { enabled: !running } });
-                        event.stopPropagation();
-                    }}
-                    onFocus={event => event.stopPropagation()}
-                    className={clsx(classes.button, instance.canStart ?
-                        (running ? classes.enabled : classes.disabled) : classes.hide)}
-                >
-                    {running ? <PauseIcon /> : <PlayArrowIcon />}
-                </IconButton>
-            </Tooltip>
-            <Hidden xsDown>
-                <Tooltip title={t('Settings')}>
-                    <IconButton
-                        size="small"
-                        className={clsx(classes.button, !instance.config && classes.visibility)}
-                        onClick={() => openConfig(id)}
-                    >
-                        <BuildIcon />
-                    </IconButton>
-                </Tooltip>
-            </Hidden>
-            <Tooltip title={t('Reload')}>
-                <IconButton
-                    size="small"
-                    onClick={event => {
-                        extendObject('system.adapter.' + instance.id, {});
-                        event.stopPropagation();
-                    }}
-                    onFocus={event => event.stopPropagation()}
-                    className={clsx(classes.button, !instance.canStart && classes.hide)}
-                    disabled={!running}
-                >
-                    <RefreshIcon />
-                </IconButton>
-            </Tooltip>
-            <Tooltip title={t('Open web page of adapter')}>
-                <IconButton
-                    size="small"
-                    className={clsx(classes.button, (!instance.link || !instance.link[0]) && classes.hide)}
-                    disabled={!running}
-                    onClick={event => {
-                        window.open(instance.link, '_blank');
-                        event.stopPropagation();
-                    }}
-                    onFocus={event => event.stopPropagation()}
-                >
-                    <InputIcon />
-                </IconButton>
-            </Tooltip>
         </AccordionSummary>
         <AccordionDetails>
             <Grid container direction="row">
@@ -830,16 +870,16 @@ const InstanceRow = ({
                                 {logLevel}
                             </InstanceInfo>
                             <Tooltip title={t('Edit')}>
-                            <IconButton
-                                size="small"
-                                className={classes.button}
-                                onClick={(event) => {
-                                    setOpenDialogSelect(true);
-                                    event.stopPropagation();
-                                }}
-                            >
-                                <EditIcon />
-                            </IconButton>
+                                <IconButton
+                                    size="small"
+                                    className={classes.button}
+                                    onClick={(event) => {
+                                        setOpenDialogSelect(true);
+                                        event.stopPropagation();
+                                    }}
+                                >
+                                    <EditIcon />
+                                </IconButton>
                             </Tooltip>
                         </div>}
                         {expertMode &&
@@ -867,16 +907,16 @@ const InstanceRow = ({
                                 {getSchedule(id) || '-'}
                             </InstanceInfo>
                             <Tooltip title={t('Edit')}>
-                            <IconButton
-                                size="small"
-                                className={classes.button}
-                                onClick={(event) => {
-                                    setOpenDialogSchedule(true);
-                                    event.stopPropagation();
-                                }}
-                            >
-                                <EditIcon />
-                            </IconButton>
+                                <IconButton
+                                    size="small"
+                                    className={classes.button}
+                                    onClick={(event) => {
+                                        setOpenDialogSchedule(true);
+                                        event.stopPropagation();
+                                    }}
+                                >
+                                    <EditIcon />
+                                </IconButton>
                             </Tooltip>
                         </div>}
                         {expertMode && (instance.mode === 'daemon') &&
@@ -888,16 +928,16 @@ const InstanceRow = ({
                                     {getRestartSchedule(id) || '-'}
                                 </InstanceInfo>
                                 <Tooltip title={t('Edit')}>
-                                <IconButton
-                                    size="small"
-                                    className={classes.button}
-                                    onClick={(event) => {
-                                        setOpenDialogCron(true);
-                                        event.stopPropagation();
-                                    }}
-                                >
-                                    <EditIcon />
-                                </IconButton>
+                                    <IconButton
+                                        size="small"
+                                        className={classes.button}
+                                        onClick={(event) => {
+                                            setOpenDialogCron(true);
+                                            event.stopPropagation();
+                                        }}
+                                    >
+                                        <EditIcon />
+                                    </IconButton>
                                 </Tooltip>
                             </div>
                         }
@@ -909,53 +949,53 @@ const InstanceRow = ({
                                 {(memoryLimitMB ? memoryLimitMB : '-.--') + ' MB'}
                             </InstanceInfo>
                             <Tooltip title={t('Edit')}>
-                            <IconButton
-                                size="small"
-                                className={classes.button}
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    setOpenDialogMemoryLimit(true);
-                                }}
-                            >
-                                <EditIcon />
-                            </IconButton>
+                                <IconButton
+                                    size="small"
+                                    className={classes.button}
+                                    onClick={e => {
+                                        setOpenDialogMemoryLimit(true);
+                                        e.stopPropagation();
+                                    }}
+                                >
+                                    <EditIcon />
+                                </IconButton>
                             </Tooltip>
                         </div>
                         }
-                        {expertMode && checkCompact && compact && supportCompact && <div className={classes.selectWrapper}>
-                            <ViewCompactIcon className={classes.marginRight} color="inherit" />
-                            <FormControl className={classes.formControl2}  variant="outlined" >
-                                <InputLabel htmlFor="outlined-age-native-simple">{t('compact groups')}</InputLabel>
-                                <Select
-                                    variant="standard"
-                                    autoWidth
-                                    onClose={() => setOpenSelect(false)}
-                                    onOpen={() => setOpenSelect(true)}
-                                    open={openSelect}
-                                    value={compactGroup === 1 ? 'default' : compactGroup === '0' ? "controller" : !compactGroup ? 'default' : compactGroup || 'default'}
-                                    onChange={el => setCompactGroup(el.target.value)}
-                                >
-                                    <div onClick={(e) => {
-                                        e.preventDefault();
+                        {expertMode && checkCompact && compact && supportCompact &&
+                            <div className={classes.displayFlex}>
+                                <InstanceInfo icon={<ViewCompactIcon className={classes.marginRight} color="inherit" />} tooltip={t('compact groups')}>
+                                    {compactGroup === 1 ? 'default' : compactGroup === '0' ? "controller" : !compactGroup ? 'default' : compactGroup || 'default'}
+                                </InstanceInfo>
+                                <Tooltip title={t('Edit')}>
+                                    <IconButton
+                                        size="small"
+                                        className={classes.button}
+                                        onClick={e => {
+                                            setOpenDialogCompact(true);
+                                            e.stopPropagation();
+                                        }}
+                                    >
+                                        <EditIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </div>}
+                        {expertMode && <div className={classes.displayFlex}>
+                            <InstanceInfo icon={<LowPriorityIcon className={classes.marginRight} color="inherit" />} tooltip={t('Start order (tier)')}>
+                                {arrayTier.find(el => el.value === tier)?.desc || arrayTier[2]}
+                            </InstanceInfo>
+                            <Tooltip title={t('Edit start order (tier)')}>
+                                <IconButton
+                                    size="small"
+                                    className={classes.button}
+                                    onClick={e => {
+                                        setOpenDialogSelectTier(true);
                                         e.stopPropagation();
                                     }}
-                                        className={classes.selectStyle}>
-                                        <Button onClick={() => {
-                                            setOpenSelect(false);
-                                            setCompactGroup(compactGroupCount + 1);
-                                        }} variant="outlined" stylevariable='outlined'>{t('Add compact group')}</Button>
-                                    </div>
-                                    <MenuItem value="controller">
-                                        {t('with controller')}
-                                    </MenuItem>
-                                    <MenuItem value="default">
-                                        {t('default group')}
-                                    </MenuItem>
-                                    {Array(compactGroupCount - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
-                                        {idx + 2}
-                                    </MenuItem>)}
-                                </Select>
-                            </FormControl>
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                            </Tooltip>
                         </div>}
                     </Grid>
                 </Grid>
@@ -963,26 +1003,26 @@ const InstanceRow = ({
                     <Grid item>
                         <Hidden smUp>
                             <Tooltip title={t('Settings')}>
-                            <IconButton
-                                size="small"
-                                className={classes.button}
-                                onClick={() => openConfig(id)}
-                            >
-                                <BuildIcon />
-                            </IconButton>
+                                <IconButton
+                                    size="small"
+                                    className={classes.button}
+                                    onClick={() => openConfig(id)}
+                                >
+                                    <BuildIcon />
+                                </IconButton>
                             </Tooltip>
                         </Hidden>
                         <Tooltip title={t('Delete')}>
-                        <IconButton
-                            size="small"
-                            className={classes.button}
-                            onClick={(event) => {
-                                setOpenDialogDelete(true);
-                                event.stopPropagation();
-                            }}
-                        >
-                            <DeleteIcon />
-                        </IconButton>
+                            <IconButton
+                                size="small"
+                                className={classes.button}
+                                onClick={(event) => {
+                                    setOpenDialogDelete(true);
+                                    event.stopPropagation();
+                                }}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
                         </Tooltip>
                     </Grid>
                 </Grid>

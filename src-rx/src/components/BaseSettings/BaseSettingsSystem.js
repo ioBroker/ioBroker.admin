@@ -114,6 +114,7 @@ class BaseSettingsSystem extends Component {
                             }
                             label={ this.props.t('Compact mode') }
                         />
+                        <div>{ this.props.t('When enabled adapter instances can run in one or few processes to save RAM usage.') }</div>
                     </Grid>
                     <Grid item className={ this.props.classes.controlItem }>
                         <FormControlLabel

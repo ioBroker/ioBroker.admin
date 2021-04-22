@@ -293,7 +293,10 @@
                 "dsn": "https://9d2aaf29332a4999b133c693f43203b9@sentry.iobroker.net/18"
             }
         },
-        "jsonConfig": true
+        "jsonConfig": true,
+        "adminUI": {
+            "config": "json"
+        }
     },
     "native": {
         "port": 8081,

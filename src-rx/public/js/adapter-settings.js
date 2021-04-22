@@ -8,7 +8,7 @@ if (location.pathname.match(/^\/admin\//)) {
 
 var systemConfig;
 var socket   = io.connect('/', {path: parts.join('/') + '/socket.io'});
-var query = window.location.search.replace('?', '').split('&');
+var query    = window.location.search.replace(/^\?/, '').split('&');
 var instance = query[0];
 var common   = null; // common information of adapter
 var host     = null; // host object on which the adapter runs
@@ -17,8 +17,8 @@ var certs    = [];
 var adapter  = '';
 var onChangeSupported = false;
 var isMaterialize = false;
-var ___onChange = null;
-var systemSecret = 'Zgfr56gFe87jJOM';
+var ___onChange   = null;
+var systemSecret  = 'Zgfr56gFe87jJOM';
 var supportedFeatures = [
     'ADAPTER_AUTO_DECRYPT_NATIVE', // all native attributes, that are listed in an array `encryptedNative` in io-pack will be automatically decrypted and encrypted. Since js-controller 3.0
 ];
@@ -36,7 +36,7 @@ function preInit () {
 
     systemDictionary.save =           {"en": "Save",           "fr": "Sauvegarder",                     "nl": "Opslaan",             "es": "Salvar",                      "pt": "Salve",                   "it": "Salvare",                     "de": "Speichern",                "pl": "Zapisać",                      "ru": "Сохранить",           "zh-cn": "保存"};
     systemDictionary.saveclose =      {"en": "Save and close", "fr": "Sauver et fermer",                "nl": "Opslaan en afsluiten","es": "Guardar y cerrar",            "pt": "Salvar e fechar",         "it": "Salva e chiudi",              "de": "Speichern und schließen",  "pl": "Zapisz i zamknij",             "ru": "Сохранить и выйти",   "zh-cn": "保存并关闭"};
-    systemDictionary.none =           {"en": "none",           "fr": "aucun",                           "nl": "geen",                "es": "ninguna",                     "pt": "Nenhum",                  "it": "nessuna",                     "de": "keins",                    "pl": "Żaden",                        "ru": "никто",               "zh-cn": "无"};
+    systemDictionary.none =           {"en": "none",           "fr": "aucun",                           "nl": "geen",                "es": "ninguna",                     "pt": "Nenhum",                  "it": "nessuna",                     "de": "keins",                    "pl": "Żaden",                        "ru": "ничего",              "zh-cn": "无"};
     systemDictionary.nonerooms =      {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "pl": "",                             "ru": "",                    "zh-cn": ""};
     systemDictionary.nonefunctions =  {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "pl": "",                             "ru": "",                    "zh-cn": ""};
     systemDictionary.all =            {"en": "all",            "fr": "tout",                            "nl": "alle",                "es": "todas",                       "pt": "todos",                   "it": "tutti",                       "de": "alle",                     "pl": "wszystko",                     "ru": "все",                 "zh-cn": "所有"};
@@ -259,9 +259,11 @@ function preInit () {
             for (var a in native) {
                 if (native.hasOwnProperty(a)) {
                     oldObj.native[a] = native[a];
-
-                    // encode all native attributes starting with enc_
-                    if (oldObj.native[a] && a.match(/^enc_/)) {
+                    // encode all native attributes listed in oldObj.encryptedNative
+                    if (oldObj.encryptedNative &&
+                        typeof oldObj.encryptedNative === 'object' &&
+                        oldObj.encryptedNative instanceof Array &&
+                        oldObj.encryptedNative.indexOf(a) !== -1) {
                         oldObj.native[a] = encrypt(oldObj.native[a]);
                     }
                 }
@@ -422,10 +424,13 @@ function preInit () {
                         M.updateTextFields();
 
                         // workaround for materialize checkbox problem
-                        $('input[type="checkbox"]+span').off('click').on('click', function () {
+                        $('input[type="checkbox"]+span').off('click').on('click', function (event) {
                             var $input = $(this).prev();
                             if (!$input.prop('disabled')) {
                                 $input.prop('checked', !$input.prop('checked')).trigger('change');
+                                // prevent propagation to prevent original handling from reverting our value change
+                                event.preventDefault();
+                                event.stopImmediatePropagation();
                             }
                         });
                     }
@@ -486,10 +491,13 @@ function handleFileSelect(evt) {
                             M.updateTextFields();
 
                             // workaround for materialize checkbox problem
-                            $('input[type="checkbox"]+span').off('click').on('click', function () {
+                            $('input[type="checkbox"]+span').off('click').on('click', function (event) {
                                 var $input = $(this).prev();
                                 if (!$input.prop('disabled')) {
                                     $input.prop('checked', !$input.prop('checked')).trigger('change');
+                                    // prevent propagation to prevent original handling from reverting our value change
+                                    event.preventDefault();
+                                    event.stopImmediatePropagation();
                                 }
                             });
                         }
@@ -1065,7 +1073,7 @@ function fillUsers(elemId, current, callback) {
         for (var u in users) {
             if (users.hasOwnProperty(u)) {
                 var id = users[u]._id.substring(len);
-                text += '<option value="' + id + '" ' + (current === id ? 'selected' : '') + ' >' + u[0].toUpperCase() + u.substring(1)  + '</option>\n';
+                text += '<option value="' + id + '" ' + (current === id ? 'selected' : '') + ' >' + (u ? u[0].toUpperCase() + u.substring(1) : '__noname__')  + '</option>\n';
             }
         }
         $(elemId).html(text);

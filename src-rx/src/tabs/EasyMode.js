@@ -58,8 +58,8 @@ const styles = theme => ({
         width: '100%',
         border: 0
     },
-    IconButtons:{
-        display:'flex'
+    IconButtons: {
+        display: 'flex'
     },
     logoPointer: {
         cursor: 'pointer'
@@ -95,9 +95,8 @@ class EasyMode extends Component {
             isFloatComma,
             dateFormat,
             configStored,
-            systemConfig
         } = this.props;
-        const configs = this.state.configs;
+        const { configs, strictMode } = this.state;
         if (!configs) {
             return <CircularProgress />;
         }
@@ -113,11 +112,11 @@ class EasyMode extends Component {
             >
                 <Toolbar className={classes.toolBar}>
                     <div className={classes.wrapperHeader}>
-                        <CardMedia onClick={this.state.strictMode ? () => navigate('tab-intro') : null} className={clsx(classes.img, themeName === 'colored' && classes.logoWhite, !this.state.strictMode && classes.logoPointer)} component="img" image={'img/no-image.png'} />
+                        <CardMedia onClick={strictMode ? () => navigate('tab-intro') : null} className={clsx(classes.img, themeName === 'colored' && classes.logoWhite, strictMode && classes.logoPointer)} component="img" image={'img/no-image.png'} />
                         <div className={classes.headerName}>{t('Easy Admin')}</div>
                     </div>
                     <div className={classes.IconButtons}>
-                        {this.state.strictMode && <IconButton onClick={()=>navigate('tab-intro')}>
+                        {strictMode && <IconButton onClick={() => navigate('tab-intro')}>
                             <ArrowBackIcon />
                         </IconButton>}
                         <ToggleThemeMenu t={t} toggleTheme={toggleTheme} themeName={themeName} />
@@ -131,6 +130,8 @@ class EasyMode extends Component {
                         adapter={currentInstance.id.split('.')[0]}
                         instance={currentInstance.id.split('.')[1]}
                         jsonConfig={currentInstance.jsonConfig}
+                        materialize={currentInstance.materialize}
+                        tab={currentInstance.tab}
                         socket={socket}
                         themeName={themeName}
                         themeType={themeType}

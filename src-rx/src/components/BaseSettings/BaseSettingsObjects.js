@@ -14,6 +14,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Paper from  '@material-ui/core/Paper';
+import Switch from  '@material-ui/core/Switch';
 
 //Icons
 
@@ -43,7 +44,7 @@ class BaseSettingsObjects extends Component {
 
         this.state = {
             type:                    settings.type                    || 'file',
-            host:                    settings.host                    || '127.0.0.1',
+            host:                    Array.isArray(settings.host) ? settings.host.join(',') : (settings.host || '127.0.0.1'),
             port:                    settings.port                    || 9001,
             noFileCache:             settings.noFileCache             || false,
             dataDir:                 settings.dataDir                 || '',
@@ -59,9 +60,10 @@ class BaseSettingsObjects extends Component {
             backup_hours:            settings.backup.hours            || 48,
             backup_period:           settings.backup.period           || 120,
             backup_path:             settings.backup.path             || '',
+            textIP:                  Array.isArray(settings.host) || (settings.host || '').match(/[^.\d]/) || (settings.host || '').includes(','),
 
-            IPs:          ['0.0.0.0', '127.0.0.1'],
-            loading:      true,
+            IPs:                     ['0.0.0.0', '127.0.0.1'],
+            loading:                 true,
         };
 
         this.focusRef = createRef();
@@ -132,15 +134,37 @@ class BaseSettingsObjects extends Component {
                     </Grid>
 
                     <Grid item>
-                        <FormControl className={this.props.classes.controlItem}>
-                            <InputLabel>{ this.props.t('Bind IP address') }</InputLabel>
-                            <Select
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={this.state.textIP}
+                                    onChange={e => this.setState({ textIP: e.target.checked })}
+                                />
+                            }
+                            label={this.props.t('IP is domain or more than one address')}
+                        />
+                    </Grid>
+                    <Grid item>
+                        {this.state.textIP ?
+                            <TextField
+                                className={ this.props.classes.controlItem }
                                 value={ this.state.host }
+                                type="text"
                                 onChange={ e => this.setState({ host: e.target.value }, () => this.onChange())}
-                            >
-                                { this.state.IPs.map(ip => <MenuItem key={ ip } value={ ip }>{ ip === '0.0.0.0' ? `0.0.0.0 [${ this.props.t('All addresses') }]` : ip }</MenuItem>) }
-                            </Select>
-                        </FormControl>
+                                label={ this.props.t('Bind IP address') }
+                                helperText={ this.props.t('You can enter more than one address divided by comma') }
+                            />
+                            :
+                            <FormControl className={this.props.classes.controlItem}>
+                                <InputLabel>{ this.props.t('Bind IP address') }</InputLabel>
+                                <Select
+                                    value={ this.state.host }
+                                    onChange={ e => this.setState({ host: e.target.value }, () => this.onChange())}
+                                >
+                                    { this.state.IPs.map(ip => <MenuItem key={ ip } value={ ip }>{ ip === '0.0.0.0' ? `0.0.0.0 [${ this.props.t('All addresses') }]` : ip }</MenuItem>) }
+                                </Select>
+                            </FormControl>
+                        }
                     </Grid>
 
                     <Grid item>
@@ -258,14 +282,18 @@ class BaseSettingsObjects extends Component {
                     </Grid> : null }
 
                     { this.state.type === 'redis' ? <Grid item>
-                        <TextField
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.options_family }
-                            type="number"
-                            helperText={ this.props.t('Used for sentinels') }
-                            onChange={ e => this.setState({ options_family: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('Family number') }
-                        />
+                        <FormControl className={this.props.classes.controlItem}>
+                            <InputLabel>{ this.props.t('Family number') }</InputLabel>
+                            <Select
+                                value={ this.state.options_family }
+                                onChange={ e => this.setState({ options_family: e.target.value}, () => this.onChange())}
+                            >
+                                <MenuItem value={0}>auto</MenuItem>
+                                <MenuItem value={4}>IPv4</MenuItem>
+                                <MenuItem value={6}>IPv6</MenuItem>
+                            </Select>
+                            <FormHelperText>{ this.props.t('Used for sentinels') }</FormHelperText>
+                        </FormControl>
                     </Grid> : null }
 
                     { this.state.type === 'file' ? <Grid item>

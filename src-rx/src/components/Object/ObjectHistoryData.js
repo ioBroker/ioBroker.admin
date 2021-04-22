@@ -139,6 +139,9 @@ const styles = theme => ({
     notAliveInstance: {
         opacity: 0.5,
     },
+    customRange: {
+        color: theme.palette.primary.main
+    },
     rowSelected: {
         background: theme.palette.secondary.main,
     },
@@ -205,7 +208,7 @@ const styles = theme => ({
         width: 50,
     },
     colFrom: {
-        width: 120,
+        width: 150,
     },
     colLastChange: {
         width: 200,
@@ -473,8 +476,12 @@ class ObjectHistoryData extends Component {
                     // if range and details are not equal
                     if (values[t] && (!chart.length || chart[chart.length - 1].ts < values[t].ts)) {
                         chart.push(values[t]);
-                        if (values[t].from && values[t].from.startsWith('system.adapter.')) {
-                            values[t].from = values[t].from.substring(15);
+                        if (values[t].from) {
+                            if (values[t].from.startsWith('system.adapter.')) {
+                                values[t].from = values[t].from.substring(15);
+                            } else if (values[t].from.startsWith('system.host.')) {
+                                values[t].from = values[t].from.substring(7);
+                            }
                         }
                         if (!lcVisible && values[t].lc) {
                             lcVisible = true;
@@ -611,7 +618,7 @@ class ObjectHistoryData extends Component {
                 >
                     <TableCell/>
                     <TableCell>{ state.noData ? this.props.t('No data in history') : this.props.t('No data in history for selected period')}</TableCell>
-                    {this.state.ackVisible ? <TableCell/> : null}
+                    {this.state.ackVisible  ? <TableCell/> : null}
                     {this.state.fromVisible ? <TableCell/> : null}
                     { this.state.lcVisible  ? <TableCell/> : null }
                 </TableRow>);
@@ -1114,7 +1121,7 @@ class ObjectHistoryData extends Component {
                     value={ this.state.relativeRange }
                     onChange={ e => this.setRelativeInterval(e.target.value) }
                 >
-                    <MenuItem key={ 'custom' } value={ 'absolute' } className={ classes.notAliveInstance }>{ this.props.t('custom range') }</MenuItem>
+                    <MenuItem key={ 'custom' } value={ 'absolute' } className={ classes.customRange }>{ this.props.t('custom range') }</MenuItem>
                     <MenuItem key={ '1'  } value={ 10 }            >{ this.props.t('last 10 minutes') }</MenuItem>
                     <MenuItem key={ '2'  } value={ 30 }            >{ this.props.t('last 30 minutes') }</MenuItem>
                     <MenuItem key={ '3'  } value={ 60 }            >{ this.props.t('last hour') }</MenuItem>
@@ -1252,7 +1259,6 @@ class ObjectHistoryData extends Component {
                 state.ack ? 'true' : 'false',
                 state.from || ''
             ].join(';')));
-
 
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(lines.join('\n')));
         element.setAttribute('download', Utils.getObjectName({[this.props.obj._id]: this.props.obj}, this.props.obj._id, { language: this.props.lang }) + '.csv');

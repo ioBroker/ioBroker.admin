@@ -39,7 +39,6 @@ const styles = theme => ({
 });
 
 class BaseSettingsDialog extends Component {
-
     constructor(props) {
         super(props);
 
@@ -223,7 +222,7 @@ class BaseSettingsDialog extends Component {
             maxWidth="xl"
             aria-labelledby="base-settings-dialog-title"
         >
-            {<DialogTitle id="base-settings-dialog-title">{this.props.t('Base settings')}</DialogTitle>}
+            {<DialogTitle id="base-settings-dialog-title">{this.props.t('Host Base Settings')}: {this.props.currentHostName || this.props.currentHost}</DialogTitle>}
             <DialogContent className={this.props.classes.content}>
                 <AppBar position="static">
                     <Tabs

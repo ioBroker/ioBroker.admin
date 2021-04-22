@@ -710,7 +710,7 @@
   "desc": "desc.",
   "description": "Descripción",
   "device": "aparato",
-  "diag-note": "Trabajamos duro para crear este proyecto. En cambio, pedimos que nos envíe las estadísticas de uso. <br>Ninguna información privada será enviada a ioBroker.net. Cada vez que se actualiza la lista del adaptador, también se enviarán las estadísticas anónimas. - <br>¡Gracias!",
+  "diag-note": "¡Ayúdanos a mejorar ioBroker! <br> Permitir la transmisión de estadísticas de uso anónimas e informes de fallos. El alcance exacto de los datos enviados a iobroker.org al actualizar la lista de adaptadores se puede seleccionar a continuación y se muestra en la descripción general a la derecha. Los datos no contienen ninguna información personal y nos ayudan a establecer las prioridades para el desarrollo posterior de ioBroker en interés de todos los usuarios y para poder corregir los errores que ocurren rápidamente. <br> ¡Muchas gracias por apoyar nuestro arduo trabajo al aceptar la transmisión de los datos estadísticos!",
   "edit": "editar",
   "edit enum": "editar la clasificación",
   "edit enums": "Editar enumeraciones para",
@@ -1186,5 +1186,15 @@
   "ECharts": "ECharts",
   "Running command": "Comando de ejecución",
   "Now the expert mode will be deactivated only during this browser session.": "Ahora, el modo experto se desactivará solo durante esta sesión del navegador.",
-  "allow set of compact groups": "Permitir el conjunto de los grupos compactos"
+  "allow set of compact groups": "Permitir el conjunto de los grupos compactos",
+  "Host Base Settings": "Configuración de la base del host",
+  "Change color theme": "Cambiar tema de color",
+  "Change current host": "Cambiar el anfitrión actual",
+  "Discovery devices": "Dispositivos de descubrimiento",
+  "Delete with children": "Eliminar con niños",
+  "Delete one item": "Eliminar un elemento",
+  "Delete object(s)": "Eliminar objeto(s)",
+  "When enabled adapter instances can run in one or few processes to save RAM usage.": "Cuando están habilitadas, las instancias del adaptador pueden ejecutarse en uno o pocos procesos para ahorrar uso de RAM.",
+  "When activated this host can be discovered by other iobroker installations in your network to become the master of a multihost system.": "Cuando se activa, este host puede ser descubierto por otras instalaciones de ioBroker en su red para convertirse en el maestro de un sistema multihost.",
+  "Instance link %s": "Enlace de instancia %s"
 }

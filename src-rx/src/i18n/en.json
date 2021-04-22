@@ -710,7 +710,7 @@
   "desc": "desc",
   "description": "Description",
   "device": "device",
-  "diag-note": "We worked hard to create this project. In return we expect from you some usage statistics.<br>Every time the adapter list is updated, the anonymized statistics are sent. We respect your privacy, so no private information will be transmitted.<br>Thank you!",
+  "diag-note": "Help us to make ioBroker even better! <br> Allow the transmission of anonymous usage statistics and crash reports. The exact scope of the data sent to iobroker.org when updating the adapter list can be selected below and is shown in the overview on the right. The data does not contain any personal information and helps us to set the priorities for the further development of ioBroker in the interest of all users and to be able to correct occurring errors quickly.<br>Much thanks for supporting our hard work by agreeing to the transmission of the statistical data!",
   "edit": "edit",
   "edit enum": "edit enum",
   "edit enums": "Edit enumerations for",
@@ -1186,5 +1186,15 @@
   "ECharts": "ECharts",
   "Running command": "Running command",
   "Now the expert mode will be deactivated only during this browser session.": "Now the expert mode will be deactivated only during this browser session.",
-  "allow set of compact groups": "Allow set of the compact groups"
+  "allow set of compact groups": "Allow set of the compact groups",
+  "Host Base Settings": "Host Base Settings",
+  "Change color theme": "Change color theme",
+  "Change current host": "Change current host",
+  "Discovery devices": "Discovery devices",
+  "Delete with children": "Delete with children",
+  "Delete one item": "Delete one item",
+  "Delete object(s)": "Delete object(s)",
+  "When enabled adapter instances can run in one or few processes to save RAM usage.": "When enabled adapter instances can run in one or few processes to save RAM usage.",
+  "When activated this host can be discovered by other iobroker installations in your network to become the master of a multihost system.": "When activated this host can be discovered by other ioBroker installations in your network to become the master of a multihost system.",
+  "Instance link %s": "Instance link %s"
 }

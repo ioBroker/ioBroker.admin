@@ -80,12 +80,14 @@ class ObjectBrowserValue extends Component {
 
     onUpdate() {
         if (this.state.type === 'number') {
-            this.value = parseFloat(this.value.replace(',', '.')) || 0;
+            if (typeof this.value !== 'number') {
+                this.value = parseFloat(this.value.replace(',', '.')) || 0;
+            }
         } else if (this.state.type === 'boolean') {
             this.value = this.value === true || this.value === 'true' || this.value === '1' || this.value === 'ON' || this.value === 'on';
         }
 
-        this.props.onClose({val: this.value, ack: this.ack, q: this.q})
+        this.props.onClose({val: this.value, ack: this.ack, q: this.q});
     }
 
     renderJsonEditor() {

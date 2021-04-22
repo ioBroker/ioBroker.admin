@@ -37,6 +37,9 @@ const styles = theme => ({
     },
     id: {
         fontStyle: 'italic',
+    },
+    buttonText: {
+        whiteSpace: 'nowrap'
     }
 });
 class Objects extends Component {
@@ -124,7 +127,7 @@ class Objects extends Component {
                 aria-labelledby="delete-object-dialog-title"
                 aria-describedby="delete-object-dialog-description"
             >
-                <DialogTitle id="delete-object-dialog-title">{this.state.deleteObjectShow.hasChildren ? this.t('Delete object(s): ') : this.t('Delete object: ')} <span className={this.props.classes.id}>{this.state.deleteObjectShow.id}</span></DialogTitle>
+                <DialogTitle id="delete-object-dialog-title">{this.state.deleteObjectShow.hasChildren ? this.t('Delete object(s)') : this.t('Delete object')}: <span className={this.props.classes.id}>{this.state.deleteObjectShow.id}</span></DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         {this.t('Are you sure?')}
@@ -143,8 +146,8 @@ class Objects extends Component {
                 </DialogContent>
                 <DialogActions>
                     <Button variant="contained" onClick={() => this.setState({ deleteObjectShow: null })}><IconCancel className={this.props.classes.buttonIcon} />{this.t('ra_Cancel')}</Button>
-                    {this.state.deleteObjectShow.hasChildren ? <Button variant="contained" onClick={() => this.onDelete(true)}><IconDeleteAll className={clsx(this.props.classes.buttonAll, this.props.classes.buttonIcon)} />{this.t('Delete with children')}</Button> : null}
-                    {this.state.deleteObjectShow.exists ? <Button variant="contained" onClick={() => this.onDelete(false)} color="primary"><IconDeleteOne className={this.props.classes.buttonIcon} />{this.t('Delete one item')}</Button> : null}
+                    {this.state.deleteObjectShow.hasChildren ? <Button variant="contained" classes={{label: this.props.classes.buttonText}} onClick={() => this.onDelete(true)}><IconDeleteAll className={clsx(this.props.classes.buttonAll, this.props.classes.buttonIcon)} />{this.t('Delete with children')}</Button> : null}
+                    {this.state.deleteObjectShow.exists ? <Button variant="contained" classes={{label: this.props.classes.buttonText}} onClick={() => this.onDelete(false)} color="primary"><IconDeleteOne className={this.props.classes.buttonIcon} />{this.t('Delete one item')}</Button> : null}
                 </DialogActions>
             </Dialog>;
         }

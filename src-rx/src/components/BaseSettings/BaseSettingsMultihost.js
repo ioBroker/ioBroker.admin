@@ -84,6 +84,7 @@ class BaseSettingsMultihost extends Component {
                                 }
                                 label={ this.props.t('Allow slave connections') }
                             />
+                            <div>{ this.props.t('When activated this host can be discovered by other iobroker installations in your network to become the master of a multihost system.')}</div>
                         </Grid>
                         <Grid item className={ this.props.classes.controlItem }>
                             <FormControlLabel
