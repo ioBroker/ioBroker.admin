@@ -29,7 +29,7 @@ Issues Admin5 Collection #1
 * Objects
   * Remove "Role" from "Edit Object dialog" when not state
   * Objects ACL Edit Dialog - table layout need fixing (sometimes)
-  * <!--Stateview: Check alignment headline Timestamp, lastchange and Value to data columns-->
+  * Stateview: Check alignment headline Timestamp, lastchange and Value to data columns
   * State updates should get the green blink of the value
   * State value color: Make "not-ack" red color lighter
   * Use default acl in table if object/state ACT does not exist, instead of showing NaN
