@@ -35,7 +35,7 @@ class Connection {
      * @param {import('./types').ConnectionProps} props
      */
     constructor(props) {
-        props                 = props ? JSON.parse(JSON.stringify(props)) : { protocol: window.location.protocol, host: window.location.hostname };
+        props                 = props || { protocol: window.location.protocol, host: window.location.hostname };
         this.props            = props;
 
         this.autoSubscribes   = this.props.autoSubscribes || [];
