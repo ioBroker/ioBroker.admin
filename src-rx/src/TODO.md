@@ -73,6 +73,7 @@ Issues Admin5 Collection #1
   * Settings: Map position not shown initially, change save button to primary
   * Finish Page: Have fun automating your home with <ioBroker-name logo>
   * Finish-Page: Jump to "Adapter" page when clicking Finish
+
 ## Discovery
 - Implement
 

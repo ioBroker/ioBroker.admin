@@ -258,7 +258,6 @@ class Instances extends Component {
     }
 
     getInstances = async data => {
-        console.log('GET INSTANCES');
         let instances = [];
         let instancesWorker = await this.props.instancesWorker.getInstances();
         Object.keys(instancesWorker).forEach(el => {
@@ -441,10 +440,6 @@ class Instances extends Component {
         const common = obj ? obj.common : null;
         const mode = common?.mode || '';
         let state = mode === 'daemon' ? 'green' : 'blue';
-
-        if (obj._id === 'system.adapter.mqtt-client.0') {
-            console.log('A');
-        }
 
         if (common && common.enabled && (!common.webExtension || !obj.native.webInstance || mode === 'daemon')) {
             const alive = this.states[obj._id + '.alive'];

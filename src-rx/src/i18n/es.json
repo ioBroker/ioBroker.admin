@@ -1196,5 +1196,10 @@
   "Delete object(s)": "Eliminar objeto(s)",
   "When enabled adapter instances can run in one or few processes to save RAM usage.": "Cuando están habilitadas, las instancias del adaptador pueden ejecutarse en uno o pocos procesos para ahorrar uso de RAM.",
   "When activated this host can be discovered by other iobroker installations in your network to become the master of a multihost system.": "Cuando se activa, este host puede ser descubierto por otras instalaciones de ioBroker en su red para convertirse en el maestro de un sistema multihost.",
-  "Instance link %s": "Enlace de instancia %s"
+  "Instance link %s": "Enlace de instancia %s",
+  "Start/stop": "Iniciar/detener",
+  "Restart": "Reanudar",
+  "Start order (tier)": "Orden de inicio (nivel)",
+  "Edit start order (tier)": "Editar orden de inicio (nivel)",
+  "Easy Admin": "Easy Admin"
 }

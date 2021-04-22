@@ -1196,5 +1196,10 @@
   "Delete object(s)": "Object(en) verwijderen",
   "When enabled adapter instances can run in one or few processes to save RAM usage.": "Indien ingeschakeld, kunnen adapterinstanties in een of enkele processen worden uitgevoerd om RAM-gebruik te besparen.",
   "When activated this host can be discovered by other iobroker installations in your network to become the master of a multihost system.": "Indien geactiveerd, kan deze host worden ontdekt door andere ioBroker-installaties in uw netwerk om de meester te worden van een multihost-systeem.",
-  "Instance link %s": "Instantiekoppeling %s"
+  "Instance link %s": "Instantiekoppeling %s",
+  "Start/stop": "Start/Stop",
+  "Restart": "Herstarten",
+  "Start order (tier)": "Startorder (tier)",
+  "Edit start order (tier)": "Startvolgorde bewerken (tier)",
+  "Easy Admin": "Easy Admin"
 }

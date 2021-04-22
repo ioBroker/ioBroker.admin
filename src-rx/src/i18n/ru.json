@@ -1200,5 +1200,10 @@
   "Delete object(s)": "Удалить объект(ы)",
   "When enabled adapter instances can run in one or few processes to save RAM usage.": "Когда включено, экземпляры адаптера могут запускаться в одном или нескольких процессах для экономии использования оперативной памяти.",
   "When activated this host can be discovered by other iobroker installations in your network to become the master of a multihost system.": "После активации этот хост может быть обнаружен другими установками ioBroker в вашей сети, чтобы стать мастером многоузловой системы.",
-  "Instance link %s": "Ссылка на экземпляр %s"
+  "Instance link %s": "Ссылка на экземпляр %s",
+  "Start/stop": "Старт/стоп",
+  "Restart": "Запустить снова",
+  "Start order (tier)": "Порядок старта (уровень)",
+  "Edit start order (tier)": "Изменить стартовый порядок (уровень)",
+  "Easy Admin": "Easy Admin"
 }

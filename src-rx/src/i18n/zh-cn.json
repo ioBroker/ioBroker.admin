@@ -1196,5 +1196,10 @@
   "Delete object(s)": "删除对象",
   "When enabled adapter instances can run in one or few processes to save RAM usage.": "启用后，适配器实例可以在一个或几个进程中运行以节省RAM使用量。",
   "When activated this host can be discovered by other iobroker installations in your network to become the master of a multihost system.": "激活后，该主机可以被网络中的其他ioBroker安装发现，成为多主机系统的主机。",
-  "Instance link %s": "实例链接%s"
+  "Instance link %s": "实例链接%s",
+  "Start/stop": "开始/停止",
+  "Restart": "重新开始",
+  "Start order (tier)": "起始订单（等级）",
+  "Edit start order (tier)": "编辑开始顺序（层）",
+  "Easy Admin": "Easy Admin"
 }

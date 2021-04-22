@@ -43,9 +43,14 @@ const styles = theme => ({
 });
 
 class Config extends Component {
+    constructor(props) {
+        super(props);
 
+        this.state ={
+            checkedExist: false,
+        };
+    }
     componentDidMount() {
-
         // receive messages from IFRAME
         const eventFunc = window.addEventListener ? 'addEventListener' : 'attachEvent';
         const emit = window[eventFunc];
@@ -58,10 +63,9 @@ class Config extends Component {
                         this.setState({checkedExist: 'tab.html'});
                     } else {
                         return this.props.socket.fileExists(this.props.adapter + '.admin', 'tab_m.html')
-                            .then(exist => {
-                                exist && this.setState({checkedExist: 'tab_m.html'});
-                            });
-                    }                    
+                            .then(exist =>
+                                exist ? this.setState({checkedExist: 'tab_m.html'}) : window.alert('Cannot find tab(_m).html'));
+                    }
                 });
         } else {
             this.setState({checkedExist: true});
@@ -85,7 +89,7 @@ class Config extends Component {
                 Router.doNavigate('easy');
             } else {
                 Router.doNavigate('tab-instances');
-            }        
+            }
         } else if (event.data === 'change' || event.message === 'change') {
             this.props.configStored(false);
         } else if (event.data === 'nochange' || event.message === 'nochange') {
