@@ -1227,5 +1227,6 @@
   "Use self signed certificates": "Use certificados autoassinados",
   "Authentication in Admin": "Autenticação em Admin",
   "Activate the check of password in admin if you plan to access your ioBroker is not in \"Demilitarized Zone\"": "Ative a verificação de senha no admin se você planeja acessar seu ioBroker não está em \"Zona Desmilitarizada\"",
-  "Your communication with admin is not encrypted": "Sua comunicação com o administrador não é criptografada"
+  "Your communication with admin is not encrypted": "Sua comunicação com o administrador não é criptografada",
+  "Instance": "Instância"
 }

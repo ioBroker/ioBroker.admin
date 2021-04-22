@@ -1227,5 +1227,6 @@
   "Use self signed certificates": "Gebruik zelfondertekende certificaten",
   "Authentication in Admin": "Authenticatie in Admin",
   "Activate the check of password in admin if you plan to access your ioBroker is not in \"Demilitarized Zone\"": "Activeer de controle van het wachtwoord in admin als u van plan bent om toegang te krijgen tot uw ioBroker die zich niet in \"Demilitarized Zone\" bevindt",
-  "Your communication with admin is not encrypted": "Uw communicatie met admin is niet versleuteld"
+  "Your communication with admin is not encrypted": "Uw communicatie met admin is niet versleuteld",
+  "Instance": "Voorbeeld"
 }

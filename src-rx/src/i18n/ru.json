@@ -1195,7 +1195,7 @@
   "Change color theme": "Изменить цветовую тему",
   "Change current host": "Изменить текущий хост",
   "Discovery devices": "Устройства обнаружения",
-  "Delete with children": "Удалить с детьми",
+  "Delete with children": "Удалить все элементы",
   "Delete one item": "Удалить один элемент",
   "Delete object(s)": "Удалить объект(ы)",
   "When enabled adapter instances can run in one or few processes to save RAM usage.": "Когда включено, экземпляры адаптера могут запускаться в одном или нескольких процессах для экономии использования оперативной памяти.",
@@ -1231,5 +1231,6 @@
   "Use self signed certificates": "Использовать самоподписанные сертификаты",
   "Authentication in Admin": "Аутентификация в админке",
   "Activate the check of password in admin if you plan to access your ioBroker is not in \"Demilitarized Zone\"": "Активируйте проверку пароля в админке, если вы планируете получить доступ к вашему ioBroker не в «Демилитаризованной зоне»",
-  "Your communication with admin is not encrypted": "Ваше общение с администратором не зашифровано"
+  "Your communication with admin is not encrypted": "Ваше общение с администратором не зашифровано",
+  "Instance": "Экземпляр"
 }

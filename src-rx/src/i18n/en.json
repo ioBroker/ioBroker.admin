@@ -1191,7 +1191,7 @@
   "Change color theme": "Change color theme",
   "Change current host": "Change current host",
   "Discovery devices": "Discovery devices",
-  "Delete with children": "Delete with children",
+  "Delete with children": "Delete all items",
   "Delete one item": "Delete one item",
   "Delete object(s)": "Delete object(s)",
   "When enabled adapter instances can run in one or few processes to save RAM usage.": "When enabled adapter instances can run in one or few processes to save RAM usage.",
@@ -1227,5 +1227,6 @@
   "Use self signed certificates": "Use self signed certificates",
   "Authentication in Admin": "Authentication in Admin",
   "Activate the check of password in admin if you plan to access your ioBroker is not in \"Demilitarized Zone\"": "Activate the check of password in admin if you plan to access your ioBroker is not in \"Demilitarized Zone\"",
-  "Your communication with admin is not encrypted": "Your communication with admin is not encrypted"
+  "Your communication with admin is not encrypted": "Your communication with admin is not encrypted",
+  "Instance": "Instance"
 }

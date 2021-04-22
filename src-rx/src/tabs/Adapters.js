@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import { Component, Fragment, createRef } from 'react';
+import React, { Component, Fragment, createRef } from 'react';
 import Semver from 'semver';
 import PropTypes from "prop-types";
 import clsx from 'clsx';
@@ -203,7 +203,7 @@ class Adapters extends Component {
             lastUpdate: 0,
             repository: {},
             installed: {},
-            instances: [],
+            adapters: [],
             categories: [],
             hostData: {},
             hostOs: '',
@@ -265,16 +265,13 @@ class Adapters extends Component {
 
     async componentDidMount() {
         if (this.props.ready) {
-            await this.getInstances();
+            await this.getAdapters();
             await this.getAdaptersInfo();
-            await this.props.instancesWorker.registerHandler(this.getInstances);
+            await this.props.adaptersWorker.registerHandler(this.onAdaptersChanged);
         }
     }
 
     componentDidUpdate() {
-        // if (!this.state.init && !this.state.update && this.props.ready) {
-        //     this.getAdaptersInfo();
-        // }
         const descWidth = this.getDescWidth();
         if (this.state.descWidth !== descWidth) {
             this.setState({ descWidth });
@@ -285,7 +282,9 @@ class Adapters extends Component {
     }
 
     componentWillUnmount() {
-        this.props.instancesWorker.unregisterHandler(this.getInstances);
+        this.updateTimeout && clearTimeout(this.updateTimeout);
+        this.updateTimeout = null;
+        this.props.adaptersWorker.unregisterHandler(this.onAdaptersChanged);
     }
 
     static getDerivedStateFromProps() {
@@ -297,40 +296,82 @@ class Adapters extends Component {
         };
     }
 
-    getInstances = async () => {
-        try {
-            const currentHost = this.props.currentHost;
-            let instancesWorker = await this.props.instancesWorker.getInstances();
-            const installed = await this.props.socket.getInstalled(currentHost, true).catch(e => window.alert('Cannot getInstalled: ' + e));
-            const repository = await this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: false }, false).catch(e => window.alert('Cannot getRepository: ' + e));
-            const instances = Object.keys(instancesWorker).map(name => instancesWorker[name]);
+    onAdaptersChanged = changes => {
+        this.tempAdapters  = this.tempAdapters  || JSON.parse(JSON.stringify(this.state.adapters));
+        this.tempInstalled = this.tempInstalled || JSON.parse(JSON.stringify(this.state.installed));
 
-            let updateAvailable = [];
-            instances.forEach(el => {
-                const value = el.common.name;
-                if (installed[value]) {
-                    const version = installed[value].version;
-                    const repositoryValue = repository[value];
-                    if (repositoryValue &&
-                        repositoryValue.version !== version &&
-                        Adapters.updateAvailable(version, repositoryValue.version) &&
-                        updateAvailable.indexOf(value) === -1
-                    ) {
-                        updateAvailable.push(value);
+        changes.forEach(item => {
+            if (item.type === 'deleted') {
+                // remove from installed
+                delete this.tempInstalled[item.oldObj.common.name];
+                delete this.tempAdapters[item.id];
+            } else {
+                // remove from installed
+                Object.keys(this.tempInstalled[item.oldObj.common.name]).forEach(attr => {
+                    if (item.obj.common[attr] !== undefined) {
+                        this.tempInstalled[item.oldObj.common.name][attr] = item.obj.common[attr];
                     }
+                })
+
+                this.tempAdapters[item.id] = item.obj;
+            }
+        });
+
+        this.updateTimeout && clearTimeout(this.updateTimeout);
+        this.updateTimeout = setTimeout(() => {
+            const adapters     = this.tempAdapters;
+            this.tempAdapters  = null;
+            const installed    = this.tempInstalled;
+            this.tempInstalled = null;
+            this.analyseInstalled(adapters, installed);
+        }, 300);
+    }
+
+    analyseInstalled(adapters, installed, repository) {
+        adapters   = adapters   || this.state.adapters;
+        installed  = installed  || this.state.installed;
+        repository = repository || this.state.repository;
+
+        const updateAvailable = [];
+
+        Object.keys(adapters).forEach(name => {
+            const value = adapters[name].common.name;
+            if (installed[value]) {
+                const version         = installed[value].version;
+                const repositoryValue = repository[value];
+
+                if (repositoryValue &&
+                    repositoryValue.version !== version &&
+                    Adapters.updateAvailable(version, repositoryValue.version) &&
+                    !updateAvailable.includes(value)
+                ) {
+                    updateAvailable.push(value);
                 }
-            });
-            this.setState({
-                instances,
-                updateAvailable,
-                installed,
-                repository
-            }, () => {
-                if (this.cache.listOfVisibleAdapter) {
-                    this.cache.listOfVisibleAdapter = null;
-                    this.buildCache();
-                }
-            });
+            }
+        });
+
+        this.setState({
+            adapters,
+            updateAvailable,
+            installed,
+            repository
+        }, () => {
+            if (this.cache.listOfVisibleAdapter) {
+                this.cache.listOfVisibleAdapter = null;
+                this.buildCache();
+            }
+        });
+    }
+
+    getAdapters = async () => {
+        try {
+            console.log('getAdapters')
+            const currentHost  = this.props.currentHost;
+            const adapters     = await this.props.adaptersWorker.getAdapters();
+            const installed    = await this.props.socket.getInstalled(currentHost, true).catch(e => window.alert('Cannot getInstalled: ' + e));
+            const repository   = await this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: false }, false).catch(e => window.alert('Cannot getRepository: ' + e));
+
+            this.analyseInstalled(adapters, installed, repository);
         } catch (e) {
             console.error(e.message);
         }
@@ -342,17 +383,18 @@ class Adapters extends Component {
         }
 
         // Do not update too often
-        if (new Date().getTime() - this.state.lastUpdate > 1000) {
+        if (Date.now() - this.state.lastUpdate > 1000) {
+            console.log('getAdaptersInfo ')
 
             !this.state.update && this.setState({ update: true });
 
             const currentHost = this.props.currentHost;
             try {
+                const {installed, repository} = this.state;
                 const hostData = await this.props.socket.getHostInfo(currentHost).catch(e => window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`));
-                const {installed,repository} = this.state;
-                const rebuild = await this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD').catch(e => window.alert('Cannot checkFeatureSupported: ' + e));
-                const objects = await this.props.socket.getForeignObjects('system.adapter.*', 'adapter').catch(e => window.alert('Cannot read system.adapters.*: ' + e));
-                const ratings = await this.props.socket.getRatings(updateRepo).catch(e => window.alert('Cannot read ratings: ' + e));
+                const rebuild  = await this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD').catch(e => window.alert('Cannot checkFeatureSupported: ' + e));
+                const objects  = await this.props.adaptersWorker.getAdapters(updateRepo).catch(e => window.alert('Cannot read system.adapters.*: ' + e));
+                const ratings  = await this.props.socket.getRatings(updateRepo).catch(e => window.alert('Cannot read ratings: ' + e));
 
                 this.uuid = ratings.uuid;
 
@@ -409,8 +451,9 @@ class Adapters extends Component {
                             this.recentUpdatedAdapters++
                         }
                         if (installed[value]) {
-                            this.installedAdapters++
+                            this.installedAdapters++;
                         }
+
                         if (!categories[type]) {
                             categories[type] = {
                                 name: type,
@@ -432,14 +475,13 @@ class Adapters extends Component {
                 Object.keys(categories).sort().forEach(value =>
                     categoriesSorted.push(categories[value]));
 
-
-                const list = JSON.parse(window.localStorage.getItem('Adapters.list'));
-                const viewMode = JSON.parse(window.localStorage.getItem('Adapters.viewMode'));
-                const updateList = JSON.parse(window.localStorage.getItem('Adapters.updateList'));
-                const installedList = JSON.parse(window.localStorage.getItem('Adapters.installedList'));
+                const list            = JSON.parse(window.localStorage.getItem('Adapters.list'));
+                const viewMode        = JSON.parse(window.localStorage.getItem('Adapters.viewMode'));
+                const updateList      = JSON.parse(window.localStorage.getItem('Adapters.updateList'));
+                const installedList   = JSON.parse(window.localStorage.getItem('Adapters.installedList'));
                 const categoriesTiles = window.localStorage.getItem('Adapters.categoriesTiles') || 'All';
-                const filterTiles = window.localStorage.getItem('Adapters.filterTiles') || 'A-Z';
-                this.allAdapters = Object.keys(repository).length - 1;
+                const filterTiles     = window.localStorage.getItem('Adapters.filterTiles') || 'A-Z';
+                this.allAdapters      = Object.keys(repository).length - 1;
 
                 this.setState({
                     filterTiles,
@@ -447,13 +489,11 @@ class Adapters extends Component {
                     installedList,
                     updateList,
                     viewMode,
-                    // installed,
                     list,
                     lastUpdate: Date.now(),
                     hostData,
                     hostOs,
                     nodeJsVersion,
-                    // repository,
                     categories: categoriesSorted,
                     categoriesExpanded,
                     init: true,
@@ -465,7 +505,7 @@ class Adapters extends Component {
         }
     }
 
-    addInstance(adapter, instance, debug = false, customUrl = false) {
+    async addInstance(adapter, instance, debug = false, customUrl = false) {
         if (!instance && this.props.expertMode && !customUrl) {
             this.setState({
                 addInstanceDialog: true,
@@ -474,18 +514,9 @@ class Adapters extends Component {
             });
         } else {
             if (instance && !customUrl) {
-                let cancel = false;
-
-                for (let i = 0; i < this.state.instances.length; i++) {
-                    const instance = this.state.instances[i];
-
-                    if (instance._id === `system.adapter.${adapter}.${instance}`) {
-                        cancel = true;
-                        break;
-                    }
-                }
-
-                if (cancel) {
+                const instances = this.props.instancesWorker.getInstances();
+                // if the instance already exists
+                if (instances[`system.adapter.${adapter}.${instance}`]) {
                     return this.setState({ addInstanceError: true });
                 }
             }
@@ -941,13 +972,16 @@ class Adapters extends Component {
                 rating={adapter.rating}
                 onSetRating={installed && installed.version ? () => this.showSetRatingDialog(value, installed.version) : null}
 
-                onAddInstance={() => licenseDialogFunc(adapter.license === 'MIT', () => this.addInstance(value), adapter.extIcon.split('/master')[0] + '/master/LICENSE')}//
+                onAddInstance={() =>
+                    licenseDialogFunc(adapter.license === 'MIT', async () =>
+                        await this.addInstance(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
                 onDeletion={() => this.openAdapterDeletionDialog(value)}
                 onInfo={() => this.openInfoDialog(value)}
                 onRebuild={() => this.rebuild(value)}
                 onUpdate={() => this.openUpdateDialog(value)}
                 openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
-                onUpload={() => licenseDialogFunc(adapter.license === 'MIT', () => this.upload(value), adapter.extIcon.split('/master')[0] + '/master/LICENSE')}//
+                onUpload={() => licenseDialogFunc(adapter.license === 'MIT', () =>
+                    this.upload(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
             />;
         } else {
             return null;
@@ -1143,13 +1177,16 @@ class Adapters extends Component {
                     rating={adapter.rating}
                     onSetRating={installed && installed.version ? () => this.showSetRatingDialog(value, installed.version) : null}
 
-                    onAddInstance={() => licenseDialogFunc(adapter.license === 'MIT', () => this.addInstance(value), adapter.extIcon.split('/master')[0] + '/master/LICENSE')}//
+                    onAddInstance={() =>
+                        licenseDialogFunc(adapter.license === 'MIT', async () =>
+                            await this.addInstance(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
                     onDeletion={() => this.openAdapterDeletionDialog(value)}
                     onInfo={() => this.openInfoDialog(value)}
                     onRebuild={() => this.rebuild(value)}
                     onUpdate={() => this.openUpdateDialog(value)}
                     openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
-                    onUpload={() => licenseDialogFunc(adapter.license === 'MIT', () => this.upload(value), adapter.extIcon.split('/master')[0] + '/master/LICENSE')}//
+                    onUpload={() => licenseDialogFunc(adapter.license === 'MIT', () =>
+                        this.upload(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
                 />;
             });
         }
@@ -1166,7 +1203,9 @@ class Adapters extends Component {
                 lang={this.props.lang}
                 installed={this.state.installed}
                 repository={this.state.repository}
-                onClose={reload => this.setState({ showUpdater: false }, () => reload && this.getAdaptersInfo(true))}
+                onClose={reload =>
+                    this.setState({ showUpdater: false }, () =>
+                        reload && this.getAdaptersInfo(true))}
                 socket={this.props.socket}
             />;
         }
@@ -1403,13 +1442,14 @@ class Adapters extends Component {
                     open={this.state.addInstanceDialog}
                     adapter={this.state.addInstanceAdapter}
                     hosts={this.props.hosts}
-                    instances={this.state.instances}
+                    instancesWorker={this.props.instancesWorker}
                     repository={this.state.repository}
                     dependencies={this.getDependencies(this.state.addInstanceAdapter)}
                     currentHost={this.state.addInstanceHost}
                     currentInstance={this.state.addInstanceId}
                     t={this.t}
-                    onClick={() => this.addInstance(this.state.addInstanceAdapter, this.state.addInstanceId)}
+                    onClick={async () =>
+                        await this.addInstance(this.state.addInstanceAdapter, this.state.addInstanceId)}
                     onClose={() => this.closeAddInstanceDialog()}
                     onHostChange={event => this.handleHostsChange(event)}
                     onInstanceChange={event => this.handleInstanceChange(event)}
@@ -1428,8 +1468,8 @@ class Adapters extends Component {
                 t={this.t}
                 open={this.state.gitHubInstallDialog}
                 categories={this.state.categories}
-                installFromUrl={(value, debug, customUrl) =>
-                    this.addInstance(value, undefined, debug, customUrl)}
+                installFromUrl={async (value, debug, customUrl) =>
+                    await this.addInstance(value, undefined, debug, customUrl)}
                 repository={this.state.repository}
                 onClose={() => { this.setState({ gitHubInstallDialog: false }) }}
             />
@@ -1502,6 +1542,21 @@ Adapters.propTypes = {
     commandRunning: PropTypes.bool,
     menuOpened: PropTypes.bool,
     menuClosed: PropTypes.bool,
-    menuCompact: PropTypes.bool
+    menuCompact: PropTypes.bool,
+    adaptersWorker: PropTypes.object,
+    instancesWorker: PropTypes.object,
+    theme: PropTypes.object,
+    themeName: PropTypes.string,
+    themeType: PropTypes.string,
+    systemConfig: PropTypes.object,
+    socket: PropTypes.object,
+    hosts: PropTypes.array,
+    currentHost: PropTypes.string,
+    currentHostName: PropTypes.string,
+    ready: PropTypes.bool,
+    t: PropTypes.func,
+    lang: PropTypes.string,
+    expertMode: PropTypes.bool,
+    executeCommand: PropTypes.func,
 };
 export default withStyles(styles)(Adapters);

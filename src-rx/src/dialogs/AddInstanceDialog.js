@@ -40,8 +40,21 @@ class AddInstanceDialog extends Component {
 
     constructor(props) {
         super(props);
-
+        this.state = {
+            instanceNumbers: []
+        }
         this.t = props.t;
+    }
+
+    componentDidMount() {
+        this.props.instancesWorker.getInstances()
+            .then(instances => {
+                const instanceNumbers = Object.keys(instances)
+                    .filter(id => instances[id]?.common?.name === this.props.adapter)
+                    .map(id => id.substring(id.lastIndexOf('.') + 1));
+
+                this.setState({instanceNumbers});
+            });
     }
 
     getHosts() {
@@ -51,29 +64,11 @@ class AddInstanceDialog extends Component {
     }
 
     getAvailableInstances() {
-
         const result = [];
-        const instanceNumber = {};
-
-        if (!this.props.instances) {
-            return null;
-        }
-
-        for (let i = 0; i < this.props.instances.length; i++) {
-
-            const instance = this.props.instances[i];
-
-            if (instance.common && instance.common.name === this.props.adapter) {
-                const id = instance._id.substring(instance._id.lastIndexOf('.') + 1);
-
-                instanceNumber[id] = true;
-            }
-        }
-
         result.push(<MenuItem value="auto" key="auto">{this.t('auto')}</MenuItem>);
 
         for (let i = 0; i <= 10; i++) {
-            if (!instanceNumber[i]) {
+            if (!this.state.instanceNumbers.includes(i)) {
                 result.push(<MenuItem value={`${i}`} key={i}>{i}</MenuItem>);
             }
         }
@@ -183,7 +178,7 @@ AddInstanceDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     adapter: PropTypes.string.isRequired,
     hosts: PropTypes.array.isRequired,
-    instances: PropTypes.array.isRequired,
+    instancesWorker: PropTypes.object.isRequired,
     currentHost: PropTypes.string.isRequired,
     currentInstance: PropTypes.string.isRequired,
     t: PropTypes.func.isRequired,

@@ -1227,5 +1227,6 @@
   "Use self signed certificates": "使用自签名证书",
   "Authentication in Admin": "管理员身份验证",
   "Activate the check of password in admin if you plan to access your ioBroker is not in \"Demilitarized Zone\"": "如果您打算访问ioBroker不在“非军事区”，请在admin中激活密码检查。",
-  "Your communication with admin is not encrypted": "您与管理员的通讯未加密"
+  "Your communication with admin is not encrypted": "您与管理员的通讯未加密",
+  "Instance": "实例"
 }

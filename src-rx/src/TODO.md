@@ -1,5 +1,8 @@
 # Todo
 
+* Enhance Expert Mode text and add "<bold>The expert mode allows you to view and edit system internal details. Please make sure you know what you are doing!</bold><paragraph>current text"
+
+
 ## Bugs
 - Adapter tab: The version will not be automatically updated: https://github.com/ioBroker/ioBroker.admin/issues/688
 - Ask "Discard data?" if instance config not saved for json config
@@ -32,7 +35,7 @@
   * Alias ID can be object with read and write properties. Show both alternatively or ignore this case on display
   * Object editor Alias Tab: also allow to specify red/write ids
     
-  * Too long roles need to be cut in table (e.g. indicator.maintenance.unreach)
+  * Too long roles need to be cut in table (e.g. `indicator.maintenance.unreach`)
   * User can create a new role 
 
   * Role in table should only be editable in expert mode
@@ -49,7 +52,7 @@
 
 * Easy Mode
 
-* AdminSettings: Access to instances: add infotexts for  "Apply access rights" and "Allow access only"
+* AdminSettings: Access to the instances: add infotexts for  "Apply access rights" and "Allow access only"
 
 * General: Support the new io-package fields that replace materialize and materializeTab (but we need to be backward compatible)
   common.adminUI: {
@@ -99,3 +102,4 @@
 ## JSON config - Admin settings dialog (index_m.html)
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)
 - Table, move items up and down if add/delete possible 
+* On Custom-Mass-Edit: When more than 10 data points are edited show a dialog to inform use about that mass edit and let him decide to do it or not: "The changes will be applied to %1 states. Are you sure?"

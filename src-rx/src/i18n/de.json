@@ -1191,7 +1191,7 @@
   "Change color theme": "Farbthema ändern",
   "Change current host": "Aktuellen Host ändern ",
   "Discovery devices": "Erkennungsgeräte",
-  "Delete with children": "Mit Kindern löschen",
+  "Delete with children": "Alle Einträge löschen",
   "Delete one item": "Einen Eintrag löschen ",
   "Delete object(s)": "Objekt(e) löschen",
   "When enabled adapter instances can run in one or few processes to save RAM usage.": "Wenn diese Option aktiviert ist, können Adapterinstanzen in einem oder wenigen Prozessen ausgeführt werden, um die RAM-Nutzung zu sparen.",
@@ -1227,5 +1227,6 @@
   "Use self signed certificates": "Selbstsignierte Zertifikate verwenden ",
   "Authentication in Admin": "Authentifizierung in Admin",
   "Activate the check of password in admin if you plan to access your ioBroker is not in \"Demilitarized Zone\"": "Aktivieren Sie die Kennwortprüfung in admin, wenn Sie vorhaben, auf Ihren ioBroker zuzugreifen, der sich nicht in der \"entmilitarisierten Zone\" befindet.",
-  "Your communication with admin is not encrypted": "Ihre Kommunikation mit dem Administrator ist nicht verschlüsselt"
+  "Your communication with admin is not encrypted": "Ihre Kommunikation mit dem Administrator ist nicht verschlüsselt",
+  "Instance": "Instanz"
 }
