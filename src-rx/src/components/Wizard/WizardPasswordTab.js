@@ -118,7 +118,7 @@ class WizardPasswordTab extends Component {
             </form>
             <Toolbar className={ this.props.classes.toolbar }>
                 <div className={ this.props.classes.grow }/>
-                <Button variant={"contained"} onClick={ () => this.props.onDone(this.state.password) } disabled={ !!this.state.errorPasswordRepeat || this.state.errorPassword }>{ this.props.t('Set administrator password') }</Button>
+                <Button  color="primary" variant={"contained"} onClick={ () => this.props.onDone(this.state.password) } disabled={ !!this.state.errorPasswordRepeat || this.state.errorPassword }>{ this.props.t('Set administrator password') }</Button>
             </Toolbar>
         </Paper>;
     }

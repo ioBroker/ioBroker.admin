@@ -343,6 +343,8 @@
           "label": "Test"
         },
         "autoComplete": {
+          "newLine": true,
+          "sm": 4,
           "type": "autocomplete",
           "freeSolo": true,
           "options": [{

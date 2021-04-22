@@ -308,14 +308,16 @@ class Adapters extends Component {
             let updateAvailable = [];
             instances.forEach(el => {
                 const value = el.common.name;
-                const version = installed[value].version;
-                const repositoryValue = repository[value];
-                if (repositoryValue &&
-                    repositoryValue.version !== version &&
-                    Adapters.updateAvailable(version, repositoryValue.version) &&
-                    updateAvailable.indexOf(value) === -1
-                ) {
-                    updateAvailable.push(value);
+                if (installed[value]) {
+                    const version = installed[value].version;
+                    const repositoryValue = repository[value];
+                    if (repositoryValue &&
+                        repositoryValue.version !== version &&
+                        Adapters.updateAvailable(version, repositoryValue.version) &&
+                        updateAvailable.indexOf(value) === -1
+                    ) {
+                        updateAvailable.push(value);
+                    }
                 }
             });
             this.setState({

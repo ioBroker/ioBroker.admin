@@ -29,13 +29,16 @@ class ConfigCustomEasyAccess extends ConfigGeneric {
 
         this.props.socket.getAdapterInstances()
             .then(instances => {
-                instances = instances.filter(instance =>
-                    instance && instance.common && (!instance.common.noConfig || instance.common.adminTab))
+                instances = instances
+                    .filter(instance =>
+                        instance && instance.common && (!instance.common.noConfig || instance.common.adminTab))
                     .map(instance => ({
                         id: instance._id.replace(/^system\.adapter\./, ''),
                         config: !instance.common.noConfig,
                         adminTab: instance.common.adminTab
-                    }));
+                    }))
+                    .sort((a, b) => a.id > b.id ? 1 : (a.id < b.id ? -1 : 0));
+
                 this.setState({instances});
             });
     }

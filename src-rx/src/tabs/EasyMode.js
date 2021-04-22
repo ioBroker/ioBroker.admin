@@ -1,12 +1,15 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
 import { withStyles } from '@material-ui/core/styles';
+
+import { AppBar, CardMedia, CircularProgress, IconButton, Paper, Toolbar } from '@material-ui/core';
+
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+
+import ToggleThemeMenu from '../components/ToggleThemeMenu';
 import Config from '../dialogs/Config';
 import EasyModeCard from '../components/EasyModeCard';
-import { AppBar, CardMedia, CircularProgress, IconButton, Paper, Toolbar } from '@material-ui/core';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import clsx from 'clsx';
-import ToggleThemeMenu from '../components/ToggleThemeMenu';
 
 const styles = theme => ({
     appBar: {

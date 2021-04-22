@@ -33,9 +33,6 @@ import ConfigTopic from './ConfigTopic';
 import ConfigAutocomplete from './ConfigAutocomplete';
 import ConfigAutocompleteSendTo from './ConfigAutocompleteSendTo';
 
-//import ConfigTabs from "./ConfigTabs";
-// import { Paper } from '@material-ui/core';
-
 const components = {
     text: ConfigText,
     checkbox: ConfigCheckbox,

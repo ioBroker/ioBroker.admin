@@ -2182,6 +2182,20 @@ class Connection {
             this._socket.emit('getRatings', update, (err, ratings) =>
                 err ? reject(err) : resolve(ratings)));
     }
+
+    /**
+     * Read current web, socketio or admin namespace, like admin.0
+     * @returns {Promise<string>}
+     */
+    getCurrentInstance(update) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getCurrentInstance', (err, namespace) =>
+                err ? reject(err) : resolve(namespace)));
+    }
+
 }
 
 Connection.Connection = {

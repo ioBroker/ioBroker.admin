@@ -701,7 +701,7 @@ class App extends Router {
     /**
      * Changes the current theme
      */
-    toggleTheme(currentThemeName) {
+    toggleTheme = currentThemeName => {
         const themeName = this.state.themeName;
 
         // dark => blue => colored => light => dark
@@ -1175,9 +1175,12 @@ class App extends Router {
         if (this.state.wizard) {
             return <WizardDialog
                 socket={this.socket}
+                themeName={this.state.themeName}
+                toggleTheme={this.toggleTheme}
                 t={I18n.t}
                 lang={I18n.getLanguage()}
-                onClose={() => this.setState({ wizard: false })}
+                onClose={() =>
+                    this.setState({ wizard: false })}
             />;
         }
     }
@@ -1256,7 +1259,7 @@ class App extends Router {
                     <EasyMode
                         navigate={Router.doNavigate}
                         location={this.state.currentTab}
-                        toggleTheme={this.toggleTheme.bind(this)}
+                        toggleTheme={this.toggleTheme}
                         themeName={this.state.themeName}
                         themeType={this.state.themeType}
                         theme={this.state.theme}
@@ -1303,7 +1306,7 @@ class App extends Router {
                                 </IconButton>
                             </Tooltip>
                             <ToggleThemeMenu
-                                toggleTheme={this.toggleTheme.bind(this)}
+                                toggleTheme={this.toggleTheme}
                                 themeName={this.state.themeName}
                                 t={I18n.t} />
                             {/*This will be removed later to settings, to not allow so easy to enable it*/}

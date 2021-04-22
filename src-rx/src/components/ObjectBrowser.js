@@ -877,7 +877,7 @@ function buildTree(objects, options) {
                         hasCustoms: obj.common?.custom && Object.keys(obj.common.custom).length,
                         level:      parts.length - 1,
                         generated:  false,
-                        button:     obj.type === 'state' && obj.common?.role?.startsWith('button') && obj.common?.write !== false,
+                        button:     obj.type === 'state' && obj.common?.role && typeof obj.common.role === 'string' && obj.common.role.startsWith('button') && obj.common?.write !== false,
                     }
                 };
 

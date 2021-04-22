@@ -46,8 +46,8 @@ Possible types:
   - `options` - `[{label: {en: "option 1"}, value: 1}, ...]`
 
 - `autocomplete`
-  - 'options' - `["value1", "value2", ...]`
-  - freeSolo - Set freeSolo to true so the textbox can contain any arbitrary value.
+  - `options` - `["value1", "value2", ...]` or `[{"value": "value", "label": "Value1"}, "value2", ...]`
+  - `freeSolo` - Set freeSolo to true so the textbox can contain any arbitrary value.
 
 - `!icon` - base64 icon
   - `maxSize`
@@ -146,7 +146,7 @@ Possible types:
 
 - `divider` - horizontal line
   - `height` - optional height
-  - `color` - optional divider color or "primary", "secondary"
+  - `color` - optional divider color or `primary`, `secondary`
 
 - `header`
   - `text`
@@ -160,7 +160,7 @@ Possible types:
   - `!manual` - allow manual editing. Without drop down  
   - `noTranslation` - do not translate label of selects  
     To use this option, your adapter must implement message handler:
-    The result of command must be an array in form `[{value: 1, label: 'one'}]`
+    The result of command must be an array in form `[{"value": 1, "label": "one"}, ...]`
 ```
 adapter.on('message', obj => {
    if (obj) {
@@ -200,42 +200,11 @@ adapter.on('message', obj => {
   - `command` - sendTo command
   - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`
   - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both.
-  - freeSolo - Set freeSolo to true so the textbox can contain any arbitrary value.
+  - `freeSolo` - Set freeSolo to true so the textbox can contain any arbitrary value.
+    
     To use this option, your adapter must implement message handler:
-    The result of command must be an array in form `["value1", "value2", ...]`
-```
-adapter.on('message', obj => {
-   if (obj) {
-       switch (obj.command) {
-           case 'command':
-               if (obj.callback) {
-                   try {
-                       const serialport = require('serialport');
-                       if (serialport) {
-                           // read all found serial ports
-                           serialport.list()
-                               .then(ports => {
-                                   adapter.log.info('List of port: ' + JSON.stringify(ports));
-                                   adapter.sendTo(obj.from, obj.command, ports.map(item => item.path), obj.callback);
-                               })
-                               .catch(e => {
-                                   adapter.sendTo(obj.from, obj.command, [], obj.callback);
-                                   adapter.log.error(e)
-                               });
-                       } else {
-                           adapter.log.warn('Module serialport is not available');
-                           adapter.sendTo(obj.from, obj.command, [''], obj.callback);
-                       }
-                   } catch (e) {
-                       adapter.sendTo(obj.from, obj.command, [''], obj.callback);
-                   }
-               }
-
-               break;
-       }
-   }
-});
-```
+    The result of command must be an array in form `["value1", {"value": "value2", "label": "Value2"}, ...]`
+    See `selectSendTo` for handler example 
 
 
 ## Common attributes of controls

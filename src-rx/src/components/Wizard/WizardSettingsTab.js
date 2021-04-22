@@ -59,11 +59,11 @@ const styles = theme => ({
         overflow: 'hidden',
     },
     controlItem: {
-        width: 300,
+        width: SETTINGS_WIDTH,
         marginBottom: theme.spacing(1),
     },
     controlItemAddress: {
-        width: 300 - 32,
+        width: SETTINGS_WIDTH - 40,
         marginBottom: theme.spacing(1),
     },
     gridSettings: {
@@ -88,19 +88,20 @@ class WizardSettingsTab extends Component {
         super(props);
 
         this.state = {
-            password: '',
+            password:       '',
             passwordRepeat: '',
-            errorPassword: false,
+            errorPassword:  false,
             errorPasswordRepeat: false,
-            tempUnit:     '°C',
-            currency:     '€',
-            dateFormat:   'DD.MM.YYYY',
-            isFloatComma: true,
-            country:      '',
-            city:         '',
-            address:      '',
-            longitude:    0,
-            latitude:     0,
+            tempUnit:       '°C',
+            currency:       '€',
+            dateFormat:     'DD.MM.YYYY',
+            isFloatComma:   true,
+            country:        '',
+            city:           '',
+            address:        '',
+            longitude:      0,
+            latitude:       0,
+            firstDayOfWeek: 'monday'
         };
 
         this.focusRef = createRef();
@@ -223,7 +224,7 @@ class WizardSettingsTab extends Component {
                             <h2 className={ this.props.classes.title }>{ this.props.t('Important main settings') }</h2>
                         </Grid>
                         <Grid container direction="column" className={this.props.classes.settingsGrid}>
-                            <Grid item>
+                            <Grid item style={{textAlign: 'left'}}>
                                 <FormControl className={ this.props.classes.controlItem }>
                                     <InputLabel>{ this.props.t('Temperature unit') }</InputLabel>
                                     <Select
@@ -243,7 +244,7 @@ class WizardSettingsTab extends Component {
                                     onChange={ e => this.setState( {currency: e.target.value })}
                                 />
                             </Grid>
-                            <Grid item>
+                            <Grid item style={{textAlign: 'left'}}>
                                 <FormControl className={ this.props.classes.controlItem }>
                                     <InputLabel>{ this.props.t('Date format') }</InputLabel>
                                     <Select
@@ -251,12 +252,12 @@ class WizardSettingsTab extends Component {
                                         onChange={e => this.setState({dateFormat: e.target.value}) }
                                     >
                                         <MenuItem value="DD.MM.YYYY">DD.MM.YYYY</MenuItem>
-                                        <MenuItem value="DD.MM.YY">DD.MM.YY</MenuItem>
-                                        <MenuItem value="DD/MM/YYYY">DD/MM/YYYY</MenuItem>
+                                        <MenuItem value="YYYY.MM.DD">YYYY.MM.DD</MenuItem>
+                                        <MenuItem value="MM/DD/YYYY">MM/DD/YYYY</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Grid>
-                            <Grid item>
+                            <Grid item style={{textAlign: 'left'}}>
                                 <FormControl className={ this.props.classes.controlItem }>
                                     <InputLabel>{ this.props.t('Float divider') }</InputLabel>
                                     <Select
@@ -268,7 +269,7 @@ class WizardSettingsTab extends Component {
                                     </Select>
                                 </FormControl>
                             </Grid>
-                            <Grid item>
+                            <Grid item style={{textAlign: 'left'}}>
                                 <FormControl className={ this.props.classes.controlItem }>
                                     <InputLabel>{ this.props.t('Country') }</InputLabel>
                                     <Select
@@ -558,7 +559,7 @@ class WizardSettingsTab extends Component {
                                     onChange={ e => this.setState( {latitude: parseFloat(e.target.value.replace(',', '.')) })}
                                 />
                             </Grid>
-                            <Grid item>
+                            <Grid item style={{textAlign: 'left'}}>
                                 <FormControl className={ this.props.classes.controlItem }>
                                     <InputLabel>{ this.props.t('Week starts with') }</InputLabel>
                                     <Select
@@ -579,7 +580,7 @@ class WizardSettingsTab extends Component {
                 </Grid>
             <Toolbar className={ this.props.classes.toolbar }>
                 <div className={ this.props.classes.grow }/>
-                <Button variant={"contained"} onClick={ () => this.props.onDone({
+                <Button variant="contained" color="primary" onClick={ () => this.props.onDone({
                     tempUnit:     this.state.tempUnit,
                     currency:     this.state.currency,
                     dateFormat:   this.state.dateFormat,
