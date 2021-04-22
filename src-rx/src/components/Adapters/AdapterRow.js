@@ -32,6 +32,7 @@ import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import RemoveIcon from '@material-ui/icons/Remove';
 import sentryIcon from '../../assets/sentry.svg';
+import { Rating } from '@material-ui/lab';
 
 import {
     amber,
@@ -40,7 +41,7 @@ import {
     red
 } from '@material-ui/core/colors';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
-import { Rating } from '@material-ui/lab';
+
 
 const styles = theme => ({
     smallAvatar: {
@@ -133,6 +134,9 @@ const styles = theme => ({
         objectFit: 'fill',
         filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)'
     },
+    rating: {
+        cursor: 'pointer'
+    }
 });
 
 class AdapterRow extends Component {
@@ -270,7 +274,7 @@ class AdapterRow extends Component {
                         {connectionType === 'cloud' ?
                             <Tooltip title={this.props.t('Adapter requires the specific cloud access for these devices/service')}><CloudIcon /></Tooltip> :
                             (connectionType === 'local' ?
-                                <Tooltip title={this.props.t('Adapter does not use the cloud for these devices/service')}><CloudOffIcon /></Tooltip> : connectionType)
+                                <Tooltip title={this.props.t('Adapter does not use the cloud for these devices/service')}><CloudOffIcon /></Tooltip> : null)
                         }
                         {dataSource && <div className={classes.marginLeft5}>{(
                             dataSource === 'poll' ?

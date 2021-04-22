@@ -176,7 +176,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                             renderInput={(params) => <TextField {...params} label={I18n.t('Select adapter')} />}
                         /></div>
                     <div style={{
-                        fontSize: 40,
+                        fontSize: 24,
                         fontWeight: 'bold',
                         marginTop: 40
                     }}>{t('Warning!')}</div>
@@ -217,7 +217,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                         />
                     </div>
                     <div style={{
-                        fontSize: 40,
+                        fontSize: 24,
                         fontWeight: 'bold',
                         marginTop: 40
                     }}>{t('Warning!')}</div>

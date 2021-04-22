@@ -471,8 +471,8 @@ const styles = theme => ({
     },
     headerCellValue: {
         paddingTop: 4,
-        paddingLeft: 4,
-        fontSize: 16
+        paddingLeft: 5,
+        fontSize: 16,
     },
     headerCellInput: {
         width: 'calc(100% - 5px)',

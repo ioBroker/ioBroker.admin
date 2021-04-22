@@ -13,23 +13,17 @@ Issues Admin5 Collection #1
   * Log: Change accordion title of log entries to other background color
 
 * Adapter
-  <!-- * Tile view: add Github logo (in front of installed version) -->
-  <!-- * List view: Remove "Bugreport icon" on adapter logo and add as Sentry icon after the
-    cloud/connection-type logos -->
-  <!-- * Tile view: Add sentry icon if sentry plugin is used aside the cloud/conn-type logos -->
-  <!-- * List view: Increase size of Adapter Logos (padding 0, size 32) -->
-  <!-- * Both views: Update All dialog: move select all/none to right to be "over" the other checkboxes -->
-  <!-- * List view: Custom Install warnings (both tabs) - add some more space on top of "Warning" text -->
-  <!-- * Repository Version info need to be updated on reload -->
-  <!-- * Rating dialog: Add info text: Rate how good this version of the adapter works on your system. You can vote for every new version. -->
-  <!-- * Rating dialog: add close button -->
-  * Add Rating in Listview below Adaptername
+  * Tile view: add Github logo (in front of installed version)
+* Both views: Update All dialog: move select all/none to right to be "over" the other checkboxes - Add tooltip: "Select/Unselect all"  
+  * Check logic of command dialog: 
+    - if command dialog is closed, is running is still set
+    - If command dialog is in background, next install just opens this dialog and do nothing.
   
 * Adapter Update Dialog: Only show "Dependency list" when at least one dep is not met
 * Objects
   * Remove "Role" from "Edit Object dialog" when not state
   * Objects ACL Edit Dialog - table layout need fixing (sometimes)
-  * <!--Stateview: Check alignment headline Timestamp, lastchange and Value to data columns-->
+  * Stateview: Check alignment headline Timestamp, lastchange and Value to data columns
   * State updates should get the green blink of the value
   * State value color: Make "not-ack" red color lighter
   * Use default acl in table if object/state ACT does not exist, instead of showing NaN
@@ -51,9 +45,9 @@ Issues Admin5 Collection #1
   * Line view: host color should be used
   * Move "Host base settings dialog" to Hosts tab and leave as wrench, but only show in expert mode
   * Add Notifications button with "bubble" to hosts list and allow open Notification dialog per host if something is there. Gray button out if no notifications exist for that host
+  * Disable host settings (not color/icon) and restart if host not alive
 
 * Easy Mode
-  * Add padding at the page bottom
 
 * AdminSettings: Access to instances: add infotexts for  "Apply access rights" and "Allow access only"
 
@@ -63,15 +57,6 @@ Issues Admin5 Collection #1
   config: 'materialize',
   tab: 'html'
   }
-  
-* Installation Wizard
-  * Update License year for agreement
-  * Switch position of Buttons on "License agreement" page (Agree to right)
-  * Password Page: change color of "set Admin Password" button to primary
-  * Settings: Map position not shown initially, change save button to primary
-  * Finish Page: Have fun automating your home with <ioBroker-name logo>
-  * Finish-Page: Jump to "Adapter" page when clicking Finish
-
 
 ## Settings
   
@@ -79,13 +64,17 @@ Issues Admin5 Collection #1
 
 ## Adapters
 - Adapters - Use readme renderer from www.iobroker.net (BF)
-- Update all adapters => Keep only one check box (Indeterminate => All => none). And move them to the right on the one line with others. And add tooltip (Select/unselect all)
 
 ## Wizard
-- Theme switcher
-
+  * Theme switcher
+  * Update License year for agreement
+  * Switch position of Buttons on "License agreement" page (Agree to right)
+  * Password Page: change color of "set Admin Password" button to primary
+  * Settings: Map position not shown initially, change save button to primary
+  * Finish Page: Have fun automating your home with <ioBroker-name logo>
+  * Finish-Page: Jump to "Adapter" page when clicking Finish
 ## Discovery
-- todo
+- Implement
 
 ## Logs
 - Toggle the PID => layout problem
@@ -106,6 +95,7 @@ Issues Admin5 Collection #1
 <!-- - Show admin tabs: 
    - config => JsonConfig(jsonConfig: true),  index_m.html (materialize: true), index.html
    - admin => tab_m.html (materialize: true), tab_html -->
+   - Check if text2command works
 
 ## After all is done
 - Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io) (BF)
@@ -115,3 +105,5 @@ Issues Admin5 Collection #1
 ## JSON config - Admin settings dialog (index_m.html)
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)
 - Table, move items up and down if add/delete possible 
+- Implement auto-complete control
+- Custom Admin5 instances selecror has strange order

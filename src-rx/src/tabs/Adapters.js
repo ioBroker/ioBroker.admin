@@ -731,7 +731,7 @@ class Adapters extends Component {
                 open={true}
                 onClose={() => this.setState({ showSetRating: null })}
             >
-                <DialogTitle>{this.t('Rate how good this version of the adapter works on your system. You can vote for every new version. Review') + ' ' + this.state.showSetRating.adapter + '@' + this.state.showSetRating.version}</DialogTitle>
+                <DialogTitle>{this.t('Review') + ' ' + this.state.showSetRating.adapter + '@' + this.state.showSetRating.version}</DialogTitle>
                 <DialogContent style={{ textAlign: 'center' }}>
                     <Rating
                         className={this.props.classes.rating}
@@ -747,6 +747,7 @@ class Adapters extends Component {
                             }
                         }}
                     />
+                    <div style={{paddingTop: 8, paddingBottom: 16}}>{this.t('Rate how good this version of the adapter works on your system. You can vote for every new version.')}</div>
                     {item ? <div>{this.t('You voted for %s on %s', versions[0], new Date(item.ts).toLocaleDateString())}</div> : null}
                 </DialogContent>
                 <DialogActions>

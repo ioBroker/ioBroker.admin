@@ -132,6 +132,7 @@ class EasyMode extends Component {
                         materialize={currentInstance.materialize}
                         tab={currentInstance.tab}
                         socket={socket}
+                        easyMode={true}
                         themeName={themeName}
                         themeType={themeType}
                         theme={theme}
