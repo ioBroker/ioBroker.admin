@@ -13,7 +13,6 @@ import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import Dropzone from 'react-dropzone'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Slider from '@material-ui/core/Slider';
@@ -23,12 +22,10 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
 import CloseIcon from '@material-ui/icons/Close';
-import clsx from "clsx";
 
 // icons
-import { FaFileUpload as UploadIcon } from 'react-icons/fa';
-
 import IntroCard from '../components/IntroCard';
+import UploadImage from '../components/UploadImage';
 
 
 const styles = theme => ({
@@ -174,29 +171,6 @@ class EditIntroLinkDialog extends Component {
         }
     }
 
-    onDrop(acceptedFiles) {
-        const file = acceptedFiles[0];
-        const reader = new FileReader();
-
-        reader.onabort = () => console.log('file reading was aborted');
-        reader.onerror = () => console.log('file reading has failed');
-        reader.onload = () => {
-            let ext = 'image/' + file.name.split('.').pop().toLowerCase();
-            if (ext === 'image/jpg') {
-                ext = 'image/jpeg';
-            } else if (ext === 'image/svg') {
-                ext = 'image/svg+xml';
-            }
-
-            const base64 = 'data:' + ext + ';base64,' + btoa(
-                new Uint8Array(reader.result)
-                    .reduce((data, byte) => data + String.fromCharCode(byte), ''));
-
-            this.setState({ image: base64 });
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
     render() {
         const { classes } = this.props;
 
@@ -287,37 +261,15 @@ class EditIntroLinkDialog extends Component {
                                 <div style={{ width: 50 }} className={this.props.classes.editItem}>
                                     <TextField fullWidth={true} label={this.props.t('Color')} className={this.props.editColor} type="color" value={this.state.color} onChange={e => this.setState({ color: e.target.value })} />
                                 </div>
-
-                                <Dropzone
-                                    key="dropzone"
-                                    multiple={false}
-                                    accept="image/svg+xml,image/png,image/jpeg"
+                                <UploadImage
+                                    disabled={false}
+                                    crop
                                     maxSize={256 * 1024}
-                                    onDragEnter={() => this.setState({ uploadFile: 'dragging' })}
-                                    onDragLeave={() => this.setState({ uploadFile: true })}
-                                    onDrop={acceptedFiles => this.onDrop(acceptedFiles)}
-                                >
-                                    {({ getRootProps, getInputProps }) => (
-                                        <div className={clsx(
-                                            this.props.classes.uploadDiv,
-                                            this.state.uploadFile === 'dragging' && this.props.classes.uploadDivDragging,
-                                            this.props.classes.dropZone,
-                                            !this.state.image && this.props.classes.dropZoneEmpty
-                                        )}
-                                            {...getRootProps()}>
-                                            <input {...getInputProps()} />
-                                            <div className={this.props.classes.uploadCenterDiv}>
-                                                <div className={this.props.classes.uploadCenterTextAndIcon}>
-                                                    <UploadIcon className={this.props.classes.uploadCenterIcon} />
-                                                    <div className={this.props.classes.uploadCenterText}>{
-                                                        this.state.uploadFile === 'dragging' ? this.props.t('Drop file here') :
-                                                            this.props.t('Place your files here or click here to open the browse dialog')}</div>
-                                                </div>
-                                                {this.state.image ? <img src={this.state.image} className={this.props.classes.image} alt="icon" /> : null}
-                                            </div>
-
-                                        </div>)}
-                                </Dropzone>
+                                    icon={this.state.image}
+                                    removeIconFunc={() => this.setState({ image: '' })}
+                                    onChange={(base64) => this.setState({ image: base64 })}
+                                    t={this.props.t}
+                                />
                             </Grid>
                         </Grid>
                         <IntroCard

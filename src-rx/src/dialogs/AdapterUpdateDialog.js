@@ -108,6 +108,7 @@ class AdapterUpdateDialog extends Component {
                     wrap="nowrap"
                 >
                     {this.props.dependencies && this.props.dependencies.length > 0 &&
+                    this.props.dependencies.find(dependency=>!dependency.rightVersion) &&
                         <Grid item>
                             <Typography variant="h6" gutterBottom>{this.t('Dependencies')}</Typography>
                             {this.getDependencies()}

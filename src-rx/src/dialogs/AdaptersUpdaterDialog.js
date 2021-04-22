@@ -14,6 +14,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 
 import AdaptersUpdater from '../components/Adapters/AdaptersUpdater';
 import Command from '../components/Command';
+import { Tooltip } from '@material-ui/core';
 
 const styles = theme => ({
     dialogRoot: {
@@ -97,7 +98,7 @@ class AdaptersUpdaterDialog extends Component {
             <DialogTitle id="update-dialog-title">
                 <div className={this.props.classes.wrapperHead}>
                     {this.props.t('Update %s adapter(s)', this.state.selected.length)}
-                    {!this.state.finished && !this.state.inProcess && <Checkbox
+                    {!this.state.finished && !this.state.inProcess && <Tooltip title={this.props.t('Select/Unselect all')}><Checkbox
                         checked={this.state.selected.length === this.updateAvailable.length}
                         className={this.props.classes.checkbox}
                         tabIndex={-1}
@@ -111,7 +112,7 @@ class AdaptersUpdaterDialog extends Component {
                             }
                             this.setState({ selected });
                         }}
-                    />}
+                    /></Tooltip>}
                 </div>
             </DialogTitle>
             <DialogContent style={{ height: '100%', overflow: 'hidden' }}>

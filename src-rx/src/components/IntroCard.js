@@ -23,12 +23,14 @@ import EditIcon from '@material-ui/icons/Create';
 import ErrorIcon from '@material-ui/icons/Error';
 import CloseIcon from '@material-ui/icons/Close';
 import SaveIcon from '@material-ui/icons/Save';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import blue from '@material-ui/core/colors/blue';
 import grey from '@material-ui/core/colors/grey';
 import copy from 'copy-to-clipboard';
 
 import CameraIntroDialog from '../dialogs/CameraIntroDialog';
+import { red } from '@material-ui/core/colors';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -169,6 +171,21 @@ const styles = theme => ({
         '&:focus': {
             backgroundColor: grey[500]
         }
+    },
+    deleteButton:{
+        color: '#ffffff',
+        backgroundColor: red[500],
+        position: 'absolute',
+        top: theme.spacing(3) + 48 + 48, // 48 is the height of button
+        right: theme.spacing(1),
+        boxShadow,
+        '&:hover': {
+            backgroundColor: red[300]
+        },
+        '&:focus': {
+            backgroundColor: red[500]
+        }
+
     },
     cameraImg: {
         width: '100%',
@@ -485,6 +502,12 @@ class IntroCard extends Component {
                         this.props.edit && this.props.onEdit &&
                         <IconButton className={classes.editButton} onClick={() => this.props.onEdit()}>
                             <EditIcon />
+                        </IconButton>
+                    }
+                    {
+                        this.props.edit && this.props.onRemove &&
+                        <IconButton className={classes.deleteButton} onClick={() => this.props.onRemove()}>
+                            <DeleteIcon />
                         </IconButton>
                     }
                     {this.renderCameraDialog()}

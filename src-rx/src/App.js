@@ -1139,6 +1139,21 @@ class App extends Router {
     }
 
     executeCommand(cmd, callBack = false) {
+        if (this.state.performed || this.state.commandError) {
+            return this.setState({
+                cmd: null,
+                cmdDialog: false,
+                commandError: false,
+                performed: false,
+                callBack: false
+            }, () => {
+                this.setState({
+                    cmd,
+                    cmdDialog: true,
+                    callBack
+                });
+            });
+        }
         this.setState({
             cmd,
             cmdDialog: true,
@@ -1171,7 +1186,10 @@ class App extends Router {
         return this.state.cmd ?
             <CommandDialog
                 onSetCommandRunning={commandRunning => this.setState({ commandRunning })}
-                onClose={() => this.closeCmdDialog()}
+                onClose={() => {
+                    this.closeCmdDialog();
+                    this.setState({ commandRunning: false })
+                }}
                 visible={this.state.cmdDialog}
                 callBack={this.state.callBack}
                 header={I18n.t('Command')}

@@ -227,7 +227,8 @@ const styles = theme => ({
         cursor: 'pointer'
     },
     versionWarn: {
-        color: amber[500]
+        color: amber[500],
+        marginRight:5
     },
     sentry: {
         width: 24,
@@ -407,14 +408,6 @@ const AdapterTile = ({
                                         <RemoveIcon className={classes.classAssumption} /></Tooltip> : null
                     )}</div>
                 }
-                {installedFrom &&
-                    <Tooltip title={t('Non-NPM-Version: ') + installedFrom}>
-                        <GitHubIcon
-                            fontSize="small"
-                            className={classes.versionWarn}
-                        />
-                    </Tooltip>
-                }
                 {sentry && <div className={classes.marginLeft5}>
                     <Tooltip title="sentry">
                         <CardMedia
@@ -444,7 +437,14 @@ const AdapterTile = ({
                 </Typography>
                 {installedVersion && <Typography component={'span'} className={classes.cardContentFlexBetween}>
                     <div>{t('Installed version')}:</div>
-                    <div>{installedVersion}</div>
+                    <div className={classes.cardContentFlex}>{installedFrom &&
+                    <Tooltip title={t('Non-NPM-Version: ') + installedFrom}>
+                        <GitHubIcon
+                            fontSize="small"
+                            className={classes.versionWarn}
+                        />
+                    </Tooltip>
+                }{installedVersion}</div>
                 </Typography>}
                 {!!installedCount && <Typography component={'span'} className={classes.cardContentFlexBetween}>
                     <div>{t('Installed instances')}:</div>

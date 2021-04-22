@@ -5,21 +5,22 @@
 - Ask "Discard data?" if instance config not saved for json config
 
 Issues Admin5 Collection #1
-* Intro
-  * Camera tile delete missing
+<!-- * Intro
+  * Camera tile delete missing -->
 
-* Expert Settings:
+<!-- * Expert Settings:
   * Log: Move the "+" buttons to bottom of the page
-  * Log: Change accordion title of log entries to other background color
+  * Log: Change accordion title of log entries to other background color -->
 
 * Adapter
-  * Tile view: add Github logo (in front of installed version)
-* Both views: Update All dialog: move select all/none to right to be "over" the other checkboxes - Add tooltip: "Select/Unselect all"  
-  * Check logic of command dialog: 
+  <!-- * Tile view: add Github logo (in front of installed version) -->
+<!-- * Both views: Update All dialog: move select all/none to right to be "over" the other checkboxes - Add tooltip: "Select/Unselect all"   -->
+  <!-- * Check logic of command dialog:  -->
+<!--   
     - if command dialog is closed, is running is still set
-    - If command dialog is in background, next install just opens this dialog and do nothing.
+    - If command dialog is in background, next install just opens this dialog and do nothing. -->
   
-* Adapter Update Dialog: Only show "Dependency list" when at least one dep is not met
+<!-- * Adapter Update Dialog: Only show "Dependency list" when at least one dep is not met -->
 * Objects
   * Remove "Role" from "Edit Object dialog" when not state
   * Objects ACL Edit Dialog - table layout need fixing (sometimes)
