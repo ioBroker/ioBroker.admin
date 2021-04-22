@@ -331,7 +331,7 @@ class Command extends Component {
 }
 
 Command.defaultProps = {
-    onSetCommandRunning: ()=>{}
+    onSetCommandRunning: () => {}
 };
 
 Command.propTypes = {
