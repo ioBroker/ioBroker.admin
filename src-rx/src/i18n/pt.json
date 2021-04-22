@@ -1228,5 +1228,7 @@
   "Authentication in Admin": "Autenticação em Admin",
   "Activate the check of password in admin if you plan to access your ioBroker is not in \"Demilitarized Zone\"": "Ative a verificação de senha no admin se você planeja acessar seu ioBroker não está em \"Zona Desmilitarizada\"",
   "Your communication with admin is not encrypted": "Sua comunicação com o administrador não é criptografada",
-  "Instance": "Instância"
+  "Instance": "Instância",
+  "The expert mode allows you to view and edit system internal details.": "O modo especialista permite que você visualize e edite os detalhes internos do sistema.",
+  "Please make sure you know what you are doing!": "Certifique-se de saber o que está fazendo!"
 }

@@ -1232,5 +1232,7 @@
   "Authentication in Admin": "Аутентификация в админке",
   "Activate the check of password in admin if you plan to access your ioBroker is not in \"Demilitarized Zone\"": "Активируйте проверку пароля в админке, если вы планируете получить доступ к вашему ioBroker не в «Демилитаризованной зоне»",
   "Your communication with admin is not encrypted": "Ваше общение с администратором не зашифровано",
-  "Instance": "Экземпляр"
+  "Instance": "Экземпляр",
+  "The expert mode allows you to view and edit system internal details.": "Экспертный режим позволяет просматривать и редактировать внутренние детали системы.",
+  "Please make sure you know what you are doing!": "Пожалуйста, убедитесь, что вы знаете, что делаете!"
 }

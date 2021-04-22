@@ -1,7 +1,6 @@
 # Todo
 
-* Enhance Expert Mode text and add "<bold>The expert mode allows you to view and edit system internal details. Please make sure you know what you are doing!</bold><paragraph>current text"
-
+* Update expert mode in APP if changed in the system settings. 
 
 ## Bugs
 - Adapter tab: The version will not be automatically updated: https://github.com/ioBroker/ioBroker.admin/issues/688

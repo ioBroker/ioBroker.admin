@@ -37,6 +37,10 @@ const useStyles = makeStyles((theme) => ({
     },
     text: {
         fontSize: 16
+    },
+    textBold: {
+        fontSize: 16,
+        fontWeight: 'bold'
     }
 }));
 
@@ -68,11 +72,17 @@ const ExpertModeDialog = ({ boolSettings, func, buttonIcon, themeType }) => {
                             {boolSettings ? I18n.t('Now the expert mode will be deactivated only during this browser session.') : I18n.t('Now the expert mode will be active only during this browser session.')}
                         </Typography>
                         {!boolSettings ? <Typography
-                            className={classes.text}
+                            className={classes.textBold}
                             variant="body2"
                             component="p">
-                            {I18n.t('The expert mode allows you to view and edit system internal details. Please make sure you know what you are doing!')}
-                        </Typography> : }
+                            {I18n.t('The expert mode allows you to view and edit system internal details.')}
+                        </Typography> : null}
+                        {!boolSettings ? <Typography
+                            className={classes.textBold}
+                            variant="body2"
+                            component="p">
+                            {I18n.t('Please make sure you know what you are doing!')}
+                        </Typography> : null}
                         <Typography
                             className={classes.text}
                             variant="body2"
