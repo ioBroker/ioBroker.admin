@@ -107,6 +107,7 @@ const styles = theme => ({
         width: '100%',
         border: 0,
         backgroundColor: '#FFF',
+        color: '#000'
     },
     silly: {
 

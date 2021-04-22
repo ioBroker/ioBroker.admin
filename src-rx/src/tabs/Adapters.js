@@ -301,15 +301,17 @@ class Adapters extends Component {
         this.tempInstalled = this.tempInstalled || JSON.parse(JSON.stringify(this.state.installed));
 
         changes.forEach(item => {
+
             if (item.type === 'deleted') {
                 // remove from installed
                 delete this.tempInstalled[item.oldObj.common.name];
                 delete this.tempAdapters[item.id];
             } else {
-                // remove from installed
-                Object.keys(this.tempInstalled[item.oldObj.common.name]).forEach(attr => {
+                const name = item.obj.common.name;
+                // Update attributes
+                Object.keys(this.tempInstalled[name]).forEach(attr => {
                     if (item.obj.common[attr] !== undefined) {
-                        this.tempInstalled[item.oldObj.common.name][attr] = item.obj.common[attr];
+                        this.tempInstalled[name][attr] = item.obj.common[attr];
                     }
                 })
 

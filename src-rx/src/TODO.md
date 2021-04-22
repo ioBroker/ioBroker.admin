@@ -12,14 +12,9 @@
 <!--   * Camera tile delete missing -->
 - Lists of elements are different in Admin4 and Admin5
 
-<!-- * Expert Settings:
-  * Log: Move the "+" buttons to bottom of the page
-  * Log: Change accordion title of log entries to other background color -->
-
 * Adapter
   <!-- * Tile view: add Github logo (in front of installed version) -->
-  <!-- * Check logic of command dialog:  -->
-  <!--   
+  <!-- * Check logic of command dialog:
     - if command dialog is closed, is running is still set
     - If command dialog is in background, next install just opens this dialog and do nothing. -->
   

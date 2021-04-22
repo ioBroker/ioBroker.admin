@@ -65,8 +65,14 @@ const ExpertModeDialog = ({ boolSettings, func, buttonIcon, themeType }) => {
                             className={classes.text}
                             variant="body2"
                             component="p">
-                            {I18n.t(boolSettings ? I18n.t('Now the expert mode will be deactivated only during this browser session.') : I18n.t('Now the expert mode will be active only during this browser session.'))}
+                            {boolSettings ? I18n.t('Now the expert mode will be deactivated only during this browser session.') : I18n.t('Now the expert mode will be active only during this browser session.')}
                         </Typography>
+                        {!boolSettings ? <Typography
+                            className={classes.text}
+                            variant="body2"
+                            component="p">
+                            {I18n.t('The expert mode allows you to view and edit system internal details. Please make sure you know what you are doing!')}
+                        </Typography> : }
                         <Typography
                             className={classes.text}
                             variant="body2"

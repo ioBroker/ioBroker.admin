@@ -133,11 +133,14 @@ class Config extends Component {
                 t={this.props.t}
             />;
         } else {
+            const src = `adapter/${this.props.adapter}/` +
+                `${this.props.tab ? this.state.checkedExist : (this.props.materialize ? 'index_m.html' : 'index.html')}?` +
+                `${this.props.instance}`;//&react=${this.props.themeName}`;
             if (this.state.checkedExist) {
                 return <iframe
                     title="config"
                     className={this.props.className}
-                    src={`adapter/${this.props.adapter}/${this.props.tab ? this.state.checkedExist : (this.props.materialize ? 'index_m.html' : 'index.html')}?${this.props.instance}&react=${this.props.themeName}`}>
+                    src={src}>
                 </iframe>;
             } else {
                 return null;
