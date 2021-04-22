@@ -263,16 +263,18 @@ class Adapters extends Component {
         return this.wordCache[word];
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         if (this.props.ready) {
-            this.getAdaptersInfo();
+            await this.getInstances();
+            await this.getAdaptersInfo();
+            await this.props.instancesWorker.registerHandler(this.getInstances);
         }
     }
 
     componentDidUpdate() {
-        if (!this.state.init && !this.state.update && this.props.ready) {
-            this.getAdaptersInfo();
-        }
+        // if (!this.state.init && !this.state.update && this.props.ready) {
+        //     this.getAdaptersInfo();
+        // }
         const descWidth = this.getDescWidth();
         if (this.state.descWidth !== descWidth) {
             this.setState({ descWidth });
@@ -280,6 +282,10 @@ class Adapters extends Component {
         if (this.countRef.current) {
             this.countRef.current.innerHTML = this.listOfVisibleAdapterLength;
         }
+    }
+
+    componentWillUnmount() {
+        this.props.instancesWorker.unregisterHandler(this.getInstances);
     }
 
     static getDerivedStateFromProps() {
@@ -291,7 +297,44 @@ class Adapters extends Component {
         };
     }
 
-    async getAdaptersInfo(updateRepo = false) {
+    getInstances = async () => {
+        try {
+            const currentHost = this.props.currentHost;
+            let instancesWorker = await this.props.instancesWorker.getInstances();
+            const installed = await this.props.socket.getInstalled(currentHost, true).catch(e => window.alert('Cannot getInstalled: ' + e));
+            const repository = await this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: false }, false).catch(e => window.alert('Cannot getRepository: ' + e));
+            const instances = Object.keys(instancesWorker).map(name => instancesWorker[name]);
+
+            let updateAvailable = [];
+            instances.forEach(el => {
+                const value = el.common.name;
+                const version = installed[value].version;
+                const repositoryValue = repository[value];
+                if (repositoryValue &&
+                    repositoryValue.version !== version &&
+                    Adapters.updateAvailable(version, repositoryValue.version) &&
+                    updateAvailable.indexOf(value) === -1
+                ) {
+                    updateAvailable.push(value);
+                }
+            });
+            this.setState({
+                instances,
+                updateAvailable,
+                installed,
+                repository
+            }, () => {
+                if (this.cache.listOfVisibleAdapter) {
+                    this.cache.listOfVisibleAdapter = null;
+                    this.buildCache();
+                }
+            });
+        } catch (e) {
+            console.error(e.message);
+        }
+    }
+
+    getAdaptersInfo = async (updateRepo = false) => {
         if (!this.props.currentHost) {
             return;
         }
@@ -302,19 +345,15 @@ class Adapters extends Component {
             !this.state.update && this.setState({ update: true });
 
             const currentHost = this.props.currentHost;
-
             try {
-                const hostData   = await this.props.socket.getHostInfo(currentHost).catch(e => window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`));
-                const repository = await this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: updateRepo }, updateRepo).catch(e => window.alert('Cannot getRepository: ' + e));
-                const installed  = await this.props.socket.getInstalled(currentHost, updateRepo).catch(e => window.alert('Cannot getInstalled: ' + e));
-                const instances  = await this.props.socket.getAdapterInstances(updateRepo).catch(e => window.alert('Cannot getAdapterInstances: ' + e));
-                const rebuild    = await this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD').catch(e => window.alert('Cannot checkFeatureSupported: ' + e));
-                const objects    = await this.props.socket.getForeignObjects('system.adapter.*', 'adapter').catch(e => window.alert('Cannot read system.adapters.*: ' + e));
-                const ratings    = await this.props.socket.getRatings(updateRepo).catch(e => window.alert('Cannot read ratings: ' + e));
+                const hostData = await this.props.socket.getHostInfo(currentHost).catch(e => window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`));
+                const {installed,repository} = this.state;
+                const rebuild = await this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD').catch(e => window.alert('Cannot checkFeatureSupported: ' + e));
+                const objects = await this.props.socket.getForeignObjects('system.adapter.*', 'adapter').catch(e => window.alert('Cannot read system.adapters.*: ' + e));
+                const ratings = await this.props.socket.getRatings(updateRepo).catch(e => window.alert('Cannot read ratings: ' + e));
 
                 this.uuid = ratings.uuid;
 
-                // console.log('objects', hostData, instancesProm)
                 this.rebuildSupported = rebuild || false;
 
                 const nodeJsVersion = hostData['Node.js'].replace('v', '');
@@ -323,7 +362,6 @@ class Adapters extends Component {
                 const categories = {};
                 const categoriesSorted = [];
                 const categoriesExpanded = JSON.parse(window.localStorage.getItem('Adapters.expandedCategories')) || {};
-                const updateAvailable = [];
 
                 Object.keys(installed).forEach(value => {
                     const adapter = installed[value];
@@ -349,13 +387,6 @@ class Adapters extends Component {
                         adapter.keywords = adapter.keywords.map(word => word.toLowerCase());
                     }
                     const _installed = installed[value];
-
-                    if (_installed &&
-                        _installed.ignoreVersion !== adapter.version &&
-                        Adapters.updateAvailable(_installed.version, adapter.version)
-                    ) {
-                        updateAvailable.push(value);
-                    }
 
                     adapter.rating = ratings[value];
                     if (adapter.rating && adapter.rating.rating) {
@@ -396,66 +427,31 @@ class Adapters extends Component {
                     }
                 });
 
-                Object.keys(instances).forEach(value => {
-                    const instance    = instances[value];
-                    const name        = instance.common.name;
-                    const enabled     = instance.common.enabled;
-                    let installedFrom = instance.common.installedFrom;
-                    const inst        = installed[name];
-                    let nonNpmVersion = false;
-
-                    if (installedFrom && installedFrom.search(/^iobroker.*?@\d+.\d+.\d+.*$/) === -1) {
-                        nonNpmVersion = true;
-                        installedFrom = installedFrom.substr(installedFrom.lastIndexOf('/') + 1, 8).trim();
-                    }
-
-                    if (inst) {
-                        inst.count++;
-
-                        if (enabled) {
-                            inst.enabled++;
-                        }
-
-                        if (nonNpmVersion) {
-                            inst.installedFrom = installedFrom;
-                        }
-                    }
-                });
-
                 Object.keys(categories).sort().forEach(value =>
                     categoriesSorted.push(categories[value]));
 
-                /*
-                categoriesSorted.sort((a, b) => {
-                    const result = b.installed - a.installed;
 
-                    return result !== 0 ? result : a.translation < b.translation ? -1 :
-                        a.translation > b.translation ? 1 : 0;
-                });*/
-
-                const list            = JSON.parse(window.localStorage.getItem('Adapters.list'));
-                const viewMode        = JSON.parse(window.localStorage.getItem('Adapters.viewMode'));
-                const updateList      = JSON.parse(window.localStorage.getItem('Adapters.updateList'));
-                const installedList   = JSON.parse(window.localStorage.getItem('Adapters.installedList'));
+                const list = JSON.parse(window.localStorage.getItem('Adapters.list'));
+                const viewMode = JSON.parse(window.localStorage.getItem('Adapters.viewMode'));
+                const updateList = JSON.parse(window.localStorage.getItem('Adapters.updateList'));
+                const installedList = JSON.parse(window.localStorage.getItem('Adapters.installedList'));
                 const categoriesTiles = window.localStorage.getItem('Adapters.categoriesTiles') || 'All';
-                const filterTiles     = window.localStorage.getItem('Adapters.filterTiles') || 'A-Z';
-                this.allAdapters      = Object.keys(repository).length - 1;
+                const filterTiles = window.localStorage.getItem('Adapters.filterTiles') || 'A-Z';
+                this.allAdapters = Object.keys(repository).length - 1;
 
                 this.setState({
                     filterTiles,
                     categoriesTiles,
                     installedList,
                     updateList,
-                    updateAvailable,
                     viewMode,
+                    // installed,
                     list,
                     lastUpdate: Date.now(),
                     hostData,
                     hostOs,
                     nodeJsVersion,
-                    repository,
-                    installed,
-                    instances,
+                    // repository,
                     categories: categoriesSorted,
                     categoriesExpanded,
                     init: true,
@@ -735,7 +731,7 @@ class Adapters extends Component {
                 open={true}
                 onClose={() => this.setState({ showSetRating: null })}
             >
-                <DialogTitle>{this.t('Review') + ' ' + this.state.showSetRating.adapter + '@' + this.state.showSetRating.version}</DialogTitle>
+                <DialogTitle>{this.t('Rate how good this version of the adapter works on your system. You can vote for every new version. Review') + ' ' + this.state.showSetRating.adapter + '@' + this.state.showSetRating.version}</DialogTitle>
                 <DialogContent style={{ textAlign: 'center' }}>
                     <Rating
                         className={this.props.classes.rating}
@@ -753,6 +749,17 @@ class Adapters extends Component {
                     />
                     {item ? <div>{this.t('You voted for %s on %s', versions[0], new Date(item.ts).toLocaleDateString())}</div> : null}
                 </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        autoFocus
+                        onClick={() => {
+                            this.setState({ showSetRating: null });
+                        }}
+                        color="default">
+                        {this.t('Close')}
+                    </Button>
+                </DialogActions>
             </Dialog>;
         } else {
             return null;
@@ -909,6 +916,8 @@ class Adapters extends Component {
                 connectionType={cached.connectionType}
                 dataSource={adapter.dataSource}
                 description={cached.desc}
+                adapter={value}
+                versionDate={cached.daysAgoText}
                 enabledCount={installed && installed.enabled}
                 expertMode={this.props.expertMode}
                 image={cached.image}

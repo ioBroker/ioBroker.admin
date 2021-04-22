@@ -13,16 +13,16 @@ Issues Admin5 Collection #1
   * Log: Change accordion title of log entries to other background color
 
 * Adapter
-  * Tile view: add Github logo (in front of installed version)
-  * List view: Remove "Bugreport icon" on adapter logo and add as Sentry icon after the
-    cloud/connection-type logos
-  * Tile view: Add sentry icon if sentry plugin is used aside the cloud/conn-type logos
-  * List view: Increase size of Adapter Logos (padding 0, size 32)
-  * Both views: Update All dialog: move select all/none to right to be "over" the other checkboxes
-  * List view: Custom Install warnings (both tabs) - add some more space on top of "Warning" text
-  * Repository Version info need to be updated on reload
-  * Rating dialog: Add info text: Rate how good this version of the adapter works on your system. You can vote for every new version.
-  * Rating dialog: add close button
+  <!-- * Tile view: add Github logo (in front of installed version) -->
+  <!-- * List view: Remove "Bugreport icon" on adapter logo and add as Sentry icon after the
+    cloud/connection-type logos -->
+  <!-- * Tile view: Add sentry icon if sentry plugin is used aside the cloud/conn-type logos -->
+  <!-- * List view: Increase size of Adapter Logos (padding 0, size 32) -->
+  <!-- * Both views: Update All dialog: move select all/none to right to be "over" the other checkboxes -->
+  <!-- * List view: Custom Install warnings (both tabs) - add some more space on top of "Warning" text -->
+  <!-- * Repository Version info need to be updated on reload -->
+  <!-- * Rating dialog: Add info text: Rate how good this version of the adapter works on your system. You can vote for every new version. -->
+  <!-- * Rating dialog: add close button -->
   * Add Rating in Listview below Adaptername
   
 * Adapter Update Dialog: Only show "Dependency list" when at least one dep is not met

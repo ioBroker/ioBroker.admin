@@ -7,7 +7,7 @@ import clsx from 'clsx';
 
 import {
     Avatar,
-    Badge,
+    CardMedia,
     Grid,
     IconButton,
     TableCell,
@@ -18,7 +18,6 @@ import {
 
 import AddIcon from '@material-ui/icons/Add';
 import AddToPhotosIcon from '@material-ui/icons/AddToPhotos';
-import BugReportIcon from '@material-ui/icons/BugReport';
 import BuildIcon from '@material-ui/icons/RotateRight';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import CloudIcon from '@material-ui/icons/Cloud';
@@ -32,6 +31,7 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import RemoveIcon from '@material-ui/icons/Remove';
+import sentryIcon from '../../assets/sentry.svg';
 
 import {
     amber,
@@ -40,11 +40,15 @@ import {
     red
 } from '@material-ui/core/colors';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
+import { Rating } from '@material-ui/lab';
 
 const styles = theme => ({
     smallAvatar: {
-        width: theme.spacing(3),
-        height: theme.spacing(3)
+        width: theme.spacing(4),
+        height: theme.spacing(4)
+    },
+    paddingNone: {
+        padding: '0 !important'
     },
     hidden: {
         visibility: 'hidden'
@@ -111,7 +115,7 @@ const styles = theme => ({
         color: 'green'
     },
     classAssumption: {
-        color:'red',
+        color: 'red',
         transform: 'rotate(90deg)'
     },
     marginLeft5: {
@@ -122,6 +126,12 @@ const styles = theme => ({
     },
     flex: {
         display: 'flex'
+    },
+    sentry: {
+        width: 24,
+        height: 24,
+        objectFit: 'fill',
+        filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)'
     },
 });
 
@@ -142,13 +152,13 @@ class AdapterRow extends Component {
             alignItems="center"
             spacing={1}
         >
-            
+
             <Grid item>
                 {installedVersion +
                     (installedCount ? ` (${installedCount}${installedCount !== enabledCount ? '~' : ''})` : '')
                 }
             </Grid>
-            { installedFrom &&
+            {installedFrom &&
                 <Grid item container>
                     <Tooltip title={t('Non-NPM-Version: ') + installedFrom}>
                         <GitHubIcon
@@ -178,7 +188,11 @@ class AdapterRow extends Component {
             categoryName,
             openInstallVersionDialog,
             dataSource,
-            descHidden
+            descHidden,
+            adapter,
+            versionDate,
+            onSetRating,
+            rating
         } = this.props;
 
         if (isCategory) {
@@ -224,17 +238,30 @@ class AdapterRow extends Component {
                 <TableCell />
                 <TableCell>
                     <Grid container spacing={1} alignItems="center" className={classes.name}>
-                        <Grid item>
-                            <Badge badgeContent={sentry && <BugReportIcon classes={{ root: classes.sentryIcon }} />}>
-                                <Avatar
-                                    variant="square"
-                                    alt={name}
-                                    src={this.props.image}
-                                    className={classes.smallAvatar}
-                                />
-                            </Badge>
+                        <Grid item className={classes.paddingNone}>
+                            <Avatar
+                                variant="square"
+                                alt={name}
+                                src={this.props.image}
+                                className={classes.smallAvatar}
+                            />
                         </Grid>
-                        <Grid item>{name}</Grid>
+                        {/* <Grid item>{name}</Grid> */}
+                        <Grid item><div>{name}</div>
+                            {!versionDate ? <div
+                                onClick={onSetRating ? () => onSetRating() : undefined}
+                                className={clsx(classes.rating, onSetRating && classes.ratingSet)}
+                                title={rating?.title}
+                            >
+                                <Rating
+                                    name={adapter}
+                                    precision={0.5}
+                                    size="small"
+                                    readOnly
+                                    value={rating?.rating ? rating.rating.r : 0}
+                                />
+                            </div> : null}
+                        </Grid>
                     </Grid>
                 </TableCell>
                 {!descHidden && <TableCell>{this.props.description}</TableCell>}
@@ -245,19 +272,28 @@ class AdapterRow extends Component {
                             (connectionType === 'local' ?
                                 <Tooltip title={this.props.t('Adapter does not use the cloud for these devices/service')}><CloudOffIcon /></Tooltip> : connectionType)
                         }
-                        {dataSource && <div  className={classes.marginLeft5}>{(
+                        {dataSource && <div className={classes.marginLeft5}>{(
                             dataSource === 'poll' ?
                                 <Tooltip title={this.props.t('The device or service will be periodically asked')}>
                                     <ArrowUpwardIcon className={classes.classPoll} />
                                 </Tooltip> :
                                 dataSource === 'push' ?
                                     <Tooltip title={this.props.t('The device or service delivers the new state actively')}>
-                                        <ArrowDownwardIcon className={classes.classPush}/>
+                                        <ArrowDownwardIcon className={classes.classPush} />
                                     </Tooltip> :
                                     dataSource === 'assumption' ?
                                         <Tooltip title={this.props.t('Adapter cannot request the exactly device status and the status will be guessed on the last sent command')}>
-                                            <RemoveIcon  className={classes.classAssumption} /></Tooltip> : null
+                                            <RemoveIcon className={classes.classAssumption} /></Tooltip> : null
                         )}
+                        </div>}
+                        {sentry && <div className={classes.marginLeft5}>
+                            <Tooltip title="sentry">
+                                <CardMedia
+                                    className={classes.sentry}
+                                    component="img"
+                                    image={sentryIcon}
+                                />
+                            </Tooltip>
                         </div>}
                     </div>
                 </TableCell>
@@ -272,16 +308,16 @@ class AdapterRow extends Component {
                     >
                         {!commandRunning && updateAvailable ?
                             <Tooltip title={this.props.t('Update')}>
-                            <div
-                                onClick={this.props.onUpdate}
-                                className={classes.buttonUpdate}>
-                                <IconButton
-                                    className={classes.buttonUpdateIcon}
-                                    size="small"
-                                >
-                                    <RefreshIcon />
-                                </IconButton>{this.props.version}
-                            </div>
+                                <div
+                                    onClick={this.props.onUpdate}
+                                    className={classes.buttonUpdate}>
+                                    <IconButton
+                                        className={classes.buttonUpdateIcon}
+                                        size="small"
+                                    >
+                                        <RefreshIcon />
+                                    </IconButton>{this.props.version}
+                                </div>
                             </Tooltip>
                             :
                             this.props.version
@@ -290,67 +326,67 @@ class AdapterRow extends Component {
                 </TableCell>
                 <TableCell>{this.props.license}</TableCell>
                 <TableCell>
-                <Tooltip title={this.props.t('Add instance')}>
-                    <IconButton
-                        size="small"
-                        className={!rightOs ? classes.hidden : ''}
-                        onClick={rightOs ? this.props.onAddInstance : null}
-                    >
-                        <AddIcon />
-                    </IconButton>
+                    <Tooltip title={this.props.t('Add instance')}>
+                        <IconButton
+                            size="small"
+                            className={!rightOs ? classes.hidden : ''}
+                            onClick={rightOs ? this.props.onAddInstance : null}
+                        >
+                            <AddIcon />
+                        </IconButton>
                     </Tooltip>
                     <Tooltip title={this.props.t('Readme')}>
-                    <IconButton
-                        size="small"
-                        onClick={this.props.onInfo}
-                    >
-                        <HelpIcon />
-                    </IconButton>
+                        <IconButton
+                            size="small"
+                            onClick={this.props.onInfo}
+                        >
+                            <HelpIcon />
+                        </IconButton>
                     </Tooltip>
                     {this.props.expertMode &&
                         <Tooltip title={this.props.t('Upload')}>
-                        <IconButton
-                            size="small"
-                            disabled={commandRunning}
-                            className={!installedVersion ? classes.hidden : ''}
-                            onClick={this.props.onUpload}
-                        >
-                            <PublishIcon />
-                        </IconButton>
+                            <IconButton
+                                size="small"
+                                disabled={commandRunning}
+                                className={!installedVersion ? classes.hidden : ''}
+                                onClick={this.props.onUpload}
+                            >
+                                <PublishIcon />
+                            </IconButton>
                         </Tooltip>
                     }
                     <Tooltip title={this.props.t('Delete adapter')}>
-                    <IconButton
-                        size="small"
-                        disabled={commandRunning}
-                        className={!installedVersion ? classes.hidden : ''}
-                        onClick={this.props.onDeletion}
-                    >
-                        <DeleteForeverIcon />
-                    </IconButton>
-                    </Tooltip>
-                    {this.props.expertMode &&
-                        <Tooltip title={this.props.t('Install a specific version')}>
                         <IconButton
                             size="small"
                             disabled={commandRunning}
                             className={!installedVersion ? classes.hidden : ''}
-                            onClick={openInstallVersionDialog}
+                            onClick={this.props.onDeletion}
                         >
-                            <AddToPhotosIcon />
+                            <DeleteForeverIcon />
                         </IconButton>
+                    </Tooltip>
+                    {this.props.expertMode &&
+                        <Tooltip title={this.props.t('Install a specific version')}>
+                            <IconButton
+                                size="small"
+                                disabled={commandRunning}
+                                className={!installedVersion ? classes.hidden : ''}
+                                onClick={openInstallVersionDialog}
+                            >
+                                <AddToPhotosIcon />
+                            </IconButton>
                         </Tooltip>
                     }
                     {this.props.rebuild && this.props.expertMode &&
                         <Tooltip title={this.props.t('Rebuild')}>
-                        <IconButton
-                            size="small"
-                            disabled={commandRunning}
-                            className={!installedVersion ? classes.hidden : ''}
-                            onClick={this.props.onRebuild}
-                        >
-                            <BuildIcon />
-                        </IconButton>
+                            <IconButton
+                                size="small"
+                                disabled={commandRunning}
+                                className={!installedVersion ? classes.hidden : ''}
+                                onClick={this.props.onRebuild}
+                            >
+                                <BuildIcon />
+                            </IconButton>
                         </Tooltip>
                     }
                 </TableCell>

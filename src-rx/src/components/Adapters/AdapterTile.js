@@ -19,6 +19,9 @@ import CloudOffIcon from '@material-ui/icons/CloudOff';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import RemoveIcon from '@material-ui/icons/Remove';
+import GitHubIcon from '@material-ui/icons/GitHub';
+import { amber } from '@material-ui/core/colors';
+import sentryIcon from '../../assets/sentry.svg';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -222,7 +225,16 @@ const styles = theme => ({
     },
     ratingSet: {
         cursor: 'pointer'
-    }
+    },
+    versionWarn: {
+        color: amber[500]
+    },
+    sentry: {
+        width: 24,
+        height: 24,
+        objectFit: 'fill',
+        filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)'
+    },
 });
 const AdapterTile = ({
     name,
@@ -253,7 +265,9 @@ const AdapterTile = ({
     t,
     commandRunning,
     rating,
-    onSetRating
+    onSetRating,
+    installedFrom,
+    sentry
 }) => {
     const [openCollapse, setCollapse] = useState(false);
     const [focused, setFocused] = useState(false);
@@ -393,6 +407,23 @@ const AdapterTile = ({
                                         <RemoveIcon className={classes.classAssumption} /></Tooltip> : null
                     )}</div>
                 }
+                {installedFrom &&
+                    <Tooltip title={t('Non-NPM-Version: ') + installedFrom}>
+                        <GitHubIcon
+                            fontSize="small"
+                            className={classes.versionWarn}
+                        />
+                    </Tooltip>
+                }
+                {sentry && <div className={classes.marginLeft5}>
+                    <Tooltip title="sentry">
+                        <CardMedia
+                            className={classes.sentry}
+                            component="img"
+                            image={sentryIcon}
+                        />
+                    </Tooltip>
+                </div>}
             </div>
             <div className={classes.cardMargin10}>
                 <Typography component={'span'} className={classes.availableVersion}>
@@ -415,7 +446,7 @@ const AdapterTile = ({
                     <div>{t('Installed version')}:</div>
                     <div>{installedVersion}</div>
                 </Typography>}
-                {installedCount && <Typography component={'span'} className={classes.cardContentFlexBetween}>
+                {!!installedCount && <Typography component={'span'} className={classes.cardContentFlexBetween}>
                     <div>{t('Installed instances')}:</div>
                     <div>{installedCount}</div>
                 </Typography>}

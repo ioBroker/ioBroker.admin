@@ -1,4 +1,4 @@
-import {Component} from 'react';
+import { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 
@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import Grid from '@material-ui/core/Grid';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Toolbar  from '@material-ui/core/Toolbar';
+import Toolbar from '@material-ui/core/Toolbar';
 
 import AdaptersUpdater from '../components/Adapters/AdaptersUpdater';
 import Command from '../components/Command';
@@ -18,6 +18,13 @@ import Command from '../components/Command';
 const styles = theme => ({
     dialogRoot: {
         height: 'calc(100% - 64px)',
+    },
+    wrapperHead: {
+        justifyContent: 'space-between',
+        display: 'flex'
+    },
+    checkbox:{
+        marginRight:10
     }
 });
 
@@ -42,15 +49,15 @@ class AdaptersUpdaterDialog extends Component {
 
     updateAdapter(adapter, cb) {
         this.onAdapterFinished = cb;
-        this.setState({current: adapter});
+        this.setState({ current: adapter });
     }
 
     onStartUpdate() {
-        this.setState({inProcess: true}, () => {
+        this.setState({ inProcess: true }, () => {
             this.props.onSetCommandRunning(true);
             this.processList = [...this.state.selected];
             this.updateAdapters(() => {
-                this.setState({inProcess: false, finished: true}, () => {
+                this.setState({ inProcess: false, finished: true }, () => {
                     this.props.onSetCommandRunning(false);
                     if (this.state.closeOnFinished) {
                         this.props.onClose(!!this.state.updated.length);
@@ -70,7 +77,7 @@ class AdaptersUpdaterDialog extends Component {
             this.updateAdapter(adapter, () => {
                 const updated = [...this.state.updated];
                 updated.push(adapter);
-                this.setState({updated}, () =>
+                this.setState({ updated }, () =>
                     setTimeout(() => this.updateAdapters(cb), 200));
             });
         }
@@ -84,32 +91,33 @@ class AdaptersUpdaterDialog extends Component {
             onClose={() => this.props.onClose(!!this.state.updated.length)}
             aria-labelledby="update-dialog-title"
             aria-describedby="update-dialog-description"
-            classes={{paper: this.props.classes.dialogRoot}}
+            classes={{ paper: this.props.classes.dialogRoot }}
             scroll="paper"
         >
             <DialogTitle id="update-dialog-title">
-                {this.props.t('Update %s adapter(s)', this.state.selected.length)}
-                {!this.state.finished && !this.state.inProcess && <Checkbox
-                    checked={false}
-                    tabIndex={-1}
-                    disableRipple
-                    title={this.props.t('Unselect all')}
-                    disabled={!this.state.selected.length}
-                    onClick={() => this.setState({selected: []})}
-                />}
-                {!this.state.finished && !this.state.inProcess && <Checkbox
-                    checked={true}
-                    tabIndex={-1}
-                    disabled={this.state.selected.length === this.updateAvailable.length}
-                    title={this.props.t('Select all')}
-                    disableRipple
-                    onClick={() => this.setState({selected: [...this.updateAvailable]})}
-                />}
+                <div className={this.props.classes.wrapperHead}>
+                    {this.props.t('Update %s adapter(s)', this.state.selected.length)}
+                    {!this.state.finished && !this.state.inProcess && <Checkbox
+                        checked={this.state.selected.length === this.updateAvailable.length}
+                        className={this.props.classes.checkbox}
+                        tabIndex={-1}
+                        indeterminate={this.state.selected.length !== this.updateAvailable.length && this.state.selected.length !== 0}
+                        title={this.props.t('Select all')}
+                        disableRipple
+                        onClick={() => {
+                            let selected = [];
+                            if (this.state.selected.length !== this.updateAvailable.length) {
+                                selected = [...this.updateAvailable];
+                            }
+                            this.setState({ selected });
+                        }}
+                    />}
+                </div>
             </DialogTitle>
-            <DialogContent style={{height: '100%', overflow: 'hidden'}}>
-                <Grid container direction="row" style={{height: 'calc(100% - 50px)', overflow: 'hidden'}}>
-                    <Grid item style={{height: '100%', overflow: 'hidden', width: this.state.current ? 250 : '100%'}}>
-                        <div style={{height: '100%', overflow: 'auto'}}>
+            <DialogContent style={{ height: '100%', overflow: 'hidden' }}>
+                <Grid container direction="row" style={{ height: 'calc(100% - 50px)', overflow: 'hidden' }}>
+                    <Grid item style={{ height: '100%', overflow: 'hidden', width: this.state.current ? 250 : '100%' }}>
+                        <div style={{ height: '100%', overflow: 'auto' }}>
                             <AdaptersUpdater
                                 t={this.props.t}
                                 finished={this.state.finished}
@@ -126,11 +134,11 @@ class AdaptersUpdaterDialog extends Component {
                                     if (updateAvailable) {
                                         this.updateAvailable = updateAvailable;
                                     }
-                                    this.setState({selected});
-                                }}/>
-                            </div>
+                                    this.setState({ selected });
+                                }} />
+                        </div>
                     </Grid>
-                    {!!this.state.current && <Grid item style={{height: '100%', overflow: 'hidden', width: 'calc(100% - 260px)'}}>
+                    {!!this.state.current && <Grid item style={{ height: '100%', overflow: 'hidden', width: 'calc(100% - 260px)' }}>
                         <Command
                             noSpacing={true}
                             key={this.state.current}
@@ -142,7 +150,7 @@ class AdaptersUpdaterDialog extends Component {
                             onFinished={() => this.onAdapterFinished()}
                             errorFunc={() => {
                                 if (this.state.stopOnError) {
-                                    this.setState({stoppedOnError: true, finished: true});
+                                    this.setState({ stoppedOnError: true, finished: true });
                                     this.onAdapterFinished = null;
                                     this.props.onSetCommandRunning(false);
                                 } else {
@@ -159,7 +167,7 @@ class AdaptersUpdaterDialog extends Component {
                             checked={this.state.stopOnError}
                             onChange={() => {
                                 window.localStorage.setItem('AdaptersUpdaterDialog.stopOnError', this.state.stopOnError ? 'false' : 'true');
-                                this.setState({stopOnError: !this.state.stopOnError});
+                                this.setState({ stopOnError: !this.state.stopOnError });
                             }}
                         />}
                         label={this.props.t('Stop on error')}
@@ -170,8 +178,8 @@ class AdaptersUpdaterDialog extends Component {
                             checked={this.state.closeOnFinished}
                             onChange={() => {
                                 window.localStorage.setItem('AdaptersUpdaterDialog.closeOnFinished', this.state.closeOnFinished ? 'false' : 'true');
-                                this.setState({closeOnFinished: !this.state.closeOnFinished});
-                            }}                            />}
+                                this.setState({ closeOnFinished: !this.state.closeOnFinished });
+                            }} />}
                         label={this.props.t('Close on finished')}
                     />
                     <FormControlLabel
@@ -180,8 +188,8 @@ class AdaptersUpdaterDialog extends Component {
                             checked={this.state.debug}
                             onChange={() => {
                                 window.localStorage.setItem('AdaptersUpdaterDialog.debug', this.state.debug ? 'false' : 'true');
-                                this.setState({debug: !this.state.debug});
-                            }}                            />}
+                                this.setState({ debug: !this.state.debug });
+                            }} />}
                         label={this.props.t('Debug info')}
                     />
                 </Toolbar>
