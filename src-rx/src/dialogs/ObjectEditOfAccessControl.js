@@ -454,7 +454,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                             }}
                             value={valueObjectAccessControl} />
                     </div>
-                    {((applyToChildren && checkState) || objects[selected]?.acl.state) && <div>
+                    {checkState && <div>
                         <h2>{t('States rights')}</h2>
                         <ObjectRights
                             mask={maskState}

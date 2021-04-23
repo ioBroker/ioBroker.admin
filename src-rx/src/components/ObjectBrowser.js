@@ -394,10 +394,15 @@ const styles = theme => ({
         animation: '$newValueAnimation 2s ease-in-out'
     },
     '@keyframes newValueAnimation': {
-        "from": {
-            color: '#09d609',
-            transition: 'color 1s',
+        "0%": {
+            color: '#00f900',
         },
+        "80%": {
+            color: '#008000',
+        },
+        "100%": {
+            color: theme.palette.type === 'dark' ? '#fff' : '#000',
+        }
     },
     cellValueTextState: {
         opacity: 0.7,

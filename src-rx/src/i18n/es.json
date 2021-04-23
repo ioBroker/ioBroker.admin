@@ -1242,5 +1242,6 @@
   "1: Logic adapters": "1: adaptadores lógicos",
   "2: Data provider adapters": "2: adaptadores de proveedores de datos",
   "3: Other adapters": "3: otros adaptadores",
-  "Show/hide PID": "Mostrar/ocultar ID de proceso"
+  "Show/hide PID": "Mostrar/ocultar ID de proceso",
+  "Are you sure you want to delete the instance %s?": "¿Está seguro de que desea eliminar la instancia %s?"
 }

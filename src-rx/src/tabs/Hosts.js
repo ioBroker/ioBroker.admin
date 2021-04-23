@@ -248,11 +248,17 @@ const Hosts = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(async () => {
         let hostsArray = await socket.getHosts(true, false, 10000);
-        const repositoryProm = await socket.getRepository(currentHost, { update: false }, false, 10000);
-        hostsArray.forEach(async ({ _id }) => {
-            let aliveValue = await socket.getState(`${_id}.alive`);
-            setAlive((prev) => ({ ...prev, [_id]: !aliveValue ? false : !!aliveValue.val }));
-        });
+
+        const repositoryProm = await socket.getRepository(currentHost, {update: false}, false, 10000);
+        const _alive = JSON.parse(JSON.stringify(alive));
+
+        for (let h = 0; h < hostsArray.length; h++) {
+            let aliveValue = await socket.getState(`${hostsArray[h]._id}.alive`);
+            _alive[hostsArray[h]._id] = !aliveValue ? false : !!aliveValue.val;
+        }
+
+        setAlive(_alive);
+
         setRepository(repositoryProm);
         setHosts(hostsArray);
         filterText && hostsArray.length <= 2 && setFilterText('');

@@ -1242,5 +1242,6 @@
   "1: Logic adapters": "1: Logic adapters",
   "2: Data provider adapters": "2: Data provider adapters",
   "3: Other adapters": "3: Other adapters",
-  "Show/hide PID": "Show/hide process ID"
+  "Show/hide PID": "Show/hide process ID",
+  "Are you sure you want to delete the instance %s?": "Are you sure you want to delete the instance %s?"
 }

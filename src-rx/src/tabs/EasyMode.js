@@ -61,7 +61,10 @@ const styles = theme => ({
     iframe: {
         height: '100%',
         width: '100%',
-        border: 0
+        background: '#FFF',
+        color: '#000',
+        borderRadius: 5,
+        border: '1px solid #888'
     },
     IconButtons: {
         display: 'flex'
