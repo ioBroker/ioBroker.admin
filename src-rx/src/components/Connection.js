@@ -35,16 +35,17 @@ class Connection {
      * @param {import('./types').ConnectionProps} props
      */
     constructor(props) {
-        props = props || { protocol: window.location.protocol, host: window.location.hostname };
-        this.props = props;
+        props                 = props || { protocol: window.location.protocol, host: window.location.hostname };
+        this.props            = props;
 
         this.autoSubscribes   = this.props.autoSubscribes || [];
         this.autoSubscribeLog = this.props.autoSubscribeLog;
 
-        this.props.protocol  = this.props.protocol || window.location.protocol;
-        this.props.host      = this.props.host     || window.location.hostname;
-        this.props.port      = this.props.port     || (window.location.port === '3000' ? 8081 : window.location.port);
-        this.props.ioTimeout = Math.max(this.props.ioTimeout || 20000, 20000);
+        this.props.protocol   = this.props.protocol || window.location.protocol;
+        this.props.host       = this.props.host     || window.location.hostname;
+        this.props.port       = this.props.port     || (window.location.port === '3000' ? 8081 : window.location.port);
+        this.props.ioTimeout  = Math.max(this.props.ioTimeout  || 20000, 20000);
+        this.props.cmdTimeout = Math.max(this.props.cmdTimeout || 5000, 5000);
 
         // breaking change. Do not load all objects by default is true
         this.doNotLoadAllObjects = this.props.doNotLoadAllObjects === undefined ? true : this.props.doNotLoadAllObjects;
@@ -1472,7 +1473,7 @@ class Connection {
                     timeout = null;
                     reject('timeout');
                 }
-            }, 5000);
+            }, this.props.cmdTimeout);
 
             this._socket.emit('sendToHost', host, 'getHostInfo', null, data => {
                 if (timeout) {
@@ -1521,7 +1522,7 @@ class Connection {
                     timeout = null;
                     reject('timeout');
                 }
-            }, 5000);
+            }, this.props.cmdTimeout);
 
             this._socket.emit('sendToHost', host, 'getRepository', args, data => {
                 if (timeout) {
@@ -1569,7 +1570,7 @@ class Connection {
                     timeout = null;
                     reject('timeout');
                 }
-            }, 5000);
+            }, this.props.cmdTimeout);
 
             this._socket.emit('sendToHost', host, 'getInstalled', null, data => {
                 if (timeout) {
@@ -1614,7 +1615,7 @@ class Connection {
                     timeout = null;
                     reject('timeout');
                 }
-            }, 5000);
+            }, this.props.cmdTimeout);
 
             this._socket.emit('cmdExec', host, cmdId, cmd, null, err => {
                 if (timeout) {
@@ -1674,7 +1675,7 @@ class Connection {
                                 timeout = null;
                                 reject('timeout');
                             }
-                        }, 5000);
+                        }, this.props.cmdTimeout);
 
                         this._socket.emit('sendToHost', host, 'readBaseSettings', null, data => {
                             if (timeout) {
@@ -1719,7 +1720,7 @@ class Connection {
                                 timeout = null;
                                 reject('timeout');
                             }
-                        }, 5000);
+                        }, this.props.cmdTimeout);
 
                         this._socket.emit('sendToHost', host, 'writeBaseSettings', config, data => {
                             if (timeout) {
@@ -2165,6 +2166,7 @@ class Connection {
             this._socket.emit('authEnabled', (isSecure, user) =>
                 resolve(user)));
     }
+
     /**
      * Read adapter ratings
      * @returns {Promise<any>}
@@ -2180,6 +2182,20 @@ class Connection {
             this._socket.emit('getRatings', update, (err, ratings) =>
                 err ? reject(err) : resolve(ratings)));
     }
+
+    /**
+     * Read current web, socketio or admin namespace, like admin.0
+     * @returns {Promise<string>}
+     */
+    getCurrentInstance(update) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getCurrentInstance', (err, namespace) =>
+                err ? reject(err) : resolve(namespace)));
+    }
+
 }
 
 Connection.Connection = {

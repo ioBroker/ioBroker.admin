@@ -55,7 +55,7 @@ adapter.on('message', obj => {
 });
  */
 
-class ConfigListSendTo extends ConfigGeneric {
+class ConfigSelectSendTo extends ConfigGeneric {
     componentDidMount() {
         super.componentDidMount();
         if (this.props.alive) {
@@ -124,7 +124,7 @@ class ConfigListSendTo extends ConfigGeneric {
     }
 }
 
-ConfigListSendTo.propTypes = {
+ConfigSelectSendTo.propTypes = {
     socket: PropTypes.object.isRequired,
     themeType: PropTypes.string,
     themeName: PropTypes.string,
@@ -139,4 +139,4 @@ ConfigListSendTo.propTypes = {
     onChange: PropTypes.func,
 };
 
-export default withStyles(styles)(ConfigListSendTo);
+export default withStyles(styles)(ConfigSelectSendTo);

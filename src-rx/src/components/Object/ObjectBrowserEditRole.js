@@ -9,10 +9,10 @@ import TextField from '@material-ui/core/TextField';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 import IconCancel from '@material-ui/icons/Close';
 import IconCheck from '@material-ui/icons/Check';
-import {LinearProgress} from "@material-ui/core";
 
 const styles = theme => ({
     input: {
@@ -71,6 +71,7 @@ class ObjectBrowserEditRole extends Component {
             <DialogContent>
                 {this.state.role === null ? <LinearProgress/> :
                 <Autocomplete
+                    freeSolo
                     options={this.props.roles}
                     //getOptionLabel={option => option.title}
                     style={{ width: '100%' }}

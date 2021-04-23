@@ -176,8 +176,9 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                             renderInput={(params) => <TextField {...params} label={I18n.t('Select adapter')} />}
                         /></div>
                     <div style={{
-                        fontSize: 40,
-                        fontWeight: 'bold'
+                        fontSize: 24,
+                        fontWeight: 'bold',
+                        marginTop: 40
                     }}>{t('Warning!')}</div>
                     <div style={{ color: '#f53939' }}>
                         {t(`Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!`)}
@@ -216,8 +217,9 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                         />
                     </div>
                     <div style={{
-                        fontSize: 40,
-                        fontWeight: 'bold'
+                        fontSize: 24,
+                        fontWeight: 'bold',
+                        marginTop: 40
                     }}>{t('Warning!')}</div>
                     <div style={{ color: '#f53939' }}>
                         {t(`Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!`)}

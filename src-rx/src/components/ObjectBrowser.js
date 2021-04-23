@@ -471,8 +471,8 @@ const styles = theme => ({
     },
     headerCellValue: {
         paddingTop: 4,
-        paddingLeft: 4,
-        fontSize: 16
+        paddingLeft: 5,
+        fontSize: 16,
     },
     headerCellInput: {
         width: 'calc(100% - 5px)',
@@ -877,7 +877,7 @@ function buildTree(objects, options) {
                         hasCustoms: obj.common?.custom && Object.keys(obj.common.custom).length,
                         level:      parts.length - 1,
                         generated:  false,
-                        button:     obj.type === 'state' && obj.common?.role?.startsWith('button') && obj.common?.write !== false,
+                        button:     obj.type === 'state' && obj.common?.role && typeof obj.common.role === 'string' && obj.common.role.startsWith('button') && obj.common?.write !== false,
                     }
                 };
 
@@ -2496,7 +2496,7 @@ class ObjectBrowser extends Component {
      * @private
      * @param {string} id
      */
-    getEnumsForId = (id) => {
+    getEnumsForId = id => {
         let result = [];
         this.info.enums.forEach(_id => {
             if (this.objects[_id]?.common?.members?.includes(id)) {
@@ -2576,7 +2576,7 @@ class ObjectBrowser extends Component {
                 }
                 try {
                     await this.props.socket.setObject(id, obj);
-                    await this._createAllEnums(enums, obj._id);
+                    enums && await this._createAllEnums(enums, obj._id);
                     if (obj.type === 'state') {
                         const state = await this.props.socket.getState(obj._id);
                         if (!state || state.val === null) {
@@ -2594,7 +2594,7 @@ class ObjectBrowser extends Component {
      * @private
      * @param {object} evt
      */
-    handleFileSelect = evt => {
+    handleJsonUpload = evt => {
         let f = evt.target.files[0];
         if (f) {
             let r = new FileReader();
@@ -2748,7 +2748,7 @@ class ObjectBrowser extends Component {
                             input.setAttribute('type', 'file');
                             input.setAttribute('id', 'files');
                             input.setAttribute('opacity', 0);
-                            input.addEventListener('change', e => this.handleFileSelect(e), false);
+                            input.addEventListener('change', e => this.handleJsonUpload(e), false);
                             input.click();
                         }}>
                             <PublishIcon />
@@ -2759,13 +2759,14 @@ class ObjectBrowser extends Component {
                     <Tooltip title={this.props.t('ra_Save objects tree as JSON file')}>
                         <IconButton onClick={() => {
                             if (this.state.selected.length) {
-                                let result = {};
-                                let keys = Object.keys(this.objects);
-                                let id = this.state.selected[0];
-                                let idLen = id.length;
+                                const result = {};
+                                const keys = Object.keys(this.objects);
+                                const id = this.state.selected[0];
+                                const idDot = id + '.';
+                                const idLen = idDot.length;
                                 for (let k = 0; k < keys.length; k++) {
                                     const key = keys[k];
-                                    if (!key.startsWith(id)) {
+                                    if (id === key || key.startsWith(idDot)) {
                                         result[key] = JSON.parse(JSON.stringify(this.objects[key]));
                                         // add enum information
                                         if (result[key].common) {
@@ -2775,7 +2776,7 @@ class ObjectBrowser extends Component {
                                             }
                                         }
                                     }
-                                    if (key.substring(0, idLen) > id) {
+                                    if (key.substring(0, idLen) > idDot) {
                                         break;
                                     }
                                 }

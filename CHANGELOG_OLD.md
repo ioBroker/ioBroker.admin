@@ -1,3 +1,6 @@
+## 5.0.2 (2020-12-26)
+* (bluefox) Merged the changes from admin4
+
 ## 5.0.0 (2020-09_23)
 * (bluefox) The tile view implemented for the file browser
 

@@ -28,11 +28,10 @@ import ConfigStaticHeader from './ConfigStaticHeader';
 import ConfigStaticDivider from './ConfigStaticDivider';
 import ConfigSetState from './ConfigSetState';
 import ConfigJsonEditor from './ConfigJsonEditor';
-import ConfigListSendTo from './ConfigListSendTo';
+import ConfigSelectSendTo from './ConfigSelectSendTo';
 import ConfigTopic from './ConfigTopic';
-
-//import ConfigTabs from "./ConfigTabs";
-// import { Paper } from '@material-ui/core';
+import ConfigAutocomplete from './ConfigAutocomplete';
+import ConfigAutocompleteSendTo from './ConfigAutocompleteSendTo';
 
 const components = {
     text: ConfigText,
@@ -60,8 +59,10 @@ const components = {
     divider: ConfigStaticDivider,
     setState: ConfigSetState,
     jsonEditor: ConfigJsonEditor,
-    listSendTo: ConfigListSendTo,
+    selectSendTo: ConfigSelectSendTo,
     topic: ConfigTopic,
+    autocomplete: ConfigAutocomplete,
+    autocompleteSendTo: ConfigAutocompleteSendTo,
 };
 
 const styles = theme => ({
@@ -71,7 +72,7 @@ const styles = theme => ({
     },
     paper: {
         margin: 10,
-        height: 'calc(100vh - 230px) !important',
+        height: 'calc(100vh - 235px) !important',
         width: 'auto !important',
         overflowY: 'auto',
         paddingBottom: theme.spacing(1)

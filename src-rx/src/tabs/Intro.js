@@ -228,6 +228,15 @@ class Intro extends Component {
                             editLinkIndex: i,
                             link: JSON.parse(JSON.stringify(this.state.introLinks[i]))
                         })}
+
+                        onRemove={() => {
+                            const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
+                            introLinks.splice(i, 1);
+                            const hasUnsavedChanges = JSON.stringify(this.state.instances) !== JSON.stringify(this.instancesOriginal) ||
+                                JSON.stringify(introLinks) !== JSON.stringify(this.introLinksOriginal);
+                            this.setState({ introLinks, hasUnsavedChanges });
+                        }}
+
                         enabled={item.enabled}
                         toggleActivation={() => this.toggleLinkCard(i)}
                     >
@@ -603,7 +612,7 @@ class Intro extends Component {
                 onClose={() => this.setState({ openSnackBar: false })}
                 message={this.t('copied')}
             />
-            <TabContent classes={{root: classes.container}}>
+            <TabContent classes={{ root: classes.container }}>
                 <Grid container spacing={2}>
                     {this.getInstancesCards()}
                     {this.getLinkCards()}

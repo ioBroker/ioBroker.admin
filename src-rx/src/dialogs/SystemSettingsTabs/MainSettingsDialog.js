@@ -152,12 +152,12 @@ class MainSettingsDialog extends Component {
                         title: 'DD.MM.YYYY'
                     },
                     {
-                        id: 'DD.MM.YY',
-                        title: 'DD.MM.YY'
+                        id: 'YYYY.MM.DD',
+                        title: 'YYYY.MM.DD'
                     },
                     {
-                        id: 'DD/MM/YYYY',
-                        title: 'DD/MM/YYYY'
+                        id: 'MM/DD/YYYY',
+                        title: 'MM/DD/YYYY'
                     }
                 ]
             },

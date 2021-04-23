@@ -43,13 +43,33 @@ const styles = theme => ({
 });
 
 class Config extends Component {
+    constructor(props) {
+        super(props);
 
+        this.state ={
+            checkedExist: false,
+        };
+    }
     componentDidMount() {
-
         // receive messages from IFRAME
         const eventFunc = window.addEventListener ? 'addEventListener' : 'attachEvent';
         const emit = window[eventFunc];
         const eventName = eventFunc === 'attachEvent' ? 'onmessage' : 'message';
+
+        if (this.props.tab) {
+            this.props.socket.fileExists(this.props.adapter + '.admin', 'tab.html')
+                .then(exist => {
+                    if (exist) {
+                        this.setState({checkedExist: 'tab.html'});
+                    } else {
+                        return this.props.socket.fileExists(this.props.adapter + '.admin', 'tab_m.html')
+                            .then(exist =>
+                                exist ? this.setState({checkedExist: 'tab_m.html'}) : window.alert('Cannot find tab(_m).html'));
+                    }
+                });
+        } else {
+            this.setState({checkedExist: true});
+        }
 
         emit(eventName, event => this.closeConfig(event), false);
     }
@@ -65,7 +85,11 @@ class Config extends Component {
 
     closeConfig(event) {
         if (event.data === 'close' || event.message === 'close') {
-            Router.doNavigate('tab-instances');
+            if (this.props.easyMode){
+                Router.doNavigate('easy');
+            } else {
+                Router.doNavigate('tab-instances');
+            }
         } else if (event.data === 'change' || event.message === 'change') {
             this.props.configStored(false);
         } else if (event.data === 'nochange' || event.message === 'nochange') {
@@ -109,11 +133,18 @@ class Config extends Component {
                 t={this.props.t}
             />;
         } else {
-            return <iframe
-                title="config"
-                className={this.props.className}
-                src={`adapter/${this.props.adapter}/${this.props.tab ? 'tab_m.html' : this.props.tab !== undefined ? 'tab.html' : this.props.materialize ? 'index_m.html' : 'index.html'}?${this.props.instance}&react=${this.props.themeName}`}>
-            </iframe>;
+            const src = `adapter/${this.props.adapter}/` +
+                `${this.props.tab ? this.state.checkedExist : (this.props.materialize ? 'index_m.html' : 'index.html')}?` +
+                `${this.props.instance}`;//&react=${this.props.themeName}`;
+            if (this.state.checkedExist) {
+                return <iframe
+                    title="config"
+                    className={this.props.className}
+                    src={src}>
+                </iframe>;
+            } else {
+                return null;
+            }
         }
     }
 
@@ -157,6 +188,7 @@ Config.propTypes = {
     icon: PropTypes.string,
     readme: PropTypes.string,
     lang: PropTypes.string,
+    easyMode: PropTypes.bool,
 };
 
 export default withStyles(styles)(Config);

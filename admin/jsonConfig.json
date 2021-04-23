@@ -341,6 +341,16 @@
           "val": "${data.myLanguage}",
           "id": "javascript.0.value",
           "label": "Test"
+        },
+        "autoComplete": {
+          "newLine": true,
+          "sm": 4,
+          "type": "autocomplete",
+          "freeSolo": true,
+          "options": [{
+            "label": "A",
+            "value": "a"
+          }, "B"]
         }
       }
     }

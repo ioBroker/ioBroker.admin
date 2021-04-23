@@ -65,7 +65,7 @@ const styles = theme => ({
         marginLeft: 32,
     },
     greenButton: {
-        marginRight: theme.spacing(1),
+        marginLeft: theme.spacing(1),
     },
     toolbar: {
         height: TOOLBAR_HEIGHT,
@@ -169,8 +169,8 @@ class WizardLicenseTab extends Component {
             </Grid>
             <Toolbar className={ this.props.classes.toolbar }>
                 <div className={ this.props.classes.grow }/>
-                <Button variant="contained" color="secondary" className={ this.props.classes.greenButton } disabled={ !this.state.statisticsAccepted } onClick={ () => this.props.onDone() }><IconCheck/>{ this.props.t('Agree') }</Button>
                 <Button variant="contained" onClick={ () => this.setState({notAgree: true}) }><IconCancel/>{ this.props.t('Not agree') }</Button>
+                <Button variant="contained" color="primary" className={ this.props.classes.greenButton } disabled={ !this.state.statisticsAccepted } onClick={ () => this.props.onDone() }><IconCheck/>{ this.props.t('Agree') }</Button>
                 <div className={ this.props.classes.grow }/>
             </Toolbar>
             { this.renderNotAgree() }

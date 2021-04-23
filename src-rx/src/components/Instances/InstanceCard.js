@@ -347,11 +347,13 @@ const InstanceCard = memo(({
                     (openDialogDelete && t('Please confirm')) ||
                     (openDialogMemoryLimit && t('Edit memory limit rule for %s', instance.id)) ||
                     (openDialogCompact && t('Edit compact groups for %s', instance.id)) ||
-                    (openDialogSelectTier && t('Set tier for %s', instance.id))
+                    (openDialogSelectTier && t('Set tier for %s', instance.id)) ||
+                    ''
                 }
                 help={
-                    openDialogMemoryLimit && t('Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)') ||
-                    openDialogSelectTier && t('Tiers define the order of adapters when the system starts.')
+                    (openDialogMemoryLimit && t('Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)')) ||
+                    (openDialogSelectTier && t('Tiers define the order of adapters when the system starts.')) ||
+                    ''
                 }
                 open={true}
                 applyDisabled={openDialogText || openDialogMemoryLimit}
@@ -639,7 +641,7 @@ const InstanceCard = memo(({
                             className={classes.button}
                             onClick={setCompact}
                         >
-                            <ViewCompactIcon color={compact ? 'primary' : ''} />
+                            <ViewCompactIcon color={!!compact ? 'primary' : 'inherit'} />
                         </IconButton>
                     </Tooltip>
                 </div>}

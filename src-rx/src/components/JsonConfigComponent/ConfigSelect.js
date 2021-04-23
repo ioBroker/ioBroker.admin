@@ -37,7 +37,7 @@ class ConfigSelect extends ConfigGeneric {
             return null;
         }
         // eslint-disable-next-line
-        const item = this.state.selectOptions?.find(item => item.value == this.state.value); // let "==" be and not ===
+        const item = this.state.selectOptions.find(item => item.value == this.state.value); // let "==" be and not ===
 
         return <FormControl className={this.props.classes.fullWidth}>
             <InputLabel>{this.getText(this.props.schema.label)}</InputLabel>

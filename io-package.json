@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.6",
+        "version": "5.0.7",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -15,6 +15,18 @@
             "zh-cn": "Admin"
         },
         "news": {
+            "5.0.7": {
+                "en": "Admin5: Fixed many bugs",
+                "de": "Admin5: Viele Fehler behoben",
+                "ru": "Admin5: Исправлено множество ошибок",
+                "pt": "Admin5: muitos bugs corrigidos",
+                "nl": "Admin5: Veel bugs opgelost",
+                "fr": "Admin5: Correction de nombreux bugs",
+                "it": "Admin5: risolti molti bug",
+                "es": "Admin5: se corrigieron muchos errores",
+                "pl": "Admin5: Naprawiono wiele błędów",
+                "zh-cn": "Admin5：修复了许多错误"
+            },
             "5.0.6": {
                 "en": "Admin5: Fixed many bugs",
                 "de": "Admin5: Viele Fehler behoben",

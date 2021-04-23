@@ -43,7 +43,11 @@ Possible types:
   - `short` - no system.func.
 
 - `select` 
-  - `options` - [{label: {en: "option 1"}, value: 1}, ...]
+  - `options` - `[{label: {en: "option 1"}, value: 1}, ...]`
+
+- `autocomplete`
+  - `options` - `["value1", "value2", ...]` or `[{"value": "value", "label": "Value1"}, "value2", ...]`
+  - `freeSolo` - Set freeSolo to true so the textbox can contain any arbitrary value.
 
 - `!icon` - base64 icon
   - `maxSize`
@@ -98,8 +102,8 @@ Possible types:
 
 - `sendto` - button that sends request to instance (https://github.com/iobroker-community-adapters/ioBroker.email/blob/master/admin/index_m.html#L128)
   - `command` - (Default 'send')
-  - `jsonData` - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`  
-  - `data` - `{"subject1": 1, "data": "static"}`
+  - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`  
+  - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both.
   - `result` - `{result1: {en: 'A'}, result2: {en: 'B'}}`
   - `error` - `{error1: {en: 'E'}, error2: {en: 'E2'}}`
   - `variant` -  contained, outlined, ''
@@ -142,19 +146,21 @@ Possible types:
 
 - `divider` - horizontal line
   - `height` - optional height
-  - `color` - optional divider color or "primary", "secondary"
+  - `color` - optional divider color or `primary`, `secondary`
 
 - `header`
   - `text`
   - `size` - 1-5 => h1-h5
 
-- `listSendTo`
-  - `command` - sendto command
-  - `data` - data for send to command, could be as JS pattern. null is default. (see sendTo)
+- `selectSendTo`
+  Shows drop down menu with the given from the instance values. 
+  - `command` - sendTo command
+  - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`
+  - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both.
   - `!manual` - allow manual editing. Without drop down  
   - `noTranslation` - do not translate label of selects  
-    To use this option, your adapter must implement listUart message:
-    The result of command must be an array in form `[{value: 1, label: 'one'}]`
+    To use this option, your adapter must implement message handler:
+    The result of command must be an array in form `[{"value": 1, "label": "one"}, ...]`
 ```
 adapter.on('message', obj => {
    if (obj) {
@@ -188,6 +194,18 @@ adapter.on('message', obj => {
    }
 });
 ```
+
+- `autocompleteSendTo`
+  Shows autocomplete control with the given from the instance values.
+  - `command` - sendTo command
+  - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`
+  - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both.
+  - `freeSolo` - Set freeSolo to true so the textbox can contain any arbitrary value.
+    
+    To use this option, your adapter must implement message handler:
+    The result of command must be an array in form `["value1", {"value": "value2", "label": "Value2"}, ...]`
+    See `selectSendTo` for handler example 
+
 
 ## Common attributes of controls
 All types could have:

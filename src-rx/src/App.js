@@ -44,30 +44,31 @@ import Connecting from './components/Connecting';
 import WizardDialog from './dialogs/WizardDialog';
 import BaseSettingsDialog from './dialogs/BaseSettingsDialog';
 import SystemSettingsDialog from './dialogs/SystemSettingsDialog';
-import LogsWorker from './components/LogsWorker';
-import InstancesWorker from './components/InstancesWorker';
-import HostsWorker from './components/HostsWorker';
 import Login from './login/Login';
-import { ContextWrapper } from './components/ContextWrapper';
 import HostSelectors from './components/HostSelectors';
 import { Hidden, Tooltip } from '@material-ui/core';
 import { expertModeDialogFunc } from './dialogs/ExpertModeDialog';
 import { newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
 import { adaptersWarningDialogFunc } from './dialogs/AdaptersWarningDialog';
-import EasyMode from "./tabs/EasyMode";
 import ToggleThemeMenu from './components/ToggleThemeMenu';
 
+import LogsWorker from './components/LogsWorker';
+import InstancesWorker from './components/InstancesWorker';
+import HostsWorker from './components/HostsWorker';
+import AdaptersWorker from './components/AdaptersWorker';
+
 // Tabs
-const Adapters = React.lazy(() => import('./tabs/Adapters'));
+const Adapters  = React.lazy(() => import('./tabs/Adapters'));
 const Instances = React.lazy(() => import('./tabs/Instances'));
-const Intro = React.lazy(() => import('./tabs/Intro'));
-const Logs = React.lazy(() => import('./tabs/Logs'));
-const Files = React.lazy(() => import('./tabs/Files'));
-const Objects = React.lazy(() => import('./tabs/Objects'));
-const Users = React.lazy(() => import('./tabs/Users'));
-const Enums = React.lazy(() => import('./tabs/Enums'));
+const Intro     = React.lazy(() => import('./tabs/Intro'));
+const Logs      = React.lazy(() => import('./tabs/Logs'));
+const Files     = React.lazy(() => import('./tabs/Files'));
+const Objects   = React.lazy(() => import('./tabs/Objects'));
+const Users     = React.lazy(() => import('./tabs/Users'));
+const Enums     = React.lazy(() => import('./tabs/Enums'));
 const CustomTab = React.lazy(() => import('./tabs/CustomTab'));
-const Hosts = React.lazy(() => import('./tabs/Hosts'));
+const Hosts     = React.lazy(() => import('./tabs/Hosts'));
+const EasyMode  = React.lazy(() => import('./tabs/EasyMode'));
 
 const query = {};
 (window.location.search || '').replace(/^\?/, '').split('&').forEach(attr => {
@@ -443,9 +444,10 @@ class App extends Router {
                                     })
                             } else {
                                 // create Workers
-                                this.logsWorker = this.logsWorker || new LogsWorker(this.socket, 1000);
+                                this.logsWorker      = this.logsWorker      || new LogsWorker(this.socket, 1000);
                                 this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
-                                this.hostsWorker = this.hostsWorker || new HostsWorker(this.socket);
+                                this.hostsWorker     = this.hostsWorker     || new HostsWorker(this.socket);
+                                this.adaptersWorker  = this.adaptersWorker  || new AdaptersWorker(this.socket);
 
                                 const newState = {
                                     lang: this.socket.systemLang,
@@ -526,14 +528,6 @@ class App extends Router {
                                 this.setState(newState, () => this.setCurrentTabTitle());
 
                                 this.logsWorkerChanged(this.state.currentHost);
-
-                                if (!this.logsHandlerRegistered) {
-                                    this.logsHandlerRegistered = true;
-                                    this.logsWorker.registerErrorCountHandler(logErrors =>
-                                        (this.state.currentTab.tab !== 'tab-logs' || (this.state.currentTab.tab === 'tab-logs' && this.context.stateContext.logErrors)) && this.context.setStateContext({ logErrors }));
-                                    this.logsWorker.registerWarningCountHandler(logWarnings =>
-                                        (this.state.currentTab.tab !== 'tab-logs' || (this.state.currentTab.tab === 'tab-logs' && this.context.stateContext.logWarnings)) && this.context.setStateContext({ logWarnings }));
-                                }
                             }
                         });
                 },
@@ -589,21 +583,23 @@ class App extends Router {
     }
 
     readRepoAndInstalledInfo = (currentHost, hosts) => async () => {
+        hosts = hosts || this.state.hosts;
+
         try {
             const repository = await this.socket.getRepository(currentHost, { update: false });
-            const installed = await this.socket.getInstalled(currentHost, { update: false });
-            const adapters = await this.socket.getAdapters(); // we need information about ignored versions
+            const installed  = await this.socket.getInstalled(currentHost, { update: false });
+            const adapters   = await this.adaptersWorker.getAdapters(); // we need information about ignored versions
 
-            adapters.forEach(adapter => {
+            Object.keys(adapters).forEach(id => {
+                const adapter = adapters[id];
                 if (installed[adapter?.common?.name] && adapter.common?.ignoreVersion) {
                     installed[adapter.common.name].ignoreVersion = adapter.common.ignoreVersion;
                 }
             });
-            this.context.setStateContext({ hosts, repository, installed });
+            this.setState({ repository, installed, hosts });
         } catch (e) {
             window.alert('Cannot read repo information: ' + e);
         }
-
     }
 
     logsWorkerChanged = (currentHost) => {
@@ -701,7 +697,7 @@ class App extends Router {
     /**
      * Changes the current theme
      */
-    toggleTheme(currentThemeName) {
+    toggleTheme = currentThemeName => {
         const themeName = this.state.themeName;
 
         // dark => blue => colored => light => dark
@@ -832,6 +828,7 @@ class App extends Router {
                         key="adapters"
                         theme={this.state.theme}
                         themeName={this.state.themeName}
+                        adaptersWorker={this.adaptersWorker}
                         instancesWorker={this.instancesWorker}
                         themeType={this.state.themeType}
                         systemConfig={this.state.systemConfig}
@@ -846,7 +843,6 @@ class App extends Router {
                         executeCommand={(cmd, cb) => this.executeCommand(cmd, cb)}
                         commandRunning={this.state.commandRunning}
                         onSetCommandRunning={commandRunning => this.setState({ commandRunning })}
-
                         menuOpened={opened}
                         menuClosed={closed}
                         menuCompact={compact}
@@ -1139,6 +1135,21 @@ class App extends Router {
     }
 
     executeCommand(cmd, callBack = false) {
+        if (this.state.performed || this.state.commandError) {
+            return this.setState({
+                cmd: null,
+                cmdDialog: false,
+                commandError: false,
+                performed: false,
+                callBack: false
+            }, () => {
+                this.setState({
+                    cmd,
+                    cmdDialog: true,
+                    callBack
+                });
+            });
+        }
         this.setState({
             cmd,
             cmdDialog: true,
@@ -1160,9 +1171,12 @@ class App extends Router {
         if (this.state.wizard) {
             return <WizardDialog
                 socket={this.socket}
+                themeName={this.state.themeName}
+                toggleTheme={this.toggleTheme}
                 t={I18n.t}
                 lang={I18n.getLanguage()}
-                onClose={() => this.setState({ wizard: false })}
+                onClose={() =>
+                    this.setState({ wizard: false })}
             />;
         }
     }
@@ -1171,7 +1185,10 @@ class App extends Router {
         return this.state.cmd ?
             <CommandDialog
                 onSetCommandRunning={commandRunning => this.setState({ commandRunning })}
-                onClose={() => this.closeCmdDialog()}
+                onClose={() => {
+                    this.closeCmdDialog();
+                    this.setState({ commandRunning: false })
+                }}
                 visible={this.state.cmdDialog}
                 callBack={this.state.callBack}
                 header={I18n.t('Command')}
@@ -1238,7 +1255,7 @@ class App extends Router {
                     <EasyMode
                         navigate={Router.doNavigate}
                         location={this.state.currentTab}
-                        toggleTheme={this.toggleTheme.bind(this)}
+                        toggleTheme={this.toggleTheme}
                         themeName={this.state.themeName}
                         themeType={this.state.themeType}
                         theme={this.state.theme}
@@ -1285,7 +1302,7 @@ class App extends Router {
                                 </IconButton>
                             </Tooltip>
                             <ToggleThemeMenu
-                                toggleTheme={this.toggleTheme.bind(this)}
+                                toggleTheme={this.toggleTheme}
                                 themeName={this.state.themeName}
                                 t={I18n.t} />
                             {/*This will be removed later to settings, to not allow so easy to enable it*/}
@@ -1378,6 +1395,7 @@ class App extends Router {
                         onLogout={() => this.logout()}
                         currentTab={this.state.currentTab && this.state.currentTab.tab}
                         instancesWorker={this.instancesWorker}
+                        logsWorker={this.logsWorker}
                         logoutTitle={I18n.t('Logout')}
                         isSecure={this.socket.isSecure}
                         t={I18n.t}
@@ -1388,6 +1406,10 @@ class App extends Router {
                         themeName={this.state.themeName}
                         protocol={this.state.protocol}
                         hostname={this.state.hostname}
+
+                        hosts={this.state.hosts}
+                        repository={this.state.repository}
+                        installed={this.state.installed}
                     />
                 </DndProvider>
                 <Paper
@@ -1419,5 +1441,4 @@ class App extends Router {
         </ThemeProvider>;
     }
 }
-App.contextType = ContextWrapper;
 export default withWidth()(withStyles(styles)(App));

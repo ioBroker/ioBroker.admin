@@ -1,12 +1,15 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
 import { withStyles } from '@material-ui/core/styles';
+
+import { AppBar, CardMedia, CircularProgress, IconButton, Paper, Toolbar } from '@material-ui/core';
+
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+
+import ToggleThemeMenu from '../components/ToggleThemeMenu';
 import Config from '../dialogs/Config';
 import EasyModeCard from '../components/EasyModeCard';
-import { AppBar, CardMedia, CircularProgress, IconButton, Paper, Toolbar } from '@material-ui/core';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import clsx from 'clsx';
-import ToggleThemeMenu from '../components/ToggleThemeMenu';
 
 const styles = theme => ({
     appBar: {
@@ -20,10 +23,12 @@ const styles = theme => ({
         borderRadius: 0
     },
     wrapperCard: {
-        display: 'flex',
         padding: '80px 20px 20px',
         height: '100%',
         overflowY: 'auto',
+    },
+    controlHeigth:{
+        display: 'flex',
         flexFlow: 'wrap',
         justifyContent: 'center'
     },
@@ -78,8 +83,6 @@ class EasyMode extends Component {
                 .then(config => this.setState({ configs: config.configs }));
         }
     }
-    //                 src={`adapter/${this.props.adapter}/${this.props.materialize ? 'index.html' : 'tab.html'}?${this.props.instance}&react=${this.props.themeName}`}>
-
     render() {
         const {
             classes,
@@ -103,7 +106,6 @@ class EasyMode extends Component {
 
         const tab = location.id;
         const currentInstance = configs.find(({ id }) => id === tab);
-        console.log(configs)
         return <Paper className={classes.wrapperEasyMode}>
             <AppBar
                 color="default"
@@ -133,6 +135,7 @@ class EasyMode extends Component {
                         materialize={currentInstance.materialize}
                         tab={currentInstance.tab}
                         socket={socket}
+                        easyMode={true}
                         themeName={themeName}
                         themeType={themeType}
                         theme={theme}
@@ -144,9 +147,11 @@ class EasyMode extends Component {
                     />
                 </Paper> :
                 <div className={classes.wrapperCard}>
+                    <div className={classes.controlHeigth}>
                     {configs
                         .sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
                         .map(el => <EasyModeCard key={el.id} navigate={() => navigate(null, 'config', el.id)} {...el} />)}
+                        </div>
                 </div>}
         </Paper>;
     }

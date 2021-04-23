@@ -40,6 +40,7 @@ import { ContextWrapper } from './ContextWrapper';
 import CustomPopper from './CustomPopper';
 import CustomTab from '../tabs/CustomTab';
 import DrawerItem from './DrawerItem';
+import Adapters from '../tabs/Adapters';
 
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
@@ -117,7 +118,7 @@ const styles = theme => ({
     },
     expand: {
         marginBottom: 5,
-        marginLeft: 5
+        marginLeft:   5
     }
 });
 
@@ -163,27 +164,101 @@ class Drawer extends Component {
         super(props);
 
         this.state = {
-            tabs: [],
-            editList: false
+            tabs:           [],
+            editList:       false,
+            logErrors:      0,
+            logWarnings:    0,
+            hostsUpdate:    Drawer.calculateHostUpdates(this.props.hosts, this.props.repository),
+            adaptersUpdate: Drawer.calculateAdapterUpdates(this.props.installed, this.props.repository),
         };
-
-        this.instanceChangedHandlerBound = this.instanceChangedHandler.bind(this);
 
         this.instances = null;
 
         this.getTabs();
     }
 
-    instanceChangedHandler(changes) {
+    static getDerivedStateFromProps(props, state) {
+        const hostsUpdate = Drawer.calculateHostUpdates(props.hosts, props.repository);
+        const adaptersUpdate = Drawer.calculateAdapterUpdates(props.installed, props.repository);
+        if (hostsUpdate !== state.hostsUpdate || adaptersUpdate !== state.adaptersUpdate) {
+            return {hostsUpdate, adaptersUpdate};
+        } else {
+            return null;
+        }
+    }
+
+    static calculateHostUpdates(hosts, repository) {
+        if (hosts && repository) {
+            const jsControllerVersion = repository['js-controller'].version;
+            let count = 0;
+            hosts.forEach(element => {
+                if (Adapters.updateAvailable(element.common.installedVersion, jsControllerVersion)) {
+                    count++;
+                }
+            });
+            return count;
+        } else {
+            return 0;
+        }
+    }
+
+    static calculateAdapterUpdates(installed, repository) {
+        if (installed) {
+            let count = 0;
+
+            Object.keys(installed).forEach(element => {
+                const _installed = installed[element];
+                const adapter = repository[element];
+                if (element !== 'js-controller' &&
+                    element !== 'hosts' &&
+                    _installed?.version &&
+                    adapter?.version &&
+                    _installed.ignoreVersion !== adapter.version &&
+                    Adapters.updateAvailable(_installed.version, adapter.version)
+                ) {
+                    count++;
+                }
+            });
+
+            return count;
+        } else {
+            return 0;
+        }
+    }
+
+    instanceChangedHandler = changes => {
         this.getTabs();
     }
 
     componentDidMount() {
-        this.props.instancesWorker.registerHandler(this.instanceChangedHandlerBound);
+        this.props.instancesWorker.registerHandler(this.instanceChangedHandler);
+
+        if (!this.logsHandlerRegistered) {
+            this.logsHandlerRegistered = true;
+            this.props.logsWorker.registerErrorCountHandler(this.onErrorsUpdates);
+            this.props.logsWorker.registerWarningCountHandler(this.onWarningsUpdates);
+        }
+    }
+
+    onErrorsUpdates = logErrors => {
+        if (this.props.currentTab.tab !== 'tab-logs' || (this.props.currentTab.tab === 'tab-logs' && this.state.logErrors)) {
+            this.setState({ logErrors });
+        }
+    }
+
+    onWarningsUpdates = logWarnings => {
+        if (this.props.currentTab.tab !== 'tab-logs' || (this.props.currentTab.tab === 'tab-logs' && this.state.logWarnings)) {
+            this.setState({ logWarnings });
+        }
     }
 
     componentWillUnmount() {
-        this.props.instancesWorker.unregisterHandler(this.instanceChangedHandlerBound);
+        this.props.instancesWorker.unregisterHandler(this.instanceChangedHandler);
+        if (this.logsHandlerRegistered) {
+            this.logsHandlerRegistered = false;
+            this.props.logsWorker.registerErrorCountHandler(this.onErrorsUpdates);
+            this.props.logsWorker.registerWarningCountHandler(this.onWarningsUpdates);
+        }
     }
 
 
@@ -192,6 +267,7 @@ class Drawer extends Component {
             this.setState({ editList: false });
         }
     }
+
     getTabs() {
         return this.props.instancesWorker.getInstances()
             .then(instances => {
@@ -275,7 +351,7 @@ class Drawer extends Component {
 
                 // add dynamic tabs
                 tabs = tabs.concat(dynamicTabs);
-                tabs = tabs.map(obj => {
+                tabs = tabs.filter(obj => obj).map(obj => {
                     obj.visible = true;
                     return obj;
                 });
@@ -306,7 +382,6 @@ class Drawer extends Component {
     }
 
     getHeader() {
-
         const { classes, state, handleNavigation } = this.props;
 
         return <div className={clsx(
@@ -362,8 +437,7 @@ class Drawer extends Component {
     }
 
     getNavigationItems() {
-        const { tabs, editList } = this.state;
-        const { stateContext: { logErrors, logWarnings } } = this.context;
+        const { tabs, editList, logErrors, logWarnings } = this.state;
         const { systemConfig, currentTab, state, classes, handleNavigation } = this.props;
         if (!systemConfig) {
             return
@@ -418,18 +492,20 @@ class Drawer extends Component {
         });
     }
 
-    badge = (tab) => {
-        const { stateContext: { logErrors, logWarnings, hostsUpdate, adaptersUpdate } } = this.context;
+    badge = tab => {
         switch (tab.name) {
-            case "tab-logs":
-                return ({ content: logErrors || logWarnings || 0, color: (logErrors ? 'error' : 'warn') || '' });
-            case "tab-adapters":
-                return ({ content: adaptersUpdate || 0, color: 'primary' });
-            case "tab-hosts":
-                return ({ content: hostsUpdate || 0, color: 'primary' });
-            default:
-                return ({ content: 0, color: '' });
+            case 'tab-logs':
+                const {logErrors, logWarnings} = this.state;
+                return { content: logErrors || logWarnings || 0, color: (logErrors ? 'error' : 'warn') || '' };
 
+            case 'tab-adapters':
+                return { content: this.state.adaptersUpdate || 0, color: 'primary' };
+
+            case 'tab-hosts':
+                return { content: this.state.hostsUpdate || 0, color: 'primary' };
+
+            default:
+                return { content: 0, color: '' };
         }
     }
 
@@ -508,6 +584,7 @@ Drawer.propTypes = {
     state: PropTypes.number,
     onStateChange: PropTypes.func,
     onLogout: PropTypes.func,
+    logsWorker: PropTypes.object,
     logoutTitle: PropTypes.string,
     isSecure: PropTypes.bool,
     currentTab: PropTypes.string,
@@ -518,6 +595,10 @@ Drawer.propTypes = {
     instancesWorker: PropTypes.object,
     hostname: PropTypes.string,
     protocol: PropTypes.string,
+
+    installed: PropTypes.object,
+    hosts: PropTypes.array,
+    repository: PropTypes.object,
 };
 
 Drawer.contextType = ContextWrapper;
