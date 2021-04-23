@@ -1234,5 +1234,17 @@
   "Your communication with admin is not encrypted": "Ваше общение с администратором не зашифровано",
   "Instance": "Экземпляр",
   "The expert mode allows you to view and edit system internal details.": "Экспертный режим позволяет просматривать и редактировать внутренние детали системы.",
-  "Please make sure you know what you are doing!": "Пожалуйста, убедитесь, что вы знаете, что делаете!"
+  "Please make sure you know what you are doing!": "Пожалуйста, убедитесь, что вы знаете, что делаете!",
+  "Edit log level rule for %s": "Изменить уровень протоколирования для %s",
+  "log level": "Уровень протоколирования",
+  "Edit restart rule for %s": "Изменить расписание перезапуска для %s",
+  "Edit memory limit rule for %s": "Изменить ограничение памяти для %s",
+  "Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)": "Движок V8 по умолчанию имеет ограничение памяти 512 МБ в 32-разрядных системах и 1 ГБ в 64-разрядных системах. Предел можно увеличить, установив --max-old-space-size максимум на ~ 1 ГБ (32-разрядная версия) и ~ 1,7 ГБ (64-разрядная версия).",
+  "Set tier for %s": "Установить порядок запуска для %s",
+  "Tiers define the order of adapters when the system starts.": "Уровни определяют порядок старта драйверов при запуске системы.",
+  "Tiers": "Уровни",
+  "1: Logic adapters": "1: логические драйвера",
+  "2: Data provider adapters": "2: Драйвера поставщика данных",
+  "3: Other adapters": "3: другие драйвера",
+  "Show/hide PID": "Показать/скрыть идентификатор процесса"
 }

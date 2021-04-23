@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 const InfoPanel = ({socket,idHost,memRssId,currentHostName,instances}) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect( async () => {
-        socket.getHostInfo(idHost)
+        socket.getHostInfo(idHost, null, 10000)
         .catch(error => {
             console.error(error);
             return error;

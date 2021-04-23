@@ -1230,5 +1230,17 @@
   "Your communication with admin is not encrypted": "Ihre Kommunikation mit dem Administrator ist nicht verschlüsselt",
   "Instance": "Instanz",
   "The expert mode allows you to view and edit system internal details.": "Im Expertenmodus können Sie systeminterne Details anzeigen und bearbeiten.",
-  "Please make sure you know what you are doing!": "Bitte stellen Sie sicher, dass Sie wissen, was Sie tun!"
+  "Please make sure you know what you are doing!": "Bitte stellen Sie sicher, dass Sie wissen, was Sie tun!",
+  "Edit log level rule for %s": "Die Protokollebene für %s bearbeiten",
+  "log level": "Protokollstufe",
+  "Edit restart rule for %s": "Neustartzeitplan für %s bearbeiten",
+  "Edit memory limit rule for %s": "Speicherlimit für %s bearbeiten",
+  "Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)": "Die Standard-V8-Engine hat ein Speicherlimit von 512 MB auf 32-Bit-Systemen und 1 GB auf 64-Bit-Systemen. Das Limit kann angehoben werden, indem --max-old-space-size auf maximal ~ 1 GB (32 Bit) und ~ 1,7 GB (64 Bit) eingestellt wird.",
+  "Set tier for %s": "Die Startstufe für %s festlegen",
+  "Tiers define the order of adapters when the system starts.": "Tiers definieren die Reihenfolge der Adapter beim Systemstart.",
+  "Tiers": "Ebenen",
+  "1: Logic adapters": "1: Logikadapter",
+  "2: Data provider adapters": "2: Datenprovider-Adapter",
+  "3: Other adapters": "3: Andere Adapter",
+  "Show/hide PID": "Prozess-ID ein-/ausblenden"
 }

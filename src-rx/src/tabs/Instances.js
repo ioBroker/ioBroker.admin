@@ -259,6 +259,7 @@ class Instances extends Component {
     }
 
     getInstances = async data => {
+        const start = Date.now();
         let instances = [];
         let instancesWorker = await this.props.instancesWorker.getInstances();
         Object.keys(instancesWorker).forEach(el => {
@@ -337,6 +338,7 @@ class Instances extends Component {
             formatted[obj._id] = instance;
         });
 
+        console.log('getInstances: ' + (Date.now() - start));
         this.setState({
             compactGroupCount,
             processes,
@@ -778,7 +780,7 @@ class Instances extends Component {
     }
 
     async getHostsData() {
-        this.props.socket.getHostInfo(this.props.idHost)
+        this.props.socket.getHostInfo(this.props.idHost, false, 10000)
             .catch(error => {
                 window.alert('Cannot read host information: ' + error);
                 return {};

@@ -205,7 +205,7 @@ const Hosts = ({
                }) => {
     const getHostsData = hosts => {
         const promises = hosts.map(obj =>
-            socket.getHostInfo(obj._id)
+            socket.getHostInfo(obj._id, null, 10000)
                 .catch(error => {
                     console.error(error);
                     return error;
@@ -240,11 +240,11 @@ const Hosts = ({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(async () => {
-        let hostsArray = await socket.getHosts(true);
-        const repositoryProm = await socket.getRepository(currentHost, {update: false});
+        let hostsArray = await socket.getHosts(true, false, 10000);
+        const repositoryProm = await socket.getRepository(currentHost, {update: false}, false, 10000);
         hostsArray.forEach(async ({_id}) => {
             let aliveValue = await socket.getState(`${_id}.alive`);
-            setAlive((prev) => ({...prev, [_id]: aliveValue.val === null ? false : aliveValue.val}));
+            setAlive((prev) => ({...prev, [_id]: !aliveValue ? false : !!aliveValue.val}));
         });
         setRepository(repositoryProm);
         setHosts(hostsArray);
