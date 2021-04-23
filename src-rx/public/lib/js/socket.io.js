@@ -106,7 +106,7 @@ function SocketClient () {
                         return this._garbageCollect();
                     }
                 }
-                if (Date.now() - lastPong > 15000) {
+                if (Date.now() - lastPong > 30000) {
                     this.close();
                 }
                 this._garbageCollect();
