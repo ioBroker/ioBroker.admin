@@ -1243,5 +1243,8 @@
   "2: Data provider adapters": "2: adattatori del fornitore di dati",
   "3: Other adapters": "3: Altri adattatori",
   "Show/hide PID": "Mostra/nascondi ID processo",
-  "Are you sure you want to delete the instance %s?": "Sei sicuro di voler eliminare l'istanza %s?"
+  "Are you sure you want to delete the instance %s?": "Sei sicuro di voler eliminare l'istanza %s?",
+  "Ignore version %s": "Ignora la versione %s",
+  "Command": "Comando",
+  "Filter specific compact group": "Filtra gruppo compatto specifico"
 }

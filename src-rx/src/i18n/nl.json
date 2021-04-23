@@ -1243,5 +1243,8 @@
   "2: Data provider adapters": "2: Dataprovideradapters",
   "3: Other adapters": "3: Andere adapters",
   "Show/hide PID": "Toon/verberg proces-ID",
-  "Are you sure you want to delete the instance %s?": "Weet u zeker dat u de instantie %s wilt verwijderen?"
+  "Are you sure you want to delete the instance %s?": "Weet u zeker dat u de instantie %s wilt verwijderen?",
+  "Ignore version %s": "Negeer versie %s",
+  "Command": "Opdracht",
+  "Filter specific compact group": "Filter specifieke compacte groep"
 }

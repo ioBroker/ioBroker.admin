@@ -1247,5 +1247,8 @@
   "2: Data provider adapters": "2: Драйвера поставщика данных",
   "3: Other adapters": "3: другие драйвера",
   "Show/hide PID": "Показать/скрыть идентификатор процесса",
-  "Are you sure you want to delete the instance %s?": "Вы уверены, что хотите удалить экземпляр %s?"
+  "Are you sure you want to delete the instance %s?": "Вы уверены, что хотите удалить экземпляр %s?",
+  "Ignore version %s": "Игнорировать версию %s",
+  "Command": "Команда",
+  "Filter specific compact group": "Фильтровать по compact-группе"
 }

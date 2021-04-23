@@ -1243,5 +1243,8 @@
   "2: Data provider adapters": "2：数据提供程序适配器",
   "3: Other adapters": "3：其他适配器",
   "Show/hide PID": "显示/隐藏进程ID",
-  "Are you sure you want to delete the instance %s?": "您确定要删除实例%s吗？"
+  "Are you sure you want to delete the instance %s?": "您确定要删除实例%s吗？",
+  "Ignore version %s": "忽略版本%s",
+  "Command": "命令",
+  "Filter specific compact group": "筛选特定的紧凑型组"
 }
