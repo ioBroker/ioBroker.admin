@@ -15,6 +15,10 @@ import Typography from '@material-ui/core/Typography';
 import Fab from '@material-ui/core/Fab';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import TextField from '@material-ui/core/TextField';
+import Popover from '@material-ui/core/Popover';
+
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
 
 import {withStyles} from '@material-ui/core/styles';
 
@@ -202,18 +206,51 @@ class EnumsList extends Component {
         search: '',
         enumEditDialog: false,
         enumEditDialogNew: null,
-        enumDeleteDialog: false
+        enumDeleteDialog: false,
+        members: {},
+        categoryPopoverOpen: false,
+        enumPopoverOpen: false
+    }
+
+    enumTemplate = {
+        "type": "enum",
+        "common": {
+            "name": "",
+            "dontDelete": false,
+            "enabled": true,
+            "color": false,
+            "desc": ""
+        },
+        "native": {},
+        "_id": "system.user.new",
+        "enums": {}
+    };
+
+    getEnumTemplate(prefix) {
+        let enumTemplate = JSON.parse(JSON.stringify(this.enumTemplate));
+        enumTemplate._id = prefix + '.new';
+        return enumTemplate
     }
 
     componentDidMount() {
         this.updateData();
     }
 
-    updateData = () => {
-        this.props.socket.getForeignObjects('enum.*', 'enum').then(enums => {
-            this.setState({enums: enums})
-            this.createTree(enums);
-        });
+    updateData = async () => {
+        const enums = await this.props.socket.getForeignObjects('enum.*', 'enum');
+        const members = {}
+        for (let enumKey in enums) {
+            if (enums[enumKey].common.members) {
+                for (let memberKey in enums[enumKey].common.members) {
+                    let member = enums[enumKey].common.members[memberKey];
+                    if (!members[member]) {
+                        members[member] = await this.props.socket.getObject(member);
+                    }
+                }
+            }
+        }
+        this.setState({enums: enums, members: members});
+        this.createTree(enums);
     }
 
     createTree(enums) {
@@ -246,7 +283,7 @@ class EnumsList extends Component {
         console.log(enumsTree);
         this.setState({
             enumsTree: enumsTree,
-            currentCategory: this.state.currentCategory ? this.state.currentCategory : Object.keys(enumsTree.children.enum.children)[0]
+            currentCategory: this.state.currentCategory && enumsTree.children.enum.children[this.state.currentCategory] ? this.state.currentCategory : Object.keys(enumsTree.children.enum.children)[0]
         })
     }
 
@@ -285,13 +322,27 @@ class EnumsList extends Component {
         })).then(() => this.updateData())
     }
 
+    removeMemberFromEnum = (memberId, enumId) => {
+        let enumItem = this.state.enums[enumId];
+        let members = enumItem.common.members;
+        if (members.includes(memberId)) {
+            members.splice(members.indexOf(memberId), 1);
+            this.props.socket.setObject(enumItem._id, enumItem).then(() => {
+                this.updateData();
+            });
+        }
+    } 
+
     renderTree(container) {
         return <div style={{paddingLeft: '10px'}}>
             {container.data && (!this.state.search || container.data._id.toLowerCase().includes(this.state.search.toLowerCase())) ? <EnumBlock
                 enum={container.data}
+                members={this.state.members}
                 moveEnum={this.moveEnum}
+                removeMemberFromEnum={this.removeMemberFromEnum}
                 showEnumEditDialog={this.showEnumEditDialog}
                 showEnumDeleteDialog={this.showEnumDeleteDialog}
+                copyEnum={this.copyEnum}
                 key={container.data._id}
                 getName={this.getName}
                 {...this.props}
@@ -332,6 +383,18 @@ class EnumsList extends Component {
         });
     }
 
+    copyEnum = (enumId) => {
+        let enumItem = JSON.parse(JSON.stringify(this.state.enums[enumId]));
+        let newId;
+        let index = 1;
+        do {
+            newId = enumId + index.toString();
+            index++;
+        } while (this.state.enums[newId]);
+        enumItem._id = newId;
+        this.props.socket.setObject(newId, enumItem).then(() => this.updateData());
+    }
+
     changeEnumFormData = (enumItem) => {
         this.setState({enumEditDialog: enumItem})
     }
@@ -348,16 +411,62 @@ class EnumsList extends Component {
             <DndProvider backend={HTML5Backend}>
                 <Grid container>
                     <Grid md={6} item>
+                    <Fab 
+                        size="small"
+                        id="categoryPopoverButton"
+                        className={this.props.classes.left} 
+                        onClick={()=>this.setState({categoryPopoverOpen: true})}
+                    >
+                        <PersonAddIcon/>
+                    </Fab>
+                    <Popover 
+                        open={this.state.categoryPopoverOpen} 
+                        onClose={() => this.setState({categoryPopoverOpen: false})}
+                        anchorEl={()=>document.getElementById('categoryPopoverButton')}
+                        anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+                    >
+                        <Fab 
+                            size="small" 
+                            className={this.props.classes.left} 
+                            onClick={()=>this.showEnumEditDialog(this.getEnumTemplate('enum'), true)}
+                        >
+                            <PersonAddIcon/>
+                        </Fab>
+                    </Popover>
                     <Tabs
-                        variant="fullWidth"
                         value={this.state.currentCategory}
+                        variant="scrollable"
+                        scrollButtons="auto"
                         onChange={(e, newTab) => this.setState({currentCategory: newTab})}
                     >
                         {Object.keys(this.state.enumsTree.children.enum.children).map((category, index) => 
                             <Tab key={index} label={category} value={category} />
                         )}
                     </Tabs>
-                        <div><input value={this.state.search} onChange={e => this.setState({search: e.target.value})}/></div>
+                        <div>
+                            <TextField value={this.state.search} onChange={e => this.setState({search: e.target.value})}/>
+                            <Fab 
+                                size="small" 
+                                onClick={()=>this.setState({enumPopoverOpen: true})}
+                                id="enumPopoverButton"
+                            >
+                                <PersonAddIcon/>
+                            </Fab>
+                            <Popover 
+                                open={this.state.enumPopoverOpen} 
+                                onClose={() => this.setState({enumPopoverOpen: false})}
+                                anchorEl={()=>document.getElementById('enumPopoverButton')}
+                                anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+                            >
+                                <Fab 
+                                    size="small" 
+                                    className={this.props.classes.left} 
+                                    onClick={()=>this.showEnumEditDialog(this.getEnumTemplate('enum.' + this.state.currentCategory), true)}
+                                >
+                                    <PersonAddIcon/>
+                                </Fab>
+                            </Popover>
+                        </div>
                         {this.renderTree(this.state.enumsTree.children.enum.children[this.state.currentCategory])}
                     </Grid>
                     <Grid md={6} item>

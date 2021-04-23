@@ -51,6 +51,12 @@ function EnumEditDialog(props) {
     const name2Id = name =>
         name.replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_').toLowerCase();
 
+    const changeShortId = (_id, short) => {
+        let idArray = _id.split('.');
+        idArray[idArray.length-1] = short;
+        return idArray.join('.');
+    }
+
     return <Dialog PaperProps={{className: props.classes.dialogPaper}} open={props.open} onClose={props.onClose}>
         <DialogTitle className={props.classes.dialogTitle} style={{padding:12}} >
            { props.t( "Enum parameters" ) }
@@ -64,6 +70,9 @@ function EnumEditDialog(props) {
                         value={ props.enum.common.name }
                         onChange={e=>{
                             let newData = props.enum;
+                            if (name2Id(newData.common.name) === getShortId(newData._id)) {
+                                newData._id = changeShortId(newData._id, name2Id(e.target.value));
+                            }
                             newData.common.name = e.target.value;
                             props.change(newData);
                         }}
@@ -80,9 +89,7 @@ function EnumEditDialog(props) {
                         value={ props.enum._id.split('.')[props.enum._id.split('.').length-1] }
                         onChange={e=>{
                             let newData = props.enum;
-                            let idArray = props.enum._id.split('.');
-                            idArray[idArray.length-1] = e.target.value.replaceAll('.', '_');
-                            newData._id = idArray.join('.');
+                            newData._id = changeShortId(newData._id, name2Id(e.target.value));
                             props.change(newData);
                         }}
                         icon={LocalOfferIcon}
