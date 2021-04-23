@@ -10,6 +10,7 @@ import GroupIcon from '@material-ui/icons/Group';
 import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 function EnumBlock(props) {
     const [{ canDrop, isOver }, drop] = useDrop(() => ({
@@ -62,10 +63,16 @@ function EnumBlock(props) {
                     </IconButton>
                     <IconButton 
                         size="small" 
+                        onClick={()=>{props.copyEnum(props.enum._id)}}
+                    >
+                        <FileCopyIcon style={{ color: textColor }} />
+                    </IconButton>
+                    <IconButton 
+                        size="small" 
                         onClick={()=>{props.showEnumDeleteDialog(props.enum)}} 
                         disabled={props.enum.common.dontDelete}
                     >
-                        <DeleteIcon style={{ color: textColor }} />
+                        <DeleteIcon style={props.enum.common.dontDelete ? null : { color: textColor }} />
                     </IconButton>
                 </div>
                 <CardContent>
@@ -103,34 +110,33 @@ function EnumBlock(props) {
                         </div>
                     </Typography>
                     <div >
-                        {props.enum.common.members ? props.enum.common.members.map(member => member
-                            // group.common.members && group.common.members.includes(props.enum._id) ?
-                            // <Card 
-                            //     key={group._id}  
-                            //     variant="outlined" 
-                            //     className={props.classes.enumGroupMember}
-                            //     style={{ color: textColor, borderColor: textColor + "40" }}
-                            // >
-                            //     {
-                            //         group.common.icon 
-                            //             ? 
-                            //             <span
-                            //                 className={ props.classes.icon }
-                            //                 style={{ backgroundImage: "url(" + group.common.icon + ")" }}
-                            //             /> 
-                            //             : 
-                            //             <GroupIcon className={props.classes.icon} />
-                            //         }
-                            //     {props.getName(group.common.name)}
-                            //     <IconButton
-                            //         size="small"
-                            //         onClick={() => props.removeEnumFromGroup(props.enum._id, group._id)}
-                            //     >
-                            //         <ClearIcon  style={{ color: textColor }} />
-                            //     </IconButton>
-                            // </Card>
-                            // : null
-                        ) : null}
+                        {props.enum.common.members ? props.enum.common.members.map(memberId => {
+                            let member = props.members[memberId];
+                            return <Card 
+                                key={member._id}  
+                                variant="outlined" 
+                                className={props.classes.enumGroupMember}
+                                style={{ color: textColor, borderColor: textColor + "40" }}
+                            >
+                                {
+                                    member.common.icon 
+                                        ? 
+                                        <span
+                                            className={ props.classes.icon }
+                                            style={{ backgroundImage: "url(" + member.common.icon + ")" }}
+                                        /> 
+                                        : 
+                                        <GroupIcon className={props.classes.icon} />
+                                    }
+                                {props.getName(member.common.name)}
+                                <IconButton
+                                    size="small"
+                                    onClick={() => props.removeMemberFromEnum(member._id, props.enum._id)}
+                                >
+                                    <ClearIcon  style={{ color: textColor }} />
+                                </IconButton>
+                            </Card>
+                        }) : null}
                     </div>
                 </CardContent>
             </div>
