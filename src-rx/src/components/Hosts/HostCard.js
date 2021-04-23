@@ -9,6 +9,7 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import CachedIcon from '@material-ui/icons/Cached';
+import BuildIcon from '@material-ui/icons/Build';
 
 import Utils from '@iobroker/adapter-react/Components/Utils';
 
@@ -150,7 +151,7 @@ const styles = theme => ({
     onOffLine: {
         alignSelf: 'center',
         width: '100%',
-        height: 12,
+        height: 4,
         // borderRadius: 20,
 
     },
@@ -219,7 +220,7 @@ const styles = theme => ({
     red: {
         background: '#da0000',
         // border: '1px solid #440202',,
-        animation: '$red 3s ease-in-out infinite alternate'
+        // animation: '$red 3s ease-in-out infinite alternate'
     },
     '@keyframes red': {
         '0%': {
@@ -237,7 +238,7 @@ const styles = theme => ({
         position: 'absolute',
         left: -11,
         // boxShadow: '12px 29px 81px 0px rgb(0 0 0 / 75%)',
-        animation: '$colors 3s ease-in-out infinite'
+        // animation: '$colors 3s ease-in-out infinite'
     },
     '@keyframes colors': {
         '0%': {
@@ -291,7 +292,9 @@ const HostCard = ({
     executeCommandRemove,
     currentHost,
     dialogUpgrade,
-    systemConfig
+    systemConfig,
+    setBaseSettingsDialog,
+    expertMode
 }) => {
 
     const [openCollapse, setCollapse] = useState(false);
@@ -302,16 +305,16 @@ const HostCard = ({
     const refUptime = useRef();
 
     const eventsInputFunc = (_, input) => {
-        inputCache = input ? input.val : '-';
+        inputCache = input && input.val !== null ? `⇥${input.val}` : '-';
         if (refEvents.current) {
-            refEvents.current.innerHTML = `⇥${inputCache} / ↦${outputCache}`;
+            refEvents.current.innerHTML = `${inputCache} / ${outputCache}`;
         }
     };
 
     const eventsOutputFunc = (_, output) => {
-        outputCache = output ? output.val : '-';
+        outputCache = output && output.val !== null ? `↦${output.val}` : '-';
         if (refEvents.current) {
-            refEvents.current.innerHTML = `⇥${inputCache} / ↦${outputCache}`;
+            refEvents.current.innerHTML = `${inputCache} / ${outputCache}`;
         }
     };
 
@@ -425,7 +428,7 @@ const HostCard = ({
             )}>
             <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
             <div
-                style={{color: (color && Utils.invertColor(color, true)) || 'inherit'}}
+                style={{ color: (color && Utils.invertColor(color, true)) || 'inherit' }}
                 className={classes.adapter}>{name}</div>
             <Fab
                 disabled={typeof description === 'string'}
@@ -464,11 +467,21 @@ const HostCard = ({
                     >
                         <EditIcon />
                     </IconButton>
-
+                    {expertMode &&
+                        <Tooltip title={t('Host Base Settings')}>
+                            <div>
+                                <IconButton disabled={!alive} onClick={setBaseSettingsDialog}>
+                                    <BuildIcon className={classes.baseSettingsButton} />
+                                </IconButton>
+                            </div>
+                        </Tooltip>
+                    }
                     <Tooltip title={t('Restart host')}>
-                        <IconButton onClick={executeCommand}>
-                            <CachedIcon />
-                        </IconButton>
+                        <div>
+                            <IconButton disabled={!alive} onClick={executeCommand}>
+                                <CachedIcon />
+                            </IconButton>
+                        </div>
                     </Tooltip>
                     <Tooltip title={t((alive || currentHost) ? 'Upgrade' : 'Remove')}>
                         <IconButton onClick={(alive || currentHost) ? dialogUpgrade : executeCommandRemove}>

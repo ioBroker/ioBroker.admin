@@ -1,12 +1,12 @@
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import withWidth from '@material-ui/core/withWidth';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-import {InputAdornment, LinearProgress, TextField} from '@material-ui/core';
+import { InputAdornment, LinearProgress, TextField } from '@material-ui/core';
 
 import RefreshIcon from '@material-ui/icons/Refresh';
 import ViewListIcon from '@material-ui/icons/ViewList';
@@ -15,14 +15,15 @@ import CloseIcon from '@material-ui/icons/Close';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
-import {useStateLocal} from '../helpers/hooks/useStateLocal';
+import { useStateLocal } from '../helpers/hooks/useStateLocal';
 import HostCard from '../components/Hosts/HostCard';
 import HostRow from '../components/Hosts/HostRow';
 import HostEdit from '../components/Hosts/HostEdit';
-import {Skeleton} from '@material-ui/lab';
-import {JsControllerDialogFunc} from '../dialogs/JsControllerDialog';
+import { Skeleton } from '@material-ui/lab';
+import { JsControllerDialogFunc } from '../dialogs/JsControllerDialog';
 import clsx from 'clsx';
 import Utils from '../Utils';
+import BaseSettingsDialog from '../dialogs/BaseSettingsDialog';
 
 const styles = theme => ({
     grow: {
@@ -56,6 +57,9 @@ const styles = theme => ({
         fontSize: 14,
         fontWeight: 600,
         alignSelf: 'center'
+    },
+    widthButtons:{
+        width: 192,
     },
     tabFlex: {
         display: 'flex',
@@ -123,7 +127,7 @@ const formatInfo = {
 const getHostDescriptionAll = (id, t, classes, hostsData) => {
     const hostData = hostsData ? hostsData[id] : null;
     if (!hostData) {
-        return [<Skeleton/>];
+        return [<Skeleton />];
     }
     if (typeof hostData === 'string') {
         return [hostData];
@@ -139,7 +143,7 @@ const getHostDescriptionAll = (id, t, classes, hostsData) => {
                                 {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
                             </span>
                             :
-                            <Skeleton/>
+                            <Skeleton />
                         }
                     </li>)
             }
@@ -147,17 +151,17 @@ const getHostDescriptionAll = (id, t, classes, hostsData) => {
         <div className={classes.wrapperInfo}>
             <div className={classes.marginRight}>
                 {hostData && typeof hostData === 'object' && Object.keys(hostData).map((value, idx) => idx < 5 &&
-                <div
-                    className={classes.wrapperBlockItem} key={value}>
-                    {hostData && typeof hostData === 'object' ?
-                        <>
-                            <span className={clsx(classes.bold, classes.nowrap)}>{t(value)}: </span>
-                            {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
-                        </>
-                        :
-                        <Skeleton/>
-                    }
-                </div>)}
+                    <div
+                        className={classes.wrapperBlockItem} key={value}>
+                        {hostData && typeof hostData === 'object' ?
+                            <>
+                                <span className={clsx(classes.bold, classes.nowrap)}>{t(value)}: </span>
+                                {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
+                            </>
+                            :
+                            <Skeleton />
+                        }
+                    </div>)}
             </div>
             <div className={classes.marginRight}>
                 {hostData && typeof hostData === 'object' && Object.keys(hostData).map((value, idx) => idx > 4 && idx < 10 &&
@@ -169,7 +173,7 @@ const getHostDescriptionAll = (id, t, classes, hostsData) => {
                                 {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
                             </>
                             :
-                            <Skeleton/>
+                            <Skeleton />
                         }
                     </div>)}
             </div>
@@ -183,7 +187,7 @@ const getHostDescriptionAll = (id, t, classes, hostsData) => {
                                 {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
                             </>
                             :
-                            <Skeleton/>
+                            <Skeleton />
                         }
                     </div>)}
             </div>
@@ -193,16 +197,19 @@ const getHostDescriptionAll = (id, t, classes, hostsData) => {
 
 // every tab should get their data itself from server
 const Hosts = ({
-                   classes,
-                   disabled,
-                   socket,
-                   currentHost,
-                   setCurrentHost,
-                   expertMode,
-                   executeCommand,
-                   systemConfig,
-                   ...props
-               }) => {
+    classes,
+    disabled,
+    socket,
+    currentHost,
+    setCurrentHost,
+    expertMode,
+    executeCommand,
+    systemConfig,
+    navigate,
+    themeName,
+    lang,
+    ...props
+}) => {
     const getHostsData = hosts => {
         const promises = hosts.map(obj =>
             socket.getHostInfo(obj._id, null, 10000)
@@ -211,7 +218,7 @@ const Hosts = ({
                     return error;
                 })
                 .then(data =>
-                    ({id: obj._id, data})));
+                    ({ id: obj._id, data })));
 
         return new Promise(resolve =>
             Promise.all(promises)
@@ -241,10 +248,10 @@ const Hosts = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(async () => {
         let hostsArray = await socket.getHosts(true, false, 10000);
-        const repositoryProm = await socket.getRepository(currentHost, {update: false}, false, 10000);
-        hostsArray.forEach(async ({_id}) => {
+        const repositoryProm = await socket.getRepository(currentHost, { update: false }, false, 10000);
+        hostsArray.forEach(async ({ _id }) => {
             let aliveValue = await socket.getState(`${_id}.alive`);
-            setAlive((prev) => ({...prev, [_id]: !aliveValue ? false : !!aliveValue.val}));
+            setAlive((prev) => ({ ...prev, [_id]: !aliveValue ? false : !!aliveValue.val }));
         });
         setRepository(repositoryProm);
         setHosts(hostsArray);
@@ -255,67 +262,82 @@ const Hosts = ({
     }, [refresh]);
 
     const getAllArrayHosts = useMemo(() => hosts.map(({
-                                                          _id,
-                                                          common: {name, icon, color, title, installedVersion},
-                                                          native: {os: {platform}},
-                                                      }, idx
-        ) => ({
-            renderCard: <HostCard
-                systemConfig={systemConfig}
-                key={_id}
-                setEditDialog={() => setEditDialog({
-                    index: idx,
-                    dialogName: name
-                })}
-                socket={socket}
-                name={name}
-                alive={alive[_id]}
-                color={color}
-                image={icon}
-                title={title}
-                os={platform}
-                description={getHostDescriptionAll(_id, t, classes, hostsData)[0]}
-                available={repository['js-controller']?.latestVersion || '-'}
-                executeCommand={() => executeCommand('restart')}
-                executeCommandRemove={() => executeCommand(`host remove ${name}`)}
-                dialogUpgrade={JsControllerDialogFunc}
-                currentHost={currentHost === _id}
-                installed={installedVersion}
-                events={'⇥ - / ↦ -'}
-                t={t}
-                _id={_id}
-            />,
-            renderRow: <HostRow
-                systemConfig={systemConfig}
-                key={_id}
-                setEditDialog={() => setEditDialog({
-                    index: idx,
-                    dialogName: name
-                })}
-                socket={socket}
-                name={name}
-                alive={alive[_id]}
-                color={color}
-                image={icon}
-                title={title}
-                os={platform}
-                executeCommand={() => executeCommand('restart')}
-                executeCommandRemove={() => executeCommand(`host remove ${name}`)}
-                dialogUpgrade={JsControllerDialogFunc}
-                currentHost={currentHost === _id}
-                description={getHostDescriptionAll(_id, t, classes, hostsData)[1]}
-                available={repository['js-controller']?.latestVersion || '-'}
-                installed={installedVersion}
-                events={'⇥ - / ↦ -'}
-                t={t}
-                _id={_id}
-            />,
-            name
-        })
+        _id,
+        common: { name, icon, color, title, installedVersion },
+        native: { os: { platform } },
+    }, idx
+    ) => ({
+        renderCard: <HostCard
+            systemConfig={systemConfig}
+            key={_id}
+            setEditDialog={() => setEditDialog({
+                index: idx,
+                dialogName: name
+            })}
+            setBaseSettingsDialog={() => setBaseSettingsDialog({
+                index: idx,
+                dialogName: name
+            })}
+            expertMode={expertMode}
+            socket={socket}
+            name={name}
+            alive={alive[_id]}
+            color={color}
+            image={icon}
+            title={title}
+            os={platform}
+            description={getHostDescriptionAll(_id, t, classes, hostsData)[0]}
+            available={repository['js-controller']?.latestVersion || '-'}
+            executeCommand={() => executeCommand('restart')}
+            executeCommandRemove={() => executeCommand(`host remove ${name}`)}
+            dialogUpgrade={JsControllerDialogFunc}
+            currentHost={currentHost === _id}
+            installed={installedVersion}
+            events={'- / -'}
+            t={t}
+            _id={_id}
+        />,
+        renderRow: <HostRow
+            systemConfig={systemConfig}
+            key={_id}
+            setEditDialog={() => setEditDialog({
+                index: idx,
+                dialogName: name
+            })}
+            setBaseSettingsDialog={() => setBaseSettingsDialog({
+                index: idx,
+                dialogName: name
+            })}
+            expertMode={expertMode}
+            socket={socket}
+            name={name}
+            alive={alive[_id]}
+            color={color}
+            image={icon}
+            title={title}
+            os={platform}
+            executeCommand={() => executeCommand('restart')}
+            executeCommandRemove={() => executeCommand(`host remove ${name}`)}
+            dialogUpgrade={JsControllerDialogFunc}
+            currentHost={currentHost === _id}
+            description={getHostDescriptionAll(_id, t, classes, hostsData)[1]}
+            available={repository['js-controller']?.latestVersion || '-'}
+            installed={installedVersion}
+            events={'- / -'}
+            t={t}
+            _id={_id}
+        />,
+        name
+    })
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    ), [hosts, alive, repository, hostsData, classes]);
+    ), [hosts, alive, repository, hostsData, classes,expertMode]);
 
     const [editDialog, setEditDialog] = useState({
+        index: 0,
+        dialogName: ''
+    });
+
+    const [baseSettingsDialog, setBaseSettingsDialog] = useState({
         index: 0,
         dialogName: ''
     });
@@ -324,6 +346,29 @@ const Hosts = ({
         const items = getAllArrayHosts.filter(el => filterText ? el.name.toLowerCase().includes(filterText.toLowerCase()) : true).map(el => viewMode ? el.renderCard : el.renderRow);
         return items.length ? items : t('All items are filtered out');
     }, [getAllArrayHosts, t, filterText, viewMode,]);
+
+    const baseSettingsSettingsDialog = () => {
+
+        if (!baseSettingsDialog.dialogName) {
+            return null;
+        }
+       return <BaseSettingsDialog
+            currentHost={baseSettingsDialog.dialogName}
+            hosts={hosts}
+            themeName={themeName}
+            currentHostName={baseSettingsDialog.dialogName}
+            key="base"
+            onClose={() => setBaseSettingsDialog({
+                    index: 0,
+                    dialogName: ''
+                })}
+            lang={lang}
+            // showAlert={(message, type) => this.showAlert(message, type)}
+            socket={socket}
+            // currentTab={this.state.currentTab}
+            t={t}
+        />
+    }
 
     const renderEditObjectDialog = () => {
         if (!editDialog.dialogName) {
@@ -350,26 +395,27 @@ const Hosts = ({
     }
 
     if (!hosts.length) {
-        return <LinearProgress/>;
+        return <LinearProgress />;
     }
 
     return <TabContainer>
         {renderEditObjectDialog()}
+        {baseSettingsSettingsDialog()}
         <TabHeader>
             <Tooltip title={t('Show / hide List')}>
                 <IconButton onClick={() => setViewMode(!viewMode)}>
-                    {viewMode ? <ViewModuleIcon/> : <ViewListIcon/>}
+                    {viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
                 </IconButton>
             </Tooltip>
             <Tooltip title={t('Reload')}>
                 <IconButton onClick={() => setRefresh(el => !el)}>
-                    <RefreshIcon/>
+                    <RefreshIcon />
                 </IconButton>
             </Tooltip>
-            <div className={classes.grow}/>
+            <div className={classes.grow} />
             {hosts.length > 2 ? <TextField
                 label={t('Filter')}
-                style={{margin: '5px 0'}}
+                style={{ margin: '5px 0' }}
                 value={filterText}
                 onChange={event => setFilterText(event.target.value)}
                 InputProps={{
@@ -379,32 +425,32 @@ const Hosts = ({
                                 size="small"
                                 onClick={() => setFilterText('')}
                             >
-                                <CloseIcon/>
+                                <CloseIcon />
                             </IconButton>
                         </InputAdornment> : null
                     ),
                 }}
             /> : null}
-            <div className={classes.grow}/>
+            <div className={classes.grow} />
         </TabHeader>
         <TabContent overflow="auto">
             <div className={viewMode ? classes.cards : ''}>
                 {!viewMode &&
-                <div className={classes.tabHeaderWrapper}>
-                    <div className={classes.tabHeaderFirstItem}>
-                        {t('Name:')}
-                    </div>
-                    <div className={classes.tabFlex}>
-                        {/*<div className={clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Title:')}</div>*/}
-                        <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>CPU</div>
-                        <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>RAM</div>
-                        <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>{t('Uptime')}</div>
-                        <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{t('Available')}</div>
-                        <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{t('Installed')}</div>
-                        <div className={clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Events')}</div>
-                        <div className={classes.tabHeaderItemButton}/>
-                    </div>
-                </div>}
+                    <div className={classes.tabHeaderWrapper}>
+                        <div className={classes.tabHeaderFirstItem}>
+                            {t('Name:')}
+                        </div>
+                        <div className={classes.tabFlex}>
+                            {/*<div className={clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Title:')}</div>*/}
+                            <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>CPU</div>
+                            <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>RAM</div>
+                            <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>{t('Uptime')}</div>
+                            <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{t('Available')}</div>
+                            <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{t('Installed')}</div>
+                            <div className={clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Events')}</div>
+                            <div className={clsx(classes.tabHeaderItemButton,expertMode && classes.widthButtons)} />
+                        </div>
+                    </div>}
                 {getPanels()}
             </div>
         </TabContent>

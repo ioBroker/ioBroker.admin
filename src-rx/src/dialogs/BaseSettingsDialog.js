@@ -41,7 +41,6 @@ const styles = theme => ({
 class BaseSettingsDialog extends Component {
     constructor(props) {
         super(props);
-
         this.state = {
             currentTab: 0,
             hasChanges: [],

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {Checkbox, FormControl, InputLabel, LinearProgress, MenuItem, Select, Switch} from '@material-ui/core';
+import { Checkbox, FormControl, InputLabel, LinearProgress, MenuItem, Select, Switch } from '@material-ui/core';
 import CustomModal from '../components/CustomModal';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import Icon from '@iobroker/adapter-react/Components/Icon';
@@ -8,19 +8,19 @@ import I18n from '@iobroker/adapter-react/i18n';
 const readWriteArray = [
     {
         Owner: [
-            { name: 'read',   valueNum: 0x400, title: 'read owner' },
-            { name: 'write',  valueNum: 0x200, title: 'write owner' }
+            { name: 'read', valueNum: 0x400, title: 'read owner' },
+            { name: 'write', valueNum: 0x200, title: 'write owner' }
         ]
     },
     {
         Group: [
-            { name: 'read',  valueNum: 0x40, title: 'read group' },
+            { name: 'read', valueNum: 0x40, title: 'read group' },
             { name: 'write', valueNum: 0x20, title: 'write group' }
         ]
     },
     {
         Everyone: [
-            { name: 'read',  valueNum: 0x4, title: 'read everyone' },
+            { name: 'read', valueNum: 0x4, title: 'read everyone' },
             { name: 'write', valueNum: 0x2, title: 'write everyone' }
         ]
     },
@@ -145,7 +145,7 @@ function getBackgroundColor(textColor, themeType) {
     }
 }
 
-const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObject, objects, t, modalEmptyId, themeType}) => {
+const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObject, objects, t, modalEmptyId, themeType }) => {
     const [stateOwnerUser, setStateOwnerUser] = useState(null);
     const [stateOwnerGroup, setStateOwnerGroup] = useState(null);
     const [ownerUsers, setOwnerUsers] = useState([]);
@@ -181,9 +181,9 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
         let users = [];
         const lang = I18n.getLanguage();
 
-        let _differentOwner  = false;
-        let _differentGroup  = false;
-        let _stateOwnerUser  = null;
+        let _differentOwner = false;
+        let _differentGroup = false;
+        let _stateOwnerUser = null;
         let _stateOwnerGroup = null;
         let _valueObjectAccessControl = null;
         let _valueStateAccessControl = null;
@@ -237,27 +237,27 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                     color: obj.common?.color,
                 });
             } else
-            if (key.startsWith('system.user.') && obj?.type === 'user') {
-                users.push({
-                    name: Utils.getObjectNameFromObj(obj, lang).replace('system.user.', ''),
-                    value: key,
-                    icon: obj.common?.icon,
-                    color: obj.common?.color,
-                });
-            }
+                if (key.startsWith('system.user.') && obj?.type === 'user') {
+                    users.push({
+                        name: Utils.getObjectNameFromObj(obj, lang).replace('system.user.', ''),
+                        value: key,
+                        icon: obj.common?.icon,
+                        color: obj.common?.color,
+                    });
+                }
         }
 
-        _stateOwnerUser  = _stateOwnerUser  || objects['system.config'].common.defaultNewAcl.owner;
+        _stateOwnerUser = _stateOwnerUser || objects['system.config'].common.defaultNewAcl.owner;
         _stateOwnerGroup = _stateOwnerGroup || objects['system.config'].common.defaultNewAcl.ownerGroup;
         _valueObjectAccessControl = _valueObjectAccessControl || objects['system.config'].common.defaultNewAcl.object;
-        setValueObjectAccessControl(_valueObjectAccessControl);
+        setValueObjectAccessControl(isNaN(_valueObjectAccessControl) ? objects['system.config'].common.defaultNewAcl.object : _valueObjectAccessControl);
 
         if (_checkState) {
             _valueStateAccessControl = _valueStateAccessControl || objects['system.config'].common.defaultNewAcl.state;
-            setValueStateAccessControl(_valueStateAccessControl);
+            setValueStateAccessControl(isNaN(_valueStateAccessControl) ? objects['system.config'].common.defaultNewAcl.state : _valueStateAccessControl);
         }
 
-        const userItem  = users.find(item => item.value === _stateOwnerUser);
+        const userItem = users.find(item => item.value === _stateOwnerUser);
         const groupItem = groups.find(item => item.value === _stateOwnerGroup);
 
         setStateOwnerUser(userItem);
@@ -283,7 +283,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
     useEffect(() => {
         if (applyToChildren) {
             if (differentGroup) {
-                stateOwnerGroup.value !== 'different' && setStateOwnerGroup({name: different, value: 'different'});
+                stateOwnerGroup.value !== 'different' && setStateOwnerGroup({ name: different, value: 'different' });
                 if (!ownerGroups.find(item => item.value === 'different')) {
                     setOwnerGroups(el => ([{
                         name: different,
@@ -293,7 +293,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
             }
 
             if (differentOwner) {
-                stateOwnerUser.value !== 'different' && setStateOwnerUser({name: different, value: 'different'});
+                stateOwnerUser.value !== 'different' && setStateOwnerUser({ name: different, value: 'different' });
                 if (!ownerUsers.find(item => item.value === 'different')) {
                     setOwnerUsers(el => ([{
                         name: different,
@@ -316,7 +316,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
     }, [applyToChildren, stateOwnerUser, stateOwnerGroup, differentOwner, differentGroup]);
 
     if (!ids.length) {
-        return <LinearProgress/>;
+        return <LinearProgress />;
     } else {
         return <CustomModal
             open={open}
@@ -329,9 +329,9 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                 setProgress(true);
                 setTimeout(async () => {
                     if (!applyToChildren) {
-                        let newAcl        = JSON.parse(JSON.stringify(objects[selected].acl || {}));
-                        newAcl.object     = valueObjectAccessControl;
-                        newAcl.owner      = stateOwnerUser.value;
+                        let newAcl = JSON.parse(JSON.stringify(objects[selected].acl || {}));
+                        newAcl.object = valueObjectAccessControl;
+                        newAcl.owner = stateOwnerUser.value;
                         newAcl.ownerGroup = stateOwnerGroup.value;
 
                         if (objects[selected].type === 'state') {
@@ -380,16 +380,16 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                         <Select
                             disabled={progress}
                             value={stateOwnerUser.value}
-                            renderValue={value => <span>{stateOwnerUser.icon ? <Icon src={stateOwnerUser.icon} style={{width: 16, height: 16, marginRight: 8}}/> : null}{stateOwnerUser.name}</span>}
-                            style={stateOwnerUser.value === 'different' ? { opacity: 0.5 } : {color: stateOwnerUser.color || undefined, backgroundColor: getBackgroundColor(stateOwnerUser.color, themeType)}}
+                            renderValue={value => <span>{stateOwnerUser.icon ? <Icon src={stateOwnerUser.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}{stateOwnerUser.name}</span>}
+                            style={stateOwnerUser.value === 'different' ? { opacity: 0.5 } : { color: stateOwnerUser.color || undefined, backgroundColor: getBackgroundColor(stateOwnerUser.color, themeType) }}
                             onChange={el => {
                                 const userItem = ownerUsers.find(item => item.value === el.target.value);
                                 setStateOwnerUser(userItem);
                                 setDisabledButton(false);
                             }}
                         >
-                            {ownerUsers.map(el => <MenuItem style={el.value === 'different' ? { opacity: 0.5 } : {color: el.color || undefined, backgroundColor: getBackgroundColor(el.color, themeType)}} key={el.value} value={el.value}>
-                                {el.icon ? <Icon src={el.icon} style={{width: 16, height: 16, marginRight: 8}}/> : null}
+                            {ownerUsers.map(el => <MenuItem style={el.value === 'different' ? { opacity: 0.5 } : { color: el.color || undefined, backgroundColor: getBackgroundColor(el.color, themeType) }} key={el.value} value={el.value}>
+                                {el.icon ? <Icon src={el.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}
                                 {el.name}
                             </MenuItem>)}
                         </Select>
@@ -399,16 +399,16 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                         <Select
                             disabled={progress}
                             value={stateOwnerGroup.value}
-                            renderValue={value => <span>{stateOwnerGroup.icon ? <Icon src={stateOwnerGroup.icon} style={{width: 16, height: 16, marginRight: 8}}/> : null}{stateOwnerGroup.name}</span>}
-                            style={stateOwnerGroup.value === 'different' ? { opacity: 0.5 } : {color: stateOwnerGroup.color || undefined, backgroundColor: getBackgroundColor(stateOwnerGroup.color, themeType)}}
+                            renderValue={value => <span>{stateOwnerGroup.icon ? <Icon src={stateOwnerGroup.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}{stateOwnerGroup.name}</span>}
+                            style={stateOwnerGroup.value === 'different' ? { opacity: 0.5 } : { color: stateOwnerGroup.color || undefined, backgroundColor: getBackgroundColor(stateOwnerGroup.color, themeType) }}
                             onChange={el => {
                                 const groupItem = ownerGroups.find(item => item.value === el.target.value);
                                 setStateOwnerGroup(groupItem);
                                 setDisabledButton(false);
                             }}
                         >
-                            {ownerGroups.map(el => <MenuItem key={el.value} value={el.value} style={el.value === 'different' ? { opacity: 0.5 } : {color: el.color || undefined, backgroundColor: getBackgroundColor(el.color, themeType)}}>
-                                {el.icon ? <Icon src={el.icon} style={{width: 16, height: 16, marginRight: 8}}/> : null}
+                            {ownerGroups.map(el => <MenuItem key={el.value} value={el.value} style={el.value === 'different' ? { opacity: 0.5 } : { color: el.color || undefined, backgroundColor: getBackgroundColor(el.color, themeType) }}>
+                                {el.icon ? <Icon src={el.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}
                                 {el.name}
                             </MenuItem>)}
                         </Select>
@@ -436,7 +436,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                     <div style={applyToChildren ? { color: 'green' } : null}>{t('to apply with children')} {(modalEmptyId || childrenCount > 1) ? `(${childrenCount} ${t('object(s)')})` : ''}</div>
                 </div>
 
-                {progress && <LinearProgress/>}
+                {progress && <LinearProgress />}
 
                 <div style={{ overflowY: 'auto' }}>
                     <div>
