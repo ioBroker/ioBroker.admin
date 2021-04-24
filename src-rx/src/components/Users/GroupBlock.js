@@ -12,9 +12,6 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 function GroupBlock(props) {
-    function canMeDropClosure(monitor) {
-        return canMeDrop( monitor, props );
-    }
     const [{ CanDrop, isOver, isCanDrop }, drop] = useDrop(() => ({
         accept: 'user',
         drop: () => ({ groupId: props.group._id }),
@@ -23,7 +20,7 @@ function GroupBlock(props) {
             isOver: monitor.isOver(),
             CanDrop: monitor.canDrop()
         }),
-    }));
+    }), [props.group.common.members]);
     let opacity =  .7; 
     let backgroundColor = '';
     const isActive = CanDrop && isOver;
