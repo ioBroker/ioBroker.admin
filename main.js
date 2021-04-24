@@ -502,6 +502,9 @@ function updateRatings() {
                 } catch (e) {
                     adapter.log.error('Cannot parse ratings: ' + e);
                 }
+                if (!adapter._ratings || typeof adapter._ratings !== 'object' || Array.isArray(adapter._ratings)) {
+                    adapter._ratings = {};
+                }
                 adapter._ratings.uuid = uuid;
                 resolve(adapter._ratings);
             }
