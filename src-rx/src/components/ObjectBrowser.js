@@ -1558,16 +1558,28 @@ class ObjectBrowser extends Component {
 
         props.socket.getObjects(true, true)
             .then(objects => {
+                this.systemConfig = objects['system.config'] || {};
+                this.systemConfig.common = this.systemConfig.common || {};
+                this.systemConfig.common.defaultNewAcl = this.systemConfig.common.defaultNewAcl || {};
+                this.systemConfig.common.defaultNewAcl.owner = this.systemConfig.common.defaultNewAcl.owner || 'system.user.admin';
+                this.systemConfig.common.defaultNewAcl.ownerGroup = this.systemConfig.common.defaultNewAcl.ownerGroup || 'system.group.administrator';
+                if (typeof this.systemConfig.common.defaultNewAcl.state !== 'number'){
+                    this.systemConfig.common.defaultNewAcl.state = 0x664;
+                }
+                if (typeof this.systemConfig.common.defaultNewAcl.object !== 'number'){
+                    this.systemConfig.common.defaultNewAcl.state = 0x664;
+                }
+
                 if (props.types) {
                     this.objects = {};
                     Object.keys(objects).forEach(id => {
                         const type = objects[id] && objects[id].type;
                         if (type && (
-                            type === 'channel' ||
-                            type === 'device' ||
-                            type === 'enum' ||
-                            type === 'folder' ||
-                            type === 'adapter' ||
+                            type === 'channel'  ||
+                            type === 'device'   ||
+                            type === 'enum'     ||
+                            type === 'folder'   ||
+                            type === 'adapter'  ||
                             type === 'instance' ||
                             props.types.includes(type))) {
                             this.objects[id] = objects[id];
@@ -2939,7 +2951,7 @@ class ObjectBrowser extends Component {
         item.data.aclTooltip = item.data.aclTooltip || this.renderTooltipAccessControl(item.data.obj.acl);
 
         const acl = item.data.obj.acl ? (item.data.obj.type === 'state' ? item.data.obj.acl.state : item.data.obj.acl.object) : 0;
-        const aclSystemConfig = item.data.obj.acl && this.objects['system.config'] ? (item.data.obj.type === 'state' ? this.objects['system.config'].common.defaultNewAcl.state : this.objects['system.config'].common.defaultNewAcl.object) : 0;
+        const aclSystemConfig = item.data.obj.acl && (item.data.obj.type === 'state' ? this.systemConfig.common.defaultNewAcl.state : this.systemConfig.common.defaultNewAcl.object);
         return [
             this.props.expertMode && this.props.objectEditOfAccessControl ? <Tooltip key="acl" title={item.data.aclTooltip}><IconButton className={classes.cellButtonMinWidth} onClick={() =>
                 this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })

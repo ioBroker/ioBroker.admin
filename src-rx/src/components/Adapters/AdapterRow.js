@@ -129,8 +129,9 @@ const styles = theme => ({
         display: 'flex'
     },
     sentry: {
-        width: 24,
-        height: 24,
+        width: 21,
+        height: 21,
+        marginTop: 3,
         objectFit: 'fill',
         filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)'
     },

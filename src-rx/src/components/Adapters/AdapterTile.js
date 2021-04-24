@@ -231,9 +231,10 @@ const styles = theme => ({
         marginRight:5
     },
     sentry: {
-        width: 24,
-        height: 24,
+        width: 21,
+        height: 21,
         objectFit: 'fill',
+        marginTop: 3,
         filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)'
     },
 });

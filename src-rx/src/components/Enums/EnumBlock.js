@@ -24,7 +24,7 @@ function EnumBlock(props) {
     const [{ isDragging }, dragRef, preview] = useDrag(
         {
             type: 'enum',
-            item: {enum_id: props.enum._id}, 
+            item: {enum_id: props.enum._id},
             end: (item, monitor) => {
                 const dropResult = monitor.getDropResult();
                 props.moveEnum(item.enum_id, dropResult.enum_id);
@@ -35,8 +35,8 @@ function EnumBlock(props) {
             }),
         }
     );
-    
-    const opacity = isDragging ? 0.4 : 1; 
+
+    const opacity = isDragging ? 0.4 : 1;
 
     let textColor = !props.enum ||  !props.enum.common || !props.enum.common.color || Color(props.enum.common.color).hsl().object().l > 50 ? '#000000' : '#FFFFFF';
     if (!props.enum.common.color) {
@@ -53,28 +53,28 @@ function EnumBlock(props) {
     return <div ref={drop}>
         <DragPreviewImage connect={preview}/>
         <Card   ref={dragRef}
-            style={ style } 
-            className={props.classes.enumGroupCard2} 
-        
-            
+            style={ style }
+            className={props.classes.enumGroupCard2}
+
+
         >
             <div className={props.classes.enumCardContent}>
                 <div className={props.classes.right}>
-                    <IconButton 
-                        size="small" 
+                    <IconButton
+                        size="small"
                         onClick={()=>{props.showEnumEditDialog(props.enum, false)}}
                     >
                         <EditIcon style={{ color: textColor }} />
                     </IconButton>
-                    <IconButton 
-                        size="small" 
+                    <IconButton
+                        size="small"
                         onClick={()=>{props.copyEnum(props.enum._id)}}
                     >
                         <FileCopyIcon style={{ color: textColor }} />
                     </IconButton>
-                    <IconButton 
-                        size="small" 
-                        onClick={()=>{props.showEnumDeleteDialog(props.enum)}} 
+                    <IconButton
+                        size="small"
+                        onClick={()=>{props.showEnumDeleteDialog(props.enum)}}
                         disabled={props.enum.common.dontDelete}
                     >
                         <DeleteIcon style={props.enum.common.dontDelete ? null : { color: textColor }} />
@@ -84,12 +84,12 @@ function EnumBlock(props) {
                     <Typography gutterBottom component="div" className={props.classes.enumGroupTitle}>
                         {
                             props.enum.common.icon
-                                ? 
+                                ?
                                 <span
                                     className={ props.classes.icon }
                                     style={{ backgroundImage: "url(" + props.enum.common.icon + ")" }}
                                 />
-                                : 
+                                :
                                 <ListIcon className={props.classes.icon} />
                         }
                         <div>
@@ -97,43 +97,46 @@ function EnumBlock(props) {
                                 <span className={props.classes.enumGroupEnumName}>
                                     {props.getName(props.enum.common.name)}
                                 </span>
-                                <span className={props.classes.enumGroupEnumID}> 
+                                <span className={props.classes.enumGroupEnumID}>
                                     {props.enum._id}
                                 </span>
                             </div>
                             <span>
                             {
-                                props.enum.common.desc !== '' 
-                                    ? 
-                                    <div className={props.classes.enumName}> 
+                                props.enum.common.desc !== ''
+                                    ?
+                                    <div className={props.classes.enumName}>
                                         {props.getName(props.enum.common.desc)}
-                                    </div> 
-                                    : 
+                                    </div>
+                                    :
                                     null
                             }
                             </span>
                         </div>
                     </Typography>
                     <div >
-                        {props.enum.common.members ? props.enum.common.members.map(memberId => {
+                        {props.enum?.common?.members ? props.enum.common.members.map(memberId => {
                             let member = props.members[memberId];
-                            return <Card 
-                                key={member._id}  
-                                variant="outlined" 
+                            if (!member) {
+                                return null;
+                            }
+                            return <Card
+                                key={member._id}
+                                variant="outlined"
                                 className={props.classes.enumGroupMember}
                                 style={{ color: textColor, borderColor: textColor + "40" }}
                             >
                                 {
-                                    member.common.icon 
-                                        ? 
+                                    member.common?.icon
+                                        ?
                                         <span
                                             className={ props.classes.icon }
                                             style={{ backgroundImage: "url(" + member.common.icon + ")" }}
-                                        /> 
-                                        : 
+                                        />
+                                        :
                                         <ListIcon className={props.classes.icon} />
                                     }
-                                {props.getName(member.common.name)}
+                                {member.common?.name ? props.getName(member.common?.name) : null}
                                 <IconButton
                                     size="small"
                                     onClick={() => props.removeMemberFromEnum(member._id, props.enum._id)}
@@ -145,7 +148,7 @@ function EnumBlock(props) {
                     </div>
                 </CardContent>
             </div>
-        </Card> 
+        </Card>
     </div>
 }
 

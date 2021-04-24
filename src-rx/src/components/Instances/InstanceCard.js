@@ -581,9 +581,9 @@ const InstanceCard = memo(({
                         </div>}
                     {expertMode && <div className={classes.displayFlex}>
                         <InstanceInfo icon={<LowPriorityIcon className={classes.marginRight} color="inherit" />} tooltip={t('Start order (tier)')}>
-                            {arrayTier.find(el=>el.value === tier)?.desc || arrayTier[2]}
+                            {name === 'admin' ? t('Always first') : (arrayTier.find(el => el.value === tier)?.desc || arrayTier[2])}
                         </InstanceInfo>
-                        <Tooltip title={t('Edit start order (tier)')}>
+                        {name !== 'admin' ? <Tooltip title={t('Edit start order (tier)')}>
                             <IconButton
                                 size="small"
                                 className={classes.button}
@@ -594,7 +594,7 @@ const InstanceCard = memo(({
                             >
                                 <EditIcon />
                             </IconButton>
-                        </Tooltip>
+                        </Tooltip> : null}
                     </div>}
                     <Hidden smUp>
                         <IconButton

@@ -1246,5 +1246,13 @@
   "Are you sure you want to delete the instance %s?": "Czy na pewno chcesz usunąć instancję %s?",
   "Ignore version %s": "Ignoruj wersję %s",
   "Command": "Komenda",
-  "Filter specific compact group": "Filtruj określoną grupę kompaktową"
+  "Filter specific compact group": "Filtruj określoną grupę kompaktową",
+  "You voted for %s on %s": "Głosowałeś na v%s w %s roku",
+  "Vote:": "Głosować:",
+  "Rate how good this version of the adapter works on your system. You can vote for every new version.": "Oceń, jak dobrze ta wersja adaptera działa w Twoim systemie. Możesz głosować na każdą nową wersję.",
+  "Max length %s characters": "Maksymalna długość %s znaków",
+  "Rate": "Oceniać",
+  "Comments": "Komentarze",
+  "Your comment": "Twój komentarz",
+  "Always first": "Zawsze pierwszy"
 }

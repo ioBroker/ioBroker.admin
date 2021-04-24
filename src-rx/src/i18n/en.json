@@ -1246,5 +1246,13 @@
   "Are you sure you want to delete the instance %s?": "Are you sure you want to delete the instance %s?",
   "Ignore version %s": "Ignore version %s",
   "Command": "Command",
-  "Filter specific compact group": "Filter specific compact group"
+  "Filter specific compact group": "Filter specific compact group",
+  "You voted for %s on %s": "You voted for v%s on %s",
+  "Vote:": "Vote:",
+  "Rate how good this version of the adapter works on your system. You can vote for every new version.": "Rate how good this version of the adapter works on your system. You can vote for every new version.",
+  "Max length %s characters": "Max length %s characters",
+  "Rate": "Rate",
+  "Comments": "Comments",
+  "Your comment": "Your comment",
+  "Always first": "Always first"
 }

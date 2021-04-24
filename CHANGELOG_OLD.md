@@ -1,3 +1,6 @@
+## 5.0.3 (2021-04-17)
+* (bluefox) Admin5: Many new features implemented
+
 ## 5.0.2 (2020-12-26)
 * (bluefox) Merged the changes from admin4
 

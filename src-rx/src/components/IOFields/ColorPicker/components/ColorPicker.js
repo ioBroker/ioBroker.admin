@@ -51,11 +51,11 @@ const ColorPicker =
             {...TextFieldProps}
             {...custom}
         />
-        <Popover 
-            open={showPicker} 
+        <Popover
+            open={showPicker}
             onClose={() => setShowPicker(false)}
             anchorEl={()=>fieldRef.current}
-            anchorOrigin={{vertical: 'bottom'}}
+            anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
         >
             <PickerDialog
                 value={value === undefined ? internalValue : value}

@@ -1246,5 +1246,13 @@
   "Are you sure you want to delete the instance %s?": "您确定要删除实例%s吗？",
   "Ignore version %s": "忽略版本%s",
   "Command": "命令",
-  "Filter specific compact group": "筛选特定的紧凑型组"
+  "Filter specific compact group": "筛选特定的紧凑型组",
+  "You voted for %s on %s": "您在年对v%s投了赞成票%s",
+  "Vote:": "投票：",
+  "Rate how good this version of the adapter works on your system. You can vote for every new version.": "评估此版本的适配器在系统上的运行情况。您可以为每个新版本投票。",
+  "Max length %s characters": "最大长度%s个字符",
+  "Rate": "速度",
+  "Comments": "注释",
+  "Your comment": "你的评论",
+  "Always first": "永远第一"
 }

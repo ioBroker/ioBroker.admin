@@ -1250,5 +1250,13 @@
   "Are you sure you want to delete the instance %s?": "Вы уверены, что хотите удалить экземпляр %s?",
   "Ignore version %s": "Игнорировать версию %s",
   "Command": "Команда",
-  "Filter specific compact group": "Фильтровать по compact-группе"
+  "Filter specific compact group": "Фильтровать по compact-группе",
+  "You voted for %s on %s": "Вы голосовали за v%s %s",
+  "Vote:": "Голосование:",
+  "Rate how good this version of the adapter works on your system. You can vote for every new version.": "Оцените, насколько хорошо эта версия адаптера работает в вашей системе. Вы можете проголосовать за каждую новую версию.",
+  "Max length %s characters": "Максимальная длина %s символов",
+  "Rate": "Оценить",
+  "Comments": "Комментарии",
+  "Your comment": "Твой комментарий",
+  "Always first": "Всегда первый"
 }
