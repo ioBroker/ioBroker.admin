@@ -5,8 +5,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
 import Checkbox from '@material-ui/core/Checkbox';
-import PersonIcon from '@material-ui/icons/Person';
-import GroupIcon from '@material-ui/icons/Group';
+import ListIcon from '@material-ui/icons/List';
 import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -44,6 +43,9 @@ function EnumBlock(props) {
     if( props.enum.common.color )
     {
         style.backgroundColor = props.enum.common.color;
+        if (!props.enum.common.color) {
+            textColor = null;
+        }
     }
     return <div ref={drop}>
         <DragPreviewImage connect={preview}/>
@@ -85,7 +87,7 @@ function EnumBlock(props) {
                                     style={{ backgroundImage: "url(" + props.enum.common.icon + ")" }}
                                 />
                                 : 
-                                <PersonIcon className={props.classes.icon} />
+                                <ListIcon className={props.classes.icon} />
                         }
                         <div>
                             <div>
@@ -126,7 +128,7 @@ function EnumBlock(props) {
                                             style={{ backgroundImage: "url(" + member.common.icon + ")" }}
                                         /> 
                                         : 
-                                        <GroupIcon className={props.classes.icon} />
+                                        <ListIcon className={props.classes.icon} />
                                     }
                                 {props.getName(member.common.name)}
                                 <IconButton

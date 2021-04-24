@@ -17,8 +17,10 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import TextField from '@material-ui/core/TextField';
 import Popover from '@material-ui/core/Popover';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
 
-import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import AddIcon from '@material-ui/icons/Add';
 
 import {withStyles} from '@material-ui/core/styles';
 
@@ -197,6 +199,15 @@ const DragObjectBrowser = (props) => {
     />
 }
 
+const enumTemplates = {
+    'favorites': {
+        _id: 'enum.favorites',
+        common: {
+            name: 'Favorites'
+        }
+    }
+}
+
 class EnumsList extends Component {
     state = {
         enums: null,
@@ -222,14 +233,22 @@ class EnumsList extends Component {
             "desc": ""
         },
         "native": {},
-        "_id": "system.user.new",
-        "enums": {}
+        "_id": "enum.new",
+        "members": []
     };
 
     getEnumTemplate(prefix) {
         let enumTemplate = JSON.parse(JSON.stringify(this.enumTemplate));
         enumTemplate._id = prefix + '.new';
         return enumTemplate
+    }
+
+    createEnumTemplate(prefix, templateName) {
+        let enumTemplate = this.getEnumTemplate(prefix);
+        let templateValues = enumTemplates[templateName];
+        enumTemplate._id = templateValues._id;
+        enumTemplate.common = {...enumTemplate.common, ...templateValues.common};
+        this.props.socket.setObject(enumTemplate._id, enumTemplate).then(()=>this.updateData());
     }
 
     componentDidMount() {
@@ -417,7 +436,7 @@ class EnumsList extends Component {
                         className={this.props.classes.left} 
                         onClick={()=>this.setState({categoryPopoverOpen: true})}
                     >
-                        <PersonAddIcon/>
+                        <AddIcon/>
                     </Fab>
                     <Popover 
                         open={this.state.categoryPopoverOpen} 
@@ -425,13 +444,16 @@ class EnumsList extends Component {
                         anchorEl={()=>document.getElementById('categoryPopoverButton')}
                         anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
                     >
-                        <Fab 
-                            size="small" 
-                            className={this.props.classes.left} 
-                            onClick={()=>this.showEnumEditDialog(this.getEnumTemplate('enum'), true)}
-                        >
-                            <PersonAddIcon/>
-                        </Fab>
+                        <MenuList>
+                            {this.state.enumsTree.children.enum.children['favorites'] ? null :
+                                <MenuItem onClick={()=>this.createEnumTemplate('enum', 'favorites')}>
+                                    {this.props.t('Favorites')}
+                                </MenuItem>
+                            }
+                            <MenuItem onClick={()=>this.showEnumEditDialog(this.getEnumTemplate('enum'), true)}>
+                                {this.props.t('Custom enum')}
+                            </MenuItem>
+                        </MenuList>
                     </Popover>
                     <Tabs
                         value={this.state.currentCategory}
@@ -450,7 +472,7 @@ class EnumsList extends Component {
                                 onClick={()=>this.setState({enumPopoverOpen: true})}
                                 id="enumPopoverButton"
                             >
-                                <PersonAddIcon/>
+                                <AddIcon/>
                             </Fab>
                             <Popover 
                                 open={this.state.enumPopoverOpen} 
@@ -458,13 +480,11 @@ class EnumsList extends Component {
                                 anchorEl={()=>document.getElementById('enumPopoverButton')}
                                 anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
                             >
-                                <Fab 
-                                    size="small" 
-                                    className={this.props.classes.left} 
-                                    onClick={()=>this.showEnumEditDialog(this.getEnumTemplate('enum.' + this.state.currentCategory), true)}
-                                >
-                                    <PersonAddIcon/>
-                                </Fab>
+                                <MenuList>
+                                    <MenuItem onClick={()=>this.showEnumEditDialog(this.getEnumTemplate('enum.' + this.state.currentCategory), true)}>
+                                        {this.props.t('Custom group')}
+                                    </MenuItem>
+                                </MenuList>
                             </Popover>
                         </div>
                         {this.renderTree(this.state.enumsTree.children.enum.children[this.state.currentCategory])}

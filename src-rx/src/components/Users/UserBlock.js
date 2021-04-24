@@ -31,6 +31,9 @@ function UserBlock(props) {
     const opacity = isDragging ? 0.4 : 1; 
 
     let textColor = !props.user ||  !props.user.common || !props.user.common.color || Color(props.user.common.color).hsl().object().l > 50 ? '#000000' : '#FFFFFF';
+    if (!props.user.common.color) {
+        textColor = null;
+    }
     let style = { cursor: 'grab', opacity, overflow: "hidden", color: textColor }
     if( props.user.common.color )
     {
@@ -72,7 +75,7 @@ function UserBlock(props) {
                     onClick={()=>{props.showUserDeleteDialog(props.user)}} 
                     disabled={props.user.common.dontDelete}
                 >
-                    <DeleteIcon style={{ color: textColor }} />
+                    <DeleteIcon style={props.user.common.dontDelete ? null : { color: textColor }} />
                 </IconButton>
             </div>
             <CardContent>

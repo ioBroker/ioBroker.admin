@@ -40,7 +40,9 @@ function GroupBlock(props) {
         '#FFFFFF' 
         : 
         '#000000';
-
+    if (!props.group.common.color) {
+        textColor = null;
+    }
     let style = { opacity, overflow: "hidden", color: textColor  };
     if( props.group.common.color )
     {
@@ -64,7 +66,7 @@ function GroupBlock(props) {
                 onClick={()=>{props.showGroupDeleteDialog(props.group)}} 
                 disabled={props.group.common.dontDelete}
             >
-                <DeleteIcon style={{ color: textColor }} />
+                <DeleteIcon style={props.group.common.dontDelete ? null : { color: textColor }} />
             </IconButton>
         </div>
         <CardContent>
