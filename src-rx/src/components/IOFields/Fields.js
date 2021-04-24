@@ -10,7 +10,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 
 import ColorPicker from './ColorPicker';
 
-export function EnumsTextField(props) {
+export function IOTextField(props) {
     let Icon = props.icon;
     return <div className={props.classes.formContainer}>
         {
@@ -40,7 +40,7 @@ export function EnumsTextField(props) {
     </div>;
 }
 
-let EnumsColorPicker = function (props) {
+let IOColorPicker = function (props) {
     let Icon = props.icon;
     return <div className="CP_container">
         {
@@ -76,15 +76,15 @@ let EnumsColorPicker = function (props) {
     </div>;
 };
 
-EnumsColorPicker.propTypes = {
+IOColorPicker.propTypes = {
     label: PropTypes.string,
     name: PropTypes.string,
     value: PropTypes.any,
     formData: PropTypes.object,
 };
-export {EnumsColorPicker};
+export {IOColorPicker};
 
-let EnumsFileInput = function (props) {
+let IOFileInput = function (props) {
     let Icon = props.icon;
     const onDrop = useCallback(acceptedFiles => {
         const reader = new FileReader();
@@ -137,4 +137,4 @@ let EnumsFileInput = function (props) {
     </div>;
 };
 
-export {EnumsFileInput};
+export {IOFileInput};

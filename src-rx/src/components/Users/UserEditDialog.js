@@ -16,7 +16,7 @@ import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import ColorLensIcon from '@material-ui/icons/ColorLens';
 import ImageIcon from '@material-ui/icons/Image';
 
-import {UsersTextField, UsersColorPicker, UsersFileInput} from './Fields';
+import {IOTextField, IOColorPicker, IOFileInput} from '../IOFields/Fields';
 import Utils from '../Utils';
 
 function UserEditDialog(props) {
@@ -59,7 +59,7 @@ function UserEditDialog(props) {
         <DialogContent >
             <Grid  container spacing={4} className={props.classes.dialog}>
                 <Grid item xs={12} md={6}>
-                    <UsersTextField 
+                    <IOTextField 
                         label="Name" 
                         t={props.t} 
                         value={ props.user.common.name }
@@ -74,7 +74,7 @@ function UserEditDialog(props) {
                     />
                 </Grid>
                  <Grid item xs={12} md={6}>
-                    <UsersTextField 
+                    <IOTextField 
                         label="ID edit" 
                         t={props.t} 
                         disabled={props.user.common.dontDelete}
@@ -91,7 +91,7 @@ function UserEditDialog(props) {
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <UsersTextField 
+                    <IOTextField 
                         label="ID preview" 
                         t={props.t} 
                         disabled
@@ -101,7 +101,7 @@ function UserEditDialog(props) {
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <UsersTextField 
+                    <IOTextField 
                         label="Description" 
                         t={props.t} 
                         value={ props.user.common.desc }
@@ -115,7 +115,7 @@ function UserEditDialog(props) {
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <UsersTextField 
+                    <IOTextField 
                         label="Password" 
                         t={props.t} 
                         value={ props.user.common.password }
@@ -131,7 +131,7 @@ function UserEditDialog(props) {
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <UsersTextField 
+                    <IOTextField 
                         label="Password repeat" 
                         t={props.t} 
                         value={ props.user.common.passwordRepeat }
@@ -147,7 +147,7 @@ function UserEditDialog(props) {
                     />                
                 </Grid>
                  <Grid item xs={12} md={6}>
-                    <UsersFileInput 
+                    <IOFileInput 
                         label="Icon" 
                         t={props.t} 
                         value={ props.user.common.icon }
@@ -162,7 +162,7 @@ function UserEditDialog(props) {
                     />                
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <UsersColorPicker 
+                    <IOColorPicker 
                         label="Color" 
                         t={props.t} 
                         value={ props.user.common.color }

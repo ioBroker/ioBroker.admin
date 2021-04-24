@@ -16,7 +16,7 @@ import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import ColorLensIcon from '@material-ui/icons/ColorLens';
 import ImageIcon from '@material-ui/icons/Image';
 
-import {EnumsTextField, EnumsColorPicker, EnumsFileInput} from './Fields';
+import {IOTextField, IOColorPicker, IOFileInput} from '../IOFields/Fields';
 import Utils from '../Utils';
 
 function EnumEditDialog(props) {
@@ -64,7 +64,7 @@ function EnumEditDialog(props) {
         <DialogContent >
             <Grid  container spacing={4} className={props.classes.dialog}>
                 <Grid item xs={12} md={6}>
-                    <EnumsTextField 
+                    <IOTextField 
                         label="Name" 
                         t={props.t} 
                         value={ props.enum.common.name }
@@ -82,7 +82,7 @@ function EnumEditDialog(props) {
                     />
                 </Grid>
                  <Grid item xs={12} md={6}>
-                    <EnumsTextField 
+                    <IOTextField 
                         label="ID edit" 
                         t={props.t} 
                         disabled={props.enum.common.dontDelete}
@@ -97,7 +97,7 @@ function EnumEditDialog(props) {
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <EnumsTextField 
+                    <IOTextField 
                         label="ID preview" 
                         t={props.t} 
                         disabled
@@ -107,7 +107,7 @@ function EnumEditDialog(props) {
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <EnumsTextField 
+                    <IOTextField 
                         label="Description" 
                         t={props.t} 
                         value={ props.enum.common.desc }
@@ -121,7 +121,7 @@ function EnumEditDialog(props) {
                     />
                 </Grid>
                  <Grid item xs={12} md={6}>
-                    <EnumsFileInput 
+                    <IOFileInput 
                         label="Icon" 
                         t={props.t} 
                         value={ props.enum.common.icon }
@@ -136,7 +136,7 @@ function EnumEditDialog(props) {
                     />                
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <EnumsColorPicker 
+                    <IOColorPicker 
                         label="Color" 
                         t={props.t} 
                         value={ props.enum.common.color }

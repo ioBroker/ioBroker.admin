@@ -19,7 +19,7 @@ import PageviewIcon from '@material-ui/icons/Pageview';
 import ColorLensIcon from '@material-ui/icons/ColorLens';
 import ImageIcon from '@material-ui/icons/Image';
 
-import {UsersTextField, UsersFileInput, UsersColorPicker} from './Fields';
+import {IOTextField, IOFileInput, IOColorPicker} from '../IOFields/Fields';
 
 function PermsTab(props) {
     let mapObject = function(object, mapFunction) {
@@ -96,7 +96,7 @@ function GroupEditDialog(props) {
         props.group.common.name;
     let mainTab = <Grid  container spacing={4} className={props.classes.dialog}>
         <Grid item xs={12} md={6}>
-            <UsersTextField
+            <IOTextField
                 label="Name"
                 t={props.t}
                 value={ name }
@@ -111,7 +111,7 @@ function GroupEditDialog(props) {
             />
         </Grid>
          <Grid item xs={12} md={6}>
-            <UsersTextField
+            <IOTextField
                 label="ID edit"
                 t={props.t}
                 disabled={props.group.common.dontDelete}
@@ -128,7 +128,7 @@ function GroupEditDialog(props) {
             />
         </Grid>
         <Grid item xs={12} md={6}>
-            <UsersTextField
+            <IOTextField
                 label="ID preview"
                 t={props.t}
                 disabled
@@ -138,7 +138,7 @@ function GroupEditDialog(props) {
         />
         </Grid>
         <Grid item xs={12} md={6}>
-            <UsersTextField
+            <IOTextField
                 label="Description"
                 t={props.t}
                 value={ description }
@@ -152,7 +152,7 @@ function GroupEditDialog(props) {
             />
         </Grid>
         <Grid item xs={12} md={6}>
-            <UsersFileInput
+            <IOFileInput
                 label="Icon"
                 t={props.t}
                 value={ props.group.common.icon }
@@ -167,7 +167,7 @@ function GroupEditDialog(props) {
             />
         </Grid>
         <Grid item xs={12} md={6}>
-            <UsersColorPicker
+            <IOColorPicker
                 label="Color"
                 t={props.t}
                 value={ props.group.common.color }
