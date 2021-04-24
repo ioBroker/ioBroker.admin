@@ -581,9 +581,9 @@ const InstanceCard = memo(({
                         </div>}
                     {expertMode && <div className={classes.displayFlex}>
                         <InstanceInfo icon={<LowPriorityIcon className={classes.marginRight} color="inherit" />} tooltip={t('Start order (tier)')}>
-                            {name === 'admin' ? t('Always first') : (arrayTier.find(el => el.value === tier)?.desc || arrayTier[2])}
+                            {instance.adapter === 'admin' ? t('Always first') : (arrayTier.find(el => el.value === tier)?.desc || arrayTier[2])}
                         </InstanceInfo>
-                        {name !== 'admin' ? <Tooltip title={t('Edit start order (tier)')}>
+                        {instance.adapter !== 'admin' ? <Tooltip title={t('Edit start order (tier)')}>
                             <IconButton
                                 size="small"
                                 className={classes.button}
