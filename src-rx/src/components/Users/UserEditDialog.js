@@ -51,6 +51,12 @@ function UserEditDialog(props) {
 
     const name2Id = name =>
         name.replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_').toLowerCase();
+    
+    const changeShortId = (_id, short) => {
+        let idArray = _id.split('.');
+        idArray[idArray.length-1] = short;
+        return idArray.join('.');
+    }
 
     return <Dialog PaperProps={{className: props.classes.dialogPaper}} open={props.open} onClose={props.onClose}>
         <DialogTitle className={props.classes.dialogTitle} style={{padding:12}} >
@@ -65,6 +71,9 @@ function UserEditDialog(props) {
                         value={ props.user.common.name }
                         onChange={e=>{
                             let newData = props.user;
+                            if (!props.user.common.dontDelete && name2Id(newData.common.name) === getShortId(newData._id)) {
+                                newData._id = changeShortId(newData._id, name2Id(e.target.value));
+                            }
                             newData.common.name = e.target.value;
                             props.change(newData);
                         }}
@@ -81,9 +90,7 @@ function UserEditDialog(props) {
                         value={ props.user._id.split('.')[props.user._id.split('.').length-1] }
                         onChange={e=>{
                             let newData = props.user;
-                            let idArray = props.user._id.split('.');
-                            idArray[idArray.length-1] = e.target.value.replaceAll('.', '_');
-                            newData._id = idArray.join('.');
+                            newData._id = changeShortId(newData._id, name2Id(e.target.value));
                             props.change(newData);
                         }}
                         icon={LocalOfferIcon}

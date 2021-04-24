@@ -21,6 +21,8 @@ import ImageIcon from '@material-ui/icons/Image';
 
 import {IOTextField, IOFileInput, IOColorPicker} from '../IOFields/Fields';
 
+import Utils from '../Utils';
+
 function PermsTab(props) {
     let mapObject = function(object, mapFunction) {
         return Object.values(object).map((value, index) => {
@@ -74,6 +76,19 @@ function GroupEditDialog(props) {
     let canSave = props.group._id !== 'system.group.' &&
         props.group.common.password === props.group.common.passwordRepeat;
 
+    const getShortId = _id => {
+        return _id.split('.').pop();
+    };
+
+    const name2Id = name =>
+        name.replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_').toLowerCase();
+    
+    const changeShortId = (_id, short) => {
+        let idArray = _id.split('.');
+        idArray[idArray.length-1] = short;
+        return idArray.join('.');
+    }
+
     if (props.isNew) {
         if (idExists) {
             canSave = false;
@@ -83,7 +98,7 @@ function GroupEditDialog(props) {
             canSave = false;
         }
     }
-    console.log( props.group.common );
+    
     let description = props.group.common.description[ props.lang ]
         ?
         props.group.common.description[ props.lang ]
@@ -102,6 +117,9 @@ function GroupEditDialog(props) {
                 value={ name }
                 onChange={e=>{
                     let newData = props.group;
+                    if (!props.group.common.dontDelete && name2Id(newData.common.name) === getShortId(newData._id)) {
+                        newData._id = changeShortId(newData._id, name2Id(e.target.value));
+                    }
                     newData.common.name = e.target.value;
                     props.change(newData);
                 }}
@@ -118,9 +136,7 @@ function GroupEditDialog(props) {
                 value={ props.group._id.split('.')[props.group._id.split('.').length-1] }
                 onChange={e=>{
                     let newData = props.group;
-                    let idArray = props.group._id.split('.');
-                    idArray[idArray.length-1] = e.target.value.replaceAll('.', '_');
-                    newData._id = idArray.join('.');
+                    newData._id = changeShortId(newData._id, name2Id(e.target.value));
                     props.change(newData);
                 }}
                 icon={LocalOfferIcon}
