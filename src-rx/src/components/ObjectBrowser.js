@@ -2939,7 +2939,7 @@ class ObjectBrowser extends Component {
         item.data.aclTooltip = item.data.aclTooltip || this.renderTooltipAccessControl(item.data.obj.acl);
 
         const acl = item.data.obj.acl ? (item.data.obj.type === 'state' ? item.data.obj.acl.state : item.data.obj.acl.object) : 0;
-        const aclSystemConfig = item.data.obj.acl ? (item.data.obj.type === 'state' ? this.objects['system.config'].common.defaultNewAcl.state : this.objects['system.config'].common.defaultNewAcl.object) : 0;
+        const aclSystemConfig = item.data.obj.acl && this.objects['system.config'] ? (item.data.obj.type === 'state' ? this.objects['system.config'].common.defaultNewAcl.state : this.objects['system.config'].common.defaultNewAcl.object) : 0;
         return [
             this.props.expertMode && this.props.objectEditOfAccessControl ? <Tooltip key="acl" title={item.data.aclTooltip}><IconButton className={classes.cellButtonMinWidth} onClick={() =>
                 this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })
