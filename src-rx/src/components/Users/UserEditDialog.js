@@ -77,7 +77,7 @@ function UserEditDialog(props) {
                             newData.common.name = e.target.value;
                             props.change(newData);
                         }}
-                        autoComplete="off"
+                        autoComplete="new-password"
                         icon={TextFieldsIcon}
                         classes={props.classes}
                     />
@@ -132,7 +132,7 @@ function UserEditDialog(props) {
                             props.change(newData);
                         }}
                         type="password"
-                        autoComplete="off"
+                        autoComplete="new-password"
                         icon={VpnKeyIcon}
                         classes={props.classes}
                     />
@@ -148,10 +148,10 @@ function UserEditDialog(props) {
                             props.change(newData);
                         }}
                         type="password"
-                        autoComplete="off"
+                        autoComplete="new-password"
                         icon={VpnKeyIcon}
                         classes={props.classes}
-                    />                
+                    />
                 </Grid>
                  <Grid item xs={12} md={6}>
                     <IOFileInput 
