@@ -103,7 +103,6 @@ class AdaptersUpdaterDialog extends Component {
                         className={this.props.classes.checkbox}
                         tabIndex={-1}
                         indeterminate={this.state.selected.length !== this.updateAvailable.length && this.state.selected.length !== 0}
-                        title={this.props.t('Select all')}
                         disableRipple
                         onClick={() => {
                             let selected = [];

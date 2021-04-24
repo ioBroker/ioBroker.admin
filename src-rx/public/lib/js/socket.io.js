@@ -2,7 +2,7 @@
  * ioBroker WebSockets
  * Copyright 2020-2021, bluefox <dogafox@gmail.com>
  * Released under the MIT License.
- * v 0.2.1 (2020_10_16)
+ * v 0.2.2 (2021_04_23)
  */
 /* jshint -W097 */
 /* jshint strict: false */
@@ -39,19 +39,19 @@ const ERRORS = {
 
 // possible events: connect, disconnect, reconnect, error, connect_error
 function SocketClient () {
-    const handlers = {};
-    let lastPong;
-    let socket;
-    let wasConnected = false;
-    let connectTimer = null;
+    const handlers      = {};
+    let wasConnected    = false;
+    let connectTimer    = null;
     let connectingTimer = null;
     let connectionCount = 0;
-    let callbacks = [];
-    this.pending = []; // pending requests till connection established
+    let callbacks       = [];
+    this.pending        = []; // pending requests till connection established
+    let id              = 0;
+    let lastPong;
+    let socket;
     let url;
     let options;
     let pingInterval;
-    let id = 0;
     let sessionID;
     let authTimeout = null;
 
@@ -68,7 +68,15 @@ function SocketClient () {
         connectTimer = null;
 
         url = url || _url || window.location.href;
-        options = options || _options;
+        options = options || JSON.parse(JSON.stringify(_options || {}));
+
+        options.pongTimeout       = parseInt(options.pongTimeout,       10) || 30000; // Timeout for answer for ping (pong)
+        options.pingInterval      = parseInt(options.pingInterval,      10) || 5000;  // Ping interval
+        options.connectTimeout    = parseInt(options.connectTimeout,    10) || 3000;  // connection request timeout
+        options.authTimeout       = parseInt(options.authTimeout,       10) || 3000;  // Authentication timeout
+        options.connectInterval   = parseInt(options.connectInterval,   10) || 1000;  // Interval between connection attempts
+        options.connectMaxAttempt = parseInt(options.connectMaxAttempt, 10) || 5;     // Every connection attempt the interval increasing at options.connectInterval till max this number
+
         sessionID = Date.now();
         try {
             if (url === '/') {
@@ -76,8 +84,8 @@ function SocketClient () {
             }
 
             let u = url.replace(/^http/, 'ws').split('?')[0] + '?sid=' + sessionID;
-            if (_options && _options.name) {
-                u += '&name=' + encodeURIComponent(_options.name);
+            if (options && options.name) {
+                u += '&name=' + encodeURIComponent(options.name);
             }
             // "ws://www.example.com/socketserver"
             socket = new WebSocket(u);
@@ -90,14 +98,14 @@ function SocketClient () {
             connectingTimer = null;
             this.log.warn('No READY flag received in 3 seconds. Re-init');
             this.close(); // re-init connection, because no ___ready___ received in 2000 ms
-        }, 3000);
+        }, options.connectTimeout);
 
         socket.onopen = event => {
             lastPong = Date.now();
             connectionCount = 0;
 
             pingInterval = setInterval(() => {
-                if (Date.now() - lastPong > 5000) {
+                if (Date.now() - lastPong > options.pingInterval - 10) {
                     try {
                         socket.send(JSON.stringify([MESSAGE_TYPES.PING]));
                     } catch (e) {
@@ -106,11 +114,11 @@ function SocketClient () {
                         return this._garbageCollect();
                     }
                 }
-                if (Date.now() - lastPong > 15000) {
+                if (Date.now() - lastPong > options.pongTimeout) {
                     this.close();
                 }
                 this._garbageCollect();
-            }, 5000);
+            }, options.pingInterval);
         };
 
         socket.onclose = event => {
@@ -230,7 +238,7 @@ function SocketClient () {
                     handlers.error && handlers.error.forEach(cb => cb.call(this, 'Authenticate timeout'));
                 }
                 this.close();
-            }, 2000);
+            }, options.authTimeout);
         }
         callbacks.push({id, cb, ts: DEBUG ? 0 : Date.now() + 30000});
         socket.send(JSON.stringify([MESSAGE_TYPES.CALLBACK, id, name, args]));
@@ -315,7 +323,7 @@ function SocketClient () {
     };
 
     this.close = function () {
-        pingInterval && clearTimeout(pingInterval);
+        pingInterval && clearInterval(pingInterval);
         pingInterval = null;
 
         authTimeout && clearTimeout(authTimeout);
@@ -343,16 +351,22 @@ function SocketClient () {
         this._reconnect();
     };
 
+    this.destroy = function () {
+        close();
+        connectTimer && clearTimeout(connectTimer);
+        connectTimer = null;
+    }
+
     this._reconnect = function () {
         if (!connectTimer) {
             this.log.debug('Start reconnect ' + connectionCount);
             connectTimer = setTimeout(() => {
                 connectTimer = null;
-                if (connectionCount < 5) {
+                if (connectionCount < options.connectMaxAttempt) {
                     connectionCount++;
                 }
                 this.connect(url, options);
-            }, connectionCount * 1000);
+            }, connectionCount * options.connectInterval);
         } else {
             this.log.debug('Reconnect is already running ' + connectionCount);
         }

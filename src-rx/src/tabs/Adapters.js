@@ -371,7 +371,7 @@ class Adapters extends Component {
             const currentHost  = this.props.currentHost;
             const adapters     = await this.props.adaptersWorker.getAdapters();
             const installed    = await this.props.socket.getInstalled(currentHost, true).catch(e => window.alert('Cannot getInstalled: ' + e));
-            const repository   = await this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: false }, false).catch(e => window.alert('Cannot getRepository: ' + e));
+            const repository   = await this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: false }, false, 10000).catch(e => window.alert('Cannot getRepository: ' + e));
 
             this.analyseInstalled(adapters, installed, repository);
         } catch (e) {
@@ -393,7 +393,7 @@ class Adapters extends Component {
             const currentHost = this.props.currentHost;
             try {
                 const {installed, repository} = this.state;
-                const hostData = await this.props.socket.getHostInfo(currentHost).catch(e => window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`));
+                const hostData = await this.props.socket.getHostInfo(currentHost, false, 10000).catch(e => window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`));
                 const rebuild  = await this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD').catch(e => window.alert('Cannot checkFeatureSupported: ' + e));
                 const objects  = await this.props.adaptersWorker.getAdapters(updateRepo).catch(e => window.alert('Cannot read system.adapters.*: ' + e));
                 const ratings  = await this.props.socket.getRatings(updateRepo).catch(e => window.alert('Cannot read ratings: ' + e));

@@ -4,10 +4,12 @@ import { withStyles } from '@material-ui/core/styles';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import clsx from 'clsx';
 import DeleteIcon from '@material-ui/icons/Delete';
+import BuildIcon from '@material-ui/icons/Build';
 
 import EditIcon from '@material-ui/icons/Edit';
 import CachedIcon from '@material-ui/icons/Cached';
 import PropTypes from "prop-types";
+import Utils from '@iobroker/adapter-react/Components/Utils';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -26,6 +28,7 @@ const styles = theme => ({
         }
     },
     imageBlock: {
+        marginRight: 6,
         minHeight: 60,
         width: '100%',
         maxWidth: 300,
@@ -91,7 +94,7 @@ const styles = theme => ({
     },
     onOff: {
         alignSelf: 'center',
-        width: 10,
+        width: 4,
         height: '100%',
         // borderRadius: 20,
         // position: 'absolute',
@@ -139,7 +142,7 @@ const styles = theme => ({
         zIndex: 2,
         position: 'absolute',
         top: -21,
-        animation: '$colors 3s ease-in-out infinite'
+        // animation: '$colors 3s ease-in-out infinite'
     },
     '@keyframes colors': {
         '0%': {
@@ -151,7 +154,7 @@ const styles = theme => ({
     },
     red: {
         background: '#da0000',
-        animation: '$red 3s ease-in-out infinite alternate'
+        // animation: '$red 3s ease-in-out infinite alternate'
     },
     '@keyframes red': {
         '0%': {
@@ -175,6 +178,9 @@ const styles = theme => ({
         display: 'flex',
         height: '100%',
         // alignItems: 'center'
+    },
+    cursorNoDrop: {
+        cursor: 'no-drop !important'
     },
     wrapperFlex: {
         display: 'flex', cursor: 'pointer',
@@ -257,7 +263,9 @@ const HostRow = ({
     currentHost,
     dialogUpgrade,
     executeCommandRemove,
-    systemConfig
+    systemConfig,
+    expertMode,
+    setBaseSettingsDialog
 }) => {
 
     const [openCollapse, setCollapse] = useState(false);
@@ -270,16 +278,16 @@ const HostRow = ({
     const refUptime = useRef();
 
     const eventsInputFunc = (_, input) => {
-        inputCache = input ? input.val : '-';
+        inputCache = input && input.val !== null ? `⇥${input.val}` : '-';
         if (refEvents.current) {
-            refEvents.current.innerHTML = `⇥${inputCache} / ↦${outputCache}`;
+            refEvents.current.innerHTML = `${inputCache} / ${outputCache}`;
         }
     };
 
     const eventsOutputFunc = (_, output) => {
-        outputCache = output ? output.val : '-';
+        outputCache = output && output.val !== null ? `↦${output.val}` : '-';
         if (refEvents.current) {
-            refEvents.current.innerHTML = `⇥${inputCache} / ↦${outputCache}`;
+            refEvents.current.innerHTML = `${inputCache} / ${outputCache}`;
         }
     };
 
@@ -373,17 +381,18 @@ const HostRow = ({
         onMouseMove={() => setFocused(true)}
         onClick={() => setCollapse((bool) => !bool)}
         key={_id} className={clsx(classes.root, hidden ? classes.hidden : '')}>
-        <div className={classes.wrapperFlex}>
+        <div className={clsx(classes.wrapperFlex, !alive && classes.cursorNoDrop)}>
             <div className={classes.wrapperColor}>
                 <div className={clsx(classes.onOff, alive ? classes.green : classes.red)} />
                 {alive && <div className={classes.dotLine} />}
             </div>
             <div
                 ref={refWarning}
+                style={{ background: color || 'inherit' }}
                 // style={{ background: color || 'inherit' }}
                 className={classes.imageBlock}>
                 <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
-                <div className={classes.host}>{name}</div>
+                <div style={{ color: (color && Utils.invertColor(color, true)) || 'inherit' }} className={classes.host}>{name}</div>
             </div>
             <CardContent className={classes.cardContentH5}>
                 {/*<Typography className={clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="p">
@@ -417,13 +426,28 @@ const HostRow = ({
                         >
                             <EditIcon />
                         </IconButton>
+
+                        {expertMode &&
+                            <Tooltip title={t('Host Base Settings')}>
+                                <div>
+                                    <IconButton disabled={!alive} onClick={(e) => {
+                                        setBaseSettingsDialog();
+                                        e.stopPropagation();
+                                    }}>
+                                        <BuildIcon className={classes.baseSettingsButton} />
+                                    </IconButton>
+                                </div>
+                            </Tooltip>
+                        }
                         <Tooltip title={t('Restart host')}>
-                            <IconButton onClick={(e) => {
-                                executeCommand();
-                                e.stopPropagation();
-                            }}>
-                                <CachedIcon />
-                            </IconButton>
+                            <div>
+                                <IconButton disabled={!alive} onClick={(e) => {
+                                    executeCommand();
+                                    e.stopPropagation();
+                                }}>
+                                    <CachedIcon />
+                                </IconButton>
+                            </div>
                         </Tooltip>
                         <Tooltip title={t((alive || currentHost) ? 'Upgrade' : 'Remove')}>
                             <IconButton onClick={(e) => {

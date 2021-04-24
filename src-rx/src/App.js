@@ -42,7 +42,6 @@ import { STATES as DrawerStates } from './components/Drawer';
 import { DRAWER_FULL_WIDTH, DRAWER_COMPACT_WIDTH } from './components/Drawer';
 import Connecting from './components/Connecting';
 import WizardDialog from './dialogs/WizardDialog';
-import BaseSettingsDialog from './dialogs/BaseSettingsDialog';
 import SystemSettingsDialog from './dialogs/SystemSettingsDialog';
 import Login from './login/Login';
 import HostSelectors from './components/HostSelectors';
@@ -586,7 +585,7 @@ class App extends Router {
         hosts = hosts || this.state.hosts;
 
         try {
-            const repository = await this.socket.getRepository(currentHost, { update: false });
+            const repository = await this.socket.getRepository(currentHost, { update: false }, false, 10000);
             const installed  = await this.socket.getInstalled(currentHost, { update: false });
             const adapters   = await this.adaptersWorker.getAdapters(); // we need information about ignored versions
 
@@ -964,6 +963,7 @@ class App extends Router {
                         idHost={this.state.hosts.find(({ common: { name } }) => name === this.state.currentHostName)._id}
                         currentHostName={this.state.currentHostName}
                         t={I18n.t}
+                        navigate={Router.doNavigate}
                         currentHost={this.state.currentHost}
                         width={this.props.width}
                         configStored={value => this.allStored(value)}
@@ -1013,29 +1013,11 @@ class App extends Router {
 
     getCurrentDialog() {
         if (this.state && this.state.currentTab && this.state.currentTab.dialog) {
-            if (this.state.currentTab.dialog === 'base') {
-                return this.getBaseSettingsDialog();
-            } else if (this.state.currentTab.dialog === 'system') {
+            if (this.state.currentTab.dialog === 'system') {
                 return this.getSystemSettingsDialog();
             }
         }
         return null;
-    }
-
-    getBaseSettingsDialog() {
-        return <BaseSettingsDialog
-            currentHost={this.state.currentHost}
-            hosts={this.state.hosts}
-            themeName={this.state.themeName}
-            currentHostName={this.state.currentHostName}
-            key="base"
-            onClose={() => Router.doNavigate(null)}
-            lang={this.state.lang}
-            showAlert={(message, type) => this.showAlert(message, type)}
-            socket={this.socket}
-            currentTab={this.state.currentTab}
-            t={I18n.t}
-        />;
     }
 
     getSystemSettingsDialog() {
@@ -1333,14 +1315,6 @@ class App extends Router {
                                     />
                                 </IconButton>
                             </Tooltip>
-                            {/*This will be removed later to settings, to not allow so easy to edit it*/}
-                            {this.state.expertMode &&
-                                <Tooltip title={I18n.t('Host Base Settings')}>
-                                    <IconButton onClick={() => Router.doNavigate(null, 'base')}>
-                                        <BuildIcon className={classes.baseSettingsButton} />
-                                    </IconButton>
-                                </Tooltip>
-                            }
                             <HostSelectors
                                 expertMode={this.state.expertMode}
                                 socket={this.socket}

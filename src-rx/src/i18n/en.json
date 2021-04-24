@@ -1230,5 +1230,21 @@
   "Your communication with admin is not encrypted": "Your communication with admin is not encrypted",
   "Instance": "Instance",
   "The expert mode allows you to view and edit system internal details.": "The expert mode allows you to view and edit system internal details.",
-  "Please make sure you know what you are doing!": "Please make sure you know what you are doing!"
+  "Please make sure you know what you are doing!": "Please make sure you know what you are doing!",
+  "Edit log level rule for %s": "Edit log level for %s",
+  "log level": "Log level",
+  "Edit restart rule for %s": "Edit restart schedule for %s",
+  "Edit memory limit rule for %s": "Edit memory limit for %s",
+  "Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)": "Default V8 engine has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)",
+  "Set tier for %s": "Set tier for %s",
+  "Tiers define the order of adapters when the system starts.": "Tiers define the order of adapters when the system starts.",
+  "Tiers": "Tiers",
+  "1: Logic adapters": "1: Logic adapters",
+  "2: Data provider adapters": "2: Data provider adapters",
+  "3: Other adapters": "3: Other adapters",
+  "Show/hide PID": "Show/hide process ID",
+  "Are you sure you want to delete the instance %s?": "Are you sure you want to delete the instance %s?",
+  "Ignore version %s": "Ignore version %s",
+  "Command": "Command",
+  "Filter specific compact group": "Filter specific compact group"
 }

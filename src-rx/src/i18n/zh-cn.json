@@ -1230,5 +1230,21 @@
   "Your communication with admin is not encrypted": "您与管理员的通讯未加密",
   "Instance": "实例",
   "The expert mode allows you to view and edit system internal details.": "专家模式可让您查看和编辑系统内部详细信息。",
-  "Please make sure you know what you are doing!": "请确保您知道自己在做什么！"
+  "Please make sure you know what you are doing!": "请确保您知道自己在做什么！",
+  "Edit log level rule for %s": "编辑%s的日志级别",
+  "log level": "日志级别",
+  "Edit restart rule for %s": "编辑%s的重启时间表",
+  "Edit memory limit rule for %s": "编辑%s的内存限制",
+  "Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)": "默认的V8引擎在32位系统上的内存限制为512mb，在64位系统上的内存限制为1gb。可以通过将--max-old-space-size设置为最大〜1gb（32位）和〜1.7gb（64位）来提高限制",
+  "Set tier for %s": "为%s设置等级",
+  "Tiers define the order of adapters when the system starts.": "层定义了系统启动时适配器的顺序。",
+  "Tiers": "层级",
+  "1: Logic adapters": "1：逻辑适配器",
+  "2: Data provider adapters": "2：数据提供程序适配器",
+  "3: Other adapters": "3：其他适配器",
+  "Show/hide PID": "显示/隐藏进程ID",
+  "Are you sure you want to delete the instance %s?": "您确定要删除实例%s吗？",
+  "Ignore version %s": "忽略版本%s",
+  "Command": "命令",
+  "Filter specific compact group": "筛选特定的紧凑型组"
 }

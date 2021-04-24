@@ -1230,5 +1230,21 @@
   "Your communication with admin is not encrypted": "Twoja komunikacja z administratorem nie jest szyfrowana",
   "Instance": "Instancja",
   "The expert mode allows you to view and edit system internal details.": "Tryb ekspercki umożliwia przeglądanie i edycję wewnętrznych szczegółów systemu.",
-  "Please make sure you know what you are doing!": "Upewnij się, że wiesz, co robisz!"
+  "Please make sure you know what you are doing!": "Upewnij się, że wiesz, co robisz!",
+  "Edit log level rule for %s": "Edytuj poziom dziennika %s",
+  "log level": "Poziom dziennika",
+  "Edit restart rule for %s": "Edytuj harmonogram ponownego uruchamiania %s",
+  "Edit memory limit rule for %s": "Edytuj limit pamięci dla %s",
+  "Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)": "Domyślny silnik V8 ma limit pamięci 512 MB w systemach 32-bitowych i 1 GB w systemach 64-bitowych. Limit można zwiększyć, ustawiając --max-old-space-size na maksymalnie ~ 1 GB (32-bit) i ~ 1,7 GB (64-bit)",
+  "Set tier for %s": "Ustaw poziom dla %s",
+  "Tiers define the order of adapters when the system starts.": "Warstwy określają kolejność adapterów podczas uruchamiania systemu.",
+  "Tiers": "Schody",
+  "1: Logic adapters": "1: Adaptery logiczne",
+  "2: Data provider adapters": "2: Adaptery dostawcy danych",
+  "3: Other adapters": "3: Inne adaptery",
+  "Show/hide PID": "Pokaż/ukryj identyfikator procesu",
+  "Are you sure you want to delete the instance %s?": "Czy na pewno chcesz usunąć instancję %s?",
+  "Ignore version %s": "Ignoruj wersję %s",
+  "Command": "Komenda",
+  "Filter specific compact group": "Filtruj określoną grupę kompaktową"
 }

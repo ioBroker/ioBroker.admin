@@ -1451,7 +1451,7 @@ class Connection {
      * @param {boolean} [update] Force update.
      * @returns {Promise<any>}
      */
-    getHostInfo(host, update) {
+    getHostInfo(host, update, timeoutMs) {
         if (Connection.isWeb()) {
             return Promise.reject('Allowed only in admin');
         }
@@ -1471,9 +1471,9 @@ class Connection {
             let timeout = setTimeout(() => {
                 if (timeout) {
                     timeout = null;
-                    reject('timeout');
+                    reject('getHostInfo timeout');
                 }
-            }, this.props.cmdTimeout);
+            }, timeoutMs || this.props.cmdTimeout);
 
             this._socket.emit('sendToHost', host, 'getHostInfo', null, data => {
                 if (timeout) {
@@ -1500,7 +1500,7 @@ class Connection {
      * @param {boolean} [update] Force update.
      * @returns {Promise<any>}
      */
-    getRepository(host, args, update) {
+    getRepository(host, args, update, timeoutMs) {
         if (Connection.isWeb()) {
             return Promise.reject('Allowed only in admin');
         }
@@ -1520,9 +1520,9 @@ class Connection {
             let timeout = setTimeout(() => {
                 if (timeout) {
                     timeout = null;
-                    reject('timeout');
+                    reject('getRepository timeout');
                 }
-            }, this.props.cmdTimeout);
+            }, timeoutMs || this.props.cmdTimeout);
 
             this._socket.emit('sendToHost', host, 'getRepository', args, data => {
                 if (timeout) {
@@ -1568,7 +1568,7 @@ class Connection {
             let timeout = setTimeout(() => {
                 if (timeout) {
                     timeout = null;
-                    reject('timeout');
+                    reject('getInstalled timeout');
                 }
             }, this.props.cmdTimeout);
 
@@ -1613,7 +1613,7 @@ class Connection {
             let timeout = setTimeout(() => {
                 if (timeout) {
                     timeout = null;
-                    reject('timeout');
+                    reject('cmdExec timeout');
                 }
             }, this.props.cmdTimeout);
 
@@ -1673,7 +1673,7 @@ class Connection {
                         let timeout = setTimeout(() => {
                             if (timeout) {
                                 timeout = null;
-                                reject('timeout');
+                                reject('readBaseSettings timeout');
                             }
                         }, this.props.cmdTimeout);
 
@@ -1718,7 +1718,7 @@ class Connection {
                         let timeout = setTimeout(() => {
                             if (timeout) {
                                 timeout = null;
-                                reject('timeout');
+                                reject('writeBaseSettings timeout');
                             }
                         }, this.props.cmdTimeout);
 

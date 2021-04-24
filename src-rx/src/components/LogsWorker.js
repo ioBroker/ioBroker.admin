@@ -164,7 +164,8 @@ class LogsWorker {
             const time = line.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/);
 
             if (time && time.length > 0) {
-                let ts = new Date(time[0]).getTime();
+                const tt = time[0].split(' ');
+                let ts = new Date(tt[0] + 'T' + tt[1]).getTime();
                 let key = ts;
 
                 if (lastKey && lastKey <= ts) {
@@ -250,11 +251,13 @@ class LogsWorker {
 
         this.socket.getLogs(this.currentHost, 200)
             .then(lines => {
-                const logSize = lines ? Utils.formatBytes(lines.pop()) : -1;
+                const logSize = lines ? Utils.formatBytes(lines.pop()) : -1;                
 
                 this.logs = [];
                 let lastKey;
-                lines.sort((a, b) => a.ts > b.ts ? 1 : (a.ts < b.ts ? -1 : 0));
+                if (lines && lines.length && lines[0].ts) {
+                    lines.sort((a, b) => a.ts > b.ts ? 1 : (a.ts < b.ts ? -1 : 0));
+                }
 
                 lines.forEach(line => {
                     const obj = this._processLine(line, lastKey);

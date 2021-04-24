@@ -516,6 +516,8 @@ class FileBrowser extends Component {
 
     componentWillUnmount() {
         this.mounted = false;
+        this.browseList = null;
+        this.browseListRunning = false;
     }
 
     browseFolders(foldersList, _newFolders, _resolve) {
@@ -539,13 +541,15 @@ class FileBrowser extends Component {
 
     readDirSerial(adapter, relPath) {
         return new Promise((resolve, reject) => {
-            this.browseList.push({resolve, reject, adapter, relPath});
-            !this.browseListRunning && this.processBrowseList();
+            if (this.browseList) { // if component still mounted
+                this.browseList.push({resolve, reject, adapter, relPath});
+                !this.browseListRunning && this.processBrowseList();
+            }
         });
     }
 
     processBrowseList(level) {
-        if (!this.browseListRunning && this.browseList.length) {
+        if (!this.browseListRunning && this.browseList && this.browseList.length) {
             this.browseListRunning = true;
             if (this.browseList.length > 10) {
                 // not too often
@@ -559,41 +563,54 @@ class FileBrowser extends Component {
             this.browseList[0].processing = true;
             this.props.socket.readDir(this.browseList[0].adapter, this.browseList[0].relPath)
                 .then(files => {
-                    const item = this.browseList.shift();
-                    const resolve = item.resolve;
-                    item.resolve = null;
-                    item.reject  = null;
-                    item.adapter = null;
-                    item.relPath = null;
-                    resolve(files);
-                    this.browseListRunning = false;
-                    if (this.browseList.length) {
-                        if (level < 5) {
-                            this.processBrowseList(level + 1);
+                    if (this.browseList) { // if component still mounted
+                        const item = this.browseList.shift();
+                        if (item) {
+                            const resolve = item.resolve;
+                            item.resolve = null;
+                            item.reject  = null;
+                            item.adapter = null;
+                            item.relPath = null;
+                            resolve(files);
+                            this.browseListRunning = false;
+                            if (this.browseList.length) {
+                                if (level < 5) {
+                                    this.processBrowseList(level + 1);
+                                } else {
+                                    setTimeout(() => this.processBrowseList(0), 0);
+                                }
+                            } else {
+                                this.setState({queueLength: 0});
+                            }
                         } else {
-                            setTimeout(() => this.processBrowseList(0), 0);
+                            this.setState({queueLength: 0});
                         }
-                    } else {
-                        this.setState({queueLength: 0});
                     }
+
                 })
                 .catch(e => {
-                    const item = this.browseList.shift();
-                    const reject = item.reject;
-                    item.resolve = null;
-                    item.reject  = null;
-                    item.adapter = null;
-                    item.relPath = null;
-                    reject(e);
-                    this.browseListRunning = false;
-                    if (this.browseList.length) {
-                        if (level < 5) {
-                            this.processBrowseList(level + 1);
+                    if (this.browseList) { // if component still mounted
+                        const item = this.browseList.shift();
+                        if (item) {
+                            const reject = item.reject;
+                            item.resolve = null;
+                            item.reject = null;
+                            item.adapter = null;
+                            item.relPath = null;
+                            reject(e);
+                            this.browseListRunning = false;
+                            if (this.browseList.length) {
+                                if (level < 5) {
+                                    this.processBrowseList(level + 1);
+                                } else {
+                                    setTimeout(() => this.processBrowseList(0), 0);
+                                }
+                            } else {
+                                this.setState({queueLength: 0});
+                            }
                         } else {
-                            setTimeout(() => this.processBrowseList(0), 0);
+                            this.setState({queueLength: 0});
                         }
-                    } else {
-                        this.setState({queueLength: 0});
                     }
                 });
         }
@@ -602,7 +619,8 @@ class FileBrowser extends Component {
     browseFolder(folderId, _newFolders, _checkEmpty) {
         if (!_newFolders) {
             _newFolders = {};
-            Object.keys(this.state.folders).forEach(folder => _newFolders[folder] = this.state.folders[folder]);
+            Object.keys(this.state.folders).forEach(folder =>
+                _newFolders[folder] = this.state.folders[folder]);
         }
 
         if (_newFolders[folderId]) {

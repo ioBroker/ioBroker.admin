@@ -504,70 +504,79 @@ const InstanceRow = ({
     const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
     const arrayTier = [{ value: 1, desc: "1: Logic adapters" }, { value: 2, desc: "2: Data provider adapters" }, { value: 3, desc: "3: Other adapters" }];
 
-    const customModal =
-    openDialogSelectTier ||
-        openDialogCompact ||
-            openDialogSelect ||
-            openDialogText ||
-            openDialogDelete ||
-            openDialogMemoryLimit ? <CustomModal
-                title={
-                    (openDialogText && t('Enter title for %s', instance.id)) ||
-                    (openDialogSelect && t('Edit log level rule for %s', instance.id)) ||
-                    (openDialogDelete && t('Please confirm')) ||
-                    (openDialogMemoryLimit && t('Edit memory limit rule for %s', instance.id)) ||
-                    (openDialogCompact && t('Edit compact groups for %s', instance.id)) ||
-                    (openDialogSelectTier && t('Set tier for %s', instance.id))
-                }
-                help={
-                    (openDialogMemoryLimit && t('Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)')) ||
-                    (openDialogSelectTier && t('Tiers define the order of adapters when the system starts.')) ||
-                    ''
-                }
-                open={true}
-                applyDisabled={openDialogText || openDialogMemoryLimit}
-                textInput={openDialogText || openDialogMemoryLimit}
-                defaultValue={openDialogText ? name : openDialogMemoryLimit ? memoryLimitMB : ''}
-                onApply={value => {
-                    if (openDialogSelect) {
-                        setLogLevel(select)
-                        setOpenDialogSelect(false);
-                    } else if (openDialogText) {
-                        setName(value);
-                        setOpenDialogText(false);
-                    } else if (openDialogDelete) {
-                        setOpenDialogDelete(false);
-                        deletedInstances();
-                    } else if (openDialogMemoryLimit) {
-                        setMemoryLimitMB(value);
-                        setOpenDialogMemoryLimit(false);
-                    } else if (openDialogCompact) {
-                        setCompactGroup(selectCompact);
-                        setOpenDialogCompact(false);
-                    }else if (openDialogSelectTier) {
-                        setTier(tierValue);
-                        setOpenDialogSelectTier(false);
-                    }
-                }}
-                onClose={() => {
-                    if (openDialogSelect) {
-                        setSelect(logLevel);
-                        setOpenDialogSelect(false);
-                    } else if (openDialogText) {
-                        setOpenDialogText(false);
-                    } else if (openDialogDelete) {
-                        setOpenDialogDelete(false);
-                    } else if (openDialogMemoryLimit) {
-                        setOpenDialogMemoryLimit(false);
-                    } else if (openDialogCompact) {
-                        setSelectCompact(compactGroup);
-                        setSelectCompactGroupCount(compactGroupCount);
-                        setOpenDialogCompact(false);
-                    }else if (openDialogSelectTier) {
-                        setTierValue(tier);
-                        setOpenDialogSelectTier(false);
-                    }
-                }}>
+    let showModal = false;
+
+    let title;
+    let help = '';
+    if (openDialogText) {
+        title = t('Enter title for %s', instance.id);
+        showModal= true;
+    } else if (openDialogSelect) {
+        title = t('Edit log level rule for %s', instance.id);
+        showModal= true;
+    } else if (openDialogDelete) {
+        title = t('Please confirm');
+        showModal= true;
+    } else if (openDialogMemoryLimit) {
+        title = t('Edit memory limit rule for %s', instance.id);
+        help = t('Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)');
+        showModal= true;
+    } else if (openDialogCompact) {
+        title = t('Edit compact groups for %s', instance.id);
+        showModal= true;
+    } else if (openDialogSelectTier) {
+        title = t('Set tier for %s', instance.id);
+        help = t('Tiers define the order of adapters when the system starts.');
+        showModal= true;
+    }
+
+    const customModal = showModal ? <CustomModal
+        title={title}
+        help={help}
+        open={true}
+        applyDisabled={openDialogText || openDialogMemoryLimit}
+        textInput={openDialogText || openDialogMemoryLimit}
+        defaultValue={openDialogText ? name : openDialogMemoryLimit ? memoryLimitMB : ''}
+        onApply={value => {
+            if (openDialogSelect) {
+                setLogLevel(select)
+                setOpenDialogSelect(false);
+            } else if (openDialogText) {
+                setName(value);
+                setOpenDialogText(false);
+            } else if (openDialogDelete) {
+                setOpenDialogDelete(false);
+                deletedInstances();
+            } else if (openDialogMemoryLimit) {
+                setMemoryLimitMB(value);
+                setOpenDialogMemoryLimit(false);
+            } else if (openDialogCompact) {
+                setCompactGroup(selectCompact);
+                setOpenDialogCompact(false);
+            } else if (openDialogSelectTier) {
+                setTier(tierValue);
+                setOpenDialogSelectTier(false);
+            }
+        }}
+        onClose={() => {
+            if (openDialogSelect) {
+                setSelect(logLevel);
+                setOpenDialogSelect(false);
+            } else if (openDialogText) {
+                setOpenDialogText(false);
+            } else if (openDialogDelete) {
+                setOpenDialogDelete(false);
+            } else if (openDialogMemoryLimit) {
+                setOpenDialogMemoryLimit(false);
+            } else if (openDialogCompact) {
+                setSelectCompact(compactGroup);
+                setSelectCompactGroupCount(compactGroupCount);
+                setOpenDialogCompact(false);
+            } else if (openDialogSelectTier) {
+                setTierValue(tier);
+                setOpenDialogSelectTier(false);
+            }
+        }}>
             {openDialogSelect && <FormControl className={classes.formControl} variant="outlined" >
                 <InputLabel htmlFor="outlined-age-native-simple">{t('log level')}</InputLabel>
                 <Select
@@ -589,7 +598,7 @@ const InstanceRow = ({
                     onClose={e => setOpenSelect(false)}
                     onOpen={e => setOpenSelect(true)}
                     open={openSelect}
-                    value={selectCompact === 1 ? 'default' : selectCompact === '0' ? "controller" : !selectCompact ? 'default' : selectCompact || 'default'}
+                    value={selectCompact === 1 ? 'default' : selectCompact === '0' || selectCompact === 0 ? 'controller' : !selectCompact ? 'default' : selectCompact || 'default'}
                     onChange={el => setSelectCompact(el.target.value)}
                 >
                     <div onClick={(e) => {
@@ -603,32 +612,28 @@ const InstanceRow = ({
                             setSelectCompactGroupCount(selectCompactGroupCount + 1);
                         }} variant="outlined" stylevariable='outlined'>{t('Add compact group')}</Button>
                     </div>
-                    <MenuItem value="controller">
-                        {t('with controller')}
-                    </MenuItem>
-                    <MenuItem value="default">
-                        {t('default group')}
-                    </MenuItem>
+                    <MenuItem value="controller">{t('with controller')}</MenuItem>
+                    <MenuItem value="default">{t('default group')}</MenuItem>
                     {Array(selectCompactGroupCount - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
                         {idx + 2}
                     </MenuItem>)}
                 </Select>
             </FormControl>}
             {openDialogSelectTier && <FormControl className={classes.formControl} variant="outlined" >
-                    <InputLabel htmlFor="outlined-age-native-simple">{t('Tiers')}</InputLabel>
-                    <Select
-                        variant="standard"
-                        value={tierValue}
-                        fullWidth
-                        onChange={el => setTierValue(el.target.value)}
-                    >
-                        {arrayTier.map(el => <MenuItem key={el.value} value={el.value}>
-                            {t(el.desc)}
-                        </MenuItem>)}
-                    </Select>
-                </FormControl>}
-            {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
-        </CustomModal> : null;
+                <InputLabel htmlFor="outlined-age-native-simple">{t('Tiers')}</InputLabel>
+                <Select
+                    variant="standard"
+                    value={tierValue}
+                    fullWidth
+                    onChange={el => setTierValue(el.target.value)}
+                >
+                    {arrayTier.map(el => <MenuItem key={el.value} value={el.value}>
+                        {t(el.desc)}
+                    </MenuItem>)}
+                </Select>
+            </FormControl>}
+        {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
+    </CustomModal> : null;
 
     const [visibleEdit, handlerEdit] = useState(false);
 

@@ -390,8 +390,8 @@ class Logs extends Component {
         const rows = [];
         const { classes } = this.props;
 
+        let previousKey = 0;
         for (let i = this.state.pause > 0 ? this.state.pause - 1 : this.state.logs.length - 1; i >= 0; i--) {
-
             const row = this.state.logs[i];
             const severity = row.severity;
 
@@ -412,10 +412,13 @@ class Logs extends Component {
             const isHidden = isFrom || this.severities[severity] < this.severities[this.state.severity] ||
                 !message.toLowerCase().includes(this.state.message.toLowerCase());
 
+            const key = previousKey === row.key ? i : row.key;
+            previousKey = row.key;
+
             rows.push(
                 <TableRow
                     className={clsx(classes.row, isHidden && classes.hidden, this.lastRowRender && row.ts > this.lastRowRender && classes.updatedRow)}
-                    key={row.key}
+                    key={key}
                     hover
                 >
                     <TableCell className={classes.cell}>
@@ -438,6 +441,7 @@ class Logs extends Component {
                     </TableCell>
                 </TableRow>
             );
+
         }
 
         if (!this.lastRowRender || Date.now() - this.lastRowRender > 1000) {

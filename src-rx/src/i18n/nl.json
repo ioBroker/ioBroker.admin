@@ -1230,5 +1230,21 @@
   "Your communication with admin is not encrypted": "Uw communicatie met admin is niet versleuteld",
   "Instance": "Voorbeeld",
   "The expert mode allows you to view and edit system internal details.": "In de expertmodus kunt u interne systeemdetails bekijken en bewerken.",
-  "Please make sure you know what you are doing!": "Zorg ervoor dat u weet wat u doet!"
+  "Please make sure you know what you are doing!": "Zorg ervoor dat u weet wat u doet!",
+  "Edit log level rule for %s": "Bewerk logniveau voor %s",
+  "log level": "Log niveau",
+  "Edit restart rule for %s": "Bewerk het herstartschema voor %s",
+  "Edit memory limit rule for %s": "Bewerk geheugenlimiet voor %s",
+  "Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)": "De standaard V8-engine heeft een geheugenlimiet van 512 MB op 32-bits systemen en 1 GB op 64-bits systemen. De limiet kan worden verhoogd door --max-old-space-size in te stellen op een maximum van ~ 1GB (32-bit) en ~ 1,7GB (64-bit)",
+  "Set tier for %s": "Stel niveau in voor %s",
+  "Tiers define the order of adapters when the system starts.": "Niveaus bepalen de volgorde van adapters wanneer het systeem start.",
+  "Tiers": "Tiers",
+  "1: Logic adapters": "1: Logische adapters",
+  "2: Data provider adapters": "2: Dataprovideradapters",
+  "3: Other adapters": "3: Andere adapters",
+  "Show/hide PID": "Toon/verberg proces-ID",
+  "Are you sure you want to delete the instance %s?": "Weet u zeker dat u de instantie %s wilt verwijderen?",
+  "Ignore version %s": "Negeer versie %s",
+  "Command": "Opdracht",
+  "Filter specific compact group": "Filter specifieke compacte groep"
 }

@@ -378,7 +378,7 @@ class Intro extends Component {
 
     getHostsData(hosts) {
         const promises = hosts.map(obj =>
-            this.props.socket.getHostInfo(obj._id)
+            this.props.socket.getHostInfo(obj._id, false, 10000)
                 .catch(error => {
                     console.error(error);
                     return error;
