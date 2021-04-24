@@ -39,6 +39,9 @@ function EnumBlock(props) {
     const opacity = isDragging ? 0.4 : 1; 
 
     let textColor = !props.enum ||  !props.enum.common || !props.enum.common.color || Color(props.enum.common.color).hsl().object().l > 50 ? '#000000' : '#FFFFFF';
+    if (!props.enum.common.color) {
+        textColor = null;
+    }
     let style = { cursor: 'grab', opacity, overflow: "hidden", color: textColor }
     if( props.enum.common.color )
     {
