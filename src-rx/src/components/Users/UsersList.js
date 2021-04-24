@@ -94,13 +94,13 @@ const styles = theme => ({
         marginRight:10
     },
     dialog: {
-        padding: 10, 
+        // padding: 10, 
         
-        maxWidth: '100vw',
-        maxHeight: '100vh',
-        overflowY: 'auto',
-        overflowX: 'hidden',
-        padding: 0
+        // maxWidth: '100vw',
+        // maxHeight: '100vh',
+        // overflowY: 'hidden',
+        // overflowX: 'hidden',
+        // padding: 0
     }, 
     flex : {
         display: "flex" 
