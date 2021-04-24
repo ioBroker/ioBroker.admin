@@ -60,7 +60,7 @@ function UserEditDialog(props) {
 
     return <Dialog PaperProps={{className: props.classes.dialogPaper}} open={props.open} onClose={props.onClose}>
         <DialogTitle className={props.classes.dialogTitle} style={{padding:12}} >
-           { props.t( "User parameters" ) }
+           { props.t( 'User parameters' ) }
         </DialogTitle>
         <DialogContent >
             <Grid  container spacing={4} className={props.classes.dialog}>

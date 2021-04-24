@@ -17,7 +17,7 @@ function GroupBlock(props) {
     }
     const [{ CanDrop, isOver, isCanDrop }, drop] = useDrop(() => ({
         accept: 'user',
-        drop: () => ({ group_id: props.group._id }),
+        drop: () => ({ groupId: props.group._id }),
         canDrop: (item, monitor) => canMeDrop(monitor, props),
         collect: (monitor, item) => ({
             isOver: monitor.isOver(),
@@ -43,7 +43,7 @@ function GroupBlock(props) {
     if (!props.group.common.color) {
         textColor = null;
     }
-    let style = { opacity, overflow: "hidden", color: textColor  };
+    let style = { opacity, overflow: 'hidden', color: textColor  };
     if( props.group.common.color )
     {
         style.backgroundColor = props.group.common.color;
@@ -76,7 +76,7 @@ function GroupBlock(props) {
                         ?                         
                         <span
                             className={ props.classes.icon }
-                            style={{ backgroundImage: "url(" + props.group.common.icon + ")" }}
+                            style={{ backgroundImage: 'url(' + props.group.common.icon + ')' }}
                         />
                         : 
                         <GroupIcon className={props.classes.icon} />
@@ -118,14 +118,14 @@ function GroupBlock(props) {
                         key={i}
                         variant="outlined"
                         className={props.classes.userGroupMember}
-                        style={{ color: textColor, borderColor: textColor + "40" }}
+                        style={{ color: textColor, borderColor: textColor + '40' }}
                     >
                          {
                             user.common.icon 
                             ?                         
                             <span
                                 className={ props.classes.icon }
-                                style={{ backgroundImage: "url(" + user.common.icon + ")" }}
+                                style={{ backgroundImage: 'url(' + user.common.icon + ')' }}
                             />
                             : 
                             <PersonIcon className={props.classes.icon} />
@@ -151,12 +151,9 @@ export default GroupBlock;
 
 export function canMeDrop(monitor, props )
 {
-    console.log( monitor.getItem().user_id ); 
-    console.log( props.group.common.members );
-    // console.log( props.group.common.members.filter(e => e == monitor.getItem().user_id).length == 0 );
     return props.group.common.members
         ?
-        !props.group.common.members.includes(monitor.getItem().user_id)
+        !props.group.common.members.includes(monitor.getItem().userId)
         :
         true
 

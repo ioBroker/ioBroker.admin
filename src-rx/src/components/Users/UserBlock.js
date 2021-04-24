@@ -15,11 +15,11 @@ function UserBlock(props) {
     const [{ isDragging }, dragRef, preview] = useDrag(
         {
             type: 'user',
-            item: {user_id: props.user._id},
+            item: {userId: props.user._id},
             end: (item, monitor) => {
                 const dropResult = monitor.getDropResult();
                 if (item && dropResult) {
-                    props.addUserToGroup(item.user_id, dropResult.group_id);
+                    props.addUserToGroup(item.userId, dropResult.groupId);
                 }
             },
             collect: (monitor) => ({
@@ -34,7 +34,7 @@ function UserBlock(props) {
     if (!props.user.common.color) {
         textColor = null;
     }
-    let style = { cursor: 'grab', opacity, overflow: "hidden", color: textColor }
+    let style = { cursor: 'grab', opacity, overflow: 'hidden', color: textColor }
     if( props.user.common.color )
     {
         style.backgroundColor = props.user.common.color;
@@ -85,7 +85,7 @@ function UserBlock(props) {
                             ? 
                             <span
                                 className={ props.classes.icon }
-                                style={{ backgroundImage: "url(" + props.user.common.icon + ")" }}
+                                style={{ backgroundImage: 'url(' + props.user.common.icon + ')' }}
                             />
                             : 
                             <PersonIcon className={props.classes.icon} />
@@ -122,14 +122,14 @@ function UserBlock(props) {
                             key={group._id}  
                             variant="outlined" 
                             className={props.classes.userGroupMember}
-                            style={{ color: textColor, borderColor: textColor + "40" }}
+                            style={{ color: textColor, borderColor: textColor + '40' }}
                         >
                             {
                                 group.common.icon 
                                     ? 
                                     <span
                                         className={ props.classes.icon }
-                                        style={{ backgroundImage: "url(" + group.common.icon + ")" }}
+                                        style={{ backgroundImage: 'url(' + group.common.icon + ')' }}
                                     /> 
                                     : 
                                     <GroupIcon className={props.classes.icon} />

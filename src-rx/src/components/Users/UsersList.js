@@ -28,15 +28,15 @@ const styles = theme => ({
         backgroundColor:theme.palette.background.default
     } ,
     userGroupCard2: {
-        border: "1px solid #FFF",
+        border: '1px solid #FFF',
         borderColor: theme.palette.divider, 
         margin:    10,
         minHeight: 140,
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
-        transition: "all 200ms ease-out",
+        transition: 'all 200ms ease-out',
         opacity:1,
-        overflow: "hidden",
+        overflow: 'hidden',
         '&:hover': {
             overflowY: 'auto',
             boxShadow: boxShadowHover
@@ -48,7 +48,7 @@ const styles = theme => ({
     },
     userCardContent:
     {
-        height:"100%",
+        height:'100%',
         opacity:1 
     },
     userGroupTitle: {
@@ -73,8 +73,8 @@ const styles = theme => ({
         display: 'inline-flex',
         margin: 4,
         padding: 4,
-        backgroundColor: "#00000010",
-        border: "1px solid #FFF",
+        backgroundColor: '#00000010',
+        border: '1px solid #FFF',
         borderColor: theme.palette.text.hint, 
         color: theme.palette.text.primary,
         alignItems: 'center',
@@ -83,8 +83,8 @@ const styles = theme => ({
         height: 32,
         width: 32,
         marginRight:5,
-        backgroundSize: "cover",
-        backgroundPosition:"center"
+        backgroundSize: 'cover',
+        backgroundPosition:'center'
     },
     right: {
         float: 'right',
@@ -103,17 +103,17 @@ const styles = theme => ({
         // padding: 0
     }, 
     flex : {
-        display: "flex" 
+        display: 'flex' 
     },
     formControl : {
-        display: "flex",
+        display: 'flex',
         padding: 24,
         flexGrow: 1000
     },
     formContainer : {
-        display: "flex",
-        justifyContent:"center",
-        alignItems:"center"
+        display: 'flex',
+        justifyContent:'center',
+        alignItems:'center'
     },
     formIcon : {
         margin: 10,
@@ -136,30 +136,30 @@ const styles = theme => ({
         }
     },
     dialogTitle: {
-        borderBottom: "1px solid #00000020",
+        borderBottom: '1px solid #00000020',
         padding : 0,
-        width:"100%"
+        width:'100%'
     },
     dialogActions: {
-        borderTop: "1px solid #00000020", 
-        width:"100%"
+        borderTop: '1px solid #00000020', 
+        width:'100%'
     },
     dialogPaper: {
         overflowY: 'initial',
-        display:"flex",
-        flexDirection:"column",
-        justifyContent:"center",
-        alignItems:"center",
-        width: "calc(100% - 100px)",
-        height: "calc(100% - 100px)",
+        display:'flex',
+        flexDirection:'column',
+        justifyContent:'center',
+        alignItems:'center',
+        width: 'calc(100% - 100px)',
+        height: 'calc(100% - 100px)',
         maxWidth: 800,
-        maxHeight:  "100%"
+        maxHeight:  '100%'
     },
     dialogPaperMini : {
         maxHeight: 300
     },
     colorPicker: {
-        // position:"absolute"
+        // position:'absolute'
     },  
     iconPreview: {
         maxHeight: 40,
@@ -191,67 +191,67 @@ class UsersList extends Component {
     }
 
     userTemplate = {
-        "type": "user",
-        "common": {
-          "name": "",
-          "password": "",
-          "dontDelete": false,
-          "enabled": true,
-          "color": false,
-          "desc": ""
+        'type': 'user',
+        'common': {
+          'name': '',
+          'password': '',
+          'dontDelete': false,
+          'enabled': true,
+          'color': false,
+          'desc': ''
         },
-        "native": {},
-        "_id": "system.user.new",
-        "enums": {}
+        'native': {},
+        '_id': 'system.user.new',
+        'enums': {}
       };
     
     groupTemplate = {
-        "_id": "system.group.new",
-        "type": "group",
-        "common": {
-          "name": "",
-          "description": "",
-          "members": [
+        '_id': 'system.group.new',
+        'type': 'group',
+        'common': {
+          'name': '',
+          'description': '',
+          'members': [
             
           ],
-          "dontDelete": false,
-          "acl": {
-            "object": {
-              "list": false,
-              "read": false,
-              "write": false,
-              "delete": false
+          'dontDelete': false,
+          'acl': {
+            'object': {
+              'list': false,
+              'read': false,
+              'write': false,
+              'delete': false
             },
-            "state": {
-              "list": false,
-              "read": false,
-              "write": false,
-              "create": false,
-              "delete": false
+            'state': {
+              'list': false,
+              'read': false,
+              'write': false,
+              'create': false,
+              'delete': false
             },
-            "users": {
-              "list": false,
-              "read": false,
-              "write": false,
-              "create": false,
-              "delete": false
+            'users': {
+              'list': false,
+              'read': false,
+              'write': false,
+              'create': false,
+              'delete': false
             },
-            "other": {
-              "execute": false,
-              "http": false,
-              "sendto": false
+            'other': {
+              'execute': false,
+              'http': false,
+              'sendto': false
             },
-            "file": {
-              "list": false,
-              "read": false,
-              "write": false,
-              "create": false,
-              "delete": false
+            'file': {
+              'list': false,
+              'read': false,
+              'write': false,
+              'create': false,
+              'delete': false
             }
           },
-          "icon": "",
-          "color": false,
-          "desc": ""
+          'icon': '',
+          'color': false,
+          'desc': ''
         }
       };
 

@@ -9,7 +9,7 @@ function GroupDeleteDialog(props) {
         return null;
     }
     return <Dialog 
-        PaperProps={{className: props.classes.dialogPaper + " " + props.classes.dialogPaperMini}} 
+        PaperProps={{className: props.classes.dialogPaper + ' ' + props.classes.dialogPaperMini}} 
         open={props.open} 
         onClose={props.onClose}
     >
