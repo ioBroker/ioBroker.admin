@@ -162,7 +162,7 @@ const styles = theme => ({
         maxHeight: 300
     },
     colorPicker: {
-        position:"absolute"
+        // position:"absolute"
     },  
     iconPreview: {
         maxHeight: 40,

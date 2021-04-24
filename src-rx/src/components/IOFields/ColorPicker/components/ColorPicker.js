@@ -1,4 +1,4 @@
-import React from 'react';
+import {React, useRef} from 'react';
 import PropTypes from 'prop-types';
 import compose from 'recompose/compose';
 import withState from 'recompose/withState';
@@ -7,6 +7,7 @@ import TextField from '@material-ui/core/TextField';
 
 import {DEFAULT_CONVERTER, converters} from '../transformers';
 import PickerDialog from './PickerDialog';
+import Popover from '@material-ui/core/Popover';
 
 const ColorPicker =
     ({
@@ -32,9 +33,12 @@ const ColorPicker =
          pickerClassName,
 
          ...custom
-     }) => <>
+     }) => {
+     const fieldRef = useRef();
+     return <>
         <TextField
             name={name}
+            ref={fieldRef}
             id={id}
             label={floatingLabelText || label}
             placeholder={hintText || placeholder}
@@ -47,13 +51,14 @@ const ColorPicker =
             {...TextFieldProps}
             {...custom}
         />
-        {showPicker && (
+        <Popover 
+            open={showPicker} 
+            onClose={() => setShowPicker(false)}
+            anchorEl={()=>fieldRef.current}
+            anchorOrigin={{vertical: 'bottom'}}
+        >
             <PickerDialog
                 value={value === undefined ? internalValue : value}
-                onClick={() => {
-                    setShowPicker(false)
-                    onChange(value)
-                }}
                 onChange={c => {
                     const newValue = converters[convert](c)
                     setValue(newValue)
@@ -61,8 +66,8 @@ const ColorPicker =
                 }}
                 className={pickerClassName}
             />
-        )}
-    </>;
+        </Popover>
+    </>};
 
 ColorPicker.propTypes = {
     value: PropTypes.string,

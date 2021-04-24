@@ -42,7 +42,7 @@ export function IOTextField(props) {
 
 let IOColorPicker = function (props) {
     let Icon = props.icon;
-    return <div className="CP_container">
+    return <div className="">
         {
             Icon 
                 ? 
@@ -71,7 +71,6 @@ let IOColorPicker = function (props) {
             onChange={props.onChange}
             InputLabelProps={{shrink: true}}
             value={props.value || ''}
-            style={{position:"absolute"}}
         />
     </div>;
 };
