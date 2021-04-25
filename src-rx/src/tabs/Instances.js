@@ -271,22 +271,20 @@ class Instances extends Component {
         const host = this.states[memRssId];
         let processes = 1;
         let mem = host ? host.val : 0;
-        for (let id in instances) {
-            if (instances.hasOwnProperty(id)) {
-                let inst = instances[id];
-                if (!inst || !inst.common) {
-                    return
-                }
-                if (inst.common.host !== this.props.currentHostName) {
-                    return
-                }
-                if (inst.common.enabled && inst.common.mode === 'daemon') {
-                    memRssId = inst._id + '.memRss';
-                    this.states[memRssId] = this.states[memRssId] || (await this.props.socket.getState(memRssId));
-                    const m = this.states[memRssId];
-                    mem += m ? m.val : 0;
-                    processes++;
-                }
+        for (let i = 0; i < instances.length; i++) {
+            let inst = instances[i];
+            if (!inst || !inst.common) {
+                return
+            }
+            /*if (inst.common.host !== this.props.currentHostName) {
+                return
+            }*/
+            if (inst.common.enabled && inst.common.mode === 'daemon') {
+                memRssId = inst._id + '.memRss';
+                this.states[memRssId] = this.states[memRssId] || (await this.props.socket.getState(memRssId));
+                const m = this.states[memRssId];
+                mem += m ? m.val : 0;
+                processes++;
             }
         }
 

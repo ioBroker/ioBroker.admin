@@ -286,7 +286,7 @@
           "newLine": true,
           "sm": 12,
           "noDelete": false,
-          "type": "table",
+          "type": "table1",
           "items": [
             {
               "type": "text",
@@ -351,6 +351,31 @@
             "label": "A",
             "value": "a"
           }, "B"]
+        },
+        "targetValues": {
+          "newLine": true,
+          "type": "table",
+          "items": [
+            {
+              "type": "text",
+              "attr": "key",
+              "title": "Key"
+            }, {
+              "type": "text",
+              "attr": "targetDatapointId",
+              "title": "Target-Datapoint ID"
+            }, {
+              "type": "text",
+              "attr": "targetValue",
+              "title": "Target-Value"
+            }
+          ],
+          "objKeyName": "key",
+          "sm": 12,
+          "lg": 12,
+          "label":"Target-Value-List",
+          "help": "(If the user enters one of these keys in iQontrol, the defined Target-Value will be sent to the defined Target-Datapoint ID)",
+          "default": ""
         }
       }
     }

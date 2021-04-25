@@ -596,7 +596,7 @@ Drawer.propTypes = {
 
     hostname: PropTypes.string,
     protocol: PropTypes.string,
-    port: PropTypes.string,
+    port: PropTypes.number,
     adminInstance: PropTypes.string,
 
     installed: PropTypes.object,

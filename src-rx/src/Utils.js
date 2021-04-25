@@ -326,6 +326,7 @@ class Utils {
                                     .filter(id => id.startsWith('system.adapter.' + adapterInstance + '.') && context.objects[id].common.enabled)
                                     .map(id => id.substring(15));
 
+                                // eslint-disable-next-line
                                 ids.forEach(id => {
                                     if (_urls.length) {
                                         const item = _urls.find(t => t.instance === id);

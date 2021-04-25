@@ -97,7 +97,10 @@ function arrayToObject(array, nameOfFirstAttr, nameOfSecondAttr) {
     const object = {};
 
     array.forEach(row => {
-        const key = row[nameOfFirstAttr];
+        let key = row[nameOfFirstAttr];
+        if (key === null || key === undefined) {
+            key = '';
+        }
         delete row[nameOfFirstAttr];
 
         if (nameOfSecondAttr) {
@@ -167,8 +170,9 @@ class ConfigTable extends ConfigGeneric {
                 const newVisibleValue = JSON.parse(JSON.stringify(visibleValue));
                 newObj[idx][attr] = valueChange;
                 newVisibleValue[idx][attr] = valueChange;
-                this.setState({ value: newObj, visibleValue: newVisibleValue });
-                this.onChangeWrapper(newObj,true);
+                this.setState({ value: newObj, visibleValue: newVisibleValue }, () =>
+                    this.onChangeWrapper(newObj,true));
+
             }}
             onError={(error, attr) => this.onError(error, attr)}
         />;
@@ -273,10 +277,10 @@ class ConfigTable extends ConfigGeneric {
             const newObj = JSON.parse(JSON.stringify(value));
             newObj.splice(index, 1);
             this.setState({ value: newObj }, () => {
+                this.onChangeWrapper(newObj);
                 this.onFilter(false, newObj);
                 this.handleRequestSort(orderBy, true);
             });
-            this.onChangeWrapper(newObj);
         };
 
     onChangeWrapper = (newValue, updateVisible = false) => {
@@ -287,7 +291,7 @@ class ConfigTable extends ConfigGeneric {
             this.typingTimer = null;
 
             if (this.props.schema.objKeyName) {
-                const objValue = arrayToObject(value, this.props.schema.objKeyName, this.props.schema.objValueName);
+                const objValue = arrayToObject(JSON.parse(JSON.stringify(value)), this.props.schema.objKeyName, this.props.schema.objValueName);
                 this.onChange(this.props.attr, objValue);
             } else {
                 this.onChange(this.props.attr, value);
@@ -381,7 +385,7 @@ class ConfigTable extends ConfigGeneric {
                             </TableRow>)}
                     </TableBody>
                 </Table>
-                {!visibleValue.length &&
+                {!visibleValue.length && value.length ?
                     <div className={classes.filteredOut}>
                         <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
                             {I18n.t('All items are filtered out')}
@@ -392,7 +396,7 @@ class ConfigTable extends ConfigGeneric {
                                 <CloseIcon />
                             </IconButton>
                         </Typography>
-                    </div>}
+                    </div> : null}
             </TableContainer>
             {schema.help ? <FormHelperText>{this.getText(schema.help)}</FormHelperText> : null}
         </Paper>;
