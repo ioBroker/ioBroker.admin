@@ -376,7 +376,7 @@ class Instances extends Component {
 
     getParamsLocalAndPanel = async () => {
         const compact = await this.props.socket.readBaseSettings(this.props.currentHostName)
-            .then(e => e.config.system.compact);
+            .then(e => !!e.config?.system?.compact);
 
         const importantDevices = JSON.parse(window.localStorage.getItem('Instances.importantDevices'));
         const playArrow = JSON.parse(window.localStorage.getItem('Instances.playArrow'));

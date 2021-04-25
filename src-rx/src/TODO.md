@@ -3,6 +3,7 @@
 ## Bugs
 - Ask "Discard data?" if instance config not saved for json config
 - Update expert mode in APP if changed in the system settings.
+- Drag&Drop in drawer does not work in firefox
 
 - (BF) AdminSettings: Access to the instances: add infotexts for "Apply access rights" and "Allow access only"
 - (BF)General: Support the new io-package fields that replace materialize and materializeTab (but we need to be backward compatible)
@@ -33,9 +34,11 @@
 
 ## Logs
 * When entering Message filter show clear button
+* Mobile view: https://github.com/ioBroker/ioBroker.admin/issues/758
 
 ## Instances
 - if more than one host => host selector for every instance
+* Mobile view: https://github.com/ioBroker/ioBroker.admin/issues/758
 
 ## Objects
 - Add in object edit the possibility to set color and icon (icon could be uploaded as base64 and may not be bigger than 5k) and use it for text color. Add possibility to scale the images.
@@ -56,6 +59,7 @@
 
 ## Easy mode
 - Back button for tabs
+- https://github.com/ioBroker/ioBroker.admin/issues/756
 
 ## After all is done
 - Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io) (BF)
