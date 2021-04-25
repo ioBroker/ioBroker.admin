@@ -1218,6 +1218,7 @@ class Connection {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
+
         return new Promise(resolve =>
             this._socket.emit('sendToHost', host, 'getLogs', linesNumber || 200, lines =>
                 resolve(lines)));

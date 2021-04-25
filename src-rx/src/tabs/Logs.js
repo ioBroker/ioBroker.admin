@@ -109,6 +109,9 @@ const styles = theme => ({
         marginRight: '1rem',
         marginLeft: '1rem'
     },
+    logEstimated: {
+        fontStyle: 'italic',
+    },
     closeButton: {
         position: 'absolute',
         right: theme.spacing(1),
@@ -180,6 +183,7 @@ class Logs extends Component {
             logFiles: [],
             logs: null,
             logSize: null,
+            estimatedSize: true,
             pause: 0,
             pauseCount: 0,
             pid: JSON.parse(window.localStorage.getItem('Logs.pid')) || false
@@ -188,14 +192,12 @@ class Logs extends Component {
         this.severities = {
             'silly': 0,
             'debug': 1,
-            'info': 2,
-            'warn': 3,
+            'info':  2,
+            'warn':  3,
             'error': 4
         };
 
         this.t = props.t;
-
-        this.logHandlerBound = this.logHandler.bind(this);
 
         this.props.socket.getLogsFiles()
             .then(list => {
@@ -231,60 +233,71 @@ class Logs extends Component {
                         }
                     });
 
-                    if (this.props.logsWorker) {
-                        this.props.logsWorker.getLogs()
-                            .then(results => {
-                                const logs = [...results.logs];
-                                const logSize = results.logSize;
-
-                                logs.forEach(item => {
-                                    if (!item.time) {
-                                        const date = new Date(item.ts);
-                                        item.time = `${date.getFullYear()}-${padding2(date.getMonth() + 1)}-${padding2(date.getDate())} ` +
-                                            `${padding2(date.getHours())}:${padding2(date.getMinutes())}:${padding2(date.getSeconds())}.${padding3(date.getMilliseconds())}`;
-                                    }
-                                });
-
-                                this.setState({ logFiles, logs, logSize });
-                            });
-                    } else {
-                        this.setState({ logFiles });
-                    }
+                    this.readLogs(true, logFiles);
                 }
             });
 
         this.words = {};
     }
 
+    readLogs(force, logFiles, cb) {
+        if (this.props.logsWorker) {
+            this.props.logsWorker.getLogs(force)
+                .then(results => {
+                    const logs = [...results.logs];
+                    const logSize = results.logSize;
+
+                    logs.forEach(item => {
+                        if (!item.time) {
+                            const date = new Date(item.ts);
+                            item.time = `${date.getFullYear()}-${padding2(date.getMonth() + 1)}-${padding2(date.getDate())} ` +
+                                `${padding2(date.getHours())}:${padding2(date.getMinutes())}:${padding2(date.getSeconds())}.${padding3(date.getMilliseconds())}`;
+                        }
+                    });
+
+                    if (logFiles) {
+                        this.setState({ logFiles, logs, logSize, estimatedSize: false }, () => cb && cb());
+                    } else {
+                        this.setState({ logs, logSize, estimatedSize: false }, () => cb && cb());
+                    }
+                });
+        } else if (logFiles) {
+            this.setState({ logFiles }, () => cb && cb());
+        }
+    }
+
     componentDidMount() {
         this.props.logsWorker && this.props.logsWorker.enableCountErrors(false);
-        this.props.logsWorker.registerHandler(this.logHandlerBound);
+        this.props.logsWorker.registerHandler(this.logHandler);
         this.props.clearErrors();
     }
 
     componentWillUnmount() {
         this.props.logsWorker && this.props.logsWorker.enableCountErrors(true);
-        this.props.logsWorker.unregisterHandler(this.logHandlerBound);
+        this.props.logsWorker.unregisterHandler(this.logHandler);
         this.props.clearErrors();
     }
 
-    logHandler(newLogs) {
+    logHandler = (newLogs, size) => {
         const oldLogs = this.state.logs || [];
         const logs = oldLogs.concat(newLogs);
+
         logs.forEach(item => {
             if (!item.time) {
                 const date = new Date(item.ts);
                 item.time = `${date.getFullYear()}-${padding2(date.getMonth() + 1)}-${padding2(date.getDate())} ` +
                     `${padding2(date.getHours())}:${padding2(date.getMinutes())}:${padding2(date.getSeconds())}.${padding3(date.getMilliseconds())}`;
             }
+
         });
-        this.setState({ logs });
+
+        this.setState({ logs, logSize: this.state.logSize + size, estimatedSize: true });
     }
 
     clearLog() {
         this.props.logsWorker && this.props.logsWorker.clearLines();
-        this.setState({logs: []});
         this.props.clearErrors();
+        this.setState({logs: []});
     }
 
     handleMessageChange(event) {
@@ -318,8 +331,11 @@ class Logs extends Component {
     handleLogDelete() {
         this.props.socket.delLogs(this.props.currentHost)
             .then(() => this.clearLog())
-            .catch(error => window.alert(error));
-        this.closeLogDelete();
+            .then(() => this.readLogs(true,  null, () => this.closeLogDelete()))
+            .catch(error => {
+                this.closeLogDelete();
+                window.alert(error);
+            });
     }
 
     handleLogPause() {
@@ -500,14 +516,7 @@ class Logs extends Component {
         return <TabContainer>
             <TabHeader>
                 <Tooltip title={this.props.t('Refresh log')}>
-                    <IconButton
-                        onClick={() => this.props.logsWorker &&
-                            this.props.logsWorker.getLogs(true).then(results => {
-                                const logs = results.logs;
-                                const logSize = results.logSize;
-                                this.setState({ logs: [...logs], logSize });
-                            })}
-                    >
+                    <IconButton onClick={() => this.readLogs(true)}>
                         <RefreshIcon />
                     </IconButton>
                 </Tooltip>
@@ -532,7 +541,7 @@ class Logs extends Component {
                 <Tooltip title={this.props.t('Show/hide PID')}>
                     <IconButton
                         onClick={() => this.changePid()}
-                        color={!this.state.pid ? "default" : "primary"}
+                        color={!this.state.pid ? 'default' : 'primary'}
                     >
                         <div className={classes.pidSize}>{this.props.t('PID')}</div>
                     </IconButton>
@@ -562,9 +571,10 @@ class Logs extends Component {
                 <div className={classes.grow} />
                 <Typography
                     variant="body2"
+                    title={this.state.estimatedSize ? this.props.t('Estimated size') : ''}
                     className={classes.logSize}
                 >
-                    {`${this.t('Log size:')} ${this.state.logSize || '-'}`}
+                    {this.t('Log size:')} <span className={this.state.estimatedSize && classes.logEstimated}>{this.state.logSize === null ? '-' : Utils.formatBytes(this.state.logSize)}</span>
                 </Typography>
             </TabHeader>
             <TabContent>

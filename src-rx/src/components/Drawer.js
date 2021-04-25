@@ -241,13 +241,13 @@ class Drawer extends Component {
     }
 
     onErrorsUpdates = logErrors => {
-        if (this.props.currentTab.tab !== 'tab-logs' || (this.props.currentTab.tab === 'tab-logs' && this.state.logErrors)) {
+        if (this.props.currentTab !== 'tab-logs' || (this.props.currentTab === 'tab-logs' && this.state.logErrors)) {
             this.setState({ logErrors });
         }
     }
 
     onWarningsUpdates = logWarnings => {
-        if (this.props.currentTab.tab !== 'tab-logs' || (this.props.currentTab.tab === 'tab-logs' && this.state.logWarnings)) {
+        if (this.props.currentTab !== 'tab-logs' || (this.props.currentTab === 'tab-logs' && this.state.logWarnings)) {
             this.setState({ logWarnings });
         }
     }

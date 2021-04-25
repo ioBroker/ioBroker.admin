@@ -2,24 +2,23 @@ import Utils from '../Utils';
 
 class LogsWorker {
     constructor(socket, maxLogs) {
-        this.socket = socket;
-        this.handlers = [];
-        this.promise = new Promise(resolve => this.resolve = resolve);
+        this.socket               = socket;
+        this.handlers             = [];
+        this.promise              = new Promise(resolve => this.resolve = resolve);
 
-        this.logHandlerBound = this.logHandler.bind(this);
-        this.connectionHandlerBound = this.connectionHandler.bind(this);
-        this.errorCountHandlers = [];
+        this.errorCountHandlers   = [];
         this.warningCountHandlers = [];
-        socket.registerLogHandler(this.logHandlerBound);
-        socket.registerConnectionHandler(this.connectionHandlerBound);
-        this.countErrors = true;
-        this.countWarnings = true;
-        this.errors = 0;
-        this.warnings = 0;
-        this.currentHost = '';
-        this.connected = this.socket.isConnected();
-        this.maxLogs = maxLogs || 1000;
-        this.logs = null;
+        this.countErrors          = true;
+        this.countWarnings        = true;
+        this.errors               = 0;
+        this.warnings             = 0;
+        this.currentHost          = '';
+        this.connected            = this.socket.isConnected();
+        this.maxLogs              = maxLogs || 1000;
+        this.logs                 = null;
+
+        socket.registerLogHandler(this.logHandler);
+        socket.registerConnectionHandler(this.connectionHandler);
     }
 
     setCurrentHost(currentHost) {
@@ -34,7 +33,7 @@ class LogsWorker {
             this.countErrors = isEnabled;
             if (!this.countErrors) {
                 const errors = this.errors;
-                this.error = 0;
+                this.error   = 0;
                 errors && this.errorCountHandlers.forEach(handler => handler && handler(errors));
             }
         }
@@ -67,12 +66,12 @@ class LogsWorker {
         }
     }
 
-    logHandler(line) {
+    logHandler = line => {
         const errors = this.errors;
         const warnings = this.warnings;
 
         const obj = this._processLine(line);
-        obj && this.handlers.forEach(handler => handler && handler([obj]));
+        obj && this.handlers.forEach(handler => handler && handler([obj], JSON.stringify(line).length - 65));
 
         if (errors !== this.errors) {
             this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
@@ -83,7 +82,7 @@ class LogsWorker {
         }
     }
 
-    connectionHandler(isConnected) {
+    connectionHandler = isConnected => {
         if (isConnected && !this.connected) {
             this.connected = true;
             this.getLogs(true);
@@ -251,7 +250,7 @@ class LogsWorker {
 
         this.socket.getLogs(this.currentHost, 200)
             .then(lines => {
-                const logSize = lines ? Utils.formatBytes(lines.pop()) : -1;                
+                const logSize = lines ? lines.pop() : null;
 
                 this.logs = [];
                 let lastKey;
@@ -269,7 +268,7 @@ class LogsWorker {
                 this.logSize = logSize;
 
                 // inform subscribes about each line
-                this.handlers.forEach(cb => cb && cb(this.logs));
+                this.handlers.forEach(cb => cb && cb(this.logs, logSize));
 
                 this.errors && this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
                 this.warnings && this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));

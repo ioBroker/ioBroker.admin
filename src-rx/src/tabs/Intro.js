@@ -438,11 +438,13 @@ class Intro extends Component {
                     }
                 });
 
-                Object.keys(instances).forEach(key => {
-                    const obj = instances[key];
-                    const common = (obj) ? obj.common : null;
-                    const objId = obj._id.split('.');
-                    const instanceId = objId[objId.length - 1];
+                instances.forEach(obj => {
+                    if (!obj) {
+                        return;
+                    }
+                    const common     = obj.common || null;
+                    const objId      = obj._id.split('.');
+                    const instanceId = objId.pop();
 
                     if (common.name && common.name === 'admin' && common.localLink === (this.props.hostname || '')) {
                         return;
@@ -453,30 +455,45 @@ class Intro extends Component {
                     } else if (common.name && common.name.match(/^icons-/)) {
                         return;
                     } else if (common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
-                        const ws = common.welcomeScreen ? common.welcomeScreen : null;
-                        let links = /*(ws && ws.link) ? ws.link :*/ common.localLinks || common.localLink || '';
+                        let links = common.localLinks || common.localLink || '';
                         if (typeof links === 'string') {
                             links = { _default: links };
                         }
 
                         Object.keys(links).forEach(linkName => {
-                            const link = links[linkName];
+                            let link = links[linkName];
                             const instance = {};
+                            if (typeof link === 'string') {
+                                link = {link};
+                            }
 
-                            instance.id = obj._id.replace('system.adapter.', '') + (linkName === '_default' ? '' : ' ' + linkName);
-                            instance.name = (/*(ws && ws.name) ? ws.name :*/ common.titleLang ? common.titleLang[this.props.lang] : common.title) + (linkName === '_default' ? '' : ' ' + linkName);
-                            instance.color = ws && ws.color ? ws.color : '';
+                            instance.id          = obj._id.replace('system.adapter.', '') + (linkName === '_default' ? '' : ' ' + linkName);
+                            instance.name        = (common.titleLang ? common.titleLang[this.props.lang] : common.title) + (linkName === '_default' ? '' : ' ' + linkName);
+                            instance.color       = link.color || '';
                             instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
-                            instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
-                            instance.link = Utils.replaceLink(link, common.name, instanceId, {
+                            instance.image       = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
+                            instance.enabled     = deactivated.hasOwnProperty(instance.id) ? !!deactivated[instance.id] : true;
+
+                            const _urls = Utils.replaceLink(link.link, common.name, instanceId, {
                                 objects,
                                 hostname: this.props.hostname,
                                 protocol: this.props.protocol
-                            }) || '';
+                            }) || [];
 
-                            instance.enabled = deactivated.hasOwnProperty(instance.id) ? !!deactivated[instance.id] : true;
-
-                            introInstances.push(instance);
+                            if (_urls.length === 1) {
+                                instance.link = _urls[0].url;
+                                instance.port = _urls[0].port;
+                                // if link already exists => ignore
+                                if (!introInstances.find(item => item.link === instance.link)) {
+                                    introInstances.push(instance);
+                                }
+                            } else if (_urls.length > 1) {
+                                _urls.forEach(url => {
+                                    if (!introInstances.find(item => item.link === url.url)) {
+                                        introInstances.push({...instance, link: url.url, port: url.port});
+                                    }
+                                })
+                            }
                         });
                     }
                 });

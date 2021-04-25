@@ -78,11 +78,12 @@ class CustomTab extends Component {
 
                 if (href.includes('%')) {
                     // replace
-                    href = Utils.replaceLink(href, adapter, instNum, {
+                    const hrefs = Utils.replaceLink(href, adapter, instNum, {
                         hostname,
                         protocol,
                         objects: instances
                     });
+                    href = hrefs[0].url;
                 }
 
                 return href;
