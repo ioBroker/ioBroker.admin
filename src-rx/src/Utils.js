@@ -113,7 +113,7 @@ class Utils {
     }
 
     // internal use
-    static _replaceLink(link, objects, adapterInstance, attr, placeholder) {
+    static _replaceLink(link, objects, adapterInstance, attr, placeholder, hosts, hostname, adminInstance) {
         if (attr === 'protocol') {
             attr = 'secure';
         }
@@ -125,7 +125,17 @@ class Utils {
                 if (attr === 'secure') {
                     link = link.replace('%' + placeholder + '%', object.native[attr] ? 'https' : 'http');
                 } else {
-                    if (link.indexOf('%' + placeholder + '%') === -1) {
+                    if (attr === 'bind' || attr === 'ip') {
+                        let ip = object.native.bind || object.native.ip;
+                        if (ip === '0.0.0.0') {
+                            ip = Utils.getHostname(object, objects, hosts, hostname, adminInstance);
+                        }
+                        if (!link.includes('%' + placeholder + '%')) {
+                            link = link.replace('%native_' + placeholder + '%', ip);
+                        } else {
+                            link = link.replace('%' + placeholder + '%', ip);
+                        }
+                    } else if (!link.includes('%' + placeholder + '%')) {
                         link = link.replace('%native_' + placeholder + '%', object.native[attr]);
                     } else {
                         link = link.replace('%' + placeholder + '%', object.native[attr]);
@@ -141,6 +151,97 @@ class Utils {
         return link;
     }
 
+    static ip2int(ip) {
+        return ip.split('.').reduce((ipInt, octet) => (ipInt << 8) + parseInt(octet, 10), 0) >>> 0;
+    }
+
+    static findNetworkAddressOfHost(obj, localIp) {
+        const networkInterfaces = obj?.native?.hardware?.networkInterfaces;
+        if (!networkInterfaces) {
+            return null;
+        }
+
+        let hostIp;
+        Object.keys(networkInterfaces).forEach(inter => {
+            networkInterfaces[inter].forEach(ip => {
+                if (ip.internal) {
+                    return;
+                } else if (localIp.includes(':') && ip.family !== 'IPv6') {
+                    return;
+                } else if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
+                    return;
+                }
+                if (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/)) { // if DNS name
+                    hostIp = ip.address;
+                } else {
+                    if (ip.family === 'IPv4' && localIp.includes('.') &&
+                        (Utils.ip2int(localIp) & Utils.ip2int(ip.netmask)) === (Utils.ip2int(ip.address) & Utils.ip2int(ip.netmask))) {
+                        hostIp = ip.address;
+                    } else {
+                        hostIp = ip.address;
+                    }
+                }
+            });
+        });
+
+        if (!hostIp) {
+            Object.keys(networkInterfaces).forEach(inter => {
+                networkInterfaces[inter].forEach(ip => {
+                    if (ip.internal) {
+                        return;
+                    } else if (localIp.includes(':') && ip.family !== 'IPv6') {
+                        return;
+                    } else if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
+                        return;
+                    }
+                    if (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/)) { // if DNS name
+                        hostIp = ip.address;
+                    } else {
+                        hostIp = ip.address;
+                    }
+                });
+            });
+        }
+
+        if (!hostIp) {
+            Object.keys(networkInterfaces).forEach(inter => {
+                networkInterfaces[inter].forEach(ip => {
+                    if (ip.internal) {
+                        return;
+                    }
+                    hostIp = ip.address;
+                });
+            });
+        }
+
+        return hostIp;
+    }
+
+    static getHostname(instanceObj, objects, hosts, currentHostname, adminInstance) {
+        let hostname;
+        // check if the adapter from the same host as admin
+        const adminHost = objects['system.adapter.' + adminInstance]?.common?.host;
+        if (instanceObj.common.host !== adminHost) {
+            // find IP address
+            const host = hosts.find(obj => obj._id === 'system.host.' + instanceObj.common.host);
+            if (host) {
+                const ip = Utils.findNetworkAddressOfHost(host, currentHostname);
+                if (ip) {
+                    hostname = ip;
+                } else {
+                    console.warn(`Cannot find suitable IP in host ${instanceObj.common.host} for ${instanceObj._id}`);
+                    return null;
+                }
+            } else {
+                console.warn(`Cannot find host ${instanceObj.common.host} for ${instanceObj._id}`);
+                return null
+            }
+        } else {
+            hostname = currentHostname;
+        }
+        return hostname;
+    }
+
     /**
      * Format number in seconds to time text
      * @param {string} link pattern for link
@@ -154,7 +255,8 @@ class Utils {
         let port;
 
         if (link) {
-            const native = context.objects[`system.adapter.${adapter}.${instance}`]?.native || {};
+            const instanceObj = context.objects[`system.adapter.${adapter}.${instance}`];
+            const native      = instanceObj?.native || {};
 
             let placeholders = link.match(/%(\w+)%/g);
 
@@ -165,7 +267,8 @@ class Utils {
                     if (placeholder === '%ip%') {
                         let ip = native.bind || native.ip;
                         if (!ip || ip === '127.0.0.1' || ip === 'localhost' || ip === '0.0.0.0') {
-                            ip = context.hostname
+                            // Check host
+                            ip = Utils.getHostname(instanceObj, context.objects, context.hosts, context.hostname, context.adminInstance);
                         }
 
                         if (_urls.length) {
@@ -208,9 +311,9 @@ class Utils {
                             const adapterInstance = adapter + '.' + instance;
                             if (_urls.length) {
                                 _urls.forEach(item =>
-                                    item.url = Utils._replaceLink(item.url, context.objects, adapterInstance, placeholder, placeholder));
+                                    item.url = Utils._replaceLink(item.url, context.objects, adapterInstance, placeholder, placeholder, context.hosts, context.hostname, context.adminInstance));
                             } else {
-                                link = Utils._replaceLink(link, context.objects, adapterInstance, placeholder, placeholder);
+                                link = Utils._replaceLink(link, context.objects, adapterInstance, placeholder, placeholder, context.hosts, context.hostname, context.adminInstance);
                                 port = context.objects['system.adapter.' + adapterInstance]?.native?.port;
                             }
                         } else {
@@ -227,16 +330,16 @@ class Utils {
                                     if (_urls.length) {
                                         const item = _urls.find(t => t.instance === id);
                                         if (item) {
-                                            item.url = Utils._replaceLink(item.url, context.objects, id, attr, placeholder);
+                                            item.url = Utils._replaceLink(item.url, context.objects, id, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
                                         }
                                     } else {
-                                        const _link = Utils._replaceLink(link, context.objects, id, attr, placeholder);
+                                        const _link = Utils._replaceLink(link, context.objects, id, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
                                         const _port = context.objects['system.adapter.' + id]?.native?.port;
                                         _urls.push({url: _link, port: _port, instance: id});
                                     }
                                 });
                             } else {
-                                link = Utils._replaceLink(link, context.objects, adapterInstance, attr, placeholder);
+                                link = Utils._replaceLink(link, context.objects, adapterInstance, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
                                 port = context.objects['system.adapter.' + adapterInstance]?.native?.port;
                             }
                         }

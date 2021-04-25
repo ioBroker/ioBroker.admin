@@ -298,7 +298,6 @@ class Instances extends Component {
 
         instances.forEach(obj => {
             const common     = obj ? obj.common : null;
-            const native     = obj ? obj.native : {};
             const objId      = obj._id.split('.');
             const instanceId = objId[objId.length - 1];
 
@@ -328,9 +327,12 @@ class Instances extends Component {
                 }
 
                 const urls = Utils.replaceLink(link.link, common.name, instanceId, {
-                    objects: instancesWorker,
-                    hostname: this.props.hostname,
-                    protocol: this.props.protocol,
+                    objects:       instancesWorker,
+                    hostname:      this.props.hostname,
+                    protocol:      this.props.protocol,
+                    port:          this.props.port,
+                    hosts:         this.props.hosts,
+                    adminInstance: this.props.adminInstance,
                 }) || [];
 
                 if (urls.length === 1) {
@@ -992,9 +994,12 @@ Instances.propTypes = {
     t: PropTypes.func,
     lang: PropTypes.string,
     expertMode: PropTypes.bool,
+
     hostname: PropTypes.string,
     hosts: PropTypes.array,
     protocol: PropTypes.string,
+    adminInstance: PropTypes.string,
+
     socket: PropTypes.object,
     themeName: PropTypes.string,
     themeType: PropTypes.string,

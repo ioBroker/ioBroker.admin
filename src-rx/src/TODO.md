@@ -35,6 +35,7 @@
 * When entering Message filter show clear button
 
 ## Instances
+- if more than one host => host selector for every instance
 
 ## Objects
 - Add in object edit the possibility to set color and icon (icon could be uploaded as base64 and may not be bigger than 5k) and use it for text color. Add possibility to scale the images.

@@ -6,12 +6,10 @@
  **/
 import React from 'react';
 import I18n from '@iobroker/adapter-react/i18n';
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
 
-const NAMESPACE = 'material';
-const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const NAMESPACE    = 'material';
+const days         = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+const months       = ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const QUALITY_BITS = {
     0x00: '0x00 - good',
 

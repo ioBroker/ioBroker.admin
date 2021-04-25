@@ -58,16 +58,19 @@ const styles = theme => ({
     },
     container: {
         overflowY: 'auto'
+    },
+    hostOffline: {
+        color: '#bb0000'
     }
 });
 
 const formatInfo = {
-    'Uptime': Utils.formatSeconds,
+    'Uptime':        Utils.formatSeconds,
     'System uptime': Utils.formatSeconds,
-    'RAM': Utils.formatRam,
-    'Speed': Utils.formatSpeed,
-    'Disk size': Utils.formatBytes,
-    'Disk free': Utils.formatBytes
+    'RAM':           Utils.formatRam,
+    'Speed':         Utils.formatSpeed,
+    'Disk size':     Utils.formatBytes,
+    'Disk free':     Utils.formatBytes
 };
 
 class Intro extends Component {
@@ -157,9 +160,7 @@ class Intro extends Component {
 
     getInstancesCards() {
         return this.state.instances.map(instance => {
-
             if (instance.enabled || this.state.edit) {
-
                 let linkText = instance.link ? instance.link.replace(/^https?:\/\//, '') : '';
                 const pos = linkText.indexOf('/');
                 if (pos !== -1) {
@@ -167,26 +168,25 @@ class Intro extends Component {
                 }
 
                 const hostData = this.state.hostsData ? this.state.hostsData[instance.id] : null;
-                return (
-                    <IntroCard
-                        key={instance.id}
-                        socket={this.props.socket}
-                        image={instance.image}
-                        title={instance.name}
-                        action={{ link: instance.link, text: linkText }}
-                        t={this.props.t}
-                        color={instance.color}
-                        reveal={instance.info}
-                        edit={this.state.edit}
-                        enabled={instance.enabled}
-                        disabled={!Boolean(hostData && typeof hostData === 'object')}
-                        getHostDescriptionAll={() => this.getHostDescriptionAll(instance.id)}
-                        toggleActivation={() => this.toggleCard(instance.id)}
-                        openSnackBarFunc={() => this.setState({ openSnackBar: true })}
-                    >
-                        { instance.description || this.getHostDescription(instance.id)}
-                    </IntroCard>
-                );
+                return <IntroCard
+                    key={instance.id}
+                    socket={this.props.socket}
+                    image={instance.image}
+                    title={instance.name}
+                    action={{ link: instance.link, text: linkText }}
+                    t={this.props.t}
+                    color={instance.color}
+                    reveal={instance.info}
+                    edit={this.state.edit}
+                    offline={hostData && hostData.alive === false}
+                    enabled={instance.enabled}
+                    disabled={!(hostData && typeof hostData === 'object')}
+                    getHostDescriptionAll={() => this.getHostDescriptionAll(instance.id)}
+                    toggleActivation={() => this.toggleCard(instance.id)}
+                    openSnackBarFunc={() => this.setState({ openSnackBar: true })}
+                >
+                    { instance.description || this.getHostDescription(instance.id)}
+                </IntroCard>;
             } else {
                 return null;
             }
@@ -283,54 +283,47 @@ class Intro extends Component {
         const buttons = [];
 
         if (this.state.edit) {
-            buttons.push(
-                <Fab
-                    key="add"
-                    color="primary"
-                    className={classes.button + ' ' + classes.addButton}
-                    onClick={() =>
-                        this.setState({
-                            editLink: true,
-                            editLinkIndex: -1,
-                            link: {}
-                        })}
-                >
-                    <AddIcon />
-                </Fab>
-            );
-            buttons.push(
-                <Fab
-                    key="save"
-                    color="primary"
-                    disabled={!this.state.hasUnsavedChanges}
-                    className={classes.button + ' ' + classes.saveButton}
-                    onClick={() => this.saveCards()}
-                >
-                    <CheckIcon />
-                </Fab>
-            );
+            buttons.push(<Fab
+                key="add"
+                color="primary"
+                className={classes.button + ' ' + classes.addButton}
+                onClick={() =>
+                    this.setState({
+                        editLink: true,
+                        editLinkIndex: -1,
+                        link: {}
+                    })}
+            >
+                <AddIcon />
+            </Fab>);
 
-            buttons.push(
-                <Fab
-                    key="close"
-                    color="primary"
-                    className={classes.button + ' ' + classes.closeButton}
-                    onClick={() => this.deactivateEditMode()}
-                >
-                    <CloseIcon />
-                </Fab>
-            )
+            buttons.push(<Fab
+                key="save"
+                color="primary"
+                disabled={!this.state.hasUnsavedChanges}
+                className={classes.button + ' ' + classes.saveButton}
+                onClick={() => this.saveCards()}
+            >
+                <CheckIcon />
+            </Fab>);
+
+            buttons.push(<Fab
+                key="close"
+                color="primary"
+                className={classes.button + ' ' + classes.closeButton}
+                onClick={() => this.deactivateEditMode()}
+            >
+                <CloseIcon />
+            </Fab>);
         } else {
-            buttons.push(
-                <Fab
-                    color="primary"
-                    key="edit"
-                    className={classes.button}
-                    onClick={() => this.activateEditMode()}
-                >
-                    <CreateIcon />
-                </Fab>
-            );
+            buttons.push(<Fab
+                color="primary"
+                key="edit"
+                className={classes.button}
+                onClick={() => this.activateEditMode()}
+            >
+                <CreateIcon />
+            </Fab>);
         }
 
         return buttons;
@@ -378,7 +371,14 @@ class Intro extends Component {
 
     getHostsData(hosts) {
         const promises = hosts.map(obj =>
-            this.props.socket.getHostInfo(obj._id, false, 10000)
+            this.props.socket.getState(obj._id + '.alive')
+                .then(alive => {
+                    if (alive && alive.val) {
+                        return this.props.socket.getHostInfo(obj._id, false, 10000);
+                    } else {
+                        return {alive: false};
+                    }
+                })
                 .catch(error => {
                     console.error(error);
                     return error;
@@ -474,23 +474,42 @@ class Intro extends Component {
                             instance.image       = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
                             instance.enabled     = deactivated.hasOwnProperty(instance.id) ? !!deactivated[instance.id] : true;
 
+
+                            /*let protocol = this.props.protocol;
+                            let port     = this.props.port;
+                            let hostname = Intro.getHostname(obj, objects, hosts, this.props.hostname, this.adminInstance);
+
+                            if (!hostname) {
+                                return;
+                            }*/
+
                             const _urls = Utils.replaceLink(link.link, common.name, instanceId, {
                                 objects,
-                                hostname: this.props.hostname,
-                                protocol: this.props.protocol
+                                hostname:      this.props.hostname,
+                                protocol:      this.props.protocol,
+                                port:          this.props.port,
+                                adminInstance: this.props.adminInstance,
+                                hosts,
                             }) || [];
 
                             if (_urls.length === 1) {
                                 instance.link = _urls[0].url;
                                 instance.port = _urls[0].port;
                                 // if link already exists => ignore
-                                if (!introInstances.find(item => item.link === instance.link)) {
+                                const lll = introInstances.find(item => item.link === instance.link);
+                                if (!lll) {
                                     introInstances.push(instance);
+                                } else {
+                                    console.log('Double links: "' + instance.id + '" and "' + lll.id + '"');
                                 }
                             } else if (_urls.length > 1) {
                                 _urls.forEach(url => {
-                                    if (!introInstances.find(item => item.link === url.url)) {
+                                    const lll = introInstances.find(item => item.link === url.url);
+
+                                    if (!lll) {
                                         introInstances.push({...instance, link: url.url, port: url.port});
+                                    } else {
+                                        console.log('Double links: "' + instance.id + '" and "' + lll.id + '"');
                                     }
                                 })
                             }
@@ -498,30 +517,20 @@ class Intro extends Component {
                     }
                 });
 
-                /*var urlText = url.replace(/^https?:\/\//, '');
-                var pos = urlText.indexOf('/');
-                if (pos !== -1) {
-                    urlText = urlText.substring(0, pos);
-                }
-                if (adapter === 'admin' && urlText === location.host) return null;
-                if (adapter === 'web') return null;
-                if (adapter !== 'vis-web-admin' && adapter.match(/^vis-/)) return null; // no widgets
-                if (adapter.match(/^icons-/)) return null; // no icons
-            */
-
                 Object.keys(hosts).forEach(key => {
                     const obj = hosts[key];
                     const common = obj && obj.common;
 
                     if (common) {
-                        const instance = {};
+                        const instance   = {};
 
-                        instance.id = obj._id;
-                        instance.name = common.name;
-                        instance.color = '';
-                        instance.image = common.icon || 'img/no-image.png';
+                        instance.id      = obj._id;
+                        instance.name    = common.name;
+                        instance.color   = '';
+                        instance.image   = common.icon || 'img/no-image.png';
                         instance.enabled = deactivated.hasOwnProperty(instance.id) ? !!deactivated[instance.id] : true;
-                        instance.info = this.t('Info');
+                        instance.info    = this.t('Info');
+
                         introInstances.push(instance);
                     }
                 });
@@ -533,30 +542,27 @@ class Intro extends Component {
     }
 
     getHostDescription(id) {
-
         const { classes } = this.props;
         const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
 
-        return (
-            <ul>
-                {
-                    ['Platform', 'RAM', 'Node.js', 'NPM'].map(value => {
-                        return (
-                            <li key={value}>
-                                { hostData && typeof hostData === 'object' ?
-                                    <span>
-                                        <span className={classes.bold}>{this.t(value)}: </span>
-                                        {(formatInfo[value] ? formatInfo[value](hostData[value]) : hostData[value] || '--')}
-                                    </span>
-                                    :
-                                    <Skeleton />
-                                }
-                            </li>
-                        )
-                    })
-                }
-            </ul>
-        );
+        if (hostData && hostData.alive === false) {
+            return <div className={this.props.classes.hostOffline}>{this.props.t('Offline')}</div>;
+        }
+
+        return <ul>{
+            ['Platform', 'RAM', 'Node.js', 'NPM'].map(value =>
+                <li key={value}>
+                    { hostData && typeof hostData === 'object' ?
+                        <span>
+                            <span className={classes.bold}>{this.t(value)}: </span>
+                            {(formatInfo[value] ? formatInfo[value](hostData[value]) : hostData[value] || '--')}
+                        </span>
+                        :
+                        <Skeleton />
+                    }
+                </li>
+            )}
+        </ul>;
     }
 
     getHostDescriptionAll(id) {
@@ -586,7 +592,11 @@ class Intro extends Component {
         let hosts;
         let systemConfig;
 
-        return this.props.socket.getSystemConfig(update)
+        return this.props.socket.getCurrentInstance()
+            .then(adminInstance => {
+                this.adminInstance = adminInstance;
+                return this.props.socket.getSystemConfig(update);
+            })
             .then(_systemConfig => {
                 systemConfig = _systemConfig;
                 return this.getHosts(update);
@@ -658,6 +668,11 @@ Intro.propTypes = {
     t: PropTypes.func,
     lang: PropTypes.string,
     toggleActivation: PropTypes.func,
+
+    hostname: PropTypes.string,
+    protocol: PropTypes.string,
+    port: PropTypes.string,
+    adminInstance: PropTypes.string,
 };
 
 export default withStyles(styles)(Intro);
