@@ -1,7 +1,8 @@
 import { Component } from 'react';
 
 import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { TouchBackend } from 'react-dnd-touch-backend';
 
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
@@ -27,6 +28,13 @@ const styles = theme => ({
     canDrop:{
         backgroundColor:theme.palette.background.default
     } ,
+    headContainer: {
+        margin: 10
+    },
+    blocksContainer: {
+        overflowY: 'auto',
+        height: '100%'
+    },
     userGroupCard2: {
         border: '1px solid #FFF',
         borderColor: theme.palette.divider, 
@@ -45,6 +53,11 @@ const styles = theme => ({
     userGroupCardSecondary:{
         color: theme.palette.text.primary,
         backgroundColor: theme.palette.success.light
+    },
+    permHeaders: {
+        backgroundColor: theme.palette.primary.main,
+        padding: 4,
+        borderRadius: 2
     },
     userCardContent:
     {
@@ -172,6 +185,12 @@ const styles = theme => ({
         padding: 20
     }
 });
+
+function isTouchDevice() {
+    return (('ontouchstart' in window) ||
+        (navigator.maxTouchPoints > 0) ||
+        (navigator.msMaxTouchPoints > 0));
+}
 
 class UsersList extends Component {
 
@@ -399,20 +418,23 @@ class UsersList extends Component {
             return 'loading';
         }
         return <>
-            <DndProvider backend={HTML5Backend}>
+            <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
                 <div className={this.props.classes.descriptionPanel}>
                     {this.props.t('You can drag users to groups.')}
                 </div>
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
-                        <Fab 
-                            size="small" 
-                            className={this.props.classes.left} 
-                            onClick={()=>this.showGroupEditDialog(this.groupTemplate, true)}
-                        >
-                            <GroupAddIcon/>
-                        </Fab>
-                        <Typography gutterBottom variant="h4" component="h4">{this.props.t('Groups')}</Typography>
+                        <div className={this.props.classes.headContainer}>
+                            <Fab 
+                                size="small" 
+                                className={this.props.classes.right} 
+                                onClick={()=>this.showGroupEditDialog(this.groupTemplate, true)}
+                            >
+                                <GroupAddIcon/>
+                            </Fab>
+                            <Typography gutterBottom variant="h4" component="h4">{this.props.t('Groups')}</Typography>
+                        </div>
+                        <div className={this.props.classes.blocksContainer}>
                         {
                             this.state.groups.map(group => <GroupBlock 
                                 group={group} 
@@ -425,22 +447,26 @@ class UsersList extends Component {
                                 {...this.props}
                             />)
                         }
+                        </div>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                        <Fab 
-                            size="small" 
-                            className={this.props.classes.left} 
-                            onClick={()=>this.showUserEditDialog(this.userTemplate, true)}
-                        >
-                            <PersonAddIcon/>
-                        </Fab>
-                        <Typography 
-                            gutterBottom 
-                            variant="h4" 
-                            component="h4"
-                        >
-                            {this.props.t('Users')}
-                        </Typography>
+                        <div className={this.props.classes.headContainer}>
+                            <Fab 
+                                size="small" 
+                                className={this.props.classes.right} 
+                                onClick={()=>this.showUserEditDialog(this.userTemplate, true)}
+                            >
+                                <PersonAddIcon/>
+                            </Fab>
+                            <Typography 
+                                gutterBottom 
+                                variant="h4" 
+                                component="h4"
+                            >
+                                {this.props.t('Users')}
+                            </Typography>
+                        </div>
+                        <div className={this.props.blocksContainer}>
                         {
                             this.state.users.map(user => <UserBlock 
                                 user={user} 
@@ -455,6 +481,7 @@ class UsersList extends Component {
                                 {...this.props}
                             />)
                         }
+                        </div>
                     </Grid>
                 </Grid>
                 <UserEditDialog 

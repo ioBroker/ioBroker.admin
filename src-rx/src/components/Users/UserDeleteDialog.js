@@ -12,8 +12,8 @@ function UserDeleteDialog(props) {
                 {props.t('Do you want to delete user ') + props.user.common.name + '?'}
             </h2>
             <div>
-                <Button onClick={()=>props.deleteUser(props.user._id)}>Delete</Button>
-                <Button onClick={props.onClose}>Cancel</Button>
+                <Button onClick={()=>props.deleteUser(props.user._id)}>{props.t('Delete')}</Button>
+                <Button onClick={props.onClose}>{props.t('Cancel')}</Button>
             </div>
         </Box>
     </Dialog>;

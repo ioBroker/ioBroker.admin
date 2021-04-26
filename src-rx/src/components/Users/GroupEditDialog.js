@@ -35,7 +35,7 @@ function PermsTab(props) {
         {
             mapObject(props.group.common.acl, (block, blockKey) =>
                 <Grid item xs={12} md={12} key={blockKey}>
-                    <h4>{props.t(blockKey)}</h4>
+                    <h2 className={props.classes.permHeaders}>{props.t(blockKey)}</h2>
                     {mapObject(block, (perm, permKey) =>
                         <FormControlLabel
                             key={permKey}
@@ -221,8 +221,8 @@ function GroupEditDialog(props) {
             </div>
         </DialogContent>
         <DialogActions className={props.classes.dialogActions} >
-            <Button onClick={()=>props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>Save</Button>
-            <Button onClick={props.onClose}>Cancel</Button>
+            <Button onClick={()=>props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>{props.t('Save')}</Button>
+            <Button onClick={props.onClose}>{props.t('Cancel')}</Button>
         </DialogActions>
     </Dialog>;
 }

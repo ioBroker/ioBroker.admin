@@ -27,10 +27,8 @@ class Users extends Component {
         }
 
         return <TabContainer>
-            <TabContent overflow="auto">
-                <div style={{overflow:"hidden"}}>
-                    <UsersList {...this.props} />
-                </div>
+            <TabContent overflow="auto" style={{display: 'flex', flexDirection: 'column'}}>
+                <UsersList {...this.props} />
             </TabContent>
         </TabContainer>;
     }

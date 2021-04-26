@@ -19,8 +19,8 @@ function GroupDeleteDialog(props) {
             </h2>
         </DialogContent>
         <DialogActions className={props.classes.dialogActions} >
-                <Button onClick={()=>props.deleteGroup(props.group._id)}>Delete</Button>
-                <Button onClick={props.onClose}>Cancel</Button>
+                <Button onClick={()=>props.deleteGroup(props.group._id)}>{props.t('Delete')}</Button>
+                <Button onClick={props.onClose}>{props.t('Cancel')}</Button>
          </DialogActions> 
     </Dialog>;
 }

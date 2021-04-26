@@ -187,8 +187,8 @@ function UserEditDialog(props) {
             </Grid>
         </DialogContent>
         <DialogActions className={props.classes.dialogActions} >
-            <Button onClick={()=>props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>Save</Button>
-            <Button onClick={props.onClose}>Cancel</Button>
+            <Button onClick={()=>props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>{props.t('Save')}</Button>
+            <Button onClick={props.onClose}>{props.t('Cancel')}</Button>
         </DialogActions> 
     </Dialog>;
 }
