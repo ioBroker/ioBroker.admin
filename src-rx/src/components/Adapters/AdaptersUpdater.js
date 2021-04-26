@@ -81,8 +81,7 @@ class AdaptersUpdater extends Component {
     }
 
     getNews(value) {
-
-        const adapter = this.props.repository[value];
+        const adapter   = this.props.repository[value];
         const installed = this.props.installed[value];
         const news = [];
 

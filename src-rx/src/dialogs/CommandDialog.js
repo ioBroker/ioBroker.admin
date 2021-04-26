@@ -111,6 +111,7 @@ class CommandDialog extends Component {
                     <Button
                         variant="contained"
                         autoFocus
+                        disabled={!this.props.inBackground}
                         onClick={this.props.onClose}
                         color="default">
                         {this.props.t('Close')}

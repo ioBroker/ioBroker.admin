@@ -3,9 +3,11 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
-import { Accordion, AccordionDetails, AccordionSummary, Avatar,
+import {
+    Accordion, AccordionDetails, AccordionSummary, Avatar,
     // Badge,
-    Button, CardMedia, FormControl, Grid, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from "@material-ui/core";
+    Button, CardMedia, FormControl, Grid, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography
+} from "@material-ui/core";
 import { amber, blue, green, grey, red, orange } from '@material-ui/core/colors';
 
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -322,6 +324,18 @@ const styles = theme => ({
     hidden1050: {
         display: 'flex'
     },
+    hidden800: {
+        display: 'flex',
+    },
+    visible800: {
+        display: 'none'
+    },
+    hidden570: {
+        display: 'flex',
+    },
+    visible570: {
+        display: 'none'
+    },
     '@media screen and (max-width: 1250px)': {
         hidden1250: {
             display: 'none !important'
@@ -338,6 +352,39 @@ const styles = theme => ({
             display: 'flex !important'
         },
     },
+    '@media screen and (max-width: 800px)': {
+        hidden800: {
+            display: 'none !important'
+        },
+        visible800: {
+            display: 'flex !important'
+        },
+    },
+    '@media screen and (max-width: 570px)': {
+        hidden570: {
+            display: 'none !important'
+        },
+        visible570: {
+            display: 'flex !important'
+        },
+    },
+    '@media screen and (max-width: 480px)': {
+        gridStyle: {
+            minWidth: 'auto !important',
+            marginLeft: 10
+        },
+        instanceId: {
+            width: 100,
+        },
+        maxWidth300:{
+            width:`250px !important`
+        }
+    },
+    '@media screen and (max-width: 335px)': {
+        gridStyle: {
+            marginLeft: 0
+        }
+    },
     displayFlex: {
         display: 'flex',
     },
@@ -348,7 +395,7 @@ const styles = theme => ({
     secondaryHeadingDiv: {
         display: 'flex',
         alignItems: 'center',
-        minWidth: 200
+        width: 200
     },
     secondaryHeadingDivDiv: {
         whiteSpace: 'nowrap',
@@ -421,7 +468,7 @@ const styles = theme => ({
         filter: 'contrast(0%)'
     },
     paddingRight200: {
-        paddingRight: 200
+        // paddingRight: 200
     },
     instanceStateNotAlive1: {
         backgroundColor: 'rgba(192, 192, 192, 0.2)'
@@ -440,6 +487,12 @@ const styles = theme => ({
     },
     instanceStateAliveAndConnected2: {
         backgroundColor: 'rgba(0, 255, 0, 0.15)'
+    },
+    maxWidth300: {
+        width: 300
+    },
+    width150: {
+        width: 150
     }
 });
 const InstanceRow = ({
@@ -512,24 +565,24 @@ const InstanceRow = ({
     let help = '';
     if (openDialogText) {
         title = t('Enter title for %s', instance.id);
-        showModal= true;
+        showModal = true;
     } else if (openDialogSelect) {
         title = t('Edit log level rule for %s', instance.id);
-        showModal= true;
+        showModal = true;
     } else if (openDialogDelete) {
         title = t('Please confirm');
-        showModal= true;
+        showModal = true;
     } else if (openDialogMemoryLimit) {
         title = t('Edit memory limit rule for %s', instance.id);
         help = t('Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)');
-        showModal= true;
+        showModal = true;
     } else if (openDialogCompact) {
         title = t('Edit compact groups for %s', instance.id);
-        showModal= true;
+        showModal = true;
     } else if (openDialogSelectTier) {
         title = t('Set tier for %s', instance.id);
         help = t('Tiers define the order of adapters when the system starts.');
-        showModal= true;
+        showModal = true;
     }
 
     const customModal = showModal ? <CustomModal
@@ -579,61 +632,61 @@ const InstanceRow = ({
                 setOpenDialogSelectTier(false);
             }
         }}>
-            {openDialogSelect && <FormControl className={classes.formControl} variant="outlined" >
-                <InputLabel htmlFor="outlined-age-native-simple">{t('log level')}</InputLabel>
-                <Select
-                    variant="standard"
-                    value={select}
-                    fullWidth
-                    onChange={el => setSelect(el.target.value)}
-                >
-                    {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
-                        {t(el)}
-                    </MenuItem>)}
-                </Select>
-            </FormControl>}
-            {openDialogCompact && <FormControl className={classes.formControl2} variant="outlined" >
-                <InputLabel htmlFor="outlined-age-native-simple">{t('compact groups')}</InputLabel>
-                <Select
-                    variant="standard"
-                    autoWidth
-                    onClose={e => setOpenSelect(false)}
-                    onOpen={e => setOpenSelect(true)}
-                    open={openSelect}
-                    value={selectCompact === 1 ? 'default' : selectCompact === '0' || selectCompact === 0 ? 'controller' : !selectCompact ? 'default' : selectCompact || 'default'}
-                    onChange={el => setSelectCompact(el.target.value)}
-                >
-                    <div onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }}
-                        className={classes.selectStyle}>
-                        <Button onClick={e => {
-                            setOpenSelect(false);
-                            setSelectCompact(selectCompactGroupCount + 1);
-                            setSelectCompactGroupCount(selectCompactGroupCount + 1);
-                        }} variant="outlined" stylevariable='outlined'>{t('Add compact group')}</Button>
-                    </div>
-                    <MenuItem value="controller">{t('with controller')}</MenuItem>
-                    <MenuItem value="default">{t('default group')}</MenuItem>
-                    {Array(selectCompactGroupCount - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
-                        {idx + 2}
-                    </MenuItem>)}
-                </Select>
-            </FormControl>}
-            {openDialogSelectTier && <FormControl className={classes.formControl} variant="outlined" >
-                <InputLabel htmlFor="outlined-age-native-simple">{t('Tiers')}</InputLabel>
-                <Select
-                    variant="standard"
-                    value={tierValue}
-                    fullWidth
-                    onChange={el => setTierValue(el.target.value)}
-                >
-                    {arrayTier.map(el => <MenuItem key={el.value} value={el.value}>
-                        {t(el.desc)}
-                    </MenuItem>)}
-                </Select>
-            </FormControl>}
+        {openDialogSelect && <FormControl className={classes.formControl} variant="outlined" >
+            <InputLabel htmlFor="outlined-age-native-simple">{t('log level')}</InputLabel>
+            <Select
+                variant="standard"
+                value={select}
+                fullWidth
+                onChange={el => setSelect(el.target.value)}
+            >
+                {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
+                    {t(el)}
+                </MenuItem>)}
+            </Select>
+        </FormControl>}
+        {openDialogCompact && <FormControl className={classes.formControl2} variant="outlined" >
+            <InputLabel htmlFor="outlined-age-native-simple">{t('compact groups')}</InputLabel>
+            <Select
+                variant="standard"
+                autoWidth
+                onClose={e => setOpenSelect(false)}
+                onOpen={e => setOpenSelect(true)}
+                open={openSelect}
+                value={selectCompact === 1 ? 'default' : selectCompact === '0' || selectCompact === 0 ? 'controller' : !selectCompact ? 'default' : selectCompact || 'default'}
+                onChange={el => setSelectCompact(el.target.value)}
+            >
+                <div onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }}
+                    className={classes.selectStyle}>
+                    <Button onClick={e => {
+                        setOpenSelect(false);
+                        setSelectCompact(selectCompactGroupCount + 1);
+                        setSelectCompactGroupCount(selectCompactGroupCount + 1);
+                    }} variant="outlined" stylevariable='outlined'>{t('Add compact group')}</Button>
+                </div>
+                <MenuItem value="controller">{t('with controller')}</MenuItem>
+                <MenuItem value="default">{t('default group')}</MenuItem>
+                {Array(selectCompactGroupCount - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
+                    {idx + 2}
+                </MenuItem>)}
+            </Select>
+        </FormControl>}
+        {openDialogSelectTier && <FormControl className={classes.formControl} variant="outlined" >
+            <InputLabel htmlFor="outlined-age-native-simple">{t('Tiers')}</InputLabel>
+            <Select
+                variant="standard"
+                value={tierValue}
+                fullWidth
+                onChange={el => setTierValue(el.target.value)}
+            >
+                {arrayTier.map(el => <MenuItem key={el.value} value={el.value}>
+                    {t(el.desc)}
+                </MenuItem>)}
+            </Select>
+        </FormControl>}
         {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
     </CustomModal> : null;
 
@@ -641,7 +694,7 @@ const InstanceRow = ({
 
     const state = getInstanceState(id);
 
-    const linksDialog = showLinks ? <LinksDialog image={instance.image} instanceId={instance.id} links={instance.links} onClose={() => setShowLinks(false)} t={t}/> : null;
+    const linksDialog = showLinks ? <LinksDialog image={instance.image} instanceId={instance.id} links={instance.links} onClose={() => setShowLinks(false)} t={t} /> : null;
 
     return <Accordion key={key} square
         expanded={expanded === instance.id}
@@ -775,7 +828,7 @@ const InstanceRow = ({
                     </div>
                 </Tooltip>
 
-                <Typography className={classes.secondaryHeading} component="div">
+                <Typography className={clsx(classes.secondaryHeading, classes.hidden800)} component="div">
                     <div
                         onMouseMove={() => handlerEdit(true)}
                         onMouseEnter={() => handlerEdit(true)}
@@ -821,7 +874,7 @@ const InstanceRow = ({
                         </Avatar>
                     </Tooltip>
                 }
-                <Grid item className={classes.hidden1050}>
+                <Grid item className={clsx(classes.hidden1050, classes.width150)}>
                     <InstanceInfo
                         icon={<MemoryIcon />}
                         tooltip={t('RAM usage')}
@@ -830,7 +883,7 @@ const InstanceRow = ({
                     </InstanceInfo>
                 </Grid>
             </Grid>
-            <div className={classes.displayFlex}>
+            <div className={classes.hidden570}>
                 <Tooltip title="sentry">
                     <IconButton
                         size="small"
@@ -848,18 +901,21 @@ const InstanceRow = ({
                     </IconButton>
                 </Tooltip>
             </div>
-            {supportCompact ? <Tooltip title={t('compact groups')}>
-                <IconButton
-                    size="small"
-                    className={clsx(classes.button, expertMode && checkCompact ? null : classes.hide)}
-                    onClick={e => {
-                        e.stopPropagation();
-                        setCompact();
-                    }}
-                >
-                    <ViewCompactIcon color={!!compact ? 'primary' : 'inherit'} />
-                </IconButton>
-            </Tooltip> : null}
+            {supportCompact ?
+                <div className={classes.hidden570}>
+                    <Tooltip title={t('compact groups')}>
+                        <IconButton
+                            size="small"
+                            className={clsx(classes.button, expertMode && checkCompact ? null : classes.hide)}
+                            onClick={e => {
+                                e.stopPropagation();
+                                setCompact();
+                            }}
+                        >
+                            <ViewCompactIcon color={!!compact ? 'primary' : 'inherit'} />
+                        </IconButton>
+                    </Tooltip>
+                </div> : null}
         </AccordionSummary>
         <AccordionDetails>
             <Grid container direction="row">
@@ -880,7 +936,7 @@ const InstanceRow = ({
                         </InstanceInfo>
                     </Grid>
                     <Grid container item direction="column" xs={12} sm={6} md={4} className={classes.paddingRight200}>
-                        {expertMode && <div className={classes.displayFlex}>
+                        {expertMode && <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={loglevelIcon} tooltip={t('loglevel')}>
                                 {logLevel}
                             </InstanceInfo>
@@ -917,7 +973,7 @@ const InstanceRow = ({
                                 {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
                             </InstanceInfo>
                         </Grid>
-                        {mode && <div className={classes.displayFlex}>
+                        {mode && <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={<ScheduleIcon />} tooltip={t('schedule_group')}>
                                 {getSchedule(id) || '-'}
                             </InstanceInfo>
@@ -935,7 +991,7 @@ const InstanceRow = ({
                             </Tooltip>
                         </div>}
                         {expertMode && (instance.mode === 'daemon') &&
-                            <div className={classes.displayFlex}>
+                            <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                                 <InstanceInfo
                                     icon={<ScheduleIcon className={classes.scheduleIcon} />}
                                     tooltip={t('restart')}
@@ -956,7 +1012,7 @@ const InstanceRow = ({
                                 </Tooltip>
                             </div>
                         }
-                        {expertMode && <div className={classes.displayFlex}>
+                        {expertMode && <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo
                                 icon={<MemoryIcon className={classes.ram} />}
                                 tooltip={t('RAM limit')}
@@ -978,7 +1034,7 @@ const InstanceRow = ({
                         </div>
                         }
                         {expertMode && checkCompact && compact && supportCompact &&
-                            <div className={classes.displayFlex}>
+                            <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                                 <InstanceInfo icon={<ViewCompactIcon className={classes.marginRight} color="inherit" />} tooltip={t('compact groups')}>
                                     {compactGroup === 1 ? 'default' : compactGroup === '0' ? "controller" : !compactGroup ? 'default' : compactGroup || 'default'}
                                 </InstanceInfo>
@@ -995,7 +1051,7 @@ const InstanceRow = ({
                                     </IconButton>
                                 </Tooltip>
                             </div>}
-                        {expertMode && <div className={classes.displayFlex}>
+                        {expertMode && <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={<LowPriorityIcon className={classes.marginRight} color="inherit" />} tooltip={t('Start order (tier)')}>
                                 {instance.adapter === 'admin' ? t('Always first') : (arrayTier.find(el => el.value === tier)?.desc || arrayTier[2])}
                             </InstanceInfo>
@@ -1012,10 +1068,27 @@ const InstanceRow = ({
                                 </IconButton>
                             </Tooltip> : null}
                         </div>}
+                        <div className={clsx(classes.maxWidth300, classes.visible800)}>
+                            <InstanceInfo >
+                                {name}
+                            </InstanceInfo>
+                            <Tooltip title={t('Edit')}>
+                                <IconButton
+                                    size="small"
+                                    className={classes.button}
+                                    onClick={event => {
+                                        setOpenDialogText(true);
+                                        event.stopPropagation();
+                                    }}
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </div>
                     </Grid>
                 </Grid>
-                <Grid item container direction="column" xs={2}>
-                    <Grid item>
+                <div className={classes.displayFlex}>
+                <div className={classes.displayFlex}>
                         <Hidden smUp>
                             <Tooltip title={t('Settings')}>
                                 <IconButton
@@ -1039,8 +1112,41 @@ const InstanceRow = ({
                                 <DeleteIcon />
                             </IconButton>
                         </Tooltip>
-                    </Grid>
-                </Grid>
+                        <div className={classes.visible570}>
+                            <Tooltip title="sentry">
+                                <IconButton
+                                    size="small"
+                                    className={clsx(classes.button, expertMode && checkSentry ? null : classes.hide)}
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        setSentry();
+                                    }}
+                                >
+                                    <CardMedia
+                                        className={clsx(classes.sentry, !currentSentry && classes.contrast0)}
+                                        component="img"
+                                        image={sentry}
+                                    />
+                                </IconButton>
+                            </Tooltip>
+                        </div>
+                        {supportCompact ?
+                            <div className={classes.visible570}>
+                                <Tooltip title={t('compact groups')}>
+                                    <IconButton
+                                        size="small"
+                                        className={clsx(classes.button, expertMode && checkCompact ? null : classes.hide)}
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            setCompact();
+                                        }}
+                                    >
+                                        <ViewCompactIcon color={!!compact ? 'primary' : 'inherit'} />
+                                    </IconButton>
+                                </Tooltip>
+                            </div> : null}
+                    </div>
+                </div>
             </Grid>
         </AccordionDetails>
     </Accordion >;

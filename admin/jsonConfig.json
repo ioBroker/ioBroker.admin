@@ -359,15 +359,19 @@
             {
               "type": "text",
               "attr": "key",
-              "title": "Key"
+              "title": "Key",
+              "filter": true,
+              "default": ""
             }, {
               "type": "text",
               "attr": "targetDatapointId",
-              "title": "Target-Datapoint ID"
+              "title": "Target-Datapoint ID",
+              "default": ""
             }, {
               "type": "text",
               "attr": "targetValue",
-              "title": "Target-Value"
+              "title": "Target-Value",
+              "default": ""
             }
           ],
           "objKeyName": "key",

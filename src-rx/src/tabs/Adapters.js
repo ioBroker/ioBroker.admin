@@ -614,11 +614,11 @@ class Adapters extends Component {
             dependencies && dependencies.length && dependencies.forEach(dependency => {
 
                 const entry = {
-                    name: '',
-                    version: null,
-                    installed: false,
+                    name:             '',
+                    version:          null,
+                    installed:        false,
                     installedVersion: null,
-                    rightVersion: false
+                    rightVersion:     false
                 };
 
                 const checkVersion = typeof dependency !== 'string';
@@ -770,19 +770,17 @@ class Adapters extends Component {
     }
 
     getNews(value, all = false) {
-        const adapter = this.state.repository[value];
+        const adapter   = this.state.repository[value];
         const installed = this.state.installed[value];
-        const news = [];
+        const news      = [];
 
         if (installed && adapter && adapter.news) {
-
             Object.keys(adapter.news).forEach(version => {
                 try {
-                    console.log(22222, Semver.gt(version, installed.version));
                     if (Semver.gt(version, installed.version) || all) {
                         news.push({
                             version: version,
-                            news: adapter.news[version][this.props.lang] || adapter.news[version].en
+                            news:    adapter.news[version][this.props.lang] || adapter.news[version].en
                         });
                     }
                 } catch (e) {
@@ -1092,9 +1090,9 @@ class Adapters extends Component {
             }}>{this.props.t('all items are filtered out')}</div>;
         } else {
             return this.cache.listOfVisibleAdapter.map(value => {
-                const adapter = this.state.repository[value];
+                const adapter   = this.state.repository[value];
                 const installed = this.state.installed[value];
-                const cached = this.cache.adapters[value];
+                const cached    = this.cache.adapters[value];
 
                 if (cached.title instanceof Object || !cached.desc) {
                     console.warn(adapter);

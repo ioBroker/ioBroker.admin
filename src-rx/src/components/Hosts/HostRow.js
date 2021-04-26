@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CardContent, CardMedia, IconButton, Tooltip, Typography } from "@material-ui/core";
+import { Badge, CardContent, CardMedia, IconButton, Tooltip, Typography } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import clsx from 'clsx';
@@ -231,6 +231,9 @@ const styles = theme => ({
             flexDirection: 'column'
         },
     },
+    badge: {
+        top: 14
+    }
 });
 
 let outputCache = '-';
@@ -242,6 +245,14 @@ let uptimeCache = '-';
 let diskFreeCache = 1;
 let diskSizeCache = 1;
 let diskWarningCache = 1;
+
+const StyledBadge = withStyles((theme) => ({
+    badge: {
+        right: -3,
+        top: 13,
+        padding: '0 4px',
+    },
+}))(Badge);
 
 const HostRow = ({
     name,
@@ -265,7 +276,8 @@ const HostRow = ({
     executeCommandRemove,
     systemConfig,
     expertMode,
-    setBaseSettingsDialog
+    setBaseSettingsDialog,
+    modalAdaptersWarning
 }) => {
 
     const [openCollapse, setCollapse] = useState(false);
@@ -347,7 +359,29 @@ const HostRow = ({
         }
     }
 
+    const [errorHost, setErrorHost] = useState({ notifications: {}, count: 0 });
+
+    const getAdaptersWarning = (notifications) => {
+        const { result } = notifications;
+        if (!result || !result.system) {
+            return;
+        }
+        if (Object.keys(result.system.categories).length) {
+            let count = 0;
+            let obj = result.system.categories;
+            Object.keys(obj).forEach(nameTab => {
+                Object.keys(obj[nameTab].instances).forEach(_ => {
+                    count++
+                });
+            });
+            setErrorHost({ notifications, count });
+        }
+    }
+
     useEffect(() => {
+        socket.getNotifications(`system.host.${name}`)
+            .then(notifications => getAdaptersWarning(notifications));
+
         socket.subscribeState(`${_id}.inputCount`, eventsInputFunc);
         socket.subscribeState(`${_id}.outputCount`, eventsOutputFunc);
 
@@ -389,10 +423,20 @@ const HostRow = ({
             <div
                 ref={refWarning}
                 style={{ background: color || 'inherit' }}
-                // style={{ background: color || 'inherit' }}
                 className={classes.imageBlock}>
-                <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
-                <div style={{ color: (color && Utils.invertColor(color, true)) || 'inherit' }} className={classes.host}>{name}</div>
+                <StyledBadge
+                    badgeContent={errorHost.count}
+                    color="error"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        modalAdaptersWarning(errorHost.notifications, socket, `system.host.${name}`);
+                    }}
+                >
+                    <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
+                </StyledBadge>
+                <div style={{ color: (color && Utils.invertColor(color, true)) || 'inherit' }} className={classes.host}>
+                    {name}
+                </div>
             </div>
             <CardContent className={classes.cardContentH5}>
                 {/*<Typography className={clsx(classes.flex, classes.hidden600)} variant="body2" color="textSecondary" component="p">

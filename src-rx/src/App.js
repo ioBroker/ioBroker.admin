@@ -453,7 +453,7 @@ class App extends Router {
                                 this.adaptersWorker  = this.adaptersWorker  || new AdaptersWorker(this.socket);
 
                                 const newState = {
-                                    lang: this.socket.systemLang,
+                                    lang:  this.socket.systemLang,
                                     ready: true,
                                     objects,
                                 };
@@ -478,11 +478,11 @@ class App extends Router {
                                     }
                                 }
 
-                                this.instancesWorker.registerHandler(this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts));
+                                await this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
 
                                 this.subscribeOnHostsStatus();
 
-                                newState.expertMode = window.sessionStorage.getItem('App.expertMode') === 'true' || !!newState.systemConfig.common.expertMode;
+                                newState.expertMode = window.sessionStorage.getItem('App.expertMode') ? window.sessionStorage.getItem('App.expertMode') === 'true' : !!newState.systemConfig.common.expertMode;
 
                                 // Read user and show him
                                 if (this.socket.isSecure) {
@@ -501,36 +501,24 @@ class App extends Router {
                                                     });
                                                 })
                                         });
-                                } else {
-                                    // simulate
-                                    /*this.socket.getObject('system.user.admin')
-                                        .then(userObj =>
-                                            this.setState({
-                                                user: {
-                                                    id: userObj._id,
-                                                    name: Utils.getObjectNameFromObj(userObj, this.socket.systemLang),
-                                                    color: userObj.common.color,
-                                                    icon: userObj.common.icon,
-                                                    invertBackground: this.mustInvertBackground(userObj.common.color)
-                                                }
-                                            }));*/
                                 }
 
+                                this.setState(newState, () =>
+                                    this.setCurrentTabTitle());
+
                                 // Give some time for communication
                                 setTimeout(() =>
-                                    this.findNewsInstance()
-                                        .then(instance => this.socket.subscribeState(`admin.${instance}.info.newsFeed`, this.getNews(instance))),
+                                    this.logsWorkerChanged(this.state.currentHost), 1000);
+
+                                setTimeout(() =>
+                                        this.findNewsInstance()
+                                            .then(instance => this.socket.subscribeState(`admin.${instance}.info.newsFeed`, this.getNews(instance))),
                                     5000);
 
-                                // Give some time for communication
                                 setTimeout(() =>
-                                    this.socket.getNotifications(newState.currentHost)
-                                        .then(notifications => this.getAdaptersWarning(notifications, this.socket, newState.currentHost)),
+                                        this.socket.getNotifications(newState.currentHost)
+                                            .then(notifications => this.getAdaptersWarning(notifications, this.socket, newState.currentHost)),
                                     3000);
-
-                                this.setState(newState, () => this.setCurrentTabTitle());
-
-                                this.logsWorkerChanged(this.state.currentHost);
                             }
                         });
                 },
@@ -590,7 +578,7 @@ class App extends Router {
 
         try {
             const repository = await this.socket.getRepository(currentHost, { update: false }, false, 10000);
-            const installed  = await this.socket.getInstalled(currentHost, { update: false });
+            const installed  = await this.socket.getInstalled(currentHost, false, 10000);
             const adapters   = await this.adaptersWorker.getAdapters(); // we need information about ignored versions
 
             Object.keys(adapters).forEach(id => {
@@ -599,13 +587,14 @@ class App extends Router {
                     installed[adapter.common.name].ignoreVersion = adapter.common.ignoreVersion;
                 }
             });
+
             this.setState({ repository, installed, hosts });
         } catch (e) {
             window.alert('Cannot read repo information: ' + e);
         }
     }
 
-    logsWorkerChanged = (currentHost) => {
+    logsWorkerChanged = currentHost => {
         this.logsWorker && this.logsWorker.setCurrentHost(currentHost);
     }
 
@@ -985,6 +974,7 @@ class App extends Router {
                         executeCommand={cmd => this.executeCommand(cmd)}
                         inBackgroundCommand={this.state.commandError || this.state.performed}
                         systemConfig={this.state.systemConfig}
+                        getAdaptersWarning={this.getAdaptersWarning}
                     />
                 </Suspense>;
             } else {
@@ -1053,6 +1043,12 @@ class App extends Router {
             showAlert={(message, type) => this.showAlert(message, type)}
             socket={this.socket}
             currentTab={this.state.currentTab}
+            expertModeFunc={(value) => {
+                window.sessionStorage.removeItem('App.expertMode');
+                const systemConfig = JSON.parse(JSON.stringify(this.state.systemConfig));
+                systemConfig.common.expertMode = value;
+                this.setState({ expertMode: value, systemConfig });
+            }}
             t={I18n.t}
         />;
     }
@@ -1404,6 +1400,7 @@ class App extends Router {
                         port={this.state.port}
                         adminInstance={this.adminInstance}
 
+                        currentHost={this.state.currentHost}
                         hosts={this.state.hosts}
                         repository={this.state.repository}
                         installed={this.state.installed}

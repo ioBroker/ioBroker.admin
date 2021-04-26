@@ -1,5 +1,3 @@
-import Utils from '../Utils';
-
 class LogsWorker {
     constructor(socket, maxLogs) {
         this.socket               = socket;

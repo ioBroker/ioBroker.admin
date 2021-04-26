@@ -2,16 +2,17 @@ class HostsWorker {
     constructor(socket) {
         this.socket = socket;
         this.handlers = [];
-        this.objectChangeHandlerBound = this.objectChangeHandler.bind(this);
-        this.connectionHandlerBound   = this.connectionHandler.bind(this);
-        socket.registerConnectionHandler(this.connectionHandlerBound);
-        socket.subscribeObject('system.host.*', this.objectChangeHandlerBound)
-            .catch(e => window.alert('Cannot subscribe on object: ' + e));
+
+        socket.registerConnectionHandler(this.connectionHandler);
+
+        socket.subscribeObject('system.host.*', this.objectChangeHandler)
+            .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
+
         this.connected = this.socket.isConnected();
         this.objects = {};
     }
 
-    objectChangeHandler(id, obj) {
+    objectChangeHandler = (id, obj) => {
         // if instance
         if (id.match(/^system\.host\.[^.]+\.\d+$/)) {
             let type;
@@ -47,7 +48,7 @@ class HostsWorker {
         return JSON.parse(JSON.stringify(this.objects));
     }
 
-    connectionHandler(isConnected) {
+    connectionHandler = isConnected => {
         if (isConnected && !this.connected) {
             this.connected = true;
             this._readHosts(true);

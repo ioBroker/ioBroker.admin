@@ -56,11 +56,9 @@ class AdapterUpdateDialog extends Component {
     }
 
     getNews() {
-
         const result = [];
 
         this.props.news && this.props.news.forEach(entry => {
-
             const news = entry.news ? entry.news.split('\n') : [];
 
             result.push(
@@ -83,7 +81,6 @@ class AdapterUpdateDialog extends Component {
     }
 
     render() {
-
         const { classes } = this.props;
 
         const version = this.props.news && this.props.news[0]?.version;

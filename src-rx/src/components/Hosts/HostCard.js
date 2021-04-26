@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { Card, CardContent, CardMedia, Fab, IconButton, Tooltip, Typography } from '@material-ui/core';
+import { Badge, Card, CardContent, CardMedia, Fab, IconButton, Tooltip, Typography } from '@material-ui/core';
 
 import { withStyles } from '@material-ui/core/styles';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -258,6 +258,9 @@ const styles = theme => ({
         top: 0,
         paddingTop: 10
     },
+    badge: {
+        cursor: 'pointer'
+    }
 });
 
 let outputCache = '-';
@@ -294,7 +297,8 @@ const HostCard = ({
     dialogUpgrade,
     systemConfig,
     setBaseSettingsDialog,
-    expertMode
+    expertMode,
+    modalAdaptersWarning
 }) => {
 
     const [openCollapse, setCollapse] = useState(false);
@@ -374,7 +378,29 @@ const HostCard = ({
         }
     }
 
+    const [errorHost, setErrorHost] = useState({ notifications: {}, count: 0 });
+
+    const getAdaptersWarning = (notifications) => {
+        const { result } = notifications;
+        if (!result || !result.system) {
+            return;
+        }
+        if (Object.keys(result.system.categories).length) {
+            let count = 0;
+            let obj = result.system.categories;
+            Object.keys(obj).forEach(nameTab => {
+                Object.keys(obj[nameTab].instances).forEach(_ => {
+                    count++
+                });
+            });
+            setErrorHost({ notifications, count });
+        }
+    }
+
     useEffect(() => {
+        socket.getNotifications(`system.host.${name}`)
+            .then(notifications => getAdaptersWarning(notifications));
+
         socket.subscribeState(`${_id}.inputCount`, eventsInputFunc);
         socket.subscribeState(`${_id}.outputCount`, eventsOutputFunc);
 
@@ -429,7 +455,15 @@ const HostCard = ({
             <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
             <div
                 style={{ color: (color && Utils.invertColor(color, true)) || 'inherit' }}
-                className={classes.adapter}>{name}</div>
+                className={classes.adapter}>
+                <Badge
+                    badgeContent={errorHost.count}
+                    color="error"
+                    className={classes.badge}
+                    onClick={() => modalAdaptersWarning(errorHost.notifications, socket, `system.host.${name}`)}
+                >{name}
+                </Badge>
+            </div>
             <Fab
                 disabled={typeof description === 'string'}
                 onMouseOut={() => setFocused(false)}
