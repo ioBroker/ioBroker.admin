@@ -1218,6 +1218,7 @@ class Connection {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
+
         return new Promise(resolve =>
             this._socket.emit('sendToHost', host, 'getLogs', linesNumber || 200, lines =>
                 resolve(lines)));
@@ -2187,13 +2188,17 @@ class Connection {
      * Read current web, socketio or admin namespace, like admin.0
      * @returns {Promise<string>}
      */
-    getCurrentInstance(update) {
+    getCurrentInstance() {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
-        return new Promise((resolve, reject) =>
-            this._socket.emit('getCurrentInstance', (err, namespace) =>
-                err ? reject(err) : resolve(namespace)));
+
+        this._promises.currentInstance = this._promises.currentInstance ||
+            new Promise((resolve, reject) =>
+                this._socket.emit('getCurrentInstance', (err, namespace) =>
+                    err ? reject(err) : resolve(namespace)));
+
+        return this._promises.currentInstance;
     }
 
 }

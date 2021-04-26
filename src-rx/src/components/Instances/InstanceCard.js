@@ -1,30 +1,34 @@
 import React, { memo, useState } from 'react';
-import { Button, Card, CardContent, CardMedia, Fab, FormControl, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from "@material-ui/core";
+import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
+
+import { Button, Card, CardContent, CardMedia, Fab, FormControl, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from "@material-ui/core";
+
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import RefreshIcon from '@material-ui/icons/Refresh';
-import clsx from 'clsx';
 import BuildIcon from '@material-ui/icons/Build';
 import InputIcon from '@material-ui/icons/Input';
 import DeleteIcon from '@material-ui/icons/Delete';
-// import InfoIcon from '@material-ui/icons/Info';
 import LowPriorityIcon from '@material-ui/icons/LowPriority';
 import MemoryIcon from '@material-ui/icons/Memory';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import ViewCompactIcon from '@material-ui/icons/ViewCompact';
-
+import EditIcon from '@material-ui/icons/Edit';
 import PauseIcon from '@material-ui/icons/Pause';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import I18n from '@iobroker/adapter-react/i18n';
+import ImportExportIcon from '@material-ui/icons/ImportExport';
+
 import { green, red } from '@material-ui/core/colors';
+
+import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
+import I18n from '@iobroker/adapter-react/i18n';
+
+import sentry from '../../assets/sentry.svg';
 import InstanceInfo from './InstanceInfo';
 import State from '../State';
-import sentry from '../../assets/sentry.svg';
 import CustomModal from '../CustomModal';
-import EditIcon from '@material-ui/icons/Edit';
-import ImportExportIcon from '@material-ui/icons/ImportExport';
-import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
-import PropTypes from "prop-types";
+import LinksDialog from './LinksDialog';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -329,6 +333,7 @@ const InstanceCard = memo(({
     const [selectCompactGroupCount, setSelectCompactGroupCount] = useState(compactGroupCount);
     const [openDialogSelectTier, setOpenDialogSelectTier] = useState(false);
     const [tierValue, setTierValue] = useState(tier);
+    const [showLinks, setShowLinks] = useState(false);
 
     const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
     const arrayTier = [{ value: 1, desc: "1: Logic adapters" }, { value: 2, desc: "2: Data provider adapters" }, { value: 3, desc: "3: Other adapters" }];
@@ -581,9 +586,9 @@ const InstanceCard = memo(({
                         </div>}
                     {expertMode && <div className={classes.displayFlex}>
                         <InstanceInfo icon={<LowPriorityIcon className={classes.marginRight} color="inherit" />} tooltip={t('Start order (tier)')}>
-                            {arrayTier.find(el=>el.value === tier)?.desc || arrayTier[2]}
+                            {instance.adapter === 'admin' ? t('Always first') : (arrayTier.find(el => el.value === tier)?.desc || arrayTier[2])}
                         </InstanceInfo>
-                        <Tooltip title={t('Edit start order (tier)')}>
+                        {instance.adapter !== 'admin' ? <Tooltip title={t('Edit start order (tier)')}>
                             <IconButton
                                 size="small"
                                 className={classes.button}
@@ -594,7 +599,7 @@ const InstanceCard = memo(({
                             >
                                 <EditIcon />
                             </IconButton>
-                        </Tooltip>
+                        </Tooltip> : null}
                     </div>}
                     <Hidden smUp>
                         <IconButton
@@ -648,6 +653,8 @@ const InstanceCard = memo(({
             </div>
         </div> : null;
 
+    const linksDialog = showLinks ? <LinksDialog image={image} instanceId={instance.id}  links={instance.links} onClose={() => setShowLinks(false)} t={t}/> : null;
+
     const cronDialog = (openDialogCron || openDialogSchedule) &&
         <ComplexCron
             title={
@@ -671,11 +678,14 @@ const InstanceCard = memo(({
                 }
             }}
         />;
+
     const [visibleEdit, handlerEdit] = useState(false);
+
     return <Card key={key} className={clsx(classes.root, hidden ? classes.hidden : '')}>
         {customModal}
         {cronDialog}
         {secondCardInfo}
+        {linksDialog}
 
         <div className={clsx(
             classes.imageBlock,
@@ -768,11 +778,15 @@ const InstanceCard = memo(({
                         <div>
                             <IconButton
                                 size="small"
-                                className={clsx(classes.button, (!instance.link || !instance.link[0]) && classes.hide)}
+                                className={clsx(classes.button, (!instance.links || !instance.links[0]) && classes.hide)}
                                 disabled={!running}
                                 onClick={event => {
-                                    window.open(instance.link, '_blank');
-                                    event.stopPropagation();
+                                    event.stopPropagation()
+                                    if (instance.links.length === 1) {
+                                        window.open(instance.links[0].link, instance.id);
+                                    } else {
+                                        setShowLinks(true);
+                                    }
                                 }}
                                 onFocus={event => event.stopPropagation()}
                             >
@@ -787,10 +801,6 @@ const InstanceCard = memo(({
 })
 
 InstanceCard.propTypes = {
-    /**
-     * Link and text
-     * {link: 'https://example.com', text: 'example.com'}
-     */
     t: PropTypes.func,
 };
 

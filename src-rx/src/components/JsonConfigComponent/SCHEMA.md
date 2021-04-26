@@ -8,6 +8,7 @@ Possible types:
 
 - `tabs` - Tabs with items
   - `items` - Object with panels `{"tab1": {}, "tab2": {}...}`
+  
 - `panel` - Tab with items
   - `icon` - tab can have icon (base64)
   - `label` - Label of tab
@@ -90,14 +91,16 @@ Possible types:
  - `adapter` - name of adapter
  - `allowDeactivate` - if true. Additional option "deactivate" is shown
 
-- `chips` - user can enter the word and it will be added (see cloud => services => White list)
+- `chips` - user can enter the word, and it will be added (see cloud => services => White list)
 
-- `!alive` - just indication if the instance is alive and it could be used in "hidden" and "disabled" (will not be saved in config)
+- `!alive` - just indication if the instance is alive, and it could be used in "hidden" and "disabled" (will not be saved in config)
+  
   Just text: Instance is running, Instance is not running
 
 - `pattern` - read only field with pattern like 'https://${data.ip}:${data.port}' (will not be saved in config)                
   - `copyToClipboard` - if true - show button
   - `pattern` - my pattern
+  
   Text input with read only flag, that shows pattern.
 
 - `sendto` - button that sends request to instance (https://github.com/iobroker-community-adapters/ioBroker.email/blob/master/admin/index_m.html#L128)
@@ -106,15 +109,16 @@ Possible types:
   - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both.
   - `result` - `{result1: {en: 'A'}, result2: {en: 'B'}}`
   - `error` - `{error1: {en: 'E'}, error2: {en: 'E2'}}`
-  - `variant` -  contained, outlined, ''
+  - `variant` - `contained`, `outlined`, ''
     
     `this.props.socket.sendTo(adapterName.instance, command || 'send', data, result => {});`
 
 - `setState` - button that set instance's state
-   - `id` - 'info.test'
-   - `ack`: false (default false)
-   - `val`: '${data.myText}_test' or number. Type must be detected automatically and convertaion done too
-   - `okText`: Alert that will be shown by pressing the button
+  - `id` - 'info.test'
+  - `ack` - false (default false)
+  - `val` - '${data.myText}_test' or number. Type will be detected automatically from state type and converting done too
+  - `okText` - Alert which will be shown by pressing the button
+  - `variant` - `contained`, `outlined`, ''
 
 - `staticText` - static text like description
    - `text` - multi-language text
@@ -132,6 +136,9 @@ Possible types:
 - `table` - table with items that could be deleted, added, movedUP, moved Down
   - `items` - [{type: see above, width: px or %, title: {en: 'header'}, attr: 'name', filter: false, sort: true}]
   - `noDelete` - boolean if delete or add disabled, If noDelete is false, add, delete and move up/down should work
+  
+  - `objKeyName` - (legacy setting, don't use!) - name of the key in `{"192.168.1.1": {delay: 1000, enabled: true}, "192.168.1.2": {delay: 2000, enabled: false}}`
+  - `objValueName` - (legacy setting, don't use!) - name of the value in `{"192.168.1.1": "value1", "192.168.1.2": "value2"}`
 
 - `json` - json editor 
 

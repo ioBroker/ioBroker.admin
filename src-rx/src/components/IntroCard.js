@@ -1,8 +1,8 @@
 import { createRef, Component } from 'react';
-
 import PropTypes from 'prop-types';
-
 import { withStyles } from '@material-ui/core/styles';
+import copy from 'copy-to-clipboard';
+
 
 import { Button } from '@material-ui/core';
 import { Card } from '@material-ui/core';
@@ -15,22 +15,20 @@ import { Grid } from '@material-ui/core';
 import { IconButton } from '@material-ui/core';
 import { Link } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
-
 import { Skeleton } from '@material-ui/lab';
 
 import CheckIcon from '@material-ui/icons/Check';
 import EditIcon from '@material-ui/icons/Create';
 import ErrorIcon from '@material-ui/icons/Error';
 import CloseIcon from '@material-ui/icons/Close';
-import SaveIcon from '@material-ui/icons/Save';
 import DeleteIcon from '@material-ui/icons/Delete';
+import SaveIcon from '@iobroker/adapter-react/icons/IconCopy';
 
 import blue from '@material-ui/core/colors/blue';
 import grey from '@material-ui/core/colors/grey';
-import copy from 'copy-to-clipboard';
+import { red } from '@material-ui/core/colors';
 
 import CameraIntroDialog from '../dialogs/CameraIntroDialog';
-import { red } from '@material-ui/core/colors';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -374,7 +372,6 @@ class IntroCard extends Component {
     }
 
     render() {
-
         const { classes } = this.props;
         const editClass = this.props.edit ? ' ' + classes.edit : '';
 
@@ -389,131 +386,129 @@ class IntroCard extends Component {
             this.cameraUpdateTimer = null;
         }
 
-        return (
-            <Grid
-                item
-                xs={12}
-                sm={6}
-                md={4}
-                lg={3}
-                className={classes.root}
-            >
-                <Card className={classes.card} onClick={e => {
-                    e.stopPropagation();
-                    if (!this.props.edit && this.props.camera && this.props.camera !== 'text') {
-                        this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
-                        this.cameraUpdateTimer = null;
-                        this.setState({ dialog: true });
-                    }
-                }}>
-                    {
-                        this.props.reveal &&
-                        <Button
-                            className={classes.expand + editClass}
-                            variant="contained"
-                            size="small"
-                            disabled={this.props.disabled}
-                            onClick={() => this.handleExpandClick()}
-                            color="primary"
+        return <Grid
+            item
+            xs={12}
+            sm={6}
+            md={4}
+            lg={3}
+            className={classes.root}
+        >
+            <Card className={classes.card} onClick={e => {
+                e.stopPropagation();
+                if (!this.props.edit && this.props.camera && this.props.camera !== 'text') {
+                    this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
+                    this.cameraUpdateTimer = null;
+                    this.setState({ dialog: true });
+                }
+            }}>
+                {
+                    this.props.reveal && !this.props.offline &&
+                    <Button
+                        className={classes.expand + editClass}
+                        variant="contained"
+                        size="small"
+                        disabled={this.props.disabled}
+                        onClick={() => this.handleExpandClick()}
+                        color="primary"
+                    >
+                        {this.props.t('Info')}
+                    </Button>
+                }
+                <div className={classes.media + editClass} style={{ backgroundColor: this.props.color }}>
+                    <CardMedia
+                        className={classes.img}
+                        component="img"
+                        image={this.props.image}
+                    />
+                </div>
+                <div className={classes.contentContainer + editClass}>
+                    <CardContent className={classes.content}>
+                        <Grid
+                            container
+                            direction="column"
+                            wrap="nowrap"
+                            className={classes.contentGrid}
                         >
-                            {this.props.t('Info')}
-                        </Button>
+                            <Typography gutterBottom variant="h5" component="h5">
+                                {this.props.title}
+                            </Typography>
+                            {this.renderContent()}
+                        </Grid>
+                    </CardContent>
+                    {
+                        this.props.action && this.props.action.link &&
+                        <Divider />
                     }
-                    <div className={classes.media + editClass} style={{ backgroundColor: this.props.color }}>
-                        <CardMedia
-                            className={classes.img}
-                            component="img"
-                            image={this.props.image}
-                        />
-                    </div>
-                    <div className={classes.contentContainer + editClass}>
-                        <CardContent className={classes.content}>
-                            <Grid
-                                container
-                                direction="column"
-                                wrap="nowrap"
-                                className={classes.contentGrid}
+                    {
+                        this.props.action && this.props.action.link &&
+                        <CardActions className={classes.action}>
+                            <Link
+                                href={this.props.action.link}
+                                underline="none"
+                                target="_blank"
+                                rel="noopener noreferrer"
                             >
+                                {this.props.action.text || this.props.title || this.props.t('Link')}
+                            </Link>
+                        </CardActions>
+                    }
+                </div>
+                {
+                    this.props.reveal &&
+                    <Collapse
+                        className={classes.collapse}
+                        in={this.state.expanded}
+                        timeout="auto"
+                        unmountOnExit
+                    >
+                        <Card className={classes.cardInfo}>
+                            <div className={classes.cardInfoHead}>
                                 <Typography gutterBottom variant="h5" component="h5">
-                                    {this.props.title}
-                                </Typography>
-                                {this.renderContent()}
-                            </Grid>
-                        </CardContent>
-                        {
-                            this.props.action && this.props.action.link &&
-                            <Divider />
-                        }
-                        {
-                            this.props.action && this.props.action.link &&
-                            <CardActions className={classes.action}>
-                                <Link
-                                    href={this.props.action.link}
-                                    underline="none"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    {this.props.action.text}
-                                </Link>
-                            </CardActions>
-                        }
-                    </div>
-                    {
-                        this.props.reveal &&
-                        <Collapse
-                            className={classes.collapse}
-                            in={this.state.expanded}
-                            timeout="auto"
-                            unmountOnExit
-                        >
-                            <Card className={classes.cardInfo}>
-                                <div className={classes.cardInfoHead}>
-                                    <Typography gutterBottom variant="h5" component="h5">
-                                        Info
-                                </Typography>
-                                    <div>
-                                        <IconButton size="small" onClick={() => {
-                                            copy(this.props.getHostDescriptionAll()[1], {
-                                                format: 'text/plain'
-                                            });
-                                            this.props.openSnackBarFunc();
-                                        }}>
-                                            <SaveIcon />
-                                        </IconButton>
-                                        <IconButton size="small" onClick={() => this.handleExpandClick()}>
-                                            <CloseIcon />
-                                        </IconButton>
-                                    </div>
+                                    Info
+                            </Typography>
+                                <div>
+                                    <IconButton size="small" onClick={() => {
+                                        copy(this.props.getHostDescriptionAll()[1], {
+                                            format: 'text/plain'
+                                        });
+                                        this.props.openSnackBarFunc();
+                                    }}>
+                                        <SaveIcon />
+                                    </IconButton>
+                                    <IconButton size="small" onClick={() => this.handleExpandClick()}>
+                                        <CloseIcon />
+                                    </IconButton>
                                 </div>
-                                <CardContent >
-                                    {this.props.getHostDescriptionAll()[0]}
-                                    {/* { this.props.reveal } */}
-                                </CardContent>
-                            </Card>
-                        </Collapse>
-                    }
-                    {
-                        this.props.edit && this.props.toggleActivation &&
-                        <IconButton className={this.props.enabled ? classes.enabled : classes.disabled} onClick={() => this.props.toggleActivation()}>
-                            <CheckIcon />
-                        </IconButton>
-                    }
-                    {
-                        this.props.edit && this.props.onEdit &&
-                        <IconButton className={classes.editButton} onClick={() => this.props.onEdit()}>
-                            <EditIcon />
-                        </IconButton>
-                    }
-                    {
-                        this.props.edit && this.props.onRemove &&
-                        <IconButton className={classes.deleteButton} onClick={() => this.props.onRemove()}>
-                            <DeleteIcon />
-                        </IconButton>
-                    }
-                    {this.renderCameraDialog()}
-                </Card>
-            </Grid>
-        );
+                            </div>
+                            <CardContent >
+                                {this.props.getHostDescriptionAll()[0]}
+                                {/* { this.props.reveal } */}
+                            </CardContent>
+                        </Card>
+                    </Collapse>
+                }
+                {
+                    this.props.edit && this.props.toggleActivation &&
+                    <IconButton className={this.props.enabled ? classes.enabled : classes.disabled} onClick={() => this.props.toggleActivation()}>
+                        <CheckIcon />
+                    </IconButton>
+                }
+                {
+                    this.props.edit && this.props.onEdit &&
+                    <IconButton className={classes.editButton} onClick={() => this.props.onEdit()}>
+                        <EditIcon />
+                    </IconButton>
+                }
+                {
+                    this.props.edit && this.props.onRemove &&
+                    <IconButton className={classes.deleteButton} onClick={() => this.props.onRemove()}>
+                        <DeleteIcon />
+                    </IconButton>
+                }
+                {this.renderCameraDialog()}
+            </Card>
+        </Grid>;
     }
 }
 
@@ -527,6 +522,7 @@ IntroCard.propTypes = {
     openLinksInNewWindow: PropTypes.bool,
     onEdit: PropTypes.func,
     socket: PropTypes.object,
+    offline: PropTypes.bool,
     t: PropTypes.func,
 };
 

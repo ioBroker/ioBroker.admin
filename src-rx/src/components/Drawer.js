@@ -241,13 +241,13 @@ class Drawer extends Component {
     }
 
     onErrorsUpdates = logErrors => {
-        if (this.props.currentTab.tab !== 'tab-logs' || (this.props.currentTab.tab === 'tab-logs' && this.state.logErrors)) {
+        if (this.props.currentTab !== 'tab-logs' || (this.props.currentTab === 'tab-logs' && this.state.logErrors)) {
             this.setState({ logErrors });
         }
     }
 
     onWarningsUpdates = logWarnings => {
-        if (this.props.currentTab.tab !== 'tab-logs' || (this.props.currentTab.tab === 'tab-logs' && this.state.logWarnings)) {
+        if (this.props.currentTab !== 'tab-logs' || (this.props.currentTab === 'tab-logs' && this.state.logWarnings)) {
             this.setState({ logWarnings });
         }
     }
@@ -467,7 +467,7 @@ class Drawer extends Component {
                         compact={!this.isSwipeable() && state !== STATES.opened}
                         onClick={e => {
                             if (e.ctrlKey || e.shiftKey) {
-                                CustomTab.getHref(this.props.instancesWorker, tab.name, this.props.hostname, this.props.protocol)
+                                CustomTab.getHref(this.props.instancesWorker, tab.name, this.props.hostname, this.props.protocol, this.props.port,  this.props.hosts,  this.props.adminInstance)
                                     .then(href => {
                                         if (href) {
                                             console.log(href);
@@ -593,8 +593,11 @@ Drawer.propTypes = {
     expertMode: PropTypes.bool,
     handleNavigation: PropTypes.func,
     instancesWorker: PropTypes.object,
+
     hostname: PropTypes.string,
     protocol: PropTypes.string,
+    port: PropTypes.number,
+    adminInstance: PropTypes.string,
 
     installed: PropTypes.object,
     hosts: PropTypes.array,

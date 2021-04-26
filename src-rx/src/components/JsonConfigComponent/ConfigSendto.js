@@ -1,3 +1,4 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -9,11 +10,11 @@ import DialogError from '@iobroker/adapter-react/Dialogs/Error';
 import DialogMessage from '@iobroker/adapter-react/Dialogs/Message';
 
 import ConfigGeneric from './ConfigGeneric';
-import IconWarning from "@material-ui/icons/Warning";
-import IconError from "@material-ui/icons/Error";
-import IconInfo from "@material-ui/icons/Info";
-import ConfirmDialog from "@iobroker/adapter-react/Dialogs/Confirm";
-import React from "react";
+import IconWarning from '@material-ui/icons/Warning';
+import IconError from '@material-ui/icons/Error';
+import IconInfo from '@material-ui/icons/Info';
+import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
+
 
 const styles = theme => ({
     fullWidth: {

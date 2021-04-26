@@ -30,6 +30,7 @@ import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
 import InstanceInfo from './InstanceInfo';
 import State from '../State';
 import CustomModal from '../CustomModal';
+import LinksDialog from './LinksDialog';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -500,6 +501,7 @@ const InstanceRow = ({
     const [selectCompactGroupCount, setSelectCompactGroupCount] = useState(compactGroupCount);
     const [openDialogSelectTier, setOpenDialogSelectTier] = useState(false);
     const [tierValue, setTierValue] = useState(tier);
+    const [showLinks, setShowLinks] = useState(false);
 
     const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
     const arrayTier = [{ value: 1, desc: "1: Logic adapters" }, { value: 2, desc: "2: Data provider adapters" }, { value: 3, desc: "3: Other adapters" }];
@@ -639,6 +641,8 @@ const InstanceRow = ({
 
     const state = getInstanceState(id);
 
+    const linksDialog = showLinks ? <LinksDialog image={instance.image} instanceId={instance.id} links={instance.links} onClose={() => setShowLinks(false)} t={t}/> : null;
+
     return <Accordion key={key} square
         expanded={expanded === instance.id}
         onChange={() => {
@@ -654,6 +658,7 @@ const InstanceRow = ({
             }
             handleChange(instance.id);
         }}>
+        {linksDialog}
         <AccordionSummary
             classes={{ root: classes.row }}
             className={clsx(
@@ -753,11 +758,15 @@ const InstanceRow = ({
                     <div>
                         <IconButton
                             size="small"
-                            className={clsx(classes.button, (!instance.link || !instance.link[0]) && classes.hide)}
+                            className={clsx(classes.button, (!instance.links || !instance.links[0]) && classes.hide)}
                             disabled={!running}
                             onClick={event => {
-                                window.open(instance.link, '_blank');
-                                event.stopPropagation();
+                                event.stopPropagation()
+                                if (instance.links.length === 1) {
+                                    window.open(instance.links[0].link, instance.id);
+                                } else {
+                                    setShowLinks(true);
+                                }
                             }}
                             onFocus={event => event.stopPropagation()}
                         >
@@ -988,9 +997,9 @@ const InstanceRow = ({
                             </div>}
                         {expertMode && <div className={classes.displayFlex}>
                             <InstanceInfo icon={<LowPriorityIcon className={classes.marginRight} color="inherit" />} tooltip={t('Start order (tier)')}>
-                                {arrayTier.find(el => el.value === tier)?.desc || arrayTier[2]}
+                                {instance.adapter === 'admin' ? t('Always first') : (arrayTier.find(el => el.value === tier)?.desc || arrayTier[2])}
                             </InstanceInfo>
-                            <Tooltip title={t('Edit start order (tier)')}>
+                            {instance.adapter !== 'admin' ? <Tooltip title={t('Edit start order (tier)')}>
                                 <IconButton
                                     size="small"
                                     className={classes.button}
@@ -1001,7 +1010,7 @@ const InstanceRow = ({
                                 >
                                     <EditIcon />
                                 </IconButton>
-                            </Tooltip>
+                            </Tooltip> : null}
                         </div>}
                     </Grid>
                 </Grid>

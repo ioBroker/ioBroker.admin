@@ -12,67 +12,106 @@ import clsx from 'clsx';
 import { createRef } from 'react';
 import I18n from '@iobroker/adapter-react/i18n';
 
-const styles = theme => {
-    return ({
-        fullWidth: {
-            width: '100%'
-        },
-        root: {
-            width: '100%',
-        },
-        paper: {
-            width: '100%',
-            marginBottom: theme.spacing(2),
-            backgroundColor: `rgba(255, 255, 255, 0.1)`,
-        },
-        table: {
-            minWidth: 750,
-        },
-        visuallyHidden: {
-            border: 0,
-            clip: 'rect(0 0 0 0)',
-            height: 1,
-            margin: -1,
-            overflow: 'hidden',
-            padding: 0,
-            position: 'absolute',
-            top: 20,
-            width: 1,
-        },
-        addIcon: {
-            display: 'flex',
-            justifyContent: 'space-between'
-        },
-        highlight:
-            theme.palette.type === 'light'
-                ? {
-                    color: theme.palette.secondary.main,
-                    backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-                }
-                : {
-                    color: theme.palette.text.primary,
-                    backgroundColor: theme.palette.secondary.dark,
-                },
-        title: {
-            flex: '1 1 100%',
-        },
-        rootTool: {
-            paddingLeft: theme.spacing(2),
-            paddingRight: theme.spacing(1),
-        },
-        silver: {
-            opacity: 0.2
-        },
-        flex: {
-            display: 'flex'
-        },
-        filteredOut: {
-            padding: 10,
-            display: 'flex',
-            textAlign: 'center'
+const styles = theme => ({
+    fullWidth: {
+        width: '100%'
+    },
+    root: {
+        width: '100%',
+    },
+    paper: {
+        width: '100%',
+        marginBottom: theme.spacing(2),
+        backgroundColor: `rgba(255, 255, 255, 0.1)`,
+    },
+    table: {
+        minWidth: 750,
+    },
+    visuallyHidden: {
+        border: 0,
+        clip: 'rect(0 0 0 0)',
+        height: 1,
+        margin: -1,
+        overflow: 'hidden',
+        padding: 0,
+        position: 'absolute',
+        top: 20,
+        width: 1,
+    },
+    addIcon: {
+        display: 'flex',
+        justifyContent: 'space-between'
+    },
+    highlight:
+        theme.palette.type === 'light'
+            ? {
+                color: theme.palette.secondary.main,
+                backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+            }
+            : {
+                color: theme.palette.text.primary,
+                backgroundColor: theme.palette.secondary.dark,
+            },
+    title: {
+        flex: '1 1 100%',
+    },
+    rootTool: {
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(1),
+    },
+    silver: {
+        opacity: 0.2
+    },
+    flex: {
+        display: 'flex'
+    },
+    filteredOut: {
+        padding: 10,
+        display: 'flex',
+        textAlign: 'center'
+    }
+});
+
+function objectToArray(object, nameOfFirstAttr, nameOfSecondAttr) {
+    nameOfFirstAttr  = nameOfFirstAttr || 'key';
+
+    const array = [];
+    Object.keys(object).forEach(key => {
+        const item = {};
+        item[nameOfFirstAttr] = key;
+
+        if (nameOfSecondAttr) {
+            item[nameOfSecondAttr] = object[key]
+            array.push(item);
+        } else {
+            array.push(Object.assign(item, object[key]));
         }
-    })
-};
+    });
+
+    return array;
+}
+
+function arrayToObject(array, nameOfFirstAttr, nameOfSecondAttr) {
+    nameOfFirstAttr  = nameOfFirstAttr  || 'key';
+
+    const object = {};
+
+    array.forEach(row => {
+        let key = row[nameOfFirstAttr];
+        if (key === null || key === undefined) {
+            key = '';
+        }
+        delete row[nameOfFirstAttr];
+
+        if (nameOfSecondAttr) {
+            object[key] = row[nameOfSecondAttr];
+        } else {
+            object[key] = row;
+        }
+    });
+
+    return object;
+}
 
 class ConfigTable extends ConfigGeneric {
     constructor(props) {
@@ -83,11 +122,17 @@ class ConfigTable extends ConfigGeneric {
                 this.filterRefs[el.attr] = createRef();
             }
         });
-
     }
+
     async componentDidMount() {
         super.componentDidMount();
-        const value = ConfigGeneric.getValue(this.props.data, this.props.attr) || [];
+        let value = ConfigGeneric.getValue(this.props.data, this.props.attr) || [];
+
+        // if the list is given as an object
+        if (this.props.schema.objKeyName) {
+            value = objectToArray(value, this.props.schema.objKeyName, this.props.schema.objValueName);
+        }
+
         this.setState({ value, visibleValue: value, orderBy: value.length ? Object.keys(value[0])[0] : '', order: 'asc' });
     }
 
@@ -95,14 +140,17 @@ class ConfigTable extends ConfigGeneric {
         const { value, systemConfig, visibleValue } = this.state;
         const { schema } = this.props;
         const schemaFind = schema.items.find(el => el.attr === attrItem);
+
         if (!schemaFind) {
             return null;
         }
+
         const schemaItem = {
             items: {
                 [attrItem]: schemaFind
             }
         };
+
         return <ConfigPanel
             socket={this.props.socket}
             adapterName={this.props.adapterName}
@@ -122,14 +170,15 @@ class ConfigTable extends ConfigGeneric {
                 const newVisibleValue = JSON.parse(JSON.stringify(visibleValue));
                 newObj[idx][attr] = valueChange;
                 newVisibleValue[idx][attr] = valueChange;
-                this.setState({ value: newObj, visibleValue: newVisibleValue });
-                this.onChangeWrapper(newObj,true);
+                this.setState({ value: newObj, visibleValue: newVisibleValue }, () =>
+                    this.onChangeWrapper(newObj,true));
+
             }}
             onError={(error, attr) => this.onError(error, attr)}
         />;
     }
 
-    descendingComparator(a, b, orderBy) {
+    static descendingComparator(a, b, orderBy) {
         if (b[orderBy] < a[orderBy]) {
             return -1;
         } else
@@ -140,10 +189,10 @@ class ConfigTable extends ConfigGeneric {
             }
     }
 
-    getComparator(order, orderBy) {
+    static getComparator(order, orderBy) {
         return order === 'desc'
-            ? (a, b) => this.descendingComparator(a, b, orderBy)
-            : (a, b) => -this.descendingComparator(a, b, orderBy);
+            ? (a, b) => ConfigTable.descendingComparator(a, b, orderBy)
+            : (a, b) => -ConfigTable.descendingComparator(a, b, orderBy);
     }
 
     handleRequestSort = (property, orderCheck = false) => {
@@ -156,8 +205,9 @@ class ConfigTable extends ConfigGeneric {
 
     stableSort = (order, orderBy) => {
         const { value } = this.state;
-        const comparator = this.getComparator(order, orderBy);
+        const comparator = ConfigTable.getComparator(order, orderBy);
         const stabilizedThis = value.map((el, index) => [el, index]);
+
         stabilizedThis.sort((a, b) => {
             const order = comparator(a[0], b[0]);
             if (order !== 0) {
@@ -166,6 +216,7 @@ class ConfigTable extends ConfigGeneric {
                 return a[1] - b[1];
             }
         });
+
         return stabilizedThis.map(el => el[0]);
     }
 
@@ -220,24 +271,32 @@ class ConfigTable extends ConfigGeneric {
         </TableHead>;
     }
 
-    onDelete = (index) =>
+    onDelete = index =>
         () => {
             const { value, orderBy } = this.state;
             const newObj = JSON.parse(JSON.stringify(value));
             newObj.splice(index, 1);
             this.setState({ value: newObj }, () => {
+                this.onChangeWrapper(newObj);
                 this.onFilter(false, newObj);
                 this.handleRequestSort(orderBy, true);
             });
-            this.onChangeWrapper(newObj);
-        }
+        };
 
     onChangeWrapper = (newValue, updateVisible = false) => {
         const { orderBy } = this.state;
         this.typingTimer && clearTimeout(this.typingTimer);
+
         this.typingTimer = setTimeout(value => {
             this.typingTimer = null;
-            this.onChange(this.props.attr, value);
+
+            if (this.props.schema.objKeyName) {
+                const objValue = arrayToObject(JSON.parse(JSON.stringify(value)), this.props.schema.objKeyName, this.props.schema.objValueName);
+                this.onChange(this.props.attr, objValue);
+            } else {
+                this.onChange(this.props.attr, value);
+            }
+
             if (updateVisible) {
                 this.onFilter(false, value);
                 this.handleRequestSort(orderBy, true);
@@ -326,7 +385,7 @@ class ConfigTable extends ConfigGeneric {
                             </TableRow>)}
                     </TableBody>
                 </Table>
-                {!visibleValue.length &&
+                {!visibleValue.length && value.length ?
                     <div className={classes.filteredOut}>
                         <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
                             {I18n.t('All items are filtered out')}
@@ -337,7 +396,7 @@ class ConfigTable extends ConfigGeneric {
                                 <CloseIcon />
                             </IconButton>
                         </Typography>
-                    </div>}
+                    </div> : null}
             </TableContainer>
             {schema.help ? <FormHelperText>{this.getText(schema.help)}</FormHelperText> : null}
         </Paper>;

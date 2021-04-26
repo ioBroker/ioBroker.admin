@@ -30,12 +30,12 @@ class CustomTab extends Component {
         this.refIframe = React.createRef();
         this.registered = false;
 
-        CustomTab.getHref(this.props.instancesWorker, this.props.tab, this.props.hostname, this.props.protocol)
+        CustomTab.getHref(this.props.instancesWorker, this.props.tab, this.props.hostname, this.props.protocol, this.props.port,  this.props.hosts,  this.props.adminInstance)
             .then(href =>
                 this.setState({href}));
     }
 
-    static getHref(instancesWorker, tab, hostname, protocol) {
+    static getHref(instancesWorker, tab, hostname, protocol, port, hosts, adminInstance) {
         return instancesWorker.getInstances()
             .then(instances => {
                 let adapter = tab.replace(/^tab-/, '');
@@ -78,11 +78,16 @@ class CustomTab extends Component {
 
                 if (href.includes('%')) {
                     // replace
-                    href = Utils.replaceLink(href, adapter, instNum, {
+                    const hrefs = Utils.replaceLink(href, adapter, instNum, {
                         hostname,
                         protocol,
-                        objects: instances
+                        objects: instances,
+                        hosts,
+                        adminInstance,
+                        port,
                     });
+
+                    href = hrefs ? hrefs[0]?.url : '';
                 }
 
                 return href;
@@ -128,8 +133,13 @@ CustomTab.propTypes = {
     themeName: PropTypes.string,
     tab: PropTypes.string.isRequired,
     instancesWorker: PropTypes.object.isRequired,
+
     hostname: PropTypes.string,
     protocol: PropTypes.string,
+    port: PropTypes.number,
+    adminInstance: PropTypes.string,
+    hosts: PropTypes.array,
+
     expertMode: PropTypes.bool,
     onRegisterIframeRef: PropTypes.func,
     onUnregisterIframeRef: PropTypes.func,

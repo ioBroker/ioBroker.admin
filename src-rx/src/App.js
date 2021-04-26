@@ -305,7 +305,7 @@ class App extends Router {
                 //Finished
                 protocol: this.getProtocol(),
                 hostname: window.location.hostname,
-                port: this.getPort(),
+                port:     this.getPort(),
                 //---------
 
                 allTabs: null,
@@ -428,7 +428,11 @@ class App extends Router {
                 },
                 onReady: async objects => {
                     I18n.setLanguage(this.socket.systemLang);
-                    this.socket.getIsEasyModeStrict()
+                    this.socket.getCurrentInstance()
+                        .then(adminInstance => {
+                            this.adminInstance = adminInstance;
+                            return this.socket.getIsEasyModeStrict()
+                        })
                         .then(async isStrict => {
                             if (isStrict) {
                                 this.socket.getEasyMode()
@@ -855,8 +859,12 @@ class App extends Router {
                         socket={this.socket}
                         instancesWorker={this.instancesWorker}
                         lang={I18n.getLanguage()}
+
                         protocol={this.state.protocol}
                         hostname={this.state.hostname}
+                        port={this.state.port}
+                        adminInstance={this.adminInstance}
+
                         hosts={this.state.hosts}
                         themeName={this.state.themeName}
                         themeType={this.state.themeType}
@@ -877,8 +885,12 @@ class App extends Router {
                 return <Suspense fallback={<Connecting />}>
                     <Intro
                         key="intro"
+
                         protocol={this.state.protocol}
                         hostname={this.state.hostname}
+                        port={this.state.port}
+                        adminInstance={this.adminInstance}
+
                         showAlert={(message, type) => this.showAlert(message, type)}
                         socket={this.socket}
                         t={I18n.t}
@@ -954,8 +966,11 @@ class App extends Router {
                         menuPadding={this.state.drawerState === DrawerStates.closed ? 0 : (this.state.drawerState === DrawerStates.opened ? DRAWER_FULL_WIDTH : DRAWER_COMPACT_WIDTH)}
                         socket={this.socket}
                         lang={I18n.getLanguage()}
+
                         protocol={this.state.protocol}
                         hostname={this.state.hostname}
+                        port={this.state.port}
+
                         themeName={this.state.themeName}
                         themeType={this.state.themeType}
                         theme={this.state.theme}
@@ -988,8 +1003,13 @@ class App extends Router {
                         <CustomTab
                             key={this.state.currentTab.tab}
                             t={I18n.t}
+
                             protocol={this.state.protocol}
                             hostname={this.state.hostname}
+                            port={this.state.port}
+                            adminInstance={this.adminInstance}
+                            hosts={this.state.hosts}
+
                             instancesWorker={this.instancesWorker}
                             tab={this.state.currentTab.tab}
                             themeName={this.state.themeName}
@@ -1378,8 +1398,11 @@ class App extends Router {
                         expertMode={this.state.expertMode}
                         ready={this.state.ready}
                         themeName={this.state.themeName}
+
                         protocol={this.state.protocol}
                         hostname={this.state.hostname}
+                        port={this.state.port}
+                        adminInstance={this.adminInstance}
 
                         hosts={this.state.hosts}
                         repository={this.state.repository}

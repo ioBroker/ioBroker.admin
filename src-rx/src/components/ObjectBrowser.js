@@ -383,8 +383,14 @@ const styles = theme => ({
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
     },
+    cellValueTooltipBoth: {
+        width: 220,
+        display: 'inline-block',
+        whiteSpace: 'nowrap',
+    },
     cellValueTooltipBox: {
         width: 250,
+        overflow: 'hidden',
     },
     cellValueTextUnit: {
         marginLeft: theme.spacing(0.5),
@@ -1093,8 +1099,10 @@ function getStates(obj) {
     return states;
 }
 
-function quality2text(q) {
-    if (!q) return 'ok';
+/*function quality2text(q) {
+    if (!q) {
+        return 'ok';
+    }
     const custom = q & 0xFFFF0000;
     let text = '';
     if (q & 0x40) text += 'device';
@@ -1104,7 +1112,7 @@ function quality2text(q) {
     if (q & 0x04) text += ' error';
 
     return text + (custom ? '|0x' + (custom >> 16).toString(16).toUpperCase() : '') + ' [0x' + q.toString(16).toUpperCase() + ']';
-}
+}*/
 
 function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
     const states = getStates(obj);
@@ -1165,7 +1173,7 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
             }
             valFull.push({ t: texts.user, v: user });
         }
-        valFull.push({ t: texts.quality, v: quality2text(state.q || 0), nbr: true });
+        valFull.push({ t: texts.quality, v: Utils.quality2text(state.q || 0).join(', '), nbr: true });
     }
 
     if (typeof v === 'string' && v) {
@@ -1177,7 +1185,7 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
     return {
         valText,
         valFull,
-        style: { color: state?.ack ? (state.q ? 'orange' : '') : '#ff2222c9' }
+        style: { color: state?.ack ? (state.q ? '#ffa500' : '') : '#ff2222c9' }
     };
 }
 
@@ -1558,16 +1566,28 @@ class ObjectBrowser extends Component {
 
         props.socket.getObjects(true, true)
             .then(objects => {
+                this.systemConfig = objects['system.config'] || {};
+                this.systemConfig.common = this.systemConfig.common || {};
+                this.systemConfig.common.defaultNewAcl = this.systemConfig.common.defaultNewAcl || {};
+                this.systemConfig.common.defaultNewAcl.owner = this.systemConfig.common.defaultNewAcl.owner || 'system.user.admin';
+                this.systemConfig.common.defaultNewAcl.ownerGroup = this.systemConfig.common.defaultNewAcl.ownerGroup || 'system.group.administrator';
+                if (typeof this.systemConfig.common.defaultNewAcl.state !== 'number'){
+                    this.systemConfig.common.defaultNewAcl.state = 0x664;
+                }
+                if (typeof this.systemConfig.common.defaultNewAcl.object !== 'number'){
+                    this.systemConfig.common.defaultNewAcl.state = 0x664;
+                }
+
                 if (props.types) {
                     this.objects = {};
                     Object.keys(objects).forEach(id => {
                         const type = objects[id] && objects[id].type;
                         if (type && (
-                            type === 'channel' ||
-                            type === 'device' ||
-                            type === 'enum' ||
-                            type === 'folder' ||
-                            type === 'adapter' ||
+                            type === 'channel'  ||
+                            type === 'device'   ||
+                            type === 'enum'     ||
+                            type === 'folder'   ||
+                            type === 'adapter'  ||
                             type === 'instance' ||
                             props.types.includes(type))) {
                             this.objects[id] = objects[id];
@@ -2939,7 +2959,7 @@ class ObjectBrowser extends Component {
         item.data.aclTooltip = item.data.aclTooltip || this.renderTooltipAccessControl(item.data.obj.acl);
 
         const acl = item.data.obj.acl ? (item.data.obj.type === 'state' ? item.data.obj.acl.state : item.data.obj.acl.object) : 0;
-        const aclSystemConfig = item.data.obj.acl && this.objects['system.config'] ? (item.data.obj.type === 'state' ? this.objects['system.config'].common.defaultNewAcl.state : this.objects['system.config'].common.defaultNewAcl.object) : 0;
+        const aclSystemConfig = item.data.obj.acl && (item.data.obj.type === 'state' ? this.systemConfig.common.defaultNewAcl.state : this.systemConfig.common.defaultNewAcl.object);
         return [
             this.props.expertMode && this.props.objectEditOfAccessControl ? <Tooltip key="acl" title={item.data.aclTooltip}><IconButton className={classes.cellButtonMinWidth} onClick={() =>
                 this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })
@@ -3023,14 +3043,14 @@ class ObjectBrowser extends Component {
             let nowMs = now.getTime();
 
             this.props.socket.getHistory(id, {
-                instance: this.defaultHistory,
-                start: nowMs,
-                end: Date.now(),
-                step: 3600000,
-                from: false,
-                ack: false,
-                q: false,
-                addID: false,
+                instance:  this.defaultHistory,
+                start:     nowMs,
+                end:       Date.now(),
+                step:      3600000,
+                from:      false,
+                ack:       false,
+                q:         false,
+                addID:     false,
                 aggregate: 'minmax'
             })
                 .then(values => {
@@ -3077,10 +3097,21 @@ class ObjectBrowser extends Component {
         if (!info) {
             info = item.data.state = item.data.state || formatValue(id, state, item.data.obj, this.texts, this.props.dateFormat, this.props.isFloatComma);
 
-            info.valFull = info.valFull.map(item => [
-                <div className={classes.cellValueTooltipTitle} key={item.t}>{item.t}:</div>,
-                <div className={classes.cellValueTooltipValue} key={item.t + '_v'}>{item.v}</div>,
-                !item.nbr ? <br key={item.t + '_br'} /> : null]);
+            info.valFull = info.valFull.map(item => {
+                if (item.t === this.texts.quality && state.q) {
+                    return [
+                        <div className={classes.cellValueTooltipBoth} key={item.t}>{item.t}: {item.v}</div>,
+                        //<div className={classes.cellValueTooltipValue} key={item.t + '_v'}>{item.v}</div>,
+                        !item.nbr ? <br key={item.t + '_br'} /> : null
+                    ];
+                } else {
+                    return [
+                        <div className={classes.cellValueTooltipTitle} key={item.t}>{item.t}:</div>,
+                        <div className={classes.cellValueTooltipValue} key={item.t + '_v'}>{item.v}</div>,
+                        !item.nbr ? <br key={item.t + '_br'} /> : null
+                    ];
+                }
+            });
 
             if (this.defaultHistory && this.objects[id] && this.objects[id].common && this.objects[id].common.custom && this.objects[id].common.custom[this.defaultHistory]) {
                 info.valFull.push(<svg key="sparkline" className="sparkline" data-id={id} style={{ fill: '#3d85de' }} width="200" height="30" strokeWidth="3" />);
@@ -3600,6 +3631,8 @@ class ObjectBrowser extends Component {
         if (!checkColor || this.state.selected.includes(id)) {
             checkColor = 'inherit';
         }
+        const q = checkVisibleObjectType ? Utils.quality2text(this.states[id]?.q || 0).join(', ') : null;
+
         return <Grid
             container
             direction="row"
@@ -3679,9 +3712,9 @@ class ObjectBrowser extends Component {
                 :
                 <>
                     {this.columnsVisibility.changedFrom ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.changedFrom }} title={newValueTitle.join('\n')}>{checkVisibleObjectType && this.states[id]?.from ? newValue : null}</div> : null}
-                    {this.columnsVisibility.qualityCode ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.qualityCode }}>{checkVisibleObjectType ? quality2text(this.states[id]?.q || 0) : null}</div> : null}
-                    {this.columnsVisibility.timestamp ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.timestamp }}>{checkVisibleObjectType && this.states[id]?.ts ? Utils.formatDate(new Date(this.states[id].ts), this.props.dateFormat) : null}</div> : null}
-                    {this.columnsVisibility.lastChange ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.lastChange }}>{checkVisibleObjectType && this.states[id]?.lc ? Utils.formatDate(new Date(this.states[id].lc), this.props.dateFormat) : null}</div> : null}
+                    {this.columnsVisibility.qualityCode ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.qualityCode }} title={q || ''}>{q}</div> : null}
+                    {this.columnsVisibility.timestamp   ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.timestamp }}>{checkVisibleObjectType && this.states[id]?.ts ? Utils.formatDate(new Date(this.states[id].ts), this.props.dateFormat) : null}</div> : null}
+                    {this.columnsVisibility.lastChange  ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.lastChange }}>{checkVisibleObjectType && this.states[id]?.lc ? Utils.formatDate(new Date(this.states[id].lc), this.props.dateFormat) : null}</div> : null}
                 </>
             }
             {this.adapterColumns.map(it => <div className={classes.cellAdapter} style={{ width: this.columnsVisibility[it.id] }} key={it.id} title={it.adapter + ' => ' + it.pathText}>{this.renderCustomValue(obj, it, item)}</div>)}
@@ -3697,7 +3730,7 @@ class ObjectBrowser extends Component {
 
                 this.edit = {
                     val: this.states[id] ? this.states[id].val : '',
-                    q: 0,
+                    q:   this.states[id] ? this.states[id].q || 0 : 0,
                     ack: false,
                     id,
                 };

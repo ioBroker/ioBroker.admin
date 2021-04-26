@@ -44,6 +44,11 @@ const styles = theme => ({
         width: 100,
         height: 100,
     },
+    avatarImg: {
+        width: 'calc(100% - 4px)',
+        height: 'calc(100% - 4px)',
+        padding: 2
+    },
     form: {
         width: '100%', // Fix IE 11 issue.
         marginTop: theme.spacing(1),
@@ -98,8 +103,7 @@ class Login extends Component {
                     alignItems="center"
                 >
                     {window.loginHideLogo && window.loginHideLogo === 'false' &&
-                        <Avatar className={classes.avatar} src="img/logo.png" />
-                    }
+                        <Avatar className={classes.avatar} src="img/logo.png" classes={{img: classes.avatarImg}} />}
                     <Typography component="h1" variant="h5">
                         {this.props.t('loginTitle')}
                     </Typography>

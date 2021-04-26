@@ -1246,5 +1246,13 @@
   "Are you sure you want to delete the instance %s?": "Weet u zeker dat u de instantie %s wilt verwijderen?",
   "Ignore version %s": "Negeer versie %s",
   "Command": "Opdracht",
-  "Filter specific compact group": "Filter specifieke compacte groep"
+  "Filter specific compact group": "Filter specifieke compacte groep",
+  "You voted for %s on %s": "U heeft op v%s in %s gestemd",
+  "Vote:": "Stemmen:",
+  "Rate how good this version of the adapter works on your system. You can vote for every new version.": "Beoordeel hoe goed deze versie van de adapter op uw systeem werkt. U kunt op elke nieuwe versie stemmen.",
+  "Max length %s characters": "Maximale lengte %s tekens",
+  "Rate": "Beoordeel",
+  "Comments": "Opmerkingen",
+  "Your comment": "Jouw commentaar",
+  "Always first": "Altijd eerst"
 }

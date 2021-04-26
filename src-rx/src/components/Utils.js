@@ -7,9 +7,32 @@
 import React from 'react';
 import I18n from '@iobroker/adapter-react/i18n';
 
-const NAMESPACE = 'material';
-const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const NAMESPACE    = 'material';
+const days         = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+const months       = ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const QUALITY_BITS = {
+    0x00: '0x00 - good',
+
+    0x01: '0x01 - general problem',
+    0x02: '0x02 - no connection problem',
+
+    0x10: '0x10 - substitute value from controller',
+    0x20: '0x20 - substitute initial value',
+    0x40: '0x40 - substitute value from device or instance',
+    0x80: '0x80 - substitute value from sensor',
+
+    0x11: '0x11 - general problem by instance',
+    0x41: '0x41 - general problem by device',
+    0x81: '0x81 - general problem by sensor',
+
+    0x12: '0x12 - instance not connected',
+    0x42: '0x42 - device not connected',
+    0x82: '0x82 - sensor not connected',
+
+    0x44: '0x44 - device reports error',
+    0x84: '0x84 - sensor reports error',
+};
+
 class Utils {
     static namespace = NAMESPACE;
     static INSTANCES = 'instances';
@@ -1282,6 +1305,30 @@ class Utils {
         el.click();
 
         document.body.removeChild(el);
+    }
+
+    /**
+     * Convert quality code into text
+     * @param {number} quality code
+     * @returns {array<string>} lines that decode qulity
+     */
+    static quality2text(quality) {
+        const custom = quality & 0xFFFF0000;
+        const text = QUALITY_BITS[quality];
+        let result;
+        if (text) {
+            result = [text];
+        } else if (quality & 0x01) {
+            result = [QUALITY_BITS[0x01], '0x' + (quality & (0xFFFF & ~1)).toString(16)];
+        } else if (quality & 0x02) {
+            result = [QUALITY_BITS[0x02], '0x' + (quality & (0xFFFF & ~2)).toString(16)];
+        } else {
+            result = ['0x' + quality.toString(16)];
+        }
+        if (custom) {
+            result.push('0x' + (custom >> 16).toString(16).toUpperCase());
+        }
+        return result;
     }
 }
 

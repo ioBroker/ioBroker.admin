@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.7",
+        "version": "5.0.8",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -15,6 +15,18 @@
             "zh-cn": "Admin"
         },
         "news": {
+            "5.0.8": {
+                "en": "Admin5: Implemented rating with comments",
+                "de": "Admin5: Bewertung mit Kommentaren implementiert",
+                "ru": "Admin5: Реализовал рейтинг с комментариями",
+                "pt": "Admin5: Avaliação implementada com comentários",
+                "nl": "Admin5: Beoordeling met opmerkingen geïmplementeerd",
+                "fr": "Admin5: Évaluation mise en œuvre avec commentaires",
+                "it": "Admin5: valutazione implementata con commenti",
+                "es": "Admin5: Calificación implementada con comentarios",
+                "pl": "Admin5: Zaimplementowano ocenę z komentarzami",
+                "zh-cn": "Admin5：已实施评分并带有注释"
+            },
             "5.0.7": {
                 "en": "Admin5: Fixed many bugs",
                 "de": "Admin5: Viele Fehler behoben",

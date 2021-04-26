@@ -263,31 +263,28 @@ class Instances extends Component {
         const start = Date.now();
         let instances = [];
         let instancesWorker = await this.props.instancesWorker.getInstances();
-        Object.keys(instancesWorker).forEach(el => {
-            instances.push(instancesWorker[el]);
-        });
+        Object.keys(instancesWorker).forEach(el =>
+            instances.push(instancesWorker[el]));
         let memRssId = `system.host.${this.props.currentHostName}.memRss`;
         this.states[memRssId] = this.states[memRssId] || (await this.props.socket.getState(memRssId));
 
         const host = this.states[memRssId];
         let processes = 1;
         let mem = host ? host.val : 0;
-        for (let id in instances) {
-            if (instances.hasOwnProperty(id)) {
-                let inst = instances[id];
-                if (!inst || !inst.common) {
-                    return
-                }
-                if (inst.common.host !== this.props.currentHostName) {
-                    return
-                }
-                if (inst.common.enabled && inst.common.mode === 'daemon') {
-                    memRssId = inst._id + '.memRss';
-                    this.states[memRssId] = this.states[memRssId] || (await this.props.socket.getState(memRssId));
-                    const m = this.states[memRssId];
-                    mem += m ? m.val : 0;
-                    processes++;
-                }
+        for (let i = 0; i < instances.length; i++) {
+            let inst = instances[i];
+            if (!inst || !inst.common) {
+                return
+            }
+            /*if (inst.common.host !== this.props.currentHostName) {
+                return
+            }*/
+            if (inst.common.enabled && inst.common.mode === 'daemon') {
+                memRssId = inst._id + '.memRss';
+                this.states[memRssId] = this.states[memRssId] || (await this.props.socket.getState(memRssId));
+                const m = this.states[memRssId];
+                mem += m ? m.val : 0;
+                processes++;
             }
         }
 
@@ -298,45 +295,74 @@ class Instances extends Component {
         let compactGroupCount = 0;
 
         instances.forEach(obj => {
-            const common = obj ? obj.common : null;
-            const objId = obj._id.split('.');
+            const common     = obj ? obj.common : null;
+            const objId      = obj._id.split('.');
             const instanceId = objId[objId.length - 1];
+
             if (common.compactGroup && typeof common.compactGroup === 'number' && compactGroupCount < common.compactGroup) {
                 compactGroupCount = common.compactGroup;
             }
-            const instance = {};
-            instance.id = obj._id.replace('system.adapter.', '');
-            instance.obj = obj;
+
+            const instance   = {};
+            instance.id      = obj._id.replace('system.adapter.', '');
+            instance.obj     = obj;
             instance.compact = !!common.compact;
-            instance.host = common.host;
-            instance.name = common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en || common.title || '' : common.title;
-            instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
-            let links = common.localLinks || common.localLink || '';
+            instance.host    = common.host;
+            instance.name    = common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en || common.title || '' : common.title;
+            instance.image   = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
+            let links        = common.localLinks || common.localLink || '';
             if (links && typeof links === 'string') {
                 links = { _default: links };
             }
 
-            links && Object.keys(links).forEach(linkName => {
-                instance.link = instance.link || [];
-                const link = links[linkName];
-                instance.link.push(Utils.replaceLink(link, common.name, instanceId, {
-                    objects: instancesWorker,
-                    hostname: this.props.hostname,
-                    protocol: this.props.protocol
-                }));
+            const names = links ? Object.keys(links) : [];
+
+            names.forEach(linkName => {
+                instance.links = instance.links || [];
+                let link = links[linkName];
+                if (typeof link === 'string') {
+                    link = {link};
+                }
+
+                const urls = Utils.replaceLink(link.link, common.name, instanceId, {
+                    objects:       instancesWorker,
+                    hostname:      this.props.hostname,
+                    protocol:      this.props.protocol,
+                    port:          this.props.port,
+                    hosts:         this.props.hosts,
+                    adminInstance: this.props.adminInstance,
+                }) || [];
+
+                if (urls.length === 1) {
+                    instance.links.push({
+                        name:  linkName === '_default' ? (names.length === 1 ? '' : this.t('default')) : this.t(linkName),
+                        link:  urls[0].url,
+                        port:  urls[0].port,
+                        color: link.color,
+                    });
+                } else if (urls.length > 1) {
+                    urls.forEach(item => {
+                        instance.links.push({
+                            name:  linkName === '_default' ? (names.length === 1 ? '' : this.t('default')) : this.t(linkName),
+                            link:  item.url,
+                            port:  item.port,
+                            color: link.color,
+                        });
+                    });
+                }
             });
 
-            instance.canStart = !common.onlyWWW;
-            instance.config = !common.noConfig;
-            instance.materialize = common.materialize || false;
-            instance.jsonConfig = !!common.jsonConfig;
+            instance.canStart    = !common.onlyWWW;
+            instance.config      = !common.noConfig;
+            instance.jsonConfig  = !!common.jsonConfig;
+            instance.materialize = common.materialize      || false;
             instance.compactMode = common.runAsCompactMode || false;
-            instance.mode = common.mode || null;
-            instance.loglevel = common.loglevel || null;
-            instance.adapter = common.name || null;
-            instance.version = common.version || null;
+            instance.mode        = common.mode             || null;
+            instance.loglevel    = common.loglevel         || null;
+            instance.adapter     = common.name             || null;
+            instance.version     = common.version          || null;
 
-            formatted[obj._id] = instance;
+            formatted[obj._id]   = instance;
         });
 
         console.log('getInstances: ' + (Date.now() - start));
@@ -350,7 +376,7 @@ class Instances extends Component {
 
     getParamsLocalAndPanel = async () => {
         const compact = await this.props.socket.readBaseSettings(this.props.currentHostName)
-            .then(e => e.config.system.compact);
+            .then(e => !!e.config?.system?.compact);
 
         const importantDevices = JSON.parse(window.localStorage.getItem('Instances.importantDevices'));
         const playArrow = JSON.parse(window.localStorage.getItem('Instances.playArrow'));
@@ -962,17 +988,16 @@ class Instances extends Component {
 }
 
 Instances.propTypes = {
-    /**
-     * Link and text
-     * {link: 'https://example.com', text: 'example.com'}
-     */
     ready: PropTypes.bool,
     t: PropTypes.func,
     lang: PropTypes.string,
     expertMode: PropTypes.bool,
+
     hostname: PropTypes.string,
     hosts: PropTypes.array,
     protocol: PropTypes.string,
+    adminInstance: PropTypes.string,
+
     socket: PropTypes.object,
     themeName: PropTypes.string,
     themeType: PropTypes.string,
