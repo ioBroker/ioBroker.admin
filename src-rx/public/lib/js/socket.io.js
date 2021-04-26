@@ -70,12 +70,12 @@ function SocketClient () {
         url = url || _url || window.location.href;
         options = options || JSON.parse(JSON.stringify(_options || {}));
 
-        options.pongTimeout       = options.pongTimeout !== undefined ? 		parseInt(options.pongTimeout,       10) : 55000; // Timeout for answer for ping (pong)
-        options.pingInterval      = options.pingInterval !== undefined ? 		parseInt(options.pingInterval,      10) : 5000;  // Ping interval
-        options.connectTimeout    = options.connectTimeout !== undefined ? 		parseInt(options.connectTimeout,    10) : 3000;  // connection request timeout
-        options.authTimeout       = options.authTimeout !== undefined ? 		parseInt(options.authTimeout,       10) : 3000;  // Authentication timeout
-        options.connectInterval   = options.connectInterval !== undefined ? 	parseInt(options.connectInterval,   10) : 1000;  // Interval between connection attempts
-        options.connectMaxAttempt = options.connectMaxAttempt !== undefined ? 	parseInt(options.connectMaxAttempt, 10) : 5;     // Every connection attempt the interval increasing at options.connectInterval till max this number
+        options.pongTimeout       = parseInt(options.pongTimeout,       10) || 60000; // Timeout for answer for ping (pong)
+		options.pingInterval      = parseInt(options.pingInterval,      10) || 5000;  // Ping interval
+		options.connectTimeout    = parseInt(options.connectTimeout,    10) || 3000;  // connection request timeout
+		options.authTimeout       = parseInt(options.authTimeout,       10) || 3000;  // Authentication timeout
+		options.connectInterval   = parseInt(options.connectInterval,   10) || 1000;  // Interval between connection attempts
+        options.connectMaxAttempt = parseInt(options.connectMaxAttempt, 10) || 5;     // Every connection attempt the interval increasing at options.connectInterval till max this number
         
         sessionID = Date.now();
         try {
