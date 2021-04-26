@@ -65,3 +65,5 @@
 ## JSON config - Admin settings dialog (index_m.html)
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)
 - (BF) On Custom-Mass-Edit: When more than 10 data points are edited show a dialog to inform use about that mass edit and let him decide to do it or not: "The changes will be applied to %1 states. Are you sure?"
+- time - time picker
+- date - date picker
