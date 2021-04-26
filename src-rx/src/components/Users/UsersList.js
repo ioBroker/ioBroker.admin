@@ -3,6 +3,7 @@ import { Component } from 'react';
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
+import { usePreview } from 'react-dnd-preview'
 
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
@@ -185,6 +186,14 @@ const styles = theme => ({
         padding: 20
     }
 });
+
+const DndPreview = () => {
+    const {display, itemType, item, style} = usePreview()
+    if (!display) {
+      return null
+    }
+    return <div style={style}>{item.preview}</div>
+  }
 
 function isTouchDevice() {
     return (('ontouchstart' in window) ||
@@ -419,6 +428,7 @@ class UsersList extends Component {
         }
         return <>
             <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
+                {isTouchDevice() ? <DndPreview /> : null}
                 <div className={this.props.classes.descriptionPanel}>
                     {this.props.t('You can drag users to groups.')}
                 </div>

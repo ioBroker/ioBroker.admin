@@ -39,6 +39,8 @@
     "react-cropper": "^2.1.7",
     "react-dnd": "^14.0.2",
     "react-dnd-html5-backend": "^14.0.0",
+    "react-dnd-multi-backend": "^6.0.2",
+    "react-dnd-preview": "^6.0.2",
     "react-dnd-touch-backend": "^14.0.0",
     "react-dom": "^17.0.2",
     "react-dropzone": "^11.3.2",
