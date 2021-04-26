@@ -2,8 +2,6 @@
 
 ## Bugs
 - Ask "Discard data?" if instance config not saved for json config
-<!-- - Update expert mode in APP if changed in the system settings. -->
-<!-- - Drag&Drop in drawer does not work in firefox -->
 
 - (BF) AdminSettings: Access to the instances: add infotexts for "Apply access rights" and "Allow access only"
 - (BF)General: Support the new io-package fields that replace materialize and materializeTab (but we need to be backward compatible)
@@ -24,22 +22,19 @@
 
 ## Adapters
 - Adapters - Use readme renderer from www.iobroker.net (BF)
-<!-- - By start do not allow to close the command window (only in background). If "close on ready" it is closed automatically if not, the user can open the command window and close it.   -->
 
 ## Wizard
 - Settings: Map position not shown initially, change save button to primary
+  system.config => common.licenseConfirmed = false
 
 ## Discovery
 - Implement
 
 ## Logs
-<!-- * When entering Message filter show clear button -->
-<!-- * Mobile view: https://github.com/ioBroker/ioBroker.admin/issues/758 -->
-
+* When entering Message filter show clear button
 ## Instances
 - if more than one host => host selector for every instance
-<!-- * Mobile view: https://github.com/ioBroker/ioBroker.admin/issues/758 -->
-
+- Logo icons are disappeared
 ## Objects
 - Add in object edit the possibility to set color and icon (icon could be uploaded as base64 and may not be bigger than 5k) and use it for text color. Add possibility to scale the images.
   - Integrate https://react-dropzone.js.org/#!/Doka for image upload
@@ -53,7 +48,7 @@
 ## Files
 
 ## Hosts
-<!-- - Add Notifications button with "bubble" to hosts list and allow open Notification dialog per host if something is there. Gray button out if no notifications exist for that host -->
+- Add Notifications button with "bubble" to hosts list and allow open Notification dialog per host if something is there. Gray button out if no notifications exist for that host
 
 ## Users
 
@@ -69,5 +64,4 @@
 
 ## JSON config - Admin settings dialog (index_m.html)
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)
-- Table, move items up and down if add/delete possible 
 - (BF) On Custom-Mass-Edit: When more than 10 data points are edited show a dialog to inform use about that mass edit and let him decide to do it or not: "The changes will be applied to %1 states. Are you sure?"

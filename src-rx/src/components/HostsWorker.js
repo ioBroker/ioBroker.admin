@@ -2,6 +2,7 @@ class HostsWorker {
     constructor(socket) {
         this.socket = socket;
         this.handlers = [];
+        this.notificationsHandlers = [];
 
         socket.registerConnectionHandler(this.connectionHandler);
 
@@ -11,6 +12,12 @@ class HostsWorker {
         this.connected = this.socket.isConnected();
         this.objects = {};
     }
+
+    onNotificationHandler = (id, state) => {
+        const host = id.replace(/\.notifications\..+$/, '');
+        this.socket.getNotifications(host)
+            .then(notifications => this.notificationsHandlers.forEach(cb => cb(host, notifications)));
+    };
 
     objectChangeHandler = (id, obj) => {
         // if instance
@@ -44,6 +51,10 @@ class HostsWorker {
         }
     }
 
+    getNotifications() {
+        
+    }
+
     getHosts() {
         return JSON.parse(JSON.stringify(this.objects));
     }
@@ -61,9 +72,28 @@ class HostsWorker {
         this.handlers.includes(cb) && this.handlers.push(cb);
     }
 
+    registerNotificationHanlder(cb) {
+        if (!this.notificationsHandlers.includes(cb)) {
+            this.notificationsHandlers.push(cb);
+            if (this.notificationsHandlers.length === 1) {
+                this.socket.subscribeState('system.host.*.notifications.*', this.onNotificationHandler);                    
+            }
+        }
+    }
+
     unregisterHandler(cb) {
         const pos = this.handlers.indexOf(cb);
         pos !== -1 && this.handlers.splice(pos, 1);
+    }
+
+    unregisterNotificationHandler(cb) {
+        const pos = this.notificationHandlers.indexOf(cb);
+        if (pos !== -1) {
+            this.notificationHandlers.splice(pos, 1);
+            if (!this.notificationHandlers.length) {
+                this.socket.unsubscribeState('system.host.*.notifications.*', this.onNotificationHandler);
+            }
+        }
     }
 
     forceUpdate() {
