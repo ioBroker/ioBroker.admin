@@ -46,7 +46,7 @@ function build() {
 
     data.version = version;
 
-    fs.writeFileSync(src + 'package.json', JSON.stringify(data, null, 2));
+    fs.writeFileSync(src + 'package.json', JSON.stringify(data, null, 4));
 
     return new Promise((resolve, reject) => {
         const options = {
@@ -191,7 +191,7 @@ function flat2i18n() {
             }
             words[key] = index[key][lang];
         });
-        fs.writeFileSync(dir + '/' + lang + '.json', JSON.stringify(words, null, 2));
+        fs.writeFileSync(dir + '/' + lang + '.json', JSON.stringify(words, null, 4));
     });
 }
 
