@@ -5,7 +5,7 @@ import { findCard, moveCard } from '../helpers/cardSort';
 const style = {
     cursor: 'move',
 };
-const DragWrapper = ({ canDrag, setEndDrag, iconJSX, selected, compact, badgeContent, badgeColor, tab, tabs, setTabs, _id, children }) => {
+const DragWrapper = ({ canDrag, setEndDrag, iconJSX, selected, compact, badgeContent, badgeColor, tab, tabs, setTabs, _id, children, name }) => {
     const ref = useRef(null);
     const [{ handlerId }, drop] = useDrop({
         accept: 'box',
@@ -39,7 +39,7 @@ const DragWrapper = ({ canDrag, setEndDrag, iconJSX, selected, compact, badgeCon
         item: { _id: tab.name, ...tab, iconJSX, selected, compact, badgeContent, badgeColor },
         canDrag: () => canDrag,
         end: () => setEndDrag(),
-        collect: monitor => ({isDragging: monitor.isDragging()}),
+        collect: monitor => ({ isDragging: monitor.isDragging() }),
     });
 
     useEffect(() => {
@@ -49,9 +49,11 @@ const DragWrapper = ({ canDrag, setEndDrag, iconJSX, selected, compact, badgeCon
     const opacity = isDragging ? 0 : 1;
     drag(drop(ref));
 
-    return <div ref={ref} data-handler-id={handlerId} style={{
-        ...style, opacity
-    }}>{children}</div>;
+    return <div ref={ref} style={{ ...style, opacity }} data-handler-id={handlerId}>
+        <a type="box" data-handler-id={handlerId} onClick={event => event.preventDefault()} href={`/#${name}`} style={{ ...style, opacity, color: 'inherit', textDecoration: 'none' }} >
+            {children}
+        </a>
+    </div>;
 }
 
 export default DragWrapper;

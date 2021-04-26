@@ -57,17 +57,17 @@ import HostsWorker from './components/HostsWorker';
 import AdaptersWorker from './components/AdaptersWorker';
 
 // Tabs
-const Adapters  = React.lazy(() => import('./tabs/Adapters'));
+const Adapters = React.lazy(() => import('./tabs/Adapters'));
 const Instances = React.lazy(() => import('./tabs/Instances'));
-const Intro     = React.lazy(() => import('./tabs/Intro'));
-const Logs      = React.lazy(() => import('./tabs/Logs'));
-const Files     = React.lazy(() => import('./tabs/Files'));
-const Objects   = React.lazy(() => import('./tabs/Objects'));
-const Users     = React.lazy(() => import('./tabs/Users'));
-const Enums     = React.lazy(() => import('./tabs/Enums'));
+const Intro = React.lazy(() => import('./tabs/Intro'));
+const Logs = React.lazy(() => import('./tabs/Logs'));
+const Files = React.lazy(() => import('./tabs/Files'));
+const Objects = React.lazy(() => import('./tabs/Objects'));
+const Users = React.lazy(() => import('./tabs/Users'));
+const Enums = React.lazy(() => import('./tabs/Enums'));
 const CustomTab = React.lazy(() => import('./tabs/CustomTab'));
-const Hosts     = React.lazy(() => import('./tabs/Hosts'));
-const EasyMode  = React.lazy(() => import('./tabs/EasyMode'));
+const Hosts = React.lazy(() => import('./tabs/Hosts'));
+const EasyMode = React.lazy(() => import('./tabs/EasyMode'));
 
 const query = {};
 (window.location.search || '').replace(/^\?/, '').split('&').forEach(attr => {
@@ -305,7 +305,7 @@ class App extends Router {
                 //Finished
                 protocol: this.getProtocol(),
                 hostname: window.location.hostname,
-                port:     this.getPort(),
+                port: this.getPort(),
                 //---------
 
                 allTabs: null,
@@ -447,10 +447,10 @@ class App extends Router {
                                     })
                             } else {
                                 // create Workers
-                                this.logsWorker      = this.logsWorker      || new LogsWorker(this.socket, 1000);
+                                this.logsWorker = this.logsWorker || new LogsWorker(this.socket, 1000);
                                 this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
-                                this.hostsWorker     = this.hostsWorker     || new HostsWorker(this.socket);
-                                this.adaptersWorker  = this.adaptersWorker  || new AdaptersWorker(this.socket);
+                                this.hostsWorker = this.hostsWorker || new HostsWorker(this.socket);
+                                this.adaptersWorker = this.adaptersWorker || new AdaptersWorker(this.socket);
 
                                 const newState = {
                                     lang: this.socket.systemLang,
@@ -481,8 +481,7 @@ class App extends Router {
                                 this.instancesWorker.registerHandler(this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts));
 
                                 this.subscribeOnHostsStatus();
-
-                                newState.expertMode = window.sessionStorage.getItem('App.expertMode') === 'true' || !!newState.systemConfig.common.expertMode;
+                                newState.expertMode = window.sessionStorage.getItem('App.expertMode') !== null ? JSON.parse(window.sessionStorage.getItem('App.expertMode')) : !!newState.systemConfig.common.expertMode;
 
                                 // Read user and show him
                                 if (this.socket.isSecure) {
@@ -590,8 +589,8 @@ class App extends Router {
 
         try {
             const repository = await this.socket.getRepository(currentHost, { update: false }, false, 10000);
-            const installed  = await this.socket.getInstalled(currentHost, { update: false });
-            const adapters   = await this.adaptersWorker.getAdapters(); // we need information about ignored versions
+            const installed = await this.socket.getInstalled(currentHost, { update: false });
+            const adapters = await this.adaptersWorker.getAdapters(); // we need information about ignored versions
 
             Object.keys(adapters).forEach(id => {
                 const adapter = adapters[id];
@@ -985,6 +984,7 @@ class App extends Router {
                         executeCommand={cmd => this.executeCommand(cmd)}
                         inBackgroundCommand={this.state.commandError || this.state.performed}
                         systemConfig={this.state.systemConfig}
+                        getAdaptersWarning={this.getAdaptersWarning}
                     />
                 </Suspense>;
             } else {
@@ -1053,6 +1053,12 @@ class App extends Router {
             showAlert={(message, type) => this.showAlert(message, type)}
             socket={this.socket}
             currentTab={this.state.currentTab}
+            expertModeFunc={(value) => {
+                window.sessionStorage.setItem('App.expertMode', value);
+                const newSystemConfig = JSON.parse(JSON.stringify(this.state.systemConfig));
+                newSystemConfig.common.expertMode = value;
+                this.setState({ expertMode: value, systemConfig: newSystemConfig });
+            }}
             t={I18n.t}
         />;
     }
@@ -1404,6 +1410,7 @@ class App extends Router {
                         port={this.state.port}
                         adminInstance={this.adminInstance}
 
+                        currentHost={this.state.currentHost}
                         hosts={this.state.hosts}
                         repository={this.state.repository}
                         installed={this.state.installed}

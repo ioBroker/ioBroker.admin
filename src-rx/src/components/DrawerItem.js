@@ -44,7 +44,11 @@ const DrawerItem = props => {
         onClick,
         selected,
         text,
-        editList,visible,editListFunc
+        editList,
+        visible,
+        editListFunc,
+        badgeAdditionalContent,
+        badgeAdditionalColor
     } = props;
 
     let content = text ? text.replace('&gt;', '>') : '';
@@ -55,8 +59,8 @@ const DrawerItem = props => {
         content = 'Text→Cmd';
     }
 
-    return <div style={{display:'flex'}}>
-        { !!editList && <Checkbox checked={visible} onChange={editListFunc}/>}
+    return <div style={{ display: 'flex' }}>
+        {!!editList && <Checkbox checked={visible} onChange={editListFunc} />}
         <ListItem
             button
             className={clsx({ [classes.selected]: selected }, compact && classes.compactBadge)}
@@ -82,7 +86,13 @@ const DrawerItem = props => {
                 {!compact &&
                     <Grid item>
                         <ListItemText>
-                            {content}
+                            <Badge
+                                badgeContent={badgeAdditionalContent || 0}
+                                color={(badgeAdditionalColor === 'warn' ? 'default' : badgeAdditionalColor) || 'primary'}
+                                classes={badgeAdditionalColor === 'warn' ? { badge: classes.warn } : {}}
+                            >
+                                {content}
+                            </Badge>
                         </ListItemText>
                     </Grid>
                 }

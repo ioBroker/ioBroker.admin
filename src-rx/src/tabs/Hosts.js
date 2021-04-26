@@ -208,6 +208,7 @@ const Hosts = ({
     navigate,
     themeName,
     lang,
+    getAdaptersWarning,
     ...props
 }) => {
     const getHostsData = hosts => {
@@ -284,6 +285,7 @@ const Hosts = ({
                 index: idx,
                 dialogName: name
             })}
+            modalAdaptersWarning={getAdaptersWarning}
             expertMode={expertMode}
             socket={socket}
             name={name}
@@ -314,6 +316,7 @@ const Hosts = ({
                 index: idx,
                 dialogName: name
             })}
+            modalAdaptersWarning={getAdaptersWarning}
             expertMode={expertMode}
             socket={socket}
             name={name}

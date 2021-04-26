@@ -200,8 +200,13 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
     const [disabled, setDisabled] = useState([]);
     const [expanded, setExpanded] = useState(false);
 
-    const onClose = () =>
+    const onClose = () =>{
         setOpen(false);
+        if(node){
+            document.body.removeChild(node);
+            node = null;
+        }
+    }
 
     const handleChange = (event, newValue) =>
         setValue(newValue);

@@ -118,7 +118,7 @@ const styles = theme => ({
     },
     expand: {
         marginBottom: 5,
-        marginLeft:   5
+        marginLeft: 5
     }
 });
 
@@ -164,11 +164,12 @@ class Drawer extends Component {
         super(props);
 
         this.state = {
-            tabs:           [],
-            editList:       false,
-            logErrors:      0,
-            logWarnings:    0,
-            hostsUpdate:    Drawer.calculateHostUpdates(this.props.hosts, this.props.repository),
+            tabs: [],
+            editList: false,
+            logErrors: 0,
+            logWarnings: 0,
+            hostError: 0,
+            hostsUpdate: Drawer.calculateHostUpdates(this.props.hosts, this.props.repository),
             adaptersUpdate: Drawer.calculateAdapterUpdates(this.props.installed, this.props.repository),
         };
 
@@ -181,7 +182,7 @@ class Drawer extends Component {
         const hostsUpdate = Drawer.calculateHostUpdates(props.hosts, props.repository);
         const adaptersUpdate = Drawer.calculateAdapterUpdates(props.installed, props.repository);
         if (hostsUpdate !== state.hostsUpdate || adaptersUpdate !== state.adaptersUpdate) {
-            return {hostsUpdate, adaptersUpdate};
+            return { hostsUpdate, adaptersUpdate };
         } else {
             return null;
         }
@@ -233,6 +234,8 @@ class Drawer extends Component {
     componentDidMount() {
         this.props.instancesWorker.registerHandler(this.instanceChangedHandler);
 
+        this.props.socket.getNotifications(this.props.currentHost)
+            .then(notifications => this.getAdaptersWarning(notifications));
         if (!this.logsHandlerRegistered) {
             this.logsHandlerRegistered = true;
             this.props.logsWorker.registerErrorCountHandler(this.onErrorsUpdates);
@@ -249,6 +252,22 @@ class Drawer extends Component {
     onWarningsUpdates = logWarnings => {
         if (this.props.currentTab !== 'tab-logs' || (this.props.currentTab === 'tab-logs' && this.state.logWarnings)) {
             this.setState({ logWarnings });
+        }
+    }
+
+    getAdaptersWarning = ({ result }) => {
+        if (!result || !result.system) {
+            return;
+        }
+        if (Object.keys(result.system.categories).length) {
+            let count = 0;
+            let obj = result.system.categories;
+            Object.keys(obj).forEach(nameTab => {
+                Object.keys(obj[nameTab].instances).forEach(_ => {
+                    count++
+                });
+            });
+            this.setState({ hostError: count });
         }
     }
 
@@ -390,7 +409,7 @@ class Drawer extends Component {
             !this.isSwipeable() && this.props.state !== STATES.opened && classes.headerCompact
         )}>
             <div className={clsx(classes.avatarBlock, state === 0 && classes.avatarVisible, classes.avatarNotVisible)}>
-                <a href="/#easy" onClick={event=>event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
+                <a href="/#easy" onClick={event => event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
                     <Avatar onClick={() => handleNavigation('easy')} className={clsx((this.props.themeName === 'colored' || this.props.themeName === 'blue') && classes.logoWhite, classes.logoSize)} alt="ioBroker" src="img/no-image.png" />
                 </a>
             </div>
@@ -446,66 +465,68 @@ class Drawer extends Component {
             if (!editList && !tab.visible) {
                 return null
             }
-            return <a onClick={event=>event.preventDefault()} href={`/#${tab.name}`} style={{ color: 'inherit', textDecoration: 'none' }} key={tab.name}>
-                <DragWrapper
-                    canDrag={editList}
-                    iconJSX={!!tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <img alt="" className={classes.icon} src={tab.icon} />}
-                    _id={tab.name}
-                    selected={currentTab === tab.name}
-                    tab={tab}
+            return <DragWrapper
+                key={tab.name}
+                canDrag={editList}
+                name={tab.name}
+                iconJSX={!!tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <img alt="" className={classes.icon} src={tab.icon} />}
+                _id={tab.name}
+                selected={currentTab === tab.name}
+                tab={tab}
+                compact={!this.isSwipeable() && state !== STATES.opened}
+                badgeContent={tab.name === 'tab-logs' ? logErrors || logWarnings : 0}
+                badgeColor={tab.name === 'tab-logs' ? logErrors ? 'error' : 'warn' : ''}
+                tabs={tabs}
+                setEndDrag={() => this.tabsEditSystemConfig()}
+                setTabs={newObj => this.setState({ tabs: newObj })}>
+                <DrawerItem
+                    key={tab.name}
+                    editList={editList}
+                    visible={tab.visible}
+                    editListFunc={() => this.tabsEditSystemConfig(idx)}
                     compact={!this.isSwipeable() && state !== STATES.opened}
-                    badgeContent={tab.name === 'tab-logs' ? logErrors || logWarnings : 0}
-                    badgeColor={tab.name === 'tab-logs' ? logErrors ? 'error' : 'warn' : ''}
-                    tabs={tabs}
-                    setEndDrag={() => this.tabsEditSystemConfig()}
-                    setTabs={newObj => this.setState({ tabs: newObj })}>
-                    <DrawerItem
-                        key={tab.name}
-                        editList={editList}
-                        visible={tab.visible}
-                        editListFunc={() => this.tabsEditSystemConfig(idx)}
-                        compact={!this.isSwipeable() && state !== STATES.opened}
-                        onClick={e => {
-                            if (e.ctrlKey || e.shiftKey) {
-                                CustomTab.getHref(this.props.instancesWorker, tab.name, this.props.hostname, this.props.protocol, this.props.port,  this.props.hosts,  this.props.adminInstance)
-                                    .then(href => {
-                                        if (href) {
-                                            console.log(href);
-                                            // Open in new tab
-                                            window.open(`${window.location.protocol}//${window.location.host}/${href}`, tab.name).focus();
-                                        } else {
-                                            handleNavigation(tab.name);
-                                        }
-                                    });
-                            } else {
-                                handleNavigation(tab.name);
-                            }
-                        }}
-                        icon={!!tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <img alt="" className={classes.icon} src={tab.icon} />}
-                        text={tab.title}
-                        selected={currentTab === tab.name}
-                        badgeContent={this.badge(tab).content}
-                        badgeColor={this.badge(tab).color}
-                    />
-                </DragWrapper>
-            </a>;
+                    onClick={e => {
+                        if (e.ctrlKey || e.shiftKey) {
+                            CustomTab.getHref(this.props.instancesWorker, tab.name, this.props.hostname, this.props.protocol, this.props.port, this.props.hosts, this.props.adminInstance)
+                                .then(href => {
+                                    if (href) {
+                                        console.log(href);
+                                        // Open in new tab
+                                        window.open(`${window.location.protocol}//${window.location.host}/${href}`, tab.name).focus();
+                                    } else {
+                                        handleNavigation(tab.name);
+                                    }
+                                });
+                        } else {
+                            handleNavigation(tab.name);
+                        }
+                    }}
+                    icon={!!tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <img alt="" className={classes.icon} src={tab.icon} />}
+                    text={tab.title}
+                    selected={currentTab === tab.name}
+                    badgeContent={this.badge(tab).content}
+                    badgeColor={this.badge(tab).color}
+                    badgeAdditionalContent={this.badge(tab)?.additionalContent}
+                    badgeAdditionalColor={this.badge(tab)?.additionalColor}
+                />
+            </DragWrapper>;
         });
     }
 
     badge = tab => {
         switch (tab.name) {
             case 'tab-logs':
-                const {logErrors, logWarnings} = this.state;
+                const { logErrors, logWarnings } = this.state;
                 return { content: logErrors || logWarnings || 0, color: (logErrors ? 'error' : 'warn') || '' };
 
             case 'tab-adapters':
                 return { content: this.state.adaptersUpdate || 0, color: 'primary' };
 
             case 'tab-hosts':
-                return { content: this.state.hostsUpdate || 0, color: 'primary' };
+                return { content: this.state.hostsUpdate || 0, color: 'primary', additionalContent: this.state.hostError, additionalColor: 'error' };
 
             default:
-                return { content: 0, color: '' };
+                return { content: 0, color: '', additionalContent: 0, additionalColor: '' };
         }
     }
 

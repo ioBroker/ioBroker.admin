@@ -147,8 +147,45 @@ const styles = theme => ({
         height: 24,
         display: 'flex',
         alignItems: 'center'
-    }
-});
+    },
+    '@media screen and (max-width: 450px)': {
+        row: {
+            '& > *': {
+                fontSize: 8
+            }
+        },
+        source: {
+            width: 120
+        },
+        pid: {
+            width: 40
+        },
+        timestamp: {
+            width: 100
+        },
+        severity: {
+            width: 61,
+        },
+        message: {
+            minWidth: 150
+        },
+        formControl: {
+            '& > *': {
+                fontSize: '10px !important'
+            }
+        },
+        header: {
+            '& > *': {
+                fontSize: '10px !important'
+            }
+        },
+        messageText: {
+            '& > *': {
+                fontSize: '10px !important'
+            }
+        }
+    },
+});//row
 
 // Number prototype is read only, properties should not be added
 function padding2(num) {
@@ -192,8 +229,8 @@ class Logs extends Component {
         this.severities = {
             'silly': 0,
             'debug': 1,
-            'info':  2,
-            'warn':  3,
+            'info': 2,
+            'warn': 3,
             'error': 4
         };
 
@@ -297,41 +334,41 @@ class Logs extends Component {
     clearLog() {
         this.props.logsWorker && this.props.logsWorker.clearLines();
         this.props.clearErrors();
-        this.setState({logs: []});
+        this.setState({ logs: [], logSize: null });
     }
 
     handleMessageChange(event) {
-        this.setState({message: event.target.value});
+        this.setState({ message: event.target.value });
     }
 
     handleSourceChange(event) {
-        this.setState({source: event.target.value});
+        this.setState({ source: event.target.value });
     }
 
     handleSeverityChange(event) {
-        this.setState({severity: event.target.value});
+        this.setState({ severity: event.target.value });
     }
 
     openLogDownload(event) {
-        this.setState({logDownloadDialog: event.currentTarget});
+        this.setState({ logDownloadDialog: event.currentTarget });
     }
 
     closeLogDownload() {
-        this.setState({logDownloadDialog: null});
+        this.setState({ logDownloadDialog: null });
     }
 
     openLogDelete() {
-        this.setState({logDeleteDialog: true});
+        this.setState({ logDeleteDialog: true });
     }
 
     closeLogDelete() {
-        this.setState({logDeleteDialog: false});
+        this.setState({ logDeleteDialog: false });
     }
 
     handleLogDelete() {
         this.props.socket.delLogs(this.props.currentHost)
             .then(() => this.clearLog())
-            .then(() => this.readLogs(true,  null, () => this.closeLogDelete()))
+            .then(() => this.readLogs(true, null, () => this.closeLogDelete()))
             .catch(error => {
                 this.closeLogDelete();
                 window.alert(error);
@@ -339,7 +376,7 @@ class Logs extends Component {
     }
 
     handleLogPause() {
-        this.setState({pause: this.state.pause ? 0 : this.state.logs.length});
+        this.setState({ pause: this.state.pause ? 0 : this.state.logs.length });
     }
 
     openTab(path) {
@@ -359,7 +396,7 @@ class Logs extends Component {
                     this.closeLogDownload();
                 }}
             >
-                { entry.name}
+                {entry.name}
                 <Typography
                     className={classes.downloadLogSize}
                     variant="caption"
@@ -615,6 +652,7 @@ class Logs extends Component {
                                 <TableCell className={classes.message}>
                                     <FormControl className={classes.formControl}>
                                         <TextField
+                                            className={classes.messageText}
                                             label={this.t('Message')}
                                             onChange={event => this.handleMessageChange(event)}
                                         />

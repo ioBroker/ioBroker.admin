@@ -74,16 +74,12 @@ class ObjectBrowserEditRole extends Component {
                 <Autocomplete
                     freeSolo
                     options={this.props.roles}
-                    //getOptionLabel={option => option.title}
                     style={{ width: '100%' }}
-                    // autoSelect
                     value={this.state.role}
-                    // inputValue={this.state.role}
                     onChange={(event, role) => this.setState({ role, roleInput: role })}
                     onInputChange={(event, role) => this.setState({ roleInput: role })}
                     renderInput={params => <TextField
                         {...params}
-                        value={this.state.role2}
                         label={this.props.t('Role')}
                         variant="outlined"
                     />}
