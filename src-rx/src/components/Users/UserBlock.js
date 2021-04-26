@@ -1,3 +1,4 @@
+import {useRef} from 'react';
 import {  DragPreviewImage, useDrag } from 'react-dnd';
 import Color from 'color';
 import Typography from '@material-ui/core/Typography';
@@ -12,23 +13,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 function UserBlock(props) {
-    const [{ isDragging }, dragRef, preview] = useDrag(
-        {
-            type: 'user',
-            item: {userId: props.user._id},
-            end: (item, monitor) => {
-                const dropResult = monitor.getDropResult();
-                if (item && dropResult) {
-                    props.addUserToGroup(item.userId, dropResult.groupId);
-                }
-            },
-            collect: (monitor) => ({
-                isDragging: monitor.isDragging(),
-                handlerId: monitor.getHandlerId(),
-            }),
-        }
-    );
-    const opacity = isDragging ? 0.4 : 1; 
+    const opacity = props.isDragging ? 0.4 : 1; 
 
     let textColor = !props.user ||  !props.user.common || !props.user.common.color || Color(props.user.common.color).hsl().object().l > 50 ? '#000000' : '#FFFFFF';
     if (!props.user.common.color) {
@@ -40,9 +25,9 @@ function UserBlock(props) {
         style.backgroundColor = props.user.common.color;
     }
     return <>
-    <DragPreviewImage connect={preview}/>
-    <Card   ref={dragRef}
-        style={ style } 
+    {/* <DragPreviewImage connect={preview}/> */}
+    <Card
+        style={ style }
         className={props.classes.userGroupCard2} 
        
         
@@ -151,4 +136,29 @@ function UserBlock(props) {
     </>
 }
 
-export default UserBlock;
+const UserBlockDrag = (props) => {
+    const widthRef = useRef();
+    const [{ isDragging }, dragRef, preview] = useDrag(
+        {
+            type: 'user',
+            item: () => {return {userId: props.user._id, preview: <div style={{width: widthRef.current.offsetWidth}}><UserBlock {...props}/></div>}},
+            end: (item, monitor) => {
+                const dropResult = monitor.getDropResult();
+                if (item && dropResult) {
+                    props.addUserToGroup(item.userId, dropResult.groupId);
+                }
+            },
+            collect: (monitor) => ({
+                isDragging: monitor.isDragging(),
+                handlerId: monitor.getHandlerId(),
+            }),
+        }
+    );
+    return <div ref={dragRef}>
+        <div ref={widthRef}>
+            <UserBlock isDragging={isDragging} widthRef={widthRef} {...props}/>
+        </div>
+    </div>
+}
+
+export default UserBlockDrag;
