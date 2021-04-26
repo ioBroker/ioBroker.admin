@@ -256,8 +256,8 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
                             {message[name].description[I18n.getLanguage()]}
                         </div>
                         <div>
-                            {Object.keys(message[name].instances).map((nameInst) => {
-                                const currentInstance = instances.find(el => el._id === nameInst);
+                            {message[name].instances ? Object.keys(message[name].instances).map(nameInst => {
+                                const currentInstance = instances[nameInst];
                                 let icon = 'img/no-image.png';
                                 if (currentInstance) {
                                     icon = currentInstance.common.icon ? `adapter/${currentInstance.common.name}/${currentInstance.common.icon}` : 'img/no-image.png';
@@ -280,8 +280,7 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
                                             </Typography>)}
                                     </AccordionDetails>
                                 </Accordion>
-                            }
-                            )}
+                            }) : null}
                         </div>
                         <div className={classes.button}>
                             <Button

@@ -516,8 +516,8 @@ class App extends Router {
                                     5000);
 
                                 setTimeout(() =>
-                                        this.socket.getNotifications(newState.currentHost)
-                                            .then(notifications => this.getAdaptersWarning(notifications, this.socket, newState.currentHost)),
+                                        this.hostsWorker.getNotifications(newState.currentHost)
+                                            .then(notifications => this.showAdaptersWarning(notifications, this.socket, newState.currentHost)),
                                     3000);
                             }
                         });
@@ -545,20 +545,27 @@ class App extends Router {
         });
     }
 
-    getAdaptersWarning = async ({ result }, socket, currentHost) => {
-        if (!result || !result.system) {
-            return;
+    showAdaptersWarning = (notifications, socket, host) => {
+        if (!notifications || !notifications[host] || !notifications[host].result) {
+            return Promise.resolve();
         }
-        if (Object.keys(result.system.categories).length) {
-            const instances = await socket.getAdapterInstances(false);
-            adaptersWarningDialogFunc(
-                result.system.categories,
-                this.state.systemConfig.common.dateFormat,
-                this.state.themeType,
-                this.state.themeName,
-                instances,
-                name => socket.clearNotifications(currentHost, name)
-            );
+
+        const result = notifications[host].result;
+
+        if (result && result.system && Object.keys(result.system.categories).length) {
+            return this.instancesWorker.getInstances()
+                .then(instances => {
+                    adaptersWarningDialogFunc(
+                        result.system.categories,
+                        this.state.systemConfig.common.dateFormat,
+                        this.state.themeType,
+                        this.state.themeName,
+                        instances,
+                        name => socket.clearNotifications(host, name)
+                    );
+                });
+        } else {
+            return Promise.resolve();
         }
     }
 
@@ -741,72 +748,6 @@ class App extends Router {
         document.title = title + ' - ' + (this.state.currentHostName || 'ioBroker');
     }
 
-    /*addEventMessage(id, stateOrObj, isMessage, isState) {
-        /* // cannot directly use tabs.events.add, because to init time not available.
-        tabs.events.add(id, stateOrObj, isMessage, isState));
-    }
-
-    saveConfig(attr, value) {
-        if (attr) {
-            const config = this.state.config.slice();
-            config[attr] = value;
-            this.setState({
-            config: config
-            })
-        }
-
-        if (typeof Storage !== 'undefined') {
-            Storage.setItem('adminConfig', JSON.stringify(this.state.config));
-        }
-    }
-
-    saveTabs() {
-        try {
-            this.socket.setObject('system.config', this.state.systemConfig);
-        } catch(error) {
-            this.showError(error);
-        }
-    }*/
-
-    /*getUser() {
-        if (!this.state.currentUser) {
-            this.socket.socket.emit('authEnabled', (auth, user) => {
-                const currentUser = 'system.user.' + user;
-                this.setState({
-                    currentUser: currentUser,
-                    authenticated: auth
-                });
-            });
-        } else if (this.state.objects[this.state.currentUser]) {
-            const obj = this.state.objects[this.state.currentUser];
-            let name = '';
-
-            if (!obj || !obj.common || !obj.common.name) {
-                name = this.state.currentUser.replace(/^system\.user\./);
-                name = name[0].toUpperCase() + name.substring(1).toLowerCase();
-            } else {
-                //name = translateName(obj.common.name);
-            }
-
-            if (obj && obj.common && obj.common.icon) {
-                const objs = {};
-                objs[this.state.currentUser] = obj;
-                //$('#current-user-icon').html(main.getIcon(main.currentUser, null, objs));
-            } else {
-                //$('#current-user-icon').html('<i className="large material-icons">account_circle</i>');
-            }
-            //$('#current-user').html(name);
-            const groups = [];
-            for (let i = 0; i < this.state.tabs.users.groups.length; i++) {
-                const group = this.state.objects[this.state.tabs.users.groups[i]];
-                if (group && group.common && group.common.members && group.common.members.indexOf(this.state.currentUser) !== -1) {
-                    //groups.push(_(translateName(group.common.name)));
-                }
-            }
-            //$('#current-group').html(groups.join(', '));
-        }
-    }*/
-
     getCurrentTab() {
         if (this.state && this.state.currentTab && this.state.currentTab.tab) {
             if (this.state.currentTab.tab === 'tab-adapters') {
@@ -952,29 +893,19 @@ class App extends Router {
             } else if (this.state.currentTab.tab === 'tab-hosts') {
                 return <Suspense fallback={<Connecting />}>
                     <Hosts
-                        menuPadding={this.state.drawerState === DrawerStates.closed ? 0 : (this.state.drawerState === DrawerStates.opened ? DRAWER_FULL_WIDTH : DRAWER_COMPACT_WIDTH)}
                         socket={this.socket}
                         lang={I18n.getLanguage()}
 
-                        protocol={this.state.protocol}
-                        hostname={this.state.hostname}
-                        port={this.state.port}
+                        hostsWorker={this.hostsWorker}
 
                         themeName={this.state.themeName}
-                        themeType={this.state.themeType}
-                        theme={this.state.theme}
                         expertMode={this.state.expertMode}
-                        idHost={this.state.hosts.find(({ common: { name } }) => name === this.state.currentHostName)._id}
-                        currentHostName={this.state.currentHostName}
                         t={I18n.t}
                         navigate={Router.doNavigate}
                         currentHost={this.state.currentHost}
-                        width={this.props.width}
-                        configStored={value => this.allStored(value)}
                         executeCommand={cmd => this.executeCommand(cmd)}
-                        inBackgroundCommand={this.state.commandError || this.state.performed}
                         systemConfig={this.state.systemConfig}
-                        getAdaptersWarning={this.getAdaptersWarning}
+                        showAdaptersWarning={this.showAdaptersWarning}
                     />
                 </Suspense>;
             } else {
@@ -1344,8 +1275,8 @@ class App extends Router {
                                         window.localStorage.setItem('App.currentHost', host);
 
                                         // read notifications from host
-                                        this.socket.getNotifications(host)
-                                            .then(notifications => this.getAdaptersWarning(notifications, this.socket, host));
+                                        this.hostsWorker.getNotifications(host)
+                                            .then(notifications => this.showAdaptersWarning(notifications, this.socket, host));
                                     });
                                 }}
                                 disabled={
@@ -1385,6 +1316,7 @@ class App extends Router {
                         onLogout={() => this.logout()}
                         currentTab={this.state.currentTab && this.state.currentTab.tab}
                         instancesWorker={this.instancesWorker}
+                        hostsWorker={this.hostsWorker}
                         logsWorker={this.logsWorker}
                         logoutTitle={I18n.t('Logout')}
                         isSecure={this.socket.isSecure}
@@ -1400,7 +1332,6 @@ class App extends Router {
                         port={this.state.port}
                         adminInstance={this.adminInstance}
 
-                        currentHost={this.state.currentHost}
                         hosts={this.state.hosts}
                         repository={this.state.repository}
                         installed={this.state.installed}

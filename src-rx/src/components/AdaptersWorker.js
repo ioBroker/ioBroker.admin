@@ -2,6 +2,7 @@ class AdaptersWorker {
     constructor(socket) {
         this.socket   = socket;
         this.handlers = [];
+        this.promise  = null;
 
         socket.registerConnectionHandler(this.connectionHandler);
         this.connected = this.socket.isConnected();
@@ -48,34 +49,32 @@ class AdaptersWorker {
 
     // be careful with this object. Do not change them.
     getAdapters(update) {
-        if (!this.objects) {
-            return this.socket.getAdapters(update)
-                .then(objects => {
-                    this.objects = {};
-                    objects.forEach(obj => this.objects[obj._id] = obj);
-                    return this.objects;
-                });
+        if (!update && this.promise) {
+            return this.promise;
         }
 
-        if (!update && this.objects) {
-            return Promise.resolve(this.objects);
-        }
-
-        return this.socket.getAdapters(update)
+        this.promise = this.socket.getAdapters(update)
             .then(objects => {
                 this.objects = {};
                 objects.forEach(obj => this.objects[obj._id] = obj);
                 return this.objects;
             })
             .catch(e => window.alert('Cannot get adapters: ' + e));
+
+        return this.promise;
     }
 
     connectionHandler = isConnected => {
         if (isConnected && !this.connected) {
             this.connected = true;
+
             if (this.handlers.length) {
                 this.socket.subscribeObject('system.adapter.*', this.objectChangeHandler)
                     .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
+
+                this.getAdapters(true)
+                    .then(adapters => Object.keys(adapters)
+                        .forEach(id => this.objectChangeHandler(id, adapters[id])));
             }
         } else if (!isConnected && this.connected) {
             this.connected = false;
@@ -101,16 +100,6 @@ class AdaptersWorker {
             this.socket.unsubscribeObject('system.adapter.*', this.objectChangeHandler)
                 .catch(e => window.alert(`Cannot unsubscribe on object: ${e}`));
         }
-    }
-
-    _readAdapters(update) {
-        return this.socket.getAdapters(update)
-            .then(objects => {
-                this.objects = {};
-                objects.forEach(obj => this.objects[obj._id] = obj);
-                this.handlers.forEach(cb => cb(objects.map(obj => ({ id: obj._id, obj, type: 'new' }))));
-            })
-            .catch(e => window.alert('Cannot get adapters: ' + e));
     }
 }
 

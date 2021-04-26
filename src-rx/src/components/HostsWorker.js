@@ -3,21 +3,14 @@ class HostsWorker {
         this.socket = socket;
         this.handlers = [];
         this.notificationsHandlers = [];
+        this.promise = null;
+        this.notificationPromises = {};
 
         socket.registerConnectionHandler(this.connectionHandler);
-
-        socket.subscribeObject('system.host.*', this.objectChangeHandler)
-            .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
 
         this.connected = this.socket.isConnected();
         this.objects = {};
     }
-
-    onNotificationHandler = (id, state) => {
-        const host = id.replace(/\.notifications\..+$/, '');
-        this.socket.getNotifications(host)
-            .then(notifications => this.notificationsHandlers.forEach(cb => cb(host, notifications)));
-    };
 
     objectChangeHandler = (id, obj) => {
         // if instance
@@ -47,66 +40,157 @@ class HostsWorker {
                     return;
                 }
             }
-            this.handlers.forEach(cb => cb(id, obj, type, oldObj));
+            this.handlers.forEach(cb => cb([{id, obj, type, oldObj}]));
         }
     }
 
-    getNotifications() {
-        
-    }
+    getHosts(update) {
+        if (!update && this.promise) {
+            return this.promise;
+        }
 
-    getHosts() {
-        return JSON.parse(JSON.stringify(this.objects));
+        this.promise = this.socket.getHosts(update)
+            .then(objects => {
+                this.objects = {};
+                objects.forEach(obj => this.objects[obj._id] = obj);
+                return this.objects;
+            })
+            .catch(e => window.alert('Cannot get hosts: ' + e));
+
+        return this.promise;
     }
 
     connectionHandler = isConnected => {
         if (isConnected && !this.connected) {
             this.connected = true;
-            this._readHosts(true);
+
+            if (this.handlers.length) {
+                this.socket.subscribeObject('system.host.*', this.objectChangeHandler)
+                    .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
+
+                // read all hosts anew and inform about it
+                this.getHosts(true)
+                    .then(hosts => Object.keys(hosts)
+                        .forEach(id => this.objectChangeHandler(id, hosts[id])));
+            }
         } else if (!isConnected && this.connected) {
             this.connected = false;
         }
     }
 
     registerHandler(cb) {
-        this.handlers.includes(cb) && this.handlers.push(cb);
-    }
+        if (!this.handlers.includes(cb)) {
+            this.handlers.push(cb);
 
-    registerNotificationHanlder(cb) {
-        if (!this.notificationsHandlers.includes(cb)) {
-            this.notificationsHandlers.push(cb);
-            if (this.notificationsHandlers.length === 1) {
-                this.socket.subscribeState('system.host.*.notifications.*', this.onNotificationHandler);                    
+            if (this.handlers.length === 1 && this.connected) {
+                this.socket.subscribeObject('system.host.*', this.objectChangeHandler)
+                    .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
             }
         }
     }
 
     unregisterHandler(cb) {
         const pos = this.handlers.indexOf(cb);
-        pos !== -1 && this.handlers.splice(pos, 1);
-    }
-
-    unregisterNotificationHandler(cb) {
-        const pos = this.notificationHandlers.indexOf(cb);
         if (pos !== -1) {
-            this.notificationHandlers.splice(pos, 1);
-            if (!this.notificationHandlers.length) {
-                this.socket.unsubscribeState('system.host.*.notifications.*', this.onNotificationHandler);
+            this.handlers.splice(pos, 1);
+            if (!this.handlers.length && this.connected) {
+                this.socket.unsubscribeObject('system.host.*', this.objectChangeHandler)
+                    .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
             }
         }
     }
 
-    forceUpdate() {
-        return this._readHosts(true);
+    onNotificationHandler = (id, state) => {
+        const host = id.replace(/\.notifications\..+$/, '');
+
+        // ignore subscribe events
+        if (!this.subscribeTs || Date.now() - this.subscribeTs > 500) {
+            this.notificationPromises[host] = this.socket.getNotifications(host)
+                .then(notifications => this.notificationsHandlers.forEach(cb => cb({[host]: notifications})));
+        }
+    };
+
+    getNotifications(host, update) {
+        if (host) {
+            if (!update && this.notificationPromises[host]) {
+                return this.notificationPromises[host];
+            }
+
+            this.notificationPromises[host] = this.socket.getState(host + '.alive')
+                .then(state => {
+                    if (state && state.val) {
+                        return this.socket.getNotifications(host)
+                            .then(notifications => ({[host]: notifications}))
+                            .catch(e => {
+                                console.warn(`Cannot read notifications from "${host}": ${e}`);
+                                return {[host]: null};
+                            });
+                    } else {
+                        return {[host]: null};
+                    }
+                });
+
+            return this.notificationPromises[host];
+        } else {
+            return this.getHosts(update)
+                .then(hosts => {
+                    const ids = Object.keys(hosts);
+                    const promises = []
+
+                    for (let i = 0; i < ids.length; i++) {
+                        (host => {
+                            if (!update && this.notificationPromises[host]) {
+                                return this.notificationPromises[host];
+                            }
+
+                            this.notificationPromises[host] = this.socket.getState(host + '.alive')
+                                .then(state => {
+                                    if (state && state.val) {
+                                        return this.socket.getNotifications(host)
+                                            .then(notifications => ({[host]: notifications}))
+                                            .catch(e => {
+                                                console.warn(`Cannot read notifications from "${host}": ${e}`);
+                                                return {[host]: null};
+                                            });
+                                    } else {
+                                        return {[host]: null};
+                                    }
+                                });
+
+                            promises.push(this.notificationPromises[host]);
+                        })(ids[i]);
+                    }
+
+                    return Promise.all(promises)
+                        .then(pResults => {
+                            const result = {}
+                            pResults.forEach(r => Object.assign(result, r));
+                            return result;
+                        });
+                });
+        }
     }
 
-    _readHosts(update) {
-        return this.socket.getHosts(update)
-            .then(objects => {
-                this.objects = {};
-                objects.forEach(obj => this.objects[obj._id] = obj);
-                this.handlers.forEach(cb => cb(objects));
-            });
+    registerNotificationHandler(cb) {
+        if (!this.notificationsHandlers.includes(cb)) {
+            this.notificationsHandlers.push(cb);
+
+            if (this.notificationsHandlers.length === 1 && this.connected) {
+                this.subscribeTs = Date.now();
+                this.socket.subscribeState('system.host.*.notifications.*', this.onNotificationHandler);
+            }
+        }
+    }
+
+    unregisterNotificationHandler(cb) {
+        const pos = this.notificationsHandlers.indexOf(cb);
+
+        if (pos !== -1) {
+            this.notificationsHandlers.splice(pos, 1);
+            if (!this.notificationsHandlers.length && this.connected) {
+                this.socket.unsubscribeState('system.host.*.notifications.*', this.onNotificationHandler);
+            }
+        }
     }
 }
 
