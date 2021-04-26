@@ -105,8 +105,15 @@ class HostsWorker {
 
         // ignore subscribe events
         if (!this.subscribeTs || Date.now() - this.subscribeTs > 500) {
-            this.notificationPromises[host] = this.socket.getNotifications(host)
-                .then(notifications => this.notificationsHandlers.forEach(cb => cb({[host]: notifications})));
+            this.notificationTimer && clearTimeout(this.notificationTimer);
+
+            this.notificationTimer = setTimeout(host => {
+                this.notificationTimer = null;
+                this.notificationPromises[host] = this._getNotificationsFromHots(host, true);
+
+                this.notificationPromises[host].then(notifications =>
+                    this.notificationsHandlers.forEach(cb => cb(notifications)));
+            }, 300, host);
         }
     };
 

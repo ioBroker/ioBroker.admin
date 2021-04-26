@@ -381,13 +381,13 @@ const HostRow = ({
 
     useEffect(() => {
         const notificationHandler = notifications =>
-            notifications && setErrorHost({notifications: notifications[_id], count: calculateWarning(notifications[_id])});
+            notifications && notifications[_id] && setErrorHost({notifications: notifications[_id], count: calculateWarning(notifications[_id])});
 
         hostsWorker.registerNotificationHandler(notificationHandler);
 
         hostsWorker.getNotifications(_id)
             .then(notifications => {
-                notifications && setErrorHost({notifications: notifications[_id], count: calculateWarning(notifications[_id])});
+                notifications && notifications[_id] && setErrorHost({notifications: notifications[_id], count: calculateWarning(notifications[_id])});
             });
 
         socket.subscribeState(`${_id}.inputCount`, eventsInputFunc);
