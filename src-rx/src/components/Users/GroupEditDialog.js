@@ -82,7 +82,7 @@ function GroupEditDialog(props) {
 
     const name2Id = name =>
         name.replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_').toLowerCase();
-    
+
     const changeShortId = (_id, short) => {
         let idArray = _id.split('.');
         idArray[idArray.length-1] = short;
@@ -98,18 +98,20 @@ function GroupEditDialog(props) {
             canSave = false;
         }
     }
-    
-    let description = props.group.common.description[ props.lang ]
+
+    let description = props.group.common.description && typeof props.group.common.description === 'object'
         ?
-        props.group.common.description[ props.lang ]
+        props.group.common.description[props.lang] || props.group.common.description.en || ''
         :
-        props.group.common.description;
-    let name = props.group.common.name[ props.lang ]
+        props.group.common.description || '';
+
+    let name = props.group.common.name && typeof props.group.common.name === 'object'
         ?
-        props.group.common.name[ props.lang ]
+        props.group.common.name[ props.lang ] || props.group.common.name.end || ''
         :
-        props.group.common.name;
-    let mainTab = <Grid  container spacing={4} className={props.classes.dialog}>
+        props.group.common.name || '';
+
+    let mainTab = <Grid container spacing={4} className={props.classes.dialog}>
         <Grid item xs={12} md={6}>
             <IOTextField
                 label="Name"

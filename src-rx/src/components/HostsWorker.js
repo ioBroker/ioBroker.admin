@@ -110,60 +110,40 @@ class HostsWorker {
         }
     };
 
+    _getNotificationsFromHots(host, update) {
+        if (!update && this.notificationPromises[host]) {
+            return this.notificationPromises[host];
+        }
+
+        this.notificationPromises[host] = this.socket.getState(host + '.alive')
+            .then(state => {
+                if (state && state.val) {
+                    return this.socket.getNotifications(host)
+                        .then(notifications => ({[host]: notifications}))
+                        .catch(e => {
+                            console.warn(`Cannot read notifications from "${host}": ${e}`);
+                            return {[host]: null};
+                        });
+                } else {
+                    return {[host]: null};
+                }
+            });
+
+        return this.notificationPromises[host];
+    }
+
     getNotifications(host, update) {
         if (host) {
-            if (!update && this.notificationPromises[host]) {
-                return this.notificationPromises[host];
-            }
-
-            this.notificationPromises[host] = this.socket.getState(host + '.alive')
-                .then(state => {
-                    if (state && state.val) {
-                        return this.socket.getNotifications(host)
-                            .then(notifications => ({[host]: notifications}))
-                            .catch(e => {
-                                console.warn(`Cannot read notifications from "${host}": ${e}`);
-                                return {[host]: null};
-                            });
-                    } else {
-                        return {[host]: null};
-                    }
-                });
-
-            return this.notificationPromises[host];
+            return this._getNotificationsFromHots(host, update);
         } else {
             return this.getHosts(update)
                 .then(hosts => {
-                    const ids = Object.keys(hosts);
-                    const promises = []
-
-                    for (let i = 0; i < ids.length; i++) {
-                        (host => {
-                            if (!update && this.notificationPromises[host]) {
-                                return this.notificationPromises[host];
-                            }
-
-                            this.notificationPromises[host] = this.socket.getState(host + '.alive')
-                                .then(state => {
-                                    if (state && state.val) {
-                                        return this.socket.getNotifications(host)
-                                            .then(notifications => ({[host]: notifications}))
-                                            .catch(e => {
-                                                console.warn(`Cannot read notifications from "${host}": ${e}`);
-                                                return {[host]: null};
-                                            });
-                                    } else {
-                                        return {[host]: null};
-                                    }
-                                });
-
-                            promises.push(this.notificationPromises[host]);
-                        })(ids[i]);
-                    }
+                    const promises = Object.keys(hosts)
+                        .map(host => this._getNotificationsFromHots(host, update));
 
                     return Promise.all(promises)
                         .then(pResults => {
-                            const result = {}
+                            const result = {};
                             pResults.forEach(r => Object.assign(result, r));
                             return result;
                         });
