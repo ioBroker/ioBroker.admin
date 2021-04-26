@@ -25,7 +25,16 @@ import GroupAddIcon from '@material-ui/icons/GroupAdd';
 
 const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, .2)';
 const styles = theme => ({
-   
+    mainGridCont:
+    {
+        height: "calc(100% - 55px)"
+    },
+    childGridCont:
+    {
+        height: '100%', 
+        display: "flex",
+        flexDirection: "column"
+    },
     canDrop:{
         backgroundColor:theme.palette.background.default
     } ,
@@ -34,7 +43,7 @@ const styles = theme => ({
     },
     blocksContainer: {
         overflowY: 'auto',
-        height: '100%'
+        overflowX: 'hidden'      
     },
     userGroupCard2: {
         border: '1px solid #FFF',
@@ -56,9 +65,10 @@ const styles = theme => ({
         backgroundColor: theme.palette.success.light
     },
     permHeaders: {
-        backgroundColor: theme.palette.primary.main,
+        backgroundColor: theme.palette.type === 'dark' ? theme.palette.background.default : theme.palette.primary.main,
         padding: 4,
-        borderRadius: 2
+        borderRadius: 2,
+        color:"#EEE"
     },
     userCardContent:
     {
@@ -428,12 +438,12 @@ class UsersList extends Component {
         }
         return <>
             <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
-                {isTouchDevice() ? <DndPreview /> : null}
+                <DndPreview />
                 <div className={this.props.classes.descriptionPanel}>
                     {this.props.t('You can drag users to groups.')}
                 </div>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} md={6}>
+                <Grid container spacing={2} className={this.props.classes.mainGridCont}>
+                    <Grid item xs={12} md={6} className={this.props.classes.childGridCont}>
                         <div className={this.props.classes.headContainer}>
                             <Fab 
                                 size="small" 
@@ -459,7 +469,7 @@ class UsersList extends Component {
                         }
                         </div>
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={6} className={this.props.classes.childGridCont}>
                         <div className={this.props.classes.headContainer}>
                             <Fab 
                                 size="small" 
@@ -476,7 +486,7 @@ class UsersList extends Component {
                                 {this.props.t('Users')}
                             </Typography>
                         </div>
-                        <div className={this.props.blocksContainer}>
+                        <div className={this.props.classes.blocksContainer}>
                         {
                             this.state.users.map(user => <UserBlock 
                                 user={user} 

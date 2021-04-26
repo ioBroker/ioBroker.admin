@@ -13,7 +13,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 function UserBlock(props) {
-    const opacity = props.isDragging ? 0.4 : 1; 
+    const opacity = props.isDragging ? 0 : 1; 
 
     let textColor = !props.user ||  !props.user.common || !props.user.common.color || Color(props.user.common.color).hsl().object().l > 50 ? '#000000' : '#FFFFFF';
     if (!props.user.common.color) {
@@ -154,7 +154,7 @@ const UserBlockDrag = (props) => {
             }),
         }
     );
-    return <div ref={dragRef}>
+    return <div ref={dragRef} className="sss">
         <div ref={widthRef}>
             <UserBlock isDragging={isDragging} widthRef={widthRef} {...props}/>
         </div>
