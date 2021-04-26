@@ -1,5 +1,6 @@
-import {useRef} from 'react';
+import {useRef, useEffect} from 'react';
 import {  DragPreviewImage, useDrag } from 'react-dnd';
+import { getEmptyImage } from 'react-dnd-html5-backend';
 import Color from 'color';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
@@ -154,6 +155,10 @@ const UserBlockDrag = (props) => {
             }),
         }
     );
+    useEffect(() => {
+        preview(getEmptyImage(), { captureDraggingState: true });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
     return <div ref={dragRef}>
         <div ref={widthRef}>
             <UserBlock isDragging={isDragging} widthRef={widthRef} {...props}/>
