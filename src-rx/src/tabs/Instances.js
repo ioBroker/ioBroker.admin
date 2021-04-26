@@ -228,6 +228,7 @@ class Instances extends Component {
         await this.props.instancesWorker.registerHandler(this.getInstances);
         await this.getData();
         await this.getHostsData();
+        await this.getInstances();
     }
 
     async componentWillUnmount() {
@@ -263,8 +264,10 @@ class Instances extends Component {
         const start = Date.now();
         let instances = [];
         let instancesWorker = await this.props.instancesWorker.getInstances();
+
         Object.keys(instancesWorker).forEach(el =>
             instances.push(instancesWorker[el]));
+
         let memRssId = `system.host.${this.props.currentHostName}.memRss`;
         this.states[memRssId] = this.states[memRssId] || (await this.props.socket.getState(memRssId));
 

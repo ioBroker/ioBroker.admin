@@ -1,16 +1,21 @@
+import { createRef } from 'react';
 import PropTypes from 'prop-types';
 import { lighten, withStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 
 import FormHelperText from '@material-ui/core/FormHelperText';
+import { IconButton, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, TextField, Toolbar, Tooltip, Typography } from '@material-ui/core';
+
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
+import CloseIcon from '@material-ui/icons/Close';
+import UpIcon from '@material-ui/icons/ArrowUpward';
+import DownIcon from '@material-ui/icons/ArrowDownward';
+
+import I18n from '@iobroker/adapter-react/i18n';
+
 import ConfigGeneric from './ConfigGeneric';
 import ConfigPanel from './ConfigPanel';
-import CloseIcon from '@material-ui/icons/Close';
-import { IconButton, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, TextField, Toolbar, Tooltip, Typography } from '@material-ui/core';
-import clsx from 'clsx';
-import { createRef } from 'react';
-import I18n from '@iobroker/adapter-react/i18n';
 
 const styles = theme => ({
     fullWidth: {
@@ -69,6 +74,13 @@ const styles = theme => ({
         padding: 10,
         display: 'flex',
         textAlign: 'center'
+    },
+    buttonEmpty: {
+        width: 30,
+        display: 'inline-block'
+    },
+    buttonCell: {
+        whiteSpace: 'nowrap',
     }
 });
 
@@ -133,11 +145,19 @@ class ConfigTable extends ConfigGeneric {
             value = objectToArray(value, this.props.schema.objKeyName, this.props.schema.objValueName);
         }
 
-        this.setState({ value, visibleValue: value, orderBy: value.length ? Object.keys(value[0])[0] : '', order: 'asc' });
+        const visibleValue = value.map((_, i) => i);
+
+        this.setState({ value, visibleValue, orderBy: /*this.props.schema.items.length ? this.props.schema.items[0].attr : */'', order: 'asc' });
+    }
+
+    componentWillUnmount() {
+        this.typingTimer && clearTimeout(this.typingTimer)
+        this.typingTimer = null;
+        super.componentWillUnmount();
     }
 
     itemTable(attrItem, data, idx) {
-        const { value, systemConfig, visibleValue } = this.state;
+        const { value, systemConfig } = this.state;
         const { schema } = this.props;
         const schemaFind = schema.items.find(el => el.attr === attrItem);
 
@@ -167,12 +187,9 @@ class ConfigTable extends ConfigGeneric {
             customs={this.props.customs}
             onChange={(attr, valueChange) => {
                 const newObj = JSON.parse(JSON.stringify(value));
-                const newVisibleValue = JSON.parse(JSON.stringify(visibleValue));
                 newObj[idx][attr] = valueChange;
-                newVisibleValue[idx][attr] = valueChange;
-                this.setState({ value: newObj, visibleValue: newVisibleValue }, () =>
+                this.setState({ value: newObj }, () =>
                     this.onChangeWrapper(newObj,true));
-
             }}
             onError={(error, attr) => this.onError(error, attr)}
         />;
@@ -191,16 +208,19 @@ class ConfigTable extends ConfigGeneric {
 
     static getComparator(order, orderBy) {
         return order === 'desc'
-            ? (a, b) => ConfigTable.descendingComparator(a, b, orderBy)
+            ? (a, b) =>  ConfigTable.descendingComparator(a, b, orderBy)
             : (a, b) => -ConfigTable.descendingComparator(a, b, orderBy);
     }
 
     handleRequestSort = (property, orderCheck = false) => {
         const { order, orderBy } = this.state;
-        const isAsc = orderBy === property && order === 'asc';
-        const newOrder = orderCheck ? order : isAsc ? 'desc' : 'asc';
-        const newValue = this.stableSort(newOrder, property);
-        this.setState({ order: newOrder, orderBy: property, visibleValue: newValue });
+        if (orderBy) {
+            const isAsc = orderBy === property && order === 'asc';
+            const newOrder = orderCheck ? order : (isAsc ? 'desc' : 'asc');
+            const newValue = this.stableSort(newOrder, property);
+            this.setState({ order: newOrder, orderBy: property }, () =>
+                this.applyFilter(false, newValue));
+        }
     }
 
     stableSort = (order, orderBy) => {
@@ -220,7 +240,7 @@ class ConfigTable extends ConfigGeneric {
         return stabilizedThis.map(el => el[0]);
     }
 
-    enhancedTableHead() {
+    enhancedTableHead(buttonsWidth) {
         const { schema, classes } = this.props;
         const { order, orderBy } = this.state;
         return <TableHead>
@@ -242,7 +262,7 @@ class ConfigTable extends ConfigGeneric {
                             {headCell.filter ?
                                 <TextField
                                     ref={this.filterRefs[headCell.attr]}
-                                    onChange={(el) => this.onFilter()}
+                                    onChange={el => this.applyFilter()}
                                     InputProps={{
                                         endAdornment: (
                                             this.filterRefs[headCell.attr]?.current?.children[0]?.children[0]?.value && <InputAdornment position="end">
@@ -250,7 +270,7 @@ class ConfigTable extends ConfigGeneric {
                                                     size="small"
                                                     onClick={(e) => {
                                                         this.filterRefs[headCell.attr].current.children[0].children[0].value = '';
-                                                        this.onFilter()
+                                                        this.applyFilter();
                                                     }}
                                                 >
                                                     <CloseIcon />
@@ -262,7 +282,7 @@ class ConfigTable extends ConfigGeneric {
                         </div>
                     </TableCell>
                 ))}
-                {!schema.noDelete && <TableCell style={{ paddingLeft: 20 }} padding="checkbox">
+                {!schema.noDelete && <TableCell style={{ paddingLeft: 20, width: buttonsWidth }} padding="checkbox">
                     <IconButton disabled size="small">
                         <DeleteIcon />
                     </IconButton>
@@ -273,21 +293,22 @@ class ConfigTable extends ConfigGeneric {
 
     onDelete = index =>
         () => {
-            const { value, orderBy } = this.state;
-            const newObj = JSON.parse(JSON.stringify(value));
-            newObj.splice(index, 1);
-            this.setState({ value: newObj }, () => {
-                this.onChangeWrapper(newObj);
-                this.onFilter(false, newObj);
-                this.handleRequestSort(orderBy, true);
-            });
+            const newValue = JSON.parse(JSON.stringify(this.state.value));
+            const visibleValue = JSON.parse(JSON.stringify(this.state.visibleValue));
+            newValue.splice(index, 1);
+            const pos = visibleValue.indexOf(index);
+            if (pos !== -1) {
+                visibleValue.splice(pos, 1);
+            }
+
+            this.setState({ value: newValue, visibleValue }, () =>
+                this.onChangeWrapper(newValue));
         };
 
     onChangeWrapper = (newValue, updateVisible = false) => {
-        const { orderBy } = this.state;
         this.typingTimer && clearTimeout(this.typingTimer);
 
-        this.typingTimer = setTimeout(value => {
+        this.typingTimer = setTimeout((value, updateVisible) => {
             this.typingTimer = null;
 
             if (this.props.schema.objKeyName) {
@@ -298,48 +319,78 @@ class ConfigTable extends ConfigGeneric {
             }
 
             if (updateVisible) {
-                this.onFilter(false, value);
-                this.handleRequestSort(orderBy, true);
+                this.applyFilter(false, value);
+                this.handleRequestSort(this.state.orderBy, true);
             }
-        }, 300, newValue);
+        }, 300, newValue, updateVisible);
     }
 
     onAdd = () => {
         const { schema } = this.props;
-        const { value, orderBy } = this.state;
-        const newObj = JSON.parse(JSON.stringify(value));
-        const newEl = schema.items.reduce((accumulator, currentValue) => {
-            accumulator[currentValue.attr] = null;
+        const newValue = JSON.parse(JSON.stringify(this.state.value));
+        const visibleValue = JSON.parse(JSON.stringify(this.state.visibleValue));
+
+        const newItem = schema.items.reduce((accumulator, currentValue) => {
+            accumulator[currentValue.attr] = currentValue.default === undefined ? null : currentValue.default;
             return accumulator;
         }, {});
-        newObj.push(newEl);
-        this.setState({ value: newObj }, () => {
-            this.onFilter(false, newObj);
-            this.handleRequestSort(orderBy, true);
-        });
-        this.onChangeWrapper(newObj);
 
+        newValue.push(newItem);
+        visibleValue.push(newValue.length - 1);
+
+        this.setState({ value: newValue, visibleValue }, () =>
+            this.onChangeWrapper(newValue));
     }
 
-    onFilter = (clear = false, value = this.state.value) => {
-        let newValue = JSON.parse(JSON.stringify(value));
-        Object.keys(this.filterRefs).forEach(key => {
-            const valueInputRef = this.filterRefs[key].current.children[0].children[0].value;
+    isAnyFilterSet() {
+        return Object.keys(this.filterRefs).find(attr => this.filterRefs[attr].current?.children[0].children[0].value);
+    }
+
+    applyFilter = (clear = false, value = this.state.value) => {
+        let visibleValue = value.map((_, i) => i);
+        Object.keys(this.filterRefs).forEach(attr => {
+            let valueInputRef = this.filterRefs[attr].current.children[0].children[0].value;
             if (!clear && valueInputRef) {
-                newValue = newValue.filter(el => el[key]?.toLowerCase().includes(valueInputRef?.toLowerCase()));
+                valueInputRef = valueInputRef.toLowerCase();
+                visibleValue = visibleValue.filter(idx => value[idx] && value[idx][attr] && value[idx][attr].toLowerCase().includes(valueInputRef));
             } else {
-                this.filterRefs[key].current.children[0].children[0].value = '';
+                this.filterRefs[attr].current.children[0].children[0].value = '';
             }
         });
-        this.setState({ visibleValue: newValue })
+
+        if (JSON.stringify(visibleValue) !== JSON.stringify(this.state.visibleValue)) {
+            this.setState({ visibleValue });
+        }
+    }
+
+    onMoveUp(idx) {
+        const value = JSON.parse(JSON.stringify(this.state.value));
+        const item = value[idx];
+        value.splice(idx, 1);
+        value.splice(idx - 1, 0, item);
+        this.setState({ value }, () =>
+            this.onChangeWrapper(value));
+    }
+
+    onMoveDown(idx) {
+        const value = JSON.parse(JSON.stringify(this.state.value));
+        const item = value[idx];
+        value.splice(idx, 1);
+        value.splice(idx + 1, 0, item);
+        this.setState({ value }, () =>
+            this.onChangeWrapper(value));
     }
 
     renderItem(error, disabled, defaultValue) {
         const { classes, schema } = this.props;
         const { value, visibleValue } = this.state;
+
         if (!value) {
             return null;
         }
+
+        const doAnyFilterSet = this.isAnyFilterSet();
+
         return <Paper className={classes.paper}>
             <div className={classes.addIcon}>
                 {schema.label ? <Toolbar
@@ -350,33 +401,38 @@ class ConfigTable extends ConfigGeneric {
                         {this.getText(schema.label)}
                     </Typography>
                 </Toolbar> : null}
-                <Tooltip title={I18n.t('Add row')}>
+                {!schema.noDelete && !doAnyFilterSet ? <Tooltip title={I18n.t('Add row')}>
                     <IconButton onClick={this.onAdd}>
                         <AddIcon />
                     </IconButton>
-                </Tooltip>
+                </Tooltip> : null}
             </div>
             <TableContainer>
-                <Table
-                    className={classes.table}
-                    aria-labelledby="tableTitle"
-                    size="small"
-                    aria-label="enhanced table"
-                >
-                    {this.enhancedTableHead()}
+                <Table className={classes.table} size="small">
+                    {this.enhancedTableHead(!doAnyFilterSet && !this.state.orderBy ? 120 : 64)}
                     <TableBody>
-                        {visibleValue.map((keys, idx) =>
+                        {visibleValue.map((idx, i) =>
                             <TableRow
                                 hover
                                 key={idx}
                             >
-                                {Object.keys(keys).map(attr =>
-                                    <TableCell key={attr + idx} align="left">
-                                        {this.itemTable(attr, keys, idx)}
+                                {schema.items.map(headCell =>
+                                    <TableCell key={headCell.attr + idx} align="left">
+                                        {this.itemTable(headCell.attr, value[idx], idx)}
                                     </TableCell>
                                 )}
-                                {!schema.noDelete && <TableCell align="left">
-                                    <Tooltip title={I18n.t('Remove current row')}>
+                                {!schema.noDelete && <TableCell align="left" className={classes.buttonCell}>
+                                    {!doAnyFilterSet && !this.state.orderBy ? (i ? <Tooltip title={I18n.t('Move up')}>
+                                        <IconButton size="small" onClick={() => this.onMoveUp(idx)}>
+                                            <UpIcon />
+                                        </IconButton>
+                                    </Tooltip> : <div className={classes.buttonEmpty}/> ) : null}
+                                    {!doAnyFilterSet && !this.state.orderBy ? (i < visibleValue.length - 1 ? <Tooltip title={I18n.t('Move down')}>
+                                        <IconButton size="small" onClick={() => this.onMoveDown(idx)}>
+                                            <DownIcon />
+                                        </IconButton>
+                                    </Tooltip> : <div className={classes.buttonEmpty}/> ) : null}
+                                    <Tooltip title={I18n.t('Delete current row')}>
                                         <IconButton size="small" onClick={this.onDelete(idx)}>
                                             <DeleteIcon />
                                         </IconButton>
@@ -391,7 +447,7 @@ class ConfigTable extends ConfigGeneric {
                             {I18n.t('All items are filtered out')}
                             <IconButton
                                 size="small"
-                                onClick={(e) => this.onFilter(true)}
+                                onClick={e => this.applyFilter(true)}
                             >
                                 <CloseIcon />
                             </IconButton>

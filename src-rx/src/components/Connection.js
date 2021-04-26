@@ -1499,6 +1499,7 @@ class Connection {
      * @param {string} host
      * @param {any} [args]
      * @param {boolean} [update] Force update.
+     * @param {number} [timeoutMs] timeout in ms.
      * @returns {Promise<any>}
      */
     getRepository(host, args, update, timeoutMs) {
@@ -1549,7 +1550,7 @@ class Connection {
      * @param {boolean} [update] Force update.
      * @returns {Promise<any>}
      */
-    getInstalled(host, update) {
+    getInstalled(host, update, cmdTimeout) {
         if (Connection.isWeb()) {
             return Promise.reject('Allowed only in admin');
         }
@@ -1571,7 +1572,7 @@ class Connection {
                     timeout = null;
                     reject('getInstalled timeout');
                 }
-            }, this.props.cmdTimeout);
+            }, cmdTimeout || this.props.cmdTimeout);
 
             this._socket.emit('sendToHost', host, 'getInstalled', null, data => {
                 if (timeout) {

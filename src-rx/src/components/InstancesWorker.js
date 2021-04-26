@@ -1,19 +1,11 @@
 class InstancesWorker {
     constructor(socket) {
-        this.socket = socket;
+        this.socket   = socket;
         this.handlers = [];
-        this.resolve = null;
-        this.promise = new Promise(resolve => this.resolve = resolve);
 
         socket.registerConnectionHandler(this.connectionHandler);
 
-        socket.subscribeObject('system.adapter.*', this.objectChangeHandler)
-            .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
-
         this.connected = this.socket.isConnected();
-
-        // read instances
-        this.connected && this._readInstances();
 
         this.objects = null;
     }
@@ -57,31 +49,15 @@ class InstancesWorker {
 
     // be careful with this object. Do not change them.
     getInstances(update) {
-        if (!this.objects) {
-            this.promise = this.promise ||
-                new Promise(resolve => this.resolve = resolve);
-
-            return this.promise;
-        }
-
         if (!update && this.objects) {
             return Promise.resolve(this.objects);
         }
-
-        if (update && this.objects) {
-            this.resolve = null;
-            this.promise = null;
-        }
-
-        this.promise = this.promise ||
-            new Promise(resolve => this.resolve = resolve);
 
         return this.socket.getAdapterInstances(update)
             .then(objects => {
                 this.objects = {};
                 objects.forEach(obj => this.objects[obj._id] = obj);
-                this.resolve(this.objects);
-                this.resolve = null;
+                return this.objects;
             })
             .catch(e => window.alert('Cannot get adapter instances: ' + e));
     }
@@ -89,7 +65,7 @@ class InstancesWorker {
     connectionHandler = isConnected => {
         if (isConnected && !this.connected) {
             this.connected = true;
-            this._readInstances(true);
+            this.getInstances(true);
         } else if (!isConnected && this.connected) {
             this.connected = false;
         }
@@ -98,23 +74,25 @@ class InstancesWorker {
     registerHandler(cb) {
         if (!this.handlers.includes(cb)) {
             this.handlers.push(cb);
-            this._readInstances(true);
+
+            if (this.handlers.length === 1) {
+                return this.socket.subscribeObject('system.adapter.*', this.objectChangeHandler)
+                    .then(() => this.getInstances())
+                    .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
+            }
         }
+
+        return Promise.resolve();
     }
 
     unregisterHandler(cb) {
         const pos = this.handlers.indexOf(cb);
         pos !== -1 && this.handlers.splice(pos, 1);
-    }
 
-    _readInstances(update) {
-        return this.socket.getAdapterInstances(update)
-            .then(objects => {
-                this.objects = {};
-                objects.forEach(obj => this.objects[obj._id] = obj);
-                this.handlers.forEach(cb => cb(objects.map(obj => ({ id: obj._id, obj, type: 'new' }))));
-            })
-            .catch(e => window.alert('Cannot get adapter instances: ' + e));
+        if (!this.handlers.length) {
+            this.socket.unsubscribeObject('system.adapter.*', this.objectChangeHandler)
+                .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
+        }
     }
 }
 

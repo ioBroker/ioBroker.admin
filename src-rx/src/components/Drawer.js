@@ -232,7 +232,7 @@ class Drawer extends Component {
     }
 
     componentDidMount() {
-        this.props.instancesWorker.registerHandler(this.instanceChangedHandler);
+        this.props.instancesWorker.registerHandler(this.instanceChangedHandler, true);
 
         this.props.socket.getNotifications(this.props.currentHost)
             .then(notifications => this.getAdaptersWarning(notifications));
