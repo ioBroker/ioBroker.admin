@@ -482,7 +482,7 @@ class App extends Router {
 
                                 this.subscribeOnHostsStatus();
 
-                                newState.expertMode = window.sessionStorage.getItem('App.expertMode') === 'true' || !!newState.systemConfig.common.expertMode;
+                                newState.expertMode = window.sessionStorage.getItem('App.expertMode') ? window.sessionStorage.getItem('App.expertMode') === 'true' : !!newState.systemConfig.common.expertMode;
 
                                 // Read user and show him
                                 if (this.socket.isSecure) {
@@ -974,6 +974,7 @@ class App extends Router {
                         executeCommand={cmd => this.executeCommand(cmd)}
                         inBackgroundCommand={this.state.commandError || this.state.performed}
                         systemConfig={this.state.systemConfig}
+                        getAdaptersWarning={this.getAdaptersWarning}
                     />
                 </Suspense>;
             } else {
@@ -1042,6 +1043,12 @@ class App extends Router {
             showAlert={(message, type) => this.showAlert(message, type)}
             socket={this.socket}
             currentTab={this.state.currentTab}
+            expertModeFunc={(value) => {
+                window.sessionStorage.removeItem('App.expertMode');
+                const systemConfig = JSON.parse(JSON.stringify(this.state.systemConfig));
+                systemConfig.common.expertMode = value;
+                this.setState({ expertMode: value, systemConfig });
+            }}
             t={I18n.t}
         />;
     }
@@ -1393,6 +1400,7 @@ class App extends Router {
                         port={this.state.port}
                         adminInstance={this.adminInstance}
 
+                        currentHost={this.state.currentHost}
                         hosts={this.state.hosts}
                         repository={this.state.repository}
                         installed={this.state.installed}
