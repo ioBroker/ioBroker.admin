@@ -93,7 +93,7 @@ class ConfigAutocompleteSendTo extends ConfigGeneric {
                 this.setState({value: val}, () => this.onChange(this.props.attr, val));
             }}
             options={options}
-            getOptionLabel={option => option.label}
+            getOptionLabel={option => option.name}
             renderInput={params => <TextField
                 {...params}
                 error={!!error}

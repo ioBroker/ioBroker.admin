@@ -100,7 +100,8 @@ class RatingDialog extends Component {
             return <div style={{ width: '100%' }}>
                 <h3 className={this.props.classes.listTitle}>{this.props.t('Comments')}</h3>
                 <List classes={{ root: this.props.classes.list }} dense disablePadding>
-                    {this.state.votings.comments.map(comment => <ListItem
+                    {this.state.votings.comments.map((comment, i) => <ListItem
+                        key={i}
                         title={comment.uuid ? this.props.t('Your comment') : ''}
                         classes={{ root: comment.uuid ? this.props.classes.listOwn : undefined }} dense>
                         <ListItemAvatar classes={{ root: this.props.classes.listRating }}>

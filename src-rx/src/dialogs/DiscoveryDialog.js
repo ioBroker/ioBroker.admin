@@ -14,8 +14,6 @@ import I18n from '@iobroker/adapter-react/i18n';
 
 import theme from '@iobroker/adapter-react/Theme';
 
-
-
 let node = null;
 
 const useStyles = makeStyles((theme) => ({
@@ -258,6 +256,9 @@ const DiscoveryDialog = ({ themeType, themeName, socket }) => {
         let dataArray = Object.keys(checkboxChecked).filter(key=>checkboxChecked[key]);
         const resultList = await socket.sendTo('system.adapter.discovery.0', 'browse', dataArray);
         setDisableScanner(false);
+        if(resultList.error){
+            alert(resultList.error)
+        }
         console.log(resultList)
 
     }

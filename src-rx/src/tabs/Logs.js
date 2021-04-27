@@ -612,7 +612,7 @@ class Logs extends Component {
                     title={this.state.estimatedSize ? this.props.t('Estimated size') : ''}
                     className={classes.logSize}
                 >
-                    {this.t('Log size:')} <span className={this.state.estimatedSize && classes.logEstimated}>{this.state.logSize === null ? '-' : Utils.formatBytes(this.state.logSize)}</span>
+                    {this.t('Log size:')} <span className={this.state.estimatedSize ? classes.logEstimated : ''}>{this.state.logSize === null ? '-' : Utils.formatBytes(this.state.logSize)}</span>
                 </Typography>
             </TabHeader>
             <TabContent>
