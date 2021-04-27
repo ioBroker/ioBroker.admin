@@ -55,6 +55,7 @@ import LogsWorker from './components/LogsWorker';
 import InstancesWorker from './components/InstancesWorker';
 import HostsWorker from './components/HostsWorker';
 import AdaptersWorker from './components/AdaptersWorker';
+import { discoveryDialogFunc } from './dialogs/DiscoveryDialog';
 
 // Tabs
 const Adapters = React.lazy(() => import('./tabs/Adapters'));
@@ -357,6 +358,8 @@ class App extends Router {
                 commandError: false,
                 performed: false,
                 commandRunning: false,
+
+                discoveryAlive: false
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -505,6 +508,8 @@ class App extends Router {
                                 this.setState(newState, () =>
                                     this.setCurrentTabTitle());
 
+                                this.socket.subscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
+
                                 // Give some time for communication
                                 setTimeout(() =>
                                     this.logsWorkerChanged(this.state.currentHost), 1000);
@@ -528,6 +533,18 @@ class App extends Router {
                 }
             });
         }
+    }
+
+    onDiscoveryAlive = (name, value) => {
+        if (value) {
+            this.setState({ discoveryAlive: value.val });
+        }
+    }
+
+    openDiscoveryModal = () => {
+        discoveryDialogFunc(
+            this.state.themeType,
+            this.state.themeName,this.socket)
     }
 
     findNewsInstance = () => {
@@ -618,6 +635,7 @@ class App extends Router {
 
     componentWillUnmount() {
         window.removeEventListener('hashchange', this.onHashChanged, false);
+        this.socket.unsubscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
         // unsubscribe
         // this.state.hosts.forEach
         // this.socket.unsubscribeState(id + '.alive', this.onHostStatusChanged);
@@ -1222,11 +1240,11 @@ class App extends Router {
                             <MenuIcon />
                         </IconButton>
                         <div className={classes.wrapperButtons}>
-                            <Tooltip title={I18n.t('Discovery devices')}>
-                                <IconButton>
+                            {this.state.discoveryAlive && <Tooltip title={I18n.t('Discovery devices')}>
+                                <IconButton onClick={this.openDiscoveryModal}>
                                     <VisibilityIcon />
                                 </IconButton>
-                            </Tooltip>
+                            </Tooltip>}
                             <Tooltip title={I18n.t('System settings')}>
                                 <IconButton onClick={() => Router.doNavigate(null, 'system')}>
                                     <BuildIcon />

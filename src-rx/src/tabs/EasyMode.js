@@ -110,7 +110,6 @@ class EasyMode extends Component {
 
         const tab = location.id;
         const currentInstance = configs.find(({ id }) => id === tab);
-        console.log(getLocation())
         return <Paper className={classes.wrapperEasyMode}>
             <AppBar
                 color="default"
