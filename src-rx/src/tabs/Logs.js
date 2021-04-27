@@ -30,6 +30,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import PauseIcon from '@material-ui/icons/Pause';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import ClearIcon from '@material-ui/icons/Close';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 
 import amber from '@material-ui/core/colors/amber';
@@ -655,6 +656,17 @@ class Logs extends Component {
                                             className={classes.messageText}
                                             label={this.t('Message')}
                                             onChange={event => this.handleMessageChange(event)}
+                                            value={this.state.message}
+                                            InputProps={{
+                                                endAdornment:
+                                                    this.state.message ? <IconButton
+                                                        size="small"
+                                                        onClick={e => {
+                                                            this.setState({ message: '' });
+                                                        }}>
+                                                        <ClearIcon />
+                                                    </IconButton> : null,
+                                            }}
                                         />
                                     </FormControl>
                                 </TableCell>

@@ -7,7 +7,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Rating from '@material-ui/lab/Rating';
-import {Button, TextField} from '@material-ui/core';
+import { Button, TextField } from '@material-ui/core';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -17,32 +17,34 @@ import VoteIcon from '@material-ui/icons/HowToVote';
 import CloseIcon from '@material-ui/icons/Close';
 
 const styles = theme => ({
-    buttonIcon: {
-        marginRight: theme.spacing(1),
-    },
-    rating: {
-        marginBottom: 20,
-    },
-    listRating: {
-        marginRight: theme.spacing(1),
-    },
-    listTime: {
-        opacity: 0.5,
-        fontStyle: 'italic',
-    },
-    list: {
-        //maxHeight: 200,
-    },
-    listOwn: {
-        backgroundColor: theme.palette.secondary.dark
-    },
-    listTitle: {
-        backgroundColor: theme.palette.primary.dark,
-        paddingTop: 4,
-        paddingBottom: 4,
-        marginBottom: 4
+        buttonIcon: {
+            marginRight: theme.spacing(1),
+        },
+        rating: {
+            marginBottom: 20,
+        },
+        listRating: {
+            marginRight: theme.spacing(1),
+        },
+        listTime: {
+            opacity: 0.5,
+            fontStyle: 'italic',
+        },
+        list: {
+            //maxHeight: 200,
+        },
+        listOwn: {
+            backgroundColor: theme.name === 'colored' || theme.name === 'light' ? '#16516e2e' : theme.palette.secondary.dark
+        },
+        listTitle: {
+            backgroundColor: theme.palette.primary.dark,
+            paddingTop: 4,
+            paddingBottom: 4,
+            marginBottom: 4,
+            color: '#ffffff'
+        }
     }
-});
+);
 
 class RatingDialog extends Component {
     constructor(props) {
@@ -66,9 +68,9 @@ class RatingDialog extends Component {
                 votings.comments && votings.comments.sort((a, b) => a.ts > b.ts ? -1 : (a.ts < b.ts ? 1 : 0));
                 if (versions.length) {
                     const item = votings.rating[versions[0]];
-                    this.setState({votings, ratingNumber: item ? item.r : 0});
+                    this.setState({ votings, ratingNumber: item ? item.r : 0 });
                 } else {
-                    this.setState({votings});
+                    this.setState({ votings });
                 }
             });
     }
@@ -95,19 +97,19 @@ class RatingDialog extends Component {
 
     renderComments() {
         if (this.state.votings?.comments) {
-            return <div style={{width: '100%'}}>
+            return <div style={{ width: '100%' }}>
                 <h3 className={this.props.classes.listTitle}>{this.props.t('Comments')}</h3>
-                <List classes={{root: this.props.classes.list}} dense disablePadding>
+                <List classes={{ root: this.props.classes.list }} dense disablePadding>
                     {this.state.votings.comments.map(comment => <ListItem
                         title={comment.uuid ? this.props.t('Your comment') : ''}
-                        classes={{root: comment.uuid ? this.props.classes.listOwn : undefined }} dense>
-                        <ListItemAvatar classes={{root: this.props.classes.listRating}}>
-                            <Rating readOnly defaultValue={comment.rating} size="small"/>
+                        classes={{ root: comment.uuid ? this.props.classes.listOwn : undefined }} dense>
+                        <ListItemAvatar classes={{ root: this.props.classes.listRating }}>
+                            <Rating readOnly defaultValue={comment.rating} size="small" />
                         </ListItemAvatar>
                         <ListItemText
                             primary={comment.comment}
                             secondary={new Date(comment.ts).toLocaleString() + ' / v' + comment.version}
-                            classes={{secondary: this.props.classes.listTime}}
+                            classes={{ secondary: this.props.classes.listTime }}
                         />
                     </ListItem>)}
                 </List>
@@ -143,17 +145,17 @@ class RatingDialog extends Component {
                     onChange={(event, newValue) =>
                         this.setState({ ratingNumber: newValue })}
                 />
-                <br/>
+                <br />
                 <TextField
                     fullWidth
                     value={this.state.ratingComment}
                     label={this.props.t('Comment to version')}
-                    inputProps={{maxLength: 200}}
+                    inputProps={{ maxLength: 200 }}
                     helperText={this.props.t('Max length %s characters', 200)}
                     onChange={e =>
-                        this.setState({ratingComment: e.target.value})}
+                        this.setState({ ratingComment: e.target.value })}
                 />
-                <div style={{paddingTop: 20, paddingBottom: 16}}>{this.props.t('Rate how good this version of the adapter works on your system. You can vote for every new version.')}</div>
+                <div style={{ paddingTop: 20, paddingBottom: 16 }}>{this.props.t('Rate how good this version of the adapter works on your system. You can vote for every new version.')}</div>
 
                 {versions && item ? <div>{this.props.t('You voted for %s on %s', versions[0], new Date(item.ts).toLocaleDateString())}</div> : null}
                 {this.renderComments()}
@@ -173,13 +175,13 @@ class RatingDialog extends Component {
                         }
                     }}
                 >
-                    <VoteIcon className={this.props.classes.buttonIcon}/>{this.props.t('Rate')}
+                    <VoteIcon className={this.props.classes.buttonIcon} />{this.props.t('Rate')}
                 </Button>
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
                     color="default">
-                    <CloseIcon className={this.props.classes.buttonIcon}/>{this.props.t('Close')}
+                    <CloseIcon className={this.props.classes.buttonIcon} />{this.props.t('Close')}
                 </Button>
             </DialogActions>
         </Dialog>;
@@ -187,8 +189,8 @@ class RatingDialog extends Component {
 }
 
 RatingDialog.propTypes = {
-    t:       PropTypes.func.isRequired,
-    uuid:    PropTypes.string.isRequired,
+    t: PropTypes.func.isRequired,
+    uuid: PropTypes.string.isRequired,
     version: PropTypes.string.isRequired,
     adapter: PropTypes.string.isRequired,
     onClose: PropTypes.func.isRequired,

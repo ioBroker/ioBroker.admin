@@ -27,7 +27,7 @@ const styles = theme => ({
         height: '100%',
         overflowY: 'auto',
     },
-    controlHeigth:{
+    controlHeigth: {
         display: 'flex',
         flexFlow: 'wrap',
         justifyContent: 'center'
@@ -101,6 +101,7 @@ class EasyMode extends Component {
             isFloatComma,
             dateFormat,
             configStored,
+            getLocation,
         } = this.props;
         const { configs, strictMode } = this.state;
         if (!configs) {
@@ -109,6 +110,7 @@ class EasyMode extends Component {
 
         const tab = location.id;
         const currentInstance = configs.find(({ id }) => id === tab);
+        console.log(getLocation())
         return <Paper className={classes.wrapperEasyMode}>
             <AppBar
                 color="default"
@@ -117,11 +119,11 @@ class EasyMode extends Component {
             >
                 <Toolbar className={classes.toolBar}>
                     <div className={classes.wrapperHeader}>
-                        <CardMedia onClick={strictMode ? () => navigate('tab-intro') : null} className={clsx(classes.img, themeName === 'colored' && classes.logoWhite, strictMode && classes.logoPointer)} component="img" image={'img/no-image.png'} />
+                        <CardMedia onClick={strictMode && !getLocation().dialog ? () => navigate('tab-intro') : null} className={clsx(classes.img, themeName === 'colored' && classes.logoWhite, strictMode && !getLocation().dialog && classes.logoPointer)} component="img" image={'img/no-image.png'} />
                         <div className={classes.headerName}>{t('Easy Admin')}</div>
                     </div>
                     <div className={classes.IconButtons}>
-                        {strictMode && <IconButton onClick={() => navigate('tab-intro')}>
+                        {strictMode && !getLocation().dialog && <IconButton onClick={() => navigate('tab-intro')}>
                             <ArrowBackIcon />
                         </IconButton>}
                         <ToggleThemeMenu t={t} toggleTheme={toggleTheme} themeName={themeName} />
@@ -151,10 +153,10 @@ class EasyMode extends Component {
                 </Paper> :
                 <div className={classes.wrapperCard}>
                     <div className={classes.controlHeigth}>
-                    {configs
-                        .sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
-                        .map(el => <EasyModeCard key={el.id} navigate={() => navigate(null, 'config', el.id)} {...el} />)}
-                        </div>
+                        {configs
+                            .sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
+                            .map(el => <EasyModeCard key={el.id} navigate={() => navigate(null, 'config', el.id)} {...el} />)}
+                    </div>
                 </div>}
         </Paper>;
     }
