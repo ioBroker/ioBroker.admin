@@ -16,6 +16,7 @@
 
 ## Settings
 - Show dialog, that RESTART only works on debian systems: https://github.com/ioBroker/ioBroker.admin/issues/754
+- By changing of redis<=>file, show dialog that it must be done via CLI because no datapoints/objects will be converted
   
 ## Info
 
@@ -63,9 +64,6 @@
 
 ## Users
 
-## Easy mode
-- Back button for tabs
-
 ## After all is done
 - Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io) (BF)
 
@@ -77,4 +75,3 @@
 - On Custom-Mass-Edit: When more than 10 data points are edited show a dialog to inform use about that mass edit and let him decide to do it or not: "The changes will be applied to %1 states. Are you sure?"
 - time - time picker
 - date - date picker
-- accordion as special panel (https://github.com/ioBroker/ioBroker.admin/issues/752)

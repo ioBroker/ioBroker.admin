@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.9",
+        "version": "5.0.10",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -15,6 +15,18 @@
             "zh-cn": "Admin"
         },
         "news": {
+            "5.0.10": {
+                "en": "Admin5: Implemented the language filter and selector for rating with comments",
+                "de": "Admin5: Der Sprachfilter und die Auswahl für die Bewertung mit Kommentaren wurden implementiert",
+                "ru": "Admin5: Реализован языковой фильтр и селектор для оценки с комментариями.",
+                "pt": "Admin5: Implementado o filtro de idioma e seletor para classificação com comentários",
+                "nl": "Admin5: Implementeerde het taalfilter en de selector voor beoordeling met opmerkingen",
+                "fr": "Admin5: implémentation du filtre de langue et du sélecteur pour l'évaluation avec des commentaires",
+                "it": "Admin5: implementato il filtro della lingua e il selettore per la valutazione con commenti",
+                "es": "Admin5: implementó el filtro de idioma y el selector para calificar con comentarios",
+                "pl": "Admin5: Zaimplementowano filtr i selektor języka do oceny z komentarzami",
+                "zh-cn": "Admin5：实现了语言过滤器和选择器，以对评论进行评分"
+            },
             "5.0.9": {
                 "en": "Admin5: Fixed many bugs",
                 "de": "Admin5: Viele Fehler behoben",

@@ -19,7 +19,6 @@ import Select from '@material-ui/core/Select';
 
 import VoteIcon from '@material-ui/icons/HowToVote';
 import CloseIcon from '@material-ui/icons/Close';
-import {FcComments} from "react-icons/all";
 
 const styles = theme => ({
     buttonIcon: {

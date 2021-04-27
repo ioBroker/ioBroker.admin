@@ -3611,17 +3611,39 @@ class ObjectBrowser extends Component {
         item.data.obj?.user && newValueTitle.push(this.texts.objectChangedBy + ' ' + item.data.obj.user.replace(/^system\.user\./, ''));
         item.data.obj?.ts && newValueTitle.push(this.texts.objectChangedByUser + ' ' + Utils.formatDate(new Date(item.data.obj.ts), this.props.dateFormat));
 
-        // TODO: id could be an object with {read: id, write: id}
         const alias = id.startsWith('alias.') && item.data.obj?.common?.alias?.id ?
-            <div
-                onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    this.onSelect(item.data.obj.common.alias.id);
-                    setTimeout(() => this.scrollToItem(item.data.obj.common.alias.id), 200);
-                }}
-                className={classes.cellIdAlias}
-            >→{item.data.obj?.common?.alias?.id}</div> : null;
+            (typeof item.data.obj.common.alias.id === 'object' ?
+                <div>
+                    {item.data.obj.common.alias.id.read ? <div
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        this.onSelect(item.data.obj.common.alias.id.read);
+                        setTimeout(() => this.scrollToItem(item.data.obj.common.alias.id.read), 200);
+                    }}
+                    className={classes.cellIdAlias}
+                    >←{item.data.obj.common.alias.id.read}</div> : null}
+                    {item.data.obj.common.alias.id.write ? <div
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            this.onSelect(item.data.obj.common.alias.id.write);
+                            setTimeout(() => this.scrollToItem(item.data.obj.common.alias.id.write), 200);
+                        }}
+                        className={classes.cellIdAlias}
+                    >→{item.data.obj.common.alias.id.write}</div> : null}
+                </div>
+                :
+                <div
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        this.onSelect(item.data.obj.common.alias.id);
+                        setTimeout(() => this.scrollToItem(item.data.obj.common.alias.id), 200);
+                    }}
+                    className={classes.cellIdAlias}
+                >→{item.data.obj.common.alias.id}</div>
+            ) : null;
 
         let checkColor = item.data?.obj?.common?.color;
         let invertBackground = 'none';
