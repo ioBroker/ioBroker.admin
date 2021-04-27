@@ -151,7 +151,7 @@
           "newLine": true,
           "type": "staticLink",
           "href": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md#lets-encrypt-certificates",
-          "text": "Read about Let's Encrypt certificates",
+          "label": "Read about Let's Encrypt certificates",
           "style": {
             "fontSize": 16,
             "marginBottom": 20
@@ -239,7 +239,7 @@
       "items": {
         "_text1": {
           "type": "staticText",
-          "text": {
+          "label": {
             "en": "There is a option to allow access to the specific configuration pages of selected instances."
           }
         },
@@ -282,46 +282,60 @@
           "type": "divider",
           "sm": 12
         },
-        "myTable": {
+        "_accordion": {
           "newLine": true,
           "sm": 12,
-          "noDelete": false,
-          "type": "table1",
-          "items": [
-            {
-              "type": "text",
-              "attr": "ip",
-              "width": 100,
-              "title": "IP",
-              "filter": true,
-              "sort": true
+          "type": "panel",
+          "collapsable": true,
+          "label": "Table",
+          "color": "secondary",
+          "style": {
+            "backgroundColor": "red"
+          },
+          "items": {
+            "myTable": {
+              "newLine": true,
+              "sm": 12,
+              "noDelete": false,
+              "type": "table",
+              "items": [
+                {
+                  "type": "text",
+                  "attr": "ip",
+                  "width": 100,
+                  "title": "IP",
+                  "filter": true,
+                  "sort": true
+                },
+                {
+                  "type": "number",
+                  "attr": "delay",
+                  "width": "100%",
+                  "title": "Delay",
+                  "filter": false,
+                  "sort": true
+                },
+                {
+                  "type": "checkbox",
+                  "attr": "enabled",
+                  "width": 50,
+                  "title": "Active",
+                  "filter": false,
+                  "sort": false
+                }
+              ]
             },
-            {
-              "type": "number",
-              "attr": "delay",
-              "width": "100%",
-              "title": "Delay",
-              "filter": false,
-              "sort": true
-            },
-            {
-              "type": "checkbox",
-              "attr": "enabled",
-              "width": 50,
-              "title": "Active",
-              "filter": false,
-              "sort": false
+            "myInstance": {
+              "newLine": true,
+              "sm": 6,
+              "type": "instance",
+              "adapter": "history",
+              "label": "History"
             }
-          ]
-        },
-        "myInstance": {
-          "newLine": true,
-          "sm": 6,
-          "type": "instance",
-          "adapter": "history",
-          "label": "History"
+          }
         },
         "myObjectId": {
+          "newLine": true,
           "type": "objectId",
           "sm": 6,
           "label": "Object ID"

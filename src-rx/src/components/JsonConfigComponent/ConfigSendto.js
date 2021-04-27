@@ -15,7 +15,6 @@ import IconError from '@material-ui/icons/Error';
 import IconInfo from '@material-ui/icons/Info';
 import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 
-
 const styles = theme => ({
     fullWidth: {
         width: '100%'

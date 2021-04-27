@@ -40,7 +40,7 @@ class ConfigInstanceSelect extends ConfigGeneric {
 
         const item = this.state.selectOptions?.find(item => item.value === this.state.value);
 
-        return <FormControl className={this.props.classes.fullWidth}>
+        return <FormControl className={this.props.classes.fullWidth} key={this.props.attr}>
             <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel>
             <Select
                 error={!!error}
@@ -57,7 +57,7 @@ class ConfigInstanceSelect extends ConfigGeneric {
                         this.getText(item.label, true)
                     }</MenuItem>)}
             </Select>
-            {this.props.schema.help ? <FormHelperText>{this.getText(this.props.schema.help)}</FormHelperText> : null}
+            {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </FormControl>;
     }
 }

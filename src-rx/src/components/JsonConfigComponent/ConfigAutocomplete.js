@@ -41,9 +41,9 @@ class ConfigAutocomplete extends ConfigGeneric {
         if (isIndeterminate) {
             [...this.state.value]
                 .filter(val => !options.find(it => it.value === val))
-                .forEach(item => options.push({name: item.toString(), value: item}));
+                .forEach(item => options.push({label: item.toString(), value: item}));
 
-            item = {name: ConfigGeneric.DIFFERENT_LABEL, value: ConfigGeneric.DIFFERENT_VALUE};
+            item = {label: ConfigGeneric.DIFFERENT_LABEL, value: ConfigGeneric.DIFFERENT_VALUE};
             options.unshift(item);
         } else {
             // eslint-disable-next-line
@@ -65,13 +65,13 @@ class ConfigAutocomplete extends ConfigGeneric {
                 this.setState({value: val}, () => this.onChange(this.props.attr, val));
             }}
             options={options}
-            getOptionLabel={option => option.name}
+            getOptionLabel={option => option.label}
             renderInput={params => <TextField
                 {...params}
                 error={!!error}
                 placeholder={this.getText(this.props.schema.placeholder)}
                 label={this.getText(this.props.schema.label)}
-                helperText={this.getText(this.props.schema.help)}
+                helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
                 disabled={!!disabled}
             />}
         />;

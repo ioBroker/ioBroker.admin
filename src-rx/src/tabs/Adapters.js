@@ -752,6 +752,7 @@ class Adapters extends Component {
         if (this.state.showSetRating) {
             return <RatingDialog
                 t={this.t}
+                lang={this.props.lang}
                 version={this.state.showSetRating.version}
                 adapter={this.state.showSetRating.adapter}
                 repository={this.state.repository}

@@ -222,6 +222,14 @@ class ConfigGeneric extends Component {
         return this.getText(this.props.schema.label) || this.getText(this.props.schema.text)
     }
 
+    renderHelp(text, link, noTranslation) {
+        if (!link) {
+            return this.getText(text, noTranslation) || '';
+        } else {
+            return <a href={link} target="_blank" rel="noreferrer">{this.getText(text, noTranslation)}</a>;
+        }
+    }
+
     getPattern(pattern) {
         if (!pattern) {
             return '';

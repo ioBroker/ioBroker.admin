@@ -61,7 +61,7 @@ class ConfigIP extends ConfigGeneric {
                 {this.state.ips?.map((item, i) =>
                     <MenuItem key={i} value={item.address}>{item.name}</MenuItem>)}
             </Select>
-            {this.props.schema.help ? <FormHelperText>{this.getText(this.props.schema.help)}</FormHelperText> : null}
+            {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </FormControl>;
     }
 }

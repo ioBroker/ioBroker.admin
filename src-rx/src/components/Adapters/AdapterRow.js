@@ -15,6 +15,7 @@ import {
     Tooltip,
     Typography
 } from '@material-ui/core';
+import { Rating } from '@material-ui/lab';
 
 import AddIcon from '@material-ui/icons/Add';
 import AddToPhotosIcon from '@material-ui/icons/AddToPhotos';
@@ -32,7 +33,6 @@ import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import RemoveIcon from '@material-ui/icons/Remove';
 import sentryIcon from '../../assets/sentry.svg';
-import { Rating } from '@material-ui/lab';
 
 import {
     amber,
@@ -40,6 +40,7 @@ import {
     green,
     red
 } from '@material-ui/core/colors';
+
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 
 

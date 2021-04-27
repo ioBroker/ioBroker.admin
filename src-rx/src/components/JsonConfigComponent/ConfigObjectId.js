@@ -50,7 +50,7 @@ class ConfigObjectId extends ConfigGeneric {
                     disabled={disabled}
                     placeholder={this.getText(schema.placeholder)}
                     label={this.getText(schema.label)}
-                    helperText={this.getText(schema.help)}
+                    helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
                     onChange={e => {
                         const value = e.target.value;
                         this.setState({ value }, () =>
@@ -78,7 +78,7 @@ class ConfigObjectId extends ConfigGeneric {
                     this.setState({ showSelectId: false, value }, () =>
                         this.onChange(attr, value))}
             /> : null}
-            {schema.help ? <FormHelperText>{this.getText(schema.help)}</FormHelperText> : null}
+            {schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </FormControl>;
     }
 }

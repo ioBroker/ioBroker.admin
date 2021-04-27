@@ -1,5 +1,10 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+
+import Button from '@material-ui/core/Button';
+
+import Icon from '@iobroker/adapter-react/Components/Icon';
 
 import ConfigGeneric from './ConfigGeneric';
 
@@ -11,10 +16,22 @@ const styles = theme => ({
 });
 
 class ConfigStaticText extends ConfigGeneric {
-    renderItem() {
-        return <span
-            onClick={this.props.schema.href ? () => this.props.schema.href && window.open(this.props.schema.href, '_blank') : null}
-        >{this.getText(this.props.schema.text)}</span>;
+    renderItem(error, disabled) {
+        if (this.props.schema.button) {
+            return <Button
+                variant={this.props.schema.variant || undefined}
+                color={this.props.schema.color || undefined}
+                className={this.props.classes.fullWidth}
+                disabled={disabled}
+                onClick={() => this.props.schema.href ? () => this.props.schema.href && window.open(this.props.schema.href, '_blank') : null}
+            >
+                {this.props.schema.icon ? <Icon src={this.props.schema.icon} className={this.props.classes.icon}/> : null}
+                {this.getText(this.props.schema.text || this.props.schema.label, this.props.schema.noTranslation)}
+            </Button>
+        } else {
+            return <span onClick={this.props.schema.href ? () => this.props.schema.href && window.open(this.props.schema.href, '_blank') : null}
+            >{this.getText(this.props.schema.text || this.props.schema.label)}</span>;
+        }
     }
 }
 

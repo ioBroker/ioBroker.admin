@@ -34,24 +34,24 @@ class ConfigNumber extends ConfigGeneric {
         let isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_LABEL;
 
         if (isIndeterminate) {
-            const arr = [...this.state.value].map(item => ({name: item.toString(), value: item}));
-            arr.unshift({name: ConfigGeneric.DIFFERENT_LABEL, value: ConfigGeneric.DIFFERENT_VALUE});
+            const arr = [...this.state.value].map(item => ({label: item.toString(), value: item}));
+            arr.unshift({label: ConfigGeneric.DIFFERENT_LABEL, value: ConfigGeneric.DIFFERENT_VALUE});
 
             return <Autocomplete
                 className={this.props.classes.indeterminate}
                 fullWidth
                 value={arr[0]}
-                getOptionSelected={(option, value) => option.name === value.name}
+                getOptionSelected={(option, value) => option.label === value.label}
                 onChange={(_, value) =>
                     this.onChange(this.props.attr, value ? parseFloat(value.value) : this.props.schema.min || 0)}
                 options={arr}
-                getOptionLabel={option => option.name}
+                getOptionLabel={option => option.label}
                 renderInput={params => <TextField
                     {...params}
                     error={!!error}
                     placeholder={this.getText(this.props.schema.placeholder)}
                     label={this.getText(this.props.schema.label)}
-                    helperText={this.getText(this.props.schema.help)}
+                    helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
                     disabled={!!disabled}
                 />}
             />;
@@ -70,7 +70,7 @@ class ConfigNumber extends ConfigGeneric {
                 }}
                 placeholder={this.getText(this.props.schema.placeholder)}
                 label={this.getText(this.props.schema.label)}
-                helperText={this.getText(this.props.schema.help)}
+                helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
             />;
         }
     }

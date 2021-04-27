@@ -40,7 +40,7 @@ class ConfigCertificateSelect extends ConfigGeneric {
                         this.onChange(this.props.attr, this.state.value))}
                 t={this.props.t}
             />
-            {this.props.schema.help ? <FormHelperText>{this.getText(this.props.schema.help)}</FormHelperText> : null}
+            {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </FormControl>;
     }
 }

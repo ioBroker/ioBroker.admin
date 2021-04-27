@@ -82,7 +82,7 @@ class ConfigJsonEditor extends ConfigGeneric {
                     />
                 </div>
             </CustomModal> : null}
-            {schema.help ? <FormHelperText>{this.getText(schema.help)}</FormHelperText> : null}
+            {schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </FormControl>;
     }
 }

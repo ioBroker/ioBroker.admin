@@ -1,8 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 
 import Grid from '@material-ui/core/Grid';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import ConfigGeneric from './ConfigGeneric';
 import ConfigText from './ConfigText';
@@ -79,11 +85,29 @@ const styles = theme => ({
     },
     padding: {
         padding: 10,
+    },
+    heading: {
+
+    },
+    primary: {
+        backgroundColor: theme.palette.primary.main,
+    },
+    secondary: {
+        backgroundColor: theme.palette.secondary.main,
     }
 });
 
 class ConfigPanel extends ConfigGeneric {
+    componentDidMount() {
+        super.componentDidMount();
+        if (this.props.schema.collapsable) {
+            this.setState({expanded: window.localStorage.getItem(this.props.adapterName + '.' + this.props.attr) === 'true'});
+        }
+    }
+
     renderItems(items) {
+        const classes = this.props.classes || {};
+
         return Object.keys(items).map(attr => {
             const type = items[attr].type || 'panel';
             let ItemComponent;
@@ -94,6 +118,8 @@ class ConfigPanel extends ConfigGeneric {
                     console.error('Cannot find custom component: ' + items[attr].component);
                     ItemComponent = ConfigGeneric;
                 }
+            } else if (type === 'panel') {
+                ItemComponent = ConfigPanelStyled;
             } else {
                 ItemComponent = components[type] || ConfigGeneric;
             }
@@ -102,7 +128,7 @@ class ConfigPanel extends ConfigGeneric {
                 key={attr}
                 onCommandRunning={this.props.onCommandRunning}
                 commandRunning={this.props.commandRunning}
-                className={this.props.classes.panel}
+                className={classes.panel}
                 socket={this.props.socket}
                 adapterName={this.props.adapterName}
                 instance={this.props.instance}
@@ -130,19 +156,46 @@ class ConfigPanel extends ConfigGeneric {
 
     render() {
         const items = this.props.schema.items;
+        const classes = this.props.classes || {};
+
         if (this.props.table) {
             return this.renderItems(items);
         }
         if (this.props.custom) {
-            return <Grid container className={this.props.classes.fullWidth} spacing={2}>
+            return <Grid key={this.props.attr} container className={classes.fullWidth} spacing={2}>
                 {this.renderItems(items)}
             </Grid>;
         } else {
-            return <div className={(this.props.className || '') + ' ' + this.props.classes.paper}>
-                <Grid container className={this.props.classes.fullWidth + " " + this.props.classes.padding} spacing={2}>
-                    {this.renderItems(items)}
-                </Grid>
-            </div>;
+            if (this.props.schema.collapsable) {
+                return <Accordion
+                    key={this.props.attr}
+                    className={classes.fullWidth}
+                    expanded={!!this.state.expanded}
+                    onChange={() => {
+                        window.localStorage.setItem(this.props.adapterName + '.' + this.props.attr, this.state.expanded ? 'false' : 'true');
+                        this.setState({expanded: !this.state.expanded});
+                    }}
+                >
+                    <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        style={Object.assign({}, this.props.schema.style, this.props.themeType ? this.props.schema.darkStyle : {})}
+                        className={clsx(classes.fullWidth, this.props.schema.color === 'primary' && classes.primary, this.props.schema.color === 'secondary' && classes.secondary)}
+                    >
+                        <Typography className={classes.heading}>{this.getText(this.props.schema.label)}</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <Grid container className={classes.fullWidth + ' ' + classes.padding} spacing={2}>
+                            {this.renderItems(items)}
+                        </Grid>
+                    </AccordionDetails>
+                </Accordion>
+            } else {
+                return <div key={this.props.attr} className={(this.props.className || '') + ' ' + classes.paper}>
+                    <Grid container className={classes.fullWidth + ' ' + classes.padding} spacing={2}>
+                        {this.renderItems(items)}
+                    </Grid>
+                </div>;
+            }
         }
     }
 }
@@ -173,4 +226,6 @@ ConfigPanel.propTypes = {
     onChange: PropTypes.func,
 };
 
-export default withStyles(styles)(ConfigPanel);
+const ConfigPanelStyled = withStyles(styles)(ConfigPanel);
+
+export default ConfigPanelStyled;

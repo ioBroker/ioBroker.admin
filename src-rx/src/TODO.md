@@ -12,9 +12,10 @@
 ## Intro
 
 ## Easy Mode
+- Show back button in strickt mode for tabs (and logo button always returns to #easy in strict mode) 
 
 ## Settings
-- Show dialog, that resatrt only works on debian systems: https://github.com/ioBroker/ioBroker.admin/issues/754
+- Show dialog, that RESTART only works on debian systems: https://github.com/ioBroker/ioBroker.admin/issues/754
   
 ## Info
 

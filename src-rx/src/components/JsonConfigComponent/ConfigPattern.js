@@ -32,7 +32,7 @@ class ConfigPattern extends ConfigGeneric {
             }}
             value={this.getPattern(this.props.schema.pattern)}
             label={this.getText(this.props.schema.label)}
-            helperText={this.getText(this.props.schema.help)}
+            helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
         />;
     }
 }

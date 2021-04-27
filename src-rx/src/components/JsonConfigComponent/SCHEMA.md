@@ -13,6 +13,8 @@ Possible types:
   - `icon` - tab can have icon (base64)
   - `label` - Label of tab
   - `items` - Object `{"attr1": {}, "attr2": {}}...`
+  - `collapsable` - only possible as not part of tabs
+  - `color` - color of collapsable header `primary` or `secondary` or nothing
 
 - `text` - Text component
 
@@ -121,11 +123,13 @@ Possible types:
   - `variant` - `contained`, `outlined`, ''
 
 - `staticText` - static text like description
-   - `text` - multi-language text
+   - `label` - multi-language text
 
 - `staticLink` - static link
-   - `text` - multi-language text
+   - `label` - multi-language text
    - `href` - link
+   - `button` - show link as button
+   - `icon` - icon for button
 
 - `staticImage` - static image
    - `href` - optional HTTP link
@@ -224,8 +228,8 @@ All types could have:
 - `hidden` - JS function that could use `native.attribute` for calculation
 - `hideOnlyControl` - if hidden the place will be shown, but no control
 - `disabled` - JS function that could use `native.attribute` for calculation
-- `!helpLink` - href to help
 - `help` - help text (multi-language)
+- `helpLink` - href to help (could be used only together with `help`)
 - `icon` - base64 svg
 - `!encrypted` - is value encrypted or not (of course only for texts)
   - if encrypted, use `__encrypted__` value for show and if was changed, encrypt it with socket.encrypt
@@ -282,7 +286,7 @@ All types could have:
             }
         },
         "tab2": {
-            "name": "Tab2",
+            "label": "Tab2",
             "disabled": "data.myType === 1",
             "hidden": "data.myType === 2",
         }

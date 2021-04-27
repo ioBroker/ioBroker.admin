@@ -1254,5 +1254,8 @@
   "Rate": "速度",
   "Comments": "注释",
   "Your comment": "你的评论",
-  "Always first": "永远第一"
+  "Always first": "永远第一",
+  "Review": "审查",
+  "Comment to version": "对版本的评论",
+  "Show comments in language": "以语言显示评论"
 }

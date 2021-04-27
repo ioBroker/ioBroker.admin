@@ -12,39 +12,97 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 import VoteIcon from '@material-ui/icons/HowToVote';
 import CloseIcon from '@material-ui/icons/Close';
+import {FcComments} from "react-icons/all";
 
 const styles = theme => ({
-        buttonIcon: {
-            marginRight: theme.spacing(1),
-        },
-        rating: {
-            marginBottom: 20,
-        },
-        listRating: {
-            marginRight: theme.spacing(1),
-        },
-        listTime: {
-            opacity: 0.5,
-            fontStyle: 'italic',
-        },
-        list: {
-            //maxHeight: 200,
-        },
-        listOwn: {
-            backgroundColor: theme.name === 'colored' || theme.name === 'light' ? '#16516e2e' : theme.palette.secondary.dark
-        },
-        listTitle: {
-            backgroundColor: theme.palette.primary.dark,
-            paddingTop: 4,
-            paddingBottom: 4,
-            marginBottom: 4,
-            color: '#ffffff'
-        }
+    buttonIcon: {
+        marginRight: theme.spacing(1),
+    },
+    rating: {
+        marginBottom: 20,
+    },
+    listRating: {
+        marginRight: theme.spacing(1),
+    },
+    listTime: {
+        opacity: 0.5,
+        fontStyle: 'italic',
+    },
+    list: {
+        //maxHeight: 200,
+    },
+    listOwn: {
+        backgroundColor: theme.name === 'colored' || theme.name === 'light' ? '#16516e2e' : theme.palette.secondary.dark
+    },
+    listTitle: {
+        backgroundColor: theme.palette.primary.dark,
+        paddingTop: 4,
+        paddingBottom: 4,
+        marginBottom: 4,
+        color: '#ffffff',
+        textAlign: 'center'
+    },
+    languageFilter: {
+        width: 300,
+    },
+    ratingTextControl: {
+        width: 'calc(100% - 138px)',
+        marginRight: 8,
+    },
+    ratingLanguageControl: {
+        width: 130,
     }
-);
+});
+
+const LANGUAGES = [
+    {
+        id: 'en',
+        title: 'English'
+    },
+    {
+        id: 'de',
+        title: 'Deutsch'
+    },
+    {
+        id: 'ru',
+        title: 'русский'
+    },
+    {
+        id: 'pt',
+        title: 'Portugues'
+    },
+    {
+        id: 'nl',
+        title: 'Nederlands'
+    },
+    {
+        id: 'fr',
+        title: 'français'
+    },
+    {
+        id: 'it',
+        title: 'Italiano'
+    },
+    {
+        id: 'es',
+        title: 'Espanol'
+    },
+    {
+        id: 'pl',
+        title: 'Polski'
+    },
+    {
+        id: 'zh-ch',
+        title: '简体中文'
+    }
+];
 
 class RatingDialog extends Component {
     constructor(props) {
@@ -53,7 +111,9 @@ class RatingDialog extends Component {
         this.state = {
             ratingNumber: 0,
             ratingComment: '',
-            votings: null
+            votings: null,
+            ratingLang: this.props.lang,
+            filterLang: window.localStorage.getItem('app.commentLang') || this.props.lang,
         };
     }
 
@@ -75,12 +135,12 @@ class RatingDialog extends Component {
             });
     }
 
-    setAdapterRating(adapter, version, rating, comment) {
+    setAdapterRating(adapter, version, rating, comment, lang) {
         return fetch('https://rating.iobroker.net/vote', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             redirect: 'follow',
-            body: JSON.stringify({ uuid: this.props.uuid, adapter, version, rating, comment })
+            body: JSON.stringify({ uuid: this.props.uuid, adapter, version, rating, comment, lang})
         })
             .then(res => res.json())
             .then(update => {
@@ -97,22 +157,41 @@ class RatingDialog extends Component {
 
     renderComments() {
         if (this.state.votings?.comments) {
-            return <div style={{ width: '100%' }}>
-                <h3 className={this.props.classes.listTitle}>{this.props.t('Comments')}</h3>
+            return <div style={{ width: '100%', textAlign: 'left'}}>
+                <h3 className={this.props.classes.listTitle} >{this.props.t('Comments')}</h3>
+                <FormControl className={this.props.classes.languageFilter}>
+                    <InputLabel>{this.props.t('Show comments in language')}</InputLabel>
+                    <Select
+                        value={this.state.filterLang}
+                        onChange={e => {
+                            window.localStorage.setItem('app.commentLang', e.target.value);
+                            this.setState({filterLang: e.target.value})
+                        }}
+                    >
+                        <MenuItem value={'_'}>{this.props.t('All')}</MenuItem>
+                        {LANGUAGES.map(item => <MenuItem key={item.id} value={item.id}>{item.title}</MenuItem>)}
+                    </Select>
+                </FormControl>
                 <List classes={{ root: this.props.classes.list }} dense disablePadding>
-                    {this.state.votings.comments.map((comment, i) => <ListItem
-                        key={i}
-                        title={comment.uuid ? this.props.t('Your comment') : ''}
-                        classes={{ root: comment.uuid ? this.props.classes.listOwn : undefined }} dense>
-                        <ListItemAvatar classes={{ root: this.props.classes.listRating }}>
-                            <Rating readOnly defaultValue={comment.rating} size="small" />
-                        </ListItemAvatar>
-                        <ListItemText
-                            primary={comment.comment}
-                            secondary={new Date(comment.ts).toLocaleString() + ' / v' + comment.version}
-                            classes={{ secondary: this.props.classes.listTime }}
-                        />
-                    </ListItem>)}
+                    {this.state.votings.comments.map((comment, i) => {
+                        if (this.state.filterLang && this.state.filterLang !== '_' && comment.lang !== this.state.filterLang) {
+                            return null;
+                        } else {
+                            return <ListItem
+                                key={i}
+                                title={comment.uuid ? this.props.t('Your comment') : ''}
+                                classes={{ root: comment.uuid ? this.props.classes.listOwn : undefined }} dense>
+                                <ListItemAvatar classes={{ root: this.props.classes.listRating }}>
+                                    <Rating readOnly defaultValue={comment.rating} size="small" />
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={comment.comment}
+                                    secondary={new Date(comment.ts).toLocaleString() + ' / v' + comment.version}
+                                    classes={{ secondary: this.props.classes.listTime }}
+                                />
+                            </ListItem>
+                        }
+                    })}
                 </List>
             </div>
         } else {
@@ -146,16 +225,26 @@ class RatingDialog extends Component {
                     onChange={(event, newValue) =>
                         this.setState({ ratingNumber: newValue })}
                 />
-                <br />
-                <TextField
-                    fullWidth
-                    value={this.state.ratingComment}
-                    label={this.props.t('Comment to version')}
-                    inputProps={{ maxLength: 200 }}
-                    helperText={this.props.t('Max length %s characters', 200)}
-                    onChange={e =>
-                        this.setState({ ratingComment: e.target.value })}
-                />
+                <div style={{width: '100%', textAlign: 'left'}}>
+                    <TextField
+                        className={this.props.classes.ratingTextControl}
+                        value={this.state.ratingComment}
+                        label={this.props.t('Comment to version')}
+                        inputProps={{ maxLength: 200 }}
+                        helperText={this.props.t('Max length %s characters', 200)}
+                        onChange={e =>
+                            this.setState({ ratingComment: e.target.value })}
+                    />
+                    <FormControl className={this.props.classes.ratingLanguageControl}>
+                        <InputLabel>{this.props.t('Language')}</InputLabel>
+                        <Select
+                            value={this.state.ratingLang}
+                            onChange={e => this.setState({ratingLang: e.target.value})}
+                        >
+                            {LANGUAGES.map(item => <MenuItem key={item.id} value={item.id}>{item.title}</MenuItem>)}
+                        </Select>
+                    </FormControl>
+                </div>
                 <div style={{ paddingTop: 20, paddingBottom: 16 }}>{this.props.t('Rate how good this version of the adapter works on your system. You can vote for every new version.')}</div>
 
                 {versions && item ? <div>{this.props.t('You voted for %s on %s', versions[0], new Date(item.ts).toLocaleDateString())}</div> : null}
@@ -169,7 +258,7 @@ class RatingDialog extends Component {
                     disabled={!this.state.ratingNumber || this.state.votings === null}
                     onClick={() => {
                         if (this.state.ratingNumber !== item?.r || this.state.ratingComment) {
-                            this.setAdapterRating(this.props.adapter, this.props.version, this.state.ratingNumber, this.state.ratingComment)
+                            this.setAdapterRating(this.props.adapter, this.props.version, this.state.ratingNumber, this.state.ratingComment, this.state.ratingLang)
                                 .then(repository => this.props.onClose(repository));
                         } else {
                             this.props.onClose();
@@ -191,6 +280,7 @@ class RatingDialog extends Component {
 
 RatingDialog.propTypes = {
     t: PropTypes.func.isRequired,
+    lang: PropTypes.string.isRequired,
     uuid: PropTypes.string.isRequired,
     version: PropTypes.string.isRequired,
     adapter: PropTypes.string.isRequired,

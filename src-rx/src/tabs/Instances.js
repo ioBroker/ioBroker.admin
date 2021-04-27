@@ -107,7 +107,7 @@ const styles = theme => ({
         width: '100%',
         backgroundColor: '#FFF',
         color: '#000',
-        borderRadius: 5,
+        borderRadius: 3,
         border: '1px solid #888'
     },
     silly: {

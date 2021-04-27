@@ -97,7 +97,7 @@ class ConfigSelectSendTo extends ConfigGeneric {
                 }}
                 placeholder={this.getText(this.props.schema.placeholder)}
                 label={this.getText(this.props.schema.label)}
-                helperText={this.getText(this.props.schema.help)}
+                helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
             />;
         } else
         if (!this.state.list) {
@@ -118,7 +118,7 @@ class ConfigSelectSendTo extends ConfigGeneric {
                     {this.state.list.map((item, i) =>
                         <MenuItem key={i} value={item.value}>{item.label}</MenuItem>)}
                 </Select>
-                {this.props.schema.help ? <FormHelperText>{this.getText(this.props.schema.help)}</FormHelperText> : null}
+                {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
             </FormControl>;
         }
     }

@@ -294,11 +294,12 @@ class ConfigTable extends ConfigGeneric {
     onDelete = index =>
         () => {
             const newValue = JSON.parse(JSON.stringify(this.state.value));
-            const visibleValue = JSON.parse(JSON.stringify(this.state.visibleValue));
+            let visibleValue = JSON.parse(JSON.stringify(this.state.visibleValue));
             newValue.splice(index, 1);
             const pos = visibleValue.indexOf(index);
             if (pos !== -1) {
                 visibleValue.splice(pos, 1);
+                visibleValue = visibleValue.map(i => i > index ? i - 1 : i);
             }
 
             this.setState({ value: newValue, visibleValue }, () =>
@@ -454,7 +455,7 @@ class ConfigTable extends ConfigGeneric {
                         </Typography>
                     </div> : null}
             </TableContainer>
-            {schema.help ? <FormHelperText>{this.getText(schema.help)}</FormHelperText> : null}
+            {schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </Paper>;
     }
 }
