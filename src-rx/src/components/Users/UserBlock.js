@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import {useRef, useEffect} from 'react';
 import {  DragPreviewImage, useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
@@ -165,5 +166,18 @@ const UserBlockDrag = (props) => {
         </div>
     </div>
 }
+
+UserBlockDrag.propTypes = {
+    t: PropTypes.func,
+    lang: PropTypes.string,
+    user: PropTypes.object,
+    groups: PropTypes.array,
+    showUserEditDialog: PropTypes.func,
+    showUserDeleteDialog: PropTypes.func,
+    updateData: PropTypes.func,
+    addUserToGroup: PropTypes.func,
+    removeUserFromGroup: PropTypes.func,
+    getName: PropTypes.func,
+};
 
 export default UserBlockDrag;

@@ -1,4 +1,5 @@
 import { useDrop } from 'react-dnd';
+import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import Color from 'color';
 import Typography from '@material-ui/core/Typography';
@@ -144,9 +145,20 @@ function GroupBlock(props) {
     </Card>
 }
 
+GroupBlock.propTypes = {
+    t: PropTypes.func,
+    lang: PropTypes.string,
+    group: PropTypes.object,
+    users: PropTypes.array,
+    showGroupEditDialog: PropTypes.func,
+    showGroupDeleteDialog: PropTypes.func,
+    removeUserFromGroup: PropTypes.func,
+    getName: PropTypes.func,
+};
+
 export default GroupBlock;
 
-export function canMeDrop(monitor, props )
+function canMeDrop(monitor, props )
 {
     return props.group.common.members
         ?

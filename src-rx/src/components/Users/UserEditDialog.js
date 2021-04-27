@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react';
+import PropTypes from 'prop-types';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -82,7 +83,7 @@ function UserEditDialog(props) {
                         t={props.t}
                         value={ name }
                         onChange={e=>{
-                            let newData = props.user;
+                            let newData = Utils.clone(props.user);
                             if (!props.user.common.dontDelete && name2Id(newData.common.name) === getShortId(newData._id)) {
                                 newData._id = changeShortId(newData._id, name2Id(e.target.value));
                             }
@@ -101,7 +102,7 @@ function UserEditDialog(props) {
                         disabled={props.user.common.dontDelete}
                         value={ props.user._id.split('.')[props.user._id.split('.').length-1] }
                         onChange={e=>{
-                            let newData = props.user;
+                            let newData = Utils.clone(props.user);
                             newData._id = changeShortId(newData._id, name2Id(e.target.value));
                             props.change(newData);
                         }}
@@ -125,7 +126,7 @@ function UserEditDialog(props) {
                         t={props.t}
                         value={ description }
                         onChange={e=>{
-                            let newData = props.user;
+                            let newData = Utils.clone(props.user);
                             newData.common.desc = e.target.value;
                             props.change(newData);
                         }}
@@ -139,7 +140,7 @@ function UserEditDialog(props) {
                         t={props.t}
                         value={ props.user.common.password }
                         onChange={e=>{
-                            let newData = props.user;
+                            let newData = Utils.clone(props.user);
                             newData.common.password = e.target.value;
                             props.change(newData);
                         }}
@@ -155,7 +156,7 @@ function UserEditDialog(props) {
                         t={props.t}
                         value={ props.user.common.passwordRepeat }
                         onChange={e=>{
-                            let newData = props.user;
+                            let newData = Utils.clone(props.user);
                             newData.common.passwordRepeat = e.target.value;
                             props.change(newData);
                         }}
@@ -171,7 +172,7 @@ function UserEditDialog(props) {
                         t={props.t}
                         value={ props.user.common.icon }
                         onChange={fileblob=>{
-                            let newData = props.user;
+                            let newData = Utils.clone(props.user);
                             newData.common.icon = fileblob;
                             props.change(newData);
                         }}
@@ -187,7 +188,7 @@ function UserEditDialog(props) {
                         value={ props.user.common.color }
                         previewClassName={props.classes.iconPreview}
                         onChange={color=>{
-                            let newData = props.user;
+                            let newData = Utils.clone(props.user);
                             newData.common.color = color;
                             props.change(newData);
                         }}
@@ -204,5 +205,17 @@ function UserEditDialog(props) {
         </DialogActions>
     </Dialog>;
 }
+
+UserEditDialog.propTypes = {
+    t: PropTypes.func,
+    lang: PropTypes.string,
+    open: PropTypes.bool,
+    onClose: PropTypes.func,
+    users: PropTypes.array,
+    user: PropTypes.object,
+    isNew: PropTypes.bool,
+    change: PropTypes.func,
+    saveData: PropTypes.func,
+};
 
 export default UserEditDialog;

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useState, useEffect, Fragment } from 'react'
 
 import Dialog from '@material-ui/core/Dialog';
@@ -43,7 +44,7 @@ function PermsTab(props) {
                                 disabled={props.group.common.dontDelete}
                                 checked={perm}
                                 onChange={e=>{
-                                    let newData = props.group;
+                                    let newData = Utils.clone(props.group);
                                     newData.common.acl[blockKey][permKey] = e.target.checked;
                                     props.change(newData);
                                 }}
@@ -118,7 +119,7 @@ function GroupEditDialog(props) {
                 t={props.t}
                 value={ name }
                 onChange={e=>{
-                    let newData = props.group;
+                    let newData = Utils.clone(props.group);
                     if (!props.group.common.dontDelete && name2Id(newData.common.name) === getShortId(newData._id)) {
                         newData._id = changeShortId(newData._id, name2Id(e.target.value));
                     }
@@ -137,7 +138,7 @@ function GroupEditDialog(props) {
                 disabled={props.group.common.dontDelete}
                 value={ props.group._id.split('.')[props.group._id.split('.').length-1] }
                 onChange={e=>{
-                    let newData = props.group;
+                    let newData = Utils.clone(props.group);
                     newData._id = changeShortId(newData._id, name2Id(e.target.value));
                     props.change(newData);
                 }}
@@ -161,7 +162,7 @@ function GroupEditDialog(props) {
                 t={props.t}
                 value={ description }
                 onChange={e=>{
-                    let newData = props.group;
+                    let newData = Utils.clone(props.group);
                     newData.common.description = e.target.value;
                     props.change(newData);
                 }}
@@ -175,7 +176,7 @@ function GroupEditDialog(props) {
                 t={props.t}
                 value={ props.group.common.icon }
                 onChange={fileblob=>{
-                    let newData = props.group;
+                    let newData = Utils.clone(props.group);
                     newData.common.icon = fileblob;
                     props.change(newData);
                 }}
@@ -191,7 +192,7 @@ function GroupEditDialog(props) {
                 value={ props.group.common.color }
                 previewClassName={props.classes.iconPreview}
                 onChange={color=>{
-                    let newData = props.group;
+                    let newData = Utils.clone(props.group);
                     newData.common.color = color;
                     props.change(newData);
                 }}
@@ -228,5 +229,17 @@ function GroupEditDialog(props) {
         </DialogActions>
     </Dialog>;
 }
+
+GroupEditDialog.propTypes = {
+    t: PropTypes.func,
+    lang: PropTypes.string,
+    open: PropTypes.bool,
+    onClose: PropTypes.func,
+    groups: PropTypes.array,
+    group: PropTypes.object,
+    isNew: PropTypes.bool,
+    change: PropTypes.func,
+    saveData: PropTypes.func,
+};
 
 export default GroupEditDialog;
