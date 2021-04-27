@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import Dialog from '@material-ui/core/Dialog';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -18,5 +19,14 @@ function UserDeleteDialog(props) {
         </Box>
     </Dialog>;
 }
+
+UserDeleteDialog.propTypes = {
+    t: PropTypes.func,
+    lang: PropTypes.string,
+    open: PropTypes.bool,
+    onClose: PropTypes.func,
+    user: PropTypes.object,
+    deleteUser: PropTypes.func,
+};
 
 export default UserDeleteDialog;

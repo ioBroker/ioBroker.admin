@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -24,5 +25,14 @@ function GroupDeleteDialog(props) {
          </DialogActions> 
     </Dialog>;
 }
+
+GroupDeleteDialog.propTypes = {
+    t: PropTypes.func,
+    lang: PropTypes.string,
+    open: PropTypes.bool,
+    onClose: PropTypes.func,
+    group: PropTypes.object,
+    deleteGroup: PropTypes.func,
+};
 
 export default GroupDeleteDialog;

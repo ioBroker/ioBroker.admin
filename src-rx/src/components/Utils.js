@@ -1330,6 +1330,15 @@ class Utils {
         }
         return result;
     }
+
+    /**
+     * Deep copy object
+     * @param {object} object
+     * @returns {object}
+     */
+    static clone(object) {
+        return JSON.parse(JSON.stringify(object));
+    }
 }
 
 export default Utils;
