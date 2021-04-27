@@ -27,7 +27,8 @@ const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, 
 const styles = theme => ({
     mainGridCont:
     {
-        height: "calc(100% - 55px)"
+        height: "calc(100% - 55px)",
+        overflowY:"auto"
     },
     childGridCont:
     {
