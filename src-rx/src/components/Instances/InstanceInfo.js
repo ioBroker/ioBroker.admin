@@ -1,11 +1,15 @@
 import PropTypes from 'prop-types';
-
+import { withStyles } from '@material-ui/core/styles';
 import {
     Grid,
     Tooltip,
     Typography
 } from '@material-ui/core';
-
+const styles = theme => ({
+    nowrap:{
+        flexFlow: 'nowrap'
+    }
+})
 const InstanceInfo = props => {
     return <Grid
         item
@@ -14,6 +18,7 @@ const InstanceInfo = props => {
         alignItems="center"
         direction="row"
         spacing={ 1 }
+        className={props.classes.nowrap}
     >
         <Grid item>
             { props.icon &&
@@ -38,4 +43,4 @@ InstanceInfo.propTypes = {
     tooltip: PropTypes.string
 };
 
-export default InstanceInfo;
+export default withStyles(styles)(InstanceInfo);

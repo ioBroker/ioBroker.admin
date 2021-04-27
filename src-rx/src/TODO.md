@@ -1,7 +1,7 @@
 # Todo
 
 ## Bugs
-- Ask "Discard data?" if instance config not saved for json config
+<!-- - Ask "Discard data?" if instance config not saved for json config -->
 
 - (BF) AdminSettings: Access to the instances: add infotexts for "Apply access rights" and "Allow access only"
 - (BF)General: Support the new io-package fields that replace materialize and materializeTab (but we need to be backward compatible)
@@ -23,22 +23,22 @@
 
 ## Adapters
 - Adapters - Use readme renderer from www.iobroker.net (BF)
-- Text color: https://github.com/ioBroker/ioBroker.admin/issues/772
+<!-- - Text color: https://github.com/ioBroker/ioBroker.admin/issues/772 -->
 
 ## Wizard
-- Settings: Map position not shown initially, change save button to primary
-  system.config => common.licenseConfirmed = false
+<!-- - Settings: Map position not shown initially, change save button to primary
+  system.config => common.licenseConfirmed = false -->
 
 ## Discovery
 - Implement
 
 ## Logs
-* When entering Message filter show clear button
+<!-- * When entering Message filter show clear button -->
 
 ## Instances
 - if more than one host => host selector for every instance
-- safari: https://github.com/ioBroker/ioBroker.admin/issues/746
-- By too long names make a layout better: https://github.com/ioBroker/ioBroker.admin/issues/759
+<!-- - safari: https://github.com/ioBroker/ioBroker.admin/issues/746 -->
+<!-- - By too long names make a layout better: https://github.com/ioBroker/ioBroker.admin/issues/759 -->
 
 
 ## Objects
@@ -56,13 +56,13 @@
 ## Files
 
 ## Hosts
-- Add Notifications button with "bubble" to hosts list and allow open Notification dialog per host if something is there. Gray button out if no notifications exist for that host
+<!-- - Add Notifications button with "bubble" to hosts list and allow open Notification dialog per host if something is there. Gray button out if no notifications exist for that host -->
 
 ## Users
 
 ## Easy mode
-- Back button for tabs
-- https://github.com/ioBroker/ioBroker.admin/issues/756
+<!-- - Back button for tabs -->
+<!-- - https://github.com/ioBroker/ioBroker.admin/issues/756 -->
 
 ## After all is done
 - Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io) (BF)

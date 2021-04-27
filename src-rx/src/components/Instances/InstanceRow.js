@@ -312,11 +312,17 @@ const styles = theme => ({
     },
     hidden1250: {
         display: 'flex',
-        minWidth: 200
+        width: 200,
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
     },
     visible1250: {
-        display: 'none',
-        minWidth: 200
+        display: 'flex',
+        width: 200,
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
     },
     visible1050: {
         display: 'none'

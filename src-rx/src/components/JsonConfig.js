@@ -167,6 +167,12 @@ class JsonConfig extends Router {
             }
         }
     }
+    
+    componentDidUpdate = (prevProps, prevState) => {
+        if(prevState.changed !== this.state.changed){
+            this.props.configStored(!this.state.changed);
+        }
+    }
 
     render() {
         const { classes } = this.props;

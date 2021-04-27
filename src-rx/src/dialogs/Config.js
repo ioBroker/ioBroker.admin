@@ -128,6 +128,7 @@ class Config extends Component {
                 themeType={this.props.themeType}
                 dateFormat={this.props.dateFormat}
                 isFloatComma={this.props.isFloatComma}
+                configStored={this.props.configStored}
                 t={this.props.t}
             />;
         } else {

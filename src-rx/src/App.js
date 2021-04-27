@@ -57,17 +57,17 @@ import HostsWorker from './components/HostsWorker';
 import AdaptersWorker from './components/AdaptersWorker';
 
 // Tabs
-const Adapters  = React.lazy(() => import('./tabs/Adapters'));
+const Adapters = React.lazy(() => import('./tabs/Adapters'));
 const Instances = React.lazy(() => import('./tabs/Instances'));
-const Intro     = React.lazy(() => import('./tabs/Intro'));
-const Logs      = React.lazy(() => import('./tabs/Logs'));
-const Files     = React.lazy(() => import('./tabs/Files'));
-const Objects   = React.lazy(() => import('./tabs/Objects'));
-const Users     = React.lazy(() => import('./tabs/Users'));
-const Enums     = React.lazy(() => import('./tabs/Enums'));
+const Intro = React.lazy(() => import('./tabs/Intro'));
+const Logs = React.lazy(() => import('./tabs/Logs'));
+const Files = React.lazy(() => import('./tabs/Files'));
+const Objects = React.lazy(() => import('./tabs/Objects'));
+const Users = React.lazy(() => import('./tabs/Users'));
+const Enums = React.lazy(() => import('./tabs/Enums'));
 const CustomTab = React.lazy(() => import('./tabs/CustomTab'));
-const Hosts     = React.lazy(() => import('./tabs/Hosts'));
-const EasyMode  = React.lazy(() => import('./tabs/EasyMode'));
+const Hosts = React.lazy(() => import('./tabs/Hosts'));
+const EasyMode = React.lazy(() => import('./tabs/EasyMode'));
 
 const query = {};
 (window.location.search || '').replace(/^\?/, '').split('&').forEach(attr => {
@@ -305,7 +305,7 @@ class App extends Router {
                 //Finished
                 protocol: this.getProtocol(),
                 hostname: window.location.hostname,
-                port:     this.getPort(),
+                port: this.getPort(),
                 //---------
 
                 allTabs: null,
@@ -396,8 +396,7 @@ class App extends Router {
 
     componentDidMount() {
         if (!this.state.login) {
-            window.addEventListener('hashchange', () => this.onHashChanged(), false);
-
+            window.addEventListener('hashchange', this.onHashChanged, false);
             if (!this.state.currentTab.tab) {
                 this.handleNavigation('tab-intro');
             } else {
@@ -447,13 +446,13 @@ class App extends Router {
                                     })
                             } else {
                                 // create Workers
-                                this.logsWorker      = this.logsWorker      || new LogsWorker(this.socket, 1000);
+                                this.logsWorker = this.logsWorker || new LogsWorker(this.socket, 1000);
                                 this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
-                                this.hostsWorker     = this.hostsWorker     || new HostsWorker(this.socket);
-                                this.adaptersWorker  = this.adaptersWorker  || new AdaptersWorker(this.socket);
+                                this.hostsWorker = this.hostsWorker || new HostsWorker(this.socket);
+                                this.adaptersWorker = this.adaptersWorker || new AdaptersWorker(this.socket);
 
                                 const newState = {
-                                    lang:  this.socket.systemLang,
+                                    lang: this.socket.systemLang,
                                     ready: true,
                                     objects,
                                 };
@@ -511,13 +510,13 @@ class App extends Router {
                                     this.logsWorkerChanged(this.state.currentHost), 1000);
 
                                 setTimeout(() =>
-                                        this.findNewsInstance()
-                                            .then(instance => this.socket.subscribeState(`admin.${instance}.info.newsFeed`, this.getNews(instance))),
+                                    this.findNewsInstance()
+                                        .then(instance => this.socket.subscribeState(`admin.${instance}.info.newsFeed`, this.getNews(instance))),
                                     5000);
 
                                 setTimeout(() =>
-                                        this.hostsWorker.getNotifications(newState.currentHost)
-                                            .then(notifications => this.showAdaptersWarning(notifications, this.socket, newState.currentHost)),
+                                    this.hostsWorker.getNotifications(newState.currentHost)
+                                        .then(notifications => this.showAdaptersWarning(notifications, this.socket, newState.currentHost)),
                                     3000);
                             }
                         });
@@ -585,8 +584,8 @@ class App extends Router {
 
         try {
             const repository = await this.socket.getRepository(currentHost, { update: false }, false, 10000);
-            const installed  = await this.socket.getInstalled(currentHost, false, 10000);
-            const adapters   = await this.adaptersWorker.getAdapters(); // we need information about ignored versions
+            const installed = await this.socket.getInstalled(currentHost, false, 10000);
+            const adapters = await this.adaptersWorker.getAdapters(); // we need information about ignored versions
 
             Object.keys(adapters).forEach(id => {
                 const adapter = adapters[id];
@@ -618,7 +617,7 @@ class App extends Router {
     }
 
     componentWillUnmount() {
-        window.removeEventListener('hashchange', () => this.onHashChanged(), false);
+        window.removeEventListener('hashchange', this.onHashChanged, false);
         // unsubscribe
         // this.state.hosts.forEach
         // this.socket.unsubscribeState(id + '.alive', this.onHostStatusChanged);
@@ -627,7 +626,7 @@ class App extends Router {
     /**
      * Updates the current currentTab in the states
      */
-    onHashChanged() {
+    onHashChanged = el => {
         this.setState({
             currentTab: Router.getLocation()
         }, () => this.setCurrentTabTitle());
@@ -1181,22 +1180,25 @@ class App extends Router {
             } else if (this.state.strictEasyMode || this.state.currentTab.tab === 'easy') {
                 return <ThemeProvider theme={this.state.theme}>
                     {!this.state.connected && <Connecting />}
-                    <EasyMode
-                        navigate={Router.doNavigate}
-                        location={this.state.currentTab}
-                        toggleTheme={this.toggleTheme}
-                        themeName={this.state.themeName}
-                        themeType={this.state.themeType}
-                        theme={this.state.theme}
-                        width={this.props.width}
-                        configs={this.state.easyModeConfigs}
-                        socket={this.socket}
-                        configStored={value => this.allStored(value)}
-                        isFloatComma={this.state.systemConfig?.common.isFloatComma}
-                        dateFormat={this.state.systemConfig?.common.dateFormat}
-                        systemConfig={this.state.systemConfig}
-                        t={I18n.t}
-                    />
+                    <Suspense fallback={<Connecting />}>
+                        <EasyMode
+                            navigate={Router.doNavigate}
+                            getLocation={Router.getLocation}
+                            location={this.state.currentTab}
+                            toggleTheme={this.toggleTheme}
+                            themeName={this.state.themeName}
+                            themeType={this.state.themeType}
+                            theme={this.state.theme}
+                            width={this.props.width}
+                            configs={this.state.easyModeConfigs}
+                            socket={this.socket}
+                            configStored={value => this.allStored(value)}
+                            isFloatComma={this.state.systemConfig?.common.isFloatComma}
+                            dateFormat={this.state.systemConfig?.common.dateFormat}
+                            systemConfig={this.state.systemConfig}
+                            t={I18n.t}
+                        />
+                    </Suspense>
                 </ThemeProvider>;
             }
 
