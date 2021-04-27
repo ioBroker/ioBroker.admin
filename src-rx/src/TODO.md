@@ -54,6 +54,7 @@
   - Integrate https://react-dropzone.js.org/#!/Doka for image upload
 
 - Allow creation of folder and devices on non existing objects (JSON export too) - https://github.com/ioBroker/ioBroker.admin/issues/761
+- Layout problem by defined columns widths: https://github.com/ioBroker/ioBroker.admin/issues/698
 
 ## Files
 

@@ -360,6 +360,9 @@ const styles = theme => ({
             transform: 'scale(0.8)'
         }
     },
+    cellValueButtonFalse: {
+        opacity: 0.3
+    },
     cellAdapter: {
         display: 'inline-block',
         verticalAlign: 'top'
@@ -3142,7 +3145,7 @@ class ObjectBrowser extends Component {
 
         let val = info.valText;
         if (!this.props.expertMode && item.data.button) {
-            val = <PressButtonIcon className={this.props.classes.cellValueButton} />;
+            val = <PressButtonIcon className={clsx(this.props.classes.cellValueButton, !this.states[id] || !this.states[id].val ? this.props.classes.cellValueButtonFalse : '')} />;
         }
         return <Tooltip
             key="value"
