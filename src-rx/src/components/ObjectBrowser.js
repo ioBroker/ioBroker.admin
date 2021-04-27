@@ -209,6 +209,9 @@ const styles = theme => ({
     tableRowAlias: {
         height: ROW_HEIGHT + 10,
     },
+    tableRowAliasReadWrite: {
+        height: ROW_HEIGHT + 22,
+    },
     checkBox: {
         padding: 0,
     },
@@ -300,10 +303,19 @@ const styles = theme => ({
         fontStyle: 'italic',
         fontSize: 12,
         opacity: 0.7,
-        lineHeight: 0,
         '&:hover': {
             color: theme.palette.type === 'dark' ? '#009900' : '#007700',
         }
+    },
+    cellIdAliasReadWriteDiv: {
+        height: 24,
+        marginTop: -5,
+    },
+    cellIdAliasAlone: {
+        lineHeight: 0,
+    },
+    cellIdAliasReadWrite: {
+        lineHeight: '12px',
     },
     cellType: {
         display: 'inline-block',
@@ -1290,31 +1302,31 @@ function prepareSparkData(values, from) {
  * @type {import('./types').ObjectBrowserTableFilter}
  */
 const DEFAULT_FILTER = {
-    id: '',
-    name: '',
-    room: '',
-    func: '',
-    role: '',
-    type: '',
+    id:     '',
+    name:   '',
+    room:   '',
+    func:   '',
+    role:   '',
+    type:   '',
     custom: '',
     expertMode: false
 };
 
 const ITEM_IMAGES = {
-    state: <IconState className="itemIcon" />,
-    channel: <IconChannel className="itemIcon" />,
-    device: <IconDevice className="itemIcon" />,
-    adapter: <IconAdapter className="itemIcon" />,
-    meta: <IconMeta className="itemIcon" />,
+    state:    <IconState className="itemIcon" />,
+    channel:  <IconChannel className="itemIcon" />,
+    device:   <IconDevice className="itemIcon" />,
+    adapter:  <IconAdapter className="itemIcon" />,
+    meta:     <IconMeta className="itemIcon" />,
     instance: <IconInstance className="itemIcon" style={{ color: '#7da7ff' }} />,
-    enum: <IconEnum className="itemIcon" />,
-    chart: <IconChart className="itemIcon" />,
-    config: <IconConfig className="itemIcon" />,
-    group: <IconGroup className="itemIcon" />,
-    user: <IconUser className="itemIcon" />,
-    host: <IconHost className="itemIcon" />,
+    enum:     <IconEnum className="itemIcon" />,
+    chart:    <IconChart className="itemIcon" />,
+    config:   <IconConfig className="itemIcon" />,
+    group:    <IconGroup className="itemIcon" />,
+    user:     <IconUser className="itemIcon" />,
+    host:     <IconHost className="itemIcon" />,
     schedule: <IconSchedule className="itemIcon" />,
-    script: <IconScript className="itemIcon" />,
+    script:   <IconScript className="itemIcon" />,
 };
 
 const StyledBadge = withStyles(theme => ({
@@ -1520,46 +1532,46 @@ class ObjectBrowser extends Component {
         this.edit = {};
 
         this.texts = {
-            value: props.t('ra_tooltip_value'),
-            ack: props.t('ra_tooltip_ack'),
-            ts: props.t('ra_tooltip_ts'),
-            lc: props.t('ra_tooltip_lc'),
-            from: props.t('ra_tooltip_from'),
-            user: props.t('ra_tooltip_user'),
-            quality: props.t('ra_tooltip_quality'),
-            editObject: props.t('ra_tooltip_editObject'),
-            deleteObject: props.t('ra_tooltip_deleteObject'),
-            customConfig: props.t('ra_tooltip_customConfig'),
-            copyState: props.t('ra_tooltip_copyState'),
-            editState: props.t('ra_tooltip_editState'),
-            close: props.t('ra_Close'),
-            filter_id: props.t('ra_filter_id'),
-            filter_name: props.t('ra_filter_name'),
-            filter_type: props.t('ra_filter_type'),
-            filter_role: props.t('ra_filter_role'),
-            filter_room: props.t('ra_filter_room'),
-            filter_func: props.t('ra_filter_func'),
-            filter_customs: props.t('ra_filter_customs'), //
-            objectChangedByUser: props.t('ra_object_changed_by_user'), // Object last changed at
-            objectChangedBy: props.t('ra_object_changed_by'), // Object changed by
-            objectChangedFrom: props.t('ra_state_changed_from'), // Object changed from
-            stateChangedBy: props.t('ra_state_changed_by'), // State changed by
-            stateChangedFrom: props.t('ra_state_changed_from'), // State changed from
-            ownerGroup: props.t('ra_Owner group'),
-            ownerUser: props.t('ra_Owner user'),
+            value:                    props.t('ra_tooltip_value'),
+            ack:                      props.t('ra_tooltip_ack'),
+            ts:                       props.t('ra_tooltip_ts'),
+            lc:                       props.t('ra_tooltip_lc'),
+            from:                     props.t('ra_tooltip_from'),
+            user:                     props.t('ra_tooltip_user'),
+            quality:                  props.t('ra_tooltip_quality'),
+            editObject:               props.t('ra_tooltip_editObject'),
+            deleteObject:             props.t('ra_tooltip_deleteObject'),
+            customConfig:             props.t('ra_tooltip_customConfig'),
+            copyState:                props.t('ra_tooltip_copyState'),
+            editState:                props.t('ra_tooltip_editState'),
+            close:                    props.t('ra_Close'),
+            filter_id:                props.t('ra_filter_id'),
+            filter_name:              props.t('ra_filter_name'),
+            filter_type:              props.t('ra_filter_type'),
+            filter_role:              props.t('ra_filter_role'),
+            filter_room:              props.t('ra_filter_room'),
+            filter_func:              props.t('ra_filter_func'),
+            filter_customs:           props.t('ra_filter_customs'), //
+            objectChangedByUser:      props.t('ra_object_changed_by_user'), // Object last changed at
+            objectChangedBy:          props.t('ra_object_changed_by'), // Object changed by
+            objectChangedFrom:        props.t('ra_state_changed_from'), // Object changed from
+            stateChangedBy:           props.t('ra_state_changed_by'), // State changed by
+            stateChangedFrom:         props.t('ra_state_changed_from'), // State changed from
+            ownerGroup:               props.t('ra_Owner group'),
+            ownerUser:                props.t('ra_Owner user'),
 
-            aclOwner_read_object: props.t('ra_aclOwner_read_object'),
-            aclOwner_read_state: props.t('ra_aclOwner_read_state'),
-            aclOwner_write_object: props.t('ra_aclOwner_write_object'),
-            aclOwner_write_state: props.t('ra_aclOwner_write_state'),
-            aclGroup_read_object: props.t('ra_aclGroup_read_object'),
-            aclGroup_read_state: props.t('ra_aclGroup_read_state'),
-            aclGroup_write_object: props.t('ra_aclGroup_write_object'),
-            aclGroup_write_state: props.t('ra_aclGroup_write_state'),
-            aclEveryone_read_object: props.t('ra_aclEveryone_read_object'),
-            aclEveryone_read_state: props.t('ra_aclEveryone_read_state'),
+            aclOwner_read_object:     props.t('ra_aclOwner_read_object'),
+            aclOwner_read_state:      props.t('ra_aclOwner_read_state'),
+            aclOwner_write_object:    props.t('ra_aclOwner_write_object'),
+            aclOwner_write_state:     props.t('ra_aclOwner_write_state'),
+            aclGroup_read_object:     props.t('ra_aclGroup_read_object'),
+            aclGroup_read_state:      props.t('ra_aclGroup_read_state'),
+            aclGroup_write_object:    props.t('ra_aclGroup_write_object'),
+            aclGroup_write_state:     props.t('ra_aclGroup_write_state'),
+            aclEveryone_read_object:  props.t('ra_aclEveryone_read_object'),
+            aclEveryone_read_state:   props.t('ra_aclEveryone_read_state'),
             aclEveryone_write_object: props.t('ra_aclEveryone_write_object'),
-            aclEveryone_write_state: props.t('ra_aclEveryone_write_state'),
+            aclEveryone_write_state:  props.t('ra_aclEveryone_write_state'),
         };
 
         this.calculateColumnsVisibility();
@@ -3611,26 +3623,34 @@ class ObjectBrowser extends Component {
         item.data.obj?.user && newValueTitle.push(this.texts.objectChangedBy + ' ' + item.data.obj.user.replace(/^system\.user\./, ''));
         item.data.obj?.ts && newValueTitle.push(this.texts.objectChangedByUser + ' ' + Utils.formatDate(new Date(item.data.obj.ts), this.props.dateFormat));
 
+        const readWriteAlias = typeof item.data.obj?.common?.alias?.id === 'object';
+
         const alias = id.startsWith('alias.') && item.data.obj?.common?.alias?.id ?
-            (typeof item.data.obj.common.alias.id === 'object' ?
-                <div>
+            (readWriteAlias ?
+                <div className={classes.cellIdAliasReadWriteDiv}>
                     {item.data.obj.common.alias.id.read ? <div
                     onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         this.onSelect(item.data.obj.common.alias.id.read);
-                        setTimeout(() => this.scrollToItem(item.data.obj.common.alias.id.read), 200);
+                        setTimeout(() => {
+                            this.expandAllSelected(() =>
+                                this.scrollToItem(item.data.obj.common.alias.id.read));
+                        }, 100);
                     }}
-                    className={classes.cellIdAlias}
+                    className={clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
                     >←{item.data.obj.common.alias.id.read}</div> : null}
                     {item.data.obj.common.alias.id.write ? <div
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
                             this.onSelect(item.data.obj.common.alias.id.write);
-                            setTimeout(() => this.scrollToItem(item.data.obj.common.alias.id.write), 200);
+                            setTimeout(() => {
+                                this.expandAllSelected(() =>
+                                    this.scrollToItem(item.data.obj.common.alias.id.write));
+                            }, 100);
                         }}
-                        className={classes.cellIdAlias}
+                        className={clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
                     >→{item.data.obj.common.alias.id.write}</div> : null}
                 </div>
                 :
@@ -3639,9 +3659,12 @@ class ObjectBrowser extends Component {
                         e.stopPropagation();
                         e.preventDefault();
                         this.onSelect(item.data.obj.common.alias.id);
-                        setTimeout(() => this.scrollToItem(item.data.obj.common.alias.id), 200);
+                        setTimeout(() => {
+                            this.expandAllSelected(() =>
+                                this.scrollToItem(item.data.obj.common.alias.id));
+                        }, 100);
                     }}
-                    className={classes.cellIdAlias}
+                    className={clsx(classes.cellIdAlias, classes.cellIdAliasAlone)}
                 >→{item.data.obj.common.alias.id}</div>
             ) : null;
 
@@ -3659,7 +3682,7 @@ class ObjectBrowser extends Component {
             container
             direction="row"
             wrap="nowrap"
-            className={Utils.clsx(classes.tableRow, alias && classes.tableRowAlias, !item.data.visible && classes.filteredOut, this.state.selected.includes(id) && classes.itemSelected)}
+            className={Utils.clsx(classes.tableRow, alias && classes.tableRowAlias, readWriteAlias && classes.tableRowAliasReadWrite, !item.data.visible && classes.filteredOut, this.state.selected.includes(id) && classes.itemSelected)}
             key={id}
             id={id}
             onClick={() => this.onSelect(id)}

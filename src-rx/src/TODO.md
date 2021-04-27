@@ -47,14 +47,11 @@
 
 ## Instances
 - if more than one host => host selector for every instance
+- Mobile view:  smaller icons and some more space between status lamp and the icon - https://github.com/ioBroker/ioBroker.admin/issues/758
 
 ## Objects
 - Add in object edit the possibility to set color and icon (icon could be uploaded as base64 and may not be bigger than 5k) and use it for text color. Add possibility to scale the images.
   - Integrate https://react-dropzone.js.org/#!/Doka for image upload
-
-- (BF) Alias target do not jump to object - jump needs to open the tree
-- (BF) Alias ID can be object with read and write properties. Show both alternatively or ignore this case on display
-- (BF) Object editor Alias Tab: also allow to specify red/write ids
 
 - Allow creation of folder and devices on non existing objects (JSON export too) - https://github.com/ioBroker/ioBroker.admin/issues/761
 

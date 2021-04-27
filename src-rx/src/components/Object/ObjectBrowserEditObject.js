@@ -237,7 +237,7 @@ class ObjectBrowserEditObject extends Component {
         }
     }
 
-    onChange(value) {
+    onChange(value, cb) {
         const newState = { text: value };
         const json = this.prepareObject(value);
         if (json) {
@@ -250,7 +250,7 @@ class ObjectBrowserEditObject extends Component {
         } else {
             newState.error = true;
         }
-        this.setState(newState);
+        this.setState(newState, () => cb && cb());
     }
 
     onUpdate() {
@@ -288,11 +288,21 @@ class ObjectBrowserEditObject extends Component {
     }
 
     renderSelectDialog() {
-        if (!this.state.selectId) {
+        if (!this.state.selectId && !this.state.selectRead && !this.state.selectWrite) {
             return null;
         }
 
         const json = JSON.parse(this.state.text);
+
+        let id;
+
+        if (this.state.selectId) {
+            id = json.common?.alias?.id || '';
+        } else if (this.state.selectRead) {
+            id = json.common?.alias?.id?.read || '';
+        } else if (this.state.selectWrite) {
+            id = json.common?.alias?.id?.write || '';
+        }
 
         return <DialogSelectID
             key="selectDialog"
@@ -302,22 +312,46 @@ class ObjectBrowserEditObject extends Component {
             socket={this.props.socket}
             dialogName="aliasesEdit"
             title={this.props.t('Select for') + ' ' + this.props.obj._id}
-            selected={json.common?.alias?.id || ''}
+            selected={id}
             statesOnly={true}
             onOk={id => {
-                this.setAliasItem(json, 'id', id);
-                this.setState({ selectId: false, text: JSON.stringify(json, null, 2) });
+                const selectRead = this.state.selectRead;
+                const selectWrite = this.state.selectWrite;
+                const selectId = this.state.selectId;
+                this.setState({ selectId: false, selectRead: false, selectWrite: false }, () => {
+                    if (selectRead) {
+                        this.setAliasItem(json, 'id.read', id);
+                    } else if (selectWrite) {
+                        this.setAliasItem(json, 'id.write', id);
+                    } else if (selectId) {
+                        this.setAliasItem(json, 'id', id);
+                    }
+                });
             }}
-            onClose={() => this.setState({ selectId: false })}
+            onClose={() => this.setState({ selectId: false, selectRead: false, selectWrite: false })}
         />;
     }
 
-    setAliasItem(json, name, value) {
+    setAliasItem(json, name, value, cb) {
         json.common = json.common || {};
         json.common.alias = json.common.alias || {};
-        json.common.alias[name] = value;
+        if (name === 'id.read') {
+            if (json.common.alias.id && typeof json.common.alias.id === 'object') {
+                json.common.alias.id.read = value;
+            } else {
+                json.common.alias.id = {read: value, write: value};
+            }
+        } else if (name === 'id.write') {
+            if (json.common.alias.id && typeof json.common.alias.id === 'object') {
+                json.common.alias.id.write = value;
+            } else {
+                json.common.alias.id = {read: value, write: value};
+            }
+        } else {
+            json.common.alias[name] = value;
+        }
 
-        this.onChange(JSON.stringify(json, null, 2));
+        this.onChange(JSON.stringify(json, null, 2), cb);
     }
 
     setCommonItem(json, name, value) {
@@ -339,7 +373,7 @@ class ObjectBrowserEditObject extends Component {
                 variant="contained"
                 color="secondary"
                 onClick={cb}><AddIcon />{t('add %s', nameKey)}</Button>
-        </div>
+        </div>;
     }
 
     buttonRemoveKey(nameKey, cb) {
@@ -365,7 +399,6 @@ class ObjectBrowserEditObject extends Component {
             const checkState = obj.type === 'state';
             const checkRole = obj.type === 'channel' || obj.type === 'device' || checkState;
             return <div className={classes.commonTabWrapper}>
-
                 <div className={classes.commonWrapper}>
                     {typeof json.common.name !== 'undefined' ?
                         <TextField
@@ -455,20 +488,70 @@ class ObjectBrowserEditObject extends Component {
 
             return <Grid container direction="column" className={this.props.classes.marginTop}>
                 <Grid item>
+                    <FormControlLabel
+                        control={<Checkbox checked={typeof json.common?.alias?.id === 'object'} onChange={() => {
+                            if (typeof json.common?.alias?.id === 'object') {
+                                this.setAliasItem(json, 'id', json.common?.alias?.id?.read || '');
+                            } else {
+                                this.setAliasItem(json, 'id.read', json.common?.alias?.id || '');
+                            }
+                        }} />}
+                        label={this.props.t('Different IDs for read and write')}
+                    />
+                </Grid>
+                {typeof json.common?.alias?.id !== 'object' ? <Grid item>
                     <TextField
-                        label={this.props.t('Alias state')}
-                        value={json.common?.alias?.id || ''}
+                            label={this.props.t('Alias state')}
+                            value={json.common?.alias?.id || ''}
+                            className={this.props.classes.aliasIdEdit}
+                            InputProps={{
+                                endAdornment: json.common?.alias?.id ? <InputAdornment position="end"><IconButton
+                                    onClick={() => this.setAliasItem(json, 'id', '')}><IconClose/></IconButton></InputAdornment> : null,
+                            }}
+                            onChange={e => this.setAliasItem(json, 'id', e.target.value)}
+                            margin="normal"
+                    />
+                    <Fab
+                        className={this.props.classes.button}
+                        size="small"
+                        onClick={() => this.setState({selectId: true, selectRead: false, selectWrite: false})}>...</Fab>
+                </Grid> : null}
+
+                {typeof json.common?.alias?.id === 'object' ? <Grid item>
+                    <TextField
+                        label={this.props.t('Alias read state')}
+                        value={json.common?.alias?.id?.read || ''}
                         className={this.props.classes.aliasIdEdit}
                         InputProps={{
-                            endAdornment: json.common?.alias?.id ? <InputAdornment position="end"><IconButton onClick={() => this.setAliasItem(json, 'id', '')}><IconClose /></IconButton></InputAdornment> : null,
+                            endAdornment: json.common?.alias?.id?.read ? <InputAdornment position="end"><IconButton
+                                onClick={() => this.setAliasItem(json, 'id.read', '')}><IconClose/></IconButton></InputAdornment> : null,
                         }}
-                        onChange={e => this.setAliasItem(json, 'id', e.target.value)}
+                        onChange={e => this.setAliasItem(json, 'id.read', e.target.value)}
                         margin="normal"
                     />
-                    <Fab className={this.props.classes.button}
+                    <Fab
+                        className={this.props.classes.button}
                         size="small"
-                        onClick={() => this.setState({ selectId: true })}>...</Fab>
-                </Grid>
+                        onClick={() => this.setState({selectId: false, selectRead: true, selectWrite: false})}>...</Fab>
+                </Grid> : null}
+
+                {typeof json.common?.alias?.id === 'object' ? <Grid item>
+                    <TextField
+                        label={this.props.t('Alias write state')}
+                        value={json.common?.alias?.id?.write || ''}
+                        className={this.props.classes.aliasIdEdit}
+                        InputProps={{
+                            endAdornment: json.common?.alias?.id?.write ? <InputAdornment position="end"><IconButton
+                                onClick={() => this.setAliasItem(json, 'id.write', '')}><IconClose/></IconButton></InputAdornment> : null,
+                        }}
+                        onChange={e => this.setAliasItem(json, 'id.write', e.target.value)}
+                        margin="normal"
+                    />
+                    <Fab
+                    className={this.props.classes.button}
+                    size="small"
+                    onClick={() => this.setState({selectId: false, selectRead: false, selectWrite: true})}>...</Fab>
+                </Grid> : null}
                 <Grid item className={this.props.classes.marginTop}>
                     <FormControlLabel
                         control={
