@@ -752,14 +752,12 @@ const InstanceRow = ({
                     )}>
                         {getModeIcon(instance.mode)}
                     </Avatar>
-                    {/*<Badge color="secondary" variant="dot" invisible={!instance.compactMode}>
-                        <Avatar
-                            variant="square"
-                            alt={instance.id}
-                            src={instance.image}
-                            className={classes.instanceIcon}
-                        />
-                    </Badge>*/}
+                    <Avatar
+                        variant="square"
+                        alt={instance.id}
+                        src={instance.image}
+                        className={classes.instanceIcon}
+                    />
                     <div className={classes.instanceId}>
                         {instance.id}
                     </div>

@@ -2,6 +2,7 @@ class InstancesWorker {
     constructor(socket) {
         this.socket   = socket;
         this.handlers = [];
+        this.promise  = null;
 
         socket.registerConnectionHandler(this.connectionHandler);
 
@@ -49,23 +50,33 @@ class InstancesWorker {
 
     // be careful with this object. Do not change them.
     getInstances(update) {
-        if (!update && this.objects) {
-            return Promise.resolve(this.objects);
+        if (!update && this.promise) {
+            return this.promise;
         }
 
-        return this.socket.getAdapterInstances(update)
+        this.promise = this.socket.getAdapterInstances(update)
             .then(objects => {
                 this.objects = {};
                 objects.forEach(obj => this.objects[obj._id] = obj);
                 return this.objects;
             })
             .catch(e => window.alert('Cannot get adapter instances: ' + e));
+
+        return this.promise;
     }
 
     connectionHandler = isConnected => {
         if (isConnected && !this.connected) {
             this.connected = true;
-            this.getInstances(true);
+
+            if (this.handlers.length) {
+                this.socket.subscribeObject('system.adapter.*', this.objectChangeHandler)
+                    .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
+
+                this.getInstances(true)
+                    .then(instances => Object.keys(instances)
+                        .forEach(id => this.objectChangeHandler(id, instances[id])));
+            }
         } else if (!isConnected && this.connected) {
             this.connected = false;
         }
@@ -75,21 +86,19 @@ class InstancesWorker {
         if (!this.handlers.includes(cb)) {
             this.handlers.push(cb);
 
-            if (this.handlers.length === 1) {
-                return this.socket.subscribeObject('system.adapter.*', this.objectChangeHandler)
+            if (this.handlers.length === 1 && this.connected) {
+                this.socket.subscribeObject('system.adapter.*', this.objectChangeHandler)
                     .then(() => this.getInstances())
                     .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
             }
         }
-
-        return Promise.resolve();
     }
 
     unregisterHandler(cb) {
         const pos = this.handlers.indexOf(cb);
         pos !== -1 && this.handlers.splice(pos, 1);
 
-        if (!this.handlers.length) {
+        if (!this.handlers.length && this.connected) {
             this.socket.unsubscribeObject('system.adapter.*', this.objectChangeHandler)
                 .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
         }

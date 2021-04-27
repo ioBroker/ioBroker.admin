@@ -201,14 +201,14 @@ const Hosts = ({
     disabled,
     socket,
     currentHost,
-    setCurrentHost,
     expertMode,
     executeCommand,
     systemConfig,
     navigate,
     themeName,
     lang,
-    getAdaptersWarning,
+    hostsWorker,
+    showAdaptersWarning,
     ...props
 }) => {
     const getHostsData = hosts => {
@@ -228,7 +228,8 @@ const Hosts = ({
                     results.forEach(res => _hostsData[res.id] = res.data);
                     resolve(_hostsData);
                 }));
-    }
+    };
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const t = (word, arg1) => {
         if (arg1 !== undefined && !wordCache[`${word} ${arg1}`]) {
@@ -238,6 +239,7 @@ const Hosts = ({
         }
         return arg1 !== undefined ? wordCache[`${word} ${arg1}`] : wordCache[word];
     }
+
     const [hosts, setHosts] = useState([]);
     const [alive, setAlive] = useState({});
     const [repository, setRepository] = useState({});
@@ -274,18 +276,12 @@ const Hosts = ({
         native: { os: { platform } },
     }, idx
     ) => ({
-        renderCard: <HostCard
+        renderCard: viewMode ? <HostCard
             systemConfig={systemConfig}
             key={_id}
-            setEditDialog={() => setEditDialog({
-                index: idx,
-                dialogName: name
-            })}
-            setBaseSettingsDialog={() => setBaseSettingsDialog({
-                index: idx,
-                dialogName: name
-            })}
-            modalAdaptersWarning={getAdaptersWarning}
+            setEditDialog={() => setEditDialog({index: idx, dialogName: name})}
+            setBaseSettingsDialog={() => setBaseSettingsDialog({index: idx, dialogName: name})}
+            hostsWorker={hostsWorker}
             expertMode={expertMode}
             socket={socket}
             name={name}
@@ -304,8 +300,9 @@ const Hosts = ({
             events={'- / -'}
             t={t}
             _id={_id}
-        />,
-        renderRow: <HostRow
+            showAdaptersWarning={showAdaptersWarning}
+        /> : null,
+        renderRow: !viewMode ? <HostRow
             systemConfig={systemConfig}
             key={_id}
             setEditDialog={() => setEditDialog({
@@ -316,7 +313,7 @@ const Hosts = ({
                 index: idx,
                 dialogName: name
             })}
-            modalAdaptersWarning={getAdaptersWarning}
+            hostsWorker={hostsWorker}
             expertMode={expertMode}
             socket={socket}
             name={name}
@@ -335,21 +332,16 @@ const Hosts = ({
             events={'- / -'}
             t={t}
             _id={_id}
-        />,
+            showAdaptersWarning={showAdaptersWarning}
+        /> : null,
         name
     })
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    ), [hosts, alive, repository, hostsData, classes,expertMode]);
+    ), [hosts, alive, repository, hostsData, classes, expertMode, viewMode]);
 
-    const [editDialog, setEditDialog] = useState({
-        index: 0,
-        dialogName: ''
-    });
+    const [editDialog, setEditDialog] = useState({index: 0, dialogName: ''});
 
-    const [baseSettingsDialog, setBaseSettingsDialog] = useState({
-        index: 0,
-        dialogName: ''
-    });
+    const [baseSettingsDialog, setBaseSettingsDialog] = useState({index: 0, dialogName: ''});
 
     const getPanels = useCallback(() => {
         const items = getAllArrayHosts.filter(el => filterText ? el.name.toLowerCase().includes(filterText.toLowerCase()) : true).map(el => viewMode ? el.renderCard : el.renderRow);
@@ -357,11 +349,10 @@ const Hosts = ({
     }, [getAllArrayHosts, t, filterText, viewMode,]);
 
     const baseSettingsSettingsDialog = () => {
-
         if (!baseSettingsDialog.dialogName) {
             return null;
         }
-       return <BaseSettingsDialog
+        return <BaseSettingsDialog
             currentHost={baseSettingsDialog.dialogName}
             hosts={hosts}
             themeName={themeName}
@@ -377,7 +368,7 @@ const Hosts = ({
             // currentTab={this.state.currentTab}
             t={t}
         />
-    }
+    };
 
     const renderEditObjectDialog = () => {
         if (!editDialog.dialogName) {
@@ -401,7 +392,7 @@ const Hosts = ({
                 }
             }}
         />
-    }
+    };
 
     if (!hosts.length) {
         return <LinearProgress />;
@@ -471,6 +462,8 @@ Hosts.propTypes = {
     expertMode: PropTypes.bool,
     socket: PropTypes.object,
     systemConfig: PropTypes.object,
+    hostsWorker: PropTypes.object,
+    showAdaptersWarning: PropTypes.func,
 };
 
 export default withWidth()(withStyles(styles)(Hosts));

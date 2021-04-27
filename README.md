@@ -70,7 +70,7 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 The user has the possibility to limit the access to the instance configuration dialog.
 For that the option "Allow access only to specific instances" must be activated.
 It could be found on the "Access to instances" tab.
-Additionally the allowed instances should be selected in the appeared configuration table.
+Additionally, the allowed instances should be selected in the appeared configuration table.
 
 If this option is disabled, the simple configuration page could be accessed under http://IP:8081/configs.html
 
@@ -95,6 +95,9 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 -->
 
 ## Changelog
+### 5.0.9 (2021-04-27)
+* (bluefox) Admin5: Fixed many bugs
+
 ### 5.0.8 (2021-04-24)
 * (bluefox) Admin5: Implemented rating with comments
 
@@ -105,9 +108,6 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 * (bluefox) Admin5: Fixed many bugs
 
 ### 5.0.5 (2021-04-20)
-* (bluefox) Admin5: Fixed many bugs
-
-### 5.0.4 (2021-04-18)
 * (bluefox) Admin5: Fixed many bugs
 
 ## License

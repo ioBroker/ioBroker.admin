@@ -37,13 +37,14 @@ const styles = theme => ({
     },
     inputLine: {
         width: 400,
-        marginBottom: theme.spacing(4),
+        margin: 'auto',
+        marginBottom: 50
     },
     grow: {
         flexGrow: 1,
     },
     toolbar: {
-        height: TOOLBAR_HEIGHT,
+        height:     TOOLBAR_HEIGHT,
         lineHeight: TOOLBAR_HEIGHT + 'px',
     }
 });

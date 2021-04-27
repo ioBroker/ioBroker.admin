@@ -234,14 +234,22 @@ class Drawer extends Component {
     componentDidMount() {
         this.props.instancesWorker.registerHandler(this.instanceChangedHandler);
 
-        this.props.socket.getNotifications(this.props.currentHost)
-            .then(notifications => this.getAdaptersWarning(notifications));
-        if (!this.logsHandlerRegistered) {
-            this.logsHandlerRegistered = true;
-            this.props.logsWorker.registerErrorCountHandler(this.onErrorsUpdates);
-            this.props.logsWorker.registerWarningCountHandler(this.onWarningsUpdates);
-        }
+        this.onNotificationsHandler()
+            .then(() => {
+                this.props.hostsWorker.registerNotificationHandler(this.onNotificationsHandler);
+
+                if (!this.logsHandlerRegistered) {
+                    this.logsHandlerRegistered = true;
+                    this.props.logsWorker.registerErrorCountHandler(this.onErrorsUpdates);
+                    this.props.logsWorker.registerWarningCountHandler(this.onWarningsUpdates);
+                }
+            });
     }
+
+    onNotificationsHandler = () => {
+        return this.props.hostsWorker.getNotifications()
+            .then(notifications => this.calculateWarning(notifications));
+    };
 
     onErrorsUpdates = logErrors => {
         if (this.props.currentTab !== 'tab-logs' || (this.props.currentTab === 'tab-logs' && this.state.logErrors)) {
@@ -255,31 +263,39 @@ class Drawer extends Component {
         }
     }
 
-    getAdaptersWarning = ({ result }) => {
-        if (!result || !result.system) {
+    calculateWarning = notifications => {
+        if (!notifications) {
             return;
         }
-        if (Object.keys(result.system.categories).length) {
-            let count = 0;
-            let obj = result.system.categories;
-            Object.keys(obj).forEach(nameTab => {
-                Object.keys(obj[nameTab].instances).forEach(_ => {
-                    count++
-                });
-            });
-            this.setState({ hostError: count });
-        }
+
+        let count = 0;
+
+        Object.keys(notifications).forEach(host => {
+            if (!notifications[host]?.result?.system) {
+                return;
+            }
+
+            if (Object.keys(notifications[host].result.system.categories).length) {
+                let obj = notifications[host].result.system.categories;
+
+                Object.keys(obj).forEach(nameTab =>
+                    Object.keys(obj[nameTab].instances).forEach(_ => count++));
+            }
+        });
+
+        this.setState({ hostError: count });
     }
 
     componentWillUnmount() {
         this.props.instancesWorker.unregisterHandler(this.instanceChangedHandler);
+        this.props.hostsWorker.registerNotificationHandler(this.onNotificationsHandler);
+
         if (this.logsHandlerRegistered) {
             this.logsHandlerRegistered = false;
             this.props.logsWorker.registerErrorCountHandler(this.onErrorsUpdates);
             this.props.logsWorker.registerWarningCountHandler(this.onWarningsUpdates);
         }
     }
-
 
     componentDidUpdate() {
         if (!this.isSwipeable() && this.props.state !== STATES.opened && this.state.editList) {
@@ -605,15 +621,19 @@ Drawer.propTypes = {
     state: PropTypes.number,
     onStateChange: PropTypes.func,
     onLogout: PropTypes.func,
-    logsWorker: PropTypes.object,
+    systemConfig: PropTypes.object,
     logoutTitle: PropTypes.string,
     isSecure: PropTypes.bool,
     currentTab: PropTypes.string,
+    themeName: PropTypes.string,
     socket: PropTypes.object,
     ready: PropTypes.bool,
     expertMode: PropTypes.bool,
     handleNavigation: PropTypes.func,
+
     instancesWorker: PropTypes.object,
+    hostsWorker: PropTypes.object,
+    logsWorker: PropTypes.object,
 
     hostname: PropTypes.string,
     protocol: PropTypes.string,

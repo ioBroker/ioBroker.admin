@@ -298,7 +298,8 @@ const HostCard = ({
     systemConfig,
     setBaseSettingsDialog,
     expertMode,
-    modalAdaptersWarning
+    hostsWorker,
+    showAdaptersWarning
 }) => {
 
     const [openCollapse, setCollapse] = useState(false);
@@ -378,28 +379,33 @@ const HostCard = ({
         }
     }
 
-    const [errorHost, setErrorHost] = useState({ notifications: {}, count: 0 });
-
-    const getAdaptersWarning = (notifications) => {
+    const calculateWarning = notifications => {
+        if (!notifications) {
+            return 0;
+        }
         const { result } = notifications;
+        let count = 0;
         if (!result || !result.system) {
-            return;
+            return count;
         }
         if (Object.keys(result.system.categories).length) {
-            let count = 0;
             let obj = result.system.categories;
-            Object.keys(obj).forEach(nameTab => {
-                Object.keys(obj[nameTab].instances).forEach(_ => {
-                    count++
-                });
-            });
-            setErrorHost({ notifications, count });
+            Object.keys(obj).forEach(nameTab =>
+                Object.keys(obj[nameTab].instances).forEach(_ => count++));
         }
-    }
+        return count;
+    };
+
+    const [errorHost, setErrorHost] = useState({ notifications: {}, count: 0 });
 
     useEffect(() => {
-        socket.getNotifications(`system.host.${name}`)
-            .then(notifications => getAdaptersWarning(notifications));
+        const notificationHandler = notifications =>
+            notifications && notifications[_id] && setErrorHost({notifications: notifications[_id], count: calculateWarning(notifications[_id])});
+
+        hostsWorker.registerNotificationHandler(notificationHandler);
+
+        hostsWorker.getNotifications(_id)
+            .then(notifications => notifications && notifications[_id] && setErrorHost({notifications: notifications[_id], count: calculateWarning(notifications[_id])}));
 
         socket.subscribeState(`${_id}.inputCount`, eventsInputFunc);
         socket.subscribeState(`${_id}.outputCount`, eventsOutputFunc);
@@ -413,16 +419,17 @@ const HostCard = ({
         socket.subscribeState(`${_id}.diskWarning`, warningFunc);
 
         return () => {
-            socket.unsubscribeObject(`${_id}.inputCount`, eventsInputFunc);
-            socket.unsubscribeObject(`${_id}.outputCount`, eventsOutputFunc);
+            hostsWorker.unregisterNotificationHandler(notificationHandler);
+            socket.unsubscribeState(`${_id}.inputCount`, eventsInputFunc);
+            socket.unsubscribeState(`${_id}.outputCount`, eventsOutputFunc);
 
-            socket.unsubscribeObject(`${_id}.cpu`, cpuFunc);
-            socket.unsubscribeObject(`${_id}.mem`, memFunc);
-            socket.unsubscribeObject(`${_id}.uptime`, uptimeFunc);
+            socket.unsubscribeState(`${_id}.cpu`, cpuFunc);
+            socket.unsubscribeState(`${_id}.mem`, memFunc);
+            socket.unsubscribeState(`${_id}.uptime`, uptimeFunc);
 
-            socket.unsubscribeObject(`${_id}.diskFree`, warningFunc);
-            socket.unsubscribeObject(`${_id}.diskSize`, warningFunc);
-            socket.unsubscribeObject(`${_id}.diskWarning`, warningFunc);
+            socket.unsubscribeState(`${_id}.diskFree`, warningFunc);
+            socket.unsubscribeState(`${_id}.diskSize`, warningFunc);
+            socket.unsubscribeState(`${_id}.diskWarning`, warningFunc);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [_id, socket, classes]);
@@ -457,10 +464,14 @@ const HostCard = ({
                 style={{ color: (color && Utils.invertColor(color, true)) || 'inherit' }}
                 className={classes.adapter}>
                 <Badge
+                    title={t('Hosts notifications')}
                     badgeContent={errorHost.count}
                     color="error"
                     className={classes.badge}
-                    onClick={() => modalAdaptersWarning(errorHost.notifications, socket, `system.host.${name}`)}
+                    onClick={e => {
+                        e.stopPropagation();
+                        showAdaptersWarning({[_id]: errorHost.notifications}, socket, _id);
+                    }}
                 >{name}
                 </Badge>
             </div>
