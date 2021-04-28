@@ -1282,5 +1282,6 @@
   "group_acl_users": "Gebruikersrechten",
   "runtime": "Looptijd",
   "Repeat password is not equal with password": "Het herhaalde wachtwoord is niet gelijk aan het wachtwoord!",
-  "Empty password is not allowed": "Leeg wachtwoord is niet toegestaan"
+  "Empty password is not allowed": "Leeg wachtwoord is niet toegestaan",
+  "stop_admin": "U probeert het huidige admin-exemplaar te stoppen. U kunt ioBroker niet via de browser configureren. U kunt admin later starten via het CLI-commando \"iob start %s\". Weet je het zeker?"
 }

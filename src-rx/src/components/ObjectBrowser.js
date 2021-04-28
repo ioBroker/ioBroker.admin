@@ -1085,35 +1085,6 @@ function findFunctionsForObject(data, id, lang, withParentInfo, funcs) {
     return { funcs, pef: !ownEnums };
 }
 
-function getStates(obj) {
-    let states;
-    if (obj &&
-        obj.common &&
-        obj.common.states) {
-        states = obj.common.states;
-    }
-    if (states) {
-        if (typeof states === 'string' && states[0] === '{') {
-            try {
-                states = JSON.parse(states);
-            } catch (ex) {
-                console.error(`Cannot parse states: ${states}`);
-                states = null;
-            }
-        } else
-            // if old format val1:text1;val2:text2
-            if (typeof states === 'string') {
-                const parts = states.split(';');
-                states = {};
-                for (let p = 0; p < parts.length; p++) {
-                    const s = parts[p].split(':');
-                    states[s[0]] = s[1];
-                }
-            }
-    }
-    return states;
-}
-
 /*function quality2text(q) {
     if (!q) {
         return 'ok';
@@ -1130,7 +1101,7 @@ function getStates(obj) {
 }*/
 
 function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
-    const states = getStates(obj);
+    const states = Utils.getStates(obj);
     const isCommon = obj.common;
 
     const valText = {};
@@ -4141,7 +4112,7 @@ class ObjectBrowser extends Component {
             return null;
         }
 
-        const type = (this.objects[this.edit.id].common && this.objects[this.edit.id].common.type) ?
+        const type = this.objects[this.edit.id].common?.type ?
             this.objects[this.edit.id].common.type : typeof this.edit.val;
 
         const ObjectBrowserValue = this.props.objectBrowserValue;
@@ -4149,6 +4120,7 @@ class ObjectBrowser extends Component {
         return <ObjectBrowserValue
             t={this.props.t}
             type={type}
+            states={Utils.getStates(this.objects[this.edit.id])}
             themeType={this.props.themeType}
             expertMode={this.state.filter.expertMode}
             value={this.edit.val}

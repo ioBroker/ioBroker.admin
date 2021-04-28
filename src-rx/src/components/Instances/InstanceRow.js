@@ -5,9 +5,8 @@ import clsx from 'clsx';
 
 import {
     Accordion, AccordionDetails, AccordionSummary, Avatar,
-    // Badge,
     Button, CardMedia, FormControl, Grid, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography
-} from "@material-ui/core";
+} from '@material-ui/core';
 import { amber, blue, green, grey, red, orange } from '@material-ui/core/colors';
 
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -27,6 +26,7 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 
 import I18n from '@iobroker/adapter-react/i18n';
 import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
+import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 
 import InstanceInfo from './InstanceInfo';
 import State from '../State';
@@ -545,7 +545,8 @@ const InstanceRow = ({
     idx,
     tier,
     setTier,
-    themeType
+    themeType,
+    adminInstance
 }) => {
     const [openSelect, setOpenSelect] = useState(false);
     const [openDialogCron, setOpenDialogCron] = useState(false);
@@ -561,9 +562,10 @@ const InstanceRow = ({
     const [openDialogSelectTier, setOpenDialogSelectTier] = useState(false);
     const [tierValue, setTierValue] = useState(tier);
     const [showLinks, setShowLinks] = useState(false);
+    const [showStopAdminDialog, setShowStopAdminDialog] = useState(false);
 
     const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
-    const arrayTier = [{ value: 1, desc: "1: Logic adapters" }, { value: 2, desc: "2: Data provider adapters" }, { value: 3, desc: "3: Other adapters" }];
+    const arrayTier = [{ value: 1, desc: '1: Logic adapters' }, { value: 2, desc: '2: Data provider adapters' }, { value: 3, desc: '3: Other adapters' }];
 
     let showModal = false;
 
@@ -709,6 +711,18 @@ const InstanceRow = ({
         themeType={themeType}
     /> : null;
 
+    const stopAdminDialog = showStopAdminDialog ? <ConfirmDialog
+        title={t('Please confirm')}
+        text={t('stop_admin', adminInstance)}
+        ok={t('Stop admin')}
+        onClose={result => {
+            if (result) {
+                extendObject(showStopAdminDialog, { common: { enabled: false } });
+            }
+            setShowStopAdminDialog(false);
+        }}
+    /> : null;
+
     return <Accordion key={key} square
         expanded={expanded === instance.id}
         onChange={() => {
@@ -734,6 +748,7 @@ const InstanceRow = ({
             )}
             expandIcon={<ExpandMoreIcon />}>
             {customModal}
+            {stopAdminDialog}
             {(openDialogCron || openDialogSchedule) && <ComplexCron
                 title={
                     (openDialogCron && t('Edit restart rule for %s', instance.id)) ||
@@ -780,8 +795,13 @@ const InstanceRow = ({
                         <IconButton
                             size="small"
                             onClick={event => {
-                                extendObject('system.adapter.' + instance.id, { common: { enabled: !running } });
                                 event.stopPropagation();
+                                event.preventDefault();
+                                if (running && instance.id === adminInstance) {
+                                    setShowStopAdminDialog('system.adapter.' + instance.id);
+                                } else {
+                                    extendObject('system.adapter.' + instance.id, { common: { enabled: !running } });
+                                }
                             }}
                             onFocus={event => event.stopPropagation()}
                             className={clsx(classes.button, instance.canStart ?
@@ -1166,6 +1186,7 @@ const InstanceRow = ({
 InstanceRow.propTypes = {
     t: PropTypes.func,
     themeType: PropTypes.string,
+    adminInstance: PropTypes.string,
 };
 
 

@@ -1282,5 +1282,6 @@
   "group_acl_users": "Autorisations des utilisateurs",
   "runtime": "Durée",
   "Repeat password is not equal with password": "Le mot de passe répété n'est pas égal au mot de passe!",
-  "Empty password is not allowed": "Le mot de passe vide n'est pas autorisé"
+  "Empty password is not allowed": "Le mot de passe vide n'est pas autorisé",
+  "stop_admin": "Vous essayez d'arrêter l'instance d'administration actuelle. Vous ne pourrez pas configurer ioBroker via le navigateur. Vous pouvez démarrer l'administrateur plus tard via la commande CLI \"iob start %s\". Êtes-vous sûr?"
 }

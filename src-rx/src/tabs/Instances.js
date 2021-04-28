@@ -40,8 +40,8 @@ import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
 import InstanceCard from '../components/Instances/InstanceCard';
-import CustomSelectButton from '../components/CustomSelectButton';
 import InstanceRow from '../components/Instances/InstanceRow';
+import CustomSelectButton from '../components/CustomSelectButton';
 import sentry from '../assets/sentry.svg'
 
 const styles = theme => ({
@@ -718,6 +718,7 @@ class Instances extends Component {
                         memoryLimitMB={memoryLimitMB}
                         setMemoryLimitMB={setMemoryLimitMB}
                         themeType={this.props.themeType}
+                        adminInstance={this.props.adminInstance}
                     /> :
                     <InstanceRow
                         idx={idx}
@@ -765,6 +766,7 @@ class Instances extends Component {
                         memoryLimitMB={memoryLimitMB}
                         setMemoryLimitMB={setMemoryLimitMB}
                         themeType={this.props.themeType}
+                        adminInstance={this.props.adminInstance}
                     />,
                 running,
                 host: instance.host,

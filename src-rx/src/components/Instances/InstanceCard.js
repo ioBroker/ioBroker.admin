@@ -3,7 +3,21 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
-import { Button, Card, CardContent, CardMedia, Fab, FormControl, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from "@material-ui/core";
+import {
+    Button,
+    Card,
+    CardContent,
+    CardMedia,
+    Fab,
+    FormControl,
+    Hidden,
+    IconButton,
+    InputLabel,
+    MenuItem,
+    Select,
+    Tooltip,
+    Typography
+} from "@material-ui/core";
 
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -29,6 +43,7 @@ import InstanceInfo from './InstanceInfo';
 import State from '../State';
 import CustomModal from '../CustomModal';
 import LinksDialog from './LinksDialog';
+import ConfirmDialog from "@iobroker/adapter-react/Dialogs/Confirm";
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -317,7 +332,8 @@ const InstanceCard = memo(({
     t,
     tier,
     setTier,
-    themeType
+    themeType,
+    adminInstance
 }) => {
     const [openCollapse, setCollapse] = useState(false);
     const [mouseOver, setMouseOver] = useState(false);
@@ -335,6 +351,7 @@ const InstanceCard = memo(({
     const [openDialogSelectTier, setOpenDialogSelectTier] = useState(false);
     const [tierValue, setTierValue] = useState(tier);
     const [showLinks, setShowLinks] = useState(false);
+    const [showStopAdminDialog, setShowStopAdminDialog] = useState(false);
 
     const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
     const arrayTier = [{ value: 1, desc: "1: Logic adapters" }, { value: 2, desc: "2: Data provider adapters" }, { value: 3, desc: "3: Other adapters" }];
@@ -467,6 +484,18 @@ const InstanceCard = memo(({
                 {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
             </CustomModal>
             : null;
+
+    const stopAdminDialog = showStopAdminDialog ? <ConfirmDialog
+        title={t('Please confirm')}
+        text={t('stop_admin', adminInstance)}
+        ok={t('Stop admin')}
+        onClose={result => {
+            if (result) {
+                extendObject(showStopAdminDialog, { common: { enabled: false } });
+            }
+            setShowStopAdminDialog(false);
+        }}
+    /> : null;
 
     const secondCardInfo = openCollapse || mouseOver ?
         <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
@@ -691,6 +720,7 @@ const InstanceCard = memo(({
 
     return <Card key={key} className={clsx(classes.root, hidden ? classes.hidden : '')}>
         {customModal}
+        {stopAdminDialog}
         {cronDialog}
         {secondCardInfo}
         {linksDialog}
@@ -745,8 +775,12 @@ const InstanceCard = memo(({
                         <div><IconButton
                             size="small"
                             onClick={event => {
-                                extendObject('system.adapter.' + instance.id, { common: { enabled: !running } });
                                 event.stopPropagation();
+                                if (running && instance.id === adminInstance) {
+
+                                } else {
+                                    extendObject('system.adapter.' + instance.id, { common: { enabled: !running } });
+                                }
                             }}
                             onFocus={event => event.stopPropagation()}
                             className={clsx(classes.button, instance.canStart ? (running ? classes.enabled : classes.disabled) : classes.hide)}
@@ -811,6 +845,7 @@ const InstanceCard = memo(({
 InstanceCard.propTypes = {
     t: PropTypes.func,
     themeType: PropTypes.string,
+    adminInstance: PropTypes.string,
 };
 
 export default withStyles(styles)(InstanceCard);

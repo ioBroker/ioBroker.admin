@@ -1282,5 +1282,6 @@
   "group_acl_users": "Benutzerberechtigungen",
   "runtime": "Ausführung",
   "Repeat password is not equal with password": "Das wiederholte Passwort ist nicht gleich dem Passwort!",
-  "Empty password is not allowed": "Ein leeres Passwort ist nicht erlaubt"
+  "Empty password is not allowed": "Ein leeres Passwort ist nicht erlaubt",
+  "stop_admin": "Sie versuchen, die aktuelle Administratorinstanz zu stoppen. Sie können ioBroker nicht über den Browser konfigurieren. Sie können admin später über den CLI-Befehl \"iob start %s\" starten. Bist du sicher?"
 }

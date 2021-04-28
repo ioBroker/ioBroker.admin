@@ -1282,5 +1282,6 @@
   "group_acl_users": "Permissões de usuários",
   "runtime": "Tempo de execução",
   "Repeat password is not equal with password": "A senha repetida não é igual à senha!",
-  "Empty password is not allowed": "Senha vazia não é permitida"
+  "Empty password is not allowed": "Senha vazia não é permitida",
+  "stop_admin": "Você está tentando parar a instância atual do administrador. Você não poderá configurar o ioBroker por meio do navegador. Você pode iniciar o admin mais tarde por meio do comando CLI \"iob start %s\". Tem certeza?"
 }

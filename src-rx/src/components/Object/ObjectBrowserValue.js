@@ -54,6 +54,9 @@ class ObjectBrowserValue extends Component {
             this.propsValue = 'undefined';
         }
 
+        if (this.props.states) {
+            type = 'states';
+        } else
         if (type === 'string' || type === 'json') {
             if (this.value &&
                 ((this.value.startsWith('[') && this.value.endsWith(']')) ||
@@ -70,8 +73,9 @@ class ObjectBrowserValue extends Component {
             }
         }
 
+
         this.state = {
-            type
+            type,
         };
 
         this.ack   = false;
@@ -114,6 +118,22 @@ class ObjectBrowserValue extends Component {
         />;
     }
 
+    renderStates() {
+        if (!this.props.states) {
+            return null;
+        } else {
+            return <FormControl className={ this.props.classes.formControl }>
+                <InputLabel>{ this.props.t('Value') }</InputLabel>
+                <Select
+                    defaultValue={ this.propsValue }
+                    onChange={ e => this.value = e.target.value }
+                >
+                    {Object.keys(this.props.states).map((key, i) => <MenuItem key={i} value={key}>{this.props.states[key]}</MenuItem>)}
+                </Select>
+            </FormControl>;
+        }
+    }
+
     render() {
         return <Dialog
             open={ true }
@@ -137,6 +157,7 @@ class ObjectBrowserValue extends Component {
                                 <MenuItem value="number">Number</MenuItem>
                                 <MenuItem value="boolean">Boolean</MenuItem>
                                 <MenuItem value="json">JSON</MenuItem>
+                                {this.props.states ? <MenuItem value="states">States</MenuItem> : null}
                             </Select>
                         </FormControl></Grid> : null }
 
@@ -166,16 +187,20 @@ class ObjectBrowserValue extends Component {
                                 (this.state.type === 'json' ?
                                     this.renderJsonEditor()
                                     :
-                                    <TextField
-                                        className={ this.props.input }
-                                        autoFocus
-                                        helperText={ this.props.t('Press CTRL+ENTER to write the value, when focused')}
-                                        label={ this.props.t('Value') }
-                                        fullWidth={ true }
-                                        multiline
-                                        onKeyUp={e => e.ctrlKey && e.keyCode === 13 && this.onUpdate() }
-                                        defaultValue={ this.propsValue.toString() }
-                                        onChange={ e => this.value = e.target.value }/>
+                                        (this.state.type === 'states' ?
+                                                this.renderStates()
+                                                :
+                                                <TextField
+                                                    className={ this.props.input }
+                                                    autoFocus
+                                                    helperText={ this.props.t('Press CTRL+ENTER to write the value, when focused')}
+                                                    label={ this.props.t('Value') }
+                                                    fullWidth={ true }
+                                                    multiline
+                                                    onKeyUp={e => e.ctrlKey && e.keyCode === 13 && this.onUpdate() }
+                                                    defaultValue={ this.propsValue.toString() }
+                                                    onChange={ e => this.value = e.target.value }/>
+                                            )
                                 )
                             )
                         }
@@ -232,6 +257,7 @@ class ObjectBrowserValue extends Component {
 ObjectBrowserValue.propTypes = {
     classes: PropTypes.object,
     type: PropTypes.string,
+    states: PropTypes.object,
     value: PropTypes.any,
     expertMode: PropTypes.bool,
     onClose: PropTypes.func.isRequired,

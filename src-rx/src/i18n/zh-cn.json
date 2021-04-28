@@ -1282,5 +1282,6 @@
   "group_acl_users": "用户权限",
   "runtime": "运行",
   "Repeat password is not equal with password": "重复的密码不等于密码！",
-  "Empty password is not allowed": "不允许输入空密码"
+  "Empty password is not allowed": "不允许输入空密码",
+  "stop_admin": "您正在尝试停止当前的管理实例。您将无法通过浏览器配置ioBroker。您可以稍后通过CLI命令“ iob start %s”启动admin。你确定吗？"
 }

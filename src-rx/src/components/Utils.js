@@ -1361,6 +1361,39 @@ class Utils {
     static clone(object) {
         return JSON.parse(JSON.stringify(object));
     }
+
+    /**
+     * Get states of object
+     * @param {object} obj
+     * @returns {object} states as an object in form {"value1": "label1", "value2": "label2"} or null
+     */
+    static getStates(obj) {
+        let states = obj?.common?.states;
+        if (states) {
+            if (typeof states === 'string' && states[0] === '{') {
+                try {
+                    states = JSON.parse(states);
+                } catch (ex) {
+                    console.error(`Cannot parse states: ${states}`);
+                    states = null;
+                }
+            } else
+            // if old format val1:text1;val2:text2
+            if (typeof states === 'string') {
+                const parts = states.split(';');
+                states = {};
+                for (let p = 0; p < parts.length; p++) {
+                    const s = parts[p].split(':');
+                    states[s[0]] = s[1];
+                }
+            } else if (Array.isArray(states)) {
+                const result = {};
+                states.forEach((value, key) => result[key] = value);
+                return result;
+            }
+        }
+        return states;
+    }
 }
 
 export default Utils;

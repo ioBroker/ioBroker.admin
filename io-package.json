@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.10",
+        "version": "5.0.11",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -15,6 +15,18 @@
             "zh-cn": "Admin"
         },
         "news": {
+            "5.0.11": {
+                "en": "Admin5: users management implemented",
+                "de": "Admin5: Benutzerverwaltung implementiert",
+                "ru": "Admin5: реализовано управление пользователями",
+                "pt": "Admin5: gerenciamento de usuários implementado",
+                "nl": "Admin5: gebruikersbeheer geïmplementeerd",
+                "fr": "Admin5: gestion des utilisateurs implémentée",
+                "it": "Admin5: implementata la gestione degli utenti",
+                "es": "Admin5: gestión de usuarios implementada",
+                "pl": "Admin5: zaimplementowano zarządzanie użytkownikami",
+                "zh-cn": "Admin5：已实施用户管理"
+            },
             "5.0.10": {
                 "en": "Admin5: Implemented the language filter and selector for rating with comments",
                 "de": "Admin5: Der Sprachfilter und die Auswahl für die Bewertung mit Kommentaren wurden implementiert",
@@ -242,18 +254,6 @@
                 "es": "La descarga del registro fue corregida",
                 "pl": "Pobieranie dziennika zostało naprawione",
                 "zh-cn": "日志下载已修复"
-            },
-            "3.7.8": {
-                "en": "The disabling of custom settings was corrected",
-                "de": "Das Deaktivieren von benutzerdefinierten Einstellungen wurde korrigiert",
-                "ru": "Исправлено отключение пользовательских настроек",
-                "pt": "A desativação das configurações personalizadas foi corrigida",
-                "nl": "Het uitschakelen van aangepaste instellingen is gecorrigeerd",
-                "fr": "La désactivation des paramètres personnalisés a été corrigée",
-                "it": "La disabilitazione delle impostazioni personalizzate è stata corretta",
-                "es": "Se corrigió la desactivación de la configuración personalizada",
-                "pl": "Wyłączono niestandardowe ustawienia",
-                "zh-cn": "自定义设置的禁用已得到纠正"
             }
         },
         "desc": {
@@ -318,7 +318,7 @@
         ],
         "dependencies": [
             {
-                "js-controller": ">=2.0.0"
+                "js-controller": ">=3.2.16"
             }
         ],
         "type": "general",
@@ -335,7 +335,9 @@
             "order": 5,
             "localLink": true
         },
-        "localLink": "%protocol%://%ip%:%port%",
+        "localLinks": {
+            "_default": "%protocol%://%ip%:%port%"
+        },
         "plugins": {
             "sentry": {
                 "dsn": "https://9d2aaf29332a4999b133c693f43203b9@sentry.iobroker.net/18"
