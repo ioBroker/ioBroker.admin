@@ -316,7 +316,8 @@ const InstanceCard = memo(({
     setMemoryLimitMB,
     t,
     tier,
-    setTier
+    setTier,
+    themeType
 }) => {
     const [openCollapse, setCollapse] = useState(false);
     const [mouseOver, setMouseOver] = useState(false);
@@ -653,7 +654,14 @@ const InstanceCard = memo(({
             </div>
         </div> : null;
 
-    const linksDialog = showLinks ? <LinksDialog image={image} instanceId={instance.id}  links={instance.links} onClose={() => setShowLinks(false)} t={t}/> : null;
+    const linksDialog = showLinks ? <LinksDialog
+        image={image}
+        instanceId={instance.id}
+        links={instance.links}
+        onClose={() => setShowLinks(false)}
+        t={t}
+        themeType={themeType}
+    /> : null;
 
     const cronDialog = (openDialogCron || openDialogSchedule) &&
         <ComplexCron
@@ -802,6 +810,7 @@ const InstanceCard = memo(({
 
 InstanceCard.propTypes = {
     t: PropTypes.func,
+    themeType: PropTypes.string,
 };
 
 export default withStyles(styles)(InstanceCard);

@@ -965,11 +965,33 @@ class Utils {
         return bytes.toFixed(1) + ' ' + units[u];
     }
 
+    /**
+     * Invert the given color according to theme type to get the inverted text color for background
+     * @param {string} color Color in the format '#rrggbb' or '#rgb' (or without hash)
+     * @param {string} themeType theme type
+     * @param {string} invert dark theme has light color in control or light theme has light color in control
+     * @returns {string}
+     */
+    static getInvertedColor(color, themeType, invert) {
+        if (!color) {
+            return undefined;
+        } else {
+            const invertedColor = Utils.invertColor(color, true);
+            if (invertedColor === '#FFFFFF' && (themeType === 'dark' || (invert && themeType === 'light'))) {
+                return '#DDD';
+            }
+            if (invertedColor === '#000000' && (themeType === 'light' || (invert && themeType === 'dark'))) {
+                return '#222';
+            }
+            return undefined;
+        }
+    }
+
     // Big thanks to : https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
     /**
      * Invert the given color
      * @param {string} hex Color in the format '#rrggbb' or '#rgb' (or without hash)
-     * @param {boolean} [bw] Set to black or white.
+     * @param {boolean} bw Set to black or white.
      * @returns {string}
      */
     static invertColor(hex, bw) {

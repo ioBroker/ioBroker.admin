@@ -9,24 +9,19 @@ import IconButton from '@material-ui/core/IconButton';
 import ClearIcon from '@material-ui/icons/Clear';
 
 import ColorPicker from './ColorPicker';
+import IconSelector from './IconSelector';
 
 export function IOTextField(props) {
     let Icon = props.icon;
     return <div className={props.classes.formContainer}>
-        {
-            Icon 
-                ? 
-                <Icon className={ props.classes.formIcon } /> 
-                : 
-                null
-        }
+        {Icon ? <Icon className={ props.classes.formIcon } /> : null}
         <FormControl className={props.classes.formControl}>
             <InputLabel shrink>
                 { props.t(props.label)}
             </InputLabel>
             <TextField
                 autoComplete={props.autoComplete}
-                
+
                 value={props.value}
                 onChange={props.onChange}
                 disabled={props.disabled}
@@ -43,13 +38,7 @@ export function IOTextField(props) {
 let IOColorPicker = function (props) {
     let Icon = props.icon;
     return <div className="">
-        {
-            Icon 
-                ? 
-                <Icon className={ props.classes.formIcon } /> 
-                : 
-                null
-        }
+        {Icon ? <Icon className={ props.classes.formIcon } /> : null}
         <ColorPicker
             variant="standard"
             label={props.t(props.label)}
@@ -58,14 +47,14 @@ let IOColorPicker = function (props) {
                 style: {backgroundColor: props.value}
             }}
             InputProps={{
-                endAdornment: !props.disabled && props.value 
+                endAdornment: !props.disabled && props.value
                     ?
                     <IconButton
                         size="small"
                         onClick={() => props.onChange('')}>
                         <ClearIcon />
                     </IconButton>
-                    : 
+                    :
                     undefined,
             }}
             onChange={props.onChange}
@@ -74,7 +63,6 @@ let IOColorPicker = function (props) {
         />
     </div>;
 };
-
 IOColorPicker.propTypes = {
     label: PropTypes.string,
     name: PropTypes.string,
@@ -85,6 +73,7 @@ export {IOColorPicker};
 
 let IOFileInput = function (props) {
     let Icon = props.icon;
+
     const onDrop = useCallback(acceptedFiles => {
         const reader = new FileReader();
 
@@ -95,16 +84,11 @@ let IOFileInput = function (props) {
             reader.readAsDataURL(acceptedFiles[0]);
         }
       }, []); // eslint-disable-line react-hooks/exhaustive-deps
-      const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
+
+      const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop});
 
       return <div className={props.classes.formContainer}>
-        {
-            Icon
-                ? 
-                <Icon className={ props.classes.formIcon }/> 
-                : 
-                null
-        }
+        {Icon ? <Icon className={ props.classes.formIcon }/> : null}
         <FormControl className={props.classes.formControl} style={{padding: 3}}>
             <InputLabel shrink>
                 { props.t(props.label)}
@@ -120,20 +104,20 @@ let IOFileInput = function (props) {
                             <ClearIcon/>
                         </IconButton>
                     </>
-                :
-                    null
+                    :
+                    <IconSelector icons={props.icons} onSelect={base64 => props.onChange(base64)} t={props.t}/>
                 }
-                <div {...getRootProps()} style={{display: 'inline-block'}}>
-                <input {...getInputProps()} />
-                {
-                    isDragActive ?
-                    <p>Drop the files here ...</p> :
-                    <p>Drag 'n' drop some files here, or click to select files</p>
-                }
+
+                <div {...getRootProps()} style={Object.assign({textAlign: 'center', display: 'inline-block', height: 70,width: 240, border: '2px dashed #777', borderRadius: 10, marginTop: 12, padding: 4}, isDragActive ? {backgroundColor: 'rgba(0, 255, 0, 0.1)'} : {cursor: 'pointer'})}>
+                    <input {...getInputProps()} />
+                    {
+                        isDragActive ?
+                        <p>{props.t('Drop the files here ...')}</p> :
+                        <p>{props.t(`Drag 'n' drop some files here, or click to select files`)}</p>
+                    }
                 </div>
             </div>
         </FormControl>
     </div>;
 };
-
 export {IOFileInput};

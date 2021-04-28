@@ -717,6 +717,7 @@ class Instances extends Component {
                         deletedInstances={deletedInstances}
                         memoryLimitMB={memoryLimitMB}
                         setMemoryLimitMB={setMemoryLimitMB}
+                        themeType={this.props.themeType}
                     /> :
                     <InstanceRow
                         idx={idx}
@@ -763,6 +764,7 @@ class Instances extends Component {
                         deletedInstances={deletedInstances}
                         memoryLimitMB={memoryLimitMB}
                         setMemoryLimitMB={setMemoryLimitMB}
+                        themeType={this.props.themeType}
                     />,
                 running,
                 host: instance.host,

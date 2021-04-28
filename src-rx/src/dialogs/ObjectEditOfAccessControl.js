@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Checkbox, FormControl, InputLabel, LinearProgress, MenuItem, Select, Switch } from '@material-ui/core';
 import CustomModal from '../components/CustomModal';
-import Utils from '@iobroker/adapter-react/Components/Utils';
+
 import Icon from '@iobroker/adapter-react/Components/Icon';
 import I18n from '@iobroker/adapter-react/i18n';
+import Utils from '../Utils';
 
 const readWriteArray = [
     {
@@ -128,21 +129,6 @@ const ObjectRights = ({ value, disabled, setValue, t, differentValues, applyToCh
             </div>
         })}
     </div>;
-}
-
-function getBackgroundColor(textColor, themeType) {
-    if (!textColor) {
-        return undefined;
-    } else {
-        const invertedColor = Utils.invertColor(textColor, true);
-        if (invertedColor === '#FFFFFF' && themeType === 'dark') {
-            return '#DDD';
-        }
-        if (invertedColor === '#000000' && themeType === 'light') {
-            return '#222';
-        }
-        return undefined;
-    }
 }
 
 const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObject, objects, t, modalEmptyId, themeType }) => {
@@ -381,14 +367,14 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                             disabled={progress}
                             value={stateOwnerUser.value}
                             renderValue={value => <span>{stateOwnerUser.icon ? <Icon src={stateOwnerUser.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}{stateOwnerUser.name}</span>}
-                            style={stateOwnerUser.value === 'different' ? { opacity: 0.5 } : { color: stateOwnerUser.color || undefined, backgroundColor: getBackgroundColor(stateOwnerUser.color, themeType) }}
+                            style={stateOwnerUser.value === 'different' ? { opacity: 0.5 } : { color: stateOwnerUser.color || undefined, backgroundColor: Utils.getInvertedColor(stateOwnerUser.color, themeType) }}
                             onChange={el => {
                                 const userItem = ownerUsers.find(item => item.value === el.target.value);
                                 setStateOwnerUser(userItem);
                                 setDisabledButton(false);
                             }}
                         >
-                            {ownerUsers.map(el => <MenuItem style={el.value === 'different' ? { opacity: 0.5 } : { color: el.color || undefined, backgroundColor: getBackgroundColor(el.color, themeType) }} key={el.value} value={el.value}>
+                            {ownerUsers.map(el => <MenuItem style={el.value === 'different' ? { opacity: 0.5 } : { color: el.color || undefined, backgroundColor: Utils.getInvertedColor(el.color, themeType) }} key={el.value} value={el.value}>
                                 {el.icon ? <Icon src={el.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}
                                 {el.name}
                             </MenuItem>)}
@@ -400,14 +386,14 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                             disabled={progress}
                             value={stateOwnerGroup.value}
                             renderValue={value => <span>{stateOwnerGroup.icon ? <Icon src={stateOwnerGroup.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}{stateOwnerGroup.name}</span>}
-                            style={stateOwnerGroup.value === 'different' ? { opacity: 0.5 } : { color: stateOwnerGroup.color || undefined, backgroundColor: getBackgroundColor(stateOwnerGroup.color, themeType) }}
+                            style={stateOwnerGroup.value === 'different' ? { opacity: 0.5 } : { color: stateOwnerGroup.color || undefined, backgroundColor: Utils.getInvertedColor(stateOwnerGroup.color, themeType) }}
                             onChange={el => {
                                 const groupItem = ownerGroups.find(item => item.value === el.target.value);
                                 setStateOwnerGroup(groupItem);
                                 setDisabledButton(false);
                             }}
                         >
-                            {ownerGroups.map(el => <MenuItem key={el.value} value={el.value} style={el.value === 'different' ? { opacity: 0.5 } : { color: el.color || undefined, backgroundColor: getBackgroundColor(el.color, themeType) }}>
+                            {ownerGroups.map(el => <MenuItem key={el.value} value={el.value} style={el.value === 'different' ? { opacity: 0.5 } : { color: el.color || undefined, backgroundColor: Utils.getInvertedColor(el.color, themeType) }}>
                                 {el.icon ? <Icon src={el.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}
                                 {el.name}
                             </MenuItem>)}

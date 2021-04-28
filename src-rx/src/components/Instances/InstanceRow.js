@@ -14,7 +14,6 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import BuildIcon from '@material-ui/icons/Build';
 import InputIcon from '@material-ui/icons/Input';
 import DeleteIcon from '@material-ui/icons/Delete';
-// import InfoIcon from '@material-ui/icons/Info';
 import LowPriorityIcon from '@material-ui/icons/LowPriority';
 import MemoryIcon from '@material-ui/icons/Memory';
 import ScheduleIcon from '@material-ui/icons/Schedule';
@@ -545,7 +544,8 @@ const InstanceRow = ({
     t,
     idx,
     tier,
-    setTier
+    setTier,
+    themeType
 }) => {
     const [openSelect, setOpenSelect] = useState(false);
     const [openDialogCron, setOpenDialogCron] = useState(false);
@@ -700,7 +700,14 @@ const InstanceRow = ({
 
     const state = getInstanceState(id);
 
-    const linksDialog = showLinks ? <LinksDialog image={instance.image} instanceId={instance.id} links={instance.links} onClose={() => setShowLinks(false)} t={t} /> : null;
+    const linksDialog = showLinks ? <LinksDialog
+        image={instance.image}
+        instanceId={instance.id}
+        links={instance.links}
+        onClose={() => setShowLinks(false)}
+        t={t}
+        themeType={themeType}
+    /> : null;
 
     return <Accordion key={key} square
         expanded={expanded === instance.id}
@@ -1157,11 +1164,8 @@ const InstanceRow = ({
 }
 
 InstanceRow.propTypes = {
-    /**
-     * Link and text
-     * {link: 'https://example.com', text: 'example.com'}
-     */
     t: PropTypes.func,
+    themeType: PropTypes.string,
 };
 
 

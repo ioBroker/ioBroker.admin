@@ -1,3 +1,4 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -7,12 +8,11 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
+import Icon from '@iobroker/adapter-react/Components/Icon';
 import I18n from '@iobroker/adapter-react/i18n';
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import Utils from '../Utils';
 
 import ConfigGeneric from './ConfigGeneric';
-import Icon from "@iobroker/adapter-react/Components/Icon";
-import React from "react";
 
 const styles = theme => ({
     fullWidth: {
@@ -24,21 +24,6 @@ const styles = theme => ({
         marginRight: 8
     }
 });
-
-function getBackgroundColor(textColor, themeType) {
-    if (!textColor) {
-        return undefined;
-    } else {
-        const invertedColor = Utils.invertColor(textColor, true);
-        if (invertedColor === '#FFFFFF' && themeType === 'dark') {
-            return '#DDD';
-        }
-        if (invertedColor === '#000000' && themeType === 'light') {
-            return '#222';
-        }
-        return undefined;
-    }
-}
 
 class ConfigUser extends ConfigGeneric {
     componentDidMount() {
@@ -76,10 +61,10 @@ class ConfigUser extends ConfigGeneric {
                 disabled={!!disabled}
                 value={value}
                 renderValue={val => <span>{this.state.users && this.state.users[val]?.icon ? <Icon src={this.state.users && this.state.users[val]?.icon} className={this.props.classes.icon} /> : null}{(this.state.users && this.state.users[val]?.name) || val || ''}</span>}
-                style={{ color: (this.state.users && this.state.users[value]?.color) || undefined, backgroundColor: getBackgroundColor(this.state.users && this.state.users[value]?.color, this.props.themeType) }}
+                style={{ color: (this.state.users && this.state.users[value]?.color) || undefined, backgroundColor: Utils.getInvertedColor(this.state.users && this.state.users[value]?.color, this.props.themeType) }}
                 onChange={e => this.onChange(this.props.attr, e.target.value)}
             >
-                {this.state.users && Object.keys(this.state.users).map(id => <MenuItem style={{ color: this.state.users[id].color || undefined, backgroundColor: getBackgroundColor(this.state.users[id].color, this.props.themeType) }} key={id} value={id}>
+                {this.state.users && Object.keys(this.state.users).map(id => <MenuItem style={{ color: this.state.users[id].color || undefined, backgroundColor: Utils.getInvertedColor(this.state.users[id].color, this.props.themeType) }} key={id} value={id}>
                     {this.state.users[id].icon ? <Icon src={this.state.users[id].icon} className={this.props.classes.icon} /> : null}
                     {this.state.users[id].name}
                 </MenuItem>)}

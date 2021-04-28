@@ -21,7 +21,8 @@
 ## Info
 
 ## Adapters
-- Adapters - Use readme renderer from www.iobroker.net (BF)
+- Use readme renderer from www.iobroker.net (BF)
+- Downgrade must be possible - https://github.com/ioBroker/ioBroker.admin/issues/776
 
 ## Wizard
 
@@ -44,6 +45,7 @@
     - Go to the next instance
 
 ## Logs
+- ON multihost no source at all - https://github.com/ioBroker/ioBroker.admin/issues/777
 
 ## Instances
 - if more than one host => host selector for every instance

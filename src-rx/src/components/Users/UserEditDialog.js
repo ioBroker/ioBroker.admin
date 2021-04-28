@@ -6,7 +6,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 
 import TextFieldsIcon from '@material-ui/icons/TextFields';
@@ -20,17 +19,44 @@ import ImageIcon from '@material-ui/icons/Image';
 import {IOTextField, IOColorPicker, IOFileInput} from '../IOFields/Fields';
 import Utils from '../Utils';
 
+import User1 from '../../assets/users/user1.svg';
+import User2 from '../../assets/users/user2.svg';
+import User3 from '../../assets/users/user3.svg';
+import User4 from '../../assets/users/user4.svg';
+import User5 from '../../assets/users/user5.svg';
+import User6 from '../../assets/users/user6.svg';
+import User7 from '../../assets/users/user7.svg';
+import User8 from '../../assets/users/user8.svg';
+import User9 from '../../assets/users/user9.svg';
+import User10 from '../../assets/users/user10.svg';
+import User11 from '../../assets/users/user11.svg';
+import User12 from '../../assets/users/user12.svg';
+import IconSelector from "../IOFields/IconSelector";
+
+const USER_ICONS = [User1, User2, User3, User4, User5, User6, User7, User8, User9, User10, User11, User12];
+
 function UserEditDialog(props) {
     let [originalId, setOriginalId] = useState(null);
-    useEffect(()=>{
+    useEffect(() => {
         setOriginalId(props.user._id);
+        if (props.isNew) {
+            const icon = USER_ICONS[Math.round(Math.random() * (USER_ICONS.length - 1))];
+
+            icon && IconSelector.getSvg(icon)
+                .then(fileBlob => {
+                    let newData = Utils.clone(props.user);
+                    newData.common.icon = fileBlob;
+                    props.change(newData);
+                });
+        }
+    // eslint-disable-next-line
     }, [props.open]);
 
     if (!props.open) {
         return null;
     }
 
-    let idExists = props.users.find(user => user._id == props.user._id);
+    let idExists = props.users.find(user => user._id === props.user._id);
     let idChanged = props.user._id !== originalId;
 
     let canSave = props.user._id !== 'system.user.' &&
@@ -40,15 +66,12 @@ function UserEditDialog(props) {
         if (idExists) {
             canSave = false;
         }
-    } else {
-        if (idExists && idChanged) {
-            canSave = false;
-        }
+    } else if (idExists && idChanged) {
+        canSave = false;
     }
 
-    const getShortId = _id => {
-        return _id.split('.').pop();
-    };
+    const getShortId = _id =>
+        _id.split('.').pop();
 
     const name2Id = name =>
         name.replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_').toLowerCase();
@@ -82,7 +105,7 @@ function UserEditDialog(props) {
                         label="Name"
                         t={props.t}
                         value={ name }
-                        onChange={e=>{
+                        onChange={e => {
                             let newData = Utils.clone(props.user);
                             if (!props.user.common.dontDelete && name2Id(newData.common.name) === getShortId(newData._id)) {
                                 newData._id = changeShortId(newData._id, name2Id(e.target.value));
@@ -101,7 +124,7 @@ function UserEditDialog(props) {
                         t={props.t}
                         disabled={props.user.common.dontDelete}
                         value={ props.user._id.split('.')[props.user._id.split('.').length-1] }
-                        onChange={e=>{
+                        onChange={e => {
                             let newData = Utils.clone(props.user);
                             newData._id = changeShortId(newData._id, name2Id(e.target.value));
                             props.change(newData);
@@ -125,7 +148,7 @@ function UserEditDialog(props) {
                         label="Description"
                         t={props.t}
                         value={ description }
-                        onChange={e=>{
+                        onChange={e => {
                             let newData = Utils.clone(props.user);
                             newData.common.desc = e.target.value;
                             props.change(newData);
@@ -139,7 +162,7 @@ function UserEditDialog(props) {
                         label="Password"
                         t={props.t}
                         value={ props.user.common.password }
-                        onChange={e=>{
+                        onChange={e => {
                             let newData = Utils.clone(props.user);
                             newData.common.password = e.target.value;
                             props.change(newData);
@@ -155,7 +178,7 @@ function UserEditDialog(props) {
                         label="Password repeat"
                         t={props.t}
                         value={ props.user.common.passwordRepeat }
-                        onChange={e=>{
+                        onChange={e => {
                             let newData = Utils.clone(props.user);
                             newData.common.passwordRepeat = e.target.value;
                             props.change(newData);
@@ -168,12 +191,13 @@ function UserEditDialog(props) {
                 </Grid>
                  <Grid item xs={12} md={6}>
                     <IOFileInput
+                        icons={USER_ICONS}
                         label="Icon"
                         t={props.t}
                         value={ props.user.common.icon }
-                        onChange={fileblob=>{
+                        onChange={fileBlob => {
                             let newData = Utils.clone(props.user);
-                            newData.common.icon = fileblob;
+                            newData.common.icon = fileBlob;
                             props.change(newData);
                         }}
                         previewClassName={props.classes.iconPreview}
@@ -187,7 +211,7 @@ function UserEditDialog(props) {
                         t={props.t}
                         value={ props.user.common.color }
                         previewClassName={props.classes.iconPreview}
-                        onChange={color=>{
+                        onChange={color => {
                             let newData = Utils.clone(props.user);
                             newData.common.color = color;
                             props.change(newData);
@@ -200,8 +224,8 @@ function UserEditDialog(props) {
             </Grid>
         </DialogContent>
         <DialogActions className={props.classes.dialogActions} >
-            <Button onClick={()=>props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>{props.t('Save')}</Button>
-            <Button onClick={props.onClose}>{props.t('Cancel')}</Button>
+            <Button variant="contained" color="primary" autoFocus onClick={()=>props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>{props.t('Save')}</Button>
+            <Button variant="contained" onClick={props.onClose}>{props.t('Cancel')}</Button>
         </DialogActions>
     </Dialog>;
 }

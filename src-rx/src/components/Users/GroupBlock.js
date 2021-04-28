@@ -22,46 +22,45 @@ function GroupBlock(props) {
             CanDrop: monitor.canDrop()
         }),
     }), [props.group.common.members]);
-    let opacity =  .7; 
+
+    let opacity =  .7;
     let backgroundColor = '';
     const isActive = CanDrop && isOver;
+
     if (isActive) {
         opacity = isCanDrop ? 1 : 0.125;
         backgroundColor = props.classes.userGroupCardSecondary;
-    }
-    else if (CanDrop) {
+    } else if (CanDrop) {
         opacity = isCanDrop ? .75 : .25;
+    }
 
-    } 
-    let textColor = props.group.common.color && Color(props.group.common.color).hsl().object().l < 50 
+    let textColor = props.group.common.color && Color(props.group.common.color).hsl().object().l < 50
         ?
-        '#FFFFFF' 
-        : 
+        '#FFFFFF'
+        :
         '#000000';
+
     if (!props.group.common.color) {
         textColor = null;
     }
     let style = { opacity, overflow: 'hidden', color: textColor  };
-    if( props.group.common.color )
-    {
+
+    if (props.group.common.color) {
         style.backgroundColor = props.group.common.color;
     }
 
-    return <Card 
-        style={ style } 
-        ref={drop} 
-        className={ clsx( props.classes.userGroupCard2, backgroundColor  ) }
+    return <Card
+        style={ style }
+        ref={drop}
+        className={ clsx(props.classes.userGroupCard2, backgroundColor) }
     >
-        <div 
-            className={props.classes.right} 
-            style={{ }}
-        >
+        <div className={props.classes.right}>
             <IconButton size="small" onClick={()=>{props.showGroupEditDialog(props.group, false)}}>
                 <EditIcon style={{ color: textColor }} />
             </IconButton>
-            <IconButton 
-                size="small" 
-                onClick={()=>{props.showGroupDeleteDialog(props.group)}} 
+            <IconButton
+                size="small"
+                onClick={()=>{props.showGroupDeleteDialog(props.group)}}
                 disabled={props.group.common.dontDelete}
             >
                 <DeleteIcon style={props.group.common.dontDelete ? null : { color: textColor }} />
@@ -70,15 +69,15 @@ function GroupBlock(props) {
         <CardContent>
             <Typography gutterBottom component="div" className={props.classes.userGroupTitle}>
                 {
-                    props.group.common.icon 
-                        ?                         
+                    props.group.common.icon
+                        ?
                         <span
                             className={ props.classes.icon }
                             style={{ backgroundImage: 'url(' + props.group.common.icon + ')' }}
                         />
-                        : 
+                        :
                         <GroupIcon className={props.classes.icon} />
-                } 
+                }
                 <div>
                     <div>
                         <span className={props.classes.userGroupUserName}>
@@ -89,29 +88,29 @@ function GroupBlock(props) {
                         </span>
                      </div>
                     {
-                        props.group.common.desc !== '' 
-                            ? 
+                        props.group.common.desc !== ''
+                            ?
                             <span>
                                 {props.group.common.desc}
-                            </span> 
-                            : 
+                            </span>
+                            :
                             null
                     }
                 </div>
             </Typography>
             {
-                props.group.common.members.length 
-                    ? 
-                    <div>{props.t('Group members')}:</div> 
-                    : 
+                props.group.common.members.length
+                    ?
+                    <div>{props.t('Group members')}:</div>
+                    :
                     null
             }
             <div>
             {
                 props.group.common.members.map( (member, i) => {
                     let user = props.users.find(user => user._id === member);
-                    return user 
-                        ? 
+                    return user
+                        ?
                         <Card
                         key={i}
                         variant="outlined"
@@ -119,30 +118,30 @@ function GroupBlock(props) {
                         style={{ color: textColor, borderColor: textColor + '40' }}
                     >
                          {
-                            user.common.icon 
-                            ?                         
+                            user.common.icon
+                            ?
                             <span
                                 className={ props.classes.icon }
                                 style={{ backgroundImage: 'url(' + user.common.icon + ')' }}
                             />
-                            : 
+                            :
                             <PersonIcon className={props.classes.icon} />
                         }
-                        {props.getName(user.common.name)} 
+                        {props.getName(user.common.name)}
                         <IconButton
                             size="small"
                             onClick={() => props.removeUserFromGroup(member, props.group._id)}
                         >
                             <ClearIcon style={{ color: textColor }} />
                         </IconButton>
-                    </Card> 
-                    : 
+                    </Card>
+                    :
                     null;
                 })
             }
             </div>
         </CardContent>
-    </Card>
+    </Card>;
 }
 
 GroupBlock.propTypes = {
@@ -158,12 +157,10 @@ GroupBlock.propTypes = {
 
 export default GroupBlock;
 
-function canMeDrop(monitor, props )
-{
+function canMeDrop(monitor, props ) {
     return props.group.common.members
         ?
         !props.group.common.members.includes(monitor.getItem().userId)
         :
-        true
-
+        true;
 }
