@@ -9,10 +9,17 @@ import DialogContent from '@material-ui/core/DialogContent';
 import { AppBar, Box, Checkbox, LinearProgress, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, ThemeProvider, Typography } from '@material-ui/core';
 
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import SearchIcon from '@material-ui/icons/Search';
+import CloseIcon from '@material-ui/icons/Close';
+import LibraryAddIcon from '@material-ui/icons/LibraryAdd';
 
 import I18n from '@iobroker/adapter-react/i18n';
 
 import theme from '@iobroker/adapter-react/Theme';
+import Utils from '@iobroker/adapter-react/Components/Utils';
+import Command from '../components/Command';
 
 let node = null;
 
@@ -179,13 +186,13 @@ const TabPanel = ({ classes, children, value, index, title, ...props }) => {
 
 const headCells = [
     { id: 'instance', numeric: false, disablePadding: true, label: 'Instance' },
-    { id: 'host', numeric: true, disablePadding: false, label: 'Host' },
-    { id: 'description', numeric: true, disablePadding: false, label: 'Description' },
-    { id: 'ignore', numeric: false, disablePadding: false, label: 'Ignore' },
+    { id: 'host', numeric: false, disablePadding: false, label: 'Host' },
+    { id: 'description', numeric: false, disablePadding: false, label: 'Description' },
+    { id: 'ignore', numeric: true, disablePadding: false, label: 'Ignore' },
 ];
 
 function EnhancedTableHead(props) {
-    // const { classes } = props;
+    const { numSelected, rowCount, onSelectAllClick } = props;
     const createSortHandler = (property) => (event) => {
         //   onRequestSort(event, property);
     };
@@ -195,9 +202,9 @@ function EnhancedTableHead(props) {
             <TableRow>
                 <TableCell padding="checkbox">
                     <Checkbox
-                        //   indeterminate={numSelected > 0 && numSelected < rowCount}
-                        //   checked={rowCount > 0 && numSelected === rowCount}
-                        //   onChange={onSelectAllClick}
+                        indeterminate={numSelected > 0 && numSelected < rowCount}
+                        checked={rowCount > 0 && numSelected === rowCount}
+                        onChange={onSelectAllClick}
                         inputProps={{ 'aria-label': 'select all desserts' }}
                     />
                 </TableCell>
@@ -227,7 +234,61 @@ function EnhancedTableHead(props) {
     );
 }
 
-const DiscoveryDialog = ({ themeType, themeName, socket }) => {
+const buildComment = (comment, t) => {
+    if (!comment) {
+        return 'new';
+    }
+    if (typeof comment === 'string') return comment;
+    var text = '';
+    if (comment.add) {
+        text += t('new');
+        if (typeof comment.add === 'object' && + comment.add.length !== undefined) {
+            text += ': ';
+            if (comment.add.length <= 5) {
+                text += comment.add.join(', ');
+            } else {
+                text += t('%s devices', comment.add.length);
+            }
+        } else if (typeof comment.add === 'string' || typeof comment.add === 'number') {
+            text += ': ';
+            text += comment.add;
+        }
+    }
+    if (comment.changed) {
+        text += (text ? ', ' : '') + t('changed');
+        if (typeof comment.changed === 'object' && + comment.changed.length !== undefined) {
+            text += ': ';
+            if (comment.changed.length <= 5) {
+                text += comment.changed.join(', ');
+            } else {
+                text += t('%s devices', comment.changed.length);
+            }
+        } else if (typeof comment.changed === 'string' || typeof comment.changed === 'number') {
+            text += ': ';
+            text += comment.changed;
+        }
+    }
+    if (comment.extended) {
+        text += (text ? ', ' : '') + t('extended');
+        if (typeof comment.extended === 'object' && + comment.extended.length !== undefined) {
+            text += ': ';
+            if (comment.extended.length <= 5) {
+                text += comment.extended.join(', ');
+            } else {
+                text += t('%s devices', comment.extended.length);
+            }
+        } else if (typeof comment.extended === 'string' || typeof comment.extended === 'number') {
+            text += ': ';
+            text += comment.extended;
+        }
+    }
+    if (comment.text) {
+        text += (text ? ', ' : '') + comment.text;
+    }
+    return text;
+}
+
+const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost }) => {
     const classes = useStyles();
 
     const [open, setOpen] = useState(true);
@@ -235,6 +296,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket }) => {
     const [listMethods, setListMethods] = useState({});
     const [checkboxChecked, setCheckboxChecked] = useState({});
     const [disableScanner, setDisableScanner] = useState(false);
+    const [discoveryData, setDiscoveryData] = useState({});
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(async () => {
@@ -245,7 +307,59 @@ const DiscoveryDialog = ({ themeType, themeName, socket }) => {
         });
         setCheckboxChecked(listChecked);
         setListMethods(resultList);
-    }, [socket])
+    }, [socket]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(async () => {
+        const dataDiscovery = await socket.getObject('system.discovery');
+        console.log(dataDiscovery)
+        dataDiscovery !== undefined && setDiscoveryData(dataDiscovery?.native);
+    }, [socket]);
+
+    const [devicesFound, setDevicesFound] = useState(0);
+    const [devicesProgress, setDevicesProgress] = useState(0);
+    const [instancesFound, setInstancesFound] = useState(0);
+    const [scanRunning, setScanRunning] = useState(false);
+    const [servicesProgress, setServicesProgress] = useState(0);
+    const [selected, setSelected] = useState([]);
+    const [selectedIgnore, setSelectedIgnore] = useState([]);
+
+    const handlerInstal = (name, value) => {
+        // console.log(33333, name, value)
+        switch (name) {
+            case 'discovery.0.devicesFound':
+                return setDevicesFound(value.val);
+            case 'discovery.0.devicesProgress':
+                return setDevicesProgress(value.val);
+            case 'discovery.0.instancesFound':
+                return setInstancesFound(value.val);
+            case 'discovery.0.scanRunning':
+                return setScanRunning(value.val);
+            case 'discovery.0.servicesProgress':
+                return setServicesProgress(value.val);
+            case 'system.discovery':
+                return value !== undefined && setDiscoveryData(value?.native);
+            default:
+                return;
+        }
+    }
+
+    useEffect(() => {
+        socket.subscribeObject('system.discovery', handlerInstal);
+        // socket.get
+        socket.subscribeState('discovery.0.devicesFound', handlerInstal);
+        socket.subscribeState('discovery.0.devicesProgress', handlerInstal);
+        socket.subscribeState('discovery.0.instancesFound', handlerInstal);
+        socket.subscribeState('discovery.0.scanRunning', handlerInstal);
+        socket.subscribeState('discovery.0.servicesProgress', handlerInstal);
+        return () => {
+            socket.unsubscribeState('discovery.0.devicesFound', handlerInstal);
+            socket.unsubscribeState('discovery.0.devicesProgress', handlerInstal);
+            socket.unsubscribeState('discovery.0.instancesFound', handlerInstal);
+            socket.unsubscribeState('discovery.0.scanRunning', handlerInstal);
+            socket.unsubscribeState('discovery.0.servicesProgress', handlerInstal);
+
+        }
+    }, [socket]);
 
     const stepUp = () => setValue(value + 1);
 
@@ -253,14 +367,14 @@ const DiscoveryDialog = ({ themeType, themeName, socket }) => {
 
     const discoverScaner = async () => {
         setDisableScanner(true);
-        let dataArray = Object.keys(checkboxChecked).filter(key=>checkboxChecked[key]);
+        let dataArray = Object.keys(checkboxChecked).filter(key => checkboxChecked[key]);
         const resultList = await socket.sendTo('system.adapter.discovery.0', 'browse', dataArray);
         setDisableScanner(false);
-        if(resultList.error){
+        if (resultList.error) {
             alert(resultList.error)
+        } else {
+            setValue(1);
         }
-        console.log(resultList)
-
     }
 
     const onClose = () => {
@@ -271,8 +385,56 @@ const DiscoveryDialog = ({ themeType, themeName, socket }) => {
         }
     }
 
+    const handleSelectAllClick = (event) => {
+        if (event.target.checked) {
+            const newSelecteds = discoveryData?.newInstances?.map((n) => n._id);
+            setSelected(newSelecteds);
+            return;
+        }
+        setSelected([]);
+    };
+
+    const isSelected = (name, arr) => arr.indexOf(name) !== -1;
+
+    const handleClick = (event, name, arr, func) => {
+        const selectedIndex = arr.indexOf(name);
+        let newSelected = [];
+
+        if (selectedIndex === -1) {
+            newSelected = newSelected.concat(arr, name);
+        } else if (selectedIndex === 0) {
+            newSelected = newSelected.concat(arr.slice(1));
+        } else if (selectedIndex === arr.length - 1) {
+            newSelected = newSelected.concat(arr.slice(0, -1));
+        } else if (selectedIndex > 0) {
+            newSelected = newSelected.concat(
+                arr.slice(0, selectedIndex),
+                arr.slice(selectedIndex + 1),
+            );
+        }
+
+        func(newSelected);
+    };
+    const [installInstances, setInstallInstances] = useState([]);
+    const [installProgress, setInstallProgress] = useState(false);
+    const checkInstall = async () => {
+        let checkArray = [];
+        selected.forEach(async (id, idx) => {
+            console.log(12, id)
+            let obj = await socket.getObject(id.replace('system.adapter.', ''));
+            console.log(222222, obj)
+            if (obj) {
+                checkArray.push(id);
+            }
+            if (idx === selected.length - 1) {
+                setInstallInstances(checkArray);
+                setInstallProgress(true);
+            }
+        })
+    }
+
     const black = themeType === 'dark';
-    console.log(checkboxChecked)
+    console.log(discoveryData)
     return <ThemeProvider theme={theme(themeName)}>
         <Dialog
             onClose={onClose}
@@ -287,7 +449,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket }) => {
             }} />{I18n.t("Adapter configuration discover")}</h2>
             <DialogContent className={clsx(classes.flex, classes.overflowHidden)} dividers>
                 <div className={classes.root}>
-                {disableScanner && <LinearProgress />}
+                    {disableScanner && <LinearProgress variant="determinate" value={devicesProgress >= 99 ? servicesProgress : devicesProgress} />}
                     <TabPanel
                         className={classes.overflowAuto}
                         style={black ? { color: 'black' } : null}
@@ -300,9 +462,9 @@ const DiscoveryDialog = ({ themeType, themeName, socket }) => {
                             Press "Discover" to find devices in your network (Turn off network firewalls/traffic analyze systems before!)
                             or "Next" to use devices from previous discovery process
                         </div>
-                        <div className={classes.descriptionHeaderText}>
-                            Last scan on 2021-04-27 15:00:23
-                        </div>
+                        {discoveryData?.lastScan && <div className={classes.descriptionHeaderText}>
+                            Last scan on {Utils.formatDate(new Date(discoveryData.lastScan), dateFormat)}
+                        </div>}
                         <div
                             style={black ? { color: 'white' } : null} className={classes.headerBlock}>
                             Use following methods:
@@ -318,6 +480,13 @@ const DiscoveryDialog = ({ themeType, themeName, socket }) => {
                                 setCheckboxChecked(newCheckboxChecked)
                             }}
                         />{key}</div>)}
+
+                        {scanRunning && <div>
+                            {devicesProgress >= 99 ? `Lookup services - ${servicesProgress}%` : `Lookup devices - ${devicesProgress}%`}
+                            {disableScanner && <LinearProgress variant="determinate" value={devicesProgress >= 99 ? servicesProgress : devicesProgress} />}
+                            {devicesProgress >= 99 ? `${instancesFound} service(s) found` : `${devicesFound} device(s) found`}
+                        </div>}
+
                     </TabPanel>
                     <TabPanel
                         className={classes.overflowAuto}
@@ -325,7 +494,10 @@ const DiscoveryDialog = ({ themeType, themeName, socket }) => {
                         value={value}
                         index={1}
                         classes={classes}
-                        title={I18n.t('Create instances automatically - Last scan on 2021-04-27 16:03:10')}
+                        title={discoveryData?.lastScan ?
+                            I18n.t('Create instances automatically - Last scan on %s', Utils.formatDate(new Date(discoveryData.lastScan), dateFormat))
+                            : I18n.t('Create instances automatically')
+                        }
                     >
                         <Paper className={classes.paperTable}>
                             <TableContainer>
@@ -337,47 +509,41 @@ const DiscoveryDialog = ({ themeType, themeName, socket }) => {
                                 >
                                     <EnhancedTableHead
                                         classes={classes}
-                                    //   numSelected={selected.length}
-                                    //   order={order}
-                                    //   orderBy={orderBy}
-                                    //   onSelectAllClick={handleSelectAllClick}
-                                    //   onRequestSort={handleRequestSort}
-                                    //   rowCount={rows.length}
+                                        numSelected={selected.length}
+                                        //   order={order}
+                                        //   orderBy={orderBy}
+                                        onSelectAllClick={handleSelectAllClick}
+                                        //   onRequestSort={handleRequestSort}
+                                        rowCount={discoveryData?.newInstances?.length || 0}
                                     />
                                     <TableBody>
-                                        <TableRow
+                                        {discoveryData?.newInstances?.map(obj => (<TableRow
                                             hover
                                             //   onClick={(event) => handleClick(event, row.name)}
                                             role="checkbox"
-                                            //   aria-checked={isItemSelected}
-                                            tabIndex={-1}
-                                        //   key={row.name}
-                                        //   selected={isItemSelected}
+                                            // tabIndex={-1}
+                                            key={obj._id}
+                                            selected={obj.comment?.advice}
                                         >
                                             <TableCell padding="checkbox">
                                                 <Checkbox
-                                                    checked
+                                                    checked={isSelected(obj._id, selected)}
+                                                    onClick={(e) => handleClick(e, obj._id, selected, setSelected)}
                                                 //   inputProps={{ 'aria-labelledby': labelId }}
                                                 />
                                             </TableCell>
                                             <TableCell component="th" scope="row" padding="none">
-                                                ssss
-                      </TableCell>
-                                            <TableCell align="right">aaaa</TableCell>
-                                            <TableCell align="right">ssss</TableCell>
-                                            <TableCell align="center" padding="checkbox">
+                                                {obj._id.replace('system.adapter.', '')}
+                                            </TableCell>
+                                            <TableCell align="left">_</TableCell>
+                                            <TableCell align="left">{buildComment(obj.comment, I18n.t)}</TableCell>
+                                            <TableCell align="right" padding="checkbox">
                                                 <Checkbox
-
-                                                //   inputProps={{ 'aria-labelledby': labelId }}
+                                                    checked={isSelected(obj._id, selectedIgnore)}
+                                                    onClick={(e) => handleClick(e, obj._id, selectedIgnore, setSelectedIgnore)}
                                                 />
                                             </TableCell>
-                                        </TableRow>
-
-                                        {/* {emptyRows > 0 && (
-                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )} */}
+                                        </TableRow>))}
                                     </TableBody>
                                 </Table>
                             </TableContainer>
@@ -397,38 +563,69 @@ const DiscoveryDialog = ({ themeType, themeName, socket }) => {
                             <div className={classes.width200}>Instance</div>
                             <div>Progress</div>
                         </div>
-                        <div
+                        {selected.map(el => <div
+                            key={el}
                             // style={black ? { color: 'white' } : null}
                             className={classes.headerBlockDisplayItem}>
-                            <div className={classes.width200}>flot.0</div>
+                            <div className={classes.width200}>{el.replace('system.adapter.', '')}</div>
                             <div>started</div>
-                        </div>
+                        </div>)}
+                        {installProgress && <Command
+                            noSpacing={true}
+                            key={selected[0]}
+                            ready={true}
+                            currentHost={currentHost}
+                            socket={socket}
+                            t={I18n.t}
+                            cmd={`${installInstances.find(installName => installName === selected[0]) ? 'upgrade' : 'install'} ${discoveryData?.newInstances?.find(obj => {
+                                console.log(obj)
+                                return obj._id === selected[0]
+                            })?.common.name}`}
+                            onFinished={(el) => console.log('finish', el)}
+                            errorFunc={(el) => {
+                                console.log('error', el)
+                                // if (this.state.stopOnError) {
+                                //     this.setState({ stoppedOnError: true, finished: true });
+                                //     this.onAdapterFinished = null;
+                                //     this.props.onSetCommandRunning(false);
+                                // } else {
+                                //     this.onAdapterFinished();
+                                // }
+                            }}
+                        />}
                     </TabPanel>
                 </div>
             </DialogContent >
             <DialogActions>
-                <Button
+                {value > 0 && <Button
                     variant="contained"
                     autoFocus
                     disabled={value === 0}
                     onClick={stepDown}
                     color="primary">
+                    <NavigateBeforeIcon />
                     {I18n.t('Back')}
                 </Button>
+                }
                 {value === 0 && <Button
                     variant="contained"
                     autoFocus
                     disabled={disableScanner}
                     onClick={discoverScaner}
                     color="primary">
+                    <SearchIcon />
                     {I18n.t('Discover')}
                 </Button>}
                 {value !== 2 && <Button
                     variant="contained"
                     autoFocus
-                    disabled={value === 2 || disableScanner}
-                    onClick={stepUp}
+                    disabled={!discoveryData || value === 2 || disableScanner || (value === 1 && !selected.length)}
+                    onClick={() => {
+                        stepUp();
+                        checkInstall();
+                    }}
                     color="primary">
+                    {value === 1 ? <LibraryAddIcon /> : <NavigateNextIcon />}
                     {I18n.t(value === 1 ? 'Create instances' : 'Next')}
                 </Button>}
                 <Button
@@ -436,6 +633,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket }) => {
                     autoFocus
                     onClick={onClose}
                     color="primary">
+                    <CloseIcon />
                     {I18n.t(value === 2 ? 'Finish' : 'Close')}
                 </Button>
             </DialogActions>
@@ -443,11 +641,11 @@ const DiscoveryDialog = ({ themeType, themeName, socket }) => {
     </ThemeProvider >;
 }
 
-export const discoveryDialogFunc = (themeType, themeName, socket) => {
+export const discoveryDialogFunc = (themeType, themeName, socket, dateFormat, currentHost) => {
     if (!node) {
         node = document.createElement('div');
         node.id = 'renderDiscoveryModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<DiscoveryDialog themeName={themeName} themeType={themeType} socket={socket} />, node);
+    return ReactDOM.render(<DiscoveryDialog currentHost={currentHost} dateFormat={dateFormat} themeName={themeName} themeType={themeType} socket={socket} />, node);
 }

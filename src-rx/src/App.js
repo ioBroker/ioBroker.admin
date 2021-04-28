@@ -544,7 +544,11 @@ class App extends Router {
     openDiscoveryModal = () => {
         discoveryDialogFunc(
             this.state.themeType,
-            this.state.themeName,this.socket)
+            this.state.themeName,
+            this.socket,
+            this.state.systemConfig.common.dateFormat,
+            this.state.currentHost
+            );
     }
 
     findNewsInstance = () => {
