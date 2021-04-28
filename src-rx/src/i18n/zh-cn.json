@@ -1280,5 +1280,7 @@
   "group_acl_file": "档案权限",
   "group_acl_create": "创造",
   "group_acl_users": "用户权限",
-  "runtime": "运行"
+  "runtime": "运行",
+  "Repeat password is not equal with password": "重复的密码不等于密码！",
+  "Empty password is not allowed": "不允许输入空密码"
 }

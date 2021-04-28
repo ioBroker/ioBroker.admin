@@ -1280,5 +1280,7 @@
   "group_acl_file": "Droits d'accès aux fichiers",
   "group_acl_create": "créer",
   "group_acl_users": "Autorisations des utilisateurs",
-  "runtime": "Durée"
+  "runtime": "Durée",
+  "Repeat password is not equal with password": "Le mot de passe répété n'est pas égal au mot de passe!",
+  "Empty password is not allowed": "Le mot de passe vide n'est pas autorisé"
 }

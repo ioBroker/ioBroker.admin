@@ -1280,5 +1280,7 @@
   "group_acl_file": "Permisos de archivo",
   "group_acl_create": "crear",
   "group_acl_users": "Permisos de usuarios",
-  "runtime": "Tiempo de ejecución"
+  "runtime": "Tiempo de ejecución",
+  "Repeat password is not equal with password": "¡La contraseña repetida no es igual a la contraseña!",
+  "Empty password is not allowed": "No se permite la contraseña vacía"
 }

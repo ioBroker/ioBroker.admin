@@ -1284,5 +1284,7 @@
   "group_acl_file": "Права доступа к файлам",
   "group_acl_create": "создавать",
   "group_acl_users": "Разрешения пользователей",
-  "runtime": "Выполнение"
+  "runtime": "Выполнение",
+  "Repeat password is not equal with password": "Повторяющийся пароль не совпадает с паролем!",
+  "Empty password is not allowed": "Пустой пароль не допускается"
 }

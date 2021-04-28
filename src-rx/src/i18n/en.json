@@ -1280,5 +1280,7 @@
   "group_acl_file": "File permissions",
   "group_acl_create": "create",
   "group_acl_users": "Users permissions",
-  "runtime": "Runtime"
+  "runtime": "Runtime",
+  "Repeat password is not equal with password": "The repeated password is not equal with the password!",
+  "Empty password is not allowed": "Empty password is not allowed"
 }

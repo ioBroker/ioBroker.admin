@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
 
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -22,6 +23,8 @@ import GroupEditDialog from './GroupEditDialog';
 import UserDeleteDialog from './UserDeleteDialog';
 import GroupDeleteDialog from './GroupDeleteDialog';
 
+const PASSWORD_SET = '***********';
+
 const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, .2)';
 const styles = theme => ({
     mainGridCont: {
@@ -29,9 +32,11 @@ const styles = theme => ({
         overflowY:'auto'
     },
     childGridCont: {
-        height: '100%',
         display: 'flex',
         flexDirection: 'column'
+    },
+    childGridContWide: {
+        height: '100%',
     },
     canDrop: {
         backgroundColor:theme.palette.background.default
@@ -190,6 +195,9 @@ const styles = theme => ({
     },
     deleteDialog: {
         padding: 20
+    },
+    narrowContent: {
+        padding: '8px 8px 8px 8px',
     }
 });
 
@@ -207,6 +215,67 @@ function isTouchDevice() {
         (navigator.msMaxTouchPoints > 0));
 }
 
+const USER_TEMPLATE = {
+    'type': 'user',
+    'common': {
+        'name': '',
+        'password': '',
+        'dontDelete': false,
+        'enabled': true,
+        'color': false,
+        'desc': ''
+    },
+    'native': {},
+    'enums': {}
+};
+
+const GROUP_TEMPLATE = {
+    'type': 'group',
+    'common': {
+        'name': '',
+        'description': '',
+        'members': [],
+        'dontDelete': false,
+        'acl': {
+            'object': {
+                'list': false,
+                'read': false,
+                'write': false,
+                'delete': false
+            },
+            'state': {
+                'list': false,
+                'read': false,
+                'write': false,
+                'create': false,
+                'delete': false
+            },
+            'users': {
+                'list': false,
+                'read': false,
+                'write': false,
+                'create': false,
+                'delete': false
+            },
+            'other': {
+                'execute': false,
+                'http': false,
+                'sendto': false
+            },
+            'file': {
+                'list': false,
+                'read': false,
+                'write': false,
+                'create': false,
+                'delete': false
+            }
+        },
+        'icon': '',
+        'color': false,
+        'desc': ''
+    }
+};
+
 class UsersList extends Component {
     constructor(props) {
         super(props);
@@ -223,79 +292,25 @@ class UsersList extends Component {
         };
     }
 
-    userTemplate = {
-        'type': 'user',
-        'common': {
-          'name': '',
-          'password': '',
-          'dontDelete': false,
-          'enabled': true,
-          'color': false,
-          'desc': ''
-        },
-        'native': {},
-        'enums': {}
-      };
-
-    groupTemplate = {
-        'type': 'group',
-        'common': {
-          'name': '',
-          'description': '',
-          'members': [],
-          'dontDelete': false,
-          'acl': {
-            'object': {
-              'list': false,
-              'read': false,
-              'write': false,
-              'delete': false
-            },
-            'state': {
-              'list': false,
-              'read': false,
-              'write': false,
-              'create': false,
-              'delete': false
-            },
-            'users': {
-              'list': false,
-              'read': false,
-              'write': false,
-              'create': false,
-              'delete': false
-            },
-            'other': {
-              'execute': false,
-              'http': false,
-              'sendto': false
-            },
-            'file': {
-              'list': false,
-              'read': false,
-              'write': false,
-              'create': false,
-              'delete': false
-            }
-          },
-          'icon': '',
-          'color': false,
-          'desc': ''
-        }
-      };
-
     componentDidMount() {
-        this.updateData();
+        this.setState({innerWidth: window.innerWidth}, () =>
+            this.updateData());
     }
 
-    getName(name) {
-        return typeof(name) === 'object' ? name.en : name;
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (!window.innerWidth !== this.state.innerWidth) {
+            setTimeout(() => this.setState({innerWidth: window.innerWidth}), 100);
+        }
+    }
+
+    getName = name => {
+        return name && typeof name === 'object' ? name[this.props.lang] || name.en || '' : name || '';
     }
 
     showUserEditDialog = (user, isNew) => {
         user = JSON.parse(JSON.stringify(user));
-        user.common.password = '';
-        user.common.passwordRepeat = '';
+        user.common.password       = user.common.password ? PASSWORD_SET : '';
+        user.common.passwordRepeat = user.common.password;
         this.setState({userEditDialog: user, userEditDialogNew: isNew});
     }
 
@@ -307,11 +322,11 @@ class UsersList extends Component {
     updateData = () => {
         this.props.socket.getForeignObjects('system.user.*', 'user').then(users => {
             users = Object.values(users).sort((o1, o2) => o1._id > o2._id ? 1 : -1);
-            this.setState({users});
-        });
-        this.props.socket.getForeignObjects('system.group.*', 'group').then(groups => {
-            groups = Object.values(groups).sort((o1, o2) => o1._id > o2._id ? 1 : -1);
-            this.setState({groups});
+
+            this.props.socket.getForeignObjects('system.group.*', 'group').then(groups => {
+                groups = Object.values(groups).sort((o1, o2) => o1._id > o2._id ? 1 : -1);
+                this.setState({groups, users});
+            });
         });
     }
 
@@ -324,7 +339,7 @@ class UsersList extends Component {
     saveUser = originalId => {
         let user = JSON.parse(JSON.stringify(this.state.userEditDialog));
         let originalUser = this.state.users.find(element => element._id === user._id);
-        let newPassword = user.common.password;
+        let newPassword = user.common.password && user.common.password !== PASSWORD_SET ? user.common.password : '';
 
         if (originalUser) {
             user.common.password = originalUser.common.password;
@@ -351,14 +366,12 @@ class UsersList extends Component {
                 }
             })
             .then(() => {
-                if (newPassword !== '') {
+                if (newPassword) {
                     return this.props.socket.changePassword(user._id, newPassword);
                 }
             })
-            .then(() => {
-                this.updateData();
-                this.setState({userEditDialog: false});
-            });
+            .then(() =>
+                this.setState({userEditDialog: false}, () => this.updateData()));
     }
 
     saveGroup = originalId => {
@@ -368,10 +381,8 @@ class UsersList extends Component {
                     return this.props.socket.delObject(originalId);
                 }
             })
-            .then(() => {
-                this.updateData();
-                this.setState({groupEditDialog: false});
-            });
+            .then(() =>
+                this.setState({groupEditDialog: false}, () => this.updateData()));
     }
 
     showUserDeleteDialog = user =>
@@ -392,15 +403,15 @@ class UsersList extends Component {
                 }
             }));
         }).then(() => {
-            this.updateData();
-            this.setState({userDeleteDialog: false});
+            this.setState({userDeleteDialog: false}, () =>
+                this.updateData());
         });
     };
 
     deleteGroup = groupId =>
         this.props.socket.delObject(groupId).then(() => {
-            this.updateData();
-            this.setState({groupDeleteDialog: false});
+            this.setState({groupDeleteDialog: false}, () =>
+                this.updateData());
         });
 
     addUserToGroup = (userId, groupId) => {
@@ -448,14 +459,14 @@ class UsersList extends Component {
                     {this.props.t('You can drag users to groups.')}
                 </div>
                 <Grid container spacing={2} className={this.props.classes.mainGridCont}>
-                    <Grid item xs={12} md={6} className={this.props.classes.childGridCont}>
+                    <Grid item xs={12} md={6} className={clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
                         <div className={this.props.classes.headContainer}>
                             <Fab
                                 size="small"
                                 className={this.props.classes.right}
                                 onClick={() => {
                                     const {_id, name} = UsersList.findNewUniqueName(this.state.groups, this.props.t('Group'));
-                                    const template = JSON.parse(JSON.stringify(this.groupTemplate));
+                                    const template = JSON.parse(JSON.stringify(GROUP_TEMPLATE));
                                     template._id = _id;
                                     template.common.name = name;
                                     this.showGroupEditDialog(template, true);
@@ -478,14 +489,14 @@ class UsersList extends Component {
                             />)
                         }</div>
                     </Grid>
-                    <Grid item xs={12} md={6} className={this.props.classes.childGridCont}>
+                    <Grid item xs={12} md={6} className={clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
                         <div className={this.props.classes.headContainer}>
                             <Fab
                                 size="small"
                                 className={this.props.classes.right}
                                 onClick={() => {
                                     const {_id, name} = UsersList.findNewUniqueName(this.state.users, this.props.t('User'));
-                                    const template = JSON.parse(JSON.stringify(this.userTemplate));
+                                    const template = JSON.parse(JSON.stringify(USER_TEMPLATE));
                                     template._id = _id;
                                     template.common.name = name;
                                     this.showUserEditDialog(template, true);
@@ -524,9 +535,11 @@ class UsersList extends Component {
                     user={this.state.userEditDialog}
                     isNew={this.state.userEditDialogNew}
                     t={this.props.t}
+                    lang={this.props.lang}
                     classes={this.props.classes}
-                    change={this.changeUserFormData}
+                    onChange={this.changeUserFormData}
                     saveData={this.saveUser}
+                    innerWidth={this.state.innerWidth}
                 /> : null}
                 {this.state.groupEditDialog ? <GroupEditDialog
                     open={true}
@@ -535,10 +548,11 @@ class UsersList extends Component {
                     group={this.state.groupEditDialog}
                     isNew={this.state.groupEditDialogNew}
                     t={this.props.t}
-                    classes={this.props.classes}
-                    change={this.changeGroupFormData}
-                    saveData={this.saveGroup}
                     lang={this.props.lang}
+                    classes={this.props.classes}
+                    onChange={this.changeGroupFormData}
+                    innerWidth={this.state.innerWidth}
+                    saveData={this.saveGroup}
                 /> : null}
                 {this.state.userDeleteDialog ? <UserDeleteDialog
                     open={true}

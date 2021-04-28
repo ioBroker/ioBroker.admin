@@ -38,14 +38,14 @@ import Group10 from '../../assets/groups/group10.svg';
 const GROUPS_ICONS = [Group1, Group2, Group3, Group4, Group5, Group6, Group7, Group8, Group9, Group10];
 
 function PermsTab(props) {
-    let mapObject = function(object, mapFunction) {
+    let mapObject = function (object, mapFunction) {
         return Object.values(object).map((value, index) => {
             let key = Object.keys(object)[index];
             return mapFunction(value, key);
         });
     }
 
-    return <Grid container spacing={4} className={props.classes.dialog} key="PermsTab">
+    return <Grid container spacing={props.innerWidth < 500 ? 1 : 4} className={props.classes.dialog} key="PermsTab">
         {
             mapObject(props.group.common.acl, (block, blockKey) =>
                 <Grid item xs={12} md={12} key={blockKey}>
@@ -56,10 +56,10 @@ function PermsTab(props) {
                             control={<Checkbox
                                 disabled={props.group.common.dontDelete}
                                 checked={perm}
-                                onChange={e=>{
+                                onChange={e => {
                                     let newData = Utils.clone(props.group);
                                     newData.common.acl[blockKey][permKey] = e.target.checked;
-                                    props.change(newData);
+                                    props.onChange(newData);
                                 }}
                             />}
                             label={props.t('group_acl_' + permKey)}
@@ -86,7 +86,7 @@ function GroupEditDialog(props) {
                 .then(fileBlob => {
                     let newData = Utils.clone(props.group);
                     newData.common.icon = fileBlob;
-                    props.change(newData);
+                    props.onChange(newData);
                 });
         }
     // eslint-disable-next-line
@@ -101,6 +101,9 @@ function GroupEditDialog(props) {
 
     let canSave = props.group._id !== 'system.group.' &&
         props.group.common.password === props.group.common.passwordRepeat;
+
+    const getText = text =>
+        text && typeof text === 'object' ? text[props.lang] || text.en : text || '';
 
     const getShortId = _id =>
         _id.split('.').pop();
@@ -124,31 +127,22 @@ function GroupEditDialog(props) {
         }
     }
 
-    let description = props.group.common.description && typeof props.group.common.description === 'object'
-        ?
-        props.group.common.description[props.lang] || props.group.common.description.en || ''
-        :
-        props.group.common.description || '';
+    let description = getText(props.group.common.description);
+    let name = getText(props.group.common.name);
 
-    let name = props.group.common.name && typeof props.group.common.name === 'object'
-        ?
-        props.group.common.name[ props.lang ] || props.group.common.name.end || ''
-        :
-        props.group.common.name || '';
-
-    let mainTab = <Grid container spacing={4} className={props.classes.dialog}>
+    let mainTab = <Grid container spacing={props.innerWidth < 500 ? 1 : 4} className={props.classes.dialog}>
         <Grid item xs={12} md={6}>
             <IOTextField
                 label="Name"
                 t={props.t}
                 value={ name }
-                onChange={e=>{
+                onChange={e => {
                     let newData = Utils.clone(props.group);
                     if (!props.group.common.dontDelete && name2Id(newData.common.name) === getShortId(newData._id)) {
                         newData._id = changeShortId(newData._id, name2Id(e.target.value));
                     }
                     newData.common.name = e.target.value;
-                    props.change(newData);
+                    props.onChange(newData);
                 }}
                 autoComplete="off"
                 icon={TextFieldsIcon}
@@ -161,10 +155,10 @@ function GroupEditDialog(props) {
                 t={props.t}
                 disabled={props.group.common.dontDelete}
                 value={ props.group._id.split('.')[props.group._id.split('.').length-1] }
-                onChange={e=>{
+                onChange={e => {
                     let newData = Utils.clone(props.group);
                     newData._id = changeShortId(newData._id, name2Id(e.target.value));
-                    props.change(newData);
+                    props.onChange(newData);
                 }}
                 icon={LocalOfferIcon}
                 classes={props.classes}
@@ -185,10 +179,10 @@ function GroupEditDialog(props) {
                 label="Description"
                 t={props.t}
                 value={ description }
-                onChange={e=>{
+                onChange={e => {
                     let newData = Utils.clone(props.group);
                     newData.common.description = e.target.value;
-                    props.change(newData);
+                    props.onChange(newData);
                 }}
                 icon={DescriptionIcon}
                 classes={props.classes}
@@ -200,10 +194,10 @@ function GroupEditDialog(props) {
                 icons={GROUPS_ICONS}
                 t={props.t}
                 value={ props.group.common.icon }
-                onChange={fileBlob=>{
+                onChange={fileBlob => {
                     let newData = Utils.clone(props.group);
                     newData.common.icon = fileBlob;
-                    props.change(newData);
+                    props.onChange(newData);
                 }}
                 previewClassName={props.classes.iconPreview}
                 icon={ImageIcon}
@@ -216,10 +210,10 @@ function GroupEditDialog(props) {
                 t={props.t}
                 value={ props.group.common.color }
                 previewClassName={props.classes.iconPreview}
-                onChange={color=>{
+                onChange={color => {
                     let newData = Utils.clone(props.group);
                     newData.common.color = color;
-                    props.change(newData);
+                    props.onChange(newData);
                 }}
                 icon={ColorLensIcon}
                 className={props.classes.colorPicker}
@@ -230,7 +224,11 @@ function GroupEditDialog(props) {
 
     let selectedTab = [mainTab, PermsTab(props)][tab];
 
-    return <Dialog PaperProps={{className: props.classes.dialogPaper}} open={props.open} onClose={props.onClose}>
+    return <Dialog
+        open={props.open}
+        onClose={props.onClose}
+        fullWidth={props.innerWidth < 500}
+    >
         <DialogTitle className={props.classes.dialogTitle}>
             <Tabs
                 variant="fullWidth"
@@ -241,7 +239,7 @@ function GroupEditDialog(props) {
                 <Tab label={props.t('Permissions')} value={1} />
             </Tabs>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent className={props.innerWidth < 500 ? props.classes.narrowContent : ''}>
             { selectedTab }
         </DialogContent>
         <DialogActions className={props.classes.dialogActions} >
@@ -259,8 +257,9 @@ GroupEditDialog.propTypes = {
     groups: PropTypes.array,
     group: PropTypes.object,
     isNew: PropTypes.bool,
-    change: PropTypes.func,
+    onChange: PropTypes.func,
     saveData: PropTypes.func,
+    innerWidth: PropTypes.number,
 };
 
 export default GroupEditDialog;

@@ -1280,5 +1280,7 @@
   "group_acl_file": "Uprawnienia do plików",
   "group_acl_create": "Stwórz",
   "group_acl_users": "Uprawnienia użytkowników",
-  "runtime": "Runtime"
+  "runtime": "Runtime",
+  "Repeat password is not equal with password": "Powtórzone hasło nie jest równe hasłu!",
+  "Empty password is not allowed": "Puste hasło jest niedozwolone"
 }

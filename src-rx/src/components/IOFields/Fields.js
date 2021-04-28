@@ -21,7 +21,8 @@ export function IOTextField(props) {
             </InputLabel>
             <TextField
                 autoComplete={props.autoComplete}
-
+                error={!!props.error}
+                helperText={props.error || ''}
                 value={props.value}
                 onChange={props.onChange}
                 disabled={props.disabled}
@@ -108,7 +109,7 @@ let IOFileInput = function (props) {
                     <IconSelector icons={props.icons} onSelect={base64 => props.onChange(base64)} t={props.t}/>
                 }
 
-                <div {...getRootProps()} style={Object.assign({textAlign: 'center', display: 'inline-block', height: 70,width: 240, border: '2px dashed #777', borderRadius: 10, marginTop: 12, padding: 4}, isDragActive ? {backgroundColor: 'rgba(0, 255, 0, 0.1)'} : {cursor: 'pointer'})}>
+                <div {...getRootProps()} style={Object.assign({textAlign: 'center', display: 'inline-block', height: 90, width: 240, border: '2px dashed #777', borderRadius: 10, marginTop: 12, padding: 4}, isDragActive ? {backgroundColor: 'rgba(0, 255, 0, 0.1)'} : {cursor: 'pointer'})}>
                     <input {...getInputProps()} />
                     {
                         isDragActive ?

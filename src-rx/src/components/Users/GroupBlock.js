@@ -55,12 +55,12 @@ function GroupBlock(props) {
         className={ clsx(props.classes.userGroupCard2, backgroundColor) }
     >
         <div className={props.classes.right}>
-            <IconButton size="small" onClick={()=>{props.showGroupEditDialog(props.group, false)}}>
+            <IconButton size="small" onClick={() => props.showGroupEditDialog(props.group, false)}>
                 <EditIcon style={{ color: textColor }} />
             </IconButton>
             <IconButton
                 size="small"
-                onClick={()=>{props.showGroupDeleteDialog(props.group)}}
+                onClick={() => props.showGroupDeleteDialog(props.group)}
                 disabled={props.group.common.dontDelete}
             >
                 <DeleteIcon style={props.group.common.dontDelete ? null : { color: textColor }} />

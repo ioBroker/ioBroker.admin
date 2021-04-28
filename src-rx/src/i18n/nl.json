@@ -1280,5 +1280,7 @@
   "group_acl_file": "Bestandsrechten",
   "group_acl_create": "creëren",
   "group_acl_users": "Gebruikersrechten",
-  "runtime": "Looptijd"
+  "runtime": "Looptijd",
+  "Repeat password is not equal with password": "Het herhaalde wachtwoord is niet gelijk aan het wachtwoord!",
+  "Empty password is not allowed": "Leeg wachtwoord is niet toegestaan"
 }

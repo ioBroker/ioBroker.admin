@@ -37,6 +37,7 @@ const USER_ICONS = [User1, User2, User3, User4, User5, User6, User7, User8, User
 
 function UserEditDialog(props) {
     let [originalId, setOriginalId] = useState(null);
+
     useEffect(() => {
         setOriginalId(props.user._id);
         if (props.isNew) {
@@ -46,7 +47,7 @@ function UserEditDialog(props) {
                 .then(fileBlob => {
                     let newData = Utils.clone(props.user);
                     newData.common.icon = fileBlob;
-                    props.change(newData);
+                    props.onChange(newData);
                 });
         }
     // eslint-disable-next-line
@@ -60,15 +61,16 @@ function UserEditDialog(props) {
     let idChanged = props.user._id !== originalId;
 
     let canSave = props.user._id !== 'system.user.' &&
-        props.user.common.password === props.user.common.passwordRepeat;
+        props.user.common.password === props.user.common.passwordRepeat && props.user.common.password;
 
-    if (props.isNew) {
-        if (idExists) {
-            canSave = false;
-        }
+    if (props.isNew && idExists) {
+        canSave = false;
     } else if (idExists && idChanged) {
         canSave = false;
     }
+
+    const getText = text =>
+        text && typeof text === 'object' ? text[props.lang] || text.en : text || '';
 
     const getShortId = _id =>
         _id.split('.').pop();
@@ -82,24 +84,19 @@ function UserEditDialog(props) {
         return idArray.join('.');
     }
 
-    let description = props.user.common.desc && typeof props.user.common.desc === 'object'
-        ?
-        props.user.common.desc[props.lang] || props.user.common.desc.en || ''
-        :
-        props.user.common.desc || '';
+    let description = getText(props.user.common.desc);
+    let name = getText(props.user.common.name);
 
-    let name = props.user.common.name && typeof props.user.common.name === 'object'
-        ?
-        props.user.common.name[ props.lang ] || props.user.common.name.end || ''
-        :
-        props.user.common.name || '';
-
-    return <Dialog PaperProps={{className: props.classes.dialogPaper}} open={props.open} onClose={props.onClose}>
-        <DialogTitle className={props.classes.dialogTitle} style={{padding:12}} >
+    return <Dialog
+        fullWidth={props.innerWidth < 500}
+        open={props.open}
+        onClose={props.onClose}
+    >
+        <DialogTitle className={props.classes.dialogTitle} style={{ padding: 12 }} >
            { props.t( 'User parameters' ) }
         </DialogTitle>
-        <DialogContent >
-            <Grid  container spacing={4} className={props.classes.dialog}>
+        <DialogContent className={props.innerWidth < 500 ? props.classes.narrowContent : ''}>
+            <Grid container spacing={props.innerWidth < 500 ? 1 : 4} className={props.classes.dialog}>
                 <Grid item xs={12} md={6}>
                     <IOTextField
                         label="Name"
@@ -111,7 +108,7 @@ function UserEditDialog(props) {
                                 newData._id = changeShortId(newData._id, name2Id(e.target.value));
                             }
                             newData.common.name = e.target.value;
-                            props.change(newData);
+                            props.onChange(newData);
                         }}
                         autoComplete="new-password"
                         icon={TextFieldsIcon}
@@ -127,7 +124,7 @@ function UserEditDialog(props) {
                         onChange={e => {
                             let newData = Utils.clone(props.user);
                             newData._id = changeShortId(newData._id, name2Id(e.target.value));
-                            props.change(newData);
+                            props.onChange(newData);
                         }}
                         icon={LocalOfferIcon}
                         classes={props.classes}
@@ -151,7 +148,7 @@ function UserEditDialog(props) {
                         onChange={e => {
                             let newData = Utils.clone(props.user);
                             newData.common.desc = e.target.value;
-                            props.change(newData);
+                            props.onChange(newData);
                         }}
                         icon={DescriptionIcon}
                         classes={props.classes}
@@ -162,10 +159,11 @@ function UserEditDialog(props) {
                         label="Password"
                         t={props.t}
                         value={ props.user.common.password }
+                        error={ props.user.common.passwordRepeat !== props.user.common.password ? props.t('Repeat password is not equal with password') : ((props.user.common.password || '').trim() ? '' : props.t('Empty password is not allowed')) }
                         onChange={e => {
                             let newData = Utils.clone(props.user);
                             newData.common.password = e.target.value;
-                            props.change(newData);
+                            props.onChange(newData);
                         }}
                         type="password"
                         autoComplete="new-password"
@@ -178,10 +176,11 @@ function UserEditDialog(props) {
                         label="Password repeat"
                         t={props.t}
                         value={ props.user.common.passwordRepeat }
+                        error={props.user.common.passwordRepeat !== props.user.common.password ? props.t('Repeat password is not equal with password') : ''}
                         onChange={e => {
                             let newData = Utils.clone(props.user);
                             newData.common.passwordRepeat = e.target.value;
-                            props.change(newData);
+                            props.onChange(newData);
                         }}
                         type="password"
                         autoComplete="new-password"
@@ -198,7 +197,7 @@ function UserEditDialog(props) {
                         onChange={fileBlob => {
                             let newData = Utils.clone(props.user);
                             newData.common.icon = fileBlob;
-                            props.change(newData);
+                            props.onChange(newData);
                         }}
                         previewClassName={props.classes.iconPreview}
                         icon={ImageIcon}
@@ -214,7 +213,7 @@ function UserEditDialog(props) {
                         onChange={color => {
                             let newData = Utils.clone(props.user);
                             newData.common.color = color;
-                            props.change(newData);
+                            props.onChange(newData);
                         }}
                         icon={ColorLensIcon}
                         className={props.classes.colorPicker}
@@ -224,7 +223,7 @@ function UserEditDialog(props) {
             </Grid>
         </DialogContent>
         <DialogActions className={props.classes.dialogActions} >
-            <Button variant="contained" color="primary" autoFocus onClick={()=>props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>{props.t('Save')}</Button>
+            <Button variant="contained" color="primary" autoFocus onClick={() => props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>{props.t('Save')}</Button>
             <Button variant="contained" onClick={props.onClose}>{props.t('Cancel')}</Button>
         </DialogActions>
     </Dialog>;
@@ -238,8 +237,9 @@ UserEditDialog.propTypes = {
     users: PropTypes.array,
     user: PropTypes.object,
     isNew: PropTypes.bool,
-    change: PropTypes.func,
+    onChange: PropTypes.func,
     saveData: PropTypes.func,
+    innerWidth: PropTypes.number,
 };
 
 export default UserEditDialog;

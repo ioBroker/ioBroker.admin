@@ -1280,5 +1280,7 @@
   "group_acl_file": "Autorizzazioni sui file",
   "group_acl_create": "creare",
   "group_acl_users": "Autorizzazioni degli utenti",
-  "runtime": "Runtime"
+  "runtime": "Runtime",
+  "Repeat password is not equal with password": "La password ripetuta non è uguale alla password!",
+  "Empty password is not allowed": "Non è consentita una password vuota"
 }
