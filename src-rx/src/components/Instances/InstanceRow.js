@@ -394,7 +394,7 @@ const styles = theme => ({
         display: 'flex',
     },
     secondaryHeading: {
-        maxWidth: 220,
+        maxWidth: 200,
         fontSize: 12,
     },
     secondaryHeadingDiv: {

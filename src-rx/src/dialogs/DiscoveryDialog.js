@@ -20,12 +20,16 @@ import I18n from '@iobroker/adapter-react/i18n';
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import Command from '../components/Command';
+import { licenseDialogFunc } from '../dialogs/LicenseDialog';
+import ConfigPanelStyled from '../components/JsonConfigComponent/ConfigPanel';
+
+
 
 let node = null;
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        backgroundColor: theme.palette.background.paper,
+        // backgroundColor: theme.palette.background.paper,
         width: '100%',
         height: 'auto',
         display: 'flex',
@@ -164,7 +168,13 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const TabPanel = ({ classes, children, value, index, title, ...props }) => {
+const TabPanel = ({ classes, children, value, index, title, custom, ...props }) => {
+    if (custom) {
+        return <div
+            {...props}
+        >{value === index && children}</div>
+    }
+
     return (
         <div
             {...props}
@@ -288,6 +298,40 @@ const buildComment = (comment, t) => {
     return text;
 }
 
+// Types of parameters:
+//          - type=password, def=default value
+//          - type=checkbox, def=default value
+//          - type=select, options={value1: TextValule1, value2=TextValue2}
+//          - type=link, def = URL
+//          - type=comment, style="CSS style", def=text
+//          - type=text
+//          - name = Name of attribute like "native.ip" or "native.port"
+//          - title = Title of input
+
+const types = {
+    "password": "password",
+    "checkbox": "checkbox",
+    "select": "select",
+    "link": "staticLink",
+    "comment": "staticText",
+    "text": "text",
+    "name": "staticText",
+    "title": "staticText",
+};
+
+const generateObj = (obj, path, value) => {
+    path = path.split('.');
+    path.forEach((element, idx) => {
+        if (idx === path.length - 1) {
+            if (!obj[path[idx - 1]]) {
+                obj[path[idx - 1]] = {};
+            }
+            obj[path[idx - 1]][element] = value;
+        }
+    });
+    return obj;
+}
+
 const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost }) => {
     const classes = useStyles();
 
@@ -365,6 +409,11 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
 
     const stepDown = () => setValue(value - 1);
 
+    const extendObject = (id, data) => {
+        socket.extendObject(id, data, error =>
+            error && window.alert(error));
+    }
+
     const discoverScaner = async () => {
         setDisableScanner(true);
         let dataArray = Object.keys(checkboxChecked).filter(key => checkboxChecked[key]);
@@ -415,26 +464,90 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
 
         func(newSelected);
     };
-    const [installInstances, setInstallInstances] = useState([]);
-    const [installProgress, setInstallProgress] = useState(false);
-    const checkInstall = async () => {
-        let checkArray = [];
-        selected.forEach(async (id, idx) => {
-            console.log(12, id)
-            let obj = await socket.getObject(id.replace('system.adapter.', ''));
-            console.log(222222, obj)
-            if (obj) {
-                checkArray.push(id);
+
+
+    const checkLicense = (objName, cb) => {
+        const obj = JSON.parse(JSON.stringify(discoveryData.newInstances.find(obj => obj._id === objName)));
+        let license = true;
+        if (obj && obj.comment && obj.comment.license && obj.comment.license !== 'MIT') {
+            license = false;
+            if (!obj.common.licenseUrl) {
+                obj.common.licenseUrl = 'https://raw.githubusercontent.com/ioBroker/ioBroker.' + obj.common.name + '/master/LICENSE'
             }
-            if (idx === selected.length - 1) {
-                setInstallInstances(checkArray);
-                setInstallProgress(true);
+            if (typeof obj.common.licenseUrl === 'object') {
+                obj.common.licenseUrl = obj.common.licenseUrl[I18n.getLanguage()] || obj.common.licenseUrl.en;
             }
-        })
+            // Workaround
+            // https://github.com/ioBroker/ioBroker.vis/blob/master/LICENSE =>
+            // https://raw.githubusercontent.com/ioBroker/ioBroker.vis/master/LICENSE
+            if (obj.common.licenseUrl.indexOf('github.com') !== -1) {
+                obj.common.licenseUrl = obj.common.licenseUrl.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+            }
+        }
+        licenseDialogFunc(license, cb, obj?.common?.licenseUrl);
     }
 
+    const [installProgress, setInstallProgress] = useState(false);
+    const [currentInstall, setCurrentInstall] = useState(null);
+    const [cmdName, setCmdName] = useState('install');
+    const checkInstall = async () => {
+        setInstallProgress(true);
+        checkLicense(selected[0], () => setCurrentInstall(1));
+    }
+
+    const [suggested, setSuggested] = useState(true);
+    const [showAll, setShowAll] = useState(true);
+
     const black = themeType === 'dark';
-    console.log(discoveryData)
+
+    const [schema, setSchema] = useState({
+        items: {
+            enabled: {
+                attr: "enabled",
+                filter: false,
+                sort: false,
+                label: "55555",
+                type: "checkbox",
+                width: 50
+            },
+            "autoComplete": {
+                "newLine": true,
+                "sm": 4,
+                "type": "autocomplete",
+                label: "55555",
+                "freeSolo": true,
+                "options": [{
+                    "label": "A",
+                    "value": "a"
+                }, "B"]
+            },
+        }
+    });
+    const [schemaData, setSchemaData] = useState({ enabled: false, autoComplete: 'B' });
+
+    useEffect(() => {
+        const obj = {};
+        const objValue = {};
+        if (value === 4 && discoveryData && discoveryData.newInstances) {
+            console.log(discoveryData.newInstances[0])
+
+            discoveryData.newInstances[0].comment.add.forEach((text, idx) => {
+                obj[idx] = { type: 'header', text }
+            })
+            discoveryData.newInstances[0].comment.inputs.forEach((el, idx) => {
+                obj[idx + 1] = {
+                    ...el, type: types[el.type], label: el.title, text: el.def, href: el.def,
+                    "newLine": true
+                }
+                if (el.def !== undefined) {
+                    objValue[idx + 1] = el.def;
+                }
+            });
+            setSchemaData(objValue);
+            setSchema({ items: obj });
+        }
+    }, [discoveryData.newInstances, value])
+    console.log(schemaData, schema)
     return <ThemeProvider theme={theme(themeName)}>
         <Dialog
             onClose={onClose}
@@ -452,7 +565,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     {disableScanner && <LinearProgress variant="determinate" value={devicesProgress >= 99 ? servicesProgress : devicesProgress} />}
                     <TabPanel
                         className={classes.overflowAuto}
-                        style={black ? { color: 'black' } : null}
+                        // style={black ? { color: 'black' } : null}
                         value={value}
                         index={0}
                         classes={classes}
@@ -466,13 +579,14 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                             Last scan on {Utils.formatDate(new Date(discoveryData.lastScan), dateFormat)}
                         </div>}
                         <div
-                            style={black ? { color: 'white' } : null} className={classes.headerBlock}>
+                            // style={black ? { color: 'white' } : null} 
+                            className={classes.headerBlock}>
                             Use following methods:
 
                         </div>
                         {Object.keys(listMethods).map(key => <div key={key}><Checkbox
                             checked={checkboxChecked[key]}
-                            style={black ? { color: '#436a93' } : null}
+                            // style={black ? { color: '#436a93' } : null}
                             disabled={disableScanner}
                             onChange={(_, value) => {
                                 const newCheckboxChecked = JSON.parse(JSON.stringify(checkboxChecked));
@@ -490,7 +604,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     </TabPanel>
                     <TabPanel
                         className={classes.overflowAuto}
-                        style={black ? { color: 'black' } : null}
+                        // style={black ? { color: 'black' } : null}
                         value={value}
                         index={1}
                         classes={classes}
@@ -500,6 +614,20 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                         }
                     >
                         <Paper className={classes.paperTable}>
+                            <Button
+                                variant="contained"
+                                autoFocus
+                                onClick={() => setShowAll(!showAll)}
+                                color={showAll ? "primary" : "default"}>
+                                {I18n.t('Show all')}
+                            </Button>
+                            <Button
+                                variant="contained"
+                                autoFocus
+                                onClick={() => setSuggested(!suggested)}
+                                color={suggested ? "primary" : "default"}>
+                                {I18n.t('Suggested')}
+                            </Button>
                             <TableContainer>
                                 <Table
                                     className={classes.table}
@@ -510,18 +638,21 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                     <EnhancedTableHead
                                         classes={classes}
                                         numSelected={selected.length}
-                                        //   order={order}
-                                        //   orderBy={orderBy}
                                         onSelectAllClick={handleSelectAllClick}
-                                        //   onRequestSort={handleRequestSort}
                                         rowCount={discoveryData?.newInstances?.length || 0}
                                     />
                                     <TableBody>
-                                        {discoveryData?.newInstances?.map(obj => (<TableRow
+                                        {discoveryData?.newInstances?.filter(el => {
+                                            if (!suggested) {
+                                                return !el.comment?.advice;
+                                            }
+                                            if (!showAll) {
+                                                return !el?.comment?.ack;
+                                            }
+                                            return true;
+                                        }).map((obj, idx) => (<TableRow
                                             hover
-                                            //   onClick={(event) => handleClick(event, row.name)}
                                             role="checkbox"
-                                            // tabIndex={-1}
                                             key={obj._id}
                                             selected={obj.comment?.advice}
                                         >
@@ -529,7 +660,6 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                                 <Checkbox
                                                     checked={isSelected(obj._id, selected)}
                                                     onClick={(e) => handleClick(e, obj._id, selected, setSelected)}
-                                                //   inputProps={{ 'aria-labelledby': labelId }}
                                                 />
                                             </TableCell>
                                             <TableCell component="th" scope="row" padding="none">
@@ -539,8 +669,16 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                             <TableCell align="left">{buildComment(obj.comment, I18n.t)}</TableCell>
                                             <TableCell align="right" padding="checkbox">
                                                 <Checkbox
-                                                    checked={isSelected(obj._id, selectedIgnore)}
-                                                    onClick={(e) => handleClick(e, obj._id, selectedIgnore, setSelectedIgnore)}
+                                                    checked={!!obj?.comment?.ack}
+                                                    onClick={(e) => {
+                                                        const newInstances = JSON.parse(JSON.stringify(discoveryData.newInstances));
+                                                        newInstances[idx].comment = { ...newInstances[idx].comment, 'ack': newInstances[idx].comment.ack ? false : true };
+                                                        extendObject('system.discovery', {
+                                                            native: {
+                                                                newInstances
+                                                            }
+                                                        })
+                                                    }}
                                                 />
                                             </TableCell>
                                         </TableRow>))}
@@ -570,34 +708,76 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                             <div className={classes.width200}>{el.replace('system.adapter.', '')}</div>
                             <div>started</div>
                         </div>)}
-                        {installProgress && <Command
+                        {currentInstall && installProgress && <div item style={{ height: 500, overflow: 'hidden', width: 'calc(100% - 260px)' }}><Command
                             noSpacing={true}
-                            key={selected[0]}
+                            key={`${currentInstall}-${cmdName}`}
                             ready={true}
                             currentHost={currentHost}
                             socket={socket}
                             t={I18n.t}
-                            cmd={`${installInstances.find(installName => installName === selected[0]) ? 'upgrade' : 'install'} ${discoveryData?.newInstances?.find(obj => {
-                                console.log(obj)
-                                return obj._id === selected[0]
-                            })?.common.name}`}
-                            onFinished={(el) => console.log('finish', el)}
+                            cmd={`${cmdName} ${discoveryData?.newInstances?.find(obj => obj._id === selected[currentInstall - 1])?.common.name}`}
+                            onFinished={(el) => {
+                                const initObj = {
+                                    "type": "instance",
+                                    "protectedNative": [],
+                                    "encryptedNative": [],
+                                    "notifications": [],
+                                    "instanceObjects": [],
+                                    "objects": [],
+                                }
+                                let data = JSON.parse(JSON.stringify(discoveryData.newInstances.find(obj => obj._id === selected[currentInstall - 1])));
+                                delete data.comment;
+                                data = Object.assign(initObj, data);
+                                console.log(data);
+                                extendObject(selected[currentInstall - 1], data);
+                                if (selected.length > currentInstall) {
+                                    checkLicense(selected[currentInstall], () => {
+                                        setCurrentInstall(currentInstall + 1);
+                                        setCmdName('install');
+                                    });
+                                } else {
+                                    alert('Finish');
+                                }
+                            }}
                             errorFunc={(el) => {
                                 console.log('error', el)
-                                // if (this.state.stopOnError) {
-                                //     this.setState({ stoppedOnError: true, finished: true });
-                                //     this.onAdapterFinished = null;
-                                //     this.props.onSetCommandRunning(false);
-                                // } else {
-                                //     this.onAdapterFinished();
-                                // }
+                                if (el === 51 && cmdName === 'install') {
+                                    setCmdName('upload');
+                                }
+                                if (selected.length > currentInstall && cmdName === 'upload') {
+                                    checkLicense(selected[currentInstall], () => {
+                                        setCurrentInstall(currentInstall + 1);
+                                    });
+                                } else {
+                                    alert(`error ${selected[currentInstall - 1]}`);
+                                }
                             }}
-                        />}
+                        /></div>}
+                    </TabPanel>
+                    <TabPanel
+                        // className={classes.overflowAuto}
+                        // style={black ? { color: 'black' } : null}
+                        value={value}
+                        index={4}
+                        // classes={classes}
+                        custom
+                        title={I18n.t('Test')}
+                    >
+                        <Paper className={classes.paperTable}>
+                            <ConfigPanelStyled
+                                data={schemaData}
+                                socket={socket}
+                                themeType={themeType}
+                                themeName={themeName}
+                                onChange={setSchemaData}
+                                schema={schema}
+                            />
+                        </Paper>
                     </TabPanel>
                 </div>
             </DialogContent >
             <DialogActions>
-                {value > 0 && <Button
+                {value > 0 && value !== 4 && <Button
                     variant="contained"
                     autoFocus
                     disabled={value === 0}
@@ -616,22 +796,57 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     <SearchIcon />
                     {I18n.t('Discover')}
                 </Button>}
-                {value !== 2 && <Button
+                {value !== 2 && value !== 4 && <Button
                     variant="contained"
                     autoFocus
                     disabled={!discoveryData || value === 2 || disableScanner || (value === 1 && !selected.length)}
                     onClick={() => {
                         stepUp();
-                        checkInstall();
+                        if (value === 1) {
+                            checkInstall();
+                        }
                     }}
                     color="primary">
                     {value === 1 ? <LibraryAddIcon /> : <NavigateNextIcon />}
                     {I18n.t(value === 1 ? 'Create instances' : 'Next')}
                 </Button>}
+                {value === 4 && <Button
+                    variant="contained"
+                    autoFocus
+                    onClick={() => {
+                        let obj = {};
+                        let error = false;
+                        Object.keys(schema.items).forEach(key => {
+                            if (schema.items[key].required) {
+                                if (!schemaData[key]) {
+                                    alert(`no data ${schema.items[key].label}`);
+                                } else {
+                                    obj = generateObj(obj, schema.items[key].name, schemaData[key]);
+                                }
+                            } else if (schema.items[key].name) {
+                                obj = generateObj(obj, schema.items[key].name, schemaData[key]);
+                            }
+                        })
+                        if (!error) {
+                            // setValue(2);
+                        }
+                        console.log(obj);
+                    }}
+                    color="primary">
+                    {I18n.t('Apply')}
+                </Button>}
                 <Button
                     variant="contained"
                     autoFocus
-                    onClick={onClose}
+                    onClick={() => {
+                        if (value === 4) {
+                            return checkLicense(selected[currentInstall], () => {
+                                setCurrentInstall(currentInstall + 1);
+                                setCmdName('install');
+                            });
+                        }
+                        onClose();
+                    }}
                     color="primary">
                     <CloseIcon />
                     {I18n.t(value === 2 ? 'Finish' : 'Close')}

@@ -155,6 +155,7 @@ class ConfigPanel extends ConfigGeneric {
     }
 
     render() {
+        console.log(this.props)
         const items = this.props.schema.items;
         const classes = this.props.classes || {};
 

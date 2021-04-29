@@ -212,10 +212,10 @@ class Command extends Component {
             this.setState({ log, stopped: true }, () => {
                 this.props.onSetCommandRunning(false);
                 if (exitCode !== 0) {
-                    this.props.errorFunc && this.props.errorFunc();
+                    this.props.errorFunc && this.props.errorFunc(exitCode);
                 } else {
                     this.props.performed && this.props.performed();
-                    this.props.onFinished();
+                    this.props.onFinished(exitCode);
                 }
                 console.log('cmdExit');
                 console.log(id);
