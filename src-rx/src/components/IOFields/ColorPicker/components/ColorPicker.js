@@ -55,7 +55,7 @@ const ColorPicker =
             open={showPicker}
             onClose={() => setShowPicker(false)}
             anchorEl={()=>fieldRef.current}
-            anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+            anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
         >
             <PickerDialog
                 value={value === undefined ? internalValue : value}
