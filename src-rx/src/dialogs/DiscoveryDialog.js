@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import { AppBar, Box, Checkbox, LinearProgress, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, ThemeProvider, Typography } from '@material-ui/core';
+import { AppBar, Box, Checkbox, CircularProgress, LinearProgress, makeStyles, Paper, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, ThemeProvider, Typography } from '@material-ui/core';
 
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -21,7 +21,7 @@ import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import Command from '../components/Command';
 import { licenseDialogFunc } from '../dialogs/LicenseDialog';
-import ConfigPanelStyled from '../components/JsonConfigComponent/ConfigPanel';
+import { GenereteInputsFunc } from './GenereteInputsModal';
 
 
 
@@ -152,7 +152,16 @@ const useStyles = makeStyles((theme) => ({
     headerBlockDisplayItem: {
         padding: 13,
         fontSize: 16,
-        display: 'flex'
+        display: 'flex',
+        margin: 1
+    },
+    installSuccess: {
+        opacity: 0.7,
+        background: '#5ef05e80'
+    },
+    installError: {
+        opacity: 0.7,
+        background: '#f05e5e80'
     },
     width200: {
         width: 200
@@ -165,33 +174,44 @@ const useStyles = makeStyles((theme) => ({
     paperTable: {
         width: '100%',
         marginBottom: theme.spacing(2),
+    },
+    wrapperSwitch: {
+        display: 'flex',
+        margin: 10
+    },
+    currnetSwitch: {
+        display: 'flex',
+        margin: 10,
+        alignItems: 'center',
+        fontSize: 10,
+        marginLeft: 0,
+        color: 'silver'
     }
 }));
 
-const TabPanel = ({ classes, children, value, index, title, custom, ...props }) => {
+const TabPanel = ({ classes, children, value, index, title, custom, boxHeight, black, ...props }) => {
     if (custom) {
         return <div
             {...props}
         >{value === index && children}</div>
     }
-
-    return (
-        <div
-            {...props}
-        >{value === index &&
-            <>
+    if (value === index) {
+        return (
+            <div {...props}>
                 <AppBar position="static" color="default">
-                    <div className={classes.headerBlock}>
+                    <div style={!black ? { color: 'white' } : null} className={classes.headerBlock}>
                         {title}
                     </div>
                 </AppBar>
-                <Box p={3}>
-                    <Typography component="div">{children}</Typography>
+                <Box style={boxHeight ? { height: 'calc(100% - 45px)' } : null} p={3}>
+                    <Typography style={boxHeight ? { height: '100%' } : null} component="div">
+                        {children}
+                    </Typography>
                 </Box>
-            </>
-            }
-        </div>
-    );
+            </div>
+        );
+    }
+    return null;
 }
 
 const headCells = [
@@ -223,19 +243,12 @@ function EnhancedTableHead(props) {
                         key={headCell.id}
                         align={headCell.numeric ? 'right' : 'left'}
                         padding={headCell.disablePadding ? 'none' : 'default'}
-                    //   sortDirection={orderBy === headCell.id ? order : false}
                     >
                         <TableSortLabel
-                            // active={orderBy === headCell.id}
-                            // direction={orderBy === headCell.id ? order : 'asc'}
                             onClick={createSortHandler(headCell.id)}
                         >
                             {headCell.label}
-                            {/* {orderBy === headCell.id ? (
-                  <span className={classes.visuallyHidden}>
-                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                  </span>
-                ) : null} */}
+
                         </TableSortLabel>
                     </TableCell>
                 ))}
@@ -298,40 +311,6 @@ const buildComment = (comment, t) => {
     return text;
 }
 
-// Types of parameters:
-//          - type=password, def=default value
-//          - type=checkbox, def=default value
-//          - type=select, options={value1: TextValule1, value2=TextValue2}
-//          - type=link, def = URL
-//          - type=comment, style="CSS style", def=text
-//          - type=text
-//          - name = Name of attribute like "native.ip" or "native.port"
-//          - title = Title of input
-
-const types = {
-    "password": "password",
-    "checkbox": "checkbox",
-    "select": "select",
-    "link": "staticLink",
-    "comment": "staticText",
-    "text": "text",
-    "name": "staticText",
-    "title": "staticText",
-};
-
-const generateObj = (obj, path, value) => {
-    path = path.split('.');
-    path.forEach((element, idx) => {
-        if (idx === path.length - 1) {
-            if (!obj[path[idx - 1]]) {
-                obj[path[idx - 1]] = {};
-            }
-            obj[path[idx - 1]][element] = value;
-        }
-    });
-    return obj;
-}
-
 const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost }) => {
     const classes = useStyles();
 
@@ -355,7 +334,6 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(async () => {
         const dataDiscovery = await socket.getObject('system.discovery');
-        console.log(dataDiscovery)
         dataDiscovery !== undefined && setDiscoveryData(dataDiscovery?.native);
     }, [socket]);
 
@@ -365,10 +343,8 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
     const [scanRunning, setScanRunning] = useState(false);
     const [servicesProgress, setServicesProgress] = useState(0);
     const [selected, setSelected] = useState([]);
-    const [selectedIgnore, setSelectedIgnore] = useState([]);
 
     const handlerInstal = (name, value) => {
-        // console.log(33333, name, value)
         switch (name) {
             case 'discovery.0.devicesFound':
                 return setDevicesFound(value.val);
@@ -465,8 +441,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
         func(newSelected);
     };
 
-
-    const checkLicense = (objName, cb) => {
+    const checkLicenseAndInputs = (objName, cb) => {
         const obj = JSON.parse(JSON.stringify(discoveryData.newInstances.find(obj => obj._id === objName)));
         let license = true;
         if (obj && obj.comment && obj.comment.license && obj.comment.license !== 'MIT') {
@@ -477,22 +452,53 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
             if (typeof obj.common.licenseUrl === 'object') {
                 obj.common.licenseUrl = obj.common.licenseUrl[I18n.getLanguage()] || obj.common.licenseUrl.en;
             }
-            // Workaround
-            // https://github.com/ioBroker/ioBroker.vis/blob/master/LICENSE =>
-            // https://raw.githubusercontent.com/ioBroker/ioBroker.vis/master/LICENSE
             if (obj.common.licenseUrl.indexOf('github.com') !== -1) {
                 obj.common.licenseUrl = obj.common.licenseUrl.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
             }
         }
-        licenseDialogFunc(license, cb, obj?.common?.licenseUrl);
+
+        licenseDialogFunc(license, () => {
+            if (obj.comment?.inputs) {
+                console.log('obj', obj)
+                GenereteInputsFunc(themeType, themeName, socket, obj, () => {
+                    const index = selected.indexOf(obj._id) + 1;
+                    setInstallStatus((status) => Object.assign({ ...status }, { [index]: 'error' }));
+                    if (selected.length > index) {
+                        checkLicenseAndInputs(selected[index], () => {
+                            setCurrentInstall(index + 1);
+                            setCmdName('install');
+                            setInstallProgress(true);
+                        });
+                    }
+                }, (params) => {
+                    setInstacesInputsParams(params);
+                    cb();
+                })
+            } else {
+                cb();
+            }
+        }, obj?.common?.licenseUrl);
     }
 
     const [installProgress, setInstallProgress] = useState(false);
-    const [currentInstall, setCurrentInstall] = useState(null);
+    const [currentInstall, setCurrentInstall] = useState(1);
+    const [installStatus, setInstallStatus] = useState({});
     const [cmdName, setCmdName] = useState('install');
+
+
+    const resetStateBack = () => {
+        setSelected([]);
+        setInstallProgress(false);
+        setCurrentInstall(1);
+        setCmdName('install');
+        setInstallStatus({});
+    }
+
     const checkInstall = async () => {
-        setInstallProgress(true);
-        checkLicense(selected[0], () => setCurrentInstall(1));
+        checkLicenseAndInputs(selected[0], () => {
+            setCurrentInstall(1);
+            setInstallProgress(true);
+        });
     }
 
     const [suggested, setSuggested] = useState(true);
@@ -500,54 +506,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
 
     const black = themeType === 'dark';
 
-    const [schema, setSchema] = useState({
-        items: {
-            enabled: {
-                attr: "enabled",
-                filter: false,
-                sort: false,
-                label: "55555",
-                type: "checkbox",
-                width: 50
-            },
-            "autoComplete": {
-                "newLine": true,
-                "sm": 4,
-                "type": "autocomplete",
-                label: "55555",
-                "freeSolo": true,
-                "options": [{
-                    "label": "A",
-                    "value": "a"
-                }, "B"]
-            },
-        }
-    });
-    const [schemaData, setSchemaData] = useState({ enabled: false, autoComplete: 'B' });
-
-    useEffect(() => {
-        const obj = {};
-        const objValue = {};
-        if (value === 4 && discoveryData && discoveryData.newInstances) {
-            console.log(discoveryData.newInstances[0])
-
-            discoveryData.newInstances[0].comment.add.forEach((text, idx) => {
-                obj[idx] = { type: 'header', text }
-            })
-            discoveryData.newInstances[0].comment.inputs.forEach((el, idx) => {
-                obj[idx + 1] = {
-                    ...el, type: types[el.type], label: el.title, text: el.def, href: el.def,
-                    "newLine": true
-                }
-                if (el.def !== undefined) {
-                    objValue[idx + 1] = el.def;
-                }
-            });
-            setSchemaData(objValue);
-            setSchema({ items: obj });
-        }
-    }, [discoveryData.newInstances, value])
-    console.log(schemaData, schema)
+    const [instacesInputsParams, setInstacesInputsParams] = useState({});
     return <ThemeProvider theme={theme(themeName)}>
         <Dialog
             onClose={onClose}
@@ -565,28 +524,28 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     {disableScanner && <LinearProgress variant="determinate" value={devicesProgress >= 99 ? servicesProgress : devicesProgress} />}
                     <TabPanel
                         className={classes.overflowAuto}
-                        // style={black ? { color: 'black' } : null}
+                        style={black ? { color: 'white' } : null}
                         value={value}
                         index={0}
+                        black={black}
                         classes={classes}
                         title={I18n.t('Discover all possible devices')}
                     >
                         <div className={classes.headerText}>
-                            Press "Discover" to find devices in your network (Turn off network firewalls/traffic analyze systems before!)
-                            or "Next" to use devices from previous discovery process
+                            {I18n.t(`Press "Discover" to find devices in your network (Turn off network firewalls/traffic analyze systems before!)
+                            or "Next" to use devices from previous discovery process`)}
                         </div>
                         {discoveryData?.lastScan && <div className={classes.descriptionHeaderText}>
-                            Last scan on {Utils.formatDate(new Date(discoveryData.lastScan), dateFormat)}
+                            {I18n.t('Last scan on %s', Utils.formatDate(new Date(discoveryData.lastScan), dateFormat))}
                         </div>}
                         <div
-                            // style={black ? { color: 'white' } : null} 
+                            style={!black ? { color: 'white' } : null}
                             className={classes.headerBlock}>
-                            Use following methods:
+                            {I18n.t('Use following methods:')}
 
                         </div>
                         {Object.keys(listMethods).map(key => <div key={key}><Checkbox
                             checked={checkboxChecked[key]}
-                            // style={black ? { color: '#436a93' } : null}
                             disabled={disableScanner}
                             onChange={(_, value) => {
                                 const newCheckboxChecked = JSON.parse(JSON.stringify(checkboxChecked));
@@ -604,7 +563,6 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     </TabPanel>
                     <TabPanel
                         className={classes.overflowAuto}
-                        // style={black ? { color: 'black' } : null}
                         value={value}
                         index={1}
                         classes={classes}
@@ -614,20 +572,26 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                         }
                     >
                         <Paper className={classes.paperTable}>
-                            <Button
-                                variant="contained"
-                                autoFocus
-                                onClick={() => setShowAll(!showAll)}
-                                color={showAll ? "primary" : "default"}>
-                                {I18n.t('Show all')}
-                            </Button>
-                            <Button
-                                variant="contained"
-                                autoFocus
-                                onClick={() => setSuggested(!suggested)}
-                                color={suggested ? "primary" : "default"}>
-                                {I18n.t('Suggested')}
-                            </Button>
+                            <div className={classes.wrapperSwitch}>
+                                <div className={classes.currnetSwitch}>
+                                    <div style={!showAll ? { color: 'green' } : null}>{I18n.t('hide ignored')}</div>
+                                    <Switch
+                                        checked={showAll}
+                                        onChange={e => setShowAll(e.target.checked)}
+                                        color="primary"
+                                    />
+                                    <div style={showAll ? { color: 'green' } : null}>{I18n.t('show ignored')}</div>
+                                </div>
+                                <div className={classes.currnetSwitch}>
+                                    <div style={!suggested ? { color: 'green' } : null}>{I18n.t('hide suggested')}</div>
+                                    <Switch
+                                        checked={suggested}
+                                        onChange={e => setSuggested(e.target.checked)}
+                                        color="primary"
+                                    />
+                                    <div style={suggested ? { color: 'green' } : null}>{I18n.t('show suggested')}</div>
+                                </div>
+                            </div>
                             <TableContainer>
                                 <Table
                                     className={classes.table}
@@ -689,90 +653,83 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     </TabPanel>
                     <TabPanel
                         className={classes.overflowAuto}
-                        style={black ? { color: 'black' } : null}
                         value={value}
                         index={2}
+                        style={{ height: '100%' }}
+                        boxHeight
                         classes={classes}
                         title={I18n.t('Install adapters')}
                     >
-                        <div
-                            style={black ? { color: 'white' } : null}
-                            className={classes.headerBlockDisplay}>
-                            <div className={classes.width200}>Instance</div>
-                            <div>Progress</div>
+                        <div style={{ display: 'flex', height: '100%' }}>
+                            <div>
+                                {selected.map((el, idx) => <div
+                                    key={el}
+                                    className={clsx(classes.headerBlockDisplayItem, installStatus[idx + 1] === 'error' && classes.installError, installStatus[idx + 1] === 'success' && classes.installSuccess)}>
+                                    <div className={classes.width200}>{el.replace('system.adapter.', '')}</div>
+                                    {currentInstall === idx + 1 && !installStatus[idx + 1] && <CircularProgress size={20} />}
+                                </div>)}
+                            </div>
+                            {currentInstall && installProgress && <div item style={{ overflow: 'hidden', width: 'calc(100% - 260px)' }}>
+                                <Command
+                                    noSpacing
+                                    key={`${currentInstall}-${cmdName}`}
+                                    ready
+                                    currentHost={currentHost}
+                                    socket={socket}
+                                    t={I18n.t}
+                                    cmd={`${cmdName} ${discoveryData?.newInstances?.find(obj => obj._id === selected[currentInstall - 1])?.common.name}`}
+                                    onFinished={(el) => {
+                                        const initObj = {
+                                            "type": "instance",
+                                            "protectedNative": [],
+                                            "encryptedNative": [],
+                                            "notifications": [],
+                                            "instanceObjects": [],
+                                            "objects": [],
+                                        }
+                                        let data = JSON.parse(JSON.stringify(discoveryData.newInstances.find(obj => obj._id === selected[currentInstall - 1])));
+                                        delete data.comment;
+                                        data = Object.assign(initObj, data);
+                                        extendObject(selected[currentInstall - 1], data);
+                                        if (Object.keys(instacesInputsParams).length) {
+                                            extendObject(selected[currentInstall - 1], instacesInputsParams);
+                                            setInstacesInputsParams({});
+                                        }
+                                        if (selected.length > currentInstall) {
+                                            checkLicenseAndInputs(selected[currentInstall], () => {
+                                                setCurrentInstall(currentInstall + 1);
+                                                setCmdName('install');
+                                            });
+                                            setInstallStatus(Object.assign({ ...installStatus }, { [currentInstall]: 'success' }));
+                                        } else {
+                                            setInstallStatus(Object.assign({ ...installStatus }, { [currentInstall]: 'success' }));
+                                            alert('Finish');
+                                        }
+                                    }}
+                                    errorFunc={(el) => {
+                                        console.log('error', el)
+                                        if (el === 51 && cmdName === 'install') {
+                                            setCmdName('upload');
+                                        }
+                                        if (selected.length > currentInstall && cmdName === 'upload') {
+                                            checkLicenseAndInputs(selected[currentInstall], () => {
+                                                setCurrentInstall(currentInstall + 1);
+                                            });
+                                            setInstallStatus(Object.assign({ ...installStatus }, { [currentInstall]: 'error' }));
+                                        } else {
+                                            setInstallStatus(Object.assign({ ...installStatus }, { [currentInstall]: 'error' }));
+                                            if (selected.length > currentInstall) {
+                                                checkLicenseAndInputs(selected[currentInstall], () => {
+                                                    setCurrentInstall(currentInstall + 1);
+                                                });
+                                                setCmdName('install');
+                                            }
+                                            console.log(22222, instacesInputsParams);
+                                            alert(`error ${selected[currentInstall - 1]}`);
+                                        }
+                                    }}
+                                /></div>}
                         </div>
-                        {selected.map(el => <div
-                            key={el}
-                            // style={black ? { color: 'white' } : null}
-                            className={classes.headerBlockDisplayItem}>
-                            <div className={classes.width200}>{el.replace('system.adapter.', '')}</div>
-                            <div>started</div>
-                        </div>)}
-                        {currentInstall && installProgress && <div item style={{ height: 500, overflow: 'hidden', width: 'calc(100% - 260px)' }}><Command
-                            noSpacing={true}
-                            key={`${currentInstall}-${cmdName}`}
-                            ready={true}
-                            currentHost={currentHost}
-                            socket={socket}
-                            t={I18n.t}
-                            cmd={`${cmdName} ${discoveryData?.newInstances?.find(obj => obj._id === selected[currentInstall - 1])?.common.name}`}
-                            onFinished={(el) => {
-                                const initObj = {
-                                    "type": "instance",
-                                    "protectedNative": [],
-                                    "encryptedNative": [],
-                                    "notifications": [],
-                                    "instanceObjects": [],
-                                    "objects": [],
-                                }
-                                let data = JSON.parse(JSON.stringify(discoveryData.newInstances.find(obj => obj._id === selected[currentInstall - 1])));
-                                delete data.comment;
-                                data = Object.assign(initObj, data);
-                                console.log(data);
-                                extendObject(selected[currentInstall - 1], data);
-                                if (selected.length > currentInstall) {
-                                    checkLicense(selected[currentInstall], () => {
-                                        setCurrentInstall(currentInstall + 1);
-                                        setCmdName('install');
-                                    });
-                                } else {
-                                    alert('Finish');
-                                }
-                            }}
-                            errorFunc={(el) => {
-                                console.log('error', el)
-                                if (el === 51 && cmdName === 'install') {
-                                    setCmdName('upload');
-                                }
-                                if (selected.length > currentInstall && cmdName === 'upload') {
-                                    checkLicense(selected[currentInstall], () => {
-                                        setCurrentInstall(currentInstall + 1);
-                                    });
-                                } else {
-                                    alert(`error ${selected[currentInstall - 1]}`);
-                                }
-                            }}
-                        /></div>}
-                    </TabPanel>
-                    <TabPanel
-                        // className={classes.overflowAuto}
-                        // style={black ? { color: 'black' } : null}
-                        value={value}
-                        index={4}
-                        // classes={classes}
-                        custom
-                        title={I18n.t('Test')}
-                    >
-                        <Paper className={classes.paperTable}>
-                            <ConfigPanelStyled
-                                data={schemaData}
-                                socket={socket}
-                                themeType={themeType}
-                                themeName={themeName}
-                                onChange={setSchemaData}
-                                schema={schema}
-                            />
-                        </Paper>
                     </TabPanel>
                 </div>
             </DialogContent >
@@ -781,8 +738,13 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     variant="contained"
                     autoFocus
                     disabled={value === 0}
-                    onClick={stepDown}
-                    color="primary">
+                    onClick={() => {
+                        if (value === 2) {
+                            resetStateBack();
+                        }
+                        stepDown();
+                    }}
+                    color="default">
                     <NavigateBeforeIcon />
                     {I18n.t('Back')}
                 </Button>
@@ -806,48 +768,17 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                             checkInstall();
                         }
                     }}
-                    color="primary">
+                    color={value === 1 ? "primary" : "default"}>
                     {value === 1 ? <LibraryAddIcon /> : <NavigateNextIcon />}
                     {I18n.t(value === 1 ? 'Create instances' : 'Next')}
-                </Button>}
-                {value === 4 && <Button
-                    variant="contained"
-                    autoFocus
-                    onClick={() => {
-                        let obj = {};
-                        let error = false;
-                        Object.keys(schema.items).forEach(key => {
-                            if (schema.items[key].required) {
-                                if (!schemaData[key]) {
-                                    alert(`no data ${schema.items[key].label}`);
-                                } else {
-                                    obj = generateObj(obj, schema.items[key].name, schemaData[key]);
-                                }
-                            } else if (schema.items[key].name) {
-                                obj = generateObj(obj, schema.items[key].name, schemaData[key]);
-                            }
-                        })
-                        if (!error) {
-                            // setValue(2);
-                        }
-                        console.log(obj);
-                    }}
-                    color="primary">
-                    {I18n.t('Apply')}
                 </Button>}
                 <Button
                     variant="contained"
                     autoFocus
                     onClick={() => {
-                        if (value === 4) {
-                            return checkLicense(selected[currentInstall], () => {
-                                setCurrentInstall(currentInstall + 1);
-                                setCmdName('install');
-                            });
-                        }
                         onClose();
                     }}
-                    color="primary">
+                    color={value === 2 ? "primary" : "default"}>
                     <CloseIcon />
                     {I18n.t(value === 2 ? 'Finish' : 'Close')}
                 </Button>

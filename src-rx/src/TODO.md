@@ -43,6 +43,25 @@
     - Wait till instance is alive ? (only if common.type === 'daemon')
     - Show progress of command (if "show more" selected)
     - Go to the next instance
+- Wizard 4: Installation process    
+
+  - Show stepper (task description)
+  - check system.discovery.native.lastScan
+  - On the first step: Next => "Use last scan" (tooltip: "Skip discovery process and go to install with last scan results")
+  - Link as button (contained with World icon)
+  - Min width of input/password 400
+  - Title of input dialog: Instance parameters for %s
+  - Header in input dialog: border-radius: 3px;
+  - Save in localStorage show ignored / show suggested / show more
+  - More marging-right (40) ignored an suggested
+  - Add icons to instances (select / install dialog)
+  - use for install process: AssignmentTurnedIn (green) - ok / ReportProblem (orange) - false - no background
+  - Height of dialog (height: calc(100% - 32px), maxHeight: 800px)
+  - Install process: Use list component for instanes 
+  - Install: instances could not be selected during installation
+  - Install: as install finished, user can select instances and the command execution log will be shown for selected instance
+  - Install: hode less/more after install is finished.
+  - Install: show last install log after installation completed if "more" selected. If selected "less" do not show anything
 
 ## Logs
 - ON multihost no source at all - https://github.com/ioBroker/ioBroker.admin/issues/777
