@@ -292,7 +292,6 @@ const Hosts = ({
             os={platform}
             description={getHostDescriptionAll(_id, t, classes, hostsData)[0]}
             available={repository['js-controller']?.latestVersion || '-'}
-            executeCommand={() => executeCommand('restart')}
             executeCommandRemove={() => executeCommand(`host remove ${name}`)}
             dialogUpgrade={JsControllerDialogFunc}
             currentHost={currentHost === _id}
@@ -322,7 +321,6 @@ const Hosts = ({
             image={icon}
             title={title}
             os={platform}
-            executeCommand={() => executeCommand('restart')}
             executeCommandRemove={() => executeCommand(`host remove ${name}`)}
             dialogUpgrade={JsControllerDialogFunc}
             currentHost={currentHost === _id}

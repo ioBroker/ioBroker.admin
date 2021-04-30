@@ -333,10 +333,14 @@
             "img": "admin/img/admin.png",
             "color": "pink",
             "order": 5,
+            "localLinks": "_default",
             "localLink": true
         },
         "localLinks": {
-            "_default": "%protocol%://%ip%:%port%"
+            "_default": {
+                "link":"%protocol%://%bind%:%port%",
+                "pro": true
+            }
         },
         "plugins": {
             "sentry": {

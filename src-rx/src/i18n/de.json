@@ -1283,5 +1283,13 @@
   "runtime": "Ausführung",
   "Repeat password is not equal with password": "Das wiederholte Passwort ist nicht gleich dem Passwort!",
   "Empty password is not allowed": "Ein leeres Passwort ist nicht erlaubt",
-  "stop_admin": "Sie versuchen, die aktuelle Administratorinstanz zu stoppen. Sie können ioBroker nicht über den Browser konfigurieren. Sie können admin später über den CLI-Befehl \"iob start %s\" starten. Bist du sicher?"
+  "stop_admin": "Sie versuchen, die aktuelle Administratorinstanz zu stoppen. Sie können ioBroker nicht über den Browser konfigurieren. Sie können admin später über den CLI-Befehl \"iob start %s\" starten. Bist du sicher?",
+  "switch_db_note": "Es wird nicht empfohlen, in diesen Einstellungen den Datenbanktyp zu ändern, da keine Datenmigration durchgeführt wird. Es ist besser, den CLI-Befehl \"iob setup custom\" zu verwenden, damit alle Daten in eine neue Datenbank migriert werden. Sind Sie sicher, dass Sie hier den Datenbanktyp wechseln möchten?",
+  "Show errors": "Fehler anzeigen",
+  "Show errors and warnings": "Fehler und Warnungen anzeigen",
+  "Estimated size": "Geschätzte Größe",
+  "YYYY.MM.DD": "JJJJ.MM.TT",
+  "MM/DD/YYYY": "MM/TT/JJJJ",
+  "Default log level": "Standardprotokollstufe",
+  "for new instances": "für neue Instanzen"
 }

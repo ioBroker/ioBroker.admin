@@ -4,9 +4,9 @@
 - (BF) AdminSettings: Access to the instances: add infotexts for "Apply access rights" and "Allow access only"
 - (BF) General: Support the new io-package fields that replace materialize and materializeTab (but we need to be backward compatible)
   common.adminUI: {
-  custom: 'json',
-  config: 'materialize',
-  tab: 'html'
+    custom: 'json''
+    config: 'materialize', 'none', 'html'
+    tab: 'html'
   }
 
 ## Intro
@@ -15,14 +15,14 @@
 - Show back button in strickt mode for tabs (and logo button always returns to #easy in strict mode) 
 
 ## Settings
-- Show dialog, that RESTART only works on debian systems: https://github.com/ioBroker/ioBroker.admin/issues/754
-- By changing of redis<=>file, show dialog that it must be done via CLI because no datapoints/objects will be converted
-  
+- (Base settings) Show dialog, that RESTART only works on debian systems: https://github.com/ioBroker/ioBroker.admin/issues/754
+
 ## Info
+
+## Enums
 
 ## Adapters
 - Use readme renderer from www.iobroker.net (BF)
-- Downgrade must be possible - https://github.com/ioBroker/ioBroker.admin/issues/776
 
 ## Wizard
 
@@ -53,22 +53,20 @@
   - Title of input dialog: Instance parameters for %s
   - Header in input dialog: border-radius: 3px;
   - Save in localStorage show ignored / show suggested / show more
-  - More marging-right (40) ignored an suggested
+  - More margin-right (40) ignored and suggested
   - Add icons to instances (select / install dialog)
   - use for install process: AssignmentTurnedIn (green) - ok / ReportProblem (orange) - false - no background
   - Height of dialog (height: calc(100% - 32px), maxHeight: 800px)
-  - Install process: Use list component for instanes 
+  - Install process: Use list component for instances 
   - Install: instances could not be selected during installation
   - Install: as install finished, user can select instances and the command execution log will be shown for selected instance
-  - Install: hode less/more after install is finished.
+  - Install: hide less/more after install is finished.
   - Install: show last install log after installation completed if "more" selected. If selected "less" do not show anything
 
 ## Logs
 - ON multihost no source at all - https://github.com/ioBroker/ioBroker.admin/issues/777
 
 ## Instances
-- if more than one host => host selector for every instance
-- Mobile view:  smaller icons and some more space between status lamp and the icon - https://github.com/ioBroker/ioBroker.admin/issues/758
 
 ## Objects
 - Add in object edit the possibility to set color and icon (icon could be uploaded as base64 and may not be bigger than 5k) and use it for text color. Add possibility to scale the images.
@@ -76,6 +74,8 @@
 
 - Allow creation of folder and devices on non existing objects (JSON export too) - https://github.com/ioBroker/ioBroker.admin/issues/761
 - Layout problem by defined columns widths: https://github.com/ioBroker/ioBroker.admin/issues/698
+- Allow to set expire for experts in object browser
+- Display charts automatically in set setzen
 
 ## Files
 

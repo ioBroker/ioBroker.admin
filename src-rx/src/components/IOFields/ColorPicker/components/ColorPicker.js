@@ -1,4 +1,4 @@
-import {React, useRef} from 'react';
+import React, {useRef} from 'react';
 import PropTypes from 'prop-types';
 import compose from 'recompose/compose';
 import withState from 'recompose/withState';

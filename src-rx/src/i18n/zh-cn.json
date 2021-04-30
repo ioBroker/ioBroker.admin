@@ -1283,5 +1283,13 @@
   "runtime": "运行",
   "Repeat password is not equal with password": "重复的密码不等于密码！",
   "Empty password is not allowed": "不允许输入空密码",
-  "stop_admin": "您正在尝试停止当前的管理实例。您将无法通过浏览器配置ioBroker。您可以稍后通过CLI命令“ iob start %s”启动admin。你确定吗？"
+  "stop_admin": "您正在尝试停止当前的管理实例。您将无法通过浏览器配置ioBroker。您可以稍后通过CLI命令“ iob start %s”启动admin。你确定吗？",
+  "switch_db_note": "建议不要在此设置中更改数据库的类型，因为不会进行任何数据迁移。最好使用CLI命令“ iob setup custom”，以便将所有数据迁移到新数据库。确定要在此处切换数据库类型吗？",
+  "Show errors": "显示错误",
+  "Show errors and warnings": "显示错误和警告",
+  "Estimated size": "估计尺寸",
+  "YYYY.MM.DD": "YYYY.MM.DD",
+  "MM/DD/YYYY": "MM/DD/YYYY",
+  "Default log level": "默认日志级别",
+  "for new instances": "对于新实例"
 }

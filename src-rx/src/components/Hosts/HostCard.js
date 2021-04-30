@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
+
 import { Badge, Card, CardContent, CardMedia, Fab, IconButton, Tooltip, Typography } from '@material-ui/core';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -291,7 +292,6 @@ const HostCard = ({
     _id,
     socket,
     setEditDialog,
-    executeCommand,
     executeCommandRemove,
     currentHost,
     dialogUpgrade,
@@ -523,7 +523,11 @@ const HostCard = ({
                     }
                     <Tooltip title={t('Restart host')}>
                         <div>
-                            <IconButton disabled={!alive} onClick={executeCommand}>
+                            <IconButton disabled={!alive} onClick={e => {
+                                e.stopPropagation();
+                                socket.restartController(_id)
+                                    .catch(e => window.alert(`Cannot restart: ${e}`));
+                            }}>
                                 <CachedIcon />
                             </IconButton>
                         </div>

@@ -1679,8 +1679,9 @@ function Adapters(main) {
         $button.off('click').on('click', function () {
             const versions = [];
             let news;
-            if (that.main.objects['system.adapter.' + adapter].common.news) {
-                news = that.main.objects['system.adapter.' + adapter].common.news;
+            // TODO: take from repo
+            if (that.main.objects['system.adapter.' + adapter].common.news || that.curRepository[adapter].news) {
+                news = that.main.objects['system.adapter.' + adapter].common.news || that.curRepository[adapter].news;
                 for (const id in news) {
                     if (news.hasOwnProperty(id)) {
                         versions.push(id);

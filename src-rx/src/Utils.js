@@ -280,7 +280,7 @@ class Utils {
                         let protocol = native.secure === undefined ? native.protocol : native.secure;
                         if (protocol === true || protocol === 'true') {
                             protocol = 'https';
-                        } else if (protocol === false || protocol === 'false') {
+                        } else if (protocol === false || protocol === 'false' || !protocol) {
                             protocol = 'http';
                         }
                         protocol = protocol.replace(/:$/, '');

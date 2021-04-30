@@ -1283,5 +1283,13 @@
   "runtime": "Runtime",
   "Repeat password is not equal with password": "Powtórzone hasło nie jest równe hasłu!",
   "Empty password is not allowed": "Puste hasło jest niedozwolone",
-  "stop_admin": "Próbujesz zatrzymać bieżącą instancję administratora. Nie będziesz w stanie skonfigurować ioBrokera przez przeglądarkę. Możesz uruchomić administratora później za pomocą polecenia CLI \"iob start %s\". Jesteś pewny?"
+  "stop_admin": "Próbujesz zatrzymać bieżącą instancję administratora. Nie będziesz w stanie skonfigurować ioBrokera przez przeglądarkę. Możesz uruchomić administratora później za pomocą polecenia CLI \"iob start %s\". Jesteś pewny?",
+  "switch_db_note": "Nie zaleca się zmiany typu bazy danych w tych ustawieniach, ponieważ migracja danych nie zostanie wykonana. Lepiej jest użyć polecenia CLI „iob setup custom”, aby wszystkie dane zostały przeniesione do nowej bazy danych. Jesteś pewien, że chcesz zmienić tutaj typ bazy danych?",
+  "Show errors": "Pokaż błędy",
+  "Show errors and warnings": "Pokaż błędy i ostrzeżenia",
+  "Estimated size": "Szacowany rozmiar",
+  "YYYY.MM.DD": "RRRR.MM.DD",
+  "MM/DD/YYYY": "DD/MM/RRRR",
+  "Default log level": "Domyślny poziom dziennika",
+  "for new instances": "dla nowych instancji"
 }

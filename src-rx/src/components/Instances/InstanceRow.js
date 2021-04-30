@@ -14,6 +14,7 @@ import BuildIcon from '@material-ui/icons/Build';
 import InputIcon from '@material-ui/icons/Input';
 import DeleteIcon from '@material-ui/icons/Delete';
 import LowPriorityIcon from '@material-ui/icons/LowPriority';
+import HostIcon from '@material-ui/icons/Storage';
 import MemoryIcon from '@material-ui/icons/Memory';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import ViewCompactIcon from '@material-ui/icons/ViewCompact';
@@ -27,6 +28,7 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import I18n from '@iobroker/adapter-react/i18n';
 import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
 import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
+import Icon from '@iobroker/adapter-react/Components/Icon';
 
 import InstanceInfo from './InstanceInfo';
 import State from '../State';
@@ -364,6 +366,12 @@ const styles = theme => ({
         visible800: {
             display: 'flex !important'
         },
+        instanceIcon: {
+            height: 28,
+            width: 28,
+            marginLeft: 4,
+            marginTop: 8,
+        },
     },
     '@media screen and (max-width: 570px)': {
         hidden570: {
@@ -381,7 +389,7 @@ const styles = theme => ({
         instanceId: {
             width: 100,
         },
-        maxWidth300:{
+        maxWidth300: {
             width:`250px !important`
         }
     },
@@ -500,6 +508,10 @@ const styles = theme => ({
         width: 150
     }
 });
+
+const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
+const arrayTier = [{ value: 1, desc: '1: Logic adapters' }, { value: 2, desc: '2: Data provider adapters' }, { value: 3, desc: '3: Other adapters' }];
+
 const InstanceRow = ({
     name,
     classes,
@@ -545,36 +557,39 @@ const InstanceRow = ({
     idx,
     tier,
     setTier,
+    setHost,
     themeType,
-    adminInstance
+    adminInstance,
+    hosts,
+    host,
 }) => {
-    const [openSelect, setOpenSelect] = useState(false);
+    const [openSelectCompactGroup, setOpenSelectCompactGroup] = useState(false);
     const [openDialogCron, setOpenDialogCron] = useState(false);
     const [openDialogSchedule, setOpenDialogSchedule] = useState(false);
     const [openDialogText, setOpenDialogText] = useState(false);
-    const [openDialogSelect, setOpenDialogSelect] = useState(false);
+    const [openDialogLogLevel, setOpenDialogLogLevel] = useState(false);
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
     const [openDialogMemoryLimit, setOpenDialogMemoryLimit] = useState(false);
-    const [select, setSelect] = useState(logLevel);
+    const [openDialogHost, setOpenDialogHost] = useState(false);
     const [openDialogCompact, setOpenDialogCompact] = useState(false);
-    const [selectCompact, setSelectCompact] = useState(compactGroup || 0);
-    const [selectCompactGroupCount, setSelectCompactGroupCount] = useState(compactGroupCount);
-    const [openDialogSelectTier, setOpenDialogSelectTier] = useState(false);
-    const [tierValue, setTierValue] = useState(tier);
-    const [showLinks, setShowLinks] = useState(false);
-    const [showStopAdminDialog, setShowStopAdminDialog] = useState(false);
+    const [openDialogTier, setOpenDialogTier] = useState(false);
 
-    const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
-    const arrayTier = [{ value: 1, desc: '1: Logic adapters' }, { value: 2, desc: '2: Data provider adapters' }, { value: 3, desc: '3: Other adapters' }];
+    const [showStopAdminDialog, setShowStopAdminDialog] = useState(false);
+    const [showLinks, setShowLinks] = useState(false);
+
+    const [logLevelValue, setLogLevelValue] = useState(logLevel);
+    const [compactValue, setCompactValue] = useState(compactGroup || 0);
+    const [compactGroupCountValue, setCompactGroupCountValue] = useState(compactGroupCount);
+    const [tierValue, setTierValue] = useState(tier);
+    const [hostValue, setHostValue] = useState(host);
 
     let showModal = false;
-
     let title;
     let help = '';
     if (openDialogText) {
         title = t('Enter title for %s', instance.id);
         showModal = true;
-    } else if (openDialogSelect) {
+    } else if (openDialogLogLevel) {
         title = t('Edit log level rule for %s', instance.id);
         showModal = true;
     } else if (openDialogDelete) {
@@ -584,10 +599,13 @@ const InstanceRow = ({
         title = t('Edit memory limit rule for %s', instance.id);
         help = t('Default V8 has a memory limit of 512mb on 32-bit systems, and 1gb on 64-bit systems. The limit can be raised by setting --max-old-space-size to a maximum of ~1gb (32-bit) and ~1.7gb (64-bit)');
         showModal = true;
+    } else if (openDialogHost) {
+        title = t('Edit host for %s', instance.id);
+        showModal = true;
     } else if (openDialogCompact) {
         title = t('Edit compact groups for %s', instance.id);
         showModal = true;
-    } else if (openDialogSelectTier) {
+    } else if (openDialogTier) {
         title = t('Set tier for %s', instance.id);
         help = t('Tiers define the order of adapters when the system starts.');
         showModal = true;
@@ -601,30 +619,33 @@ const InstanceRow = ({
         textInput={openDialogText || openDialogMemoryLimit}
         defaultValue={openDialogText ? name : openDialogMemoryLimit ? memoryLimitMB : ''}
         onApply={value => {
-            if (openDialogSelect) {
-                setLogLevel(select)
-                setOpenDialogSelect(false);
+            if (openDialogLogLevel) {
+                setLogLevel(instance, logLevelValue);
+                setOpenDialogLogLevel(false);
             } else if (openDialogText) {
-                setName(value);
+                setName(instance, value);
                 setOpenDialogText(false);
             } else if (openDialogDelete) {
                 setOpenDialogDelete(false);
-                deletedInstances();
+                deletedInstances(instance);
             } else if (openDialogMemoryLimit) {
-                setMemoryLimitMB(value);
+                setMemoryLimitMB(instance, value);
                 setOpenDialogMemoryLimit(false);
             } else if (openDialogCompact) {
-                setCompactGroup(selectCompact);
+                setCompactGroup(instance, compactValue);
                 setOpenDialogCompact(false);
-            } else if (openDialogSelectTier) {
-                setTier(tierValue);
-                setOpenDialogSelectTier(false);
+            } else if (openDialogTier) {
+                setTier(instance, tierValue);
+                setOpenDialogTier(false);
+            } else if (openDialogHost) {
+                setHost(instance, hostValue);
+                setOpenDialogHost(false);
             }
         }}
         onClose={() => {
-            if (openDialogSelect) {
-                setSelect(logLevel);
-                setOpenDialogSelect(false);
+            if (openDialogLogLevel) {
+                setLogLevelValue(logLevel);
+                setOpenDialogLogLevel(false);
             } else if (openDialogText) {
                 setOpenDialogText(false);
             } else if (openDialogDelete) {
@@ -632,21 +653,24 @@ const InstanceRow = ({
             } else if (openDialogMemoryLimit) {
                 setOpenDialogMemoryLimit(false);
             } else if (openDialogCompact) {
-                setSelectCompact(compactGroup);
-                setSelectCompactGroupCount(compactGroupCount);
+                setCompactValue(compactGroup);
+                setCompactGroupCountValue(compactGroupCount);
                 setOpenDialogCompact(false);
-            } else if (openDialogSelectTier) {
+            } else if (openDialogTier) {
                 setTierValue(tier);
-                setOpenDialogSelectTier(false);
+                setOpenDialogTier(false);
+            } else if (openDialogHost) {
+                setHostValue(host);
+                setOpenDialogHost(false);
             }
         }}>
-        {openDialogSelect && <FormControl className={classes.formControl} variant="outlined" >
-            <InputLabel htmlFor="outlined-age-native-simple">{t('log level')}</InputLabel>
+        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined" >
+            <InputLabel>{t('log level')}</InputLabel>
             <Select
                 variant="standard"
-                value={select}
+                value={logLevelValue}
                 fullWidth
-                onChange={el => setSelect(el.target.value)}
+                onChange={el => setLogLevelValue(el.target.value)}
             >
                 {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
                     {t(el)}
@@ -654,15 +678,15 @@ const InstanceRow = ({
             </Select>
         </FormControl>}
         {openDialogCompact && <FormControl className={classes.formControl2} variant="outlined" >
-            <InputLabel htmlFor="outlined-age-native-simple">{t('compact groups')}</InputLabel>
+            <InputLabel>{t('compact groups')}</InputLabel>
             <Select
                 variant="standard"
                 autoWidth
-                onClose={e => setOpenSelect(false)}
-                onOpen={e => setOpenSelect(true)}
-                open={openSelect}
-                value={selectCompact === 1 ? 'default' : selectCompact === '0' || selectCompact === 0 ? 'controller' : !selectCompact ? 'default' : selectCompact || 'default'}
-                onChange={el => setSelectCompact(el.target.value)}
+                onClose={e => setOpenSelectCompactGroup(false)}
+                onOpen={e => setOpenSelectCompactGroup(true)}
+                open={openSelectCompactGroup}
+                value={compactValue === 1 ? 'default' : compactValue === '0' || compactValue === 0 ? 'controller' : !compactValue ? 'default' : compactValue || 'default'}
+                onChange={el => setCompactValue(el.target.value)}
             >
                 <div onClick={(e) => {
                     e.preventDefault();
@@ -670,20 +694,20 @@ const InstanceRow = ({
                 }}
                     className={classes.selectStyle}>
                     <Button onClick={e => {
-                        setOpenSelect(false);
-                        setSelectCompact(selectCompactGroupCount + 1);
-                        setSelectCompactGroupCount(selectCompactGroupCount + 1);
+                        setOpenSelectCompactGroup(false);
+                        setCompactValue(compactGroupCountValue + 1);
+                        setCompactGroupCountValue(compactGroupCountValue + 1);
                     }} variant="outlined" stylevariable='outlined'>{t('Add compact group')}</Button>
                 </div>
                 <MenuItem value="controller">{t('with controller')}</MenuItem>
                 <MenuItem value="default">{t('default group')}</MenuItem>
-                {Array(selectCompactGroupCount - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
+                {Array(compactGroupCountValue - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
                     {idx + 2}
                 </MenuItem>)}
             </Select>
         </FormControl>}
-        {openDialogSelectTier && <FormControl className={classes.formControl} variant="outlined" >
-            <InputLabel htmlFor="outlined-age-native-simple">{t('Tiers')}</InputLabel>
+        {openDialogTier && <FormControl className={classes.formControl} variant="outlined" >
+            <InputLabel>{t('Tiers')}</InputLabel>
             <Select
                 variant="standard"
                 value={tierValue}
@@ -696,6 +720,19 @@ const InstanceRow = ({
             </Select>
         </FormControl>}
         {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
+        {openDialogHost && <FormControl className={classes.formControl} variant="outlined">
+            <InputLabel>{t('Host')}</InputLabel>
+            <Select
+                variant="standard"
+                value={hostValue}
+                fullWidth
+                onChange={el => setHostValue(el.target.value)}
+            >
+                {hosts.map(item => <MenuItem key={item._id} value={item.common?.hostname || item._id.replace(/^system\.host\./, '')}>
+                    <Icon src={item.common.icon}/>{item.common?.name || item._id}
+                </MenuItem>)}
+            </Select>
+        </FormControl>}
     </CustomModal> : null;
 
     const [visibleEdit, handlerEdit] = useState(false);
@@ -728,12 +765,13 @@ const InstanceRow = ({
         onChange={() => {
             if (openDialogCron ||
                 openDialogSchedule ||
-                openDialogSelect ||
+                openDialogLogLevel ||
                 openDialogText ||
                 openDialogDelete ||
                 openDialogMemoryLimit ||
                 openDialogCompact ||
-                openDialogSelectTier) {
+                openDialogTier ||
+                openDialogHost) {
                 return;
             }
             handleChange(instance.id);
@@ -976,7 +1014,7 @@ const InstanceRow = ({
                                     size="small"
                                     className={classes.button}
                                     onClick={(event) => {
-                                        setOpenDialogSelect(true);
+                                        setOpenDialogLogLevel(true);
                                         event.stopPropagation();
                                     }}
                                 >
@@ -1043,26 +1081,27 @@ const InstanceRow = ({
                                 </Tooltip>
                             </div>
                         }
-                        {expertMode && <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
-                            <InstanceInfo
-                                icon={<MemoryIcon className={classes.ram} />}
-                                tooltip={t('RAM limit')}
-                            >
-                                {(memoryLimitMB ? memoryLimitMB : '-.--') + ' MB'}
-                            </InstanceInfo>
-                            <Tooltip title={t('Edit')}>
-                                <IconButton
-                                    size="small"
-                                    className={classes.button}
-                                    onClick={e => {
-                                        setOpenDialogMemoryLimit(true);
-                                        e.stopPropagation();
-                                    }}
+                        {expertMode &&
+                            <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
+                                <InstanceInfo
+                                    icon={<MemoryIcon className={classes.ram} />}
+                                    tooltip={t('RAM limit')}
                                 >
-                                    <EditIcon />
-                                </IconButton>
-                            </Tooltip>
-                        </div>
+                                    {(memoryLimitMB ? memoryLimitMB : '-.--') + ' MB'}
+                                </InstanceInfo>
+                                <Tooltip title={t('Edit')}>
+                                    <IconButton
+                                        size="small"
+                                        className={classes.button}
+                                        onClick={e => {
+                                            setOpenDialogMemoryLimit(true);
+                                            e.stopPropagation();
+                                        }}
+                                    >
+                                        <EditIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </div>
                         }
                         {expertMode && checkCompact && compact && supportCompact &&
                             <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
@@ -1081,7 +1120,8 @@ const InstanceRow = ({
                                         <EditIcon />
                                     </IconButton>
                                 </Tooltip>
-                            </div>}
+                            </div>
+                        }
                         {expertMode && <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={<LowPriorityIcon className={classes.marginRight} color="inherit" />} tooltip={t('Start order (tier)')}>
                                 {instance.adapter === 'admin' ? t('Always first') : (arrayTier.find(el => el.value === tier)?.desc || arrayTier[2])}
@@ -1091,7 +1131,7 @@ const InstanceRow = ({
                                     size="small"
                                     className={classes.button}
                                     onClick={e => {
-                                        setOpenDialogSelectTier(true);
+                                        setOpenDialogTier(true);
                                         e.stopPropagation();
                                     }}
                                 >
@@ -1116,67 +1156,82 @@ const InstanceRow = ({
                                 </IconButton>
                             </Tooltip>
                         </div>
-                    </Grid>
-                </Grid>
-                <div className={classes.displayFlex}>
-                <div className={classes.displayFlex}>
-                        <Hidden smUp>
-                            <Tooltip title={t('Settings')}>
+                        {hosts.length > 1 || (hosts.length && hosts[0].common?.hostname !== host) ? <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
+                            <InstanceInfo icon={<HostIcon className={classes.marginRight} />} tooltip={t('Host for this instance')}>
+                                {host}
+                            </InstanceInfo>
+                            <Tooltip title={t('Edit')}>
                                 <IconButton
                                     size="small"
                                     className={classes.button}
-                                    onClick={() => openConfig(id)}
+                                    onClick={event => {
+                                        setOpenDialogHost(true);
+                                        event.stopPropagation();
+                                    }}
                                 >
-                                    <BuildIcon />
+                                    <EditIcon />
                                 </IconButton>
                             </Tooltip>
-                        </Hidden>
-                        <Tooltip title={t('Delete')}>
+                        </div> : null}
+                    </Grid>
+                </Grid>
+                <div className={classes.displayFlex}>
+                    <Hidden smUp>
+                        <Tooltip title={t('Settings')}>
                             <IconButton
                                 size="small"
                                 className={classes.button}
-                                onClick={(event) => {
-                                    setOpenDialogDelete(true);
-                                    event.stopPropagation();
-                                }}
+                                onClick={() => openConfig(id)}
                             >
-                                <DeleteIcon />
+                                <BuildIcon />
                             </IconButton>
                         </Tooltip>
+                    </Hidden>
+                    <Tooltip title={t('Delete')}>
+                        <IconButton
+                            size="small"
+                            className={classes.button}
+                            onClick={(event) => {
+                                setOpenDialogDelete(true);
+                                event.stopPropagation();
+                            }}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <div className={classes.visible570}>
+                        <Tooltip title="sentry">
+                            <IconButton
+                                size="small"
+                                className={clsx(classes.button, expertMode && checkSentry ? null : classes.hide)}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    setSentry();
+                                }}
+                            >
+                                <CardMedia
+                                    className={clsx(classes.sentry, !currentSentry && classes.contrast0)}
+                                    component="img"
+                                    image={sentry}
+                                />
+                            </IconButton>
+                        </Tooltip>
+                    </div>
+                    {supportCompact ?
                         <div className={classes.visible570}>
-                            <Tooltip title="sentry">
+                            <Tooltip title={t('compact groups')}>
                                 <IconButton
                                     size="small"
-                                    className={clsx(classes.button, expertMode && checkSentry ? null : classes.hide)}
+                                    className={clsx(classes.button, expertMode && checkCompact ? null : classes.hide)}
                                     onClick={e => {
                                         e.stopPropagation();
-                                        setSentry();
+                                        setCompact();
                                     }}
                                 >
-                                    <CardMedia
-                                        className={clsx(classes.sentry, !currentSentry && classes.contrast0)}
-                                        component="img"
-                                        image={sentry}
-                                    />
+                                    <ViewCompactIcon color={!!compact ? 'primary' : 'inherit'} />
                                 </IconButton>
                             </Tooltip>
-                        </div>
-                        {supportCompact ?
-                            <div className={classes.visible570}>
-                                <Tooltip title={t('compact groups')}>
-                                    <IconButton
-                                        size="small"
-                                        className={clsx(classes.button, expertMode && checkCompact ? null : classes.hide)}
-                                        onClick={e => {
-                                            e.stopPropagation();
-                                            setCompact();
-                                        }}
-                                    >
-                                        <ViewCompactIcon color={!!compact ? 'primary' : 'inherit'} />
-                                    </IconButton>
-                                </Tooltip>
-                            </div> : null}
-                    </div>
+                        </div> : null}
                 </div>
             </Grid>
         </AccordionDetails>
@@ -1187,6 +1242,10 @@ InstanceRow.propTypes = {
     t: PropTypes.func,
     themeType: PropTypes.string,
     adminInstance: PropTypes.string,
+    hosts: PropTypes.array,
+    setHost: PropTypes.func,
+    host: PropTypes.string,
+    instanceId: PropTypes.string,
 };
 
 

@@ -1283,5 +1283,13 @@
   "runtime": "Durée",
   "Repeat password is not equal with password": "Le mot de passe répété n'est pas égal au mot de passe!",
   "Empty password is not allowed": "Le mot de passe vide n'est pas autorisé",
-  "stop_admin": "Vous essayez d'arrêter l'instance d'administration actuelle. Vous ne pourrez pas configurer ioBroker via le navigateur. Vous pouvez démarrer l'administrateur plus tard via la commande CLI \"iob start %s\". Êtes-vous sûr?"
+  "stop_admin": "Vous essayez d'arrêter l'instance d'administration actuelle. Vous ne pourrez pas configurer ioBroker via le navigateur. Vous pouvez démarrer l'administrateur plus tard via la commande CLI \"iob start %s\". Êtes-vous sûr?",
+  "switch_db_note": "Il n'est pas suggéré de modifier le type de base de données dans ces paramètres, car aucune migration de données ne sera effectuée. Il est préférable d'utiliser la commande CLI \"iob setup custom\", de sorte que toutes les données seront migrées vers la nouvelle base de données. Êtes-vous sûr de vouloir changer le type de base de données ici?",
+  "Show errors": "Afficher les erreurs",
+  "Show errors and warnings": "Afficher les erreurs et les avertissements",
+  "Estimated size": "Taille estimée",
+  "YYYY.MM.DD": "AAAA.MM.JJ",
+  "MM/DD/YYYY": "MM/JJ/AAAA",
+  "Default log level": "Niveau de journalisation par défaut",
+  "for new instances": "pour les nouvelles instances"
 }

@@ -14,14 +14,15 @@ const stateTypeArray = [
     'string',
     'number',
     'array',
+    'json',
     'object',
     'mixed'
 ];
 
 const stateDefValues = {
-    'boolean': false,
-    'string': '',
-    'number': 0,
+    boolean: false,
+    string: '',
+    number: 0,
 };
 
 const TYPES = {
@@ -43,27 +44,40 @@ const ObjectAddNewContent = ({ onClose, onApply, open, selected, extendObject, o
 
     // analyse possible types
     const parentType = objects[selected]?.type;
-    if (parentType === 'channel') {
-        types.push(TYPES.state);
-    } else if (parentType === 'device') {
-        types.push(TYPES.state);
-        types.push(TYPES.channel);
-    } else {
-        types.push(TYPES.state);
-        types.push(TYPES.channel);
-        types.push(TYPES.device);
+    let initialType = '';
+    if (objects[selected]) {
+        if (parentType === 'channel') {
+            types.push(TYPES.state);
+            initialType = 'state';
+        } else if (parentType === 'device') {
+            initialType = 'channel';
+            types.push(TYPES.state);
+            types.push(TYPES.channel);
+        } else if (parentType === 'state') {
+            initialType = '';
+        } else {
+            types.push(TYPES.state);
+            types.push(TYPES.channel);
+            types.push(TYPES.device);
 
-        if (selected.startsWith('0_userdata.') ||
-            selected.startsWith('alias.0.') ||
-            selected === '0_userdata' ||
-            selected === 'alias.0') {
-            types.push(TYPES.folder);
+            if (selected.startsWith('0_userdata.') ||
+                selected.startsWith('alias.0.') ||
+                selected === '0_userdata' ||
+                selected === 'alias.0') {
+                types.push(TYPES.folder);
+                initialType = 'folder';
+            } else {
+                initialType = 'device';
+            }
         }
+    } else {
+        types.push(TYPES.folder);
+        initialType = 'folder';
     }
 
-    const [name, setName] = useState(names.state);
-    const [type, setType] = useState('state');
-    const [stateType, setStateType] = useState('object');
+    const [name, setName] = useState(names[initialType]);
+    const [type, setType] = useState(initialType);
+    const [stateType, setStateType] = useState('string');
     const [unique, setUnique] = useState(!objects[buildId(names.state)]);
 
     function buildId(name) {
@@ -75,13 +89,13 @@ const ObjectAddNewContent = ({ onClose, onApply, open, selected, extendObject, o
         fullWidth
         maxWidth="lg"
         titleButtonApply="add"
-        applyDisabled={!name || !unique || !parentType.length}
+        applyDisabled={!name || !unique || !types.length}
         onClose={onClose}
         onApply={() => {
             const newObj = {
                 common: {
                     name,
-                    desc: 'Manually created',
+                    desc: I18n.t('Manually created'),
                 },
                 type
             };

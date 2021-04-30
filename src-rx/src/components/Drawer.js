@@ -490,8 +490,8 @@ class Drawer extends Component {
                 selected={currentTab === tab.name}
                 tab={tab}
                 compact={!this.isSwipeable() && state !== STATES.opened}
-                badgeContent={tab.name === 'tab-logs' ? logErrors || logWarnings : 0}
-                badgeColor={tab.name === 'tab-logs' ? logErrors ? 'error' : 'warn' : ''}
+                badgeContent={logErrors || logWarnings || 0}
+                badgeColor={logErrors ? 'error' : (logWarnings ? 'warn' : '')}
                 tabs={tabs}
                 setEndDrag={() => this.tabsEditSystemConfig()}
                 setTabs={newObj => this.setState({ tabs: newObj })}>

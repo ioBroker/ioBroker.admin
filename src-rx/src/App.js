@@ -58,17 +58,17 @@ import AdaptersWorker from './components/AdaptersWorker';
 import { discoveryDialogFunc } from './dialogs/DiscoveryDialog';
 
 // Tabs
-const Adapters = React.lazy(() => import('./tabs/Adapters'));
+const Adapters  = React.lazy(() => import('./tabs/Adapters'));
 const Instances = React.lazy(() => import('./tabs/Instances'));
-const Intro = React.lazy(() => import('./tabs/Intro'));
-const Logs = React.lazy(() => import('./tabs/Logs'));
-const Files = React.lazy(() => import('./tabs/Files'));
-const Objects = React.lazy(() => import('./tabs/Objects'));
-const Users = React.lazy(() => import('./tabs/Users'));
-const Enums = React.lazy(() => import('./tabs/Enums'));
+const Intro     = React.lazy(() => import('./tabs/Intro'));
+const Logs      = React.lazy(() => import('./tabs/Logs'));
+const Files     = React.lazy(() => import('./tabs/Files'));
+const Objects   = React.lazy(() => import('./tabs/Objects'));
+const Users     = React.lazy(() => import('./tabs/Users'));
+const Enums     = React.lazy(() => import('./tabs/Enums'));
 const CustomTab = React.lazy(() => import('./tabs/CustomTab'));
-const Hosts = React.lazy(() => import('./tabs/Hosts'));
-const EasyMode = React.lazy(() => import('./tabs/EasyMode'));
+const Hosts     = React.lazy(() => import('./tabs/Hosts'));
+const EasyMode  = React.lazy(() => import('./tabs/EasyMode'));
 
 const query = {};
 (window.location.search || '').replace(/^\?/, '').split('&').forEach(attr => {
@@ -536,8 +536,8 @@ class App extends Router {
     }
 
     onDiscoveryAlive = (name, value) => {
-        if (value) {
-            this.setState({ discoveryAlive: value.val });
+        if (!!(value && !!value.val) !== this.state.discoveryAlive) {
+            this.setState({ discoveryAlive: !!(value && !!value.val)});
         }
     }
 
@@ -547,8 +547,9 @@ class App extends Router {
             this.state.themeName,
             this.socket,
             this.state.systemConfig.common.dateFormat,
-            this.state.currentHost
-            );
+            this.state.currentHost,
+            this.state.systemConfig.common.defaultLogLevel
+        );
     }
 
     findNewsInstance = () => {

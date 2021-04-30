@@ -16,14 +16,12 @@ import CloseIcon from '@material-ui/icons/Close';
 import LibraryAddIcon from '@material-ui/icons/LibraryAdd';
 
 import I18n from '@iobroker/adapter-react/i18n';
-
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
+
 import Command from '../components/Command';
-import { licenseDialogFunc } from '../dialogs/LicenseDialog';
+import { licenseDialogFunc } from './LicenseDialog';
 import { GenereteInputsFunc } from './GenereteInputsModal';
-
-
 
 let node = null;
 
@@ -179,7 +177,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         margin: 10
     },
-    currnetSwitch: {
+    divSwitch: {
         display: 'flex',
         margin: 10,
         alignItems: 'center',
@@ -196,20 +194,18 @@ const TabPanel = ({ classes, children, value, index, title, custom, boxHeight, b
         >{value === index && children}</div>
     }
     if (value === index) {
-        return (
-            <div {...props}>
-                <AppBar position="static" color="default">
-                    <div style={!black ? { color: 'white' } : null} className={classes.headerBlock}>
-                        {title}
-                    </div>
-                </AppBar>
-                <Box style={boxHeight ? { height: 'calc(100% - 45px)' } : null} p={3}>
-                    <Typography style={boxHeight ? { height: '100%' } : null} component="div">
-                        {children}
-                    </Typography>
-                </Box>
-            </div>
-        );
+        return <div {...props}>
+            <AppBar position="static" color="default">
+                <div style={!black ? { color: 'white' } : null} className={classes.headerBlock}>
+                    {title}
+                </div>
+            </AppBar>
+            <Box style={boxHeight ? { height: 'calc(100% - 45px)' } : null} p={3}>
+                <Typography style={boxHeight ? { height: '100%' } : null} component="div">
+                    {children}
+                </Typography>
+            </Box>
+        </div>;
     }
     return null;
 }
@@ -227,45 +223,46 @@ function EnhancedTableHead(props) {
         //   onRequestSort(event, property);
     };
 
-    return (
-        <TableHead>
-            <TableRow>
-                <TableCell padding="checkbox">
-                    <Checkbox
-                        indeterminate={numSelected > 0 && numSelected < rowCount}
-                        checked={rowCount > 0 && numSelected === rowCount}
-                        onChange={onSelectAllClick}
-                        inputProps={{ 'aria-label': 'select all desserts' }}
-                    />
-                </TableCell>
-                {headCells.map((headCell) => (
-                    <TableCell
-                        key={headCell.id}
-                        align={headCell.numeric ? 'right' : 'left'}
-                        padding={headCell.disablePadding ? 'none' : 'default'}
+    return <TableHead>
+        <TableRow>
+            <TableCell padding="checkbox">
+                <Checkbox
+                    indeterminate={numSelected > 0 && numSelected < rowCount}
+                    checked={rowCount > 0 && numSelected === rowCount}
+                    onChange={onSelectAllClick}
+                    inputProps={{ 'aria-label': 'select all desserts' }}
+                />
+            </TableCell>
+            {headCells.map((headCell) => (
+                <TableCell
+                    key={headCell.id}
+                    align={headCell.numeric ? 'right' : 'left'}
+                    padding={headCell.disablePadding ? 'none' : 'default'}
+                >
+                    <TableSortLabel
+                        onClick={createSortHandler(headCell.id)}
                     >
-                        <TableSortLabel
-                            onClick={createSortHandler(headCell.id)}
-                        >
-                            {headCell.label}
+                        {headCell.label}
 
-                        </TableSortLabel>
-                    </TableCell>
-                ))}
-            </TableRow>
-        </TableHead>
-    );
+                    </TableSortLabel>
+                </TableCell>
+            ))}
+        </TableRow>
+    </TableHead>;
 }
 
 const buildComment = (comment, t) => {
     if (!comment) {
         return 'new';
     }
-    if (typeof comment === 'string') return comment;
-    var text = '';
+    if (typeof comment === 'string') {
+        return comment;
+    }
+    let text = '';
+
     if (comment.add) {
         text += t('new');
-        if (typeof comment.add === 'object' && + comment.add.length !== undefined) {
+        if (Array.isArray(comment.add) && comment.add.length) {
             text += ': ';
             if (comment.add.length <= 5) {
                 text += comment.add.join(', ');
@@ -277,9 +274,10 @@ const buildComment = (comment, t) => {
             text += comment.add;
         }
     }
+
     if (comment.changed) {
         text += (text ? ', ' : '') + t('changed');
-        if (typeof comment.changed === 'object' && + comment.changed.length !== undefined) {
+        if (Array.isArray(comment.changed === 'object') && comment.changed.length) {
             text += ': ';
             if (comment.changed.length <= 5) {
                 text += comment.changed.join(', ');
@@ -291,9 +289,10 @@ const buildComment = (comment, t) => {
             text += comment.changed;
         }
     }
+
     if (comment.extended) {
         text += (text ? ', ' : '') + t('extended');
-        if (typeof comment.extended === 'object' && + comment.extended.length !== undefined) {
+        if (Array.isArray(comment.extended) && comment.extended.length) {
             text += ': ';
             if (comment.extended.length <= 5) {
                 text += comment.extended.join(', ');
@@ -305,13 +304,14 @@ const buildComment = (comment, t) => {
             text += comment.extended;
         }
     }
+
     if (comment.text) {
         text += (text ? ', ' : '') + comment.text;
     }
     return text;
 }
 
-const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost }) => {
+const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost, defaultLogLevel }) => {
     const classes = useStyles();
 
     const [open, setOpen] = useState(true);
@@ -331,6 +331,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
         setCheckboxChecked(listChecked);
         setListMethods(resultList);
     }, [socket]);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(async () => {
         const dataDiscovery = await socket.getObject('system.discovery');
@@ -344,7 +345,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
     const [servicesProgress, setServicesProgress] = useState(0);
     const [selected, setSelected] = useState([]);
 
-    const handlerInstal = (name, value) => {
+    const handlerInstall = (name, value) => {
         switch (name) {
             case 'discovery.0.devicesFound':
                 return setDevicesFound(value.val);
@@ -361,22 +362,23 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
             default:
                 return;
         }
-    }
+    };
 
     useEffect(() => {
-        socket.subscribeObject('system.discovery', handlerInstal);
+        socket.subscribeObject('system.discovery', handlerInstall);
         // socket.get
-        socket.subscribeState('discovery.0.devicesFound', handlerInstal);
-        socket.subscribeState('discovery.0.devicesProgress', handlerInstal);
-        socket.subscribeState('discovery.0.instancesFound', handlerInstal);
-        socket.subscribeState('discovery.0.scanRunning', handlerInstal);
-        socket.subscribeState('discovery.0.servicesProgress', handlerInstal);
+        socket.subscribeState('discovery.0.devicesFound', handlerInstall);
+        socket.subscribeState('discovery.0.devicesProgress', handlerInstall);
+        socket.subscribeState('discovery.0.instancesFound', handlerInstall);
+        socket.subscribeState('discovery.0.scanRunning', handlerInstall);
+        socket.subscribeState('discovery.0.servicesProgress', handlerInstall);
+
         return () => {
-            socket.unsubscribeState('discovery.0.devicesFound', handlerInstal);
-            socket.unsubscribeState('discovery.0.devicesProgress', handlerInstal);
-            socket.unsubscribeState('discovery.0.instancesFound', handlerInstal);
-            socket.unsubscribeState('discovery.0.scanRunning', handlerInstal);
-            socket.unsubscribeState('discovery.0.servicesProgress', handlerInstal);
+            socket.unsubscribeState('discovery.0.devicesFound', handlerInstall);
+            socket.unsubscribeState('discovery.0.devicesProgress', handlerInstall);
+            socket.unsubscribeState('discovery.0.instancesFound', handlerInstall);
+            socket.unsubscribeState('discovery.0.scanRunning', handlerInstall);
+            socket.unsubscribeState('discovery.0.servicesProgress', handlerInstall);
 
         }
     }, [socket]);
@@ -388,19 +390,19 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
     const extendObject = (id, data) => {
         socket.extendObject(id, data, error =>
             error && window.alert(error));
-    }
+    };
 
-    const discoverScaner = async () => {
+    const discoverScanner = async () => {
         setDisableScanner(true);
         let dataArray = Object.keys(checkboxChecked).filter(key => checkboxChecked[key]);
         const resultList = await socket.sendTo('system.adapter.discovery.0', 'browse', dataArray);
         setDisableScanner(false);
         if (resultList.error) {
-            alert(resultList.error)
+            window.alert(resultList.error)
         } else {
             setValue(1);
         }
-    }
+    };
 
     const onClose = () => {
         setOpen(false);
@@ -408,18 +410,18 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
             document.body.removeChild(node);
             node = null;
         }
-    }
+    };
 
-    const handleSelectAllClick = (event) => {
+    const handleSelectAllClick = event => {
         if (event.target.checked) {
-            const newSelecteds = discoveryData?.newInstances?.map((n) => n._id);
-            setSelected(newSelecteds);
+            const newSelected = discoveryData?.newInstances?.map(n => n._id);
+            setSelected(newSelected);
             return;
         }
         setSelected([]);
     };
 
-    const isSelected = (name, arr) => arr.indexOf(name) !== -1;
+    const isSelected = (name, arr) => arr.includes(name);
 
     const handleClick = (event, name, arr, func) => {
         const selectedIndex = arr.indexOf(name);
@@ -471,20 +473,19 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                         });
                     }
                 }, (params) => {
-                    setInstacesInputsParams(params);
+                    setInstancesInputsParams(params);
                     cb();
                 })
             } else {
                 cb();
             }
         }, obj?.common?.licenseUrl);
-    }
+    };
 
     const [installProgress, setInstallProgress] = useState(false);
     const [currentInstall, setCurrentInstall] = useState(1);
     const [installStatus, setInstallStatus] = useState({});
     const [cmdName, setCmdName] = useState('install');
-
 
     const resetStateBack = () => {
         setSelected([]);
@@ -492,21 +493,22 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
         setCurrentInstall(1);
         setCmdName('install');
         setInstallStatus({});
-    }
+    };
 
     const checkInstall = async () => {
         checkLicenseAndInputs(selected[0], () => {
             setCurrentInstall(1);
             setInstallProgress(true);
         });
-    }
+    };
 
     const [suggested, setSuggested] = useState(true);
     const [showAll, setShowAll] = useState(true);
 
     const black = themeType === 'dark';
 
-    const [instacesInputsParams, setInstacesInputsParams] = useState({});
+    const [instancesInputsParams, setInstancesInputsParams] = useState({});
+
     return <ThemeProvider theme={theme(themeName)}>
         <Dialog
             onClose={onClose}
@@ -518,7 +520,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                 fontSize: 36,
                 marginLeft: 25,
                 marginRight: 10
-            }} />{I18n.t("Adapter configuration discover")}</h2>
+            }} />{I18n.t('Adapter configuration discover')}</h2>
             <DialogContent className={clsx(classes.flex, classes.overflowHidden)} dividers>
                 <div className={classes.root}>
                     {disableScanner && <LinearProgress variant="determinate" value={devicesProgress >= 99 ? servicesProgress : devicesProgress} />}
@@ -559,7 +561,6 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                             {disableScanner && <LinearProgress variant="determinate" value={devicesProgress >= 99 ? servicesProgress : devicesProgress} />}
                             {devicesProgress >= 99 ? `${instancesFound} service(s) found` : `${devicesFound} device(s) found`}
                         </div>}
-
                     </TabPanel>
                     <TabPanel
                         className={classes.overflowAuto}
@@ -573,7 +574,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     >
                         <Paper className={classes.paperTable}>
                             <div className={classes.wrapperSwitch}>
-                                <div className={classes.currnetSwitch}>
+                                <div className={classes.divSwitch}>
                                     <div style={!showAll ? { color: 'green' } : null}>{I18n.t('hide ignored')}</div>
                                     <Switch
                                         checked={showAll}
@@ -582,7 +583,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                     />
                                     <div style={showAll ? { color: 'green' } : null}>{I18n.t('show ignored')}</div>
                                 </div>
-                                <div className={classes.currnetSwitch}>
+                                <div className={classes.divSwitch}>
                                     <div style={!suggested ? { color: 'green' } : null}>{I18n.t('hide suggested')}</div>
                                     <Switch
                                         checked={suggested}
@@ -595,9 +596,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                             <TableContainer>
                                 <Table
                                     className={classes.table}
-                                    aria-labelledby="tableTitle"
                                     size="small"
-                                    aria-label="enhanced table"
                                 >
                                     <EnhancedTableHead
                                         classes={classes}
@@ -614,7 +613,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                                 return !el?.comment?.ack;
                                             }
                                             return true;
-                                        }).map((obj, idx) => (<TableRow
+                                        }).map((obj, idx) => <TableRow
                                             hover
                                             role="checkbox"
                                             key={obj._id}
@@ -623,7 +622,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                             <TableCell padding="checkbox">
                                                 <Checkbox
                                                     checked={isSelected(obj._id, selected)}
-                                                    onClick={(e) => handleClick(e, obj._id, selected, setSelected)}
+                                                    onClick={e => handleClick(e, obj._id, selected, setSelected)}
                                                 />
                                             </TableCell>
                                             <TableCell component="th" scope="row" padding="none">
@@ -634,18 +633,14 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                             <TableCell align="right" padding="checkbox">
                                                 <Checkbox
                                                     checked={!!obj?.comment?.ack}
-                                                    onClick={(e) => {
+                                                    onClick={e => {
                                                         const newInstances = JSON.parse(JSON.stringify(discoveryData.newInstances));
-                                                        newInstances[idx].comment = { ...newInstances[idx].comment, 'ack': newInstances[idx].comment.ack ? false : true };
-                                                        extendObject('system.discovery', {
-                                                            native: {
-                                                                newInstances
-                                                            }
-                                                        })
+                                                        newInstances[idx].comment = { ...newInstances[idx].comment, 'ack': !newInstances[idx].comment.ack };
+                                                        extendObject('system.discovery', {native: {newInstances}});
                                                     }}
                                                 />
                                             </TableCell>
-                                        </TableRow>))}
+                                        </TableRow>)}
                                     </TableBody>
                                 </Table>
                             </TableContainer>
@@ -669,7 +664,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                     {currentInstall === idx + 1 && !installStatus[idx + 1] && <CircularProgress size={20} />}
                                 </div>)}
                             </div>
-                            {currentInstall && installProgress && <div item style={{ overflow: 'hidden', width: 'calc(100% - 260px)' }}>
+                            {currentInstall && installProgress && <div style={{ overflow: 'hidden', width: 'calc(100% - 260px)' }}>
                                 <Command
                                     noSpacing
                                     key={`${currentInstall}-${cmdName}`}
@@ -678,23 +673,33 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                     socket={socket}
                                     t={I18n.t}
                                     cmd={`${cmdName} ${discoveryData?.newInstances?.find(obj => obj._id === selected[currentInstall - 1])?.common.name}`}
-                                    onFinished={(el) => {
+                                    onFinished={el => {
                                         const initObj = {
-                                            "type": "instance",
-                                            "protectedNative": [],
-                                            "encryptedNative": [],
-                                            "notifications": [],
-                                            "instanceObjects": [],
-                                            "objects": [],
-                                        }
-                                        let data = JSON.parse(JSON.stringify(discoveryData.newInstances.find(obj => obj._id === selected[currentInstall - 1])));
+                                            type: 'instance',
+                                            protectedNative: [],
+                                            encryptedNative: [],
+                                            notifications: [],
+                                            instanceObjects: [],
+                                            objects: [],
+                                        };
+
+                                        let data = JSON.parse(JSON.stringify(discoveryData.newInstances.find(obj =>
+                                            obj._id === selected[currentInstall - 1])));
                                         delete data.comment;
                                         data = Object.assign(initObj, data);
-                                        extendObject(selected[currentInstall - 1], data);
-                                        if (Object.keys(instacesInputsParams).length) {
-                                            extendObject(selected[currentInstall - 1], instacesInputsParams);
-                                            setInstacesInputsParams({});
+
+                                        // set log level
+                                        if (defaultLogLevel) {
+                                            data.common.logLevel = defaultLogLevel;
                                         }
+                                        data.common.logLevel = data.common.logLevel || 'info';
+
+                                        extendObject(selected[currentInstall - 1], data);
+                                        if (Object.keys(instancesInputsParams).length) {
+                                            extendObject(selected[currentInstall - 1], instancesInputsParams);
+                                            setInstancesInputsParams({});
+                                        }
+
                                         if (selected.length > currentInstall) {
                                             checkLicenseAndInputs(selected[currentInstall], () => {
                                                 setCurrentInstall(currentInstall + 1);
@@ -703,10 +708,10 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                             setInstallStatus(Object.assign({ ...installStatus }, { [currentInstall]: 'success' }));
                                         } else {
                                             setInstallStatus(Object.assign({ ...installStatus }, { [currentInstall]: 'success' }));
-                                            alert('Finish');
+                                            window.alert(I18n.t('Finished'));
                                         }
                                     }}
-                                    errorFunc={(el) => {
+                                    errorFunc={el => {
                                         console.log('error', el)
                                         if (el === 51 && cmdName === 'install') {
                                             setCmdName('upload');
@@ -719,16 +724,16 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                         } else {
                                             setInstallStatus(Object.assign({ ...installStatus }, { [currentInstall]: 'error' }));
                                             if (selected.length > currentInstall) {
-                                                checkLicenseAndInputs(selected[currentInstall], () => {
-                                                    setCurrentInstall(currentInstall + 1);
-                                                });
+                                                checkLicenseAndInputs(selected[currentInstall], () =>
+                                                    setCurrentInstall(currentInstall + 1));
                                                 setCmdName('install');
                                             }
-                                            console.log(22222, instacesInputsParams);
-                                            alert(`error ${selected[currentInstall - 1]}`);
+                                            console.log(22222, instancesInputsParams);
+                                            window.alert(`error ${selected[currentInstall - 1]}`);
                                         }
                                     }}
-                                /></div>}
+                                />
+                            </div>}
                         </div>
                     </TabPanel>
                 </div>
@@ -753,7 +758,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     variant="contained"
                     autoFocus
                     disabled={disableScanner}
-                    onClick={discoverScaner}
+                    onClick={discoverScanner}
                     color="primary">
                     <SearchIcon />
                     {I18n.t('Discover')}
@@ -768,7 +773,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                             checkInstall();
                         }
                     }}
-                    color={value === 1 ? "primary" : "default"}>
+                    color={value === 1 ? 'primary' : 'default'}>
                     {value === 1 ? <LibraryAddIcon /> : <NavigateNextIcon />}
                     {I18n.t(value === 1 ? 'Create instances' : 'Next')}
                 </Button>}
@@ -778,20 +783,20 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     onClick={() => {
                         onClose();
                     }}
-                    color={value === 2 ? "primary" : "default"}>
+                    color={value === 2 ? 'primary' : 'default'}>
                     <CloseIcon />
                     {I18n.t(value === 2 ? 'Finish' : 'Close')}
                 </Button>
             </DialogActions>
-        </Dialog >
+        </Dialog>
     </ThemeProvider >;
 }
 
-export const discoveryDialogFunc = (themeType, themeName, socket, dateFormat, currentHost) => {
+export const discoveryDialogFunc = (themeType, themeName, socket, dateFormat, currentHost, defaultLogLevel) => {
     if (!node) {
         node = document.createElement('div');
         node.id = 'renderDiscoveryModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<DiscoveryDialog currentHost={currentHost} dateFormat={dateFormat} themeName={themeName} themeType={themeType} socket={socket} />, node);
+    return ReactDOM.render(<DiscoveryDialog currentHost={currentHost} defaultLogLevel={defaultLogLevel} dateFormat={dateFormat} themeName={themeName} themeType={themeType} socket={socket} />, node);
 }

@@ -611,71 +611,74 @@ class Instances extends Component {
         return null;
     }
 
+    setSentry = instance =>
+        this.extendObject('system.adapter.' + instance.id, { common: { disableDataReporting: !!this.isSentry(instance.obj) } });
+
+    setTier = (instance, value) =>
+        this.extendObject('system.adapter.' + instance.id, { common: { tier: value } });
+
+    setName = (instance, value) =>
+        this.extendObject('system.adapter.' + instance.id, { common: { titleLang: value } });
+
+    setLogLevel = (instance, value) =>
+        this.extendObject('system.adapter.' + instance.id, { common: { loglevel: value } });
+
+    setSchedule = (instance, value) =>
+        this.extendObject('system.adapter.' + instance.id, { common: { schedule: value } });
+
+    setMemoryLimitMB = (instance, value) =>
+        this.extendObject('system.adapter.' + instance.id, { common: { memoryLimitMB: value } });
+
+    deletedInstances = instance => {
+        this.setState({ delete: true })
+        this.props.executeCommand('del ' + instance.id);
+    }
+    setCompact = instance =>
+        this.extendObject('system.adapter.' + instance.id, { common: { runAsCompactMode: !this.isCompact(instance.obj) } });
+
+    setRestartSchedule = (instance, value) =>
+        this.extendObject('system.adapter.' + instance.id, { common: { restartSchedule: value } });
+
+    setHost = (instance, value) =>
+        this.extendObject('system.adapter.' + instance.id, { common: { host: value } });
+
+    setCompactGroup = (instance, value) => {
+        this.extendObject('system.adapter.' + instance.id, {
+            common: {
+                compactGroup: value === 'controller' ? 0 :
+                    value === 'default' ? 1 : parseInt(value, 10)
+            }
+        });
+
+        if (this.state.compactGroupCount < value) {
+            this.setState({ compactGroupCount: value });
+        }
+    }
+
+
     getPanels() {
         let list = Object.keys(this.state.instances).map((id, idx) => {
 
-            const instance = this.state.instances[id];
-            const running = this.isRunning(instance.obj);
-            const alive = this.isAlive(id);
-            const compactGroup = this.isCompactGroup(instance.obj);
-            const compact = this.isCompact(instance.obj);
-            const supportCompact = instance.compact || false;
+            const instance        = this.state.instances[id];
+            const running         = this.isRunning(instance.obj);
+            const alive           = this.isAlive(id);
+            const compactGroup    = this.isCompactGroup(instance.obj);
+            const compact         = this.isCompact(instance.obj);
+            const supportCompact  = instance.compact || false;
             const connectedToHost = this.isConnectedToHost(id);
-            const connected = this.isConnected(id);
-            const name = this.getName(instance.obj);
-            const logLevel = instance.loglevel;
-            const tier = instance?.obj?.common?.tier || 3;
-            const loglevelIcon = this.getLogLevelIcon(logLevel);
-            const checkCompact = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
-            const inputOutput = this.getInputOutput(id);
-            const mode = this.isModeSchedule(instance.obj);
+            const connected       = this.isConnected(id);
+            const name            = this.getName(instance.obj);
+            const logLevel        = instance.loglevel;
+            const tier            = instance?.obj?.common?.tier || 3;
+            const loglevelIcon    = this.getLogLevelIcon(logLevel);
+            const checkCompact    = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
+            const inputOutput     = this.getInputOutput(id);
+            const mode            = this.isModeSchedule(instance.obj);
+            const checkSentry     = this.isSentryCheck(instance.adapter);
+            const currentSentry   = this.isSentry(instance.obj);
+            const memoryLimitMB   = this.isMemoryLimitMB(instance.obj);
 
-            const setCompact = () =>
-                this.extendObject('system.adapter.' + instance.id, { common: { runAsCompactMode: !compact } });
-
-            const setRestartSchedule = value =>
-                this.extendObject('system.adapter.' + instance.id, { common: { restartSchedule: value } });
-
-            const setCompactGroup = value => {
-                this.extendObject('system.adapter.' + instance.id, {
-                    common: {
-                        compactGroup: value === 'controller' ? 0 :
-                            value === 'default' ? 1 : parseInt(value, 10)
-                    }
-                });
-
-                if (this.state.compactGroupCount < value) {
-                    this.setState({ compactGroupCount: value });
-                }
-            }
-
-            const checkSentry = this.isSentryCheck(instance.adapter);
-            const currentSentry = this.isSentry(instance.obj);
-            const memoryLimitMB = this.isMemoryLimitMB(instance.obj);
-
-            const setSentry = () =>
-                this.extendObject('system.adapter.' + instance.id, { common: { disableDataReporting: !!currentSentry } });
-
-            const setTier = value =>
-                this.extendObject('system.adapter.' + instance.id, { common: { tier: value } });
-
-            const setName = value =>
-                this.extendObject('system.adapter.' + instance.id, { common: { titleLang: value } });
-
-            const setLogLevel = value =>
-                this.extendObject('system.adapter.' + instance.id, { common: { loglevel: value } });
-
-            const setSchedule = value =>
-                this.extendObject('system.adapter.' + instance.id, { common: { schedule: value } });
-
-            const setMemoryLimitMB = value =>
-                this.extendObject('system.adapter.' + instance.id, { common: { memoryLimitMB: value } });
-
-            const deletedInstances = () => {
-                this.setState({ delete: true })
-                this.props.executeCommand('del ' + instance.id);
-            }
-            return ({
+            return {
                 render: this.state.viewMode ?
                     <InstanceCard
                         t={this.t}
@@ -683,15 +686,15 @@ class Instances extends Component {
                         name={name}
                         image={instance.image}
                         tier={tier}
-                        setTier={setTier}
+                        setTier={this.setTier}
                         instance={instance}
                         running={running}
                         compactGroupCount={this.state.compactGroupCount}
                         compactGroup={compactGroup}
                         compact={compact}
                         supportCompact={supportCompact}
-                        setCompact={setCompact}
-                        setCompactGroup={setCompactGroup}
+                        setCompact={this.setCompact}
+                        setCompactGroup={this.setCompactGroup}
                         checkCompact={checkCompact}
                         id={id}
                         extendObject={this.extendObject}
@@ -706,19 +709,22 @@ class Instances extends Component {
                         getSchedule={() => this.getSchedule(instance.obj)}
                         checkSentry={checkSentry}
                         currentSentry={currentSentry}
-                        setSentry={setSentry}
-                        setRestartSchedule={setRestartSchedule}
-                        setName={setName}
+                        setSentry={this.setSentry}
+                        setRestartSchedule={this.setRestartSchedule}
+                        setName={this.setName}
                         logLevel={logLevel}
-                        setLogLevel={setLogLevel}
+                        setLogLevel={this.setLogLevel}
                         inputOutput={inputOutput}
                         mode={mode}
-                        setSchedule={setSchedule}
-                        deletedInstances={deletedInstances}
+                        setSchedule={this.setSchedule}
+                        deletedInstances={this.deletedInstances}
                         memoryLimitMB={memoryLimitMB}
-                        setMemoryLimitMB={setMemoryLimitMB}
+                        setMemoryLimitMB={this.setMemoryLimitMB}
+                        setHost={this.setHost}
                         themeType={this.props.themeType}
                         adminInstance={this.props.adminInstance}
+                        hosts={this.props.hosts}
+                        host={instance.host}
                     /> :
                     <InstanceRow
                         idx={idx}
@@ -726,7 +732,7 @@ class Instances extends Component {
                         key={instance.id}
                         name={name}
                         tier={tier}
-                        setTier={setTier}
+                        setTier={this.setTier}
                         image={instance.image}
                         instance={instance}
                         running={running}
@@ -736,8 +742,8 @@ class Instances extends Component {
                         compact={compact}
                         getInstanceState={() => this.getInstanceState(instance.obj)}
                         getModeIcon={this.getModeIcon}
-                        setCompact={setCompact}
-                        setCompactGroup={setCompactGroup}
+                        setCompact={this.setCompact}
+                        setCompactGroup={this.setCompactGroup}
                         checkCompact={checkCompact}
                         id={id}
                         extendObject={this.extendObject}
@@ -754,19 +760,22 @@ class Instances extends Component {
                         expanded={this.state.expanded}
                         checkSentry={checkSentry}
                         currentSentry={currentSentry}
-                        setSentry={setSentry}
-                        setRestartSchedule={setRestartSchedule}
-                        setName={setName}
+                        setSentry={this.setSentry}
+                        setRestartSchedule={this.setRestartSchedule}
+                        setName={this.setName}
                         logLevel={logLevel}
-                        setLogLevel={setLogLevel}
+                        setLogLevel={this.setLogLevel}
                         inputOutput={inputOutput}
                         mode={mode}
-                        setSchedule={setSchedule}
-                        deletedInstances={deletedInstances}
+                        setSchedule={this.setSchedule}
+                        deletedInstances={this.deletedInstances}
                         memoryLimitMB={memoryLimitMB}
-                        setMemoryLimitMB={setMemoryLimitMB}
+                        setMemoryLimitMB={this.setMemoryLimitMB}
+                        setHost={this.setHost}
                         themeType={this.props.themeType}
                         adminInstance={this.props.adminInstance}
+                        hosts={this.props.hosts}
+                        host={instance.host}
                     />,
                 running,
                 host: instance.host,
@@ -775,7 +784,7 @@ class Instances extends Component {
                 compactGroup,
                 checkCompact,
                 sentry: currentSentry
-            })
+            }
         });
 
         if (this.state.playArrow) {

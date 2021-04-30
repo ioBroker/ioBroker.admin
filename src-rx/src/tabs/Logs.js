@@ -20,6 +20,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Badge from '@material-ui/core/Badge';
 
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
@@ -32,6 +33,8 @@ import PauseIcon from '@material-ui/icons/Pause';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import ClearIcon from '@material-ui/icons/Close';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
+import ErrorIcon from '@material-ui/icons/ErrorOutline';
+import WarningIcon from '@material-ui/icons/Warning';
 
 import amber from '@material-ui/core/colors/amber';
 import grey from '@material-ui/core/colors/grey';
@@ -186,6 +189,19 @@ const styles = theme => ({
             }
         }
     },
+    badge: {
+        top: 10,
+        right: 10,
+    },
+    badgeError: {
+        //color: red[500]
+    },
+    badgeWarn: {
+        backgroundColor: amber[500]
+    },
+    emptyButton: {
+        width: 48
+    }
 });//row
 
 // Number prototype is read only, properties should not be added
@@ -208,30 +224,31 @@ function padding3(num) {
 }
 
 class Logs extends Component {
-
     constructor(props) {
         super(props);
 
         this.state = {
-            source: '1',
-            severity: 'debug',
-            message: '',
-            logDeleteDialog: false,
-            logDownloadDialog: null,
-            logFiles: [],
-            logs: null,
-            logSize: null,
-            estimatedSize: true,
-            pause: 0,
-            pauseCount: 0,
-            pid: JSON.parse(window.localStorage.getItem('Logs.pid')) || false
+            source:             '1',
+            severity:           'debug',
+            message:            '',
+            logDeleteDialog:    false,
+            logDownloadDialog:  null,
+            logFiles:           [],
+            logs:               null,
+            logSize:            null,
+            logErrors:          0,
+            logWarnings:        0,
+            estimatedSize:      true,
+            pause:              0,
+            pauseCount:         0,
+            pid:                JSON.parse(window.localStorage.getItem('Logs.pid')) || false
         };
 
         this.severities = {
             'silly': 0,
             'debug': 1,
-            'info': 2,
-            'warn': 3,
+            'info':  2,
+            'warn':  3,
             'error': 4
         };
 
@@ -285,18 +302,26 @@ class Logs extends Component {
                     const logs = [...results.logs];
                     const logSize = results.logSize;
 
+                    let logWarnings = 0;
+                    let logErrors   = 0;
+
                     logs.forEach(item => {
                         if (!item.time) {
                             const date = new Date(item.ts);
                             item.time = `${date.getFullYear()}-${padding2(date.getMonth() + 1)}-${padding2(date.getDate())} ` +
                                 `${padding2(date.getHours())}:${padding2(date.getMinutes())}:${padding2(date.getSeconds())}.${padding3(date.getMilliseconds())}`;
                         }
+                        if (item.severity === 'error') {
+                            logErrors++;
+                        } else if (item.severity === 'warn') {
+                            logWarnings++;
+                        }
                     });
 
                     if (logFiles) {
-                        this.setState({ logFiles, logs, logSize, estimatedSize: false }, () => cb && cb());
+                        this.setState({ logFiles, logs, logSize, estimatedSize: false, logErrors, logWarnings }, () => cb && cb());
                     } else {
-                        this.setState({ logs, logSize, estimatedSize: false }, () => cb && cb());
+                        this.setState({ logs, logSize, estimatedSize: false, logErrors, logWarnings }, () => cb && cb());
                     }
                 });
         } else if (logFiles) {
@@ -319,23 +344,28 @@ class Logs extends Component {
     logHandler = (newLogs, size) => {
         const oldLogs = this.state.logs || [];
         const logs = oldLogs.concat(newLogs);
-
+        let logWarnings = 0;
+        let logErrors = 0;
         logs.forEach(item => {
             if (!item.time) {
                 const date = new Date(item.ts);
                 item.time = `${date.getFullYear()}-${padding2(date.getMonth() + 1)}-${padding2(date.getDate())} ` +
                     `${padding2(date.getHours())}:${padding2(date.getMinutes())}:${padding2(date.getSeconds())}.${padding3(date.getMilliseconds())}`;
             }
-
+            if (item.severity === 'error') {
+                logErrors++;
+            } else if (item.severity === 'warn') {
+                logWarnings++;
+            }
         });
 
-        this.setState({ logs, logSize: this.state.logSize + size, estimatedSize: true });
+        this.setState({ logs, logSize: this.state.logSize + size, estimatedSize: true, logWarnings, logErrors });
     }
 
     clearLog() {
         this.props.logsWorker && this.props.logsWorker.clearLines();
         this.props.clearErrors();
-        this.setState({ logs: [], logSize: null });
+        this.setState({ logs: [], logSize: null, logErrors: 0, logWarnings: 0 });
     }
 
     handleMessageChange(event) {
@@ -583,6 +613,45 @@ class Logs extends Component {
                     >
                         <div className={classes.pidSize}>{this.props.t('PID')}</div>
                     </IconButton>
+                </Tooltip>
+                <Tooltip title={this.props.t('Show errors')}>
+                    <Badge
+                        badgeContent={this.state.logErrors}
+                        color="error"
+                        classes={{ badge: clsx(classes.badge, classes.badgeError) }}
+                    >
+                        <IconButton
+                            onClick={() => {
+                                if (this.state.severity === 'error') {
+                                    this.setState({severity: 'debug'});
+                                } else {
+                                    this.setState({ severity: 'error', logErrors: 0 })
+                                }
+                            }}                            color={this.state.severity === 'error' ? 'primary' : 'default'}
+                        >
+                            <ErrorIcon/>
+                        </IconButton>
+                    </Badge>
+                </Tooltip>
+                <Tooltip title={this.props.t('Show errors and warnings')}>
+                    <Badge
+                        badgeContent={this.state.logWarnings}
+                        color="default"
+                        classes={{ badge: clsx(classes.badge, classes.badgeWarn) }}
+                    >
+                        <IconButton
+                            onClick={() => {
+                                if (this.state.severity === 'warn') {
+                                    this.setState({severity: 'debug'});
+                                } else {
+                                    this.setState({ severity: 'warn', logWarnings: 0 })
+                                }
+                            }}
+                            color={this.state.severity === 'warn' ? 'primary' : 'default'}
+                        >
+                            <WarningIcon/>
+                        </IconButton>
+                    </Badge>
                 </Tooltip>
                 <div className={classes.grow} />
                 {this.state.logFiles.length > 0 &&

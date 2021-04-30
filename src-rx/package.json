@@ -50,7 +50,8 @@
         "react-scripts": "4.0.3",
         "react-showdown": "^2.3.0",
         "recompose": "^0.30.0",
-        "semver": "^7.3.5"
+        "semver": "^7.3.5",
+        "react-inlinesvg": "^2.2.2"
     },
     "homepage": ".",
     "scripts": {
