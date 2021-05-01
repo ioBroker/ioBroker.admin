@@ -277,10 +277,7 @@
   "Info adapter not found": "Adaptador de Info não encontrado",
   "Insert": "Inserir",
   "Install": "Instalar",
-  "Install adapter from URL": "Instale ou atualize o adaptador a partir do URL",
-  "Install adapter from github": "Instale ou atualize o adaptador do github",
   "Install from custom URL": "Instalar de uma URL própria",
-  "Install or update from URL...": "Instale ou atualize a partir de URL ...",
   "Installation counter": "Contador de instalação",
   "Installations counter": "Contador de instalações",
   "Installed": "Instalado",
@@ -1060,7 +1057,6 @@
   "Open repository": "Repositório aberto",
   "authors": "autores",
   "Edit on github": "Editar no github",
-  "Install or update the adapter from Github": "Instale ou atualize o adaptador do Github",
   "Debug outputs": "Saídas de depuração",
   "Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!": "Não instale adaptadores do GitHub a menos que solicitado por um desenvolvedor ou se você tiver 100% de certeza do que está fazendo! Adaptadores no GitHub podem não funcionar como deveriam (eles ainda estão em desenvolvimento). Instale-os apenas se estiver participando de um teste! Aguarde um lançamento oficial!",
   "URL or file path": "URL ou caminho do arquivo",
@@ -1103,7 +1099,6 @@
   "Value type": "Tipo de valor",
   "Press CTRL+ENTER to write the value, when focused": "Pressione CTRL + ENTER para escrever o valor, quando focado",
   "Quality": "Código de qualidade",
-  "Install or update the adapter from URL": "Instale ou atualize o adaptador a partir do URL",
   "compact groups": "Grupos compactos",
   "Source": "Fonte",
   "PID": "PID",
@@ -1291,5 +1286,9 @@
   "YYYY.MM.DD": "AAAA.MM.DD",
   "MM/DD/YYYY": "MM/DD/AAAA",
   "Default log level": "Nível de registro padrão",
-  "for new instances": "para novas instâncias"
+  "for new instances": "para novas instâncias",
+  "Set value": "Definir valor",
+  "Object does not exist!": "O objeto não existe!",
+  "github_warning": "Não instale adaptadores do %s a menos que solicitado por um desenvolvedor ou se você tiver 100% de certeza do que está fazendo! Os adaptadores no %s podem não funcionar como deveriam (eles ainda estão em desenvolvimento). Instale-os apenas se estiver participando de um teste! Aguarde um lançamento oficial!",
+  "Install adapter from %s": "Instale ou atualize o adaptador a partir do %s"
 }

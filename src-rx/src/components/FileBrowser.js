@@ -463,8 +463,7 @@ class FileBrowser extends Component {
 
         this.browseList = [];
         this.browseListRunning = false;
-
-        this.loadFolders();
+        this.initialReadFinished = false;
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -499,7 +498,8 @@ class FileBrowser extends Component {
                 } else {
                     this.scrollToSelected();
                 }
-            }));
+                this.initialReadFinished = true;
+            }))
     }
 
     scrollToSelected() {
@@ -511,7 +511,7 @@ class FileBrowser extends Component {
 
     componentDidMount() {
         this.mounted = true;
-        this.scrollToSelected();
+        this.loadFolders();
     }
 
     componentWillUnmount() {
@@ -679,7 +679,7 @@ class FileBrowser extends Component {
                         return _newFolders;
                     }
                 })
-                .catch(e => window.alert('Cannot read meta items: ' + e));
+                .catch(e => this.initialReadFinished && window.alert('Cannot read meta items: ' + e));
         } else {
             const parts   = folderId.split('/');
             const level   = parts.length;
@@ -714,9 +714,8 @@ class FileBrowser extends Component {
                         return _newFolders;
                     }
                 })
-                .catch(e => {
-                    window.alert(`Cannot read ${adapter}${relPath ? '/' + relPath : ''}: ${e}`)
-                });
+                .catch(e =>
+                    this.initialReadFinished && window.alert(`Cannot read ${adapter}${relPath ? '/' + relPath : ''}: ${e}`));
         }
     }
 

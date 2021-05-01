@@ -86,7 +86,6 @@ import IconState from '@iobroker/adapter-react/icons/IconState';
 import IconClosed from '@iobroker/adapter-react/icons/IconClosed';
 import IconOpen from '@iobroker/adapter-react/icons/IconOpen';
 import IconClearFilter from '@iobroker/adapter-react/icons/IconClearFilter';
-import clsx from 'clsx';
 
 const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
@@ -677,11 +676,11 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
             if (customFilter.type && customFilter.type !== data.obj.type) {
                 filteredOut = true;
             } else
-                if (customFilter.common && customFilter.common.custom) {
-                    if (!common || !common.custom || (customFilter.common.custom !== true && !common.custom[customFilter.common.custom])) {
-                        filteredOut = true;
-                    }
+            if (customFilter.common && customFilter.common.custom) {
+                if (!common || !common.custom || (customFilter.common.custom !== true && !common.custom[customFilter.common.custom])) {
+                    filteredOut = true;
                 }
+            }
         }
 
         if (!filteredOut && !filters.expertMode) {
@@ -829,12 +828,12 @@ function buildTree(objects, options) {
     let info = {
         funcEnums: [],
         roomEnums: [],
-        roles: [],
-        ids: [],
-        types: [],
+        roles:     [],
+        ids:       [],
+        types:     [],
         objects,
-        customs: [],
-        enums: [],
+        customs:   [],
+        enums:     [],
         hasSomeCustoms: false,
     };
 
@@ -891,12 +890,12 @@ function buildTree(objects, options) {
                         if (!binarySearch(info.ids, curPath)) {
                             const _croot = {
                                 data: {
-                                    name: parts[k],
-                                    parent: croot,
-                                    id: curPath,
-                                    obj: objects[curPath],
-                                    level: k,
-                                    icon: getSystemIcon(objects, curPath, k, imagePrefix),
+                                    name:      parts[k],
+                                    parent:    croot,
+                                    id:        curPath,
+                                    obj:       objects[curPath],
+                                    level:     k,
+                                    icon:      getSystemIcon(objects, curPath, k, imagePrefix),
                                     generated: true,
                                 }
                             };
@@ -913,16 +912,16 @@ function buildTree(objects, options) {
 
                 const _croot = {
                     data: {
-                        name: parts[parts.length - 1],
-                        title: getName(obj && obj.common && obj.common.name, options.lang),
+                        name:       parts[parts.length - 1],
+                        title:      getName(obj && obj.common && obj.common.name, options.lang),
                         obj,
-                        parent: croot,
-                        icon: getSelectIdIcon(objects, id, imagePrefix) || getSystemIcon(objects, id, 0, imagePrefix),
+                        parent:     croot,
+                        icon:       getSelectIdIcon(objects, id, imagePrefix) || getSystemIcon(objects, id, 0, imagePrefix),
                         id,
                         hasCustoms: obj.common?.custom && Object.keys(obj.common.custom).length,
-                        level: parts.length - 1,
-                        generated: false,
-                        button: obj.type === 'state' && obj.common?.role && typeof obj.common.role === 'string' && obj.common.role.startsWith('button') && obj.common?.write !== false,
+                        level:      parts.length - 1,
+                        generated:  false,
+                        button:     obj.type === 'state' && obj.common?.role && typeof obj.common.role === 'string' && obj.common.role.startsWith('button') && obj.common?.write !== false,
                     }
                 };
 
@@ -932,7 +931,7 @@ function buildTree(objects, options) {
 
                 currentPathLen = parts.length;
                 currentPathArr = parts;
-                currentPath = id;
+                currentPath    = id;
             } else {
                 let u = 0;
 
@@ -952,7 +951,7 @@ function buildTree(objects, options) {
                 } else {
                     croot = root;
                     currentPathArr = [];
-                    currentPath = '';
+                    currentPath    = '';
                     currentPathLen = 0;
                 }
                 repeat = true;
@@ -987,9 +986,9 @@ function findNode(root, id, _parts, _path, _level) {
                 found = root.children[i];
                 break;
             } else
-                if (_id > _path) {
-                    break;
-                }
+            if (_id > _path) {
+                break;
+            }
         }
         if (found) {
             return findNode(found, id, _parts, _path + '.' + _parts[_level + 1], _level + 1);
@@ -1261,19 +1260,19 @@ function prepareSparkData(values, from) {
             // assume the value was always null
             v.push(0);
         } else
-            if (i < values.length) {
-                if (typeof values[i].val === 'boolean' || typeof values[i - 1].val === 'boolean') {
-                    v.push(values[i].val ? 1 : 0);
-                } else {
-                    // remove nulls
-                    values[i - 1].val = values[i - 1].val || 0;
-                    values[i].val = values[i].val || 0;
-                    // interpolate
-                    let val = values[i - 1].val + (values[i].val - values[i - 1].val) * (time - values[i - 1].ts) / (values[i].ts - values[i - 1].ts);
+        if (i < values.length) {
+            if (typeof values[i].val === 'boolean' || typeof values[i - 1].val === 'boolean') {
+                v.push(values[i].val ? 1 : 0);
+            } else {
+                // remove nulls
+                values[i - 1].val = values[i - 1].val || 0;
+                values[i].val = values[i].val || 0;
+                // interpolate
+                let val = values[i - 1].val + (values[i].val - values[i - 1].val) * (time - values[i - 1].ts) / (values[i].ts - values[i - 1].ts);
 
-                    v.push(val);
-                }
+                v.push(val);
             }
+        }
 
         time += 3600000;
     }
@@ -2348,7 +2347,7 @@ class ObjectBrowser extends Component {
                     let name;
                     let icon;
                     if (typeof item === 'object') {
-                        id = item.value;
+                        id   = item.value;
                         name = item.name;
                         icon = item.icon;
                     } else {
@@ -2924,12 +2923,12 @@ class ObjectBrowser extends Component {
             return null;
         }
         const check = [
-            { value: '0x400', valueNum: 0x400, title: 'read', group: 'Owner' },
+            { value: '0x400', valueNum: 0x400, title: 'read',  group: 'Owner' },
             { value: '0x200', valueNum: 0x200, title: 'write', group: 'Owner' },
-            { value: '0x40', valueNum: 0x40, title: 'read', group: 'Group' },
-            { value: '0x20', valueNum: 0x20, title: 'write', group: 'Group' },
-            { value: '0x4', valueNum: 0x4, title: 'read', group: 'Everyone' },
-            { value: '0x2', valueNum: 0x2, title: 'write', group: 'Everyone' }
+            { value: '0x40',  valueNum: 0x40,  title: 'read',  group: 'Group' },
+            { value: '0x20',  valueNum: 0x20,  title: 'write', group: 'Group' },
+            { value: '0x4',   valueNum: 0x4,   title: 'read',  group: 'Everyone' },
+            { value: '0x2',   valueNum: 0x2,   title: 'write', group: 'Everyone' }
         ];
         const arrayTooltipText = [];
         const funcRenderStateObject = (value = 'object') => {
@@ -2945,7 +2944,7 @@ class ObjectBrowser extends Component {
             });
         }
         arrayTooltipText.push(<span key="group">{this.texts.ownerGroup + ': ' + (acl.ownerGroup || '').replace('system.group.', '')}</span>);
-        arrayTooltipText.push(<span key="owner">{this.texts.ownerUser + ': ' + (acl.owner || '').replace('system.user.', '')}</span>);
+        arrayTooltipText.push(<span key="owner">{this.texts.ownerUser  + ': ' + (acl.owner || '').replace('system.user.', '')}</span>);
         funcRenderStateObject();
         if (acl.state) {
             funcRenderStateObject('state');
@@ -3144,8 +3143,8 @@ class ObjectBrowser extends Component {
             info.val = copyText;
             info.valText = [
                 <span className={classes.newValue || classes.newValue} key={`${info.valText.v.toString()}valText`}>{info.valText.v.toString()}</span>,
-                info.valText.u ? <span className={clsx(classes.cellValueTextUnit, classes.newValue)} key={`${info.valText.v.toString()}unit`}>{info.valText.u}</span> : null,
-                info.valText.s !== undefined ? <span className={clsx(classes.cellValueTextState, classes.newValue)} key={`${info.valText.v.toString()}states`}>({info.valText.s})</span> : null,
+                info.valText.u ? <span className={Utils.clsx(classes.cellValueTextUnit, classes.newValue)} key={`${info.valText.v.toString()}unit`}>{info.valText.u}</span> : null,
+                info.valText.s !== undefined ? <span className={Utils.clsx(classes.cellValueTextState, classes.newValue)} key={`${info.valText.v.toString()}states`}>({info.valText.s})</span> : null,
                 <IconCopy className={Utils.clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonCopy)} onClick={(e) => this.onCopy(e, copyText)} key="cc" />,
                 //<IconEdit className={ Utils.clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonEdit) } key="ce" />
             ];
@@ -3153,7 +3152,7 @@ class ObjectBrowser extends Component {
 
         let val = info.valText;
         if (!this.props.expertMode && item.data.button) {
-            val = <PressButtonIcon className={clsx(this.props.classes.cellValueButton, !this.states[id] || !this.states[id].val ? this.props.classes.cellValueButtonFalse : '')} />;
+            val = <PressButtonIcon className={Utils.clsx(this.props.classes.cellValueButton, !this.states[id] || !this.states[id].val ? this.props.classes.cellValueButtonFalse : '')} />;
         }
         return <Tooltip
             key="value"
@@ -3275,11 +3274,11 @@ class ObjectBrowser extends Component {
                             let icon;
 
                             if (typeof item === 'object') {
-                                id = item.value;
+                                id   = item.value;
                                 name = item.name;
                                 icon = item.icon;
                             } else {
-                                id = item;
+                                id   = item;
                                 name = item;
                             }
                             const labelId = `checkbox-list-label-${id}`;
@@ -3645,7 +3644,7 @@ class ObjectBrowser extends Component {
                                 this.scrollToItem(item.data.obj.common.alias.id.read));
                         }, 100);
                     }}
-                    className={clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
+                    className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
                     >←{item.data.obj.common.alias.id.read}</div> : null}
                     {item.data.obj.common.alias.id.write ? <div
                         onClick={e => {
@@ -3657,7 +3656,7 @@ class ObjectBrowser extends Component {
                                     this.scrollToItem(item.data.obj.common.alias.id.write));
                             }, 100);
                         }}
-                        className={clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
+                        className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
                     >→{item.data.obj.common.alias.id.write}</div> : null}
                 </div>
                 :
@@ -3671,7 +3670,7 @@ class ObjectBrowser extends Component {
                                 this.scrollToItem(item.data.obj.common.alias.id));
                         }, 100);
                     }}
-                    className={clsx(classes.cellIdAlias, classes.cellIdAliasAlone)}
+                    className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasAlone)}
                 >→{item.data.obj.common.alias.id}</div>
             ) : null;
 
@@ -3859,10 +3858,10 @@ class ObjectBrowser extends Component {
      * @param {Record<string, number>} [columnsWidths]
      */
     calculateColumnsVisibility(columnsAuto, columns, columnsForAdmin, columnsWidths) {
-        columnsWidths = columnsWidths || this.state.columnsWidths;
+        columnsWidths   = columnsWidths   || this.state.columnsWidths;
         columnsForAdmin = columnsForAdmin || this.state.columnsForAdmin;
-        columns = columns || this.state.columns || [];
-        columnsAuto = typeof columnsAuto !== 'boolean' ? this.state.columnsAuto : columnsAuto;
+        columns         = columns         || this.state.columns || [];
+        columnsAuto     = typeof columnsAuto !== 'boolean' ? this.state.columnsAuto : columnsAuto;
 
         columnsWidths = JSON.parse(JSON.stringify(columnsWidths));
         Object.keys(columnsWidths).forEach(name => {
@@ -3876,18 +3875,18 @@ class ObjectBrowser extends Component {
 
         if (columnsAuto) {
             this.columnsVisibility = {
-                id: SCREEN_WIDTHS[this.props.width].idWidth,
-                name: this.visibleCols.includes('name') ? WIDTHS.name : 0,
-                type: this.visibleCols.includes('type') ? WIDTHS.type : 0,
-                role: this.visibleCols.includes('role') ? WIDTHS.role : 0,
-                room: this.visibleCols.includes('room') ? WIDTHS.room : 0,
-                func: this.visibleCols.includes('func') ? WIDTHS.func : 0,
+                id:          SCREEN_WIDTHS[this.props.width].idWidth,
+                name:        this.visibleCols.includes('name')        ? WIDTHS.name        : 0,
+                type:        this.visibleCols.includes('type')        ? WIDTHS.type        : 0,
+                role:        this.visibleCols.includes('role')        ? WIDTHS.role        : 0,
+                room:        this.visibleCols.includes('room')        ? WIDTHS.room        : 0,
+                func:        this.visibleCols.includes('func')        ? WIDTHS.func        : 0,
                 changedFrom: this.visibleCols.includes('changedFrom') ? WIDTHS.changedFrom : 0,
                 qualityCode: this.visibleCols.includes('qualityCode') ? WIDTHS.qualityCode : 0,
-                timestamp: this.visibleCols.includes('timestamp') ? WIDTHS.timestamp : 0,
-                lastChange: this.visibleCols.includes('lastChange') ? WIDTHS.lastChange : 0,
-                val: this.visibleCols.includes('val') ? WIDTHS.val : 0,
-                buttons: this.visibleCols.includes('buttons') ? WIDTHS.buttons : 0,
+                timestamp:   this.visibleCols.includes('timestamp')   ? WIDTHS.timestamp   : 0,
+                lastChange:  this.visibleCols.includes('lastChange')  ? WIDTHS.lastChange  : 0,
+                val:         this.visibleCols.includes('val')         ? WIDTHS.val         : 0,
+                buttons:     this.visibleCols.includes('buttons')     ? WIDTHS.buttons     : 0,
             };
 
             if (this.columnsVisibility.name) {
@@ -3910,7 +3909,7 @@ class ObjectBrowser extends Component {
             }
         } else {
             this.columnsVisibility = {
-                id: columnsWidths.id || SCREEN_WIDTHS[this.props.width].idWidth,
+                id:   columnsWidths.id || SCREEN_WIDTHS[this.props.width].idWidth,
                 name: columns.includes('name') ? columnsWidths.name || WIDTHS.name || SCREEN_WIDTHS.xl.widths.name : 0,
                 type: columns.includes('type') ? columnsWidths.type || WIDTHS.type || SCREEN_WIDTHS.xl.widths.type : 0,
                 role: columns.includes('role') ? columnsWidths.role || WIDTHS.role || SCREEN_WIDTHS.xl.widths.role : 0,
@@ -3933,9 +3932,9 @@ class ObjectBrowser extends Component {
                         if (columns.includes(id)) {
                             const item = {
                                 adapter,
-                                id: '_' + adapter + '_' + column.path,
-                                name: column.name,
-                                path: column.path.split('.'),
+                                id:       '_' + adapter + '_' + column.path,
+                                name:     column.name,
+                                path:     column.path.split('.'),
                                 pathText: column.path
                             };
                             if (column.edit) {
@@ -4098,7 +4097,7 @@ class ObjectBrowser extends Component {
      * @param {Partial<ioBroker.State>} valAck
      */
     onUpdate(valAck) {
-        this.props.socket.setState(this.edit.id, { val: valAck.val, ack: valAck.ack, q: valAck.q || 0 })
+        this.props.socket.setState(this.edit.id, { val: valAck.val, ack: valAck.ack, q: valAck.q || 0, expire: valAck.expire || undefined })
             .catch(e => this.showError('Cannot write value: ' + e));
     }
 
@@ -4149,14 +4148,19 @@ class ObjectBrowser extends Component {
 
         return <ObjectBrowserValue
             t={this.props.t}
+            lang={this.props.lang}
             type={type}
             states={Utils.getStates(this.objects[this.edit.id])}
             themeType={this.props.themeType}
             expertMode={this.state.filter.expertMode}
             value={this.edit.val}
+            socket={this.props.socket}
+            object={this.objects[this.edit.id]}
+            defaultHistory={this.defaultHistory}
+            dateFormat={this.props.dateFormat}
             onClose={res => {
                 this.setState({ updateOpened: false });
-                res && this.onUpdate(res)
+                res && this.onUpdate(res);
             }}
         />;
     }

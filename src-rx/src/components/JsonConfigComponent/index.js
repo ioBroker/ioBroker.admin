@@ -67,6 +67,8 @@ class JsonConfigComponent extends Component {
             commandRunning: false,
         };
 
+        this.forceUpdateHandlers = {};
+
         this.schema = JSON.parse(JSON.stringify(this.props.schema));
         this.buildDependencies(this.schema);
 
@@ -150,15 +152,18 @@ class JsonConfigComponent extends Component {
         }
     }
 
-    onChange = (data, value) => {
+    onChange = (data, value, cb) => {
         if (this.props.onValueChange) {
             this.props.onValueChange(data, value);
+            cb && cb();
         } else {
             const state = {data};
             state.changed = JSON.stringify(data) !== this.state.originalData;
 
-            this.setState({state}, () =>
-                this.props.onChange(data, state.changed));
+            this.setState({state}, () => {
+                this.props.onChange(data, state.changed);
+                cb && cb();
+            });
         }
     }
 
@@ -193,13 +198,24 @@ class JsonConfigComponent extends Component {
         Object.keys(attrs).forEach(attr => {
             if (attrs[attr].confirm?.alsoDependsOn) {
                 attrs[attr].confirm?.alsoDependsOn.forEach(dep => {
-                    attrs[dep].depends = attrs[dep].depends || [];
+                    attrs[dep].confirmDependsOn = attrs[dep].confirmDependsOn || [];
+
                     const depObj = {...attrs[attr], attr};
                     if (depObj.confirm) {
                         depObj.confirm.cancel = 'Undo';
                     }
 
-                    attrs[dep].depends.push(depObj);
+                    attrs[dep].confirmDependsOn.push(depObj);
+                });
+            }
+
+            if (attrs[attr].onChange?.alsoDependsOn) {
+                attrs[attr].onChange?.alsoDependsOn.forEach(dep => {
+                    attrs[dep].onChangeDependsOn = attrs[dep].onChangeDependsOn || [];
+
+                    const depObj = {...attrs[attr], attr};
+
+                    attrs[dep].onChangeDependsOn.push(depObj);
                 });
             }
         });
@@ -228,6 +244,9 @@ class JsonConfigComponent extends Component {
                 customObj={this.props.customObj}
                 instanceObj={this.props.instanceObj}
 
+                forceUpdate={this.forceUpdate}
+                registerOnForceUpdate={this.registerOnForceUpdate}
+
                 onChange={this.onChange}
                 onError={(attr, error) => this.onError(attr, error)}
             />;
@@ -249,6 +268,9 @@ class JsonConfigComponent extends Component {
                 dateFormat={this.props.dateFormat}
                 isFloatComma={this.props.isFloatComma}
 
+                forceUpdate={this.forceUpdate}
+                registerOnForceUpdate={this.registerOnForceUpdate}
+
                 custom={this.props.custom}
                 customObj={this.props.customObj}
                 instanceObj={this.props.instanceObj}
@@ -256,6 +278,25 @@ class JsonConfigComponent extends Component {
                 onChange={this.onChange}
                 onError={(attr, error) => this.onError(attr, error)}
             />
+        }
+    }
+
+    forceUpdate = (attr, data) => {
+        if (Array.isArray(attr)) {
+            attr.forEach(a =>
+                this.forceUpdateHandlers[a] && this.forceUpdateHandlers[a](data));
+        } else {
+            if (this.forceUpdateHandlers[attr]) {
+                this.forceUpdateHandlers[attr](data);
+            }
+        }
+    }
+
+    registerOnForceUpdate = (attr, cb) => {
+        if (cb) {
+            this.forceUpdateHandlers[attr] = cb;
+        } else if (this.forceUpdateHandlers[attr]) {
+            delete this.forceUpdateHandlers[attr];
         }
     }
 

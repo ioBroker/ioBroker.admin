@@ -277,10 +277,7 @@
   "Info adapter not found": "Информационный адаптер не найден",
   "Insert": "Вставить",
   "Install": "Установить",
-  "Install adapter from URL": "Установить или обновить адаптер с URL-адреса",
-  "Install adapter from github": "Установить или обновить адаптер с github",
   "Install from custom URL": "Установить из собственного источника",
-  "Install or update from URL...": "Установите или обновите URL-адрес ...",
   "Installation counter": "Счетчик установок",
   "Installations counter": "Счетчик установок",
   "Installed": "Установлено",
@@ -1064,7 +1061,6 @@
   "Open repository": "Открыть репозиторий",
   "authors": "авторы",
   "Edit on github": "Редактировать на github",
-  "Install or update the adapter from Github": "Установите или обновите адаптер с Github",
   "Debug outputs": "Выходы отладки",
   "Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!": "Не устанавливайте адаптеры с GitHub, если об этом не попросит разработчик или если вы на 100% уверены, что делаете! Адаптеры на GitHub могут работать не так, как должны (они все еще находятся в разработке). Устанавливайте их только в том случае, если вы участвуете в тестировании! Пожалуйста, дождитесь официального релиза!",
   "URL or file path": "URL или путь к файлу",
@@ -1107,7 +1103,6 @@
   "Value type": "Тип ценности",
   "Press CTRL+ENTER to write the value, when focused": "Нажмите CTRL + ENTER, чтобы записать значение, когда сфокусирован",
   "Quality": "Код качества",
-  "Install or update the adapter from URL": "Установите или обновите адаптер с URL-адреса",
   "compact groups": "Компакт-группы",
   "Source": "Источник",
   "PID": "PID",
@@ -1295,5 +1290,9 @@
   "YYYY.MM.DD": "ГГГГ.ММ.ДД",
   "MM/DD/YYYY": "ММ/ДД/ГГГГ",
   "Default log level": "Уровень журнала по умолчанию",
-  "for new instances": "для новых экземпляров"
+  "for new instances": "для новых экземпляров",
+  "Set value": "Записать значение",
+  "Object does not exist!": "Объект не существует!",
+  "github_warning": "Не устанавливайте адаптеры из %s , если об этом не попросит разработчик или если вы на 100% уверены, что делаете! Адаптеры в %s могут работать не так, как должны (они все еще находятся в разработке). Устанавливайте их только в том случае, если вы участвуете в тестировании! Пожалуйста, дождитесь официального релиза!",
+  "Install adapter from %s": "Установить или обновить адаптер с %s"
 }

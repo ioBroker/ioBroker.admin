@@ -241,6 +241,7 @@ All types could have:
 - `defaultFunc` - JS function to calculate default value  
 - `placeholder` - placeholder (for text control)
 - `noTranslation` - do not translate selects or other options (not for help, label or placeholder)  
+- `onChange` - Structure in form `{"alsoDependsOn": ["attr1", "attr2], "calculateFunc": "attr1 + attr2", "ignoreOwnChanges": true}`   
 - `confirm`
   - `condition` - JS function: true show confirm dialog
   - `text` - text of confirmation dialog

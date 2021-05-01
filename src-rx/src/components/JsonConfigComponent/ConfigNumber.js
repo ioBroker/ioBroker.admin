@@ -19,6 +19,7 @@ class ConfigNumber extends ConfigGeneric {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         this.setState({value});
+        //this.props.registerOnForceUpdate(this.props.attr, this.onUpdate);
     }
 
     static getDerivedStateFromProps(props, state) {

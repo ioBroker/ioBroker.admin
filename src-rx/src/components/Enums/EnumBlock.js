@@ -11,6 +11,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 
+import Icon from '@iobroker/adapter-react/Components/Icon';
+
 function EnumBlock(props) {
     const [{ canDrop, isOver }, drop] = useDrop(() => ({
         accept: ['object', 'enum'],
@@ -85,9 +87,9 @@ function EnumBlock(props) {
                         {
                             props.enum.common.icon
                                 ?
-                                <span
+                                <Icon
                                     className={ props.classes.icon }
-                                    style={{ backgroundImage: "url(" + props.enum.common.icon + ")" }}
+                                    src={props.enum.common.icon}
                                 />
                                 :
                                 <ListIcon className={props.classes.icon} />
@@ -129,9 +131,9 @@ function EnumBlock(props) {
                                 {
                                     member.common?.icon
                                         ?
-                                        <span
+                                        <Icon
                                             className={ props.classes.icon }
-                                            style={{ backgroundImage: "url(" + member.common.icon + ")" }}
+                                            src={member.common.icon}
                                         />
                                         :
                                         <ListIcon className={props.classes.icon} />

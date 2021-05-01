@@ -337,8 +337,15 @@
         "myObjectId": {
           "newLine": true,
           "type": "objectId",
+          "onChange": {"alsoDependsOn":  ["myLanguage"], "ignoreOwnChanges": true, "calculateFunc": "data.myLanguage"},
           "sm": 6,
           "label": "Object ID"
+        },
+        "myCheckbox": {
+          "type": "checkbox",
+          "onChange": {"alsoDependsOn":  ["myLanguage"], "ignoreOwnChanges": true, "calculateFunc": "!!data.myLanguage"},
+          "sm": 6,
+          "label": "Checkbox"
         },
         "myLanguage": {
           "newLine": true,

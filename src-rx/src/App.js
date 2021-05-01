@@ -605,7 +605,7 @@ class App extends Router {
         hosts = hosts || this.state.hosts;
 
         try {
-            const repository = await this.socket.getRepository(currentHost, { update: false }, false, 10000);
+            const repository = await this.socket.getRepository(currentHost, { update: false }, false, 15000);
             const installed = await this.socket.getInstalled(currentHost, false, 10000);
             const adapters = await this.adaptersWorker.getAdapters(); // we need information about ignored versions
 

@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.11",
+        "version": "5.0.12",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -15,6 +15,18 @@
             "zh-cn": "Admin"
         },
         "news": {
+            "5.0.12": {
+                "en": "Admin5: Fixed many bugs",
+                "de": "Admin5: Viele Fehler behoben",
+                "ru": "Admin5: Исправлено множество ошибок",
+                "pt": "Admin5: muitos bugs corrigidos",
+                "nl": "Admin5: Veel bugs opgelost",
+                "fr": "Admin5: Correction de nombreux bugs",
+                "it": "Admin5: risolti molti bug",
+                "es": "Admin5: se corrigieron muchos errores",
+                "pl": "Admin5: Naprawiono wiele błędów",
+                "zh-cn": "Admin5：修复了许多错误"
+            },
             "5.0.11": {
                 "en": "Admin5: users management implemented",
                 "de": "Admin5: Benutzerverwaltung implementiert",
@@ -242,18 +254,6 @@
                 "es": "socket.io actualizado a la última versión. Atención: ¡Esto podría romper la compatibilidad con dispositivos más antiguos como iPad 1/2!",
                 "pl": "socket.io zaktualizowane do najnowszej wersji. Uwaga: może to spowodować uszkodzenie kompatybilności ze starszymi urządzeniami, takimi jak iPad 1/2!",
                 "zh-cn": "socket.io已升级到最新版本。注意：这可能会破坏与iPad 1/2等旧设备的兼容性！"
-            },
-            "3.7.9": {
-                "en": "The log downloading was fixed",
-                "de": "Das Herunterladen des Protokolls wurde behoben",
-                "ru": "Загрузка журнала была исправлена",
-                "pt": "O download do log foi corrigido",
-                "nl": "Het downloaden van het logboek is opgelost",
-                "fr": "Le téléchargement du journal a été corrigé",
-                "it": "Il download del registro è stato corretto",
-                "es": "La descarga del registro fue corregida",
-                "pl": "Pobieranie dziennika zostało naprawione",
-                "zh-cn": "日志下载已修复"
             }
         },
         "desc": {
@@ -338,7 +338,7 @@
         },
         "localLinks": {
             "_default": {
-                "link":"%protocol%://%bind%:%port%",
+                "link": "%protocol%://%bind%:%port%",
                 "pro": true
             }
         },

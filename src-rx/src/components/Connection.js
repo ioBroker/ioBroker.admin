@@ -842,12 +842,52 @@ class Connection {
                     if (err) {
                         reject(err);
                     } else {
-                        resolve(doc.rows.map(item => item.value));
+                        resolve(doc.rows.map(item => {
+                            const obj = item.value;
+                            Connection._fixAdminUI(obj);
+                            return obj;
+                        }));
                     }
                 });
         });
 
         return this._promises['instances_' + adapter];
+    }
+
+    static _fixAdminUI(obj) {
+        if (obj && obj.common && !obj.common.adminUI) {
+            if (obj.common.noConfig) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'none';
+            } else if (obj.common.jsonConfig) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'json';
+            } else if (obj.common.materialize) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'materialize';
+            } else {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'html';
+            }
+
+            if (obj.common.jsonCustom) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'json';
+            } else if (obj.common.supportCustoms) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.custom = 'json';
+            }
+
+            if (obj.common.materializeTab && obj.common.adminTab) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.tab = 'materialize';
+            } else if (obj.common.adminTab) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.tab = 'html';
+            }
+
+            obj.common.adminUI && console.log(`Please add to "${obj._id.replace(/\.\d+$/, '')}" common.adminUI=${JSON.stringify(obj.common.adminUI)}`);
+        }
     }
 
     /**
@@ -886,7 +926,13 @@ class Connection {
                     if (err) {
                         reject(err);
                     } else {
-                        resolve(doc.rows.map(item => item.value).filter(obj => obj && (!adapter || (obj.common && obj.common.name === adapter))));
+                        resolve(doc.rows
+                            .map(item => {
+                                const obj = item.value;
+                                Connection._fixAdminUI(obj);
+                                return obj;
+                            })
+                            .filter(obj => obj && (!adapter || (obj.common && obj.common.name === adapter))));
                     }
                 });
         });

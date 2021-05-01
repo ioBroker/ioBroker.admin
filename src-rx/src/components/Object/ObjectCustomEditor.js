@@ -126,13 +126,15 @@ class ObjectCustomEditor extends Component {
         this.refTemplate  = {};
         this.props.customsInstances.map(id => this.refTemplate[id] = createRef());
 
-        this.customObj    = this.props.objectIDs.length > 1 ? {custom: {}, native: {}} : JSON.parse(JSON.stringify(this.props.objects[this.props.objectIDs[0]]));
+        this.customObj    = this.props.objectIDs.length > 1 ? {custom: {}, native: {}} : JSON.parse(JSON.stringify(this.props.objects[this.props.objectIDs[0]] || null));
 
-        this.loadAllPromises = this.loadAllCustoms()
-            .then(() => {
-                this.commonConfig = this.getCommonConfig();
-                this.setState({ loaded: true, newValues: {} });
-            });
+        if (this.customObj) {
+            this.loadAllPromises = this.loadAllCustoms()
+                .then(() => {
+                    this.commonConfig = this.getCommonConfig();
+                    this.setState({ loaded: true, newValues: {} });
+                });
+        }
     }
 
     componentDidMount() {
@@ -563,6 +565,9 @@ class ObjectCustomEditor extends Component {
     };
 
     render() {
+        if (this.customObj === null) {
+            return <div style={{color: '#F55', fontSize: 32}}>{this.props.t('Object does not exist!')}</div>;
+        }
         if (!this.state.loaded) {
             return <LinearProgress />;
         }

@@ -1,7 +1,7 @@
 {
   "name": "iobroker.admin",
   "description": "The adapter opens a webserver for the ioBroker admin UI.",
-  "version": "5.0.11",
+  "version": "5.0.12",
   "contributors": [
     "bluefox <dogafox@gmail.com>",
     "apollon77",
@@ -28,26 +28,26 @@
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
-    "express-fileupload": "^1.2.0",
+    "express-fileupload": "^1.2.1",
     "express-session": "^1.17.1",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "passport.socketio": "^3.7.0",
     "request": "^2.88.2",
     "semver": "^7.3.5",
-    "ws": "^7.4.1"
+    "ws": "^7.4.5"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.10",
-    "@alcalzone/release-script": "^1.8.1",
-    "@babel/plugin-transform-arrow-functions": "^7.12.1",
-    "@babel/plugin-transform-block-scoping": "^7.12.11",
-    "@babel/plugin-transform-classes": "^7.12.1",
-    "@babel/plugin-transform-template-literals": "^7.12.1",
-    "@iobroker/testing": "^2.4.0",
-    "eslint": "^7.11.0",
+    "@babel/core": "^7.14.0",
+    "@alcalzone/release-script": "^1.10.0",
+    "@babel/plugin-transform-arrow-functions": "^7.13.0",
+    "@babel/plugin-transform-block-scoping": "^7.13.16",
+    "@babel/plugin-transform-classes": "^7.13.0",
+    "@babel/plugin-transform-template-literals": "^7.13.0",
+    "@iobroker/testing": "^2.4.4",
+    "eslint": "^7.25.0",
     "ansi-colors": "^4.1.1",
-    "chai": "^4.2.0",
+    "chai": "^4.3.4",
     "del": "^6.0.0",
     "fancy-log": "^1.3.3",
     "gulp": "^4.0.2",
@@ -61,7 +61,7 @@
     "gulp-sourcemaps": "^3.0.0",
     "gulp-terser": "^2.0.0",
     "materialize-css": "^1.0.0",
-    "mocha": "^8.2.1"
+    "mocha": "^8.3.2"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.admin/issues"

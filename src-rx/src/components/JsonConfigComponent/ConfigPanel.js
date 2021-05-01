@@ -144,6 +144,9 @@ class ConfigPanel extends ConfigGeneric {
                 dateFormat={this.props.dateFormat}
                 isFloatComma={this.props.isFloatComma}
 
+                registerOnForceUpdate={this.props.registerOnForceUpdate}
+                forceUpdate={this.props.forceUpdate}
+
                 customObj={this.props.customObj}
                 instanceObj={this.props.instanceObj}
                 custom={this.props.custom}
@@ -225,6 +228,8 @@ ConfigPanel.propTypes = {
 
     onError: PropTypes.func,
     onChange: PropTypes.func,
+    onForceUpdate: PropTypes.func,
+    registerOnForceUpdate: PropTypes.func,
 };
 
 const ConfigPanelStyled = withStyles(styles)(ConfigPanel);

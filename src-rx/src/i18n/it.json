@@ -277,10 +277,7 @@
   "Info adapter not found": "Adattatore info non trovato",
   "Insert": "Inserire",
   "Install": "Installare",
-  "Install adapter from URL": "Installa l'adattatore dall'URL",
-  "Install adapter from github": "Installa l'adattatore da github",
   "Install from custom URL": "Installa dall'URL personalizzato",
-  "Install or update from URL...": "Installa o aggiorna dall'URL ...",
   "Installation counter": "Contatore d'installazione",
   "Installations counter": "Contatore delle installazioni",
   "Installed": "Installato",
@@ -1060,7 +1057,6 @@
   "Open repository": "Apri repository",
   "authors": "autori",
   "Edit on github": "Modifica su GitHub",
-  "Install or update the adapter from Github": "Installa o aggiorna l'adattatore da Github",
   "Debug outputs": "Uscite di debug",
   "Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!": "Non installare adattatori da GitHub se non richiesto da uno sviluppatore o se sei sicuro al 100% di quello che stai facendo! Gli adattatori su GitHub potrebbero non funzionare come dovrebbero (sono ancora in fase di sviluppo). Installali solo se stai partecipando a un test! Attendi un rilascio ufficiale!",
   "URL or file path": "URL o percorso del file",
@@ -1103,7 +1099,6 @@
   "Value type": "Tipo di valore",
   "Press CTRL+ENTER to write the value, when focused": "Premere CTRL + INVIO per scrivere il valore, quando è attivo",
   "Quality": "Codice di qualità",
-  "Install or update the adapter from URL": "Installa o aggiorna l'adattatore dall'URL",
   "compact groups": "Gruppi compatti",
   "Source": "fonte",
   "PID": "PID",
@@ -1291,5 +1286,9 @@
   "YYYY.MM.DD": "AAAA.MM.GG",
   "MM/DD/YYYY": "MM/GG/AAAA",
   "Default log level": "Livello di registro predefinito",
-  "for new instances": "per nuove istanze"
+  "for new instances": "per nuove istanze",
+  "Set value": "Valore impostato",
+  "Object does not exist!": "L'oggetto non esiste!",
+  "github_warning": "Non installare adattatori da %s a meno che non venga richiesto da uno sviluppatore o se sei sicuro al 100% di quello che stai facendo! Gli adattatori su %s potrebbero non funzionare come dovrebbero (sono ancora in fase di sviluppo). Installali solo se stai partecipando a un test! Attendi un rilascio ufficiale!",
+  "Install adapter from %s": "Installa l'adattatore dall'%s"
 }

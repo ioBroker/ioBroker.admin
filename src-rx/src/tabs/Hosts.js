@@ -252,7 +252,7 @@ const Hosts = ({
     useEffect(async () => {
         let hostsArray = await socket.getHosts(true, false, 10000);
 
-        const repositoryProm = await socket.getRepository(currentHost, {update: false}, false, 10000);
+        const repositoryProm = await socket.getRepository(currentHost, {update: false}, false, 15000);
         const _alive = JSON.parse(JSON.stringify(alive));
 
         for (let h = 0; h < hostsArray.length; h++) {
@@ -291,7 +291,7 @@ const Hosts = ({
             title={title}
             os={platform}
             description={getHostDescriptionAll(_id, t, classes, hostsData)[0]}
-            available={repository['js-controller']?.latestVersion || '-'}
+            available={repository['js-controller']?.version || '-'}
             executeCommandRemove={() => executeCommand(`host remove ${name}`)}
             dialogUpgrade={JsControllerDialogFunc}
             currentHost={currentHost === _id}
@@ -325,7 +325,7 @@ const Hosts = ({
             dialogUpgrade={JsControllerDialogFunc}
             currentHost={currentHost === _id}
             description={getHostDescriptionAll(_id, t, classes, hostsData)[1]}
-            available={repository['js-controller']?.latestVersion || '-'}
+            available={repository['js-controller']?.version || '-'}
             installed={installedVersion}
             events={'- / -'}
             t={t}

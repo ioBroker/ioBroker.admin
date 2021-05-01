@@ -1,8 +1,10 @@
 # Todo
 
+Marked with "!" must be in release candidate
+
 ## Bugs
 - (BF) AdminSettings: Access to the instances: add infotexts for "Apply access rights" and "Allow access only"
-- (BF) General: Support the new io-package fields that replace materialize and materializeTab (but we need to be backward compatible)
+- !(BF) General: Support the new io-package fields that replace materialize and materializeTab (but we need to be backward compatible)
   common.adminUI: {
     custom: 'json''
     config: 'materialize', 'none', 'html'
@@ -12,7 +14,7 @@
 ## Intro
 
 ## Easy Mode
-- Show back button in strickt mode for tabs (and logo button always returns to #easy in strict mode) 
+- !Show back button in strickt mode for tabs (and logo button always returns to #easy in strict mode) 
 
 ## Settings
 - (Base settings) Show dialog, that RESTART only works on debian systems: https://github.com/ioBroker/ioBroker.admin/issues/754
@@ -22,7 +24,7 @@
 ## Enums
 
 ## Adapters
-- Use readme renderer from www.iobroker.net (BF)
+- !Use readme renderer from www.iobroker.net (BF)
 
 ## Wizard
 
@@ -64,7 +66,8 @@
   - Install: show last install log after installation completed if "more" selected. If selected "less" do not show anything
 
 ## Logs
-- ON multihost no source at all - https://github.com/ioBroker/ioBroker.admin/issues/777
+- !ON multihost no source at all - https://github.com/ioBroker/ioBroker.admin/issues/777
+- !On safari new coming entries have invalid time https://github.com/ioBroker/ioBroker.admin/issues/783
 
 ## Instances
 
@@ -72,10 +75,8 @@
 - Add in object edit the possibility to set color and icon (icon could be uploaded as base64 and may not be bigger than 5k) and use it for text color. Add possibility to scale the images.
   - Integrate https://react-dropzone.js.org/#!/Doka for image upload
 
-- Allow creation of folder and devices on non existing objects (JSON export too) - https://github.com/ioBroker/ioBroker.admin/issues/761
-- Layout problem by defined columns widths: https://github.com/ioBroker/ioBroker.admin/issues/698
-- Allow to set expire for experts in object browser
-- Display charts automatically in set setzen
+- !Layout problem by defined columns widths: https://github.com/ioBroker/ioBroker.admin/issues/698
+- !On small display show only Icons for "Edit object dialog" buttons
 
 ## Files
 
@@ -84,7 +85,7 @@
 ## Users
 
 ## After all is done
-- Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io) (BF)
+- !Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io) (BF)
 
 ## Login and authentication
 - show login dialog after TTL over

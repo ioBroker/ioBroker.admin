@@ -1,22 +1,17 @@
 import React, { Component } from 'react';
-
-//import ReactMarkdown from 'react-markdown';
 import PropTypes from 'prop-types';
-
 import { withStyles } from '@material-ui/core/styles';
 
 import { AppBar } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
 import { Toolbar } from '@material-ui/core';
-/*import { Box } from '@material-ui/core';
-import { Tab } from '@material-ui/core';
-import { Tabs } from '@material-ui/core';*/
 
 import Router from '@iobroker/adapter-react/Components/Router';
 import I18n from '@iobroker/adapter-react/i18n';
-import Markdown from '../components/Markdown';
 import Loader from '@iobroker/adapter-react/Components/Loader';
+
+import Markdown from '../components/Markdown';
 
 const styles = {
     root: {

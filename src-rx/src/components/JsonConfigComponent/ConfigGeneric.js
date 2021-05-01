@@ -30,9 +30,16 @@ class ConfigGeneric extends Component {
     }
 
     componentDidMount() {
+        this.props.registerOnForceUpdate && this.props.registerOnForceUpdate(this.props.attr, this.onUpdate);
     }
 
     componentWillUnmount() {
+        this.props.registerOnForceUpdate && this.props.registerOnForceUpdate(this.props.attr);
+    }
+
+    onUpdate = data => {
+        const value = ConfigGeneric.getValue(data || this.props.data, this.props.attr) || '';
+        this.setState({ value});
     }
 
     static getValue(data, attr) {
@@ -118,7 +125,11 @@ class ConfigGeneric extends Component {
         />;
     }
 
-    onChange(attr, newValue) {
+    onChange(attr, newValue, counter) {
+        counter = counter || 0;
+        if (counter > 10) {
+            return console.error('Detected cyclic onChange by ' + attr + '!');
+        }
         if (this.props.custom) {
             return this.props.onChange(attr, newValue);
         }
@@ -135,9 +146,9 @@ class ConfigGeneric extends Component {
             });
         } else {
             // find any inputs with confirmation
-            if (this.props.schema.depends) {
-                for (let z = 0; z < this.props.schema.depends.length; z++) {
-                    const dep = this.props.schema.depends[z];
+            if (this.props.schema.confirmDependsOn) {
+                for (let z = 0; z < this.props.schema.confirmDependsOn.length; z++) {
+                    const dep = this.props.schema.confirmDependsOn[z];
                     if (dep.confirm) {
                         const val = ConfigGeneric.getValue(data, dep.attr);
 
@@ -154,8 +165,31 @@ class ConfigGeneric extends Component {
                     }
                 }
             }
+            const changed = [];
+            if (this.props.schema.onChangeDependsOn) {
+                for (let z = 0; z < this.props.schema.onChangeDependsOn.length; z++) {
+                    const dep = this.props.schema.onChangeDependsOn[z];
+                    if (dep.onChange) {
+                        const val = ConfigGeneric.getValue(data, dep.attr);
 
-            this.props.onChange(data);
+                        const newValue = this.execute(dep.onChange.calculateFunc, val, data);
+                        if (newValue !== val) {
+                            ConfigGeneric.setValue(data, dep.attr, newValue);
+                            changed.push(dep.attr);
+                        }
+                    }
+                }
+            } else if (this.props.onChange && !this.props.onChange.ignoreOwnChanges) {
+                const val = ConfigGeneric.getValue(data, this.props.attr);
+
+                const newValue = this.execute(this.props.onChange.calculateFunc, val, data);
+                if (newValue !== val) {
+                    ConfigGeneric.setValue(data, this.props.attr, newValue);
+                }
+            }
+
+            this.props.onChange(data, undefined, () =>
+                changed.length && this.props.forceUpdate(changed, data));
         }
     }
 
@@ -320,6 +354,7 @@ ConfigGeneric.propTypes = {
     onError: PropTypes.func,
     onChange: PropTypes.func,
     customs: PropTypes.object,
+    forceUpdate: PropTypes.func.isRequired,
 
     systemConfig: PropTypes.object,
     alive: PropTypes.bool,

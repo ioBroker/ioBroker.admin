@@ -77,6 +77,11 @@ class CustomTab extends Component {
                 }
 
                 if (href.includes('%')) {
+                    // fix for singletons
+                    if (instNum === null || instNum === undefined) {
+                        instNum = instance._id.split('.').pop();
+                    }
+
                     // replace
                     const hrefs = Utils.replaceLink(href, adapter, instNum, {
                         hostname,

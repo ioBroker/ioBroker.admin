@@ -277,10 +277,7 @@
   "Info adapter not found": "Info adaptateur non trouvé",
   "Insert": "Insérer",
   "Install": "Installer",
-  "Install adapter from URL": "Installer ou mettre à jour l'adaptateur depuis l'URL",
-  "Install adapter from github": "Installer ou mettre à jour l'adaptateur depuis github",
   "Install from custom URL": "Installer à partir d'une URL personnalisée",
-  "Install or update from URL...": "Installer ou mettre à jour à partir de l'URL ...",
   "Installation counter": "Compteur d'installation",
   "Installations counter": "Compteur d'installations",
   "Installed": "Installée",
@@ -1060,7 +1057,6 @@
   "Open repository": "Dépôt ouvert",
   "authors": "auteurs",
   "Edit on github": "Modifier sur github",
-  "Install or update the adapter from Github": "Installez ou mettez à jour l'adaptateur depuis Github",
   "Debug outputs": "Déboguer les sorties",
   "Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!": "N'installez pas d'adaptateurs à partir de GitHub sauf si un développeur vous le demande ou si vous êtes sûr à 100% de ce que vous faites! Les adaptateurs sur GitHub peuvent ne pas fonctionner comme ils le devraient (ils sont toujours en cours de développement). Installez-les uniquement si vous participez à un test! Veuillez attendre une sortie officielle!",
   "URL or file path": "URL ou chemin de fichier",
@@ -1103,7 +1099,6 @@
   "Value type": "Type de valeur",
   "Press CTRL+ENTER to write the value, when focused": "Appuyez sur CTRL + ENTRÉE pour écrire la valeur, une fois le focus",
   "Quality": "Code de qualité",
-  "Install or update the adapter from URL": "Installer ou mettre à jour l'adaptateur à partir de l'URL",
   "compact groups": "Groupes compacts",
   "Source": "La source",
   "PID": "PID",
@@ -1291,5 +1286,9 @@
   "YYYY.MM.DD": "AAAA.MM.JJ",
   "MM/DD/YYYY": "MM/JJ/AAAA",
   "Default log level": "Niveau de journalisation par défaut",
-  "for new instances": "pour les nouvelles instances"
+  "for new instances": "pour les nouvelles instances",
+  "Set value": "Définir la valeur",
+  "Object does not exist!": "L'objet n'existe pas!",
+  "github_warning": "N'installez pas d'adaptateurs de %s sauf si un développeur vous le demande ou si vous êtes sûr à 100% de ce que vous faites! Les adaptateurs sur %s peuvent ne pas fonctionner comme ils le devraient (ils sont encore en cours de développement). Installez-les uniquement si vous participez à un test! Veuillez attendre une sortie officielle!",
+  "Install adapter from %s": "Installer ou mettre à jour l'adaptateur depuis l'%s"
 }

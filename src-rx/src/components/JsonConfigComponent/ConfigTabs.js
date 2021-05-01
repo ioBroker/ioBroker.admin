@@ -6,6 +6,7 @@ import Tab from '@material-ui/core/Tab';
 
 import ConfigGeneric from './ConfigGeneric';
 import ConfigPanel from './ConfigPanel';
+import React from "react";
 
 const styles = theme => ({
     tabs: {
@@ -59,6 +60,9 @@ class ConfigTabs extends ConfigGeneric {
                 onError={this.props.onError}
                 onChange={this.props.onChange}
 
+                forceUpdate={this.props.forceUpdate}
+                registerOnForceUpdate={this.props.registerOnForceUpdate}
+
                 customObj={this.props.customObj}
                 instanceObj={this.props.instanceObj}
                 custom={this.props.custom}
@@ -91,6 +95,8 @@ ConfigTabs.propTypes = {
     instanceObj: PropTypes.object,
     custom: PropTypes.bool,
 
+    registerOnForceUpdate: PropTypes.func.isRequired,
+    forceUpdate: PropTypes.func.isRequired,
     systemConfig: PropTypes.object,
     alive: PropTypes.bool,
     common: PropTypes.object,

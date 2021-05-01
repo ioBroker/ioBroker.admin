@@ -277,10 +277,7 @@
   "Info adapter not found": "找不到信息插件",
   "Insert": "插入",
   "Install": "安装",
-  "Install adapter from URL": "从URL安装或更新插件",
-  "Install adapter from github": "从Github安装或更新插件",
   "Install from custom URL": "从自定义URL安装",
-  "Install or update from URL...": "从URL安装或更新...",
   "Installation counter": "安装计数器",
   "Installations counter": "安装计数器",
   "Installed": "安装",
@@ -1060,7 +1057,6 @@
   "Open repository": "公开资料库",
   "authors": "作家",
   "Edit on github": "在github上编辑",
-  "Install or update the adapter from Github": "从Github安装或更新适配器",
   "Debug outputs": "调试输出",
   "Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!": "除非开发人员要求，否则不要从GitHub安装适配器，否则您是否100％确信自己在做什么！ GitHub上的适配器可能无法正常工作（它们仍在开发中）。仅在参加测试时才安装它们！请等待正式发布！",
   "URL or file path": "URL或文件路径",
@@ -1103,7 +1099,6 @@
   "Value type": "值类型",
   "Press CTRL+ENTER to write the value, when focused": "聚焦后按CTRL + ENTER写入值",
   "Quality": "质量代码",
-  "Install or update the adapter from URL": "从URL安装或更新适配器",
   "compact groups": "紧凑群",
   "Source": "来源",
   "PID": "PID",
@@ -1291,5 +1286,9 @@
   "YYYY.MM.DD": "YYYY.MM.DD",
   "MM/DD/YYYY": "MM/DD/YYYY",
   "Default log level": "默认日志级别",
-  "for new instances": "对于新实例"
+  "for new instances": "对于新实例",
+  "Set value": "设定值",
+  "Object does not exist!": "对象不存在！",
+  "github_warning": "除非开发人员要求，否则不要安装%s的适配器，否则您是否100％确信自己在做什么！ %s上的适配器可能无法正常运行（它们仍在开发中）。仅在参加测试时才安装它们！请等待正式发布！",
+  "Install adapter from %s": "从%s安装或更新插件"
 }

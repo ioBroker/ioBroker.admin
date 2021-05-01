@@ -403,7 +403,6 @@ function Adapters(main) {
                     if (user && user.length >= 2 && (that.main.config.expertMode || order[o].indexOf('js-controller') === -1)) {
                         //text += '<option value="https://github.com/' + user[1] + '/ioBroker.' + order[o] + '/tarball/master ' + order[o] + '">' + order[o] + '</option>';
                         data[order[o] + ' [' + user[1] + ']'] = null;
-
                     }
                 }
                 that.$installDialog.find('#install-github-link').mautocomplete({

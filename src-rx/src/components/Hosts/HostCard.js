@@ -14,6 +14,8 @@ import BuildIcon from '@material-ui/icons/Build';
 
 import Utils from '@iobroker/adapter-react/Components/Utils';
 
+import Adapters from '../../tabs/Adapters';
+
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
@@ -261,7 +263,10 @@ const styles = theme => ({
     },
     badge: {
         cursor: 'pointer'
-    }
+    },
+    emptyButton: {
+        width: 48,
+    },
 });
 
 let outputCache = '-';
@@ -436,6 +441,8 @@ const HostCard = ({
 
     const [focused, setFocused] = useState(false);
 
+    const upgradeAvailable = (currentHost || alive) && Adapters.updateAvailable(installed, available);
+
     return <Card key={_id} className={clsx(classes.root, hidden ? classes.hidden : '')}>
         {(openCollapse || focused) && <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
             <CardContent className={classes.cardContentInfo}>
@@ -532,11 +539,11 @@ const HostCard = ({
                             </IconButton>
                         </div>
                     </Tooltip>
-                    <Tooltip title={t((alive || currentHost) ? 'Upgrade' : 'Remove')}>
+                    {(upgradeAvailable || (!alive && !currentHost)) ? <Tooltip title={t(alive || currentHost ? 'Upgrade' : 'Remove')}>
                         <IconButton onClick={(alive || currentHost) ? dialogUpgrade : executeCommandRemove}>
                             {(alive || currentHost) ? <RefreshIcon /> : <DeleteIcon />}
                         </IconButton>
-                    </Tooltip>
+                    </Tooltip> : <div className={classes.emptyButton} />}
                 </Typography>
             </div>
         </CardContent>

@@ -304,20 +304,23 @@ class Adapters extends Component {
         this.tempInstalled = this.tempInstalled || JSON.parse(JSON.stringify(this.state.installed));
 
         changes.forEach(item => {
-
             if (item.type === 'deleted') {
                 // remove from installed
                 delete this.tempInstalled[item.oldObj.common.name];
                 delete this.tempAdapters[item.id];
             } else {
                 const name = item.obj.common.name;
-                // Update attributes
-                Object.keys(this.tempInstalled[name]).forEach(attr => {
-                    if (item.obj.common[attr] !== undefined) {
-                        this.tempInstalled[name][attr] = item.obj.common[attr];
-                    }
-                })
-
+                if (this.tempInstalled[name]) {
+                    // Update attributes
+                    Object.keys(this.tempInstalled[name]).forEach(attr => {
+                        if (item.obj.common[attr] !== undefined) {
+                            this.tempInstalled[name][attr] = item.obj.common[attr];
+                        }
+                    });
+                } else {
+                    // new
+                    this.tempInstalled[item.id] = JSON.parse(JSON.stringify(item.obj.common));
+                }
                 this.tempAdapters[item.id] = item.obj;
             }
         });
@@ -374,7 +377,7 @@ class Adapters extends Component {
             const currentHost  = this.props.currentHost;
             const adapters     = await this.props.adaptersWorker.getAdapters();
             const installed    = await this.props.socket.getInstalled(currentHost, true).catch(e => window.alert('Cannot getInstalled: ' + e));
-            const repository   = await this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: false }, false, 10000).catch(e => window.alert('Cannot getRepository: ' + e));
+            const repository   = await this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: false }, false, 15000).catch(e => window.alert('Cannot getRepository: ' + e));
 
             this.analyseInstalled(adapters, installed, repository);
         } catch (e) {
@@ -593,7 +596,6 @@ class Adapters extends Component {
     }
 
     static updateAvailable(oldVersion, newVersion) {
-
         try {
             return Semver.gt(newVersion, oldVersion) === true;
         } catch (e) {
@@ -1415,7 +1417,7 @@ class Adapters extends Component {
                     onClose={() => this.closeAdapterDeletionDialog()}
                 />
             }
-            <GitHubInstallDialog
+            {this.state.gitHubInstallDialog && <GitHubInstallDialog
                 t={this.t}
                 open={this.state.gitHubInstallDialog}
                 categories={this.state.categories}
@@ -1423,7 +1425,7 @@ class Adapters extends Component {
                     await this.addInstance(value, undefined, debug, customUrl)}
                 repository={this.state.repository}
                 onClose={() => { this.setState({ gitHubInstallDialog: false }) }}
-            />
+            />}
             {this.state.adapterUpdateDialog &&
                 <AdapterUpdateDialog
                     open={this.state.adapterUpdateDialog}
