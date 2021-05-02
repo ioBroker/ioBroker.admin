@@ -11,7 +11,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { Autocomplete } from '@material-ui/lab';
-import { AppBar, Box, Checkbox, FormControlLabel, IconButton, InputAdornment, makeStyles, Tab, Tabs, TextField, useTheme } from '@material-ui/core';
+import { AppBar, Box, Checkbox, FormControlLabel, IconButton, InputAdornment, makeStyles, Tab, Tabs, TextField } from '@material-ui/core';
 
 import npmIcon from '../assets/npm.png';
 import { FaGithub as GithubIcon } from 'react-icons/fa';

@@ -606,8 +606,8 @@ class App extends Router {
 
         try {
             const repository = await this.socket.getRepository(currentHost, { update: false }, false, 15000);
-            const installed = await this.socket.getInstalled(currentHost, false, 10000);
-            const adapters = await this.adaptersWorker.getAdapters(); // we need information about ignored versions
+            const installed  = await this.socket.getInstalled(currentHost, false, 10000);
+            const adapters   = await this.adaptersWorker.getAdapters(); // we need information about ignored versions
 
             Object.keys(adapters).forEach(id => {
                 const adapter = adapters[id];
@@ -860,6 +860,8 @@ class App extends Router {
                         logsWorker={this.logsWorker}
                         expertMode={this.state.expertMode}
                         currentHost={this.state.currentHost}
+                        adaptersWorker={this.adaptersWorker}
+                        hostsWorker={this.hostsWorker}
                         clearErrors={cb => this.clearLogErrors(cb)}
                     />
                 </Suspense>;

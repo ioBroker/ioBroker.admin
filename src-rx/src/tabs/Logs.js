@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import clsx from 'clsx';
+import PropTypes from 'prop-types';
 
 import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
@@ -21,10 +22,12 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Badge from '@material-ui/core/Badge';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import { Tooltip } from '@material-ui/core';
 
 import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -39,15 +42,16 @@ import WarningIcon from '@material-ui/icons/Warning';
 import amber from '@material-ui/core/colors/amber';
 import grey from '@material-ui/core/colors/grey';
 import red from '@material-ui/core/colors/red';
-import PropTypes from 'prop-types';
+
+import Icon from '@iobroker/adapter-react/Components/Icon';
 
 import Utils from '../Utils';
-import LinearProgress from '@material-ui/core/LinearProgress';
 
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
-import { Tooltip } from '@material-ui/core';
+
+const MAX_LOGS = 3000;
 
 const styles = theme => ({
     container: {
@@ -66,12 +70,15 @@ const styles = theme => ({
         }
     },
     row: {
-        '&:nth-of-type(odd)': {
-            backgroundColor: theme.palette.background.default,
-        },
+    },
+    rowOdd: {
+        backgroundColor: theme.palette.background.default,
     },
     cell: {
         verticalAlign: 'top'
+    },
+    cellName: {
+        lineHeight: '14px',
     },
     updatedRow: {
         animation: 'updated 1s',
@@ -201,8 +208,18 @@ const styles = theme => ({
     },
     emptyButton: {
         width: 48
+    },
+    icon: {
+        width: 16,
+        height: 16,
+    },
+    name: {
+        verticalAlign: 'top',
+        display: 'inline-block',
+        marginTop: 1,
+        marginLeft: 2,
     }
-});//row
+});
 
 // Number prototype is read only, properties should not be added
 function padding2(num) {
@@ -241,7 +258,8 @@ class Logs extends Component {
             estimatedSize:      true,
             pause:              0,
             pauseCount:         0,
-            pid:                JSON.parse(window.localStorage.getItem('Logs.pid')) || false
+            pid:                JSON.parse(window.localStorage.getItem('Logs.pid')) || false,
+            adapters:           {}
         };
 
         this.severities = {
@@ -253,44 +271,6 @@ class Logs extends Component {
         };
 
         this.t = props.t;
-
-        this.props.socket.getLogsFiles()
-            .then(list => {
-                if (list && list.length) {
-
-                    const logFiles = [];
-
-                    list.reverse();
-                    // first 2018-01-01
-                    list.forEach(file => {
-                        const parts = file.fileName.split('/');
-                        const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '');
-
-                        if (name[0] <= '9') {
-                            logFiles.push({
-                                path: file,
-                                name: name
-                            });
-                        }
-                    });
-
-                    // then restart.log ans so on
-                    list.sort();
-                    list.forEach(file => {
-                        const parts = file.fileName.split('/');
-                        const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '');
-
-                        if (name[0] > '9') {
-                            logFiles.push({
-                                path: file,
-                                name: name
-                            });
-                        }
-                    });
-
-                    this.readLogs(true, logFiles);
-                }
-            });
 
         this.words = {};
     }
@@ -304,8 +284,12 @@ class Logs extends Component {
 
                     let logWarnings = 0;
                     let logErrors   = 0;
+                    let lastOdd     = true;
 
                     logs.forEach(item => {
+                        lastOdd = !lastOdd;
+                        item.odd = lastOdd;
+
                         if (!item.time) {
                             const date = new Date(item.ts);
                             item.time = `${date.getFullYear()}-${padding2(date.getMonth() + 1)}-${padding2(date.getDate())} ` +
@@ -316,6 +300,17 @@ class Logs extends Component {
                         } else if (item.severity === 'warn') {
                             logWarnings++;
                         }
+
+                        let adapterName = item.from.replace(/\.\d+$/, '');
+                        let icon = this.state.adapters['system.adapter.' + adapterName]?.common?.icon;
+                        if (icon) {
+                            if (!icon.startsWith('data:image')) {
+                                icon = './files/' + adapterName + '.admin/' + icon;
+                            }
+                        } else {
+                            icon = this.state.hosts['system.' + item.from]?.common?.icon;
+                        }
+                        item.icon = icon || null;
                     });
 
                     if (logFiles) {
@@ -333,6 +328,50 @@ class Logs extends Component {
         this.props.logsWorker && this.props.logsWorker.enableCountErrors(false);
         this.props.logsWorker.registerHandler(this.logHandler);
         this.props.clearErrors();
+        this.props.adaptersWorker.getAdapters()
+            .then(adapters =>
+                this.props.hostsWorker.getHosts()
+                    .then(hosts => new Promise(resolve =>
+                            this.setState({adapters, hosts}, () =>
+                                this.props.socket.getLogsFiles()
+                                    .then(list => resolve(list))))
+                    )
+                    .then(list => {
+                        if (list && list.length) {
+                            const logFiles = [];
+
+                            list.reverse();
+                            // first 2018-01-01
+                            list.forEach(file => {
+                                const parts = file.fileName.split('/');
+                                const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '');
+
+                                if (name[0] <= '9') {
+                                    logFiles.push({
+                                        path: file,
+                                        name: name
+                                    });
+                                }
+                            });
+
+                            // then restart.log ans so on
+                            list.sort();
+                            list.forEach(file => {
+                                const parts = file.fileName.split('/');
+                                const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '');
+
+                                if (name[0] > '9') {
+                                    logFiles.push({
+                                        path: file,
+                                        name
+                                    });
+                                }
+                            });
+
+                            this.readLogs(true, logFiles);
+                        }
+                    }));
+
     }
 
     componentWillUnmount() {
@@ -344,9 +383,20 @@ class Logs extends Component {
     logHandler = (newLogs, size) => {
         const oldLogs = this.state.logs || [];
         const logs = oldLogs.concat(newLogs);
+
+        if (logs.length > MAX_LOGS) {
+            logs.splice(0, logs.length - MAX_LOGS);
+        }
         let logWarnings = 0;
-        let logErrors = 0;
+        let logErrors   = 0;
+        let lastOdd     = false;
         logs.forEach(item => {
+            if (item.odd !== undefined) {
+                lastOdd = item.odd;
+            } else {
+                lastOdd = !lastOdd;
+                item.odd = lastOdd;
+            }
             if (!item.time) {
                 const date = new Date(item.ts);
                 item.time = `${date.getFullYear()}-${padding2(date.getMonth() + 1)}-${padding2(date.getDate())} ` +
@@ -356,6 +406,18 @@ class Logs extends Component {
                 logErrors++;
             } else if (item.severity === 'warn') {
                 logWarnings++;
+            }
+            if (item.icon === undefined) {
+                let adapterName = item.from.replace(/\.\d+$/, '');
+                let icon = this.state.adapters['system.adapter.' + adapterName]?.common?.icon;
+                if (icon) {
+                    if (!icon.startsWith('data:image')) {
+                        icon = './files/' + adapterName + '.admin/' + icon;
+                    }
+                } else {
+                    icon = this.state.hosts['system.' + item.from]?.common?.icon;
+                }
+                item.icon = icon || null;
             }
         });
 
@@ -501,12 +563,12 @@ class Logs extends Component {
 
             rows.push(
                 <TableRow
-                    className={clsx(classes.row, isHidden && classes.hidden, this.lastRowRender && row.ts > this.lastRowRender && classes.updatedRow)}
+                    className={clsx(classes.row, row.odd && classes.rowOdd, isHidden && classes.hidden, this.lastRowRender && row.ts > this.lastRowRender && classes.updatedRow)}
                     key={key}
                     hover
                 >
-                    <TableCell className={classes.cell}>
-                        {row.from}
+                    <TableCell className={clsx(classes.cell, classes.cellName)}>
+                        {<Icon src={row.icon} className={classes.icon}/>}<div className={classes.name}>{row.from}</div>
                     </TableCell>
                     {this.state.pid && <TableCell className={clsx(classes.cell, classes[severity])}>
                         {id}
@@ -759,5 +821,6 @@ Logs.propTypes = {
     logsWorker: PropTypes.object,
     lang: PropTypes.string,
     t: PropTypes.func,
+    adaptersWorker: PropTypes.object,
 };
 export default withWidth()(withStyles(styles)(Logs));

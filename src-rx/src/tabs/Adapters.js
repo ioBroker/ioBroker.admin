@@ -1204,7 +1204,6 @@ class Adapters extends Component {
         }
 
         if (this.state.dialog === 'readme' && this.state.dialogProp) {
-
             const adapter = this.state.repository[this.state.dialogProp] || null;
 
             if (adapter) {
@@ -1215,6 +1214,7 @@ class Adapters extends Component {
                         themeType={this.props.themeType}
                         adapter={this.state.dialogProp}
                         link={adapter.readme || ''}
+                        socket={this.props.socket}
                         t={this.t}
                     />
                 </TabContainer>;

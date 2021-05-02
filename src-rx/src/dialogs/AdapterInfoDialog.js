@@ -22,7 +22,8 @@ const styles = {
         overflowY: 'auto',
         '& img': {
             maxWidth: '100%'
-        }
+        },
+        fontSize: 14,
     }
 };
 
@@ -62,7 +63,7 @@ class AdapterInfoDialog extends Component {
                 lines.unshift('');
             }
             const split = this.splitReadMe(readme);*/
-            readme = readme.replace(/\(([-\w]+)\/adapterref\//g, '(https://www.iobroker.net/$1u/adapterref/');
+            readme = readme.replace(/\(([-\w]+)\/adapterref\//g, '(https://www.iobroker.net/$1/adapterref/');
             /*readme = readme.replace(/\(en\/adapterref\//g, '(https://www.iobroker.net/en/adapterref/');
             readme = readme.replace(/\(de\/adapterref\//g, '(https://www.iobroker.net/de/adapterref/');
             readme = readme.replace(/\(zh-cn\/adapterref\//g, '(https://www.iobroker.net/zh-cn/adapterref/');
@@ -224,6 +225,11 @@ class AdapterInfoDialog extends Component {
                 themeType={this.props.themeType}
                 mobile={this.props.mobile}
                 editMode={false}
+                socket={this.props.socket}
+                adapter={this.props.adapter}
+                //                https://github.com/ioBroker/ioBroker.admin/blob/master/README.md =>
+                // https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/README.md
+                link={this.props.link.replace('https://github.com/', 'https://raw.githubusercontent.com/').replace('/blob/', '/')}
                 //onNavigate={(language, tab, page, chapter) => this.onNavigate(language, tab, page, chapter)}
             />
             <AppBar  color="default" position="static">
@@ -260,7 +266,8 @@ AdapterInfoDialog.propTypes = {
     t: PropTypes.func,
     theme: PropTypes.object,
     themeName: PropTypes.string,
-    themeType: PropTypes.string
+    themeType: PropTypes.string,
+    socket: PropTypes.object
 };
 
 export default withStyles(styles)(AdapterInfoDialog);
