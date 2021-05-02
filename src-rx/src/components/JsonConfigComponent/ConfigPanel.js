@@ -109,6 +109,10 @@ class ConfigPanel extends ConfigGeneric {
         const classes = this.props.classes || {};
 
         return Object.keys(items).map(attr => {
+            if (this.props.multiEdit && items[attr].noMultiEdit) {
+                return null;
+            }
+
             const type = items[attr].type || 'panel';
             let ItemComponent;
             if (type === 'custom') {
@@ -221,6 +225,7 @@ ConfigPanel.propTypes = {
     onCommandRunning: PropTypes.func,
     dateFormat: PropTypes.string,
     isFloatComma: PropTypes.bool,
+    multiEdit: PropTypes.bool,
 
     customObj: PropTypes.object,
     instanceObj: PropTypes.object,

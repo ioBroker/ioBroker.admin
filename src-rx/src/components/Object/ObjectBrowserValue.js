@@ -23,7 +23,8 @@ import Select from '@material-ui/core/Select';
 import Grid from '@material-ui/core/Grid';
 import Hidden from '@material-ui/core/Hidden';
 import Fab from '@material-ui/core/Fab';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import Typography from '@material-ui/core/Typography';
+import Switch from '@material-ui/core/Switch';
 
 import ChartIcon from '@material-ui/icons/ShowChart';
 
@@ -54,6 +55,40 @@ const styles = theme => ({
     }
 
 });
+
+const AntSwitch = withStyles((theme) => ({
+    root: {
+        width: 28,
+        height: 16,
+        padding: 0,
+        display: 'flex',
+    },
+    switchBase: {
+        padding: 2,
+        color: theme.palette.grey[500],
+        '&$checked': {
+            transform: 'translateX(12px)',
+            color: theme.palette.common.white,
+            '& + $track': {
+                opacity: 1,
+                backgroundColor: theme.palette.primary.main,
+                borderColor: theme.palette.primary.main,
+            },
+        },
+    },
+    thumb: {
+        width: 12,
+        height: 12,
+        boxShadow: 'none',
+    },
+    track: {
+        border: `1px solid ${theme.palette.grey[500]}`,
+        borderRadius: 16 / 2,
+        opacity: 1,
+        backgroundColor: theme.palette.common.white,
+    },
+    checked: {},
+}))(Switch);
 
 class ObjectBrowserValue extends Component {
     constructor(props) {
@@ -112,6 +147,17 @@ class ObjectBrowserValue extends Component {
     }
 
     onUpdate() {
+        if (this.state.type === 'states') {
+            let type = this.props.type || typeof this.props.value;
+
+            if (type === 'number') {
+                if (typeof this.value !== 'number') {
+                    this.value = parseFloat(this.value.replace(',', '.')) || 0;
+                }
+            } else if (type === 'boolean') {
+                this.value = this.value === true || this.value === 'true' || this.value === '1' || this.value === 'ON' || this.value === 'on';
+            }
+        } else
         if (this.state.type === 'number') {
             if (typeof this.value !== 'number') {
                 this.value = parseFloat(this.value.replace(',', '.')) || 0;
@@ -240,7 +286,7 @@ class ObjectBrowserValue extends Component {
 
                                 <Grid item>
                                     { this.state.type === 'boolean' ?
-                                        <FormControl component="fieldset" className={ this.props.classes.formControl }>
+                                        /*<FormControl component="fieldset" className={ this.props.classes.formControl }>
                                             <FormControlLabel
                                                 className={ this.props.classes.formControl }
                                                 control={<Checkbox
@@ -251,7 +297,22 @@ class ObjectBrowserValue extends Component {
                                                 label={this.props.t('Value')}
                                             />
                                             <FormHelperText>{this.props.t('Press ENTER to write the value, when focused')}</FormHelperText>
-                                        </FormControl>
+                                        </FormControl>*/
+                                        <Typography component="div">
+                                            <Grid component="label" container alignItems="center" spacing={1}>
+                                                <Grid item style={{marginRight: 10}}>{this.props.t('Value')}:</Grid>
+                                                <Grid item>FALSE</Grid>
+                                                <Grid item>
+                                                    <AntSwitch
+                                                        autoFocus
+                                                        defaultChecked={ !!this.propsValue }
+                                                        onKeyUp={e => e.keyCode === 13 && this.onUpdate() }
+                                                        onChange={e => this.value = e.target.checked}
+                                                    />
+                                                </Grid>
+                                                <Grid item>TRUE</Grid>
+                                            </Grid>
+                                        </Typography>
                                         :
                                         (this.state.type === 'number' ?
                                                 <TextField

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import withWidth from '@material-ui/core/withWidth';
@@ -24,6 +24,7 @@ import { JsControllerDialogFunc } from '../dialogs/JsControllerDialog';
 import clsx from 'clsx';
 import Utils from '../Utils';
 import BaseSettingsDialog from '../dialogs/BaseSettingsDialog';
+import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
 
 const styles = theme => ({
     grow: {
@@ -130,7 +131,7 @@ const getHostDescriptionAll = (id, t, classes, hostsData) => {
         return [<Skeleton />];
     }
     if (typeof hostData === 'string') {
-        return [hostData];
+        return hostData;
     }
     return [
         <ul className={classes.ul}>
@@ -211,25 +212,6 @@ const Hosts = ({
     showAdaptersWarning,
     ...props
 }) => {
-    const getHostsData = hosts => {
-        const promises = hosts.map(obj =>
-            socket.getHostInfo(obj._id, null, 10000)
-                .catch(error => {
-                    console.error(error);
-                    return error;
-                })
-                .then(data =>
-                    ({ id: obj._id, data })));
-
-        return new Promise(resolve =>
-            Promise.all(promises)
-                .then(results => {
-                    const _hostsData = {};
-                    results.forEach(res => _hostsData[res.id] = res.data);
-                    resolve(_hostsData);
-                }));
-    };
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const t = (word, arg1) => {
         if (arg1 !== undefined && !wordCache[`${word} ${arg1}`]) {
@@ -247,28 +229,64 @@ const Hosts = ({
     const [refresh, setRefresh] = useState(false);
     const [viewMode, setViewMode] = useStateLocal(false, 'Hosts.viewMode');
     const [filterText, setFilterText] = useStateLocal('', 'Hosts.filterText');
+    const [showSlowConnectionWarning, setShowSlowConnectionWarning] = useState(false);
+    const [readTimeoutMs, setReadTimeoutMs] = useState(SlowConnectionWarningDialog.getReadTimeoutMs());
+
+    const getHostsData = (hosts, _alive) => {
+        const promises = hosts.map(obj => {
+            if (_alive[obj._id]) {
+                return socket.getHostInfo(obj._id, null, readTimeoutMs)
+                    .catch(error => {
+                        console.error('Cannot get getHostInfo:' + error);
+                        error.toString().includes('timeout') && setShowSlowConnectionWarning(true);
+                        return error;
+                    })
+                    .then(data =>
+                        ({ id: obj._id, data }));
+            } else {
+                return { id: obj._id, data: 'offline' };
+            }
+        });
+
+        return new Promise(resolve =>
+            Promise.all(promises)
+                .then(results => {
+                    const _hostsData = {};
+                    results.forEach(res => _hostsData[res.id] = res.data);
+                    resolve(_hostsData);
+                }));
+    };
+
+    const readInfo = () => {
+        return socket.getHosts(true, false, readTimeoutMs)
+            .then(hostsArray => socket.getRepository(currentHost, {update: false}, false, readTimeoutMs)
+                    .then(async repositoryProm => {
+                        const _alive = JSON.parse(JSON.stringify(alive));
+
+                        for (let h = 0; h < hostsArray.length; h++) {
+                            let aliveValue = await socket.getState(`${hostsArray[h]._id}.alive`);
+                            _alive[hostsArray[h]._id] = !aliveValue ? false : !!aliveValue.val;
+                        }
+
+                        setAlive(_alive);
+
+                        setRepository(repositoryProm);
+                        setHosts(hostsArray);
+                        filterText && hostsArray.length <= 2 && setFilterText('');
+                        const hostDataObj = await getHostsData(hostsArray, _alive);
+                        setHostsData(hostDataObj);
+
+                        // simulation
+                        // setTimeout(() => setShowSlowConnectionWarning(true), 5000);
+                    })
+                    .catch(e => {
+                        window.alert('Cannot getRepository: ' + e);
+                        e.toString().includes('timeout') && setShowSlowConnectionWarning(true);
+                    }));
+    };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(async () => {
-        let hostsArray = await socket.getHosts(true, false, 10000);
-
-        const repositoryProm = await socket.getRepository(currentHost, {update: false}, false, 15000);
-        const _alive = JSON.parse(JSON.stringify(alive));
-
-        for (let h = 0; h < hostsArray.length; h++) {
-            let aliveValue = await socket.getState(`${hostsArray[h]._id}.alive`);
-            _alive[hostsArray[h]._id] = !aliveValue ? false : !!aliveValue.val;
-        }
-
-        setAlive(_alive);
-
-        setRepository(repositoryProm);
-        setHosts(hostsArray);
-        filterText && hostsArray.length <= 2 && setFilterText('');
-        const hostDataObj = await getHostsData(hostsArray);
-        setHostsData(hostDataObj);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [refresh]);
+    useEffect(readInfo, [refresh]);
 
     const getAllArrayHosts = useMemo(() => hosts.map(({
         _id,
@@ -392,6 +410,24 @@ const Hosts = ({
         />
     };
 
+    const renderSlowConnectionWarning = () => {
+        if (!showSlowConnectionWarning) {
+            return null;
+        } else {
+            return <SlowConnectionWarningDialog
+                readTimeoutMs={readTimeoutMs}
+                t={t}
+                onClose={async _readTimeoutMs => {
+                    setShowSlowConnectionWarning(false);
+                    if (_readTimeoutMs) {
+                        setReadTimeoutMs(_readTimeoutMs);
+                        await readInfo();
+                    }
+                }}
+            />;
+        }
+    }
+
     if (!hosts.length) {
         return <LinearProgress />;
     }
@@ -399,6 +435,7 @@ const Hosts = ({
     return <TabContainer>
         {renderEditObjectDialog()}
         {baseSettingsSettingsDialog()}
+        {renderSlowConnectionWarning()}
         <TabHeader>
             <Tooltip title={t('Show / hide List')}>
                 <IconButton onClick={() => setViewMode(!viewMode)}>

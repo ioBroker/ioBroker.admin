@@ -1290,5 +1290,8 @@
   "Set value": "Ustalić wartość",
   "Object does not exist!": "Obiekt nie istnieje!",
   "github_warning": "Nie instaluj adapterów z %s , chyba że poprosi o to programista lub jeśli masz 100% pewności, co robisz! Adaptery w %s mogą nie działać tak, jak powinny (nadal są w fazie rozwoju). Zainstaluj je tylko wtedy, gdy bierzesz udział w teście! Proszę czekać na oficjalne wydanie!",
-  "Install adapter from %s": "Zainstaluj lub zaktualizuj adapter z adresu %s"
+  "Install adapter from %s": "Zainstaluj lub zaktualizuj adapter z adresu %s",
+  "Hosts notifications": "Powiadomienia gospodarzy",
+  "Remove": "Usunąć",
+  "Warning: Free space on disk is low": "Ostrzeżenie: mało wolnego miejsca na dysku!"
 }

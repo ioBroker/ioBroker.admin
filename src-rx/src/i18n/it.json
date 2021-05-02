@@ -1290,5 +1290,8 @@
   "Set value": "Valore impostato",
   "Object does not exist!": "L'oggetto non esiste!",
   "github_warning": "Non installare adattatori da %s a meno che non venga richiesto da uno sviluppatore o se sei sicuro al 100% di quello che stai facendo! Gli adattatori su %s potrebbero non funzionare come dovrebbero (sono ancora in fase di sviluppo). Installali solo se stai partecipando a un test! Attendi un rilascio ufficiale!",
-  "Install adapter from %s": "Installa l'adattatore dall'%s"
+  "Install adapter from %s": "Installa l'adattatore dall'%s",
+  "Hosts notifications": "Notifiche degli host",
+  "Remove": "Rimuovere",
+  "Warning: Free space on disk is low": "Attenzione: lo spazio libero su disco è insufficiente!"
 }

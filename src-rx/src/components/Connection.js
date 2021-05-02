@@ -1496,6 +1496,7 @@ class Connection {
      * Get the host information.
      * @param {string} host
      * @param {boolean} [update] Force update.
+     * @param {number} [timeoutMs] optional read timeout.
      * @returns {Promise<any>}
      */
     getHostInfo(host, update, timeoutMs) {
@@ -1594,6 +1595,7 @@ class Connection {
      * Get the installed.
      * @param {string} host
      * @param {boolean} [update] Force update.
+     * @param {number} [cmdTimeout] timeout in ms (optional)
      * @returns {Promise<any>}
      */
     getInstalled(host, update, cmdTimeout) {

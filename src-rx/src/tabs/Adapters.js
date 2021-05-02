@@ -59,6 +59,7 @@ import { licenseDialogFunc } from '../dialogs/LicenseDialog';
 import CustomModal from '../components/CustomModal';
 import AdaptersUpdaterDialog from '../dialogs/AdaptersUpdaterDialog';
 import RatingDialog from '../dialogs/RatingDialog';
+import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
 
 const WIDTHS = {
     emptyBlock: 50,
@@ -238,6 +239,8 @@ class Adapters extends Component {
             descWidth: 300,
             showStatistics: false,
             showSetRating: null,
+            readTimeoutMs: SlowConnectionWarningDialog.getReadTimeoutMs(),
+            showSlowConnectionWarning: false,
         };
 
         this.rebuildSupported = false;
@@ -264,6 +267,27 @@ class Adapters extends Component {
         }
 
         return this.wordCache[word];
+    }
+
+    renderSlowConnectionWarning() {
+        if (!this.state.showSlowConnectionWarning) {
+            return null;
+        } else {
+            return <SlowConnectionWarningDialog
+                readTimeoutMs={this.state.readTimeoutMs}
+                t={this.t}
+                onClose={readTimeoutMs => {
+                    if (readTimeoutMs) {
+                        this.setState({showSlowConnectionWarning: false, readTimeoutMs}, async () => {
+                            await this.getAdapters();
+                            await this.getAdaptersInfo();
+                        });
+                    } else {
+                        this.setState({showSlowConnectionWarning: false});
+                    }
+                }}
+            />;
+        }
     }
 
     async componentDidMount() {
@@ -375,9 +399,19 @@ class Adapters extends Component {
         try {
             console.log('getAdapters')
             const currentHost  = this.props.currentHost;
-            const adapters     = await this.props.adaptersWorker.getAdapters();
-            const installed    = await this.props.socket.getInstalled(currentHost, true).catch(e => window.alert('Cannot getInstalled: ' + e));
-            const repository   = await this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: false }, false, 15000).catch(e => window.alert('Cannot getRepository: ' + e));
+            const adapters     = await this.props.adaptersWorker.getAdapters().catch(e => window.alert('Cannot getAdapters: ' + e));
+
+            const installed    = await this.props.socket.getInstalled(currentHost, true, this.state.readTimeoutMs)
+                .catch(e => {
+                    window.alert('Cannot getInstalled: ' + e);
+                    e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
+                });
+
+            const repository   = await this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: false }, false, this.state.readTimeoutMs)
+                .catch(e => {
+                    window.alert('Cannot getRepository: ' + e);
+                    e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
+                });
 
             this.analyseInstalled(adapters, installed, repository);
         } catch (e) {
@@ -399,10 +433,17 @@ class Adapters extends Component {
             const currentHost = this.props.currentHost;
             try {
                 const {installed, repository} = this.state;
-                const hostData = await this.props.socket.getHostInfo(currentHost, false, 10000).catch(e => window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`));
+                const hostData = await this.props.socket.getHostInfo(currentHost, false, this.state.readTimeoutMs)
+                    .catch(e => {
+                        window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`);
+                        e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
+                    });
                 const rebuild  = await this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD').catch(e => window.alert('Cannot checkFeatureSupported: ' + e));
                 const objects  = await this.props.adaptersWorker.getAdapters(updateRepo).catch(e => window.alert('Cannot read system.adapters.*: ' + e));
                 const ratings  = await this.props.socket.getRatings(updateRepo).catch(e => window.alert('Cannot read ratings: ' + e));
+
+                // simulation
+                // setTimeout(() => this.setState({showSlowConnectionWarning: true}), 5000);
 
                 this.uuid = ratings.uuid;
 
@@ -1382,6 +1423,7 @@ class Adapters extends Component {
             {this.getUpdater()}
             {this.getStatistics()}
             {this.renderSetRatingDialog()}
+            {this.renderSlowConnectionWarning()}
 
             {!this.state.viewMode && <div style={{
                 display: 'flex',

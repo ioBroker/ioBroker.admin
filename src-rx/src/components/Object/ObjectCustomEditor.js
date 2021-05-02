@@ -386,6 +386,7 @@ class ObjectCustomEditor extends Component {
                             theme={this.props.theme}
                             themeName={this.props.themeName}
                             themeType={this.props.themeType}
+                            multiEdit={this.props.objectIDs.length > 1}
 
                             schema={this.jsonConfigs[adapter].json}
                             data={this.combineNewAndOld(instance)}

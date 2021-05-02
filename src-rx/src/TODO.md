@@ -24,7 +24,8 @@ Marked with "!" must be in release candidate
 ## Enums
 
 ## Adapters
-- !Use readme renderer from www.iobroker.net (BF)
+- Use only icons for update adapter: https://github.com/ioBroker/ioBroker.admin/issues/810
+  - "Ignore", Icon "Update", Icon "close" on mobile ()
 
 ## Wizard
 
@@ -77,6 +78,7 @@ Marked with "!" must be in release candidate
 
 - !Layout problem by defined columns widths: https://github.com/ioBroker/ioBroker.admin/issues/698
 - !On small display show only Icons for "Edit object dialog" buttons
+- On small display show smaller font and smaller margins between checkbox and text: https://github.com/ioBroker/ioBroker.admin/issues/810
 
 ## Files
 

@@ -1290,5 +1290,8 @@
   "Set value": "Waarde instellen",
   "Object does not exist!": "Object bestaat niet!",
   "github_warning": "Installeer geen adapters van %s tenzij daarom wordt gevraagd door een ontwikkelaar of als u 100% zeker weet wat u doet! Adapters op %s werken mogelijk niet zoals ze zouden moeten (ze zijn nog in ontwikkeling). Installeer ze alleen als u deelneemt aan een test! Wacht alstublieft op een officiële release!",
-  "Install adapter from %s": "Installeer of update de adapter via de %s"
+  "Install adapter from %s": "Installeer of update de adapter via de %s",
+  "Hosts notifications": "Hosts meldingen",
+  "Remove": "Verwijderen",
+  "Warning: Free space on disk is low": "Waarschuwing: de vrije ruimte op de schijf is laag!"
 }

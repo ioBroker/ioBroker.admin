@@ -69,6 +69,7 @@ class ConfigAutocomplete extends ConfigGeneric {
             renderInput={params => <TextField
                 {...params}
                 error={!!error}
+                inputProps={{maxLength: this.props.schema.maxLength || this.props.schema.max || undefined}}
                 placeholder={this.getText(this.props.schema.placeholder)}
                 label={this.getText(this.props.schema.label)}
                 helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}

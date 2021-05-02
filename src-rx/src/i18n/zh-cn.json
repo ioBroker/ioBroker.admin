@@ -1290,5 +1290,8 @@
   "Set value": "设定值",
   "Object does not exist!": "对象不存在！",
   "github_warning": "除非开发人员要求，否则不要安装%s的适配器，否则您是否100％确信自己在做什么！ %s上的适配器可能无法正常运行（它们仍在开发中）。仅在参加测试时才安装它们！请等待正式发布！",
-  "Install adapter from %s": "从%s安装或更新插件"
+  "Install adapter from %s": "从%s安装或更新插件",
+  "Hosts notifications": "主持人通知",
+  "Remove": "去掉",
+  "Warning: Free space on disk is low": "警告：磁盘上的可用空间不足！"
 }

@@ -96,6 +96,7 @@ class ConfigAutocompleteSendTo extends ConfigGeneric {
             getOptionLabel={option => option.label}
             renderInput={params => <TextField
                 {...params}
+                inputProps={{maxLength: this.props.schema.maxLength || this.props.schema.max || undefined}}
                 error={!!error}
                 placeholder={this.getText(this.props.schema.placeholder)}
                 label={this.getText(this.props.schema.label)}

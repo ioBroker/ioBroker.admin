@@ -332,7 +332,7 @@ const HostRow = ({
         warning = (diskFreeCache / diskSizeCache) * 100 <= diskWarningCache;
         if (refWarning.current) {
             if (warning) {
-                refWarning.current.setAttribute('title', t('disk Warning'));
+                refWarning.current.setAttribute('title', t('Warning: Free space on disk is low'));
                 refWarning.current.classList.add('warning');
             } else {
                 refWarning.current.removeAttribute('title');

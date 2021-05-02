@@ -1290,5 +1290,8 @@
   "Set value": "Valor ajustado",
   "Object does not exist!": "¡El objeto no existe!",
   "github_warning": "No instale adaptadores de %s a menos que se lo solicite un desarrollador o si está 100% seguro de lo que está haciendo. Es posible que los adaptadores en %s no funcionen como deberían (todavía están en desarrollo). ¡Solo instálelos si participa en una prueba! ¡Espere un lanzamiento oficial!",
-  "Install adapter from %s": "Instale o atualize el adaptador a un uma %s"
+  "Install adapter from %s": "Instale o atualize el adaptador a un uma %s",
+  "Hosts notifications": "Notificaciones de hosts",
+  "Remove": "Eliminar",
+  "Warning: Free space on disk is low": "Advertencia: ¡El espacio libre en el disco es bajo!"
 }

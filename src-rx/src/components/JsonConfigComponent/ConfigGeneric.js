@@ -26,11 +26,25 @@ class ConfigGeneric extends Component {
             confirmData: null,
         };
 
+        this.defaultValue = this.props.schema.defaultFunc ? this.execute(this.props.schema.defaultFunc, this.props.schema.default, this.props.data) : this.props.schema.default;
+
         this.lang = I18n.getLanguage();
     }
 
     componentDidMount() {
         this.props.registerOnForceUpdate && this.props.registerOnForceUpdate(this.props.attr, this.onUpdate);
+
+        // init default value
+        if (this.defaultValue !== undefined) {
+            const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
+            if (value === undefined) {
+                setTimeout(() => {
+                    ConfigGeneric.setValue(this.props.data, this.props.attr, this.defaultValue);
+                    this.props.onChange(this.props.data, undefined, () =>
+                        this.props.forceUpdate([this.props.attr], this.props.data))
+                }, 200);
+            }
+        }
     }
 
     componentWillUnmount() {
@@ -125,11 +139,7 @@ class ConfigGeneric extends Component {
         />;
     }
 
-    onChange(attr, newValue, counter) {
-        counter = counter || 0;
-        if (counter > 10) {
-            return console.error('Detected cyclic onChange by ' + attr + '!');
-        }
+    onChange(attr, newValue) {
         if (this.props.custom) {
             return this.props.onChange(attr, newValue);
         }
@@ -237,12 +247,12 @@ class ConfigGeneric extends Component {
             error        = schema.validator   ? !this.executeCustom(schema.validator,  this.props.data, this.props.customObj, this.props.instanceObj)   : false;
             disabled     = schema.disabled    ? this.executeCustom(schema.disabled,    this.props.data, this.props.customObj, this.props.instanceObj)   : false;
             hidden       = schema.hidden      ? this.executeCustom(schema.hidden,      this.props.data, this.props.customObj, this.props.instanceObj)   : false;
-            defaultValue = schema.default;
+            defaultValue = schema.defaultFunc ? this.execute(schema.defaultFunc, schema.default, this.props.data) : schema.default;
         } else {
             error        = schema.validator   ? !this.execute(schema.validator,  false)   : false;
             disabled     = schema.disabled    ? this.execute(schema.disabled,    false)   : false;
             hidden       = schema.hidden      ? this.execute(schema.hidden,      false)   : false;
-            defaultValue = schema.defaultFunc ? this.execute(schema.defaultFunc, schema.default) : schema.default;
+            defaultValue = schema.defaultFunc ? this.execute(schema.defaultFunc, schema.default, this.props.data) : schema.default;
         }
 
         return {error, disabled, hidden, defaultValue};

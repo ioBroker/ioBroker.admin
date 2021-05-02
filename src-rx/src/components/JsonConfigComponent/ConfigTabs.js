@@ -59,6 +59,7 @@ class ConfigTabs extends ConfigGeneric {
                 systemConfig={this.props.systemConfig}
                 onError={this.props.onError}
                 onChange={this.props.onChange}
+                multiEdit={this.props.multiEdit}
 
                 forceUpdate={this.props.forceUpdate}
                 registerOnForceUpdate={this.props.registerOnForceUpdate}
@@ -90,6 +91,7 @@ ConfigTabs.propTypes = {
     onCommandRunning: PropTypes.func,
     dateFormat: PropTypes.string,
     isFloatComma: PropTypes.bool,
+    multiEdit: PropTypes.bool,
 
     customObj: PropTypes.object,
     instanceObj: PropTypes.object,
