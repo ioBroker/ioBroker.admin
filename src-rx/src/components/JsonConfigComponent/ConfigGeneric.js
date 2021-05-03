@@ -26,7 +26,11 @@ class ConfigGeneric extends Component {
             confirmData: null,
         };
 
-        this.defaultValue = this.props.schema.defaultFunc ? this.execute(this.props.schema.defaultFunc, this.props.schema.default, this.props.data) : this.props.schema.default;
+        if (this.props.custom) {
+            this.defaultValue = this.props.schema.defaultFunc ? this.executeCustom(this.props.schema.defaultFunc, this.props.schema.default, this.props.data) : this.props.schema.default;
+        } else {
+            this.defaultValue = this.props.schema.defaultFunc ? this.execute(this.props.schema.defaultFunc, this.props.schema.default, this.props.data) : this.props.schema.default;
+        }
 
         this.lang = I18n.getLanguage();
     }
@@ -244,10 +248,10 @@ class ConfigGeneric extends Component {
         let defaultValue;
 
         if (this.props.custom) {
-            error        = schema.validator   ? !this.executeCustom(schema.validator,  this.props.data, this.props.customObj, this.props.instanceObj)   : false;
-            disabled     = schema.disabled    ? this.executeCustom(schema.disabled,    this.props.data, this.props.customObj, this.props.instanceObj)   : false;
-            hidden       = schema.hidden      ? this.executeCustom(schema.hidden,      this.props.data, this.props.customObj, this.props.instanceObj)   : false;
-            defaultValue = schema.defaultFunc ? this.execute(schema.defaultFunc, schema.default, this.props.data) : schema.default;
+            error        = schema.validator   ? !this.executeCustom(schema.validator,  this.props.data, this.props.customObj, this.props.instanceObj) : false;
+            disabled     = schema.disabled    ? this.executeCustom(schema.disabled,    this.props.data, this.props.customObj, this.props.instanceObj) : false;
+            hidden       = schema.hidden      ? this.executeCustom(schema.hidden,      this.props.data, this.props.customObj, this.props.instanceObj) : false;
+            defaultValue = schema.defaultFunc ? this.executeCustom(schema.defaultFunc, this.props.data, this.props.customObj, this.props.instanceObj) : schema.default;
         } else {
             error        = schema.validator   ? !this.execute(schema.validator,  false)   : false;
             disabled     = schema.disabled    ? this.execute(schema.disabled,    false)   : false;
