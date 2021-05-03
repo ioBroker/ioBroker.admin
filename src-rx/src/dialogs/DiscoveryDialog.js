@@ -20,6 +20,7 @@ import ReportProblemIcon from '@material-ui/icons/ReportProblem';
 import I18n from '@iobroker/adapter-react/i18n';
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
+import Icon from '@iobroker/adapter-react/Components/Icon';
 
 import Command from '../components/Command';
 import { licenseDialogFunc } from './LicenseDialog';
@@ -514,27 +515,50 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
             }
         }
 
-        licenseDialogFunc(license, () => {
-            if (obj.comment?.inputs) {
-                GenereteInputsFunc(themeType, themeName, socket, obj, () => {
-                    const index = selected.indexOf(obj._id) + 1;
-                    setInstallStatus((status) => Object.assign({ ...status }, { [index]: 'error' }));
-                    if (selected.length > index) {
+        licenseDialogFunc(license, result => {
+            if (!result) {
+                const index = selected.indexOf(obj._id) + 1;
+                setInstallStatus(status => Object.assign({ ...status }, { [index]: 'error' }));
+
+                setLogs({ ...logs, [selected[index]]: [I18n.t('Error: license not accepted')] });
+
+                if (selected.length > index) {
+                    setTimeout(() =>
                         checkLicenseAndInputs(selected[index], () => {
                             setCurrentInstall(index + 1);
                             setCmdName('install');
                             setInstallProgress(true);
-                        });
-                    } else {
-                        setFinishInstall(true)
-                    }
-                }, (params) => {
-                    setInstancesInputsParams(params);
+                        })
+                        , 100);
+                } else {
+                    setFinishInstall(true);
+                }
+            } else
+                if (obj.comment?.inputs) {
+                    GenereteInputsFunc(themeType, themeName, socket, obj, () => {
+                        const index = selected.indexOf(obj._id) + 1;
+                        setInstallStatus((status) => Object.assign({ ...status }, { [index]: 'error' }));
+
+                        setLogs({ ...logs, [selected[index]]: [I18n.t('Error: configuration dialog canceled')] });
+
+                        if (selected.length > index) {
+                            setTimeout(() =>
+                                checkLicenseAndInputs(selected[index], () => {
+                                    setCurrentInstall(index + 1);
+                                    setCmdName('install');
+                                    setInstallProgress(true);
+                                })
+                                , 100);
+                        } else {
+                            setFinishInstall(true);
+                        }
+                    }, (params) => {
+                        setInstancesInputsParams(params);
+                        cb();
+                    })
+                } else {
                     cb();
-                })
-            } else {
-                cb();
-            }
+                }
         }, obj?.common?.licenseUrl);
     };
 
@@ -574,6 +598,8 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
         <Dialog
             onClose={onClose}
             open={open}
+            disableBackdropClick
+            disableEscapeKeyDown
             classes={{ paper: classes.paper }}
         >
             <h2 className={classes.heading}>
@@ -583,7 +609,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     marginLeft: 25,
                     marginRight: 10
                 }} />
-                {I18n.t('Adapter configuration discover')}
+                {I18n.t('Find devices and services')}
             </h2>
             <Stepper className={classes.stepper} alternativeLabel activeStep={value}>
                 {steps.map((label) => (
@@ -594,7 +620,6 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
             </Stepper>
             <DialogContent className={clsx(classes.flex, classes.overflowHidden)} dividers>
                 <div className={classes.root}>
-                    {disableScanner && <LinearProgress variant="determinate" value={devicesProgress >= 99 ? servicesProgress : devicesProgress} />}
                     <TabPanel
                         className={classes.overflowAuto}
                         style={black ? { color: 'white' } : null}
@@ -604,34 +629,34 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                         classes={classes}
                         title={I18n.t('Discover all possible devices')}
                     >
-                        <div className={classes.headerText}>
+                        {!disableScanner ? <> <div className={classes.headerText}>
                             {I18n.t(`Press "Discover" to find devices in your network (Turn off network firewalls/traffic analyze systems before!)
                             or "Next" to use devices from previous discovery process`)}
                         </div>
-                        {discoveryData?.native?.lastScan && <div className={classes.descriptionHeaderText}>
-                            {I18n.t('Last scan on %s', Utils.formatDate(new Date(discoveryData.native.lastScan), dateFormat))}
-                        </div>}
-                        <div
-                            style={!black ? { color: 'white' } : null}
-                            className={classes.headerBlock}>
-                            {I18n.t('Use following methods:')}
+                            {discoveryData?.native?.lastScan && <div className={classes.descriptionHeaderText}>
+                                {I18n.t('Last scan on %s', Utils.formatDate(new Date(discoveryData.native.lastScan), dateFormat))}
+                            </div>}
+                            <div
+                                style={!black ? { color: 'white' } : null}
+                                className={classes.headerBlock}>
+                                {I18n.t('Use following methods:')}
 
-                        </div>
-                        {Object.keys(listMethods).map(key => <div key={key}><Checkbox
-                            checked={checkboxChecked[key]}
-                            disabled={disableScanner}
-                            onChange={(_, value) => {
-                                const newCheckboxChecked = JSON.parse(JSON.stringify(checkboxChecked));
-                                newCheckboxChecked[key] = value;
-                                setCheckboxChecked(newCheckboxChecked)
-                            }}
-                        />{key}</div>)}
-
-                        {scanRunning && <div>
-                            {devicesProgress >= 99 ? `Lookup services - ${servicesProgress}%` : `Lookup devices - ${devicesProgress}%`}
-                            {disableScanner && <LinearProgress variant="determinate" value={devicesProgress >= 99 ? servicesProgress : devicesProgress} />}
-                            {devicesProgress >= 99 ? `${instancesFound} service(s) found` : `${devicesFound} device(s) found`}
-                        </div>}
+                            </div>
+                            {Object.keys(listMethods).map(key => <div key={key}><Checkbox
+                                checked={checkboxChecked[key]}
+                                disabled={disableScanner}
+                                onChange={(_, value) => {
+                                    const newCheckboxChecked = JSON.parse(JSON.stringify(checkboxChecked));
+                                    newCheckboxChecked[key] = value;
+                                    setCheckboxChecked(newCheckboxChecked)
+                                }}
+                            />{key}</div>)}</>
+                            : (scanRunning && <div>
+                                {devicesProgress >= 99 ? `Lookup services - ${servicesProgress}%` : `Lookup devices - ${devicesProgress}%`}
+                                {disableScanner && <LinearProgress variant="determinate" value={devicesProgress >= 99 ? servicesProgress : devicesProgress} />}
+                                {devicesProgress >= 99 ? `${instancesFound} service(s) found` : `${devicesFound} device(s) found`}
+                            </div>)
+                        }
                     </TabPanel>
                     <TabPanel
                         className={classes.overflowAuto}
@@ -718,7 +743,9 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                                         setHostInstances(Object.assign({ ...hostInstances }, { [obj._id]: el.target.value }));
                                                     }}
                                                 >
-                                                    {Object.keys(aliveHosts).map(name => <MenuItem key={name} value={name}>{name.replace('system.host.', '')}</MenuItem>)}
+                                                    {Object.keys(aliveHosts).map(name => <MenuItem key={name} value={name}>
+                                                        <Icon src={hosts[name]?.common?.icon}/>{name.replace('system.host.', '')}
+                                                    </MenuItem>)}
                                                 </Select> :
                                                 '_'}</TableCell>
                                             <TableCell align="left">{buildComment(obj.comment, I18n.t)}</TableCell>
@@ -778,7 +805,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                     key={`${currentInstall}-${cmdName}`}
                                     ready
                                     currentHost={currentHost}
-                                    logsRead={finishInstall ? logs[selected[selectLogsIndex]] || ['scipped'] : null}
+                                    logsRead={finishInstall ? logs[selected[selectLogsIndex]] || ['skipped'] : null}
                                     showElement={!finishInstall}
                                     socket={socket}
                                     t={I18n.t}
@@ -926,6 +953,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                 <Button
                     variant="contained"
                     autoFocus
+                    disabled={disableScanner}
                     onClick={() => {
                         onClose();
                     }}

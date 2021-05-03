@@ -14,9 +14,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import I18n from '@iobroker/adapter-react/i18n';
 
 import theme from '@iobroker/adapter-react/Theme';
-import ConfigPanelStyled from '../components/JsonConfigComponent/ConfigPanel';
-
-
+import ConfigPanel from '../components/JsonConfigComponent/ConfigPanel';
 
 let node = null;
 
@@ -216,6 +214,7 @@ const GenereteInputsModal = ({ themeType, themeName, socket, newInstances, onApp
     const classes = useStyles();
 
     const [open, setOpen] = useState(true);
+    const [error, setError] = useState({});
 
     const onClose = () => {
         setOpen(false);
@@ -224,6 +223,8 @@ const GenereteInputsModal = ({ themeType, themeName, socket, newInstances, onApp
             node = null;
         }
     }
+
+    const isError = () => Object.keys(error).find(attr => error[attr]);
 
     // const black = themeType === 'dark';
 
@@ -243,8 +244,8 @@ const GenereteInputsModal = ({ themeType, themeName, socket, newInstances, onApp
             newInstances.comment.inputs.forEach((el, idx) => {
                 obj[idx + 1] = {
                     ...el, type: types[el.type], label: el.title, text: el.def, href: el.def,
-                    "sm": 6,
-                    "newLine": true
+                    'sm': 6,
+                    'newLine': true,                    
                 }
 
                 if (el.type === 'link') {
@@ -252,6 +253,7 @@ const GenereteInputsModal = ({ themeType, themeName, socket, newInstances, onApp
                     obj[idx + 1].variant = "contained";
                     obj[idx + 1].href = el.def;
                     obj[idx + 1].text = el.title;
+                    obj[idx + 1].icon = 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTExLjk5IDJDNi40NyAyIDIgNi40OCAyIDEyczQuNDcgMTAgOS45OSAxMEMxNy41MiAyMiAyMiAxNy41MiAyMiAxMlMxNy41MiAyIDExLjk5IDJ6bTYuOTMgNmgtMi45NWMtLjMyLTEuMjUtLjc4LTIuNDUtMS4zOC0zLjU2IDEuODQuNjMgMy4zNyAxLjkxIDQuMzMgMy41NnpNMTIgNC4wNGMuODMgMS4yIDEuNDggMi41MyAxLjkxIDMuOTZoLTMuODJjLjQzLTEuNDMgMS4wOC0yLjc2IDEuOTEtMy45NnpNNC4yNiAxNEM0LjEgMTMuMzYgNCAxMi42OSA0IDEycy4xLTEuMzYuMjYtMmgzLjM4Yy0uMDguNjYtLjE0IDEuMzItLjE0IDIgMCAuNjguMDYgMS4zNC4xNCAySDQuMjZ6bS44MiAyaDIuOTVjLjMyIDEuMjUuNzggMi40NSAxLjM4IDMuNTYtMS44NC0uNjMtMy4zNy0xLjktNC4zMy0zLjU2em0yLjk1LThINS4wOGMuOTYtMS42NiAyLjQ5LTIuOTMgNC4zMy0zLjU2QzguODEgNS41NSA4LjM1IDYuNzUgOC4wMyA4ek0xMiAxOS45NmMtLjgzLTEuMi0xLjQ4LTIuNTMtMS45MS0zLjk2aDMuODJjLS40MyAxLjQzLTEuMDggMi43Ni0xLjkxIDMuOTZ6TTE0LjM0IDE0SDkuNjZjLS4wOS0uNjYtLjE2LTEuMzItLjE2LTIgMC0uNjguMDctMS4zNS4xNi0yaDQuNjhjLjA5LjY1LjE2IDEuMzIuMTYgMiAwIC42OC0uMDcgMS4zNC0uMTYgMnptLjI1IDUuNTZjLjYtMS4xMSAxLjA2LTIuMzEgMS4zOC0zLjU2aDIuOTVjLS45NiAxLjY1LTIuNDkgMi45My00LjMzIDMuNTZ6TTE2LjM2IDE0Yy4wOC0uNjYuMTQtMS4zMi4xNC0yIDAtLjY4LS4wNi0xLjM0LS4xNC0yaDMuMzhjLjE2LjY0LjI2IDEuMzEuMjYgMnMtLjEgMS4zNi0uMjYgMmgtMy4zOHoiPjwvcGF0aD48L3N2Zz4='
                 }
 
                 if (el.type === 'password') {
@@ -284,7 +286,7 @@ const GenereteInputsModal = ({ themeType, themeName, socket, newInstances, onApp
                     marginLeft: 25,
                     marginRight: 10
                 }} />
-                {I18n.t("Instance parameters for %s", newInstances.common.name)}</h2>
+                {I18n.t('Instance parameters for %s', newInstances._id.replace('system.adapter.', ''))}</h2>
             <DialogContent className={clsx(classes.flex, classes.overflowHidden)} dividers>
                 <div className={classes.root}>
                     <TabPanel
@@ -294,13 +296,14 @@ const GenereteInputsModal = ({ themeType, themeName, socket, newInstances, onApp
                         title={I18n.t('Test')}
                     >
                         <Paper className={classes.paperTable}>
-                            <ConfigPanelStyled
+                            <ConfigPanel
                                 data={schemaData}
                                 socket={socket}
                                 themeType={themeType}
                                 themeName={themeName}
                                 onChange={setSchemaData}
                                 schema={schema}
+                                onError={(attr, _error) => setError({...error, [attr]: _error})}
                             />
                         </Paper>
                     </TabPanel>
@@ -310,6 +313,7 @@ const GenereteInputsModal = ({ themeType, themeName, socket, newInstances, onApp
                 <Button
                     variant="contained"
                     autoFocus
+                    disabled= {isError()}
                     onClick={() => {
                         let obj = {};
                         let error = false;

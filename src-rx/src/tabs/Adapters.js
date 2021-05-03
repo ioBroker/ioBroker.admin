@@ -984,15 +984,16 @@ class Adapters extends Component {
                 onSetRating={installed && installed.version ? () =>
                     this.setState({ showSetRating: { adapter: value, version: installed.version}}) : null}
                 onAddInstance={() =>
-                    licenseDialogFunc(adapter.license === 'MIT', async () =>
-                        await this.addInstance(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
+                    licenseDialogFunc(adapter.license === 'MIT', async result => 
+                        result && await this.addInstance(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')
+                }
                 onDeletion={() => this.openAdapterDeletionDialog(value)}
                 onInfo={() => this.openInfoDialog(value)}
                 onRebuild={() => this.rebuild(value)}
                 onUpdate={() => this.openUpdateDialog(value)}
                 openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
-                onUpload={() => licenseDialogFunc(adapter.license === 'MIT', () =>
-                    this.upload(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
+                onUpload={() => licenseDialogFunc(adapter.license === 'MIT', result =>
+                    result && this.upload(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
             />;
         } else {
             return null;
@@ -1172,15 +1173,15 @@ class Adapters extends Component {
                     onSetRating={installed && installed.version ? () =>
                         this.setState({showSetRating: {adapter: value, version: installed.version}}) : null}
                     onAddInstance={() =>
-                        licenseDialogFunc(adapter.license === 'MIT', async () =>
-                            await this.addInstance(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
+                        licenseDialogFunc(adapter.license === 'MIT', async result =>
+                            result && await this.addInstance(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
                     onDeletion={() => this.openAdapterDeletionDialog(value)}
                     onInfo={() => this.openInfoDialog(value)}
                     onRebuild={() => this.rebuild(value)}
                     onUpdate={() => this.openUpdateDialog(value)}
                     openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
-                    onUpload={() => licenseDialogFunc(adapter.license === 'MIT', () =>
-                        this.upload(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
+                    onUpload={() => licenseDialogFunc(adapter.license === 'MIT', result =>
+                        result && this.upload(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
                 />;
             });
         }

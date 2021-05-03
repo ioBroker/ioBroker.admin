@@ -1303,9 +1303,11 @@ class App extends Router {
                                         this.logsWorkerChanged(host);
                                         window.localStorage.setItem('App.currentHost', host);
 
-                                        // read notifications from host
-                                        this.hostsWorker.getNotifications(host)
-                                            .then(notifications => this.showAdaptersWarning(notifications, this.socket, host));
+                                        this.readRepoAndInstalledInfo(host, this.state.hosts)
+                                            .then(() => 
+                                                // read notifications from host
+                                                this.hostsWorker.getNotifications(host)
+                                                    .then(notifications => this.showAdaptersWarning(notifications, this.socket, host)));
                                     });
                                 }}
                                 disabled={

@@ -11,6 +11,7 @@ Marked with "!" must be in release candidate
     tab: 'html'
   }
 - Show admin version number if width > 800: https://github.com/ioBroker/ioBroker.admin/issues/820
+  - this.props.socket.getVersion
 
 ## Intro
 
@@ -18,7 +19,7 @@ Marked with "!" must be in release candidate
 - !Show back button in strickt mode for tabs (and logo button always returns to #easy in strict mode) 
 
 ## Settings
-- (Base settings) Show dialog, that RESTART only works on debian systems: https://github.com/ioBroker/ioBroker.admin/issues/754
+- <!--(Base settings) Show dialog, that RESTART only works on debian systems: https://github.com/ioBroker/ioBroker.admin/issues/754-->
 
 ## Info
 
@@ -35,48 +36,19 @@ Marked with "!" must be in release candidate
 ## Wizard
 
 ## Discovery
-<!-- - use stepper -->
-<!-- - Wizard 1: Select methods -->
-<!-- - Wizard 2: Show progress from variables discovery.0.* -->
-<!-- - Wizard 3: Create instances -->
-  <!-- - Show/hide suggested
-  - Show/hide ignored -->
-  - Create instances one by one
-    <!-- - Show host selector if more than one ALIVE hosts -->
-    <!-- - Show license dialog if not MIT -->
-    <!-- - Ask parameters: text, password (with repeat), number, checkbox, Link button, select, comment -->
-    <!-- - Call install command: "iobroker install adapter.instance" (this command only check and if need install new adapter) -->
-    - Wait till install finished
-    <!-- - socket.setObject(system.adapter." + adapter.instance, param) -->
-    - Wait till instance is alive ? (only if common.type === 'daemon')
-    <!-- - Show progress of command (if "show more" selected) -->
-    <!-- - Go to the next instance -->
 - Wizard 4: Installation process    
 
-  <!-- - Show stepper (task description) -->
-  <!-- - check system.discovery.native.lastScan -->
-  <!-- - On the first step: Next => "Use last scan" (tooltip: "Skip discovery process and go to install with last scan results") -->
-  - Link as button (contained with World icon)
-  <!-- - Min width of input/password 400 -->
-  <!-- - Title of input dialog: Instance parameters for %s -->
-  <!-- - Header in input dialog: border-radius: 3px; -->
-  <!-- - Save in localStorage show ignored / show suggested / show more -->
-  <!-- - More margin-right (40) ignored and suggested -->
-  <!-- - Add icons to instances (select / install dialog) -->
-  <!-- - use for install process: AssignmentTurnedIn (green) - ok / ReportProblem (orange) - false - no background -->
-  <!-- - Height of dialog (height: calc(100% - 32px), maxHeight: 800px) -->
-  <!-- - Install process: Use list component for instances  -->
-  <!-- - Install: instances could not be selected during installation -->
-  <!-- - Install: as install finished, user can select instances and the command execution log will be shown for selected instance -->
-  <!-- - Install: hide less/more after install is finished. -->
-  - Install: show last install log after installation completed if "more" selected. If selected "less" do not show anything
+- Show icons of hosts
+- router/URL
+
 
 ## Logs
 - !ON multihost no source at all - https://github.com/ioBroker/ioBroker.admin/issues/777
 - !On safari new coming entries have invalid time https://github.com/ioBroker/ioBroker.admin/issues/783
+- host sicon and name => nowrap
 
 ## Instances
-- Invalid status of instance: https://github.com/ioBroker/ioBroker.admin/issues/816
+- Invalid status of instance (only icon): https://github.com/ioBroker/ioBroker.admin/issues/816
 - Show info.connection in instance if string and not boolean: https://github.com/ioBroker/ioBroker.admin/issues/817
 
 
@@ -85,7 +57,7 @@ Marked with "!" must be in release candidate
   - Integrate https://react-dropzone.js.org/#!/Doka for image upload
 
 - !Layout problem by defined columns widths: https://github.com/ioBroker/ioBroker.admin/issues/698
-- !On small display show only Icons for "Edit object dialog" buttons
+- !On small display show only Icons for "Edit object dialog" buttons (see ObjectCustomDialog)
 - On small display show smaller font and smaller margins between checkbox and text: https://github.com/ioBroker/ioBroker.admin/issues/810
 
 ## Files
