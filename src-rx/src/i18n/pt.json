@@ -1293,5 +1293,6 @@
   "Install adapter from %s": "Instale ou atualize o adaptador a partir do %s",
   "Hosts notifications": "Notificações de hosts",
   "Remove": "Remover",
-  "Warning: Free space on disk is low": "Aviso: O espaço livre no disco está baixo!"
+  "Warning: Free space on disk is low": "Aviso: O espaço livre no disco está baixo!",
+  "Host for this instance": "Host para esta instância"
 }

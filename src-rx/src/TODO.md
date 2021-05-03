@@ -32,15 +32,12 @@ Marked with "!" must be in release candidate
 - Save the "close when finished" in localStorage: https://github.com/ioBroker/ioBroker.admin/issues/815
 - Update adapter list by host change: https://github.com/ioBroker/ioBroker.admin/issues/819
 - Show host name in the summary (not in details) if enough space: https://github.com/ioBroker/ioBroker.admin/issues/799
+- Show number of instances in tile and row: https://github.com/ioBroker/ioBroker.admin/issues/822
 
 ## Wizard
 
 ## Discovery
-- Wizard 4: Installation process    
-
 - Show icons of hosts
-- router/URL
-
 
 ## Logs
 - !ON multihost no source at all - https://github.com/ioBroker/ioBroker.admin/issues/777
@@ -50,7 +47,6 @@ Marked with "!" must be in release candidate
 ## Instances
 - Invalid status of instance (only icon): https://github.com/ioBroker/ioBroker.admin/issues/816
 - Show info.connection in instance if string and not boolean: https://github.com/ioBroker/ioBroker.admin/issues/817
-
 
 ## Objects
 - Add in object edit the possibility to set color and icon (icon could be uploaded as base64 and may not be bigger than 5k) and use it for text color. Add possibility to scale the images.

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
 import clsx from 'clsx';
 
 import Button from '@material-ui/core/Button';
@@ -26,8 +25,6 @@ import Command from '../components/Command';
 import { licenseDialogFunc } from './LicenseDialog';
 import { GenereteInputsFunc } from './GenereteInputsModal';
 import { useStateLocal } from '../helpers/hooks/useStateLocal';
-
-let node = null;
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -261,7 +258,7 @@ const headCells = [
 
 function EnhancedTableHead(props) {
     const { numSelected, rowCount, onSelectAllClick } = props;
-    const createSortHandler = (property) => (event) => {
+    const createSortHandler = property => event => {
         //   onRequestSort(event, property);
     };
 
@@ -285,7 +282,6 @@ function EnhancedTableHead(props) {
                         onClick={createSortHandler(headCell.id)}
                     >
                         {headCell.label}
-
                     </TableSortLabel>
                 </TableCell>
             ))}
@@ -353,11 +349,10 @@ const buildComment = (comment, t) => {
     return text;
 }
 
-const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost, defaultLogLevel, repository, hosts }) => {
+const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost, defaultLogLevel, repository, hosts, onClose }) => {
     const classes = useStyles();
 
-    const [open, setOpen] = useState(true);
-    const [value, setValue] = useState(0);
+    const [step, setStep] = useState(0);
     const [listMethods, setListMethods] = useState({});
     const [checkboxChecked, setCheckboxChecked] = useState({});
     const [disableScanner, setDisableScanner] = useState(false);
@@ -367,9 +362,23 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
     useEffect(async () => {
         const resultList = await socket.sendTo('system.adapter.discovery.0', 'listMethods', null);
         let listChecked = {};
+        let lastSelection = window.localStorage.getItem('App.discoveryLastSelection') || null;
+        if (lastSelection) {
+            try {
+                lastSelection = JSON.parse(lastSelection);
+            } catch (e) {
+                lastSelection = null;
+            }
+        }
+
         Object.keys(resultList).forEach(key => {
-            listChecked[key] = key !== 'serial'
+            if (lastSelection) {
+                listChecked[key] = lastSelection.includes(key);
+            } else {
+                listChecked[key] = key !== 'serial';
+            }
         });
+
         setCheckboxChecked(listChecked);
         setListMethods(resultList);
     }, [socket]);
@@ -403,6 +412,9 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
     const [selected, setSelected] = useState([]);
 
     const handlerInstall = (name, value) => {
+        if (!value) {
+            return;
+        }
         switch (name) {
             case 'discovery.0.devicesFound':
                 return setDevicesFound(value.val);
@@ -415,7 +427,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
             case 'discovery.0.servicesProgress':
                 return setServicesProgress(value.val);
             case 'system.discovery':
-                return value !== undefined && setDiscoveryData(value);
+                return setDiscoveryData(value);
             default:
                 return;
         }
@@ -423,7 +435,6 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
 
     useEffect(() => {
         socket.subscribeObject('system.discovery', handlerInstall);
-        // socket.get
         socket.subscribeState('discovery.0.devicesFound', handlerInstall);
         socket.subscribeState('discovery.0.devicesProgress', handlerInstall);
         socket.subscribeState('discovery.0.instancesFound', handlerInstall);
@@ -431,6 +442,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
         socket.subscribeState('discovery.0.servicesProgress', handlerInstall);
 
         return () => {
+            socket.unsubscribeObject('system.discovery', handlerInstall);
             socket.unsubscribeState('discovery.0.devicesFound', handlerInstall);
             socket.unsubscribeState('discovery.0.devicesProgress', handlerInstall);
             socket.unsubscribeState('discovery.0.instancesFound', handlerInstall);
@@ -439,14 +451,13 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
         }
     }, [socket]);
 
-    const stepUp = () => setValue(value + 1);
+    const stepUp = () => setStep(step + 1);
 
-    const stepDown = () => setValue(value - 1);
+    const stepDown = () => setStep(step - 1);
 
-    const extendObject = (id, data) => {
+    const extendObject = (id, data) =>
         socket.extendObject(id, data, error =>
             error && window.alert(error));
-    };
 
     const discoverScanner = async () => {
         setDisableScanner(true);
@@ -456,15 +467,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
         if (resultList.error) {
             window.alert(resultList.error)
         } else {
-            setValue(1);
-        }
-    };
-
-    const onClose = () => {
-        setOpen(false);
-        if (node) {
-            document.body.removeChild(node);
-            node = null;
+            setStep(1);
         }
     };
 
@@ -576,7 +579,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
         setInstallStatus({});
     };
 
-    const checkInstall = async () => {
+    const checkInstall = () => {
         checkLicenseAndInputs(selected[0], () => {
             setCurrentInstall(1);
             setInstallProgress(true);
@@ -596,8 +599,8 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
 
     return <ThemeProvider theme={theme(themeName)}>
         <Dialog
-            onClose={onClose}
-            open={open}
+            onClose={() => onClose()}
+            open={true}
             disableBackdropClick
             disableEscapeKeyDown
             classes={{ paper: classes.paper }}
@@ -611,7 +614,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                 }} />
                 {I18n.t('Find devices and services')}
             </h2>
-            <Stepper className={classes.stepper} alternativeLabel activeStep={value}>
+            <Stepper className={classes.stepper} alternativeLabel activeStep={step}>
                 {steps.map((label) => (
                     <Step key={label}>
                         <StepLabel>{I18n.t(label)}</StepLabel>
@@ -623,7 +626,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     <TabPanel
                         className={classes.overflowAuto}
                         style={black ? { color: 'white' } : null}
-                        value={value}
+                        value={step}
                         index={0}
                         black={black}
                         classes={classes}
@@ -648,6 +651,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                 onChange={(_, value) => {
                                     const newCheckboxChecked = JSON.parse(JSON.stringify(checkboxChecked));
                                     newCheckboxChecked[key] = value;
+                                    window.localStorage.setItem('App.discoveryLastSelection', JSON.stringify(newCheckboxChecked));
                                     setCheckboxChecked(newCheckboxChecked)
                                 }}
                             />{key}</div>)}</>
@@ -660,7 +664,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     </TabPanel>
                     <TabPanel
                         className={classes.overflowAuto}
-                        value={value}
+                        value={step}
                         index={1}
                         classes={classes}
                         title={discoveryData?.native?.lastScan ?
@@ -767,7 +771,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     </TabPanel>
                     <TabPanel
                         className={classes.overflowAuto}
-                        value={value}
+                        value={step}
                         index={2}
                         style={{ height: '100%' }}
                         boxHeight
@@ -908,12 +912,12 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                 </div>
             </DialogContent >
             <DialogActions>
-                {value > 0 && value !== 4 && <Button
+                {step > 0 && step !== 4 && <Button
                     variant="contained"
                     autoFocus
-                    disabled={value === 0}
+                    disabled={step === 0}
                     onClick={() => {
-                        if (value === 2) {
+                        if (step === 2) {
                             resetStateBack();
                         }
                         stepDown();
@@ -923,7 +927,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     {I18n.t('Back')}
                 </Button>
                 }
-                {value === 0 && <Button
+                {step === 0 && <Button
                     variant="contained"
                     autoFocus
                     disabled={disableScanner}
@@ -932,21 +936,22 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     <SearchIcon />
                     {I18n.t('Discover')}
                 </Button>}
-                {value !== 2 && value !== 4 &&
-                    <Tooltip title={value === 0 ? I18n.t('Skip discovery process and go to install with last scan results') : ''}>
+                {step !== 2 && step !== 4 &&
+                    <Tooltip title={step === 0 ? I18n.t('Skip discovery process and go to install with last scan results') : ''}>
                         <Button
                             variant="contained"
                             autoFocus
-                            disabled={!discoveryData || !discoveryData?.native?.lastScan || value === 2 || disableScanner || (value === 1 && !selected.length)}
+                            disabled={!discoveryData || !discoveryData?.native?.lastScan || step === 2 || disableScanner || (step === 1 && !selected.length)}
                             onClick={() => {
                                 stepUp();
-                                if (value === 1) {
+                                if (step === 1) {
                                     checkInstall();
                                 }
                             }}
-                            color={value === 1 ? 'primary' : 'default'}>
-                            {value === 1 ? <LibraryAddIcon /> : <NavigateNextIcon />}
-                            {I18n.t(value === 1 ? 'Create instances' : 'Use last scan')}
+                            color={step === 1 ? 'primary' : 'default'}
+                        >
+                            {step === 1 ? <LibraryAddIcon /> : <NavigateNextIcon />}
+                            {I18n.t(step === 1 ? 'Create instances' : 'Use last scan')}
                         </Button>
                     </Tooltip>
                 }
@@ -954,23 +959,14 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     variant="contained"
                     autoFocus
                     disabled={disableScanner}
-                    onClick={() => {
-                        onClose();
-                    }}
-                    color={value === 2 ? 'primary' : 'default'}>
-                    <CloseIcon />
-                    {I18n.t(value === 2 ? 'Finish' : 'Close')}
+                    onClick={() => onClose()}
+                    color={step === 2 ? 'primary' : 'default'}
+                >
+                    <CloseIcon />{I18n.t(step === 2 ? 'Finish' : 'Close')}
                 </Button>
             </DialogActions>
         </Dialog>
     </ThemeProvider >;
 }
 
-export const discoveryDialogFunc = (themeType, themeName, socket, dateFormat, currentHost, defaultLogLevel, repository, hosts) => {
-    if (!node) {
-        node = document.createElement('div');
-        node.id = 'renderDiscoveryModal';
-        document.body.appendChild(node);
-    }
-    return ReactDOM.render(<DiscoveryDialog hosts={hosts} repository={repository} currentHost={currentHost} defaultLogLevel={defaultLogLevel} dateFormat={dateFormat} themeName={themeName} themeType={themeType} socket={socket} />, node);
-}
+export default DiscoveryDialog;

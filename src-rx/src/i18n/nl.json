@@ -1293,5 +1293,6 @@
   "Install adapter from %s": "Installeer of update de adapter via de %s",
   "Hosts notifications": "Hosts meldingen",
   "Remove": "Verwijderen",
-  "Warning: Free space on disk is low": "Waarschuwing: de vrije ruimte op de schijf is laag!"
+  "Warning: Free space on disk is low": "Waarschuwing: de vrije ruimte op de schijf is laag!",
+  "Host for this instance": "Host voor deze instantie"
 }

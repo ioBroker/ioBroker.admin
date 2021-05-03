@@ -43,10 +43,15 @@ class ConfigGeneric extends Component {
             const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
             if (value === undefined) {
                 setTimeout(() => {
-                    ConfigGeneric.setValue(this.props.data, this.props.attr, this.defaultValue);
-                    this.props.onChange(this.props.data, undefined, () =>
-                        this.props.forceUpdate([this.props.attr], this.props.data))
-                }, 200);
+                    if (this.props.custom) {
+                        this.props.onChange(this.props.attr, this.defaultValue);
+                        //this.onChange(this.props.attr, this.defaultValue);
+                    } else {
+                        ConfigGeneric.setValue(this.props.data, this.props.attr, this.defaultValue);
+                        this.props.onChange(this.props.data, undefined, () =>
+                            this.props.forceUpdate([this.props.attr], this.props.data));
+                    }
+                }, 100);
             }
         }
     }
@@ -144,10 +149,6 @@ class ConfigGeneric extends Component {
     }
 
     onChange(attr, newValue) {
-        if (this.props.custom) {
-            return this.props.onChange(attr, newValue);
-        }
-
         const data = JSON.parse(JSON.stringify(this.props.data));
         ConfigGeneric.setValue(data, attr, newValue);
 
@@ -186,28 +187,49 @@ class ConfigGeneric extends Component {
                     if (dep.onChange) {
                         const val = ConfigGeneric.getValue(data, dep.attr);
 
-                        const newValue = this.execute(dep.onChange.calculateFunc, val, data);
+                        const newValue = this.props.custom ?
+                            this.executeCustom(dep.onChange.calculateFunc, data, this.props.customObj, this.props.instanceObj)
+                            :
+                            this.execute(dep.onChange.calculateFunc, val, data);
+
                         if (newValue !== val) {
                             ConfigGeneric.setValue(data, dep.attr, newValue);
                             changed.push(dep.attr);
                         }
                     }
                 }
-            } else if (this.props.onChange && !this.props.onChange.ignoreOwnChanges) {
+            }
+
+            if (this.props.schema.onChange && !this.props.schema.onChange.ignoreOwnChanges) {
                 const val = ConfigGeneric.getValue(data, this.props.attr);
 
-                const newValue = this.execute(this.props.onChange.calculateFunc, val, data);
+                const newValue = this.props.custom ?
+                    this.executeCustom(this.props.schema.onChange.calculateFunc, data, this.props.customObj, this.props.instanceObj)
+                    :
+                    this.execute(this.props.schema.onChange.calculateFunc, val, data);
                 if (newValue !== val) {
                     ConfigGeneric.setValue(data, this.props.attr, newValue);
                 }
             }
 
-            this.props.onChange(data, undefined, () =>
-                changed.length && this.props.forceUpdate(changed, data));
+            if (this.props.custom) {
+                this.props.onChange(attr, newValue);
+
+                changed && changed.length && changed.forEach((_attr,  i) => {
+                    setTimeout(() => this.props.onChange(_attr, data[_attr]), i * 50);
+                });
+            } else {
+                this.props.onChange(data, undefined, () =>
+                    changed.length && this.props.forceUpdate(changed, data));
+            }
         }
     }
 
     execute(func, defaultValue, data) {
+        if (func && typeof func === 'object') {
+            func = func.func;
+        }
+
         if (!func) {
             return defaultValue;
         } else {
@@ -225,6 +247,10 @@ class ConfigGeneric extends Component {
     }
 
     executeCustom(func, data, customObj, instanceObj) {
+        if (func && typeof func === 'object') {
+            func = func.func;
+        }
+
         if (!func) {
             return null;
         } else {

@@ -7,6 +7,26 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import clsx from 'clsx';
 
+// @material-ui/core
+import AppBar from '@material-ui/core/AppBar';
+import Avatar from '@material-ui/core/Avatar';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import Paper from '@material-ui/core/Paper';
+import Snackbar from '@material-ui/core/Snackbar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import { Hidden, Tooltip } from '@material-ui/core';
+
+// @material-ui/icons
+import MenuIcon from '@material-ui/icons/Menu';
+import BuildIcon from '@material-ui/icons/Build';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import PictureInPictureAltIcon from '@material-ui/icons/PictureInPictureAlt';
+import UserIcon from '@material-ui/icons/Person';
+
+import ExpertIcon from '@iobroker/adapter-react/icons/IconExpert';
+
 import Connection from './components/Connection';
 import { PROGRESS } from './components/Connection';
 import Loader from '@iobroker/adapter-react/Components/Loader';
@@ -17,25 +37,6 @@ import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 import Icon from '@iobroker/adapter-react/Components/Icon';
 import theme from './Theme'; // @iobroker/adapter-react/Theme
 
-// @material-ui/core
-import AppBar from '@material-ui/core/AppBar';
-import Avatar from '@material-ui/core/Avatar';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
-import Snackbar from '@material-ui/core/Snackbar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-
-// @material-ui/icons
-import MenuIcon from '@material-ui/icons/Menu';
-import BuildIcon from '@material-ui/icons/Build';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import ExpertIcon from '@iobroker/adapter-react/icons/IconExpert';
-
-import PictureInPictureAltIcon from '@material-ui/icons/PictureInPictureAlt';
-import UserIcon from '@material-ui/icons/Person';
-
 import CommandDialog from './dialogs/CommandDialog';
 import Drawer from './components/Drawer';
 import { STATES as DrawerStates } from './components/Drawer';
@@ -45,17 +46,16 @@ import WizardDialog from './dialogs/WizardDialog';
 import SystemSettingsDialog from './dialogs/SystemSettingsDialog';
 import Login from './login/Login';
 import HostSelectors from './components/HostSelectors';
-import { Hidden, Tooltip } from '@material-ui/core';
 import { expertModeDialogFunc } from './dialogs/ExpertModeDialog';
 import { newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
 import { adaptersWarningDialogFunc } from './dialogs/AdaptersWarningDialog';
 import ToggleThemeMenu from './components/ToggleThemeMenu';
-
 import LogsWorker from './components/LogsWorker';
 import InstancesWorker from './components/InstancesWorker';
 import HostsWorker from './components/HostsWorker';
 import AdaptersWorker from './components/AdaptersWorker';
-import { discoveryDialogFunc } from './dialogs/DiscoveryDialog';
+import DiscoveryDialog from './dialogs/DiscoveryDialog';
+import SlowConnectionWarningDialog from './dialogs/SlowConnectionWarningDialog';
 
 // Tabs
 const Adapters  = React.lazy(() => import('./tabs/Adapters'));
@@ -326,6 +326,9 @@ class App extends Router {
                 systemConfig: null,
                 user: null, // Logged in user
 
+                repository: {},
+                installed: {},
+
                 objects: {},
 
                 waitForRestart: false,
@@ -359,7 +362,10 @@ class App extends Router {
                 performed: false,
                 commandRunning: false,
 
-                discoveryAlive: false
+                discoveryAlive: false,
+
+                readTimeoutMs: SlowConnectionWarningDialog.getReadTimeoutMs(),
+                showSlowConnectionWarning: false,
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -390,10 +396,11 @@ class App extends Router {
             if (invertedColor === '#FFFFFF' && this.state.themeType === 'dark') {
                 return true;
             } else
-                if (invertedColor === '#000000' && this.state.themeType === 'light') {
-                    return true;
-                }
-            return false;
+            if (invertedColor === '#000000' && this.state.themeType === 'light') {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
@@ -541,17 +548,18 @@ class App extends Router {
         }
     }
 
-    openDiscoveryModal = () => {
-        discoveryDialogFunc(
-            this.state.themeType,
-            this.state.themeName,
-            this.socket,
-            this.state.systemConfig.common.dateFormat,
-            this.state.currentHost,
-            this.state.systemConfig.common.defaultLogLevel,
-            this.state.repository,
-            this.state.hosts
-        );
+    getDiscoveryModal = () => {
+        return <DiscoveryDialog
+            themeType={this.state.themeType}
+            themeName={this.state.themeName}
+            socket={this.socket}
+            dateFormat={this.state.systemConfig.common.dateFormat}
+            currentHost={this.state.currentHost}
+            defaultLogLevel={this.state.systemConfig.common.defaultLogLevel}
+            repository={this.state.repository}
+            hosts={this.state.hosts}
+            onClose={() => Router.doNavigate(null)}
+        />;
     }
 
     findNewsInstance = () => {
@@ -603,25 +611,62 @@ class App extends Router {
         }
     }
 
+    renderSlowConnectionWarning() {
+        if (!this.state.showSlowConnectionWarning) {
+            return null;
+        } else {
+            return <SlowConnectionWarningDialog
+                readTimeoutMs={this.state.readTimeoutMs}
+                t={this.t}
+                onClose={readTimeoutMs => {
+                    if (readTimeoutMs) {
+                        this.setState({showSlowConnectionWarning: false, readTimeoutMs}, () =>
+                            this.getAdapters()
+                                .then(() =>
+                                    this.getAdaptersInfo()));
+                    } else {
+                        this.setState({showSlowConnectionWarning: false});
+                    }
+                }}
+            />;
+        }
+    }
+
     readRepoAndInstalledInfo = async (currentHost, hosts) => {
         hosts = hosts || this.state.hosts;
+        let repository;
+        let installed;
 
-        try {
-            const repository = await this.socket.getRepository(currentHost, { update: false }, false, 15000);
-            const installed  = await this.socket.getInstalled(currentHost, false, 10000);
-            const adapters   = await this.adaptersWorker.getAdapters(); // we need information about ignored versions
+        return this.socket.getRepository(currentHost, { update: false }, false, this.state.readTimeoutMs)
+            .catch(e => {
+                window.alert('Cannot getRepository: ' + e);
+                e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
+                return null;
+            })
+            .then(_repository => {
+                repository = _repository;
+                return this.socket.getInstalled(currentHost, false, this.state.readTimeoutMs)
+                    .catch(e => {
+                        window.alert('Cannot getInstalled: ' + e);
+                        e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
+                        return null;
+                    });
+            })
+            .then(_installed => {
+                installed = _installed;
+                return this.adaptersWorker.getAdapters()
+                    .catch(e => window.alert('Cannot read adapters: ' + e));
+            })
+            .then(adapters => {
+                Object.keys(adapters).forEach(id => {
+                    const adapter = adapters[id];
+                    if (installed[adapter?.common?.name] && adapter.common?.ignoreVersion) {
+                        installed[adapter.common.name].ignoreVersion = adapter.common.ignoreVersion;
+                    }
+                });
 
-            Object.keys(adapters).forEach(id => {
-                const adapter = adapters[id];
-                if (installed[adapter?.common?.name] && adapter.common?.ignoreVersion) {
-                    installed[adapter.common.name].ignoreVersion = adapter.common.ignoreVersion;
-                }
+                this.setState({ repository, installed, hosts });
             });
-
-            this.setState({ repository, installed, hosts });
-        } catch (e) {
-            window.alert('Cannot read repo information: ' + e);
-        }
     }
 
     logsWorkerChanged = currentHost => {
@@ -982,6 +1027,8 @@ class App extends Router {
         if (this.state && this.state.currentTab && this.state.currentTab.dialog) {
             if (this.state.currentTab.dialog === 'system') {
                 return this.getSystemSettingsDialog();
+            } else if (this.state.currentTab.dialog === 'discovery') {
+                return this.getDiscoveryModal();
             }
         }
         return null;
@@ -1250,7 +1297,7 @@ class App extends Router {
                         </IconButton>
                         <div className={classes.wrapperButtons}>
                             {this.state.discoveryAlive && <Tooltip title={I18n.t('Discovery devices')}>
-                                <IconButton onClick={this.openDiscoveryModal}>
+                                <IconButton onClick={() => Router.doNavigate(null, 'discovery')}>
                                     <VisibilityIcon />
                                 </IconButton>
                             </Tooltip>}
@@ -1263,8 +1310,6 @@ class App extends Router {
                                 toggleTheme={this.toggleTheme}
                                 themeName={this.state.themeName}
                                 t={I18n.t} />
-                            {/*This will be removed later to settings, to not allow so easy to enable it*/}
-
                             <Tooltip title={I18n.t('Toggle expert mode')}>
                                 <IconButton
                                     onClick={() => {
@@ -1304,7 +1349,7 @@ class App extends Router {
                                         window.localStorage.setItem('App.currentHost', host);
 
                                         this.readRepoAndInstalledInfo(host, this.state.hosts)
-                                            .then(() => 
+                                            .then(() =>
                                                 // read notifications from host
                                                 this.hostsWorker.getNotifications(host)
                                                     .then(notifications => this.showAdaptersWarning(notifications, this.socket, host)));
@@ -1393,6 +1438,7 @@ class App extends Router {
             {this.renderConfirmDialog()}
             {this.renderCommandDialog()}
             {this.renderWizardDialog()}
+            {this.renderSlowConnectionWarning()}
             {!this.state.connected && <Connecting />}
         </ThemeProvider>;
     }

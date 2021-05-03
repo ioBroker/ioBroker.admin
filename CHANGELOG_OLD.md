@@ -1,3 +1,6 @@
+## 5.0.9 (2021-04-27)
+* (bluefox) Admin5: Fixed many bugs
+
 ## 5.0.8 (2021-04-24)
 * (bluefox) Admin5: Implemented rating with comments
 

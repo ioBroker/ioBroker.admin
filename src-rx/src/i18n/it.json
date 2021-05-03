@@ -1293,5 +1293,6 @@
   "Install adapter from %s": "Installa l'adattatore dall'%s",
   "Hosts notifications": "Notifiche degli host",
   "Remove": "Rimuovere",
-  "Warning: Free space on disk is low": "Attenzione: lo spazio libero su disco è insufficiente!"
+  "Warning: Free space on disk is low": "Attenzione: lo spazio libero su disco è insufficiente!",
+  "Host for this instance": "Host per questa istanza"
 }

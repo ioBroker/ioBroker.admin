@@ -1620,8 +1620,11 @@ class Connection {
         if (Connection.isWeb()) {
             return Promise.reject('Allowed only in admin');
         }
-        if (!update && this._promises.installed) {
-            return this._promises.installed;
+
+        this._promises.installed = this._promises.installed || {};
+
+        if (!update && this._promises.installed[host]) {
+            return this._promises.installed[host];
         }
 
         if (!this.connected) {
@@ -1632,7 +1635,7 @@ class Connection {
             host += 'system.host.' + host;
         }
 
-        this._promises.installed = new Promise((resolve, reject) => {
+        this._promises.installed[host] = new Promise((resolve, reject) => {
             let timeout = setTimeout(() => {
                 if (timeout) {
                     timeout = null;
@@ -1655,7 +1658,7 @@ class Connection {
             });
         });
 
-        return this._promises.installed;
+        return this._promises.installed[host];
     }
 
     /**

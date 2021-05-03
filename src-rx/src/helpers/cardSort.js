@@ -1,16 +1,10 @@
-import _ from "lodash";
+import _ from 'lodash';
 
 const funcSet = _.throttle(
     (setTabs, tabs) => setTabs(tabs)
     , 200);
 
-const moveCard = (
-    id,
-    atIndex,
-    tabs,
-    setTabs,
-    hoverClientY,
-    hoverMiddleY) => {
+const moveCard = (id, atIndex, tabs, setTabs, hoverClientY, hoverMiddleY) => {
     const { card, index } = findCard(id, tabs);
     if (index === atIndex) {
         return;
@@ -28,8 +22,9 @@ const moveCard = (
         funcSet(setTabs,copyCard);
     }
 };
+
 const findCard = (id, cards) => {
-    const card = cards.find((c) => c.name === id);
+    const card = cards.find(c => c.name === id);
     return {
         card,
         index: cards.indexOf(card),

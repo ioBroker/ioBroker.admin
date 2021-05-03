@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
 
 import Button from '@material-ui/core/Button';
@@ -24,6 +23,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import ObjectCustomEditor from '../components/Object/ObjectCustomEditor';
 import ObjectHistoryData from '../components/Object/ObjectHistoryData';
 import ObjectChart from '../components/Object/ObjectChart';
+import MobileDialog from '../helpers/MobileDialog';
 
 const styles = theme => ({
     dialog: {
@@ -49,7 +49,7 @@ export const EXTENSIONS = {
     txt: ['log', 'txt', 'html', 'css', 'xml'],
 };
 
-class ObjectCustomDialog extends Component {
+class ObjectCustomDialog extends MobileDialog {
     constructor(props) {
         super(props);
 
@@ -71,6 +71,7 @@ class ObjectCustomDialog extends Component {
             hasChanges: false,
             currentTab,
             confirmDialog: false,
+            mobile: MobileDialog.isMobile()
         };
 
         this.saveFunc = null;
@@ -212,12 +213,26 @@ class ObjectCustomDialog extends Component {
                     disabled={!this.state.hasChanges}
                     onClick={() => this.saveFunc && this.saveFunc()}
                 >
-                    <SaveIcon />{this.props.t('Save')}
+                    {this.getButtonTitle(<SaveIcon />, this.props.t('Save'))}
+                </Button>}
+                {this.state.currentTab === 0 && <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={!this.state.hasChanges}
+                    onClick={() => {
+                        if (this.saveFunc) {
+                            this.saveFunc(error => !error && this.onClose());
+                        }  else {
+                            this.onClose();
+                        }
+                    }}
+                >
+                    {this.getButtonTitle(<SaveIcon />, this.props.t('Save & close'), <CloseIcon />)}
                 </Button>}
                 <Button
                     variant="contained"
                     onClick={() => this.onClose()} >
-                    <CloseIcon />{this.props.t('Close')}
+                    {this.getButtonTitle(<CloseIcon />, this.props.t('Close'))}
                 </Button>
             </DialogActions>
         </Dialog>;
@@ -239,4 +254,4 @@ ObjectCustomDialog.propTypes = {
     reportChangedIds: PropTypes.func,
 };
 
-export default withWidth()(withStyles(styles)(ObjectCustomDialog));
+export default withStyles(styles)(ObjectCustomDialog);

@@ -1293,5 +1293,6 @@
   "Install adapter from %s": "Zainstaluj lub zaktualizuj adapter z adresu %s",
   "Hosts notifications": "Powiadomienia gospodarzy",
   "Remove": "Usunąć",
-  "Warning: Free space on disk is low": "Ostrzeżenie: mało wolnego miejsca na dysku!"
+  "Warning: Free space on disk is low": "Ostrzeżenie: mało wolnego miejsca na dysku!",
+  "Host for this instance": "Host dla tej instancji"
 }

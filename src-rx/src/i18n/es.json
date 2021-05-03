@@ -1293,5 +1293,6 @@
   "Install adapter from %s": "Instale o atualize el adaptador a un uma %s",
   "Hosts notifications": "Notificaciones de hosts",
   "Remove": "Eliminar",
-  "Warning: Free space on disk is low": "Advertencia: ¡El espacio libre en el disco es bajo!"
+  "Warning: Free space on disk is low": "Advertencia: ¡El espacio libre en el disco es bajo!",
+  "Host for this instance": "Anfitrión de esta instancia"
 }

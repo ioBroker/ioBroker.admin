@@ -1293,5 +1293,6 @@
   "Install adapter from %s": "从%s安装或更新插件",
   "Hosts notifications": "主持人通知",
   "Remove": "去掉",
-  "Warning: Free space on disk is low": "警告：磁盘上的可用空间不足！"
+  "Warning: Free space on disk is low": "警告：磁盘上的可用空间不足！",
+  "Host for this instance": "此实例的主机"
 }

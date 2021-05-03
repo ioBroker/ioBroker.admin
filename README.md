@@ -95,6 +95,9 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 -->
 
 ## Changelog
+### 5.0.14 (2021-05-03)
+* (bluefox) Admin5: Fixed many bugs
+
 ### 5.0.13 (2021-05-02)
 * (bluefox) Admin5: Fixed many bugs
 
@@ -106,9 +109,6 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 
 ### 5.0.10 (2021-04-27)
 * (bluefox) Admin5: Implemented the language filter and selector for rating with comments
-
-### 5.0.9 (2021-04-27)
-* (bluefox) Admin5: Fixed many bugs
 
 ## License
 
