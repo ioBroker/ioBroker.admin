@@ -30,40 +30,40 @@ Marked with "!" must be in release candidate
 ## Wizard
 
 ## Discovery
-- use stepper
-- Wizard 1: Select methods
-- Wizard 2: Show progress from variables discovery.0.*
-- Wizard 3: Create instances
-  - Show/hide suggested
-  - Show/hide ignored
+<!-- - use stepper -->
+<!-- - Wizard 1: Select methods -->
+<!-- - Wizard 2: Show progress from variables discovery.0.* -->
+<!-- - Wizard 3: Create instances -->
+  <!-- - Show/hide suggested
+  - Show/hide ignored -->
   - Create instances one by one
-    - Show host selector if more than one ALIVE hosts
-    - Show license dialog if not MIT
-    - Ask parameters: text, password (with repeat), number, checkbox, Link button, select, comment
-    - Call install command: "iobroker install adapter.instance" (this command only check and if need install new adapter)
+    <!-- - Show host selector if more than one ALIVE hosts -->
+    <!-- - Show license dialog if not MIT -->
+    <!-- - Ask parameters: text, password (with repeat), number, checkbox, Link button, select, comment -->
+    <!-- - Call install command: "iobroker install adapter.instance" (this command only check and if need install new adapter) -->
     - Wait till install finished
-    - socket.setObject(system.adapter." + adapter.instance, param)
+    <!-- - socket.setObject(system.adapter." + adapter.instance, param) -->
     - Wait till instance is alive ? (only if common.type === 'daemon')
-    - Show progress of command (if "show more" selected)
-    - Go to the next instance
+    <!-- - Show progress of command (if "show more" selected) -->
+    <!-- - Go to the next instance -->
 - Wizard 4: Installation process    
 
-  - Show stepper (task description)
-  - check system.discovery.native.lastScan
-  - On the first step: Next => "Use last scan" (tooltip: "Skip discovery process and go to install with last scan results")
+  <!-- - Show stepper (task description) -->
+  <!-- - check system.discovery.native.lastScan -->
+  <!-- - On the first step: Next => "Use last scan" (tooltip: "Skip discovery process and go to install with last scan results") -->
   - Link as button (contained with World icon)
-  - Min width of input/password 400
-  - Title of input dialog: Instance parameters for %s
-  - Header in input dialog: border-radius: 3px;
-  - Save in localStorage show ignored / show suggested / show more
-  - More margin-right (40) ignored and suggested
-  - Add icons to instances (select / install dialog)
-  - use for install process: AssignmentTurnedIn (green) - ok / ReportProblem (orange) - false - no background
-  - Height of dialog (height: calc(100% - 32px), maxHeight: 800px)
-  - Install process: Use list component for instances 
-  - Install: instances could not be selected during installation
-  - Install: as install finished, user can select instances and the command execution log will be shown for selected instance
-  - Install: hide less/more after install is finished.
+  <!-- - Min width of input/password 400 -->
+  <!-- - Title of input dialog: Instance parameters for %s -->
+  <!-- - Header in input dialog: border-radius: 3px; -->
+  <!-- - Save in localStorage show ignored / show suggested / show more -->
+  <!-- - More margin-right (40) ignored and suggested -->
+  <!-- - Add icons to instances (select / install dialog) -->
+  <!-- - use for install process: AssignmentTurnedIn (green) - ok / ReportProblem (orange) - false - no background -->
+  <!-- - Height of dialog (height: calc(100% - 32px), maxHeight: 800px) -->
+  <!-- - Install process: Use list component for instances  -->
+  <!-- - Install: instances could not be selected during installation -->
+  <!-- - Install: as install finished, user can select instances and the command execution log will be shown for selected instance -->
+  <!-- - Install: hide less/more after install is finished. -->
   - Install: show last install log after installation completed if "more" selected. If selected "less" do not show anything
 
 ## Logs

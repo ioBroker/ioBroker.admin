@@ -548,7 +548,9 @@ class App extends Router {
             this.socket,
             this.state.systemConfig.common.dateFormat,
             this.state.currentHost,
-            this.state.systemConfig.common.defaultLogLevel
+            this.state.systemConfig.common.defaultLogLevel,
+            this.state.repository,
+            this.state.hosts
         );
     }
 
@@ -601,7 +603,7 @@ class App extends Router {
         }
     }
 
-    readRepoAndInstalledInfo = (currentHost, hosts) => async () => {
+    readRepoAndInstalledInfo = async (currentHost, hosts) => {
         hosts = hosts || this.state.hosts;
 
         try {

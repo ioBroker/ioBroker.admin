@@ -8,7 +8,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import { AppBar, Box, makeStyles, Paper, ThemeProvider, Typography } from '@material-ui/core';
 
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import SettingsIcon from '@material-ui/icons/Settings';
 import CloseIcon from '@material-ui/icons/Close';
 
 import I18n from '@iobroker/adapter-react/i18n';
@@ -31,7 +31,9 @@ const useStyles = makeStyles((theme) => ({
     },
     paper: {
         maxWidth: 1000,
-        width: '100%'
+        width: '100%',
+        maxHeight: 800,
+        height: 'calc(100% - 32px)',
     },
     flex: {
         display: 'flex',
@@ -187,19 +189,8 @@ const TabPanel = ({ classes, children, value, index, title, custom, ...props }) 
     );
 }
 
-
-// Types of parameters:
-//          - type=password, def=default value
-//          - type=checkbox, def=default value
-//          - type=select, options={value1: TextValule1, value2=TextValue2}
-//          - type=link, def = URL
-//          - type=comment, style="CSS style", def=text
-//          - type=text
-//          - name = Name of attribute like "native.ip" or "native.port"
-//          - title = Title of input
-
 const types = {
-    "password": "text",
+    "password": "password",
     "checkbox": "checkbox",
     "select": "select",
     "link": "staticLink",
@@ -244,20 +235,35 @@ const GenereteInputsModal = ({ themeType, themeName, socket, newInstances, onApp
 
     useEffect(() => {
         const obj = {};
-        const objValue = {};
+        let objValue = {};
         if (newInstances) {
-            console.log(newInstances)
-
             newInstances.comment.add.forEach((text, idx) => {
                 obj[idx] = { type: 'header', text }
             })
             newInstances.comment.inputs.forEach((el, idx) => {
                 obj[idx + 1] = {
                     ...el, type: types[el.type], label: el.title, text: el.def, href: el.def,
+                    "sm": 6,
                     "newLine": true
                 }
+
+                if (el.type === 'link') {
+                    obj[idx + 1].button = true;
+                    obj[idx + 1].variant = "contained";
+                    obj[idx + 1].href = el.def;
+                    obj[idx + 1].text = el.title;
+                }
+
+                if (el.type === 'password') {
+                    obj[idx + 1].repeat = true;
+                }
+
                 if (el.def !== undefined) {
-                    objValue[idx + 1] = el.def;
+                    objValue[idx + 1] = '';
+                }
+
+                if (el.type === "checkbox") {
+                    objValue[idx + 1] = false;
                 }
             });
             setSchemaData(objValue);
@@ -271,12 +277,14 @@ const GenereteInputsModal = ({ themeType, themeName, socket, newInstances, onApp
             open={open}
             classes={{ paper: classes.paper }}
         >
-            <h2 className={classes.heading}><VisibilityIcon style={{
-                color: 'rgb(77 171 245)',
-                fontSize: 36,
-                marginLeft: 25,
-                marginRight: 10
-            }} />{I18n.t("Adapter configuration discover")}</h2>
+            <h2 className={classes.heading}>
+                <SettingsIcon style={{
+                    color: 'rgb(77 171 245)',
+                    fontSize: 36,
+                    marginLeft: 25,
+                    marginRight: 10
+                }} />
+                {I18n.t("Instance parameters for %s", newInstances.common.name)}</h2>
             <DialogContent className={clsx(classes.flex, classes.overflowHidden)} dividers>
                 <div className={classes.root}>
                     <TabPanel
@@ -305,16 +313,12 @@ const GenereteInputsModal = ({ themeType, themeName, socket, newInstances, onApp
                     onClick={() => {
                         let obj = {};
                         let error = false;
-                        console.log(1, schemaData)
-                        console.log(2, schema)
-                        console.log(3, newInstances.comment.inputs)
                         Object.keys(schema.items).forEach(key => {
                             if (schema.items[key].required) {
-                                if (!schemaData[key]) {
+                                if (!schemaData[key] && schema.items[key].type !== "checkbox") {
                                     error = true;
                                     alert(`no data ${schema.items[key].label}`);
                                 } else {
-                                    error = false;
                                     obj = generateObj(obj, schema.items[key].name, schemaData[key]);
                                 }
                             } else if (schema.items[key].name) {
