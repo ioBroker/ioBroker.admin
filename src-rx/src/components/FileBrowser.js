@@ -1371,25 +1371,31 @@ class FileBrowser extends Component {
     deleteRecursive(id) {
         const item = this.findItem(id);
         if (item.folder) {
-            return (this.state.folders[id] ? Promise.all(this.state.folders[id].map(item => this.deleteRecursive(item.id))) : Promise.resolve())
+            return (this.state.folders[id] ? Promise.all(this.state.folders[id].map(item =>
+                    this.deleteRecursive(item.id))) : Promise.resolve())
                 .then(() => {
                     // If it is folder of second level
                     if (item.level >= 1) {
-                        // remove this folder
-                        const folders = JSON.parse(JSON.stringify(this.state.folders));
-                        delete folders[item.id];
-                        // delete folder from parent item
-                        const parentId = getParentDir(item.id);
-                        const parentFolder = folders[parentId];
-                        if (parentFolder) {
-                            const pos = parentFolder.indexOf(parentFolder.find(f => f.id === item.id));
-                            if (pos !== -1) {
-                                parentFolder.splice(pos, 1);
-                            }
+                        const parts = id.split('/');
+                        const adapter = parts.shift();
+                        this.props.socket.deleteFolder(adapter, parts.join('/'))
+                            .then(() => {
+                                // remove this folder
+                                const folders = JSON.parse(JSON.stringify(this.state.folders));
+                                delete folders[item.id];
+                                // delete folder from parent item
+                                const parentId = getParentDir(item.id);
+                                const parentFolder = folders[parentId];
+                                if (parentFolder) {
+                                    const pos = parentFolder.indexOf(parentFolder.find(f => f.id === item.id));
+                                    if (pos !== -1) {
+                                        parentFolder.splice(pos, 1);
+                                    }
 
-                            this.select(parentId, () =>
-                                this.setState({folders}));
-                        }
+                                    this.select(parentId, () =>
+                                        this.setState({folders}));
+                                }
+                            });
                     }
                 });
         } else {

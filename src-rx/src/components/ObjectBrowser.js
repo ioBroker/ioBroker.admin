@@ -2625,9 +2625,17 @@ class ObjectBrowser extends Component {
                     await this.props.socket.setObject(id, obj);
                     enums && await this._createAllEnums(enums, obj._id);
                     if (obj.type === 'state') {
-                        const state = await this.props.socket.getState(obj._id);
-                        if (!state || state.val === null) {
-                            await this.props.socket.setState(obj._id, !obj.common || obj.common.def === undefined ? null : obj.common.def, true);
+                        try {
+                            const state = await this.props.socket.getState(obj._id);
+                            if (!state || state.val === null) {
+                                try {
+                                    await this.props.socket.setState(obj._id, !obj.common || obj.common.def === undefined ? null : obj.common.def, true);
+                                } catch (e) {
+                                    window.alert(`Cannot set state "${obj._id}": ${e}`);
+                                }
+                            }
+                        } catch (e) {
+                            window.alert(`Cannot read state "${obj._id}": ${e}`);
                         }
                     }
                 } catch (error) {
@@ -3773,7 +3781,8 @@ class ObjectBrowser extends Component {
 
                 // in non expert mode control button directly
                 if (!this.props.expertMode && item.data.button) {
-                    return this.props.socket.setState(id, true);
+                    return this.props.socket.setState(id, true)
+                        .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
                 }
 
                 this.edit = {

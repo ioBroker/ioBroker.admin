@@ -10,6 +10,7 @@ Marked with "!" must be in release candidate
     config: 'materialize', 'none', 'html'
     tab: 'html'
   }
+- Show admin version number if width > 800: https://github.com/ioBroker/ioBroker.admin/issues/820
 
 ## Intro
 
@@ -26,6 +27,10 @@ Marked with "!" must be in release candidate
 ## Adapters
 - Use only icons for update adapter: https://github.com/ioBroker/ioBroker.admin/issues/810
   - "Ignore", Icon "Update", Icon "close" on mobile ()
+  
+- Save the "close when finished" in localStorage: https://github.com/ioBroker/ioBroker.admin/issues/815
+- Update adapter list by host change: https://github.com/ioBroker/ioBroker.admin/issues/819
+- Show host name in the summary (not in details) if enough space: https://github.com/ioBroker/ioBroker.admin/issues/799
 
 ## Wizard
 
@@ -71,6 +76,9 @@ Marked with "!" must be in release candidate
 - !On safari new coming entries have invalid time https://github.com/ioBroker/ioBroker.admin/issues/783
 
 ## Instances
+- Invalid status of instance: https://github.com/ioBroker/ioBroker.admin/issues/816
+- Show info.connection in instance if string and not boolean: https://github.com/ioBroker/ioBroker.admin/issues/817
+
 
 ## Objects
 - Add in object edit the possibility to set color and icon (icon could be uploaded as base64 and may not be bigger than 5k) and use it for text color. Add possibility to scale the images.
@@ -83,11 +91,12 @@ Marked with "!" must be in release candidate
 ## Files
 
 ## Hosts
+- Update is not displayed. it should be shown as in instances with change log and so on
 
 ## Users
 
 ## After all is done
-- !Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io) (BF)
+- ! (BF) Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io) (BF)
 
 ## Login and authentication
 - show login dialog after TTL over

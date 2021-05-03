@@ -67,6 +67,10 @@ class AdaptersUpdater extends Component {
         const updateAvailable = [];
         Object.keys(this.props.repository).forEach(adapter => {
             const _installed = this.props.installed[adapter];
+            // ignore js-controller in this dialog
+            if (adapter === 'js-controller') {
+                return;
+            }
             if (_installed &&
                 _installed.ignoreVersion !== this.props.repository[adapter].version &&
                 AdaptersUpdater.isUpdateAvailable(_installed.version, this.props.repository[adapter].version)

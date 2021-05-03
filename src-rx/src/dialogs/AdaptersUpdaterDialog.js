@@ -11,10 +11,11 @@ import Dialog from '@material-ui/core/Dialog';
 import Grid from '@material-ui/core/Grid';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Toolbar from '@material-ui/core/Toolbar';
+import { Tooltip } from '@material-ui/core';
+
 
 import AdaptersUpdater from '../components/Adapters/AdaptersUpdater';
 import Command from '../components/Command';
-import { Tooltip } from '@material-ui/core';
 
 const styles = theme => ({
     dialogRoot: {

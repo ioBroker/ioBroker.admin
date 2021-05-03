@@ -1393,6 +1393,24 @@ class Connection {
     }
 
     /**
+     * Delete a folder of an adapter.
+     * @param {string} adapter The adapter name.
+     * @param {string} folderName The folder name.
+     * @returns {Promise<void>}
+     */
+    deleteFolder(adapter, folderName) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('deleteFolder', adapter, folderName, err =>
+                err ? reject(err) : resolve()));
+    }
+
+    /**
      * Get the list of all hosts.
      * @param {boolean} [update] Force update.
      * @returns {Promise<ioBroker.Object[]>}
