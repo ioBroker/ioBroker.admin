@@ -32,7 +32,7 @@ import { PROGRESS } from './components/Connection';
 import Loader from '@iobroker/adapter-react/Components/Loader';
 import I18n from '@iobroker/adapter-react/i18n';
 import Router from '@iobroker/adapter-react/Components/Router';
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import Utils from './components/Utils';//adapter-react/Components/Utils';
 import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 import Icon from '@iobroker/adapter-react/Components/Icon';
 import theme from './Theme'; // @iobroker/adapter-react/Theme
@@ -286,6 +286,11 @@ class App extends Router {
         I18n.setLanguage((navigator.language || navigator.userLanguage || 'en').substring(0, 2).toLowerCase());
 
         this.refConfigIframe = null;
+        this.refUser = React.createRef();
+        this.refUserDiv = React.createRef();
+        this.expireInSec = null;
+        this.expireInSecInterval = null;
+        this.expireText = I18n.t('Session expire in %s', '%s');
 
         if (!query.login) {
             let drawerState = window.localStorage.getItem('App.drawerState');
@@ -366,6 +371,8 @@ class App extends Router {
 
                 readTimeoutMs: SlowConnectionWarningDialog.getReadTimeoutMs(),
                 showSlowConnectionWarning: false,
+
+                expireInSec: null,
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -468,7 +475,7 @@ class App extends Router {
                                 };
 
                                 try {
-                                    newState.systemConfig = await this.socket.getSystemConfig();
+                                    newState.systemConfig = await this.socket.getSystemConfigCommon();
                                     newState.wizard = !newState.systemConfig.common.licenseConfirmed;
                                 } catch (error) {
                                     console.log(error);
@@ -477,12 +484,13 @@ class App extends Router {
                                 newState.hosts = await this.socket.getHosts();
 
                                 if (!this.state.currentHost) {
+
                                     const currentHost = window.localStorage.getItem('App.currentHost');
                                     if (currentHost && newState.hosts.find(({ _id }) => _id === currentHost)) {
-                                        newState.currentHost = newState.hosts.find(({ _id }) => _id === currentHost)._id;
+                                        newState.currentHost     = newState.hosts.find(({ _id }) => _id === currentHost)._id;
                                         newState.currentHostName = newState.hosts.find(({ _id }) => _id === currentHost).common.name;
                                     } else {
-                                        newState.currentHost = newState.hosts[0]._id;
+                                        newState.currentHost     = newState.hosts[0]._id;
                                         newState.currentHostName = newState.hosts[0].common.name;
                                     }
                                 }
@@ -508,6 +516,9 @@ class App extends Router {
                                                             invertBackground: this.mustInvertBackground(userObj.common.color)
                                                         }
                                                     });
+
+                                                    // start ping interval
+                                                    this.makePingAuth();
                                                 })
                                         });
                                 }
@@ -540,6 +551,56 @@ class App extends Router {
                 }
             });
         }
+    }
+
+    updateExpireIn() {
+        const now = Date.now();
+        this.expireInSec -= (now - this.lastExecution) / 1000;
+        const time = Utils.formatTime(this.expireInSec);
+        if (this.refUser.current) {
+            this.refUser.current.title = this.expireText.replace('%s', time);
+        }
+        if (this.expireInSec < 120 && this.refUserDiv.current) {
+            this.refUserDiv.current.innerHTML = time;
+            this.refUserDiv.current.style.color = '#F44';
+        }
+
+        if (this.expireInSec <= 0) {
+            window.alert('Session expired');
+            // reconnect
+            setTimeout(() =>
+                window.location.reload(), 1000);
+        }
+
+        this.lastExecution = now;
+    }
+
+    makePingAuth() {
+        this.pingAuth && clearTimeout(this.pingAuth);
+        this.pingAuth = null;
+
+        this.socket.getCurrentSession()
+            .then(data => {
+                if (data) {
+                    if (!this.expireInSecInterval) {
+                        this.expireInSecInterval = setInterval(() => this.updateExpireIn(), 1000);
+                    }
+                    this.expireInSec = data.expireInSec;
+                    this.lastExecution = Date.now();
+                    this.updateExpireIn();
+                }
+
+                /*this.pingAuth = setTimeout(() => {
+                    this.pingAuth = null;
+                    this.makePingAuth();
+                }, 30000);*/
+            })
+            .catch(e => {
+                window.alert('Session timeout: ' + e);
+                // reconnect
+                setTimeout(() =>
+                    window.location.reload(), 1000);
+            })
     }
 
     onDiscoveryAlive = (name, value) => {
@@ -660,7 +721,7 @@ class App extends Router {
             .then(adapters => {
                 Object.keys(adapters).forEach(id => {
                     const adapter = adapters[id];
-                    if (installed[adapter?.common?.name] && adapter.common?.ignoreVersion) {
+                    if (installed && installed[adapter?.common?.name] && adapter.common?.ignoreVersion) {
                         installed[adapter.common.name].ignoreVersion = adapter.common.ignoreVersion;
                     }
                 });
@@ -688,6 +749,10 @@ class App extends Router {
     componentWillUnmount() {
         window.removeEventListener('hashchange', this.onHashChanged, false);
         this.socket.unsubscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
+        this.pingAuth && clearTimeout(this.pingAuth);
+        this.pingAuth = null;
+        this.expireInSecInterval && clearInterval(this.expireInSecInterval);
+        this.expireInSecInterval = null;
         // unsubscribe
         // this.state.hosts.forEach
         // this.socket.unsubscribeState(id + '.alive', this.onHostStatusChanged);
@@ -1210,10 +1275,12 @@ class App extends Router {
 
     renderLoggedUser() {
         if (this.state.user && this.props.width !== 'xs' && this.props.width !== 'sm') {
-            return <div title={this.state.user.id} className={clsx(this.props.classes.userBadge, this.state.user.invertBackground && this.props.classes.userBackground)}>
-                {this.state.user.icon ? <Icon src={this.state.user.icon} className={this.props.classes.userIcon} />
-                    : <UserIcon className={this.props.classes.userIcon} />}
-                <div style={{ color: this.state.user.color || undefined }} className={this.props.classes.userText}>{this.state.user.name}</div>
+            return <div title={this.state.user.id} className={clsx(this.props.classes.userBadge, this.state.user.invertBackground && this.props.classes.userBackground)} ref={this.refUser}>
+                {this.state.user.icon ?
+                    <Icon src={this.state.user.icon} className={this.props.classes.userIcon} />
+                    :
+                    <UserIcon className={this.props.classes.userIcon} />}
+                <div ref={this.refUserDiv} style={{ color: this.state.user.color || undefined }} className={this.props.classes.userText}>{this.state.user.name}</div>
             </div>
         } else {
             return null;
@@ -1444,4 +1511,5 @@ class App extends Router {
         </ThemeProvider>;
     }
 }
+
 export default withWidth()(withStyles(styles)(App));

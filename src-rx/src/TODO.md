@@ -30,7 +30,6 @@ Marked with "!" must be in release candidate
 
 ## Adapters
 - Highlight version numbers in update dialog (in news). Make it somehow visible that new version description starts.
-- Show number of instances in tile and row: https://github.com/ioBroker/ioBroker.admin/issues/822
 
 ## Wizard
 

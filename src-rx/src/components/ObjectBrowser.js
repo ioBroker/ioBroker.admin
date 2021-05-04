@@ -1616,7 +1616,7 @@ class ObjectBrowser extends Component {
             });
 
         // read default history
-        props.socket.getSystemConfig()
+        props.socket.getSystemConfigCommon()
             .then(config => {
                 this.defaultHistory = config && config.common && config.common.defaultHistory;
                 if (this.defaultHistory) {

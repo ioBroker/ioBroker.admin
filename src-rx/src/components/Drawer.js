@@ -386,28 +386,27 @@ class Drawer extends Component {
                     return obj;
                 });
                 // Convert
-                let newObj = JSON.parse(JSON.stringify(this.props.systemConfig));
-                if (!newObj.common['tabsVisible'] || tabs.length !== newObj.common['tabsVisible'].length) {
-                    this.setState({
-                        tabs,
-                    }, async () => {
-                        newObj.common['tabsVisible'] = tabs.map(({ name, order, visible }) => ({ name, order, visible }));
-                        try {
-                            await this.props.socket.setSystemConfig(newObj).then(el => console.log('ok'));
-                        } catch (e) {
-                            window.alert('Cannot set system config: ' + e);
+                this.props.socket.getSystemConfig(true)
+                    .then(newObj => {
+                        newObj.common.tabsVisible = newObj.common.tabsVisible || [];
+
+                        if (!newObj.common.tabsVisible || tabs.length !== newObj.common.tabsVisible.length) {
+                            this.setState({tabs}, () => {
+                                newObj.common.tabsVisible = tabs.map(({ name, order, visible }) => ({ name, order, visible }));
+
+                                return this.props.socket.setSystemConfig(newObj)
+                                    .then(el => console.log('ok'))
+                                    .catch(e => window.alert('Cannot set system config: ' + e))
+                            });
+                        } else {
+                            let newTabs = newObj.common.tabsVisible.map(({ name, visible }) => {
+                                let tab = tabs.find(el => el.name === name);
+                                tab.visible = visible;
+                                return tab;
+                            })
+                            this.setState({tabs: newTabs});
                         }
                     });
-                } else {
-                    let newTabs = newObj.common['tabsVisible'].map(({ name, visible }) => {
-                        let tab = tabs.find(el => el.name === name);
-                        tab.visible = visible;
-                        return tab;
-                    })
-                    this.setState({
-                        tabs: newTabs
-                    });
-                }
             });
     }
 
@@ -442,13 +441,15 @@ class Drawer extends Component {
 
     tabsEditSystemConfig = async (idx) => {
         const { tabs } = this.state;
-        const { systemConfig, socket } = this.props;
+        const { socket } = this.props;
         let newTabs = JSON.parse(JSON.stringify(tabs));
         if (idx !== undefined) {
             newTabs[idx].visible = !newTabs[idx].visible;
         }
-        let newObjCopy = JSON.parse(JSON.stringify(systemConfig));
-        newObjCopy.common['tabsVisible'] = newTabs.map(({ name, order, visible }) => ({ name, order, visible }));
+        let newObjCopy = await this.props.socket.getSystemConfig(true);
+
+        newObjCopy.common.tabsVisible = newTabs.map(({ name, order, visible }) => ({ name, order, visible }));
+
         if (idx !== undefined) {
             this.setState({ tabs: newTabs }, async () => {
                 try {

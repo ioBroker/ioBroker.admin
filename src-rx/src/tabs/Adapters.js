@@ -438,7 +438,8 @@ class Adapters extends Component {
 
             let hostData;
             let rebuild;
-            let objects;
+            let ignoredVersion;
+            let ratings;
 
             return new Promise(resolve => {
                 if (!this.state.update) {
@@ -460,15 +461,26 @@ class Adapters extends Component {
                 })
                 .then(_rebuild => {
                     rebuild = _rebuild;
-                    return this.props.adaptersWorker.getAdapters(updateRepo)
-                        .catch(e => window.alert('Cannot read system.adapters.*: ' + e));
+                    return this.props.socket.getIgnoredVersion()
+                        .catch(e => {
+                            window.alert('Cannot read ignoredversion: ' + e);
+                            return {};
+                        });
                 })
-                .then(_objects => {
-                    objects = _objects;
+                .then(_ignoredVersion => {
+                    ignoredVersion = _ignoredVersion;
                     return this.props.socket.getRatings(updateRepo)
                         .catch(e => window.alert('Cannot read ratings: ' + e));
                 })
-                .then(ratings => {
+                .then(_ratings => {
+                    ratings = _ratings;
+                    return this.props.socket.getCountsOfInstances(updateRepo)
+                        .catch(e => {
+                            window.alert('Cannot read countsOfInstances: ' + e);
+                            return {};
+                        });
+                })
+                .then(counts => {
                     // simulation
                     // setTimeout(() => this.setState({showSlowConnectionWarning: true}), 5000);
 
@@ -485,9 +497,8 @@ class Adapters extends Component {
 
                     Object.keys(installed).forEach(value => {
                         const adapter = installed[value];
-                        const _obj = objects['system.adapter.' + value];
-                        if (_obj?.common?.ignoreVersion) {
-                            adapter.ignoreVersion = _obj.common.ignoreVersion;
+                        if (ignoredVersion[value]) {
+                            adapter.ignoreVersion = ignoredVersion[value];
                         }
 
                         if (!adapter.controller && value !== 'hosts') {
@@ -496,7 +507,7 @@ class Adapters extends Component {
                                 repository[value].version = '';
                             }
                         }
-                        adapter.count = 0;
+                        adapter.count   = counts[value] || 0;
                         adapter.enabled = 0;
                     });
 
@@ -509,6 +520,7 @@ class Adapters extends Component {
                         const _installed = installed[value];
 
                         adapter.rating = ratings[value];
+
                         if (adapter.rating && adapter.rating.rating) {
                             adapter.rating.title = [
                                 `Total rating: ${adapter.rating.rating.r} (${adapter.rating.rating.c} ${this.t('votes')})`,
@@ -523,6 +535,7 @@ class Adapters extends Component {
                             const installedInGroup = installed[value];
 
                             const daysAgo = Math.round((now - new Date(adapter.versionDate).getTime()) / 86400000);
+
                             if (daysAgo <= 31) {
                                 this.recentUpdatedAdapters++
                             }
@@ -700,9 +713,9 @@ class Adapters extends Component {
 
                     const installed = this.state.installed[entry.name];
 
-                    entry.installed = !!installed;
+                    entry.installed        = !!installed;
                     entry.installedVersion = installed ? installed.version : null;
-                    entry.rightVersion = installed ? checkVersion ? Semver.satisfies(installed.version, entry.version, { includePrerelease: true }) : true : false;
+                    entry.rightVersion     = installed ? checkVersion ? Semver.satisfies(installed.version, entry.version, { includePrerelease: true }) : true : false;
                 }
 
                 result.push(entry);
@@ -1077,6 +1090,7 @@ class Adapters extends Component {
             });
         }
         this.listOfVisibleAdapterLength = count !== undefined ? count : this.listOfVisibleAdapterLength;
+
         if (!count) {
             return <tr><td colSpan={4} style={{ padding: 16, fontSize: 18 }}>{this.t('all items are filtered out')}</td></tr>;
         } else {

@@ -173,6 +173,7 @@ class Connection {
         });
 
         this._socket.on('reconnect', () => {
+            this.onProgress(PROGRESS.READY);
             this.connected = true;
 
             if (this.waitForRestart) {
@@ -188,13 +189,6 @@ class Connection {
             this.subscribed = false;
             this.onProgress(PROGRESS.CONNECTING);
             this.onConnectionHandlers.forEach(cb => cb(false));
-        });
-
-        this._socket.on('reconnect', () => {
-            this.onProgress(PROGRESS.READY);
-            if (this.waitForRestart) {
-                window.location.reload();
-            }
         });
 
         this._socket.on('reauthenticate', () =>
@@ -325,7 +319,7 @@ class Connection {
             }
 
             // Read system configuration
-            return this.getSystemConfig()
+            return this.getSystemConfigCommon()
                 .then(data => {
                     if (this.doNotLoadACL) {
                         if (this.loaded) {
@@ -1766,7 +1760,7 @@ class Connection {
                 } else {
                     return Promise.reject('Not supported');
                 }
-            })
+            });
     }
 
     /**
@@ -1881,14 +1875,15 @@ class Connection {
      * @returns {Promise<ioBroker.OtherObject>}
      */
     getSystemConfig(update) {
-        if (update) {
-            this._promises.systemConfig = null;
+        if (!update && this._promises.systemConfig) {
+            return this._promises.systemConfig;
         }
-        if (!this._promises.systemConfig && !this.connected) {
+
+        if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
 
-        this._promises.systemConfig = this._promises.systemConfig || this.getObject('system.config')
+        this._promises.systemConfig = this.getObject('system.config')
             .then(systemConfig => {
                 systemConfig = systemConfig || {};
                 systemConfig.common = systemConfig.common || {};
@@ -2238,6 +2233,37 @@ class Connection {
                 resolve(user)));
     }
 
+    getCurrentSession(cmdTimeout) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        return new Promise((resolve, reject) => {
+            const controller = new AbortController();
+
+            let timeout = setTimeout(() => {
+                if (timeout) {
+                    timeout = null;
+                    controller.abort();
+                    reject('getCurrentSession timeout');
+                }
+            }, cmdTimeout || 5000);
+
+            return fetch('./session', { signal: controller.signal })
+                .then(res => res.json())
+                .then(json => {
+                    if (timeout) {
+                        clearTimeout(timeout);
+                        timeout = null;
+                        resolve(json);
+                    }
+                })
+                .catch(e => {
+                    reject('getCurrentSession: ' + e);
+                });
+        });
+    }
+
     /**
      * Read adapter ratings
      * @returns {Promise<any>}
@@ -2271,6 +2297,65 @@ class Connection {
         return this._promises.currentInstance;
     }
 
+    // returns very optimized information for adapters to minimize connection load
+    getCountsOfInstances() {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getCountsOfInstances', (err, instances) =>
+                err ? reject(err) : resolve(instances)));
+    }
+
+    // returns very optimized information for adapters to minimize connection load
+    getIgnoredVersion() {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getIgnoredVersion', (err, adapters) =>
+                err ? reject(err) : resolve(adapters)));
+    }
+
+    // returns very optimized information for adapters to minimize connection load
+    getCompactInstalled() {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getCompactInstalled', (err, installed) =>
+                err ? reject(err) : resolve(installed)));
+    }
+
+    // returns very optimized information for adapters to minimize connection load
+    getSystemConfigCommon(update) {
+        if (!update && this._promises.systemConfigCommon) {
+            return this._promises.systemConfigCommon;
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises.systemConfigCommon = new Promise((resolve, reject) =>
+            this._socket.emit('getSystemConfigCommon', (err, systemConfig) =>
+                err ? reject(err) : resolve(systemConfig)));
+
+        return this._promises.systemConfigCommon;
+    }
 }
 
 Connection.Connection = {

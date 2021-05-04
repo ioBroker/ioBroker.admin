@@ -57,7 +57,9 @@ class BaseSettingsDialog extends Component {
             log: null,
             plugins: null,
         };
+    }
 
+    componentDidMount() {
         this.getSettings(this.state.currentHost);
     }
 

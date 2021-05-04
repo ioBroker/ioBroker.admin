@@ -139,6 +139,10 @@ class MainSettingsDialog extends Component {
                     {
                         id: '₤',
                         title: '₤'
+                    },
+                    {
+                        id: 'CHF',
+                        title: 'CHF'
                     }
                 ]
             },

@@ -239,10 +239,8 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
     const object = selected.split('/').length === 1 ? folders['/'].find(({ id }) => id === selected) : folders[select].find(({ id }) => id === selected);
     const [stateOwnerUser, setStateOwnerUser] = useState(null);
     const [stateOwnerGroup, setStateOwnerGroup] = useState(null);
-    //const [ownerUsers, setOwnerUsers] = useState([]);
     const [users, setUsers] = useState([]);
     const [groups, setGroups] = useState([]);
-    //const [ownerGroups, setOwnerGroups] = useState([]);
     const [applyToChildren, setApplyToChildren] = useState(false);
     const [childrenCount, setChildrenCount] = useState(0);
     const [valueFileAccessControl, setValueFileAccessControl] = useState(null);
@@ -254,7 +252,6 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
     const [disabledButton, setDisabledButton] = useState(true);
     const [progress, setProgress] = useState(false);
 
-    const different = t(DIFFERENT);
     const lang = I18n.getLanguage();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
