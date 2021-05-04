@@ -366,8 +366,7 @@ class Adapters extends Component {
 
         const updateAvailable = [];
 
-        Object.keys(adapters).forEach(name => {
-            const value = adapters[name].common.name;
+        Object.keys(installed).forEach(value => {
             if (installed[value]) {
                 const version         = installed[value].version;
                 const repositoryValue = repository[value];
@@ -438,7 +437,7 @@ class Adapters extends Component {
 
             let hostData;
             let rebuild;
-            let ignoredVersion;
+            let adapters;
             let ratings;
 
             return new Promise(resolve => {
@@ -461,26 +460,26 @@ class Adapters extends Component {
                 })
                 .then(_rebuild => {
                     rebuild = _rebuild;
-                    return this.props.socket.getIgnoredVersion()
+                    return this.props.socket.getCompactAdapters()
                         .catch(e => {
-                            window.alert('Cannot read ignoredversion: ' + e);
+                            window.alert('Cannot read getCompactAdapters: ' + e);
                             return {};
                         });
                 })
-                .then(_ignoredVersion => {
-                    ignoredVersion = _ignoredVersion;
+                .then(_adapters => {
+                    adapters = _adapters;
                     return this.props.socket.getRatings(updateRepo)
                         .catch(e => window.alert('Cannot read ratings: ' + e));
                 })
                 .then(_ratings => {
                     ratings = _ratings;
-                    return this.props.socket.getCountsOfInstances(updateRepo)
+                    return this.props.socket.getCompactInstances(updateRepo)
                         .catch(e => {
                             window.alert('Cannot read countsOfInstances: ' + e);
                             return {};
                         });
                 })
-                .then(counts => {
+                .then(instances => {
                     // simulation
                     // setTimeout(() => this.setState({showSlowConnectionWarning: true}), 5000);
 
@@ -497,8 +496,8 @@ class Adapters extends Component {
 
                     Object.keys(installed).forEach(value => {
                         const adapter = installed[value];
-                        if (ignoredVersion[value]) {
-                            adapter.ignoreVersion = ignoredVersion[value];
+                        if (adapters[value]?.iv) {
+                            adapter.ignoreVersion = adapters[value]?.iv;
                         }
 
                         if (!adapter.controller && value !== 'hosts') {
@@ -507,8 +506,15 @@ class Adapters extends Component {
                                 repository[value].version = '';
                             }
                         }
-                        adapter.count   = counts[value] || 0;
+                        adapter.count   = 0;
                         adapter.enabled = 0;
+                    });
+
+                    Object.keys(instances).forEach(id => {
+                        const adapterName = instances[id].name;
+                        if (installed[adapterName]) {
+                            installed[adapterName].count++;
+                        }
                     });
 
                     const now = Date.now();
@@ -690,7 +696,6 @@ class Adapters extends Component {
         let result = [];
 
         if (adapter) {
-
             const dependencies = adapter.dependencies;
             const nodeVersion = adapter.node;
 
@@ -710,7 +715,6 @@ class Adapters extends Component {
                 entry.version = checkVersion ? dependency[entry.name] : null;
 
                 if (result && entry.name) {
-
                     const installed = this.state.installed[entry.name];
 
                     entry.installed        = !!installed;
@@ -722,13 +726,12 @@ class Adapters extends Component {
             });
 
             if (nodeVersion) {
-
                 const entry = {
-                    name: 'node',
-                    version: nodeVersion,
-                    installed: true,
+                    name:             'node',
+                    version:          nodeVersion,
+                    installed:        true,
                     installedVersion: this.state.nodeJsVersion,
-                    rightVersion: false
+                    rightVersion:     false
                 };
 
                 entry.rightVersion = Semver.satisfies(this.state.nodeJsVersion, nodeVersion);
@@ -745,9 +748,8 @@ class Adapters extends Component {
         let result = true;
 
         if (adapter) {
-
             const dependencies = adapter.dependencies;
-            const nodeVersion = adapter.node;
+            const nodeVersion  = adapter.node;
 
             if (dependencies) {
                 if (dependencies instanceof Array) {
@@ -787,20 +789,8 @@ class Adapters extends Component {
     rightOs(value) {
         const adapter = this.state.repository[value];
 
-        if (adapter) {
-
-            const os = adapter.os;
-
-            if (os) {
-
-                os.forEach(value => {
-                    if (this.state.hostOs === value) {
-                        return true;
-                    }
-                });
-
-                return false;
-            }
+        if (adapter?.os) {
+            return !!adapter.os.find(value => this.state.hostOs === value);
         }
 
         return true;

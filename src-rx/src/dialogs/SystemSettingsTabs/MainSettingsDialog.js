@@ -219,7 +219,7 @@ class MainSettingsDialog extends Component {
     onMap = map => {
         this.map = map;
         const center = [
-            this.props.data.common.latitude ? this.props.data.common.latitude : 50,
+            this.props.data.common.latitude  ? this.props.data.common.latitude  : 50,
             this.props.data.common.longitude ? this.props.data.common.longitude : 10
         ];
 
@@ -366,7 +366,7 @@ class MainSettingsDialog extends Component {
 
     onMarkerDragend = evt => {
         const ll = evt.target._latlng;
-        this.doChange('latitude', ll.lat);
+        this.doChange('latitude',  ll.lat);
         this.doChange('longitude', ll.lng);
     }
 
@@ -437,7 +437,7 @@ class MainSettingsDialog extends Component {
                         <TextField
                             id="latitude"
                             label={this.props.t('Latitude:')}
-                            value={this.props.data.common.latitude}
+                            value={this.props.data.common.latitude || 0}
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
@@ -454,7 +454,7 @@ class MainSettingsDialog extends Component {
                         <TextField
                             id="longitude"
                             label={this.props.t('Longitude:')}
-                            value={this.props.data.common.longitude}
+                            value={this.props.data.common.longitude || 0}
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,

@@ -475,7 +475,7 @@ class App extends Router {
                                 };
 
                                 try {
-                                    newState.systemConfig = await this.socket.getSystemConfigCommon();
+                                    newState.systemConfig = await this.socket.getCompactSystemConfig();
                                     newState.wizard = !newState.systemConfig.common.licenseConfirmed;
                                 } catch (error) {
                                     console.log(error);
@@ -678,7 +678,7 @@ class App extends Router {
         } else {
             return <SlowConnectionWarningDialog
                 readTimeoutMs={this.state.readTimeoutMs}
-                t={this.t}
+                t={I18n.t}
                 onClose={readTimeoutMs => {
                     if (readTimeoutMs) {
                         this.setState({showSlowConnectionWarning: false, readTimeoutMs}, () =>
@@ -698,15 +698,15 @@ class App extends Router {
         let repository;
         let installed;
 
-        return this.socket.getRepository(currentHost, { update: false }, false, this.state.readTimeoutMs)
+        return this.socket.getCompactRepository(currentHost, false, this.state.readTimeoutMs)
             .catch(e => {
-                window.alert('Cannot getRepository: ' + e);
+                window.alert('Cannot getRepositoryCompact: ' + e);
                 e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
                 return null;
             })
             .then(_repository => {
                 repository = _repository;
-                return this.socket.getInstalled(currentHost, false, this.state.readTimeoutMs)
+                return this.socket.getCompactInstalled(currentHost, false, this.state.readTimeoutMs)
                     .catch(e => {
                         window.alert('Cannot getInstalled: ' + e);
                         e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
@@ -715,14 +715,13 @@ class App extends Router {
             })
             .then(_installed => {
                 installed = _installed;
-                return this.adaptersWorker.getAdapters()
+                return this.socket.getCompactAdapters()
                     .catch(e => window.alert('Cannot read adapters: ' + e));
             })
             .then(adapters => {
-                Object.keys(adapters).forEach(id => {
-                    const adapter = adapters[id];
-                    if (installed && installed[adapter?.common?.name] && adapter.common?.ignoreVersion) {
-                        installed[adapter.common.name].ignoreVersion = adapter.common.ignoreVersion;
+                installed && adapters && Object.keys(adapters).forEach(id => {
+                    if (installed[id] && adapters[id].iv) {
+                        installed[id].ignoreVersion = adapters[id].iv;
                     }
                 });
 
@@ -972,7 +971,6 @@ class App extends Router {
                         logsWorker={this.logsWorker}
                         expertMode={this.state.expertMode}
                         currentHost={this.state.currentHost}
-                        adaptersWorker={this.adaptersWorker}
                         hostsWorker={this.hostsWorker}
                         clearErrors={cb => this.clearLogErrors(cb)}
                     />

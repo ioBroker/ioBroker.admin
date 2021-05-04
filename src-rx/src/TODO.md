@@ -14,7 +14,7 @@ Marked with "!" must be in release candidate
   - this.props.socket.getVersion
   
 - Check if the host is alive by setting of current host at the very beginning
-
+- (BF) Optimize loading of hosts
 
 ## Intro
 

@@ -135,7 +135,7 @@ class JsonConfigComponent extends Component {
 
     readData() {
         this.readSettings()
-            .then(() => this.props.socket.getSystemConfigCommon())
+            .then(() => this.props.socket.getCompactSystemConfig())
             .then(systemConfig => {
                 if (this.props.custom) {
                     this.setState({systemConfig: systemConfig.common});

@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.14",
+        "version": "5.0.15",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -14,7 +14,22 @@
             "es": "Admin",
             "zh-cn": "Admin"
         },
+        "title": "Admin",
+        "connectionType": "local",
+        "dataSource": "push",
         "news": {
+            "5.0.15": {
+                "en": "optimized the loading process",
+                "de": "optimierte den Ladevorgang",
+                "ru": "оптимизировали процесс загрузки",
+                "pt": "otimizou o processo de carregamento",
+                "nl": "geoptimaliseerd het laadproces",
+                "fr": "optimisé le processus de chargement",
+                "it": "ottimizzato il processo di caricamento",
+                "es": "optimizado el proceso de carga",
+                "pl": "zoptymalizował proces ładowania",
+                "zh-cn": "优化了加载过程"
+            },
             "5.0.14": {
                 "en": "Admin5: Fixed many bugs",
                 "de": "Admin5: Viele Fehler behoben",
@@ -242,18 +257,6 @@
                 "es": "arreglar la dependencia del cliente socketio",
                 "pl": "napraw zależność klienta socketio",
                 "zh-cn": "修复socketio客户端依赖性"
-            },
-            "4.0.3": {
-                "en": "Encrypted configuration was corrected.",
-                "de": "Die verschlüsselte Konfiguration wurde korrigiert.",
-                "ru": "Зашифрованная конфигурация была исправлена.",
-                "pt": "A configuração criptografada foi corrigida.",
-                "nl": "Gecodeerde configuratie is gecorrigeerd.",
-                "fr": "La configuration cryptée a été corrigée.",
-                "it": "La configurazione crittografata è stata corretta.",
-                "es": "La configuración encriptada fue corregida.",
-                "pl": "Szyfrowana konfiguracja została poprawiona.",
-                "zh-cn": "加密的配置已得到纠正。"
             }
         },
         "desc": {

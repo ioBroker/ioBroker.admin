@@ -319,7 +319,7 @@ class Connection {
             }
 
             // Read system configuration
-            return this.getSystemConfigCommon()
+            return this.getCompactSystemConfig()
                 .then(data => {
                     if (this.doNotLoadACL) {
                         if (this.loaded) {
@@ -2298,50 +2298,91 @@ class Connection {
     }
 
     // returns very optimized information for adapters to minimize connection load
-    getCountsOfInstances() {
+    getCompactAdapters(update) {
         if (Connection.isWeb()) {
             return Promise.reject('Allowed only in admin');
+        }
+        if (!update && this._promises.compactAdapters) {
+            return this._promises.compactAdapters;
+        }
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        this._promises.compactAdapters = new Promise((resolve, reject) =>
+            this._socket.emit('getCompactAdapters', (err, systemConfig) =>
+                err ? reject(err) : resolve(systemConfig)));
+
+        return this._promises.compactAdapters;
+    }
+
+    // returns very optimized information for adapters to minimize connection load
+    getCompactInstances(update) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+        if (!update && this._promises.compactInstances) {
+            return this._promises.compactInstances;
         }
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
 
-        return new Promise((resolve, reject) =>
-            this._socket.emit('getCountsOfInstances', (err, instances) =>
-                err ? reject(err) : resolve(instances)));
+        this._promises.compactInstances = new Promise((resolve, reject) =>
+            this._socket.emit('getCompactInstances', (err, systemConfig) =>
+                err ? reject(err) : resolve(systemConfig)));
+
+        return this._promises.compactInstances;
     }
 
     // returns very optimized information for adapters to minimize connection load
-    getIgnoredVersion() {
+    // reads only version of installed adapter
+    getCompactInstalled(host, update, cmdTimeout) {
         if (Connection.isWeb()) {
             return Promise.reject('Allowed only in admin');
         }
-        if (!this.connected) {
-            return Promise.reject(NOT_CONNECTED);
-        }
 
-        return new Promise((resolve, reject) =>
-            this._socket.emit('getIgnoredVersion', (err, adapters) =>
-                err ? reject(err) : resolve(adapters)));
-    }
+        this._promises.installedCompact = this._promises.installedCompact || {};
 
-    // returns very optimized information for adapters to minimize connection load
-    getCompactInstalled() {
-        if (Connection.isWeb()) {
-            return Promise.reject('Allowed only in admin');
+        if (!update && this._promises.installedCompact[host]) {
+            return this._promises.installedCompact[host];
         }
 
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
 
-        return new Promise((resolve, reject) =>
-            this._socket.emit('getCompactInstalled', (err, installed) =>
-                err ? reject(err) : resolve(installed)));
+        if (!host.startsWith('system.host.')) {
+            host += 'system.host.' + host;
+        }
+
+        this._promises.installedCompact[host] = new Promise((resolve, reject) => {
+            let timeout = setTimeout(() => {
+                if (timeout) {
+                    timeout = null;
+                    reject('getCompactInstalled timeout');
+                }
+            }, cmdTimeout || this.props.cmdTimeout);
+
+            this._socket.emit('getCompactInstalled', host, data => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    if (data === PERMISSION_ERROR) {
+                        reject('May not read "getCompactInstalled"');
+                    } else if (!data) {
+                        reject('Cannot read "getCompactInstalled"');
+                    } else {
+                        resolve(data);
+                    }
+                }
+            });
+        });
+
+        return this._promises.installedCompact[host];
     }
 
     // returns very optimized information for adapters to minimize connection load
-    getSystemConfigCommon(update) {
+    getCompactSystemConfig(update) {
         if (!update && this._promises.systemConfigCommon) {
             return this._promises.systemConfigCommon;
         }
@@ -2351,10 +2392,60 @@ class Connection {
         }
 
         this._promises.systemConfigCommon = new Promise((resolve, reject) =>
-            this._socket.emit('getSystemConfigCommon', (err, systemConfig) =>
+            this._socket.emit('getCompactSystemConfig', (err, systemConfig) =>
                 err ? reject(err) : resolve(systemConfig)));
 
         return this._promises.systemConfigCommon;
+    }
+
+    /**
+     * Get the repository (only version and icon).
+     * @param {string} host
+     * @param {any} [args]
+     * @param {boolean} [update] Force update.
+     * @param {number} [timeoutMs] timeout in ms.
+     * @returns {Promise<any>}
+     */
+    getCompactRepository(host, update, timeoutMs) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+        if (!update && this._promises.repoCompact) {
+            return this._promises.repoCompact;
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        if (!host.startsWith('system.host.')) {
+            host += 'system.host.' + host;
+        }
+
+        this._promises.repoCompact = new Promise((resolve, reject) => {
+            let timeout = setTimeout(() => {
+                if (timeout) {
+                    timeout = null;
+                    reject('getCompactRepository timeout');
+                }
+            }, timeoutMs || this.props.cmdTimeout);
+
+            this._socket.emit('getCompactRepository', host, data => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    if (data === PERMISSION_ERROR) {
+                        reject('May not read "getCompactRepository"');
+                    } else if (!data) {
+                        reject('Cannot read "getCompactRepository"');
+                    } else {
+                        resolve(data);
+                    }
+                }
+            });
+        });
+
+        return this._promises.repoCompact;
     }
 }
 

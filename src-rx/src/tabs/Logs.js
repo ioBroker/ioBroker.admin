@@ -336,7 +336,7 @@ class Logs extends Component {
         this.props.logsWorker && this.props.logsWorker.enableCountErrors(false);
         this.props.logsWorker.registerHandler(this.logHandler);
         this.props.clearErrors();
-        this.props.adaptersWorker.getAdapters()
+        this.props.socket.getCompactAdapters()
             .then(adapters =>
                 this.props.hostsWorker.getHosts()
                     .then(hosts => new Promise(resolve =>
@@ -417,7 +417,7 @@ class Logs extends Component {
             }
             if (item.icon === undefined) {
                 let adapterName = item.from.replace(/\.\d+$/, '');
-                let icon = this.state.adapters['system.adapter.' + adapterName]?.common?.icon;
+                let icon = this.state.adapters['system.adapter.' + adapterName]?.icon;
                 if (icon) {
                     if (!icon.startsWith('data:image')) {
                         icon = './files/' + adapterName + '.admin/' + icon;
@@ -831,6 +831,5 @@ Logs.propTypes = {
     logsWorker: PropTypes.object,
     lang: PropTypes.string,
     t: PropTypes.func,
-    adaptersWorker: PropTypes.object,
 };
 export default withWidth()(withStyles(styles)(Logs));

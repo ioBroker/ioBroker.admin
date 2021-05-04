@@ -142,7 +142,7 @@ class WizardDialog extends Component {
                     variant="contained"
                     color="primary"
                     onClick={ () =>
-                        this.props.socket.getSystemConfigCommon(true)
+                        this.props.socket.getCompactSystemConfig(true)
                             .then(obj =>
                                 this.setState( {activeStep: this.state.activeStep + 1 + (obj.common.licenseConfirmed ? 0 : 0) }))
                     }>

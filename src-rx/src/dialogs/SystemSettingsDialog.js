@@ -92,7 +92,7 @@ class SystemSettingsDialog extends Component {
                 });
                 this.originalRepositories = JSON.stringify(systemRepositories);
                 newState.systemRepositories = systemRepositories;
-                return this.props.socket.getSystemConfigCommon(true);
+                return this.props.socket.getCompactSystemConfig(true);
             })
             .then(systemConfig => {
                 this.originalConfig = JSON.stringify(systemConfig);

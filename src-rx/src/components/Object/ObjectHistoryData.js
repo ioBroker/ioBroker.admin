@@ -343,7 +343,7 @@ class ObjectHistoryData extends Component {
             .then(_list => {
                 list = _list;
                 // read default history
-                return this.props.socket.getSystemConfigCommon();
+                return this.props.socket.getCompactSystemConfig();
             })
             .then(config => {
                 const defaultHistory = config && config.common && config.common.defaultHistory;

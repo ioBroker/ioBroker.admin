@@ -106,7 +106,7 @@ class WizardSettingsTab extends Component {
 
         this.focusRef = createRef();
 
-        this.props.socket.getSystemConfigCommon(true)
+        this.props.socket.getCompactSystemConfig(true)
             .then(obj =>
                     this.setState({
                         tempUnit:       obj.common.tempUnit,

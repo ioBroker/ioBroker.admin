@@ -202,7 +202,7 @@ class Drawer extends Component {
         if (installed) {
             let count = 0;
 
-            Object.keys(installed).forEach(element => {
+            Object.keys(installed).sort().forEach(element => {
                 const _installed = installed[element];
                 const adapter = repository[element];
                 if (element !== 'js-controller' &&
@@ -212,6 +212,7 @@ class Drawer extends Component {
                     _installed.ignoreVersion !== adapter.version &&
                     Adapters.updateAvailable(_installed.version, adapter.version)
                 ) {
+                    console.log('Updatable: ' + count + ' ' + element);
                     count++;
                 }
             });
@@ -223,11 +224,11 @@ class Drawer extends Component {
     }
 
     instanceChangedHandler = changes => {
-        this.getTabs();
+        this.getTabs(true);
     }
 
     componentDidMount() {
-        this.props.instancesWorker.registerHandler(this.instanceChangedHandler);
+        this.props.instancesWorker.registerHandler(this.instanceChangedHandler, true);
 
         this.onNotificationsHandler()
             .then(() => {
@@ -298,21 +299,21 @@ class Drawer extends Component {
         }
     }
 
-    getTabs() {
-        return this.props.instancesWorker.getInstances()
+    getTabs(update) {
+        return this.props.socket.getCompactInstances(update)
             .then(instances => {
                 let dynamicTabs = [];
                 if (instances) {
                     Object.keys(instances).forEach(id => {
                         const instance = instances[id];
 
-                        if (!instance.common || !instance.common.adminTab) {
+                        if (!instance || !instance.adminTab) {
                             return;
                         }
 
                         let tab = 'tab-' + id.replace('system.adapter.', '').replace(/\.\d+$/, '');
 
-                        const singleton = instance && instance.common && instance.common.adminTab && instance.common.adminTab.singleton;
+                        const singleton = instance.adminTab.singleton;
                         let instNum;
                         if (!singleton) {
                             const m = id.match(/\.(\d+)$/);
@@ -328,20 +329,20 @@ class Drawer extends Component {
 
                         let title;
 
-                        if (instance.common.adminTab.name) {
-                            if (typeof instance.common.adminTab.name === 'object') {
-                                if (instance.common.adminTab.name[this.props.lang]) {
-                                    title = instance.common.adminTab.name[this.props.lang];
-                                } else if (instance.common.adminTab.name.en) {
-                                    title = this.props.t(instance.common.adminTab.name.en);
+                        if (instance.adminTab.name) {
+                            if (typeof instance.adminTab.name === 'object') {
+                                if (instance.adminTab.name[this.props.lang]) {
+                                    title = instance.adminTab.name[this.props.lang];
+                                } else if (instance.adminTab.name.en) {
+                                    title = this.props.t(instance.adminTab.name.en);
                                 } else {
-                                    title = this.props.t(instance.common.name);
+                                    title = this.props.t(instance.name);
                                 }
                             } else {
-                                title = this.props.t(instance.common.adminTab.name);
+                                title = this.props.t(instance.adminTab.name);
                             }
                         } else {
-                            title = this.props.t(instance.common.name);
+                            title = this.props.t(instance.name);
                         }
 
 
@@ -353,13 +354,13 @@ class Drawer extends Component {
                         }
 
                         if (!obj.icon) {
-                            obj.icon = `adapter/${instance.common.name}/${instance.common.icon}`;
+                            obj.icon = `adapter/${instance.name}/${instance.icon}`;
                         }
 
                         obj.title = title;
 
                         if (!singleton) {
-                            obj.instance = instance;
+                            //obj.instance = instance;
                             if (instNum) {
                                 obj.title += ' ' + instNum;
                             }
@@ -385,21 +386,24 @@ class Drawer extends Component {
                     obj.visible = true;
                     return obj;
                 });
+
                 // Convert
-                this.props.socket.getSystemConfig(true)
-                    .then(newObj => {
-                        newObj.common.tabsVisible = newObj.common.tabsVisible || [];
+                this.props.socket.getCompactSystemConfig()
+                    .then(systemConfig => {
+                        systemConfig.common.tabsVisible = systemConfig.common.tabsVisible || [];
 
-                        if (!newObj.common.tabsVisible || tabs.length !== newObj.common.tabsVisible.length) {
+                        if (!systemConfig.common.tabsVisible || tabs.length !== systemConfig.common.tabsVisible.length) {
                             this.setState({tabs}, () => {
-                                newObj.common.tabsVisible = tabs.map(({ name, order, visible }) => ({ name, order, visible }));
+                                this.props.socket.getSystemConfig(true)
+                                    .then(newObj => {
+                                        newObj.common.tabsVisible = tabs.map(({ name, order, visible }) => ({ name, order, visible }));
 
-                                return this.props.socket.setSystemConfig(newObj)
-                                    .then(el => console.log('ok'))
-                                    .catch(e => window.alert('Cannot set system config: ' + e))
+                                        return this.props.socket.setSystemConfig(newObj)
+                                            .catch(e => window.alert('Cannot set system config: ' + e));
+                                    })
                             });
                         } else {
-                            let newTabs = newObj.common.tabsVisible.map(({ name, visible }) => {
+                            let newTabs = systemConfig.common.tabsVisible.map(({ name, visible }) => {
                                 let tab = tabs.find(el => el.name === name);
                                 tab.visible = visible;
                                 return tab;
@@ -439,32 +443,26 @@ class Drawer extends Component {
         return this.props.width === 'xs' || this.props.width === 'sm';
     }
 
-    tabsEditSystemConfig = async (idx) => {
+    tabsEditSystemConfig = idx => {
         const { tabs } = this.state;
         const { socket } = this.props;
         let newTabs = JSON.parse(JSON.stringify(tabs));
         if (idx !== undefined) {
             newTabs[idx].visible = !newTabs[idx].visible;
         }
-        let newObjCopy = await this.props.socket.getSystemConfig(true);
+        return this.props.socket.getSystemConfig(true)
+            .then(newObjCopy => {
+                newObjCopy.common.tabsVisible = newTabs.map(({ name, order, visible }) => ({ name, order, visible }));
 
-        newObjCopy.common.tabsVisible = newTabs.map(({ name, order, visible }) => ({ name, order, visible }));
-
-        if (idx !== undefined) {
-            this.setState({ tabs: newTabs }, async () => {
-                try {
-                    await socket.setSystemConfig(newObjCopy).then(el => console.log('ok'));
-                } catch (e) {
-                    window.alert('Cannot set system config: ' + e);
+                if (idx !== undefined) {
+                    this.setState({ tabs: newTabs }, () =>
+                        socket.setSystemConfig(newObjCopy)
+                            .catch(e => window.alert('Cannot set system config: ' + e)));
+                } else {
+                    return socket.setSystemConfig(newObjCopy)
+                        .catch(e => window.alert('Cannot set system config: ' + e));
                 }
             });
-        } else {
-            try {
-                await socket.setSystemConfig(newObjCopy).then(el => console.log('ok'));
-            } catch (e) {
-                window.alert('Cannot set system config: ' + e);
-            }
-        }
     }
 
     getNavigationItems() {
@@ -490,7 +488,8 @@ class Drawer extends Component {
                 badgeColor={logErrors ? 'error' : (logWarnings ? 'warn' : '')}
                 tabs={tabs}
                 setEndDrag={() => this.tabsEditSystemConfig()}
-                setTabs={newObj => this.setState({ tabs: newObj })}>
+                setTabs={newObj => this.setState({ tabs: newObj })}
+            >
                 <DrawerItem
                     key={tab.name}
                     editList={editList}
@@ -543,7 +542,6 @@ class Drawer extends Component {
     }
 
     render() {
-
         const { classes } = this.props;
 
         if (this.isSwipeable()) {

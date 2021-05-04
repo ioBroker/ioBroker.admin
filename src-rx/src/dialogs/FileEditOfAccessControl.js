@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Checkbox, FormControl, InputLabel, LinearProgress, MenuItem, Select, Switch } from '@material-ui/core';
+import { Checkbox, LinearProgress, Switch } from '@material-ui/core';
 
-import Icon from '@iobroker/adapter-react/Components/Icon';
 import I18n from '@iobroker/adapter-react/i18n';
 
+import Utils from '../Utils';
 import CustomModal from '../components/CustomModal';
-import AdminUtils from '../Utils';
-import Utils from '../components/Utils';
 import SelectWithIcon from '../components/SelectWithIcon';
 
 const readWriteArray = [
@@ -147,7 +145,7 @@ async function loadFolders(folderId, folders, socket) {
             const file = files[f];
             const item = {
                 id: folderId + '/' + file.file,
-                ext: AdminUtils.getFileExtension(file.file),
+                ext: Utils.getFileExtension(file.file),
                 folder: file.isDir,
                 name: file.file,
                 size: file.stats && file.stats.size,
@@ -216,7 +214,7 @@ async function loadPath(socket, folders, path, adapter, part, level) {
         files.forEach(file => {
             const item = {
                 id:       part + '/' + file.file,
-                ext:      AdminUtils.getFileExtension(file.file),
+                ext:      Utils.getFileExtension(file.file),
                 folder:   file.isDir,
                 name:     file.file,
                 size:     file.stats && file.stats.size,
