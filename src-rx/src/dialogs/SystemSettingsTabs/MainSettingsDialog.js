@@ -219,8 +219,8 @@ class MainSettingsDialog extends Component {
     onMap = map => {
         this.map = map;
         const center = [
-            this.props.data.common.latitude  ? this.props.data.common.latitude  : 50,
-            this.props.data.common.longitude ? this.props.data.common.longitude : 10
+            parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude  : 50) || 0,
+            parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : 10) || 0
         ];
 
         this.marker = window.L.marker(
@@ -375,8 +375,8 @@ class MainSettingsDialog extends Component {
         const selectors = this.getSettings().map((e, i) => this.getSelect(e, i));
 
         const center = [
-            this.props.data.common.latitude  ? this.props.data.common.latitude  : 50,
-            this.props.data.common.longitude ? this.props.data.common.longitude : 10
+            parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude  : 50) || 0,
+            parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : 10) || 0
         ];
 
         const { zoom } = this.state;
