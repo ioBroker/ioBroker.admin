@@ -600,7 +600,17 @@ const styles = theme => ({
     tooltipAccessControl: {
         display: 'flex',
         flexDirection: 'column'
-    }
+    },
+    '@media screen and (max-width: 465px)': {
+        columnsDialogInputWidth:{
+            width:50
+        },
+        fontSizeTitle: {
+            '& *':{
+                fontSize:12
+            }
+        },
+    },
 });
 
 function generateFile(filename, obj) {
@@ -1845,14 +1855,14 @@ class ObjectBrowser extends Component {
                         this.setState({ columns });
                     }
                 }} key={id}>
-                    <ListItemIcon>
+                    {/* <ListItemIcon> */}
                         <Checkbox
                             edge="start"
                             disabled={id === 'id' || this.state.columnsAuto}
                             checked={id === 'id' || (this.state.columnsAuto ? this.visibleCols.includes(id) : (this.state.columns && this.state.columns.includes(id)))}
                             disableRipple
                         />
-                    </ListItemIcon>
+                    {/* </ListItemIcon> */}
                     <ListItemText primary={this.texts['filter_' + id] || this.props.t('ra_' + id)} />
                     <ListItemSecondaryAction>
                         <FormControl className={this.props.classes.columnsDialogInputWidth} style={{ marginTop: 0, marginBottom: 0 }} margin="dense">
@@ -1888,8 +1898,8 @@ class ObjectBrowser extends Component {
                 open={true}
                 classes={{ root: Utils.clsx(this.props.classes.dialogColumns, this.props.classes['transparent_' + this.state.columnsDialogTransparent]) }}
             >
-                <DialogTitle>{this.props.t('ra_Configure visible columns')}</DialogTitle>
-                <DialogContent>
+                <DialogTitle className={this.props.classes.fontSizeTitle}>{this.props.t('ra_Configure visible columns')}</DialogTitle>
+                <DialogContent className={this.props.classes.fontSizeTitle}>
                     <FormControlLabel
                         className={this.props.classes.switchColumnAuto}
                         control={<Switch checked={this.state.columnsAuto} onChange={() => {

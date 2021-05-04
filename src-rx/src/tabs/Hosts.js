@@ -25,6 +25,7 @@ import clsx from 'clsx';
 import Utils from '../Utils';
 import BaseSettingsDialog from '../dialogs/BaseSettingsDialog';
 import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
+import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
 
 const styles = theme => ({
     grow: {
@@ -59,7 +60,7 @@ const styles = theme => ({
         fontWeight: 600,
         alignSelf: 'center'
     },
-    widthButtons:{
+    widthButtons: {
         width: 192,
     },
     tabFlex: {
@@ -259,30 +260,30 @@ const Hosts = ({
 
     const readInfo = () => {
         return socket.getHosts(true, false, readTimeoutMs)
-            .then(hostsArray => socket.getRepository(currentHost, {update: false}, false, readTimeoutMs)
-                    .then(async repositoryProm => {
-                        const _alive = JSON.parse(JSON.stringify(alive));
+            .then(hostsArray => socket.getRepository(currentHost, { update: false }, false, readTimeoutMs)
+                .then(async repositoryProm => {
+                    const _alive = JSON.parse(JSON.stringify(alive));
 
-                        for (let h = 0; h < hostsArray.length; h++) {
-                            let aliveValue = await socket.getState(`${hostsArray[h]._id}.alive`);
-                            _alive[hostsArray[h]._id] = !aliveValue ? false : !!aliveValue.val;
-                        }
+                    for (let h = 0; h < hostsArray.length; h++) {
+                        let aliveValue = await socket.getState(`${hostsArray[h]._id}.alive`);
+                        _alive[hostsArray[h]._id] = !aliveValue ? false : !!aliveValue.val;
+                    }
 
-                        setAlive(_alive);
+                    setAlive(_alive);
 
-                        setRepository(repositoryProm);
-                        setHosts(hostsArray);
-                        filterText && hostsArray.length <= 2 && setFilterText('');
-                        const hostDataObj = await getHostsData(hostsArray, _alive);
-                        setHostsData(hostDataObj);
+                    setRepository(repositoryProm);
+                    setHosts(hostsArray);
+                    filterText && hostsArray.length <= 2 && setFilterText('');
+                    const hostDataObj = await getHostsData(hostsArray, _alive);
+                    setHostsData(hostDataObj);
 
-                        // simulation
-                        // setTimeout(() => setShowSlowConnectionWarning(true), 5000);
-                    })
-                    .catch(e => {
-                        window.alert('Cannot getRepository: ' + e);
-                        e.toString().includes('timeout') && setShowSlowConnectionWarning(true);
-                    }));
+                    // simulation
+                    // setTimeout(() => setShowSlowConnectionWarning(true), 5000);
+                })
+                .catch(e => {
+                    window.alert('Cannot getRepository: ' + e);
+                    e.toString().includes('timeout') && setShowSlowConnectionWarning(true);
+                }));
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -297,8 +298,8 @@ const Hosts = ({
         renderCard: viewMode ? <HostCard
             systemConfig={systemConfig}
             key={_id}
-            setEditDialog={() => setEditDialog({index: idx, dialogName: name})}
-            setBaseSettingsDialog={() => setBaseSettingsDialog({index: idx, dialogName: name})}
+            setEditDialog={() => setEditDialog({ index: idx, dialogName: name })}
+            setBaseSettingsDialog={() => setBaseSettingsDialog({ index: idx, dialogName: name })}
             hostsWorker={hostsWorker}
             expertMode={expertMode}
             socket={socket}
@@ -308,6 +309,7 @@ const Hosts = ({
             image={icon}
             title={title}
             os={platform}
+            openHostUpdateDialog={()=>openHostUpdateDialog(name)}
             description={getHostDescriptionAll(_id, t, classes, hostsData)[0]}
             available={repository['js-controller']?.version || '-'}
             executeCommandRemove={() => executeCommand(`host remove ${name}`)}
@@ -339,6 +341,7 @@ const Hosts = ({
             image={icon}
             title={title}
             os={platform}
+            openHostUpdateDialog={()=>openHostUpdateDialog(name)}
             executeCommandRemove={() => executeCommand(`host remove ${name}`)}
             dialogUpgrade={JsControllerDialogFunc}
             currentHost={currentHost === _id}
@@ -355,9 +358,9 @@ const Hosts = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     ), [hosts, alive, repository, hostsData, classes, expertMode, viewMode]);
 
-    const [editDialog, setEditDialog] = useState({index: 0, dialogName: ''});
+    const [editDialog, setEditDialog] = useState({ index: 0, dialogName: '' });
 
-    const [baseSettingsDialog, setBaseSettingsDialog] = useState({index: 0, dialogName: ''});
+    const [baseSettingsDialog, setBaseSettingsDialog] = useState({ index: 0, dialogName: '' });
 
     const getPanels = useCallback(() => {
         const items = getAllArrayHosts.filter(el => filterText ? el.name.toLowerCase().includes(filterText.toLowerCase()) : true).map(el => viewMode ? el.renderCard : el.renderRow);
@@ -375,9 +378,9 @@ const Hosts = ({
             currentHostName={baseSettingsDialog.dialogName}
             key="base"
             onClose={() => setBaseSettingsDialog({
-                    index: 0,
-                    dialogName: ''
-                })}
+                index: 0,
+                dialogName: ''
+            })}
             lang={lang}
             // showAlert={(message, type) => this.showAlert(message, type)}
             socket={socket}
@@ -428,6 +431,63 @@ const Hosts = ({
         }
     }
 
+    const [hostUpdateDialog, setHostUpdateDialog] = useState(false);
+    const [hostUpdate, setHostUpdate] = useState(null);
+
+    const closeHostUpdateDialog = (cb) => {
+        setHostUpdateDialog(false);
+        setHostUpdate(null);
+        cb && cb();
+    }
+
+    const openHostUpdateDialog = (hostName, cb) => {
+        setHostUpdateDialog(true);
+        setHostUpdate(hostName);
+        cb && cb();
+    }
+
+    const update = (adapter) => {
+        executeCommand('upgrade ' + adapter);
+    }
+
+    const hostUpdateDialogCb = () => {
+        if (!hostUpdateDialog) {
+            return null;
+        } else {
+            return <AdapterUpdateDialog
+                open={hostUpdateDialog}
+                adapter={hostUpdate}
+                rightDependencies
+                t={t}
+                // dependencies={Adapters.getDependencies(hostUpdate)}
+                // rightDependencies={Adapters.rightDependencies(hostUpdate)}
+                // news={Adapters.getNews(hostUpdate)}
+                onUpdate={() => {
+                    closeHostUpdateDialog(() => update(hostUpdate));
+                }}
+                // onIgnore={ignoreVersion => {
+                //     const adapter = this.state.adapterUpdateAdapter;
+                //     this.closeAdapterUpdateDialog(() => {
+                //         this.props.socket.getObject('system.adapter.' + adapter)
+                //             .then(obj => {
+                //                 obj.common.ignoreVersion = ignoreVersion;
+                //                 return this.props.socket.setObject(obj._id, obj)
+                //             })
+                //             .then(() => {
+                //                 const updateAvailable = [...this.state.updateAvailable];
+                //                 const pos = updateAvailable.indexOf(adapter);
+                //                 if (pos !== -1) {
+                //                     updateAvailable.splice(pos, 1);
+                //                     this.setState({ updateAvailable });
+                //                 }
+                //             })
+                //     })
+                // }}
+                onClose={()=>closeHostUpdateDialog()}
+            />
+        }
+    }
+
     if (!hosts.length) {
         return <LinearProgress />;
     }
@@ -436,6 +496,7 @@ const Hosts = ({
         {renderEditObjectDialog()}
         {baseSettingsSettingsDialog()}
         {renderSlowConnectionWarning()}
+        {hostUpdateDialogCb()}
         <TabHeader>
             <Tooltip title={t('Show / hide List')}>
                 <IconButton onClick={() => setViewMode(!viewMode)}>
@@ -483,7 +544,7 @@ const Hosts = ({
                             <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{t('Available')}</div>
                             <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{t('Installed')}</div>
                             <div className={clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Events')}</div>
-                            <div className={clsx(classes.tabHeaderItemButton,expertMode && classes.widthButtons)} />
+                            <div className={clsx(classes.tabHeaderItemButton, expertMode && classes.widthButtons)} />
                         </div>
                     </div>}
                 {getPanels()}

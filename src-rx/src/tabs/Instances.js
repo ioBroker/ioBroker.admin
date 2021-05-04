@@ -545,6 +545,10 @@ class Instances extends Component {
         return obj?.common?.memoryLimitMB;
     }
 
+    isCurrentHost = obj => {
+        return obj?.common?.host;
+    }
+
     getRestartSchedule = obj => {
         return obj?.common?.restartSchedule ? obj.common.restartSchedule : '';
     }
@@ -678,10 +682,13 @@ class Instances extends Component {
             const checkSentry     = this.isSentryCheck(instance.adapter);
             const currentSentry   = this.isSentry(instance.obj);
             const memoryLimitMB   = this.isMemoryLimitMB(instance.obj);
+            const currentHost   = this.isCurrentHost(instance.obj);
+            
 
             return {
                 render: this.state.viewMode ?
                     <InstanceCard
+                        currentHost={currentHost}
                         t={this.t}
                         key={instance.id}
                         name={name}
@@ -728,6 +735,7 @@ class Instances extends Component {
                         host={instance.host}
                     /> :
                     <InstanceRow
+                        currentHost={currentHost}
                         idx={idx}
                         t={this.t}
                         key={instance.id}

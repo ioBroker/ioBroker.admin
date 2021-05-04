@@ -353,6 +353,11 @@ const styles = theme => ({
             display: 'flex !important'
         },
     },
+    '@media screen and (max-width: 1230px)': {
+        hidden1230: {
+            display: 'none !important'
+        }
+    },
     '@media screen and (max-width: 1050px)': {
         hidden1050: {
             display: 'none !important'
@@ -392,7 +397,7 @@ const styles = theme => ({
             width: 100,
         },
         maxWidth300: {
-            width:`250px !important`
+            width: `250px !important`
         }
     },
     '@media screen and (max-width: 335px)': {
@@ -564,6 +569,7 @@ const InstanceRow = ({
     adminInstance,
     hosts,
     host,
+    currentHost
 }) => {
     const [openSelectCompactGroup, setOpenSelectCompactGroup] = useState(false);
     const [openDialogCron, setOpenDialogCron] = useState(false);
@@ -742,7 +748,7 @@ const InstanceRow = ({
                 onChange={el => setHostValue(el.target.value)}
             >
                 {hosts.map(item => <MenuItem key={item._id} value={item.common?.hostname || item._id.replace(/^system\.host\./, '')}>
-                    <Icon src={item.common.icon}/>{item.common?.name || item._id}
+                    <Icon src={item.common.icon} />{item.common?.name || item._id}
                 </MenuItem>)}
             </Select>
         </FormControl>}
@@ -822,13 +828,21 @@ const InstanceRow = ({
             />}
             <Grid container spacing={1} alignItems="center" direction="row" wrap="nowrap">
                 <div className={classes.gridStyle}>
-                    <Avatar className={clsx(
-                        classes.smallAvatar,
-                        classes.statusIndicator,
-                        instance.mode === 'daemon' || instance.mode === 'schedule' ? classes[state] : classes.transparent
-                    )}>
-                        {getModeIcon(instance.mode)}
-                    </Avatar>
+                    <Tooltip title={<span style={{ display: 'flex', flexDirection: 'column' }}>{[instance.mode === 'daemon' ? <State key={1} state={connectedToHost} >{t('Connected to host')}</State> : '',
+                    instance.mode === 'daemon' ? <State key={2} state={alive} >{t('Heartbeat')}</State> : '',
+                    connected !== null ? <State key={3} state={connected}>
+                        {t('Connected to %s', instance.adapter)}
+                    </State> : ''
+                    ]}</span>}>
+                        <Avatar className={clsx(
+                            classes.smallAvatar,
+                            classes.statusIndicator,
+                            instance.mode === 'daemon' || instance.mode === 'schedule' ? classes[state] : classes.transparent,
+                            connectedToHost && alive && connected === false && classes.orange
+                        )}>
+                            {getModeIcon(instance.mode)}
+                        </Avatar>
+                    </Tooltip>
                     <Avatar
                         variant="square"
                         alt={instance.id}
@@ -961,6 +975,9 @@ const InstanceRow = ({
                     >
                         {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
                     </InstanceInfo>
+                </Grid>
+                <Grid item className={clsx(classes.hidden1230)}>
+                    {currentHost}
                 </Grid>
             </Grid>
             <div className={classes.hidden570}>

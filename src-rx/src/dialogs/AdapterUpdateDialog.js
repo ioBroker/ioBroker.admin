@@ -26,7 +26,24 @@ const styles = theme => ({
     },
     typography: {
         paddingRight: 30
-    }
+    },
+    wrapperButton:{
+
+    },
+    '@media screen and (max-width: 465px)': {
+        wrapperButton: {
+            '& *':{
+                fontSize:10
+            }
+        },
+    },
+    '@media screen and (max-width: 380px)': {
+        wrapperButton: {
+            '& *':{
+                fontSize:9
+            }
+        },
+    },
 });
 
 class AdapterUpdateDialog extends Component {
@@ -124,7 +141,7 @@ class AdapterUpdateDialog extends Component {
                     </Grid>
                 </Grid>
             </DialogContent>
-            <DialogActions>
+            <DialogActions className={classes.wrapperButton}>
                 {!!this.props.rightDependencies && <Button
                     onClick={() =>
                         this.props.onIgnore(version)}
