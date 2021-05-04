@@ -579,7 +579,7 @@ class Instances extends Component {
 
     isConnected = id => {
         const instance = this.state.instances[id];
-        return this.states[instance.id + '.info.connection'] ? !!this.states[instance.id + '.info.connection'].val : null;
+        return this.states[instance.id + '.info.connection'] ? this.states[instance.id + '.info.connection'].val : null;
     }
 
     getHeaders() {

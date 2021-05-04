@@ -1022,8 +1022,8 @@ const InstanceRow = ({
                         {instance.mode === 'daemon' && <State state={connectedToHost} >{t('Connected to host')}</State>}
                         {instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
                         {connected !== null &&
-                            <State state={connected}>
-                                {t('Connected to %s', instance.adapter)}
+                            <State state={!!connected}>
+                                {typeof connected === 'string' ? t('Connected: ') + (connected || '-') : t('Connected to device or service')}
                             </State>
                         }
                     </Grid>

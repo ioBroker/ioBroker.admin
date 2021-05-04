@@ -112,6 +112,7 @@ class ObjectCustomEditor extends Component {
             hasChanges: false,
             expanded,
             newValues: {},
+            progress: null,
         };
 
         this.scrollDone   = false;
@@ -124,6 +125,8 @@ class ObjectCustomEditor extends Component {
         this.controls     = {};
         this.refTemplate  = {};
         this.props.customsInstances.map(id => this.refTemplate[id] = createRef());
+
+        this.maxOids      = null;
 
         this.customObj    = this.props.objectIDs.length > 1 ? {custom: {}, native: {}} : JSON.parse(JSON.stringify(this.props.objects[this.props.objectIDs[0]] || null));
 
@@ -516,7 +519,7 @@ class ObjectCustomEditor extends Component {
         _objects    = _objects    || {};
         _oldObjects = _oldObjects || {};
 
-        if (!ids || !ids.length) {
+        if (!ids || !ids.length) {            
             // save all objects
             const keys = Object.keys(_objects);
             if (!keys.length) {
@@ -545,6 +548,13 @@ class ObjectCustomEditor extends Component {
                 }
             }
         } else {
+            // TODO progress bar
+            if (this.maxOids === null) {
+                this.maxOids = ids.length;    
+            }
+
+            this.setState({progress: Math.round((this.maxOids - ids.length) / this.maxOids)});
+
             const id = ids.shift();
             this.getObject(_objects, _oldObjects, id)
                 .then(obj => {
