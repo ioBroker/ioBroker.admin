@@ -1,11 +1,14 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 
 import { DndProvider, useDrop, useDrag } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
+import { HTML5Backend, getEmptyImage } from 'react-dnd-html5-backend';
+import { TouchBackend } from 'react-dnd-touch-backend';
+import { usePreview } from 'react-dnd-preview'
 
 import ObjectBrowser from '../../components/ObjectBrowser';
 
 import EnumBlock from './EnumBlock';
+import CategoryLabel from './CategoryLabel';
 import EnumEditDialog from './EnumEditDialog';
 import EnumDeleteDialog from './EnumDeleteDialog';
 
@@ -26,13 +29,13 @@ import {withStyles} from '@material-ui/core/styles';
 
 const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, .2)';
 const styles = theme => ({
-
+   
     canDrop:{
         backgroundColor:theme.palette.background.default
     } ,
     enumGroupCard2: {
         border: "1px solid #FFF",
-        borderColor: theme.palette.divider,
+        borderColor: theme.palette.divider, 
         margin:    10,
         minHeight: 140,
         backgroundColor: theme.palette.background.default,
@@ -43,7 +46,7 @@ const styles = theme => ({
         '&:hover': {
             overflowY: 'auto',
             boxShadow: boxShadowHover
-        }
+        } 
     },
     enumGroupCardSecondary:{
         color: theme.palette.text.primary,
@@ -52,7 +55,7 @@ const styles = theme => ({
     enumCardContent:
     {
         height:"100%",
-        opacity:1
+        opacity:1 
     },
     enumGroupTitle: {
         display: 'inline-flex',
@@ -78,7 +81,7 @@ const styles = theme => ({
         padding: 4,
         backgroundColor: "#00000010",
         border: "1px solid #FFF",
-        borderColor: theme.palette.text.hint,
+        borderColor: theme.palette.text.hint, 
         color: theme.palette.text.primary,
         alignItems: 'center',
     },
@@ -87,7 +90,8 @@ const styles = theme => ({
         width: 32,
         marginRight:5,
         backgroundSize: "cover",
-        backgroundPosition:"center"
+        backgroundPosition:"center",
+        display: 'inline-block'
     },
     right: {
         float: 'right',
@@ -97,16 +101,16 @@ const styles = theme => ({
         marginRight:10
     },
     dialog: {
-        // padding: 10,
-
+        // padding: 10, 
+        
         // maxWidth: '100vw',
         // maxHeight: '100vh',
         // overflowY: 'auto',
         // overflowX: 'hidden',
         // padding: 0
-    },
+    }, 
     flex : {
-        display: "flex"
+        display: "flex" 
     },
     formControl : {
         display: "flex",
@@ -144,7 +148,7 @@ const styles = theme => ({
         width:"100%"
     },
     dialogActions: {
-        borderTop: "1px solid #00000020",
+        borderTop: "1px solid #00000020", 
         width:"100%"
     },
     dialogPaper: {
@@ -163,7 +167,7 @@ const styles = theme => ({
     },
     colorPicker: {
         // position:"absolute"
-    },
+    },  
     iconPreview: {
         maxHeight: 40,
         maxWidth: 40,
@@ -173,29 +177,58 @@ const styles = theme => ({
     },
     deleteDialog: {
         padding: 20
+    },
+    categoryTitle: {
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        display: 'inline-flex'
     }
 });
 
-const DragObjectBrowser = (props) => {
-    let onDragEnd = (item, monitor) => {
-        const dropResult = monitor.getDropResult();
-        if (item && dropResult) {
-            console.log(item);
-            props.addItemToEnum(item.data.obj._id, dropResult.enum_id);
-        }
-    };
-    let dragSettings = {
-        type: 'object',
-        end: onDragEnd
+const DndPreview = () => {
+    const {display/*, itemType*/, item, style} = usePreview();
+    if (!display) {
+        return null;
     }
+    return <div style={style}>{item.preview}</div>;
+}
+
+function isTouchDevice() {
+    return (('ontouchstart' in window) ||
+        (navigator.maxTouchPoints > 0) ||
+        (navigator.msMaxTouchPoints > 0));
+}
+
+const DragObjectBrowser = (props) => {
+    let browserProps = props;
+    const DragWrapper = props => {
+        let onDragEnd = (item, monitor) => {
+            const dropResult = monitor.getDropResult();
+            if (item.data && dropResult) {
+                browserProps.addItemToEnum(item.data.obj._id, dropResult.enum_id);
+            }
+        };
+        let dragSettings = {
+            type: 'object',
+            end: onDragEnd,
+        }
+        dragSettings.item = {data: props.item.data, preview: props.children};
+        const [{ isDragging }, dragRef, preview] = useDrag(dragSettings);
+        useEffect(() => {
+            preview(getEmptyImage(), { captureDraggingState: true });
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, []);
+    
+        return <div ref={dragRef} style={{ backgroundColor: isDragging ? 'rgba(100,152,255,0.1)' : undefined }}>{props.children}</div>;
+    }
+    
     return <ObjectBrowser
         t={props.t}
-        useDrag={useDrag}
         socket={props.socket}
         types={['state', 'channel', 'device']}
         lang={props.lang}
         dragEnabled
-        dragSettings={dragSettings}
+        DragWrapper={DragWrapper}
     />
 }
 
@@ -312,8 +345,7 @@ class EnumsList extends Component {
         if (!members.includes(itemId)) {
             members.push(itemId);
             this.props.socket.setObject(enumItem._id, enumItem).then(() => {
-                this.updateData(); // TODO: may be here make an optimisation: if no error returned, assume that the value is set
-                                   // to not read all the objects again. And on all other simple changes too: edit, remove member, delete, copy enum..
+                this.updateData();
             });
         }
     }
@@ -335,7 +367,7 @@ class EnumsList extends Component {
                 let newId = id.replace(fromPrefix, toPrefix);
                 let newEnum = JSON.parse(JSON.stringify(enumItem));
                 newEnum._id = newId;
-                return this.props.socket.setObject(newId, enumItem).then(() =>
+                return this.props.socket.setObject(newId, enumItem).then(
                     this.props.socket.delObject(id)
                 );
             }
@@ -351,7 +383,7 @@ class EnumsList extends Component {
                 this.updateData();
             });
         }
-    }
+    } 
 
     renderTree(container) {
         return <div style={{paddingLeft: '10px'}}>
@@ -418,9 +450,9 @@ class EnumsList extends Component {
     changeEnumFormData = (enumItem) => {
         this.setState({enumEditDialog: enumItem})
     }
-
+    
     getName(name) {
-        return typeof name === 'object' ? name.en : name;
+        return typeof(name) === 'object' ? name.en : name;
     }
 
     render() {
@@ -428,19 +460,20 @@ class EnumsList extends Component {
             return 'loading';
         }
         return <>
-            <DndProvider backend={HTML5Backend}>
+            <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
+                <DndPreview />
                 <Grid container>
                     <Grid md={6} item>
-                    <Fab
+                    <Fab 
                         size="small"
                         id="categoryPopoverButton"
-                        className={this.props.classes.left}
+                        className={this.props.classes.left} 
                         onClick={()=>this.setState({categoryPopoverOpen: true})}
                     >
                         <AddIcon/>
                     </Fab>
-                    <Popover
-                        open={this.state.categoryPopoverOpen}
+                    <Popover 
+                        open={this.state.categoryPopoverOpen} 
                         onClose={() => this.setState({categoryPopoverOpen: false})}
                         anchorEl={()=>document.getElementById('categoryPopoverButton')}
                         anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
@@ -462,21 +495,34 @@ class EnumsList extends Component {
                         scrollButtons="auto"
                         onChange={(e, newTab) => this.setState({currentCategory: newTab})}
                     >
-                        {Object.keys(this.state.enumsTree.children.enum.children).map((category, index) =>
-                            <Tab key={index} label={category} value={category} />
+                        {Object.keys(this.state.enumsTree.children.enum.children).map((category, index) => 
+                        {
+                            let categoryData = this.state.enumsTree.children.enum.children[category].data;
+                            return <Tab 
+                                key={index} 
+                                style={{backgroundColor: categoryData.common.color, borderRadius: 4}}
+                                label={<CategoryLabel 
+                                    categoryData={categoryData}
+                                    showEnumEditDialog={this.showEnumEditDialog}
+                                    showEnumDeleteDialog={this.showEnumDeleteDialog}
+                                    {...this.props}
+                                />}
+                                value={category} 
+                            />
+                        }
                         )}
                     </Tabs>
                         <div>
                             <TextField value={this.state.search} onChange={e => this.setState({search: e.target.value})}/>
-                            <Fab
-                                size="small"
+                            <Fab 
+                                size="small" 
                                 onClick={()=>this.setState({enumPopoverOpen: true})}
                                 id="enumPopoverButton"
                             >
                                 <AddIcon/>
                             </Fab>
-                            <Popover
-                                open={this.state.enumPopoverOpen}
+                            <Popover 
+                                open={this.state.enumPopoverOpen} 
                                 onClose={() => this.setState({enumPopoverOpen: false})}
                                 anchorEl={()=>document.getElementById('enumPopoverButton')}
                                 anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
@@ -488,7 +534,7 @@ class EnumsList extends Component {
                                 </MenuList>
                             </Popover>
                         </div>
-                        {this.renderTree(this.state.enumsTree.children.enum.children[this.state.currentCategory])}
+                        {Object.values(this.state.enumsTree.children.enum.children[this.state.currentCategory].children).map(enumItem => this.renderTree(enumItem))}
                     </Grid>
                     <Grid md={6} item>
                         <DragObjectBrowser
@@ -498,8 +544,8 @@ class EnumsList extends Component {
                     </Grid>
                 </Grid>
             </DndProvider>
-            <EnumEditDialog
-                open={!!this.state.enumEditDialog}
+            <EnumEditDialog 
+                open={!!this.state.enumEditDialog} 
                 onClose={()=>this.setState({enumEditDialog: false})}
                 enums={Object.values(this.state.enums)}
                 enum={this.state.enumEditDialog}
@@ -509,8 +555,8 @@ class EnumsList extends Component {
                 change={this.changeEnumFormData}
                 saveData={this.saveEnum}
             />
-            <EnumDeleteDialog
-                open={!!this.state.enumDeleteDialog}
+            <EnumDeleteDialog 
+                open={!!this.state.enumDeleteDialog} 
                 onClose={()=>this.setState({enumDeleteDialog: false})}
                 enum={this.state.enumDeleteDialog}
                 t={this.props.t}

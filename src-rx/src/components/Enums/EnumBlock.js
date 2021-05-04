@@ -1,4 +1,6 @@
+import { useEffect, useRef } from 'react'
 import { DragPreviewImage, useDrag, useDrop } from 'react-dnd';
+import { getEmptyImage } from 'react-dnd-html5-backend';
 import Color from 'color';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
@@ -14,47 +16,19 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import Icon from '@iobroker/adapter-react/Components/Icon';
 
 function EnumBlock(props) {
-    const [{ canDrop, isOver }, drop] = useDrop(() => ({
-        accept: ['object', 'enum'],
-        drop: () => ({ enum_id: props.enum._id }),
-        collect: (monitor) => ({
-            isOver: monitor.isOver(),
-            canDrop: monitor.canDrop(),
-        }),
-    }));
 
-    const [{ isDragging }, dragRef, preview] = useDrag(
-        {
-            type: 'enum',
-            item: {enum_id: props.enum._id},
-            end: (item, monitor) => {
-                const dropResult = monitor.getDropResult();
-                props.moveEnum(item.enum_id, dropResult.enum_id);
-            },
-            collect: (monitor) => ({
-                isDragging: monitor.isDragging(),
-                handlerId: monitor.getHandlerId(),
-            }),
-        }
-    );
+    const opacity = props.isDragging ? 0 : 1;
 
-    const opacity = isDragging ? 0.4 : 1;
+    let textColor = !props.enum || !props.enum.common || !props.enum.common.color || Color(props.enum.common.color).hsl().object().l > 50 ? '#000000' : '#FFFFFF';
 
-    let textColor = !props.enum ||  !props.enum.common || !props.enum.common.color || Color(props.enum.common.color).hsl().object().l > 50 ? '#000000' : '#FFFFFF';
     if (!props.enum.common.color) {
         textColor = null;
     }
-    let style = { cursor: 'grab', opacity, overflow: "hidden", color: textColor }
-    if( props.enum.common.color )
-    {
+    let style = { cursor: 'grab', opacity, overflow: 'hidden', color: textColor }
+    if (props.enum.common.color) {
         style.backgroundColor = props.enum.common.color;
-        if (!props.enum.common.color) {
-            textColor = null;
-        }
     }
-    return <div ref={drop}>
-        <DragPreviewImage connect={preview}/>
-        <Card   ref={dragRef}
+    return <Card
             style={ style }
             className={props.classes.enumGroupCard2}
 
@@ -151,7 +125,45 @@ function EnumBlock(props) {
                 </CardContent>
             </div>
         </Card>
-    </div>
 }
 
-export default EnumBlock;
+const EnumBlockDrag = (props) => {
+    const [{ canDrop, isOver }, drop] = useDrop(() => ({
+        accept: ['object', 'enum'],
+        drop: () => ({ enum_id: props.enum._id }),
+        collect: (monitor) => ({
+            isOver: monitor.isOver(),
+            canDrop: monitor.canDrop(),
+        }),
+    }));
+
+    const widthRef = useRef();
+    const [{ isDragging }, dragRef, preview] = useDrag(
+        {
+            type: 'enum',
+            item: () => {return {enum_id: props.enum._id, preview: <div style={{width: widthRef.current.offsetWidth}}><EnumBlock {...props}/></div>}},
+            end: (item, monitor) => {
+                const dropResult = monitor.getDropResult();
+                props.moveEnum(item.enum_id, dropResult.enum_id);
+            },
+            collect: (monitor) => ({
+                isDragging: monitor.isDragging(),
+                handlerId: monitor.getHandlerId(),
+            }),
+        }
+    );
+    useEffect(() => {
+        preview(getEmptyImage(), { captureDraggingState: true });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    return <div ref={drop}>
+        <div ref={dragRef}>
+            <div ref={widthRef}>
+                <EnumBlock isDragging={isDragging} widthRef={widthRef} {...props}/>
+            </div>
+        </div>
+    </div>;
+}
+
+export default EnumBlockDrag;

@@ -1374,15 +1374,6 @@ const SCREEN_WIDTHS = {
     },
 };
 
-const DraggableObject = props => {
-    let dragSettings = { ...props.dragSettings };
-    dragSettings.item = props.item;
-    const useDrag = props.useDrag;
-    const [{ isDragging }, dragRef] = useDrag(dragSettings);
-
-    return <div ref={dragRef} style={{ backgroundColor: isDragging ? 'rgba(100,152,255,0.1)' : undefined }}>{props.children}</div>;
-}
-
 /**
  * @extends {React.Component<import('./types').ObjectBrowserProps>}
  */
@@ -3819,8 +3810,9 @@ class ObjectBrowser extends Component {
         const items = [];
         counter = counter || { count: 0 };
         let leaf = this.renderLeaf(root, isExpanded, classes, counter);
+        let DragWrapper = this.props.DragWrapper;
         if (this.props.dragEnabled) {
-            leaf = <DraggableObject item={root} dragSettings={this.props.dragSettings} useDrag={this.props.useDrag}>{leaf}</DraggableObject>;
+            leaf = <DragWrapper item={root}>{leaf}</DragWrapper>;
         }
         root.data.id && items.push(leaf);
 
@@ -4310,6 +4302,7 @@ ObjectBrowser.propTypes = {
     types: PropTypes.array,   // optional ['state', 'instance', 'channel']
     columns: PropTypes.array, // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
     dragSettings: PropTypes.object,
+    DragWrapper: PropTypes.func,
     dragEnabled: PropTypes.bool,
     useDrag: PropTypes.func,
 };
