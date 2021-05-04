@@ -1,11 +1,14 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 
 import { DndProvider, useDrop, useDrag } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
+import { HTML5Backend, getEmptyImage } from 'react-dnd-html5-backend';
+import { TouchBackend } from 'react-dnd-touch-backend';
+import { usePreview } from 'react-dnd-preview'
 
 import ObjectBrowser from '../../components/ObjectBrowser';
 
 import EnumBlock from './EnumBlock';
+import CategoryLabel from './CategoryLabel';
 import EnumEditDialog from './EnumEditDialog';
 import EnumDeleteDialog from './EnumDeleteDialog';
 
@@ -87,7 +90,8 @@ const styles = theme => ({
         width: 32,
         marginRight:5,
         backgroundSize: "cover",
-        backgroundPosition:"center"
+        backgroundPosition:"center",
+        display: 'inline-block'
     },
     right: {
         float: 'right',
@@ -173,29 +177,58 @@ const styles = theme => ({
     },
     deleteDialog: {
         padding: 20
+    },
+    categoryTitle: {
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        display: 'inline-flex'
     }
 });
 
-const DragObjectBrowser = (props) => {
-    let onDragEnd = (item, monitor) => {
-        const dropResult = monitor.getDropResult();
-        if (item && dropResult) {
-            console.log(item);
-            props.addItemToEnum(item.data.obj._id, dropResult.enum_id);
-        }
-    };
-    let dragSettings = {
-        type: 'object',
-        end: onDragEnd
+const DndPreview = () => {
+    const {display/*, itemType*/, item, style} = usePreview();
+    if (!display) {
+        return null;
     }
+    return <div style={style}>{item.preview}</div>;
+}
+
+function isTouchDevice() {
+    return (('ontouchstart' in window) ||
+        (navigator.maxTouchPoints > 0) ||
+        (navigator.msMaxTouchPoints > 0));
+}
+
+const DragObjectBrowser = (props) => {
+    let browserProps = props;
+    const DragWrapper = props => {
+        let onDragEnd = (item, monitor) => {
+            const dropResult = monitor.getDropResult();
+            if (item.data && dropResult) {
+                browserProps.addItemToEnum(item.data.obj._id, dropResult.enum_id);
+            }
+        };
+        let dragSettings = {
+            type: 'object',
+            end: onDragEnd,
+        }
+        dragSettings.item = {data: props.item.data, preview: props.children};
+        const [{ isDragging }, dragRef, preview] = useDrag(dragSettings);
+        useEffect(() => {
+            preview(getEmptyImage(), { captureDraggingState: true });
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, []);
+    
+        return <div ref={dragRef} style={{ backgroundColor: isDragging ? 'rgba(100,152,255,0.1)' : undefined }}>{props.children}</div>;
+    }
+    
     return <ObjectBrowser
         t={props.t}
-        useDrag={useDrag}
         socket={props.socket}
         types={['state', 'channel', 'device']}
         lang={props.lang}
         dragEnabled
-        dragSettings={dragSettings}
+        DragWrapper={DragWrapper}
     />
 }
 
@@ -427,7 +460,8 @@ class EnumsList extends Component {
             return 'loading';
         }
         return <>
-            <DndProvider backend={HTML5Backend}>
+            <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
+                <DndPreview />
                 <Grid container>
                     <Grid md={6} item>
                     <Fab 
@@ -462,7 +496,20 @@ class EnumsList extends Component {
                         onChange={(e, newTab) => this.setState({currentCategory: newTab})}
                     >
                         {Object.keys(this.state.enumsTree.children.enum.children).map((category, index) => 
-                            <Tab key={index} label={category} value={category} />
+                        {
+                            let categoryData = this.state.enumsTree.children.enum.children[category].data;
+                            return <Tab 
+                                key={index} 
+                                style={{backgroundColor: categoryData.common.color, borderRadius: 4}}
+                                label={<CategoryLabel 
+                                    categoryData={categoryData}
+                                    showEnumEditDialog={this.showEnumEditDialog}
+                                    showEnumDeleteDialog={this.showEnumDeleteDialog}
+                                    {...this.props}
+                                />}
+                                value={category} 
+                            />
+                        }
                         )}
                     </Tabs>
                         <div>
@@ -487,7 +534,7 @@ class EnumsList extends Component {
                                 </MenuList>
                             </Popover>
                         </div>
-                        {this.renderTree(this.state.enumsTree.children.enum.children[this.state.currentCategory])}
+                        {Object.values(this.state.enumsTree.children.enum.children[this.state.currentCategory].children).map(enumItem => this.renderTree(enumItem))}
                     </Grid>
                     <Grid md={6} item>
                         <DragObjectBrowser

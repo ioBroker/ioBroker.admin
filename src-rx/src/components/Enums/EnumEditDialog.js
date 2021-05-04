@@ -70,7 +70,7 @@ function EnumEditDialog(props) {
                         value={ props.enum.common.name }
                         onChange={e=>{
                             let newData = props.enum;
-                            if (name2Id(newData.common.name) === getShortId(newData._id)) {
+                            if (!props.enum.common.dontDelete && name2Id(newData.common.name) === getShortId(newData._id)) {
                                 newData._id = changeShortId(newData._id, name2Id(e.target.value));
                             }
                             newData.common.name = e.target.value;
