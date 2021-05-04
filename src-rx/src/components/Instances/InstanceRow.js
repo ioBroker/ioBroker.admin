@@ -5,7 +5,9 @@ import clsx from 'clsx';
 
 import {
     Accordion, AccordionDetails, AccordionSummary, Avatar,
-    Button, CardMedia, FormControl, Grid, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography
+    Button, CardMedia, FormControl, Grid, Hidden, IconButton,
+    InputLabel, MenuItem, Select, Tooltip, Typography,
+    FormControlLabel, Checkbox, FormHelperText
 } from '@material-ui/core';
 import { amber, blue, green, grey, red, orange } from '@material-ui/core/colors';
 
@@ -578,10 +580,13 @@ const InstanceRow = ({
     const [showLinks, setShowLinks] = useState(false);
 
     const [logLevelValue, setLogLevelValue] = useState(logLevel);
+    const [logOnTheFlyValue, setLogOnTheFlyValue] = useState(false);
     const [compactValue, setCompactValue] = useState(compactGroup || 0);
     const [compactGroupCountValue, setCompactGroupCountValue] = useState(compactGroupCount);
     const [tierValue, setTierValue] = useState(tier);
     const [hostValue, setHostValue] = useState(host);
+
+    const [visibleEdit, handlerEdit] = useState(false);
 
     let showModal = false;
     let title;
@@ -620,7 +625,7 @@ const InstanceRow = ({
         defaultValue={openDialogText ? name : openDialogMemoryLimit ? memoryLimitMB : ''}
         onApply={value => {
             if (openDialogLogLevel) {
-                setLogLevel(instance, logLevelValue);
+                setLogLevel(instance, logLevelValue, logOnTheFlyValue);
                 setOpenDialogLogLevel(false);
             } else if (openDialogText) {
                 setName(instance, value);
@@ -645,6 +650,7 @@ const InstanceRow = ({
         onClose={() => {
             if (openDialogLogLevel) {
                 setLogLevelValue(logLevel);
+                setLogOnTheFlyValue(false);
                 setOpenDialogLogLevel(false);
             } else if (openDialogText) {
                 setOpenDialogText(false);
@@ -676,6 +682,13 @@ const InstanceRow = ({
                     {t(el)}
                 </MenuItem>)}
             </Select>
+        </FormControl>}
+        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined" >
+            <FormControlLabel
+                control={<Checkbox checked={logOnTheFlyValue} onChange={e => setLogOnTheFlyValue(e.target.checked)} />}
+                label={t('Without restart')}
+            />
+            <FormHelperText>{logOnTheFlyValue ? t('Will be reset to the saved log level after restart of adapter') : t('Log level will be saved permanently')}</FormHelperText>
         </FormControl>}
         {openDialogCompact && <FormControl className={classes.formControl2} variant="outlined" >
             <InputLabel>{t('compact groups')}</InputLabel>
@@ -734,8 +747,6 @@ const InstanceRow = ({
             </Select>
         </FormControl>}
     </CustomModal> : null;
-
-    const [visibleEdit, handlerEdit] = useState(false);
 
     const state = getInstanceState(id);
 
@@ -796,9 +807,9 @@ const InstanceRow = ({
                 language={I18n.getLanguage()}
                 onOk={cron => {
                     if (openDialogCron) {
-                        setRestartSchedule(cron);
+                        setRestartSchedule(instance, cron);
                     } else if (openDialogSchedule) {
-                        setSchedule(cron);
+                        setSchedule(instance, cron);
                     }
                 }}
                 onClose={() => {
@@ -959,7 +970,7 @@ const InstanceRow = ({
                         className={clsx(classes.button, expertMode && checkSentry ? null : classes.hide)}
                         onClick={e => {
                             e.stopPropagation();
-                            setSentry();
+                            setSentry(instance);
                         }}
                     >
                         <CardMedia
@@ -978,7 +989,7 @@ const InstanceRow = ({
                             className={clsx(classes.button, expertMode && checkCompact ? null : classes.hide)}
                             onClick={e => {
                                 e.stopPropagation();
-                                setCompact();
+                                setCompact(instance);
                             }}
                         >
                             <ViewCompactIcon color={!!compact ? 'primary' : 'inherit'} />
@@ -1206,7 +1217,7 @@ const InstanceRow = ({
                                 className={clsx(classes.button, expertMode && checkSentry ? null : classes.hide)}
                                 onClick={e => {
                                     e.stopPropagation();
-                                    setSentry();
+                                    setSentry(instance);
                                 }}
                             >
                                 <CardMedia
@@ -1225,7 +1236,7 @@ const InstanceRow = ({
                                     className={clsx(classes.button, expertMode && checkCompact ? null : classes.hide)}
                                     onClick={e => {
                                         e.stopPropagation();
-                                        setCompact();
+                                        setCompact(instance);
                                     }}
                                 >
                                     <ViewCompactIcon color={!!compact ? 'primary' : 'inherit'} />

@@ -3,7 +3,22 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
-import {Button, Card, CardContent, CardMedia, Fab, FormControl, Hidden, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography} from '@material-ui/core';
+import {
+    Button,
+    Card,
+    CardContent,
+    CardMedia, Checkbox,
+    Fab,
+    FormControl,
+    FormControlLabel, FormHelperText,
+    Hidden,
+    IconButton,
+    InputLabel,
+    MenuItem,
+    Select,
+    Tooltip,
+    Typography
+} from '@material-ui/core';
 
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -351,6 +366,7 @@ const InstanceCard = memo(({
     const [showStopAdminDialog, setShowStopAdminDialog] = useState(false);
 
     const [logLevelValue, setLogLevelValue] = useState(logLevel);
+    const [logOnTheFlyValue, setLogOnTheFlyValue] = useState(false);
     const [compactValue, setCompactValue] = useState(compactGroup || 0);
     const [compactGroupCountValue, setCompactGroupCountValue] = useState(compactGroupCount);
     const [tierValue, setTierValue] = useState(tier);
@@ -393,7 +409,7 @@ const InstanceCard = memo(({
         defaultValue={openDialogText ? name : openDialogMemoryLimit ? memoryLimitMB : ''}
         onApply={value => {
             if (openDialogLogLevel) {
-                setLogLevel(instance, logLevelValue)
+                setLogLevel(instance, logLevelValue, logOnTheFlyValue);
                 setOpenDialogLogLevel(false);
             } else if (openDialogText) {
                 setName(instance, value);
@@ -418,6 +434,7 @@ const InstanceCard = memo(({
         onClose={() => {
             if (openDialogLogLevel) {
                 setLogLevelValue(logLevel);
+                setLogOnTheFlyValue(false);
                 setOpenDialogLogLevel(false);
             } else if (openDialogText) {
                 setOpenDialogText(false);
@@ -450,6 +467,13 @@ const InstanceCard = memo(({
                     {t(el)}
                 </MenuItem>)}
             </Select>
+        </FormControl>}
+        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined" >
+            <FormControlLabel
+                control={<Checkbox checked={logOnTheFlyValue} onChange={e => setLogOnTheFlyValue(e.target.checked)} />}
+                label={t('Without restart')}
+            />
+            <FormHelperText>{logOnTheFlyValue ? t('Will be reset to the saved log level after restart of adapter') : t('Log level will be saved permanently')}</FormHelperText>
         </FormControl>}
         {openDialogCompact && <FormControl className={classes.addCompact} variant="outlined" >
             <InputLabel>{t('compact groups')}</InputLabel>
@@ -717,7 +741,7 @@ const InstanceCard = memo(({
                         <IconButton
                             size="small"
                             className={classes.button}
-                            onClick={setSentry}
+                            onClick={() => setSentry(instance)}
                         >
                             <CardMedia
                                 className={clsx(classes.sentry, !currentSentry && classes.contrast0)}
@@ -733,7 +757,7 @@ const InstanceCard = memo(({
                         <IconButton
                             size="small"
                             className={classes.button}
-                            onClick={setCompact}
+                            onClick={() => setCompact(instance)}
                         >
                             <ViewCompactIcon color={!!compact ? 'primary' : 'inherit'} />
                         </IconButton>
@@ -761,9 +785,9 @@ const InstanceCard = memo(({
             language={I18n.getLanguage()}
             onOk={cron => {
                 if (openDialogCron) {
-                    setRestartSchedule(cron);
+                    setRestartSchedule(instance, cron);
                 } else if (openDialogSchedule) {
-                    setSchedule(cron);
+                    setSchedule(instance, cron);
                 }
             }}
             onClose={() => {

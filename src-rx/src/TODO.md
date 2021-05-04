@@ -12,6 +12,8 @@ Marked with "!" must be in release candidate
   }
 - Show admin version number if width > 800: https://github.com/ioBroker/ioBroker.admin/issues/820
   - this.props.socket.getVersion
+  
+- Create SelectWithIcon Component, that could accept array [obj1, obj2] or object like {"id1": obj1, "id2": obj2} with color and icon and multi-language name
 
 ## Intro
 

@@ -1294,5 +1294,8 @@
   "Hosts notifications": "Hosts notifications",
   "Remove": "Remove",
   "Warning: Free space on disk is low": "Warning: Free space on disk is low!",
-  "Host for this instance": "Host for this instance"
+  "Host for this instance": "Host for this instance",
+  "Without restart": "Without restart",
+  "Log level will be saved permanently": "Log level will be saved permanently",
+  "Will be reset to the saved log level after restart of adapter": "Will be reset to the saved log level after restart of adapter"
 }

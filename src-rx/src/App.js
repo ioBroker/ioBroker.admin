@@ -922,6 +922,7 @@ class App extends Router {
                         lang={I18n.getLanguage()}
                         socket={this.socket}
                         themeName={this.state.themeName}
+                        themeType={this.state.themeType}
                     />
                 </Suspense>;
             } else if (this.state.currentTab.tab === 'tab-users') {

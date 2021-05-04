@@ -63,6 +63,7 @@ class Files extends Component {
                     modalEditOfAccessControl={(context, objData) =>
                         <FileEditOfAccessControl
                             open={context.state.modalEditOfAccess}
+                            themeType={this.props.themeType}
                             extendObject={async (adapter, file, data) => {
                                 let promise;
                                 if (file && typeof file === 'object') {
@@ -119,6 +120,7 @@ Files.propTypes = {
     socket: PropTypes.object,
     ready: PropTypes.bool,
     expertMode: PropTypes.bool,
+    themeType: PropTypes.string,
 };
 
 export default Files;

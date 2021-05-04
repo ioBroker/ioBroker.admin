@@ -1294,5 +1294,8 @@
   "Hosts notifications": "Hosts meldingen",
   "Remove": "Verwijderen",
   "Warning: Free space on disk is low": "Waarschuwing: de vrije ruimte op de schijf is laag!",
-  "Host for this instance": "Host voor deze instantie"
+  "Host for this instance": "Host voor deze instantie",
+  "Without restart": "Zonder herstart",
+  "Log level will be saved permanently": "Het logniveau wordt permanent opgeslagen",
+  "Will be reset to the saved log level after restart of adapter": "Wordt gereset naar het opgeslagen logniveau na herstart van de adapter"
 }

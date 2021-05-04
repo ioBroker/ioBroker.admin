@@ -5,7 +5,9 @@ import Icon from '@iobroker/adapter-react/Components/Icon';
 import I18n from '@iobroker/adapter-react/i18n';
 
 import CustomModal from '../components/CustomModal';
-import Utils from '../Utils';
+import AdminUtils from '../Utils';
+import Utils from '../components/Utils';
+import SelectWithIcon from '../components/SelectWithIcon';
 
 const readWriteArray = [
     {
@@ -145,7 +147,7 @@ async function loadFolders(folderId, folders, socket) {
             const file = files[f];
             const item = {
                 id: folderId + '/' + file.file,
-                ext: Utils.getFileExtension(file.file),
+                ext: AdminUtils.getFileExtension(file.file),
                 folder: file.isDir,
                 name: file.file,
                 size: file.stats && file.stats.size,
@@ -214,7 +216,7 @@ async function loadPath(socket, folders, path, adapter, part, level) {
         files.forEach(file => {
             const item = {
                 id:       part + '/' + file.file,
-                ext:      Utils.getFileExtension(file.file),
+                ext:      AdminUtils.getFileExtension(file.file),
                 folder:   file.isDir,
                 name:     file.file,
                 size:     file.stats && file.stats.size,
@@ -230,13 +232,17 @@ async function loadPath(socket, folders, path, adapter, part, level) {
     }
 }
 
+const DIFFERENT = 'different';
+
 const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObject, objects, t, themeType, folders, socket }) => {
     const select = selected.substring(0, selected.lastIndexOf('/')) || selected;
     const object = selected.split('/').length === 1 ? folders['/'].find(({ id }) => id === selected) : folders[select].find(({ id }) => id === selected);
     const [stateOwnerUser, setStateOwnerUser] = useState(null);
     const [stateOwnerGroup, setStateOwnerGroup] = useState(null);
-    const [ownerUsers, setOwnerUsers] = useState([]);
-    const [ownerGroups, setOwnerGroups] = useState([]);
+    //const [ownerUsers, setOwnerUsers] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [groups, setGroups] = useState([]);
+    //const [ownerGroups, setOwnerGroups] = useState([]);
     const [applyToChildren, setApplyToChildren] = useState(false);
     const [childrenCount, setChildrenCount] = useState(0);
     const [valueFileAccessControl, setValueFileAccessControl] = useState(null);
@@ -248,16 +254,14 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
     const [disabledButton, setDisabledButton] = useState(true);
     const [progress, setProgress] = useState(false);
 
-    const different = t('different');
+    const different = t(DIFFERENT);
+    const lang = I18n.getLanguage();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(async () => {
         let _differentObject = [];
 
         let id = object.id;
-        let groups = [];
-        let users = [];
-        const lang = I18n.getLanguage();
 
         let _differentOwner = false;
         let _differentGroup = false;
@@ -330,24 +334,16 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
             }
         });
 
+        const _users = [];
+        const _groups = [];
         // Get users and groups
         Object.keys(objects).forEach(_id => {
             const obj = objects[_id];
             if (_id.startsWith('system.group.') && obj?.type === 'group') {
-                groups.push({
-                    name: Utils.getObjectNameFromObj(obj, lang).replace('system.group.', ''),
-                    value: _id,
-                    icon: obj.common?.icon,
-                    color: obj.common?.color,
-                });
+                _groups.push(obj);
             } else
             if (_id.startsWith('system.user.') && obj?.type === 'user') {
-                users.push({
-                    name: Utils.getObjectNameFromObj(obj, lang).replace('system.user.', ''),
-                    value: _id,
-                    icon: obj.common?.icon,
-                    color: obj.common?.color,
-                });
+                _users.push(obj);
             }
         });
 
@@ -358,16 +354,14 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
         _valueFileAccessControl = _valueFileAccessControl || defaultAcl.file;
         setValueFileAccessControl(_valueFileAccessControl);
 
-        const userItem = users.find(item => item.value === _stateOwnerUser);
-        const groupItem = groups.find(item => item.value === _stateOwnerGroup);
-        setStateOwnerUser(userItem);
-        setStateOwnerGroup(groupItem);
+        setStateOwnerUser(_stateOwnerUser);
+        setStateOwnerGroup(_stateOwnerGroup);
 
         setDifferentOwner(_differentOwner);
         setDifferentGroup(_differentGroup);
 
-        setOwnerUsers(users);
-        setOwnerGroups(groups);
+        setUsers(_users);
+        setGroups(_groups);
 
         object.folder && setApplyToChildren(true);
         setChildrenCount(count);
@@ -380,36 +374,22 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
 
     useEffect(() => {
         if (applyToChildren) {
-            if (differentGroup) {
-                stateOwnerGroup.value !== 'different' && setStateOwnerGroup({ name: different, value: 'different' });
-                if (!ownerGroups.find(item => item.value === 'different')) {
-                    setOwnerGroups(el => ([{
-                        name: different,
-                        value: 'different'
-                    }, ...el]));
-                }
+            if (differentOwner) {
+                stateOwnerUser !== DIFFERENT && setStateOwnerUser(DIFFERENT);
             }
 
-            if (differentOwner) {
-                stateOwnerUser.value !== 'different' && setStateOwnerUser({ name: different, value: 'different' });
-                if (!ownerUsers.find(item => item.value === 'different')) {
-                    setOwnerUsers(el => ([{
-                        name: different,
-                        value: 'different'
-                    }, ...el]));
-                }
+            if (differentGroup) {
+                stateOwnerGroup !== DIFFERENT && setStateOwnerGroup(DIFFERENT);
             }
         } else {
-            if (stateOwnerUser && stateOwnerUser.value === 'different') {
+            if (stateOwnerUser && stateOwnerUser === DIFFERENT) {
                 setStateOwnerUser(objects[selected].acl.owner);
             }
-            if (stateOwnerGroup && stateOwnerGroup.value === 'different') {
+            if (stateOwnerGroup && stateOwnerGroup === DIFFERENT) {
                 setStateOwnerGroup(objects[selected].acl.ownerGroup);
             }
-            // remove different from list
-            setOwnerGroups(el => el.filter(({ value }) => value !== 'different'));
-            setOwnerUsers(el => el.filter(({ value }) => value !== 'different'));
         }
+        console.log('stateOwnerUser ' +stateOwnerUser)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [applyToChildren, stateOwnerUser, stateOwnerGroup, differentOwner, differentGroup]);
 
@@ -439,12 +419,12 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
                                 newAcl.permissions = valueFileAccessControl;
                                 changed = true;
                             }
-                            if (object.acl?.owner !== stateOwnerUser.value) {
-                                newAcl.owner = stateOwnerUser.value;
+                            if (object.acl?.owner !== stateOwnerUser) {
+                                newAcl.owner = stateOwnerUser;
                                 changed = true;
                             }
-                            if (object.acl?.ownerGroup !== stateOwnerGroup.value) {
-                                newAcl.ownerGroup = stateOwnerUser.ownerGroup;
+                            if (object.acl?.ownerGroup !== stateOwnerGroup) {
+                                newAcl.ownerGroup = stateOwnerGroup;
                                 changed = true;
                             }
                             changed && (await extendObject(adapter, path, newAcl));
@@ -456,14 +436,14 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
                                 obj.acl.file = valueFileAccessControl;
                                 changed = true;
                             }
-                            if (obj.acl?.owner !== stateOwnerUser.value) {
+                            if (obj.acl?.owner !== stateOwnerUser) {
                                 obj.acl = obj.acl || {};
-                                obj.acl.owner = stateOwnerUser.value;
+                                obj.acl.owner = stateOwnerUser;
                                 changed = true;
                             }
-                            if (obj.acl?.ownerGroup !== stateOwnerGroup.value) {
+                            if (obj.acl?.ownerGroup !== stateOwnerGroup) {
                                 obj.acl = obj.acl || {};
-                                obj.acl.ownerGroup = stateOwnerGroup.value;
+                                obj.acl.ownerGroup = stateOwnerGroup;
                                 changed = true;
                             }
                             changed && (await extendObject(obj._id, obj));
@@ -483,14 +463,14 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
                                     item.acl.file = permissions;
                                     changed = true;
                                 }
-                                if (stateOwnerUser.value !== 'different' && stateOwnerUser.value !== item.acl?.owner) {
+                                if (stateOwnerUser !== DIFFERENT && stateOwnerUser !== item.acl?.owner) {
                                     item.acl = item.acl || {};
-                                    item.acl.owner = stateOwnerUser.value;
+                                    item.acl.owner = stateOwnerUser;
                                     changed = true;
                                 }
-                                if (stateOwnerGroup.value !== 'different' && stateOwnerGroup.value !== item.acl?.ownerGroup) {
+                                if (stateOwnerGroup !== DIFFERENT && stateOwnerGroup !== item.acl?.ownerGroup) {
                                     item.acl = item.acl || {};
-                                    item.acl.ownerGroup = stateOwnerGroup.value;
+                                    item.acl.ownerGroup = stateOwnerGroup;
                                     changed = true;
                                 }
                                 changed && (await extendObject(item._id, item));
@@ -502,12 +482,12 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
                                         newAcl.permissions = permissions;
                                         changed = true;
                                     }
-                                    if (stateOwnerUser.value !== 'different' && stateOwnerUser.value !== item.acl?.owner) {
-                                        newAcl.owner = stateOwnerUser.value;
+                                    if (stateOwnerUser !== DIFFERENT && stateOwnerUser !== item.acl?.owner) {
+                                        newAcl.owner = stateOwnerUser;
                                         changed = true;
                                     }
-                                    if (stateOwnerGroup.value !== 'different' && stateOwnerGroup.value !== item.acl?.ownerGroup) {
-                                        newAcl.ownerGroup = stateOwnerGroup.value;
+                                    if (stateOwnerGroup.value !== DIFFERENT && stateOwnerGroup !== item.acl?.ownerGroup) {
+                                        newAcl.ownerGroup = stateOwnerGroup;
                                         changed = true;
                                     }
                                     if (changed) {
@@ -533,44 +513,39 @@ const FileEditOfAccessControl2 = ({ onClose, onApply, open, selected, extendObje
                 }}>{t('Access control list: %s', selected)}</div>
 
                 <div style={{ display: 'flex' }}>
-                    <FormControl fullWidth style={{ marginRight: 10 }}>
-                        <InputLabel>{t('Owner user')}</InputLabel>
-                        <Select
-                            disabled={progress}
-                            value={stateOwnerUser?.value}
-                            renderValue={value => <span>{stateOwnerUser?.icon ? <Icon src={stateOwnerUser?.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}{stateOwnerUser?.name}</span>}
-                            style={stateOwnerUser?.value === 'different' ? { opacity: 0.5 } : { color: stateOwnerUser?.color || undefined, backgroundColor: Utils.getInvertedColor(stateOwnerUser?.color, themeType) }}
-                            onChange={el => {
-                                const userItem = ownerUsers.find(item => item.value === el.target.value);
-                                setStateOwnerUser(userItem);
-                                setDisabledButton(false);
-                            }}
-                        >
-                            {ownerUsers.map(el => <MenuItem style={el.value === 'different' ? { opacity: 0.5 } : { color: el.color || undefined, backgroundColor: Utils.getInvertedColor(el.color, themeType) }} key={el.value} value={el.value}>
-                                {el.icon ? <Icon src={el.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}
-                                {el.name}
-                            </MenuItem>)}
-                        </Select>
-                    </FormControl>
-                    <FormControl fullWidth>
-                        <InputLabel>{t('Owner group')}</InputLabel>
-                        <Select
-                            value={stateOwnerGroup?.value}
-                            disabled={progress}
-                            renderValue={value => <span>{stateOwnerGroup?.icon ? <Icon src={stateOwnerGroup?.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}{stateOwnerGroup?.name}</span>}
-                            style={stateOwnerGroup?.value === 'different' ? { opacity: 0.5 } : { color: stateOwnerGroup?.color || undefined, backgroundColor: Utils.getInvertedColor(stateOwnerGroup?.color, themeType) }}
-                            onChange={el => {
-                                const groupItem = ownerGroups.find(item => item.value === el.target.value);
-                                setStateOwnerGroup(groupItem);
-                                setDisabledButton(false);
-                            }}
-                        >
-                            {ownerGroups.map(el => <MenuItem key={el.value} value={el.value} style={el.value === 'different' ? { opacity: 0.5 } : { color: el.color || undefined, backgroundColor: Utils.getInvertedColor(el.color, themeType) }}>
-                                {el.icon ? <Icon src={el.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}
-                                {el.name}
-                            </MenuItem>)}
-                        </Select>
-                    </FormControl>
+                    <SelectWithIcon
+                        fullWidth
+                        style={{ marginRight: 10 }}
+                        label={t('Owner user')}
+                        lang={lang}
+                        list={users}
+                        t={t}
+                        disabled={progress}
+                        value={stateOwnerUser}
+                        themeType={themeType}
+                        different={differentOwner ? DIFFERENT : false}
+                        onChange={val => {
+                            setDifferentOwner(false);
+                            setStateOwnerUser(val);
+                            setDisabledButton(false);
+                        }}
+                    />
+                    <SelectWithIcon
+                        fullWidth
+                        label={t('Owner group')}
+                        lang={lang}
+                        list={groups}
+                        t={t}
+                        disabled={progress}
+                        value={stateOwnerGroup}
+                        themeType={themeType}
+                        different={differentGroup ? DIFFERENT : false}
+                        onChange={val => {
+                            setDifferentGroup(false);
+                            setStateOwnerGroup(val);
+                            setDisabledButton(false);
+                        }}
+                    />
                 </div>
 
                 <div style={{

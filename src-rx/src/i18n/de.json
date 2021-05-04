@@ -1294,5 +1294,8 @@
   "Hosts notifications": "Hosts Benachrichtigungen",
   "Remove": "Entfernen",
   "Warning: Free space on disk is low": "Warnung: Der freie Speicherplatz auf der Festplatte ist niedrig!",
-  "Host for this instance": "Host für diese Instanz"
+  "Host for this instance": "Host für diese Instanz",
+  "Without restart": "Ohne Neustart",
+  "Log level will be saved permanently": "Die Protokollebene wird dauerhaft gespeichert",
+  "Will be reset to the saved log level after restart of adapter": "Wird nach dem Neustart des Adapters auf die gespeicherte Protokollebene zurückgesetzt"
 }

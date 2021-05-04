@@ -1294,5 +1294,8 @@
   "Hosts notifications": "Notifiche degli host",
   "Remove": "Rimuovere",
   "Warning: Free space on disk is low": "Attenzione: lo spazio libero su disco è insufficiente!",
-  "Host for this instance": "Host per questa istanza"
+  "Host for this instance": "Host per questa istanza",
+  "Without restart": "Senza riavviare",
+  "Log level will be saved permanently": "Il livello di registro verrà salvato in modo permanente",
+  "Will be reset to the saved log level after restart of adapter": "Verrà ripristinato al livello di registro salvato dopo il riavvio dell'adattatore"
 }

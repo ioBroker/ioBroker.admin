@@ -620,8 +620,9 @@ class Instances extends Component {
     setName = (instance, value) =>
         this.extendObject('system.adapter.' + instance.id, { common: { titleLang: value } });
 
-    setLogLevel = (instance, value) =>
+    setLogLevel = (instance, value, logOnTheFlyValue) => {
         this.extendObject('system.adapter.' + instance.id, { common: { loglevel: value } });
+    };
 
     setSchedule = (instance, value) =>
         this.extendObject('system.adapter.' + instance.id, { common: { schedule: value } });
@@ -633,6 +634,7 @@ class Instances extends Component {
         this.setState({ delete: true })
         this.props.executeCommand('del ' + instance.id);
     }
+
     setCompact = instance =>
         this.extendObject('system.adapter.' + instance.id, { common: { runAsCompactMode: !this.isCompact(instance.obj) } });
 
@@ -654,7 +656,6 @@ class Instances extends Component {
             this.setState({ compactGroupCount: value });
         }
     }
-
 
     getPanels() {
         let list = Object.keys(this.state.instances).map((id, idx) => {
