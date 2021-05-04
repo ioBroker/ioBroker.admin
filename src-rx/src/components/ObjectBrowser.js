@@ -10,6 +10,7 @@ import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 import copy from '@iobroker/adapter-react/Components/copy-to-clipboard';
 import withStyles from '@material-ui/core/styles/withStyles';
+import SVG from 'react-inlinesvg';
 
 import IconButton from '@material-ui/core/IconButton';
 import withWidth from '@material-ui/core/withWidth';
@@ -85,7 +86,6 @@ import IconState from '@iobroker/adapter-react/icons/IconState';
 import IconClosed from '@iobroker/adapter-react/icons/IconClosed';
 import IconOpen from '@iobroker/adapter-react/icons/IconOpen';
 import IconClearFilter from '@iobroker/adapter-react/icons/IconClearFilter';
-import clsx from 'clsx';
 
 const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
@@ -676,11 +676,11 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
             if (customFilter.type && customFilter.type !== data.obj.type) {
                 filteredOut = true;
             } else
-                if (customFilter.common && customFilter.common.custom) {
-                    if (!common || !common.custom || (customFilter.common.custom !== true && !common.custom[customFilter.common.custom])) {
-                        filteredOut = true;
-                    }
+            if (customFilter.common && customFilter.common.custom) {
+                if (!common || !common.custom || (customFilter.common.custom !== true && !common.custom[customFilter.common.custom])) {
+                    filteredOut = true;
                 }
+            }
         }
 
         if (!filteredOut && !filters.expertMode) {
@@ -828,12 +828,12 @@ function buildTree(objects, options) {
     let info = {
         funcEnums: [],
         roomEnums: [],
-        roles: [],
-        ids: [],
-        types: [],
+        roles:     [],
+        ids:       [],
+        types:     [],
         objects,
-        customs: [],
-        enums: [],
+        customs:   [],
+        enums:     [],
         hasSomeCustoms: false,
     };
 
@@ -890,12 +890,12 @@ function buildTree(objects, options) {
                         if (!binarySearch(info.ids, curPath)) {
                             const _croot = {
                                 data: {
-                                    name: parts[k],
-                                    parent: croot,
-                                    id: curPath,
-                                    obj: objects[curPath],
-                                    level: k,
-                                    icon: getSystemIcon(objects, curPath, k, imagePrefix),
+                                    name:      parts[k],
+                                    parent:    croot,
+                                    id:        curPath,
+                                    obj:       objects[curPath],
+                                    level:     k,
+                                    icon:      getSystemIcon(objects, curPath, k, imagePrefix),
                                     generated: true,
                                 }
                             };
@@ -912,16 +912,16 @@ function buildTree(objects, options) {
 
                 const _croot = {
                     data: {
-                        name: parts[parts.length - 1],
-                        title: getName(obj && obj.common && obj.common.name, options.lang),
+                        name:       parts[parts.length - 1],
+                        title:      getName(obj && obj.common && obj.common.name, options.lang),
                         obj,
-                        parent: croot,
-                        icon: getSelectIdIcon(objects, id, imagePrefix) || getSystemIcon(objects, id, 0, imagePrefix),
+                        parent:     croot,
+                        icon:       getSelectIdIcon(objects, id, imagePrefix) || getSystemIcon(objects, id, 0, imagePrefix),
                         id,
                         hasCustoms: obj.common?.custom && Object.keys(obj.common.custom).length,
-                        level: parts.length - 1,
-                        generated: false,
-                        button: obj.type === 'state' && obj.common?.role && typeof obj.common.role === 'string' && obj.common.role.startsWith('button') && obj.common?.write !== false,
+                        level:      parts.length - 1,
+                        generated:  false,
+                        button:     obj.type === 'state' && obj.common?.role && typeof obj.common.role === 'string' && obj.common.role.startsWith('button') && obj.common?.write !== false,
                     }
                 };
 
@@ -931,7 +931,7 @@ function buildTree(objects, options) {
 
                 currentPathLen = parts.length;
                 currentPathArr = parts;
-                currentPath = id;
+                currentPath    = id;
             } else {
                 let u = 0;
 
@@ -951,7 +951,7 @@ function buildTree(objects, options) {
                 } else {
                     croot = root;
                     currentPathArr = [];
-                    currentPath = '';
+                    currentPath    = '';
                     currentPathLen = 0;
                 }
                 repeat = true;
@@ -986,9 +986,9 @@ function findNode(root, id, _parts, _path, _level) {
                 found = root.children[i];
                 break;
             } else
-                if (_id > _path) {
-                    break;
-                }
+            if (_id > _path) {
+                break;
+            }
         }
         if (found) {
             return findNode(found, id, _parts, _path + '.' + _parts[_level + 1], _level + 1);
@@ -1191,7 +1191,11 @@ function getSelectIdIcon(objects, id, imagePrefix) {
                 return null; //'<i class="material-icons iob-list-icon">' + objects[_id_].common.icon + '</i>';
             }
         } else {
-            src = aIcon;
+            if (aIcon.startsWith('data:image/svg')) {
+                src = <SVG src={aIcon} width={28} height={28}/>;
+            } else {
+                src = aIcon;
+            }
         }
     } else {
         const common = objects[id] && objects[id].common;
@@ -1228,7 +1232,11 @@ function getSelectIdIcon(objects, id, imagePrefix) {
                     }
                 } else {
                     // base 64 image
-                    src = cIcon;
+                    if (cIcon.startsWith('data:image/svg')) {
+                        src = <SVG src={cIcon} width={28} height={28}/>;
+                    } else {
+                        src = cIcon;
+                    }
                 }
             }
         }
@@ -1252,19 +1260,19 @@ function prepareSparkData(values, from) {
             // assume the value was always null
             v.push(0);
         } else
-            if (i < values.length) {
-                if (typeof values[i].val === 'boolean' || typeof values[i - 1].val === 'boolean') {
-                    v.push(values[i].val ? 1 : 0);
-                } else {
-                    // remove nulls
-                    values[i - 1].val = values[i - 1].val || 0;
-                    values[i].val = values[i].val || 0;
-                    // interpolate
-                    let val = values[i - 1].val + (values[i].val - values[i - 1].val) * (time - values[i - 1].ts) / (values[i].ts - values[i - 1].ts);
+        if (i < values.length) {
+            if (typeof values[i].val === 'boolean' || typeof values[i - 1].val === 'boolean') {
+                v.push(values[i].val ? 1 : 0);
+            } else {
+                // remove nulls
+                values[i - 1].val = values[i - 1].val || 0;
+                values[i].val = values[i].val || 0;
+                // interpolate
+                let val = values[i - 1].val + (values[i].val - values[i - 1].val) * (time - values[i - 1].ts) / (values[i].ts - values[i - 1].ts);
 
-                    v.push(val);
-                }
+                v.push(val);
             }
+        }
 
         time += 3600000;
     }
@@ -1287,20 +1295,20 @@ const DEFAULT_FILTER = {
 };
 
 const ITEM_IMAGES = {
-    state:    <IconState className="itemIcon" />,
-    channel:  <IconChannel className="itemIcon" />,
-    device:   <IconDevice className="itemIcon" />,
-    adapter:  <IconAdapter className="itemIcon" />,
-    meta:     <IconMeta className="itemIcon" />,
+    state:    <IconState    className="itemIcon" />,
+    channel:  <IconChannel  className="itemIcon" />,
+    device:   <IconDevice   className="itemIcon" />,
+    adapter:  <IconAdapter  className="itemIcon" />,
+    meta:     <IconMeta     className="itemIcon" />,
     instance: <IconInstance className="itemIcon" style={{ color: '#7da7ff' }} />,
-    enum:     <IconEnum className="itemIcon" />,
-    chart:    <IconChart className="itemIcon" />,
-    config:   <IconConfig className="itemIcon" />,
-    group:    <IconGroup className="itemIcon" />,
-    user:     <IconUser className="itemIcon" />,
-    host:     <IconHost className="itemIcon" />,
+    enum:     <IconEnum     className="itemIcon" />,
+    chart:    <IconChart    className="itemIcon" />,
+    config:   <IconConfig   className="itemIcon" />,
+    group:    <IconGroup    className="itemIcon" />,
+    user:     <IconUser     className="itemIcon" />,
+    host:     <IconHost     className="itemIcon" />,
     schedule: <IconSchedule className="itemIcon" />,
-    script:   <IconScript className="itemIcon" />,
+    script:   <IconScript   className="itemIcon" />,
 };
 
 const StyledBadge = withStyles(theme => ({
@@ -1469,6 +1477,7 @@ class ObjectBrowser extends Component {
             loaded: false,
             foldersFirst,
             selected,
+            selectedNonObject: window.localStorage.getItem(`${props.dialogName || 'App'}.selectedNonObject`) || '',
             filter,
             filterKey: 0,
             depth: 0,
@@ -1658,7 +1667,11 @@ class ObjectBrowser extends Component {
             this.props.onSelect && this.props.onSelect(this.lastSelectedItems, name, isDouble);
         } else {
             window.localStorage.setItem(`${this.props.dialogName || 'App'}.objectSelected`, '');
-            this.setState({ selected: [] }, () => this.props.onSelect && this.props.onSelect([], ''));
+            if (this.state.selected.length) {
+                this.setState({ selected: [] }, () => this.props.onSelect && this.props.onSelect([], ''));
+            } else {
+                this.props.onSelect && this.props.onSelect([], '');
+            }
         }
     }
 
@@ -1761,17 +1774,22 @@ class ObjectBrowser extends Component {
     onSelect(toggleItem, isDouble) {
         if (!this.props.multiSelect) {
             if (this.objects[toggleItem] && (!this.props.types || this.props.types.includes(this.objects[toggleItem].type))) {
+                window.localStorage.removeItem(`${this.props.dialogName || 'App'}.selectedNonObject`);
                 if (this.state.selected[0] !== toggleItem) {
-                    this.setState({ selected: [toggleItem] }, () =>
+                    this.setState({ selected: [toggleItem], selectedNonObject: '' }, () =>
                         this.onAfterSelect(isDouble));
                 } else if (isDouble && this.props.onSelect) {
                     this.onAfterSelect(isDouble);
                 }
             } else {
-                this.setState({ selected: [] }, () => this.onAfterSelect());
+                window.localStorage.setItem(`${this.props.dialogName || 'App'}.selectedNonObject`, toggleItem);
+                this.setState({ selected: [], selectedNonObject: toggleItem }, () =>
+                    this.onAfterSelect());
             }
         } else {
             if (this.objects[toggleItem] && (!this.props.types || this.props.types.includes(this.objects[toggleItem].type))) {
+                window.localStorage.removeItem(`${this.props.dialogName || 'App'}.selectedNonObject`);
+
                 const selected = [...this.state.selected];
                 const pos = selected.indexOf(toggleItem);
                 if (pos === -1) {
@@ -1781,7 +1799,7 @@ class ObjectBrowser extends Component {
                     selected.splice(pos, 1);
                 }
 
-                this.setState({ selected }, () =>
+                this.setState({ selected, selectedNonObject: '' }, () =>
                     this.onAfterSelect(isDouble));
             }
         }
@@ -2320,7 +2338,7 @@ class ObjectBrowser extends Component {
                     let name;
                     let icon;
                     if (typeof item === 'object') {
-                        id = item.value;
+                        id   = item.value;
                         name = item.name;
                         icon = item.icon;
                     } else {
@@ -2598,9 +2616,17 @@ class ObjectBrowser extends Component {
                     await this.props.socket.setObject(id, obj);
                     enums && await this._createAllEnums(enums, obj._id);
                     if (obj.type === 'state') {
-                        const state = await this.props.socket.getState(obj._id);
-                        if (!state || state.val === null) {
-                            await this.props.socket.setState(obj._id, !obj.common || obj.common.def === undefined ? null : obj.common.def, true);
+                        try {
+                            const state = await this.props.socket.getState(obj._id);
+                            if (!state || state.val === null) {
+                                try {
+                                    await this.props.socket.setState(obj._id, !obj.common || obj.common.def === undefined ? null : obj.common.def, true);
+                                } catch (e) {
+                                    window.alert(`Cannot set state "${obj._id}": ${e}`);
+                                }
+                            }
+                        } catch (e) {
+                            window.alert(`Cannot read state "${obj._id}": ${e}`);
                         }
                     }
                 } catch (error) {
@@ -2665,6 +2691,21 @@ class ObjectBrowser extends Component {
      * @returns {JSX.Element}
      */
     getToolbar() {
+        let allowObjectCreation = false;
+        if (this.state.selected.length || this.state.selectedNonObject) {
+            const id = this.state.selected[0] || this.state.selectedNonObject;
+
+            if (id.split('.').length < 2 || (this.objects[id] && this.objects[id].type === 'state')) {
+                allowObjectCreation = false;
+            } else {
+                if (this.props.expertMode) {
+                    allowObjectCreation = true;
+                } else if (id.startsWith('alias.0') || id.startsWith('0_userdata')) {
+                    allowObjectCreation = true;
+                }
+            }
+        }
+
         return <div style={{
             display: 'flex',
             width: '100%',
@@ -2749,7 +2790,7 @@ class ObjectBrowser extends Component {
                 </Tooltip>}
 
                 {this.props.objectAddBoolean ?
-                    (!this.state.selected.length || (this.objects[this.state.selected[0]] && this.objects[this.state.selected[0]].type === 'state') || (!this.props.expertMode && !this.state.selected[0].startsWith('alias.0') && !this.state.selected[0].startsWith('0_userdata')) ?
+                    (!allowObjectCreation ?
                         <IconButton disabled><AddIcon /></IconButton>
                         :
                         <Tooltip title={this.props.t('ra_Add new child object to selected parent')}>
@@ -2758,7 +2799,8 @@ class ObjectBrowser extends Component {
                             >
                                 <AddIcon />
                             </IconButton>
-                        </Tooltip>) : null
+                        </Tooltip>
+                    ) : null
                 }
 
                 {this.props.objectImportExport &&
@@ -2775,13 +2817,13 @@ class ObjectBrowser extends Component {
                         </IconButton>
                     </Tooltip>
                 }
-                {this.props.objectImportExport && !!this.state.selected.length &&
+                {this.props.objectImportExport && (!!this.state.selected.length || this.state.selectedNonObject) &&
                     <Tooltip title={this.props.t('ra_Save objects tree as JSON file')}>
                         <IconButton onClick={() => {
-                            if (this.state.selected.length) {
+                            if (this.state.selected.length || this.state.selectedNonObject) {
                                 const result = {};
                                 const keys = Object.keys(this.objects);
-                                const id = this.state.selected[0];
+                                const id = this.state.selected[0] || this.state.selectedNonObject;
                                 const idDot = id + '.';
                                 const idLen = idDot.length;
                                 for (let k = 0; k < keys.length; k++) {
@@ -2880,12 +2922,12 @@ class ObjectBrowser extends Component {
             return null;
         }
         const check = [
-            { value: '0x400', valueNum: 0x400, title: 'read', group: 'Owner' },
+            { value: '0x400', valueNum: 0x400, title: 'read',  group: 'Owner' },
             { value: '0x200', valueNum: 0x200, title: 'write', group: 'Owner' },
-            { value: '0x40', valueNum: 0x40, title: 'read', group: 'Group' },
-            { value: '0x20', valueNum: 0x20, title: 'write', group: 'Group' },
-            { value: '0x4', valueNum: 0x4, title: 'read', group: 'Everyone' },
-            { value: '0x2', valueNum: 0x2, title: 'write', group: 'Everyone' }
+            { value: '0x40',  valueNum: 0x40,  title: 'read',  group: 'Group' },
+            { value: '0x20',  valueNum: 0x20,  title: 'write', group: 'Group' },
+            { value: '0x4',   valueNum: 0x4,   title: 'read',  group: 'Everyone' },
+            { value: '0x2',   valueNum: 0x2,   title: 'write', group: 'Everyone' }
         ];
         const arrayTooltipText = [];
         const funcRenderStateObject = (value = 'object') => {
@@ -2901,7 +2943,7 @@ class ObjectBrowser extends Component {
             });
         }
         arrayTooltipText.push(<span key="group">{this.texts.ownerGroup + ': ' + (acl.ownerGroup || '').replace('system.group.', '')}</span>);
-        arrayTooltipText.push(<span key="owner">{this.texts.ownerUser + ': ' + (acl.owner || '').replace('system.user.', '')}</span>);
+        arrayTooltipText.push(<span key="owner">{this.texts.ownerUser  + ': ' + (acl.owner || '').replace('system.user.', '')}</span>);
         funcRenderStateObject();
         if (acl.state) {
             funcRenderStateObject('state');
@@ -2916,13 +2958,13 @@ class ObjectBrowser extends Component {
      */
     renderColumnButtons(id, item, classes) {
         if (!item.data.obj) {
-            return this.props.onObjectDelete ? <div className={classes.buttonDiv}>
-                {this.props.expertMode && <IconButton
+            return this.props.onObjectDelete || this.props.objectEditOfAccessControl ? <div className={classes.buttonDiv}>
+                {this.props.expertMode && this.props.objectEditOfAccessControl ? <IconButton
                     className={Utils.clsx(classes.cellButtonsButton, classes.cellButtonsEmptyButton, classes.cellButtonMinWidth)}
                     onClick={() =>
                         this.setState({ modalEditOfAccess: true, modalEmptyId: id, modalEditOfAccessObjData: item.data })}
-                >---</IconButton>}
-                <IconButton
+                >---</IconButton> : null}
+                {this.props.onObjectDelete && item.children && item.children.length ? <IconButton
                     className={Utils.clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone)}
                     size="small"
                     aria-label="delete"
@@ -2930,17 +2972,19 @@ class ObjectBrowser extends Component {
                     onClick={() => this.props.onObjectDelete(id, !!(item.children && item.children.length), false)}
                 >
                     <IconDelete className={classes.cellButtonsButtonIcon} />
-                </IconButton></div> : null;
+                </IconButton> : null}
+            </div> : null;
         }
 
         item.data.aclTooltip = item.data.aclTooltip || this.renderTooltipAccessControl(item.data.obj.acl);
 
         const acl = item.data.obj.acl ? (item.data.obj.type === 'state' ? item.data.obj.acl.state : item.data.obj.acl.object) : 0;
         const aclSystemConfig = item.data.obj.acl && (item.data.obj.type === 'state' ? this.systemConfig.common.defaultNewAcl.state : this.systemConfig.common.defaultNewAcl.object);
+
         return [
             this.props.expertMode && this.props.objectEditOfAccessControl ? <Tooltip key="acl" title={item.data.aclTooltip}><IconButton className={classes.cellButtonMinWidth} onClick={() =>
-                this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })
-            }>
+                this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })}
+            >
                 <div className={classes.aclText}>{isNaN(Number(acl).toString(16)) ? Number(aclSystemConfig).toString(16) : Number(acl).toString(16)}</div>
             </IconButton></Tooltip> : <div key="aclEmpty" className={classes.cellButtonMinWidth} />,
             <IconButton
@@ -2961,7 +3005,7 @@ class ObjectBrowser extends Component {
                 className={classes.cellButtonsButton}
                 size="small"
                 aria-label="delete"
-                onClick={() => this.props.onObjectDelete(id, !!(item.children && item.children.length), true)}
+                onClick={() => this.props.onObjectDelete(id, !!(item.children && item.children.length), !item.data.obj.common?.dontDelete)}
                 title={this.texts.deleteObject}
             >
                 <IconDelete className={classes.cellButtonsButtonIcon} />
@@ -3098,8 +3142,8 @@ class ObjectBrowser extends Component {
             info.val = copyText;
             info.valText = [
                 <span className={classes.newValue || classes.newValue} key={`${info.valText.v.toString()}valText`}>{info.valText.v.toString()}</span>,
-                info.valText.u ? <span className={clsx(classes.cellValueTextUnit, classes.newValue)} key={`${info.valText.v.toString()}unit`}>{info.valText.u}</span> : null,
-                info.valText.s !== undefined ? <span className={clsx(classes.cellValueTextState, classes.newValue)} key={`${info.valText.v.toString()}states`}>({info.valText.s})</span> : null,
+                info.valText.u ? <span className={Utils.clsx(classes.cellValueTextUnit, classes.newValue)} key={`${info.valText.v.toString()}unit`}>{info.valText.u}</span> : null,
+                info.valText.s !== undefined ? <span className={Utils.clsx(classes.cellValueTextState, classes.newValue)} key={`${info.valText.v.toString()}states`}>({info.valText.s})</span> : null,
                 <IconCopy className={Utils.clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonCopy)} onClick={(e) => this.onCopy(e, copyText)} key="cc" />,
                 //<IconEdit className={ Utils.clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonEdit) } key="ce" />
             ];
@@ -3107,7 +3151,7 @@ class ObjectBrowser extends Component {
 
         let val = info.valText;
         if (!this.props.expertMode && item.data.button) {
-            val = <PressButtonIcon className={clsx(this.props.classes.cellValueButton, !this.states[id] || !this.states[id].val ? this.props.classes.cellValueButtonFalse : '')} />;
+            val = <PressButtonIcon className={Utils.clsx(this.props.classes.cellValueButton, !this.states[id] || !this.states[id].val ? this.props.classes.cellValueButtonFalse : '')} />;
         }
         return <Tooltip
             key="value"
@@ -3229,11 +3273,11 @@ class ObjectBrowser extends Component {
                             let icon;
 
                             if (typeof item === 'object') {
-                                id = item.value;
+                                id   = item.value;
                                 name = item.name;
                                 icon = item.icon;
                             } else {
-                                id = item;
+                                id   = item;
                                 name = item;
                             }
                             const labelId = `checkbox-list-label-${id}`;
@@ -3561,12 +3605,8 @@ class ObjectBrowser extends Component {
                 /> :
                 null;
 
-        /*if (item.data.funcs && item.data.funcs.length) {
-            console.log(item.data.funcs);
-        }*/
-
         const valueEditable = !this.props.notEditable && itemType === 'state' && (this.props.expertMode || item.data.obj?.common?.write !== false);
-        const enumEditable = !this.props.notEditable && (this.props.expertMode || itemType === 'state' || itemType === 'channel' || itemType === 'device');
+        const enumEditable  = !this.props.notEditable && this.objects[id] && (this.props.expertMode || itemType === 'state' || itemType === 'channel' || itemType === 'device');
         const checkVisibleObjectType = this.state.statesView && (itemType === 'state' || itemType === 'channel' || itemType === 'device');
         let newValue = '';
         let newValueTitle = [];
@@ -3586,7 +3626,7 @@ class ObjectBrowser extends Component {
         }
         item.data.obj?.from && newValueTitle.push(this.texts.objectChangedFrom + ' ' + item.data.obj.from.replace(/^system\.adapter\.|^system\./, ''));
         item.data.obj?.user && newValueTitle.push(this.texts.objectChangedBy + ' ' + item.data.obj.user.replace(/^system\.user\./, ''));
-        item.data.obj?.ts && newValueTitle.push(this.texts.objectChangedByUser + ' ' + Utils.formatDate(new Date(item.data.obj.ts), this.props.dateFormat));
+        item.data.obj?.ts   && newValueTitle.push(this.texts.objectChangedByUser + ' ' + Utils.formatDate(new Date(item.data.obj.ts), this.props.dateFormat));
 
         const readWriteAlias = typeof item.data.obj?.common?.alias?.id === 'object';
 
@@ -3603,7 +3643,7 @@ class ObjectBrowser extends Component {
                                 this.scrollToItem(item.data.obj.common.alias.id.read));
                         }, 100);
                     }}
-                    className={clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
+                    className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
                     >←{item.data.obj.common.alias.id.read}</div> : null}
                     {item.data.obj.common.alias.id.write ? <div
                         onClick={e => {
@@ -3615,7 +3655,7 @@ class ObjectBrowser extends Component {
                                     this.scrollToItem(item.data.obj.common.alias.id.write));
                             }, 100);
                         }}
-                        className={clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
+                        className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
                     >→{item.data.obj.common.alias.id.write}</div> : null}
                 </div>
                 :
@@ -3629,7 +3669,7 @@ class ObjectBrowser extends Component {
                                 this.scrollToItem(item.data.obj.common.alias.id));
                         }, 100);
                     }}
-                    className={clsx(classes.cellIdAlias, classes.cellIdAliasAlone)}
+                    className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasAlone)}
                 >→{item.data.obj.common.alias.id}</div>
             ) : null;
 
@@ -3647,7 +3687,7 @@ class ObjectBrowser extends Component {
             container
             direction="row"
             wrap="nowrap"
-            className={Utils.clsx(classes.tableRow, alias && classes.tableRowAlias, readWriteAlias && classes.tableRowAliasReadWrite, !item.data.visible && classes.filteredOut, this.state.selected.includes(id) && classes.itemSelected)}
+            className={Utils.clsx(classes.tableRow, alias && classes.tableRowAlias, readWriteAlias && classes.tableRowAliasReadWrite, !item.data.visible && classes.filteredOut, this.state.selected.includes(id) && classes.itemSelected, this.state.selectedNonObject === id && classes.itemSelected)}
             key={id}
             id={id}
             onClick={() => this.onSelect(id)}
@@ -3703,10 +3743,7 @@ class ObjectBrowser extends Component {
                 >
                     {iconItem}
                 </Grid>
-                <div
-                    style={{
-                        color: checkColor
-                    }}>
+                <div style={{color: checkColor}}>
                     <IconCopy className={Utils.clsx(classes.cellCopyButton, 'copyButton')} onClick={(e) => this.onCopy(e, id)} />
                 </div>
             </Grid>
@@ -3735,7 +3772,8 @@ class ObjectBrowser extends Component {
 
                 // in non expert mode control button directly
                 if (!this.props.expertMode && item.data.button) {
-                    return this.props.socket.setState(id, true);
+                    return this.props.socket.setState(id, true)
+                        .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
                 }
 
                 this.edit = {
@@ -3821,10 +3859,10 @@ class ObjectBrowser extends Component {
      * @param {Record<string, number>} [columnsWidths]
      */
     calculateColumnsVisibility(columnsAuto, columns, columnsForAdmin, columnsWidths) {
-        columnsWidths = columnsWidths || this.state.columnsWidths;
+        columnsWidths   = columnsWidths   || this.state.columnsWidths;
         columnsForAdmin = columnsForAdmin || this.state.columnsForAdmin;
-        columns = columns || this.state.columns || [];
-        columnsAuto = typeof columnsAuto !== 'boolean' ? this.state.columnsAuto : columnsAuto;
+        columns         = columns         || this.state.columns || [];
+        columnsAuto     = typeof columnsAuto !== 'boolean' ? this.state.columnsAuto : columnsAuto;
 
         columnsWidths = JSON.parse(JSON.stringify(columnsWidths));
         Object.keys(columnsWidths).forEach(name => {
@@ -3838,18 +3876,18 @@ class ObjectBrowser extends Component {
 
         if (columnsAuto) {
             this.columnsVisibility = {
-                id: SCREEN_WIDTHS[this.props.width].idWidth,
-                name: this.visibleCols.includes('name') ? WIDTHS.name : 0,
-                type: this.visibleCols.includes('type') ? WIDTHS.type : 0,
-                role: this.visibleCols.includes('role') ? WIDTHS.role : 0,
-                room: this.visibleCols.includes('room') ? WIDTHS.room : 0,
-                func: this.visibleCols.includes('func') ? WIDTHS.func : 0,
+                id:          SCREEN_WIDTHS[this.props.width].idWidth,
+                name:        this.visibleCols.includes('name')        ? WIDTHS.name        : 0,
+                type:        this.visibleCols.includes('type')        ? WIDTHS.type        : 0,
+                role:        this.visibleCols.includes('role')        ? WIDTHS.role        : 0,
+                room:        this.visibleCols.includes('room')        ? WIDTHS.room        : 0,
+                func:        this.visibleCols.includes('func')        ? WIDTHS.func        : 0,
                 changedFrom: this.visibleCols.includes('changedFrom') ? WIDTHS.changedFrom : 0,
                 qualityCode: this.visibleCols.includes('qualityCode') ? WIDTHS.qualityCode : 0,
-                timestamp: this.visibleCols.includes('timestamp') ? WIDTHS.timestamp : 0,
-                lastChange: this.visibleCols.includes('lastChange') ? WIDTHS.lastChange : 0,
-                val: this.visibleCols.includes('val') ? WIDTHS.val : 0,
-                buttons: this.visibleCols.includes('buttons') ? WIDTHS.buttons : 0,
+                timestamp:   this.visibleCols.includes('timestamp')   ? WIDTHS.timestamp   : 0,
+                lastChange:  this.visibleCols.includes('lastChange')  ? WIDTHS.lastChange  : 0,
+                val:         this.visibleCols.includes('val')         ? WIDTHS.val         : 0,
+                buttons:     this.visibleCols.includes('buttons')     ? WIDTHS.buttons     : 0,
             };
 
             if (this.columnsVisibility.name) {
@@ -3872,7 +3910,7 @@ class ObjectBrowser extends Component {
             }
         } else {
             this.columnsVisibility = {
-                id: columnsWidths.id || SCREEN_WIDTHS[this.props.width].idWidth,
+                id:   columnsWidths.id || SCREEN_WIDTHS[this.props.width].idWidth,
                 name: columns.includes('name') ? columnsWidths.name || WIDTHS.name || SCREEN_WIDTHS.xl.widths.name : 0,
                 type: columns.includes('type') ? columnsWidths.type || WIDTHS.type || SCREEN_WIDTHS.xl.widths.type : 0,
                 role: columns.includes('role') ? columnsWidths.role || WIDTHS.role || SCREEN_WIDTHS.xl.widths.role : 0,
@@ -3895,9 +3933,9 @@ class ObjectBrowser extends Component {
                         if (columns.includes(id)) {
                             const item = {
                                 adapter,
-                                id: '_' + adapter + '_' + column.path,
-                                name: column.name,
-                                path: column.path.split('.'),
+                                id:       '_' + adapter + '_' + column.path,
+                                name:     column.name,
+                                path:     column.path.split('.'),
                                 pathText: column.path
                             };
                             if (column.edit) {
@@ -4060,7 +4098,7 @@ class ObjectBrowser extends Component {
      * @param {Partial<ioBroker.State>} valAck
      */
     onUpdate(valAck) {
-        this.props.socket.setState(this.edit.id, { val: valAck.val, ack: valAck.ack, q: valAck.q || 0 })
+        this.props.socket.setState(this.edit.id, { val: valAck.val, ack: valAck.ack, q: valAck.q || 0, expire: valAck.expire || undefined })
             .catch(e => this.showError('Cannot write value: ' + e));
     }
 
@@ -4111,14 +4149,19 @@ class ObjectBrowser extends Component {
 
         return <ObjectBrowserValue
             t={this.props.t}
+            lang={this.props.lang}
             type={type}
             states={Utils.getStates(this.objects[this.edit.id])}
             themeType={this.props.themeType}
             expertMode={this.state.filter.expertMode}
             value={this.edit.val}
+            socket={this.props.socket}
+            object={this.objects[this.edit.id]}
+            defaultHistory={this.defaultHistory}
+            dateFormat={this.props.dateFormat}
             onClose={res => {
                 this.setState({ updateOpened: false });
-                res && this.onUpdate(res)
+                res && this.onUpdate(res);
             }}
         />;
     }

@@ -1,7 +1,8 @@
 import { createRef, Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
-import withWidth from "@material-ui/core/withWidth";
+import withWidth from '@material-ui/core/withWidth';
 import PropTypes from 'prop-types';
+
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -11,10 +12,10 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Paper from  '@material-ui/core/Paper';
-import FormHelperText from "@material-ui/core/FormHelperText";
+import FormHelperText from '@material-ui/core/FormHelperText';
 import Switch from "@material-ui/core/Switch";
 
-//Icons
+import DialogConfirm from '@iobroker/adapter-react/Dialogs/Confirm';
 
 const styles = theme => ({
     paper: {
@@ -59,8 +60,11 @@ class BaseSettingsObjects extends Component {
             backup_path:             settings.backup.path             || '',
             textIP:                  Array.isArray(settings.host) || (settings.host || '').match(/[^.\d]/) || (settings.host || '').includes(','),
 
-            IPs:          ['0.0.0.0', '127.0.0.1'],
-            loading:      true,
+            IPs:                     ['0.0.0.0', '127.0.0.1'],
+            loading:                 true,
+            showWarningDialog:       false,
+            toConfirmType:           '',
+            originalDBType:          settings.type                    || 'file',
         };
 
         this.focusRef = createRef();
@@ -104,8 +108,35 @@ class BaseSettingsObjects extends Component {
         });
     }
 
+    renderWarning() {
+        if (this.state.showWarningDialog) {
+            return <DialogConfirm
+                title={this.props.t('Please confirm')}
+                text={this.props.t('switch_db_note')}
+                onClose={result => {
+                    if (result) {
+                        let port;
+
+                        if (this.state.toConfirmType === 'redis') {
+                            port = 6379;
+                        } else {
+                            port = 9000;
+                        }
+                        this.setState({type: this.state.toConfirmType, showWarningDialog: false, port},
+                            () => this.onChange());
+                    } else {
+                        this.setState({showWarningDialog: false});
+                    }
+                }}
+            />
+        } else {
+            return null;
+        }
+    }
+
     render() {
         return <Paper className={ this.props.classes.paper }>
+            {this.renderWarning()}
             <Grid item className={ this.props.classes.gridSettings }>
                 <Grid container direction="column">
                     <Grid item>
@@ -114,14 +145,19 @@ class BaseSettingsObjects extends Component {
                             <Select
                                 value={ this.state.type }
                                 onChange={ e => {
-                                    let port;
-
-                                    if (e.target.value === 'redis') {
-                                        port = 6379;
+                                    if (e.target.value !== this.state.originalDBType) {
+                                        this.setState({ toConfirmType: e.target.value, showWarningDialog: true });
                                     } else {
-                                        port = 9000;
+                                        let port;
+
+                                        if (e.target.value === 'redis') {
+                                            port = 6379;
+                                        } else {
+                                            port = 9000;
+                                        }
+                                        this.setState({type: e.target.value, port},
+                                            () => this.onChange());
                                     }
-                                    this.setState({ type: e.target.value, port }, () => this.onChange());
                                 }}
                             >
                                 <MenuItem value="file">{ this.props.t('File') }</MenuItem>

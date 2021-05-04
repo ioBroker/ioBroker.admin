@@ -197,7 +197,7 @@ class Objects extends Component {
                         objects={context.objects}
                         open={context.state.modalNewObj}
                         extendObject={(id, data) => context.extendObject(id, data)}
-                        selected={context.state.selected[0]}
+                        selected={context.state.selected[0] || context.state.selectedNonObject}
                         onClose={() => context.setState({ modalNewObj: false })}
                         onApply={() => context.setState({ modalNewObj: false })} />
                 }

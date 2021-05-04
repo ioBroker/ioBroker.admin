@@ -221,6 +221,9 @@ class WizardDialog extends Component {
     }
 
     async onClose() {
+        // read if discovery is available
+        const discovery = await this.props.socket.getState('system.adapter.discovery.0.alive');
+
         if (this.adminInstance) {
             let certPublic;
             let certPrivate;
@@ -245,7 +248,7 @@ class WizardDialog extends Component {
                         this.adminInstance.native.secure = false;
 
                         await this.props.socket.setObject(this.adminInstance._id, this.adminInstance);
-                        setTimeout(() => window.location = 'http://' + window.location.host + '/#tab-adapters', 1000);
+                        setTimeout(() => window.location = `http://${window.location.host}/#tab-adapters${discovery ? '/discovery' : ''}`, 1000);
                         return this.props.onClose();
                     } else {
                         this.adminInstance.native.secure      = this.state.secure;
@@ -259,19 +262,19 @@ class WizardDialog extends Component {
                 // redirect to https or http
                 setTimeout(() => {
                     if (this.adminInstance.native.secure) {
-                        window.location = 'https://' + window.location.host + '/#tab-adapters';
+                        window.location = `https://${window.location.host}/#tab-adapters${discovery ? '/discovery' : ''}`;
                     } else {
-                        window.location = 'http://' + window.location.host + '/#tab-adapters';
+                        window.location = `http://${window.location.host}/#tab-adapters${discovery ? '/discovery' : ''}`;
                     }
                 }, 1000);
 
                 this.props.onClose();
             } else {
-                Router.doNavigate('tab-adapters');
+                Router.doNavigate('tab-adapters', discovery ? 'discovery' : undefined);
                 this.props.onClose();
             }
         } else {
-            Router.doNavigate('tab-adapters');
+            Router.doNavigate('tab-adapters', discovery ? 'discovery' : undefined);
             this.props.onClose();
         }
     }

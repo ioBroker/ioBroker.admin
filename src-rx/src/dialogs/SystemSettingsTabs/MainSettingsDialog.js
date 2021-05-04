@@ -17,6 +17,7 @@ import Utils from '../../Utils';
 import countries from '../../assets/json/countries';
 
 import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
+import {FormHelperText} from "@material-ui/core";
 
 const styles = theme => ({
     tabPanel: {
@@ -28,7 +29,7 @@ const styles = theme => ({
         //backgroundColor: blueGrey[ 50 ]
     },
     formControl: {
-        margin: theme.spacing(1),
+        marginRight: theme.spacing(1),
         minWidth: '100%',
     },
     selectEmpty: {
@@ -51,8 +52,7 @@ class MainSettingsDialog extends Component {
             values: [],
             data: {},
             zoom: 14
-        }
-
+        };
     }
 
     getSettings() {
@@ -201,7 +201,13 @@ class MainSettingsDialog extends Component {
                 id: 'expertMode',
                 title: 'Expert mode',
                 values: [{ id: true, title: 'on' }, { id: false, title: 'off (default)' }]
-
+            },
+            {
+                id: 'defaultLogLevel',
+                title: 'Default log level',
+                help: 'for new instances',
+                translate: false,
+                values: [{ id: 'debug', title: 'debug' }, { id: 'info', title: 'info' }, { id: 'warn', title: 'warn' }, { id: 'error', title: 'error' }]
             }
         ];
     }
@@ -217,13 +223,13 @@ class MainSettingsDialog extends Component {
             center,
             {
                 draggable: true,
-                title: "Resource location",
-                alt: "Resource Location",
+                title: 'Resource location',
+                alt: 'Resource Location',
                 riseOnHover: true
             }
         )
             .addTo(map)
-            .bindPopup("Popup for any custom information.")
+            .bindPopup('Popup for any custom information.')
             .on({
                 dragend: evt => this.onMarkerDragend(evt)
             });
@@ -233,7 +239,12 @@ class MainSettingsDialog extends Component {
 
     getSelect(e, i) {
         const { classes } = this.props;
-        const value = this.props.data.common[e.id];
+        let value = this.props.data.common[e.id];
+
+        if (e.id === 'defaultLogLevel' && !value) {
+            value = 'info';
+        }
+
         const items = e.values.map((elem, index) => <MenuItem value={elem.id} key={index}>
             {e.translate ? this.props.t(elem.title || elem.id) : elem.title || elem.id}
         </MenuItem>);
@@ -246,12 +257,13 @@ class MainSettingsDialog extends Component {
                 <Select
                     className={classes.formControl}
                     id={e.id}
-                    value={value === undefined ? !!value : value}
+                    value={value === undefined ? false : value}
                     onChange={evt => this.handleChange(evt, i)}
                     displayEmpty
                 >
                     {items}
                 </Select>
+                {e.help ? <FormHelperText>{this.props.t(e.help)}</FormHelperText> : null}
             </FormControl>
         </Grid>;
     }
@@ -359,14 +371,14 @@ class MainSettingsDialog extends Component {
         const selectors = this.getSettings().map((e, i) => this.getSelect(e, i));
 
         const center = [
-            this.props.data.common.latitude ? this.props.data.common.latitude : 50,
+            this.props.data.common.latitude  ? this.props.data.common.latitude  : 50,
             this.props.data.common.longitude ? this.props.data.common.longitude : 10
         ];
 
         const { zoom } = this.state;
         return <div className={classes.tabPanel}>
             {this.renderConfirmDialog()}
-            <Grid container spacing={6}>
+            <Grid container spacing={3}>
                 <Grid item lg={6} md={12}>
                     <Grid container spacing={3}>
                         {selectors}

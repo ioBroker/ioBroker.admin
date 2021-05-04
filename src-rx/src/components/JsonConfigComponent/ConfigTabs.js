@@ -6,6 +6,7 @@ import Tab from '@material-ui/core/Tab';
 
 import ConfigGeneric from './ConfigGeneric';
 import ConfigPanel from './ConfigPanel';
+import React from "react";
 
 const styles = theme => ({
     tabs: {
@@ -58,6 +59,10 @@ class ConfigTabs extends ConfigGeneric {
                 systemConfig={this.props.systemConfig}
                 onError={this.props.onError}
                 onChange={this.props.onChange}
+                multiEdit={this.props.multiEdit}
+
+                forceUpdate={this.props.forceUpdate}
+                registerOnForceUpdate={this.props.registerOnForceUpdate}
 
                 customObj={this.props.customObj}
                 instanceObj={this.props.instanceObj}
@@ -86,11 +91,14 @@ ConfigTabs.propTypes = {
     onCommandRunning: PropTypes.func,
     dateFormat: PropTypes.string,
     isFloatComma: PropTypes.bool,
+    multiEdit: PropTypes.bool,
 
     customObj: PropTypes.object,
     instanceObj: PropTypes.object,
     custom: PropTypes.bool,
 
+    registerOnForceUpdate: PropTypes.func.isRequired,
+    forceUpdate: PropTypes.func.isRequired,
     systemConfig: PropTypes.object,
     alive: PropTypes.bool,
     common: PropTypes.object,

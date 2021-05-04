@@ -62,6 +62,9 @@ class Command extends Component {
         if (!this.state.init && this.props.ready && this.props.cmd) {
             this.executeCommand();
         }
+        if (this.props.logsRead && JSON.stringify(this.props.logsRead) !== JSON.stringify(this.state.log)) {
+            this.setState({ log: this.props.logsRead });
+        }
         this.logRef.current?.scrollIntoView();
     }
 
@@ -212,10 +215,10 @@ class Command extends Component {
             this.setState({ log, stopped: true }, () => {
                 this.props.onSetCommandRunning(false);
                 if (exitCode !== 0) {
-                    this.props.errorFunc && this.props.errorFunc();
+                    this.props.errorFunc && this.props.errorFunc(exitCode, this.state.log);
                 } else {
                     this.props.performed && this.props.performed();
-                    this.props.onFinished();
+                    this.props.onFinished(exitCode, this.state.log);
                 }
                 console.log('cmdExit');
                 console.log(id);
@@ -283,13 +286,13 @@ class Command extends Component {
             direction="column"
             spacing={this.props.noSpacing ? 0 : 2}
         >
-            <Grid item>
+            {this.props.showElement && <Grid item>
                 {!this.state.stopped && <LinearProgress
                     style={this.props.commandError ? { backgroundColor: '#f44336' } : null}
                     variant={this.props.inBackground ? 'determinate' : 'indeterminate'}
                     value={this.state.max && this.state.value ? 100 - Math.round((this.state.value / this.state.max) * 100) : this.props.commandError ? 0 : 100}
                 />}
-            </Grid>
+            </Grid>}
             <div style={{
                 width: '100%',
                 display: 'flex',
@@ -307,7 +310,7 @@ class Command extends Component {
                 >
                     {this.colorize(this.state.log[this.state.log.length - 1])}
                 </Typography>
-                <Typography component="div" style={{ width: 250 }}>
+                {this.props.showElement && <Typography component="div" style={{ width: 250 }}>
                     <Grid component="label" container alignItems="center" spacing={1}>
                         <Grid item>{this.props.t('less')}</Grid>
                         <Grid item>
@@ -319,19 +322,20 @@ class Command extends Component {
                         </Grid>
                         <Grid item>{this.props.t('more')}</Grid>
                     </Grid>
-                </Typography>
+                </Typography>}
             </div>
             <Grid item style={this.props.noSpacing ? { height: 'calc(100% - 45px)', width: '100%' } : {}}>
-                <Paper className={this.props.noSpacing ? classes.logNoSpacing : classes.log}>
-                    {this.state.moreChecked ? this.getLog() : null}
-                </Paper>
+                {this.state.moreChecked && <Paper className={this.props.noSpacing ? classes.logNoSpacing : classes.log}>
+                    {this.getLog()}
+                </Paper>}
             </Grid>
         </Grid>;
     }
 }
 
 Command.defaultProps = {
-    onSetCommandRunning: () => {}
+    onSetCommandRunning: () => { },
+    showElement: true
 };
 
 Command.propTypes = {

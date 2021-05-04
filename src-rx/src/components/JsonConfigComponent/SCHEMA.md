@@ -3,6 +3,8 @@
 
 All labels, texts, help texts can be multi-language or just strings.
 
+*If the attribute name starts with "_" it will not be saved in the object.*
+
 ## Possible control types
 Possible types:
 
@@ -17,6 +19,7 @@ Possible types:
   - `color` - color of collapsable header `primary` or `secondary` or nothing
 
 - `text` - Text component
+  - `maxLength` - max length of text in field
 
 - `number`
   - `min` - minimal value
@@ -51,6 +54,7 @@ Possible types:
 - `autocomplete`
   - `options` - `["value1", "value2", ...]` or `[{"value": "value", "label": "Value1"}, "value2", ...]`
   - `freeSolo` - Set freeSolo to true so the textbox can contain any arbitrary value.
+  - `maxLength` - max length of text in field
 
 - `!icon` - base64 icon
   - `maxSize`
@@ -88,6 +92,7 @@ Possible types:
 - `password` (repeat - if repeat password must be shown with the same width settings)
   - `repeat` password must be compared with password
   - `visible` - true if allow to view the password by toggling the view button
+  - `maxLength` - max length of text in field
 
 - `instance`
  - `adapter` - name of adapter
@@ -165,8 +170,8 @@ Possible types:
 - `selectSendTo`
   Shows drop down menu with the given from the instance values. 
   - `command` - sendTo command
-  - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`
-  - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both.
+  - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to backend
+  - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to backend if jsonData is not defined.
   - `!manual` - allow manual editing. Without drop down  
   - `noTranslation` - do not translate label of selects  
     To use this option, your adapter must implement message handler:
@@ -208,11 +213,12 @@ adapter.on('message', obj => {
 - `autocompleteSendTo`
   Shows autocomplete control with the given from the instance values.
   - `command` - sendTo command
-  - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`
-  - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both.
+  - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to backend
+  - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to backend if jsonData is not defined.
   - `freeSolo` - Set freeSolo to true so the textbox can contain any arbitrary value.
-    
-    To use this option, your adapter must implement message handler:
+  - `maxLength` - max length of text in field
+
+  To use this option, your adapter must implement message handler:
     The result of command must be an array in form `["value1", {"value": "value2", "label": "Value2"}, ...]`
     See `selectSendTo` for handler example 
 
@@ -241,6 +247,8 @@ All types could have:
 - `defaultFunc` - JS function to calculate default value  
 - `placeholder` - placeholder (for text control)
 - `noTranslation` - do not translate selects or other options (not for help, label or placeholder)  
+- `onChange` - Structure in form `{"alsoDependsOn": ["attr1", "attr2], "calculateFunc": "attr1 + attr2", "ignoreOwnChanges": true}`
+- `noMultiEdit` - if this flag set to true, this field will not be shown if user selected more than one object for edit.
 - `confirm`
   - `condition` - JS function: true show confirm dialog
   - `text` - text of confirmation dialog

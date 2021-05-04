@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
         margin: 0
     }
 }));
-const LicenseDialog = ({ url, func }) => {
+const LicenseDialog = ({ url, cb }) => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
     const [text, setText] = useState('');
@@ -70,14 +70,17 @@ const LicenseDialog = ({ url, func }) => {
                     autoFocus
                     onClick={() => {
                         onClose();
-                        func();
+                        cb(true);
                     }}
                     color="primary">
                     {I18n.t('Accept')}
                 </Button>
                 <Button
                     variant="contained"
-                    onClick={onClose}
+                    onClick={() => {
+                        onClose();
+                        cb(false);
+                    }}
                     color="default">
                     {I18n.t('Close')}
                 </Button>
@@ -86,14 +89,14 @@ const LicenseDialog = ({ url, func }) => {
     </ThemeProvider>;
 }
 
-export const licenseDialogFunc = (license, func, url) => {
+export const licenseDialogFunc = (license, cb, url) => {
     if (license) {
-        return func()
+        return cb(true);
     }
     if (!node) {
         node = document.createElement('div');
         node.id = 'renderModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<LicenseDialog url={url} func={func} />, node);
+    return ReactDOM.render(<LicenseDialog url={url} cb={cb} />, node);
 }

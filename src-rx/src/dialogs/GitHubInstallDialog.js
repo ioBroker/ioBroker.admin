@@ -9,29 +9,30 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
+import { Autocomplete } from '@material-ui/lab';
+import { AppBar, Box, Checkbox, FormControlLabel, IconButton, InputAdornment, makeStyles, Tab, Tabs, TextField } from '@material-ui/core';
+
+import npmIcon from '../assets/npm.png';
+import { FaGithub as GithubIcon } from 'react-icons/fa';
+import UrlIcon from '@material-ui/icons/Language';
 
 import I18n from '@iobroker/adapter-react/i18n';
-import { AppBar, Box, Checkbox, FormControlLabel, IconButton, InputAdornment, makeStyles, Tab, Tabs, TextField, useTheme } from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
 
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`full-width-tabpanel-${index}`}
-            aria-labelledby={`full-width-tab-${index}`}
-            {...other}
-        >
-            {value === index && (
-                <Box style={{ paddingTop: 10 }} p={3}>
-                    <Typography component="div">{children}</Typography>
-                </Box>
-            )}
-        </div>
-    );
+    return <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`full-width-tabpanel-${index}`}
+        aria-labelledby={`full-width-tab-${index}`}
+        {...other}
+    >
+        {value === index && <Box style={{ paddingTop: 10 }} p={3}>
+            <Typography component="div">{children}</Typography>
+        </Box>}
+    </div>;
 }
 
 TabPanel.propTypes = {
@@ -47,7 +48,7 @@ function a11yProps(index) {
     };
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
     root: {
         backgroundColor: theme.palette.background.paper,
         width: '100%',
@@ -55,6 +56,16 @@ const useStyles = makeStyles((theme) => ({
     },
     paper: {
         maxWidth: 1000
+    },
+    tabPaper: {
+        padding: theme.spacing(2)
+    },
+    title: {
+        marginTop: 10,
+        padding: theme.spacing(1),
+        marginLeft: theme.spacing(1),
+        fontSize: 18,
+        color: theme.palette.primary.main
     }
 }));
 
@@ -81,15 +92,13 @@ if (!Array.prototype.flat) {
 }
 
 const GitHubInstallDialog = ({ categories, repository, onClose, open, installFromUrl, t }) => {
-    if (!t) {
-        t = I18n.t;
-    }
+    t = t || I18n.t;
+
     const classes = useStyles();
-    const theme = useTheme();
     const [autocompleteValue, setAutocompleteValue] = useState(null);
-    const [debug, setDebug] = useState(false);
+    const [debug, setDebug] = useState(window.localStorage.getItem('App.gitDebug') === 'true');
     const [url, setUrl] = useState('');
-    const [value, setValue] = useState(0);
+    const [currentTab, setCurrentTab] = useState(window.localStorage.getItem('App.gitTab') || 'npm');
 
     // eslint-disable-next-line array-callback-return
     const array = useCallback(() =>
@@ -100,11 +109,11 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
             .map(el => {
                 const adapter = repository[el]
                 if (!adapter?.controller) {
+                    const parts = (adapter.extIcon || adapter.meta || adapter.readme).split('/');
                     return {
-                        value: el, name: `${adapter?.name} [${(adapter.meta || '')
-                            .replace('https://raw.githubusercontent.com/', '')
-                            .substr(0, (adapter.meta || '').replace('https://raw.githubusercontent.com/', '')
-                                .indexOf('/'))}]`
+                        value: el + '/' + parts[3],
+                        name: `${adapter?.name} [${parts[3]}]`,
+                        icon: adapter.extIcon,
                     };
                 } else {
                     return null;
@@ -114,12 +123,8 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
             .sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0),
         [categories, repository]);
 
-    const handleChange = (event, newValue) => setValue(newValue);
-
     const closeInit = () => {
         setAutocompleteValue(null);
-        setDebug(false);
-        setValue(0);
         setUrl('');
     };
 
@@ -132,39 +137,34 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
             <div className={classes.root}>
                 <AppBar position="static" color="default">
                     <Tabs
-                        value={value}
-                        onChange={handleChange}
+                        value={currentTab}
+                        onChange={(e, newTab) => {
+                            window.localStorage.setItem('App.gitTab', newTab);
+                            setCurrentTab(newTab);
+                        }}
                         variant="fullWidth"
                     >
-                        <Tab label={t('From github')} {...a11yProps(0)} />
-                        <Tab label={t('Custom')} {...a11yProps(1)} />
+                        <Tab label={t('From npm')} wrapped icon={<img src={npmIcon} alt="npm" width={24} height={24}/>} {...a11yProps(0)}    value="npm"/>
+                        <Tab label={t('From github')} wrapped icon={<GithubIcon style={{width: 24, height: 24}} width={24} height={24}/>} {...a11yProps(0)} value="GitHub" />
+                        <Tab label={t('Custom')} wrapped icon={<UrlIcon width={24} height={24}/>} {...a11yProps(1)}      value="URL"/>
                     </Tabs>
                 </AppBar>
-                <div style={{
-                    marginTop: 10,
-                    padding: 7,
-                    fontSize: 18,
-                }}>{value === 0 ?
-                    t('Install or update the adapter from Github') :
-                    t('Install or update the adapter from URL')}
+                <div className={classes.title}>{t('Install or update the adapter from %s', currentTab || 'npm')}
                 </div>
-                <TabPanel value={value} index={0} dir={theme.direction}>
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center'
-                    }}>
+                {currentTab === 'npm' ? <Paper className={classes.tabPaper}>
+                    <div style={{display: 'flex', alignItems: 'center'}}>
                         <FormControlLabel
                             control={
                                 <Checkbox
                                     checked={debug}
-                                    onChange={(e) => setDebug(e.target.checked)} />}
+                                    onChange={e => {
+                                        window.localStorage.setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
+                                        setDebug(e.target.checked);
+                                    }} />}
                             label={t('Debug outputs')}
                         />
                     </div>
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'flex-end'
-                    }}>
+                    <div style={{display: 'flex', alignItems: 'flex-end'}}>
                         <SmsIcon style={{ marginRight: 10 }} />
                         <Autocomplete
                             fullWidth
@@ -173,7 +173,8 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                             onChange={(_, e) => setAutocompleteValue(e)}
                             options={array()}
                             getOptionLabel={option => option.name}
-                            renderInput={(params) => <TextField {...params} label={I18n.t('Select adapter')} />}
+                            renderInput={params =>
+                                <TextField {...params} label={I18n.t('Select adapter')} />}
                         /></div>
                     <div style={{
                         fontSize: 24,
@@ -181,11 +182,42 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                         marginTop: 40
                     }}>{t('Warning!')}</div>
                     <div style={{ color: '#f53939' }}>
-                        {t(`Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!`)}
+                        {t('github_warning', 'NPM', 'NPM')}
                     </div>
-                </TabPanel>
-                <TabPanel value={value} index={1} dir={theme.direction}>
-                    <div>
+                </Paper> : null}
+                {currentTab === 'GitHub' ? <Paper className={classes.tabPaper}>
+                    <div style={{display: 'flex', alignItems: 'center'}}>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={debug}
+                                    onChange={(e) => setDebug(e.target.checked)} />}
+                            label={t('Debug outputs')}
+                        />
+                    </div>
+                    <div style={{display: 'flex', alignItems: 'flex-end'}}>
+                        <SmsIcon style={{ marginRight: 10 }} />
+                        <Autocomplete
+                            fullWidth
+                            value={autocompleteValue}
+                            getOptionSelected={(option, value) => option.name === value.name}
+                            onChange={(_, e) => setAutocompleteValue(e)}
+                            options={array()}
+                            getOptionLabel={option => option.name}
+                            renderInput={(params) =>
+                                <TextField {...params} label={I18n.t('Select adapter')} />}
+                        /></div>
+                    <div style={{
+                        fontSize: 24,
+                        fontWeight: 'bold',
+                        marginTop: 40
+                    }}>{t('Warning!')}</div>
+                    <div style={{ color: '#f53939' }}>
+                        {t('github_warning', 'GitHub', 'GitHub')}
+                    </div>
+                </Paper> : null}
+                {currentTab === 'URL' ? <Paper className={classes.tabPaper}>
+                    <div style={{display: 'flex', alignItems: 'center'}}>
                         <TextField
                             fullWidth
                             label={t('URL')}
@@ -222,21 +254,34 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                         marginTop: 40
                     }}>{t('Warning!')}</div>
                     <div style={{ color: '#f53939' }}>
-                        {t(`Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!`)}
+                        {t('github_warning', 'URL', 'URL')}
                     </div>
-                </TabPanel>
+                </Paper> : null}
             </div>
         </DialogContent>
         <DialogActions>
             <Button
                 variant="contained"
-                disabled={(value === 0 && !autocompleteValue) || (value === 1 && !url)}
+                disabled={((currentTab === 'GitHub' || currentTab === 'npm') && !autocompleteValue) || (currentTab === 'URL' && !url)}
                 autoFocus
                 onClick={() => {
-                    if (value === 0) {
-                        installFromUrl(autocompleteValue.value, debug, true);
-                    } else {
-                        installFromUrl(url, debug, true);
+                    if (currentTab === 'GitHub') {
+                        const parts = autocompleteValue.value.split('/');
+                        const _url = 'https://github.com/' + parts[1] + '/ioBroker.' + parts[0] + '/tarball/master';
+                        installFromUrl(_url, debug, true);
+                    } else if (currentTab === 'URL') {
+                        if (!url.includes('.')) {
+                            installFromUrl('iobroker.' + url, debug, true);
+                        } else {
+                            installFromUrl(url, debug, true);
+                        }
+                    } else if (currentTab === 'npm') {
+                        const parts = autocompleteValue.value.split('/');
+                        if (!parts[0].includes('.')) {
+                            installFromUrl('iobroker.' + parts[0], debug, true);
+                        } else {
+                            installFromUrl(parts[0], debug, true);
+                        }
                     }
                     onClose();
                     closeInit();
@@ -254,7 +299,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                 {t('Close')}
             </Button>
         </DialogActions>
-    </Dialog>
+    </Dialog>;
 }
 
 export default GitHubInstallDialog;

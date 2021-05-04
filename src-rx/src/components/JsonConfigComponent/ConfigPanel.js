@@ -109,6 +109,10 @@ class ConfigPanel extends ConfigGeneric {
         const classes = this.props.classes || {};
 
         return Object.keys(items).map(attr => {
+            if (this.props.multiEdit && items[attr].noMultiEdit) {
+                return null;
+            }
+
             const type = items[attr].type || 'panel';
             let ItemComponent;
             if (type === 'custom') {
@@ -144,6 +148,9 @@ class ConfigPanel extends ConfigGeneric {
                 dateFormat={this.props.dateFormat}
                 isFloatComma={this.props.isFloatComma}
 
+                registerOnForceUpdate={this.props.registerOnForceUpdate}
+                forceUpdate={this.props.forceUpdate}
+
                 customObj={this.props.customObj}
                 instanceObj={this.props.instanceObj}
                 custom={this.props.custom}
@@ -155,6 +162,7 @@ class ConfigPanel extends ConfigGeneric {
     }
 
     render() {
+        console.log(this.props)
         const items = this.props.schema.items;
         const classes = this.props.classes || {};
 
@@ -217,6 +225,7 @@ ConfigPanel.propTypes = {
     onCommandRunning: PropTypes.func,
     dateFormat: PropTypes.string,
     isFloatComma: PropTypes.bool,
+    multiEdit: PropTypes.bool,
 
     customObj: PropTypes.object,
     instanceObj: PropTypes.object,
@@ -224,6 +233,8 @@ ConfigPanel.propTypes = {
 
     onError: PropTypes.func,
     onChange: PropTypes.func,
+    onForceUpdate: PropTypes.func,
+    registerOnForceUpdate: PropTypes.func,
 };
 
 const ConfigPanelStyled = withStyles(styles)(ConfigPanel);

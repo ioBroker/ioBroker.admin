@@ -23,7 +23,7 @@ class ConfigStaticText extends ConfigGeneric {
                 color={this.props.schema.color || undefined}
                 className={this.props.classes.fullWidth}
                 disabled={disabled}
-                onClick={() => this.props.schema.href ? () => this.props.schema.href && window.open(this.props.schema.href, '_blank') : null}
+                onClick={this.props.schema.href ? () => this.props.schema.href && window.open(this.props.schema.href, '_blank') : null}
             >
                 {this.props.schema.icon ? <Icon src={this.props.schema.icon} className={this.props.classes.icon}/> : null}
                 {this.getText(this.props.schema.text || this.props.schema.label, this.props.schema.noTranslation)}

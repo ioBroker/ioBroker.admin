@@ -12,6 +12,8 @@ import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
+import Icon from '@iobroker/adapter-react/Components/Icon';
+
 function GroupBlock(props) {
     const [{ CanDrop, isOver, isCanDrop }, drop] = useDrop(() => ({
         accept: 'user',
@@ -69,11 +71,10 @@ function GroupBlock(props) {
         <CardContent>
             <Typography gutterBottom component="div" className={props.classes.userGroupTitle}>
                 {
-                    props.group.common.icon
-                        ?
-                        <span
+                    props.group.common.icon ?
+                        <Icon
                             className={ props.classes.icon }
-                            style={{ backgroundImage: 'url(' + props.group.common.icon + ')' }}
+                            src={props.group.common.icon}
                         />
                         :
                         <GroupIcon className={props.classes.icon} />
@@ -117,15 +118,13 @@ function GroupBlock(props) {
                         className={props.classes.userGroupMember}
                         style={{ color: textColor, borderColor: textColor + '40' }}
                     >
-                         {
-                            user.common.icon
-                            ?
-                            <span
-                                className={ props.classes.icon }
-                                style={{ backgroundImage: 'url(' + user.common.icon + ')' }}
+                        {user.common.icon ?
+                            <Icon
+                                className={props.classes.icon}
+                                src={user.common.icon}
                             />
                             :
-                            <PersonIcon className={props.classes.icon} />
+                            <PersonIcon className={props.classes.icon}/>
                         }
                         {props.getName(user.common.name)}
                         <IconButton

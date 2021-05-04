@@ -67,6 +67,8 @@ class JsonConfigComponent extends Component {
             commandRunning: false,
         };
 
+        this.forceUpdateHandlers = {};
+
         this.schema = JSON.parse(JSON.stringify(this.props.schema));
         this.buildDependencies(this.schema);
 
@@ -150,15 +152,23 @@ class JsonConfigComponent extends Component {
         }
     }
 
-    onChange = (data, value) => {
+    onChange = (data, value, cb) => {
         if (this.props.onValueChange) {
             this.props.onValueChange(data, value);
+            cb && cb();
         } else {
             const state = {data};
-            state.changed = JSON.stringify(data) !== this.state.originalData;
 
-            this.setState({state}, () =>
-                this.props.onChange(data, state.changed));
+            const _data = {};
+            // remove all attributes starting with "_"
+            Object.keys(data).forEach(attr => !attr.startsWith('_') && (_data[attr] = data[attr]));
+
+            state.changed = JSON.stringify(_data) !== this.state.originalData;
+
+            this.setState({state}, () => {
+                this.props.onChange(_data, state.changed);
+                cb && cb();
+            });
         }
     }
 
@@ -193,13 +203,38 @@ class JsonConfigComponent extends Component {
         Object.keys(attrs).forEach(attr => {
             if (attrs[attr].confirm?.alsoDependsOn) {
                 attrs[attr].confirm?.alsoDependsOn.forEach(dep => {
-                    attrs[dep].depends = attrs[dep].depends || [];
-                    const depObj = {...attrs[attr], attr};
-                    if (depObj.confirm) {
-                        depObj.confirm.cancel = 'Undo';
-                    }
+                    if (!attrs[dep]) {
+                        console.error(`[JsonConfigComponent] Attribute ${dep} does not exist!`);
+                        if (dep.startsWith('data.')) {
+                            console.warn(`[JsonConfigComponent] please use "${dep.replace(/^data\./, '')}" instead of "${dep}"`);
+                        }
+                    } else {
+                        attrs[dep].confirmDependsOn = attrs[dep].confirmDependsOn || [];
 
-                    attrs[dep].depends.push(depObj);
+                        const depObj = {...attrs[attr], attr};
+                        if (depObj.confirm) {
+                            depObj.confirm.cancel = 'Undo';
+                        }
+
+                        attrs[dep].confirmDependsOn.push(depObj);
+                    }
+                });
+            }
+
+            if (attrs[attr].onChange?.alsoDependsOn) {
+                attrs[attr].onChange?.alsoDependsOn.forEach(dep => {
+                    if (!attrs[dep]) {
+                        console.error(`[JsonConfigComponent] Attribute ${dep} does not exist!`);
+                        if (dep.startsWith('data.')) {
+                            console.warn(`[JsonConfigComponent] please use "${dep.replace(/^data\./, '')}" instead of "${dep}"`);
+                        }
+                    } else {
+                        attrs[dep].onChangeDependsOn = attrs[dep].onChangeDependsOn || [];
+
+                        const depObj = {...attrs[attr], attr};
+
+                        attrs[dep].onChangeDependsOn.push(depObj);
+                    }
                 });
             }
         });
@@ -223,10 +258,14 @@ class JsonConfigComponent extends Component {
                 customs={this.props.customs}
                 dateFormat={this.props.dateFormat}
                 isFloatComma={this.props.isFloatComma}
+                multiEdit={this.props.multiEdit}
 
                 custom={this.props.custom}
                 customObj={this.props.customObj}
                 instanceObj={this.props.instanceObj}
+
+                forceUpdate={this.forceUpdate}
+                registerOnForceUpdate={this.registerOnForceUpdate}
 
                 onChange={this.onChange}
                 onError={(attr, error) => this.onError(attr, error)}
@@ -248,6 +287,10 @@ class JsonConfigComponent extends Component {
                 customs={this.props.customs}
                 dateFormat={this.props.dateFormat}
                 isFloatComma={this.props.isFloatComma}
+                multiEdit={this.props.multiEdit}
+
+                forceUpdate={this.forceUpdate}
+                registerOnForceUpdate={this.registerOnForceUpdate}
 
                 custom={this.props.custom}
                 customObj={this.props.customObj}
@@ -256,6 +299,25 @@ class JsonConfigComponent extends Component {
                 onChange={this.onChange}
                 onError={(attr, error) => this.onError(attr, error)}
             />
+        }
+    }
+
+    forceUpdate = (attr, data) => {
+        if (Array.isArray(attr)) {
+            attr.forEach(a =>
+                this.forceUpdateHandlers[a] && this.forceUpdateHandlers[a](data));
+        } else {
+            if (this.forceUpdateHandlers[attr]) {
+                this.forceUpdateHandlers[attr](data);
+            }
+        }
+    }
+
+    registerOnForceUpdate = (attr, cb) => {
+        if (cb) {
+            this.forceUpdateHandlers[attr] = cb;
+        } else if (this.forceUpdateHandlers[attr]) {
+            delete this.forceUpdateHandlers[attr];
         }
     }
 
@@ -280,6 +342,7 @@ JsonConfigComponent.propTypes = {
 
     custom: PropTypes.bool, // is the customs settings must be shown
     customObj: PropTypes.object,
+    multiEdit: PropTypes.bool, // set if user edits more than one object simultaneously
     instanceObj: PropTypes.object,
     dateFormat: PropTypes.string,
     isFloatComma: PropTypes.bool,

@@ -1,5 +1,4 @@
 import { Component } from 'react';
-
 import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
@@ -8,8 +7,6 @@ import clsx from 'clsx';
 import { Avatar, Drawer as MaterialDrawer } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
-
-import I18n from '@iobroker/adapter-react/i18n';
 
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -24,15 +21,13 @@ import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
 import SubscriptionsIcon from '@material-ui/icons/Subscriptions';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
-import LogoutIcon from '@iobroker/adapter-react/icons/IconLogout';
-
-// import CodeIcon from '@material-ui/icons/Code';
-// import AcUnitIcon from '@material-ui/icons/AcUnit';
-// import DeviceHubIcon from '@material-ui/icons/DeviceHub';
-// import PermContactCalendarIcon from '@material-ui/icons/PermContactCalendar';
-// import ShowChartIcon from '@material-ui/icons/ShowChart';
 import StorageIcon from '@material-ui/icons/Storage';
 import FilesIcon from '@material-ui/icons/FileCopy';
+
+import LogoutIcon from '@iobroker/adapter-react/icons/IconLogout';
+
+import Icon from '@iobroker/adapter-react/Components/Icon';
+import I18n from '@iobroker/adapter-react/i18n';
 
 import DragWrapper from './DragWrapper';
 import CustomDragLayer from './CustomDragLayer';
@@ -485,13 +480,13 @@ class Drawer extends Component {
                 key={tab.name}
                 canDrag={editList}
                 name={tab.name}
-                iconJSX={!!tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <img alt="" className={classes.icon} src={tab.icon} />}
+                iconJSX={!!tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <Icon className={classes.icon} src={tab.icon} />}
                 _id={tab.name}
                 selected={currentTab === tab.name}
                 tab={tab}
                 compact={!this.isSwipeable() && state !== STATES.opened}
-                badgeContent={tab.name === 'tab-logs' ? logErrors || logWarnings : 0}
-                badgeColor={tab.name === 'tab-logs' ? logErrors ? 'error' : 'warn' : ''}
+                badgeContent={logErrors || logWarnings || 0}
+                badgeColor={logErrors ? 'error' : (logWarnings ? 'warn' : '')}
                 tabs={tabs}
                 setEndDrag={() => this.tabsEditSystemConfig()}
                 setTabs={newObj => this.setState({ tabs: newObj })}>
@@ -517,7 +512,7 @@ class Drawer extends Component {
                             handleNavigation(tab.name);
                         }
                     }}
-                    icon={!!tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <img alt="" className={classes.icon} src={tab.icon} />}
+                    icon={!!tabsInfo[tab.name]?.icon ? tabsInfo[tab.name].icon : <Icon src={tab.icon} className={classes.icon} />}
                     text={tab.title}
                     selected={currentTab === tab.name}
                     badgeContent={this.badge(tab).content}

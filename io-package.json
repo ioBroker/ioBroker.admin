@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.11",
+        "version": "5.0.14",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -15,6 +15,42 @@
             "zh-cn": "Admin"
         },
         "news": {
+            "5.0.14": {
+                "en": "Admin5: Fixed many bugs",
+                "de": "Admin5: Viele Fehler behoben",
+                "ru": "Admin5: Исправлено множество ошибок",
+                "pt": "Admin5: muitos bugs corrigidos",
+                "nl": "Admin5: Veel bugs opgelost",
+                "fr": "Admin5: Correction de nombreux bugs",
+                "it": "Admin5: risolti molti bug",
+                "es": "Admin5: se corrigieron muchos errores",
+                "pl": "Admin5: Naprawiono wiele błędów",
+                "zh-cn": "Admin5：修复了许多错误"
+            },
+            "5.0.13": {
+                "en": "Admin5: Fixed many bugs",
+                "de": "Admin5: Viele Fehler behoben",
+                "ru": "Admin5: Исправлено множество ошибок",
+                "pt": "Admin5: muitos bugs corrigidos",
+                "nl": "Admin5: Veel bugs opgelost",
+                "fr": "Admin5: Correction de nombreux bugs",
+                "it": "Admin5: risolti molti bug",
+                "es": "Admin5: se corrigieron muchos errores",
+                "pl": "Admin5: Naprawiono wiele błędów",
+                "zh-cn": "Admin5：修复了许多错误"
+            },
+            "5.0.12": {
+                "en": "Admin5: Fixed many bugs",
+                "de": "Admin5: Viele Fehler behoben",
+                "ru": "Admin5: Исправлено множество ошибок",
+                "pt": "Admin5: muitos bugs corrigidos",
+                "nl": "Admin5: Veel bugs opgelost",
+                "fr": "Admin5: Correction de nombreux bugs",
+                "it": "Admin5: risolti molti bug",
+                "es": "Admin5: se corrigieron muchos errores",
+                "pl": "Admin5: Naprawiono wiele błędów",
+                "zh-cn": "Admin5：修复了许多错误"
+            },
             "5.0.11": {
                 "en": "Admin5: users management implemented",
                 "de": "Admin5: Benutzerverwaltung implementiert",
@@ -218,42 +254,6 @@
                 "es": "La configuración encriptada fue corregida.",
                 "pl": "Szyfrowana konfiguracja została poprawiona.",
                 "zh-cn": "加密的配置已得到纠正。"
-            },
-            "4.0.2": {
-                "en": "Fixed the loading of some adapter configurations",
-                "de": "Das Laden einiger Adapterkonfigurationen wurde behoben",
-                "ru": "Исправлена загрузка некоторых конфигураций адаптера",
-                "pt": "Corrigido o carregamento de algumas configurações do adaptador",
-                "nl": "Het laden van sommige adapterconfiguraties opgelost",
-                "fr": "Correction du chargement de certaines configurations d'adaptateur",
-                "it": "Risolto il problema con il caricamento di alcune configurazioni dell'adattatore",
-                "es": "Se corrigió la carga de algunas configuraciones de adaptadores",
-                "pl": "Naprawiono ładowanie niektórych konfiguracji adaptera",
-                "zh-cn": "修复了某些适配器配置的加载"
-            },
-            "4.0.0": {
-                "en": "socket.io upgraded to latest version. Attention: This might break compatibility with older devices like iPad 1/2!",
-                "de": "socket.io wurde auf die neueste Version aktualisiert. Achtung: Dies könnte die Kompatibilität mit älteren Geräten wie dem iPad 1/2 beeinträchtigen!",
-                "ru": "socket.io обновлен до последней версии. Внимание: это может нарушить совместимость со старыми устройствами, такими как iPad 1/2!",
-                "pt": "socket.io atualizado para a versão mais recente. Atenção: Isso pode quebrar a compatibilidade com dispositivos mais antigos, como o iPad 1/2!",
-                "nl": "socket.io opgewaardeerd naar de nieuwste versie. Let op: hierdoor kan de compatibiliteit met oudere apparaten zoals iPad 1/2 worden verbroken!",
-                "fr": "socket.io mis à niveau vers la dernière version. Attention: cela pourrait casser la compatibilité avec les appareils plus anciens comme l'iPad 1/2!",
-                "it": "socket.io aggiornato all'ultima versione. Attenzione: questo potrebbe interrompere la compatibilità con dispositivi più vecchi come iPad 1/2!",
-                "es": "socket.io actualizado a la última versión. Atención: ¡Esto podría romper la compatibilidad con dispositivos más antiguos como iPad 1/2!",
-                "pl": "socket.io zaktualizowane do najnowszej wersji. Uwaga: może to spowodować uszkodzenie kompatybilności ze starszymi urządzeniami, takimi jak iPad 1/2!",
-                "zh-cn": "socket.io已升级到最新版本。注意：这可能会破坏与iPad 1/2等旧设备的兼容性！"
-            },
-            "3.7.9": {
-                "en": "The log downloading was fixed",
-                "de": "Das Herunterladen des Protokolls wurde behoben",
-                "ru": "Загрузка журнала была исправлена",
-                "pt": "O download do log foi corrigido",
-                "nl": "Het downloaden van het logboek is opgelost",
-                "fr": "Le téléchargement du journal a été corrigé",
-                "it": "Il download del registro è stato corretto",
-                "es": "La descarga del registro fue corregida",
-                "pl": "Pobieranie dziennika zostało naprawione",
-                "zh-cn": "日志下载已修复"
             }
         },
         "desc": {
@@ -333,10 +333,14 @@
             "img": "admin/img/admin.png",
             "color": "pink",
             "order": 5,
+            "localLinks": "_default",
             "localLink": true
         },
         "localLinks": {
-            "_default": "%protocol%://%ip%:%port%"
+            "_default": {
+                "link": "%protocol%://%bind%:%port%",
+                "pro": true
+            }
         },
         "plugins": {
             "sentry": {

@@ -20,6 +20,7 @@ const SocketIO    = require('./lib/socket');
 const Web         = require('./lib/web');
 const semver      = require('semver');
 const request     = require('request');
+const fs          = require('fs');
 
 const ONE_HOUR_MS = 3600000;
 const ERROR_PERMISSION = 'permissionError';
@@ -596,6 +597,7 @@ function main(adapter) {
 
     updateNews();
     removeNews();
+    updateIcons()
 }
 
 function getData(adapter, callback) {
@@ -637,6 +639,23 @@ function getData(adapter, callback) {
 
         callback && callback(adapter);
     });
+}
+
+// update icons by all known default objects. Remove this function after 2 years (BF: 2021.04.20)
+function updateIcons() {
+    if (fs.existsSync(utils.controllerDir + '/io-package.json')) {
+        const ioPackage = require(utils.controllerDir + '/io-package.json');
+        ioPackage.objects.forEach(async obj => {
+            if (obj.common && obj.common.icon && obj.common.icon.length > 50) {
+                const cObj = await adapter.getForeignObjectAsync(obj._id);
+                if (!cObj.common.icon || cObj.common.icon.length < 50) {
+                    adapter.log.debug('Update icon for ' + cObj._id);
+                    cObj.common.icon = obj.common.icon;
+                    await adapter.setForeignObjectAsync(cObj._id, cObj);
+                }
+            }
+        });
+    }
 }
 
 // read repository information from active repository

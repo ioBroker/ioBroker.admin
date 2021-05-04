@@ -16,6 +16,8 @@ import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
+import Icon from '@iobroker/adapter-react/Components/Icon';
+
 function UserBlock(props) {
     const opacity = props.isDragging ? 0 : 1;
 
@@ -67,11 +69,10 @@ function UserBlock(props) {
             <CardContent>
                 <Typography gutterBottom component="div" className={props.classes.userGroupTitle}>
                     {
-                        props.user.common.icon
-                            ?
-                            <span
+                        props.user.common.icon ?
+                            <Icon
                                 className={ props.classes.icon }
-                                style={{ backgroundImage: 'url(' + props.user.common.icon + ')' }}
+                                src={props.user.common.icon}
                             />
                             :
                             <PersonIcon className={props.classes.icon} />
@@ -110,11 +111,10 @@ function UserBlock(props) {
                             style={{ color: textColor, borderColor: textColor + '40' }}
                         >
                             {
-                                group.common.icon
-                                    ?
-                                    <span
+                                group.common.icon ?
+                                    <Icon
                                         className={ props.classes.icon }
-                                        style={{ backgroundImage: 'url(' + group.common.icon + ')' }}
+                                        src={group.common.icon}
                                     />
                                     :
                                     <GroupIcon className={props.classes.icon} />

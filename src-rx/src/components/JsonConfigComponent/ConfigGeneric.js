@@ -26,13 +26,43 @@ class ConfigGeneric extends Component {
             confirmData: null,
         };
 
+        if (this.props.custom) {
+            this.defaultValue = this.props.schema.defaultFunc ? this.executeCustom(this.props.schema.defaultFunc, this.props.schema.default, this.props.data) : this.props.schema.default;
+        } else {
+            this.defaultValue = this.props.schema.defaultFunc ? this.execute(this.props.schema.defaultFunc, this.props.schema.default, this.props.data) : this.props.schema.default;
+        }
+
         this.lang = I18n.getLanguage();
     }
 
     componentDidMount() {
+        this.props.registerOnForceUpdate && this.props.registerOnForceUpdate(this.props.attr, this.onUpdate);
+
+        // init default value
+        if (this.defaultValue !== undefined) {
+            const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
+            if (value === undefined) {
+                setTimeout(() => {
+                    if (this.props.custom) {
+                        this.props.onChange(this.props.attr, this.defaultValue);
+                        //this.onChange(this.props.attr, this.defaultValue);
+                    } else {
+                        ConfigGeneric.setValue(this.props.data, this.props.attr, this.defaultValue);
+                        this.props.onChange(this.props.data, undefined, () =>
+                            this.props.forceUpdate([this.props.attr], this.props.data));
+                    }
+                }, 100);
+            }
+        }
     }
 
     componentWillUnmount() {
+        this.props.registerOnForceUpdate && this.props.registerOnForceUpdate(this.props.attr);
+    }
+
+    onUpdate = data => {
+        const value = ConfigGeneric.getValue(data || this.props.data, this.props.attr) || '';
+        this.setState({ value});
     }
 
     static getValue(data, attr) {
@@ -119,10 +149,6 @@ class ConfigGeneric extends Component {
     }
 
     onChange(attr, newValue) {
-        if (this.props.custom) {
-            return this.props.onChange(attr, newValue);
-        }
-
         const data = JSON.parse(JSON.stringify(this.props.data));
         ConfigGeneric.setValue(data, attr, newValue);
 
@@ -135,9 +161,9 @@ class ConfigGeneric extends Component {
             });
         } else {
             // find any inputs with confirmation
-            if (this.props.schema.depends) {
-                for (let z = 0; z < this.props.schema.depends.length; z++) {
-                    const dep = this.props.schema.depends[z];
+            if (this.props.schema.confirmDependsOn) {
+                for (let z = 0; z < this.props.schema.confirmDependsOn.length; z++) {
+                    const dep = this.props.schema.confirmDependsOn[z];
                     if (dep.confirm) {
                         const val = ConfigGeneric.getValue(data, dep.attr);
 
@@ -154,12 +180,56 @@ class ConfigGeneric extends Component {
                     }
                 }
             }
+            const changed = [];
+            if (this.props.schema.onChangeDependsOn) {
+                for (let z = 0; z < this.props.schema.onChangeDependsOn.length; z++) {
+                    const dep = this.props.schema.onChangeDependsOn[z];
+                    if (dep.onChange) {
+                        const val = ConfigGeneric.getValue(data, dep.attr);
 
-            this.props.onChange(data);
+                        const newValue = this.props.custom ?
+                            this.executeCustom(dep.onChange.calculateFunc, data, this.props.customObj, this.props.instanceObj)
+                            :
+                            this.execute(dep.onChange.calculateFunc, val, data);
+
+                        if (newValue !== val) {
+                            ConfigGeneric.setValue(data, dep.attr, newValue);
+                            changed.push(dep.attr);
+                        }
+                    }
+                }
+            }
+
+            if (this.props.schema.onChange && !this.props.schema.onChange.ignoreOwnChanges) {
+                const val = ConfigGeneric.getValue(data, this.props.attr);
+
+                const newValue = this.props.custom ?
+                    this.executeCustom(this.props.schema.onChange.calculateFunc, data, this.props.customObj, this.props.instanceObj)
+                    :
+                    this.execute(this.props.schema.onChange.calculateFunc, val, data);
+                if (newValue !== val) {
+                    ConfigGeneric.setValue(data, this.props.attr, newValue);
+                }
+            }
+
+            if (this.props.custom) {
+                this.props.onChange(attr, newValue);
+
+                changed && changed.length && changed.forEach((_attr,  i) => {
+                    setTimeout(() => this.props.onChange(_attr, data[_attr]), i * 50);
+                });
+            } else {
+                this.props.onChange(data, undefined, () =>
+                    changed.length && this.props.forceUpdate(changed, data));
+            }
         }
     }
 
     execute(func, defaultValue, data) {
+        if (func && typeof func === 'object') {
+            func = func.func;
+        }
+
         if (!func) {
             return defaultValue;
         } else {
@@ -177,6 +247,10 @@ class ConfigGeneric extends Component {
     }
 
     executeCustom(func, data, customObj, instanceObj) {
+        if (func && typeof func === 'object') {
+            func = func.func;
+        }
+
         if (!func) {
             return null;
         } else {
@@ -200,15 +274,15 @@ class ConfigGeneric extends Component {
         let defaultValue;
 
         if (this.props.custom) {
-            error        = schema.validator   ? !this.executeCustom(schema.validator,  this.props.data, this.props.customObj, this.props.instanceObj)   : false;
-            disabled     = schema.disabled    ? this.executeCustom(schema.disabled,    this.props.data, this.props.customObj, this.props.instanceObj)   : false;
-            hidden       = schema.hidden      ? this.executeCustom(schema.hidden,      this.props.data, this.props.customObj, this.props.instanceObj)   : false;
-            defaultValue = schema.default;
+            error        = schema.validator   ? !this.executeCustom(schema.validator,  this.props.data, this.props.customObj, this.props.instanceObj) : false;
+            disabled     = schema.disabled    ? this.executeCustom(schema.disabled,    this.props.data, this.props.customObj, this.props.instanceObj) : false;
+            hidden       = schema.hidden      ? this.executeCustom(schema.hidden,      this.props.data, this.props.customObj, this.props.instanceObj) : false;
+            defaultValue = schema.defaultFunc ? this.executeCustom(schema.defaultFunc, this.props.data, this.props.customObj, this.props.instanceObj) : schema.default;
         } else {
             error        = schema.validator   ? !this.execute(schema.validator,  false)   : false;
             disabled     = schema.disabled    ? this.execute(schema.disabled,    false)   : false;
             hidden       = schema.hidden      ? this.execute(schema.hidden,      false)   : false;
-            defaultValue = schema.defaultFunc ? this.execute(schema.defaultFunc, schema.default) : schema.default;
+            defaultValue = schema.defaultFunc ? this.execute(schema.defaultFunc, schema.default, this.props.data) : schema.default;
         }
 
         return {error, disabled, hidden, defaultValue};
@@ -320,6 +394,7 @@ ConfigGeneric.propTypes = {
     onError: PropTypes.func,
     onChange: PropTypes.func,
     customs: PropTypes.object,
+    forceUpdate: PropTypes.func.isRequired,
 
     systemConfig: PropTypes.object,
     alive: PropTypes.bool,

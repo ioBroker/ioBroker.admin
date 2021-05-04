@@ -277,6 +277,14 @@
           "pattern": "my ${data.bind} ${_alive}",
           "copyToClipboard": true
         },
+        "prefixId": {
+          "type": "text",
+          "label": "prefix for id of linked object",
+          "maxLength": 255,
+          "sm": 4,
+          "defaultFunc": "data.linkedId.includes('.') ? data.linkedId.substring(0, data.linkedId.lastIndexOf('.')) : ''",
+          "validator": "data.prefixId.length > 0 && !(/[*?\"'`´,;:<>#/{}ß\\[\\]\\s]/).test(data.prefixId)"
+        },
         "_header": {
           "newLine": true,
           "type": "divider",
@@ -337,8 +345,15 @@
         "myObjectId": {
           "newLine": true,
           "type": "objectId",
+          "onChange": {"alsoDependsOn":  ["myLanguage"], "ignoreOwnChanges": true, "calculateFunc": "data.myLanguage"},
           "sm": 6,
           "label": "Object ID"
+        },
+        "myCheckbox": {
+          "type": "checkbox",
+          "onChange": {"alsoDependsOn":  ["myLanguage"], "ignoreOwnChanges": true, "calculateFunc": "!!data.myLanguage"},
+          "sm": 6,
+          "label": "Checkbox"
         },
         "myLanguage": {
           "newLine": true,

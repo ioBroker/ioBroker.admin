@@ -180,7 +180,7 @@ class CertificatesDialog extends Component {
                     className="small_size"
                     color="primary"
                     aria-label="add"
-                    onClick={this.onAdd}
+                    onClick={() => this.onAdd()}
                 >
                     <AddIcon/>
                 </Fab>
@@ -231,9 +231,18 @@ class CertificatesDialog extends Component {
     onAdd = (title, data) => {
         let newData = JSON.parse(JSON.stringify(this.props.data))
         let array = this.certToArray(newData.native.certificates);
+        if (!title) {
+            let i = 1;
+            // eslint-disable-next-line
+            while (array.find(item => item.title === this.props.t('certificate') + '_' + i)) {
+                i++;
+            }
+            title = this.props.t('certificate') + '_' + i;
+        }
+
         array.push({
             title: title ? title : '__',
-            data: data ? data : ''
+            data:  data  ? data  : ''
         });
         newData.native.certificates = this.arrayToCert(array);
         this.props.onChange(newData);

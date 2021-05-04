@@ -842,12 +842,52 @@ class Connection {
                     if (err) {
                         reject(err);
                     } else {
-                        resolve(doc.rows.map(item => item.value));
+                        resolve(doc.rows.map(item => {
+                            const obj = item.value;
+                            Connection._fixAdminUI(obj);
+                            return obj;
+                        }));
                     }
                 });
         });
 
         return this._promises['instances_' + adapter];
+    }
+
+    static _fixAdminUI(obj) {
+        if (obj && obj.common && !obj.common.adminUI) {
+            if (obj.common.noConfig) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'none';
+            } else if (obj.common.jsonConfig) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'json';
+            } else if (obj.common.materialize) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'materialize';
+            } else {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'html';
+            }
+
+            if (obj.common.jsonCustom) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'json';
+            } else if (obj.common.supportCustoms) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.custom = 'json';
+            }
+
+            if (obj.common.materializeTab && obj.common.adminTab) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.tab = 'materialize';
+            } else if (obj.common.adminTab) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.tab = 'html';
+            }
+
+            obj.common.adminUI && console.log(`Please add to "${obj._id.replace(/\.\d+$/, '')}" common.adminUI=${JSON.stringify(obj.common.adminUI)}`);
+        }
     }
 
     /**
@@ -886,7 +926,13 @@ class Connection {
                     if (err) {
                         reject(err);
                     } else {
-                        resolve(doc.rows.map(item => item.value).filter(obj => obj && (!adapter || (obj.common && obj.common.name === adapter))));
+                        resolve(doc.rows
+                            .map(item => {
+                                const obj = item.value;
+                                Connection._fixAdminUI(obj);
+                                return obj;
+                            })
+                            .filter(obj => obj && (!adapter || (obj.common && obj.common.name === adapter))));
                     }
                 });
         });
@@ -1347,6 +1393,24 @@ class Connection {
     }
 
     /**
+     * Delete a folder of an adapter.
+     * @param {string} adapter The adapter name.
+     * @param {string} folderName The folder name.
+     * @returns {Promise<void>}
+     */
+    deleteFolder(adapter, folderName) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('deleteFolder', adapter, folderName, err =>
+                err ? reject(err) : resolve()));
+    }
+
+    /**
      * Get the list of all hosts.
      * @param {boolean} [update] Force update.
      * @returns {Promise<ioBroker.Object[]>}
@@ -1450,6 +1514,7 @@ class Connection {
      * Get the host information.
      * @param {string} host
      * @param {boolean} [update] Force update.
+     * @param {number} [timeoutMs] optional read timeout.
      * @returns {Promise<any>}
      */
     getHostInfo(host, update, timeoutMs) {
@@ -1548,14 +1613,18 @@ class Connection {
      * Get the installed.
      * @param {string} host
      * @param {boolean} [update] Force update.
+     * @param {number} [cmdTimeout] timeout in ms (optional)
      * @returns {Promise<any>}
      */
     getInstalled(host, update, cmdTimeout) {
         if (Connection.isWeb()) {
             return Promise.reject('Allowed only in admin');
         }
-        if (!update && this._promises.installed) {
-            return this._promises.installed;
+
+        this._promises.installed = this._promises.installed || {};
+
+        if (!update && this._promises.installed[host]) {
+            return this._promises.installed[host];
         }
 
         if (!this.connected) {
@@ -1566,7 +1635,7 @@ class Connection {
             host += 'system.host.' + host;
         }
 
-        this._promises.installed = new Promise((resolve, reject) => {
+        this._promises.installed[host] = new Promise((resolve, reject) => {
             let timeout = setTimeout(() => {
                 if (timeout) {
                     timeout = null;
@@ -1589,7 +1658,7 @@ class Connection {
             });
         });
 
-        return this._promises.installed;
+        return this._promises.installed[host];
     }
 
     /**

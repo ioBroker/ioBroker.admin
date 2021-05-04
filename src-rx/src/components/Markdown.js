@@ -4,12 +4,12 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
 import MarkdownView from 'react-showdown';
-import clsx from 'clsx';
+import semver from 'semver';
 
 import Paper from '@material-ui/core/Paper';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionActions from '@material-ui/core/AccordionDetails';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import IconButton from '@material-ui/core/IconButton';
@@ -118,7 +118,7 @@ const styles = theme => ({
         opacity: 0.8,
         top: 60,
         right: 20,
-        background: '#EEEEEE',
+        background: theme.palette.type === 'dark' ? '#111111': '#EEEEEE',
         maxHeight: 'calc(100% - 70px)',
     },
     contentDivClosed: {
@@ -143,7 +143,7 @@ const styles = theme => ({
     contentLinks: {
         cursor: 'pointer',
         '&:hover': {
-            color: '#111111'
+            color: theme.palette.type === 'dark' ? '#AAA' : '#666',
         }
     },
     headerTranslated: {
@@ -156,7 +156,7 @@ const styles = theme => ({
         background: '#bdded5',
         cursor: 'pointer',
         '&:before': {
-            content: 'url(' + IconGlobe + ')',
+            content: `url(${IconGlobe})`,
             marginRight: 10,
             color: '#000000',
             height: 20,
@@ -251,7 +251,6 @@ const styles = theme => ({
         //fontWeight: 'bold',
     },
 
-
     warn: {
         borderColor: '#0b87da',
         borderWidth: '0 0 0 3px',
@@ -313,6 +312,53 @@ const styles = theme => ({
     },
     paragraph: {
 
+    },
+
+    changeLog: {
+        display: 'block',
+        width: '100%'
+    },
+    changeLogDiv: {
+        display: 'block',
+        paddingBottom: theme.spacing(2),
+        '&:hover': {
+            backgroundColor: theme.palette.type === 'dark' ? '#333' : '#DDD',
+        },
+        width: '100%'
+    },
+    changeLogVersion: {
+        fontWeight: 'bold',
+        fontSize: 18,
+    },
+    changeLogDate: {
+        fontSize: 16,
+        fontStyle: 'italic',
+        marginLeft: theme.spacing(1),
+        opacity: 0.7
+    },
+    changeLogLine: {
+        display: 'block',
+        fontSize: 14,
+        marginLeft: theme.spacing(1),
+        '&:before': {
+            content: '"• "',
+        }
+    },
+    changeLogUL: {
+        paddingLeft: theme.spacing(1),
+        marginTop: 4,
+    },
+    changeLogAuthor: {
+        fontStyle: 'italic',
+        fontWeight: 'bold',
+        marginRight: theme.spacing(1),
+    },
+    changeLogLineText: {
+
+    },
+
+    changeLogAccordion: {
+        justifyContent: 'flex-start',
     }
 });
 
@@ -352,6 +398,7 @@ class Markdown extends Component {
             text: this.props.text || '',
             notFound: false,
             affiliate: null,
+            adapterNews: null,
             hideContent: window.localStorage ? window.localStorage.getItem('Docs.hideContent') === 'true' : false,
         };
 
@@ -419,12 +466,14 @@ class Markdown extends Component {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.mounted = true;
         this.state.text && this.parseText(this.state.text);
+        this.props.socket && this.props.socket.getRepository()
+            .then(repo => this.setState({adapterNews: repo[this.props.adapter]?.news}))
     }
 
-    componentWillReceiveProps(nextProps, nextContext) {
+    UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
         if (this.props.path !== nextProps.path) {
             this.mounted && this.setState({notFound: false, parts :[]});
             this.load(nextProps.path);
@@ -455,7 +504,7 @@ class Markdown extends Component {
     }*/
 
     onNavigate(id, link) {
-        /*if (link && link.match(/^https?:\/\//)) {
+        if (link && link.match(/^https?:\/\//)) {
             Utils.openLink(link);
         } else if (id) {
             const el = window.document.getElementById(id) || window.document.getElementById(id.replace('nbsp', ''));
@@ -466,7 +515,7 @@ class Markdown extends Component {
             // if relative path
             if (!link.startsWith('#')) {
                 // ../../download
-                const ppp = link.replace(this.props.path + '/', '').split('#');
+                /*const ppp = link.replace(this.props.path + '/', '').split('#');
                 let _link = ppp[1];
                 let _path = ppp[0].replace(/\.MD$/, '.md');
                 if (!_path.endsWith('.md')) {
@@ -489,11 +538,56 @@ class Markdown extends Component {
                     _path = locParts.join('/')
                 }
 
-                this.props.onNavigate(null, this.props.rootPath || location.tab, _path, _link);
-            } else {
-                this.props.onNavigate(null, null, link);
+                this.props.onNavigate(null, this.props.rootPath || location.tab, _path, _link);*/
+            } else if (link) {
+                //this.props.onNavigate(null, null, link);
+                link = link.replace(/^#/, '');
+                const el = window.document.getElementById(link) || window.document.getElementById(link.replace('nbsp', ''));
+                if (el) {
+                    el.scrollIntoView(true);
+                }
             }
-        }*/
+        }
+    }
+
+    parseChangeLog(changeLog) {
+        const lines = changeLog.split('\n');
+        const entries = {};
+        let oneEntry;
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i];
+            if (line.startsWith('##')) {
+                if (oneEntry) {
+                    entries[oneEntry.version] = oneEntry;
+                    oneEntry = null;
+                }
+                // ### 3.0.5 (2020-10-30) or ### 3.0.5 [2020-10-30] or ### 3.0.5
+                const [version, date] = line.replace(/^#+\s?/, '').split(/[\s([]+/);
+                if (version) {
+                    oneEntry = {lines: []};
+                    oneEntry.version = version.trim();
+                    oneEntry.date = (date || '').trim().replace(/\)/, '');
+                }
+            } else if (line.trim() && oneEntry) {
+                // extract author
+                // *(bluefox) if group
+                line = line.replace(/^[+*]+\s?/, '').trim();
+                if (line.startsWith('(') && line.includes(')')) {
+                    const p = line.split(')');
+                    const author = p[0].replace('(', '');
+                    line = line.replace('(' + author + ')', '').trim();
+                    oneEntry.lines.push({author, line});
+                } else {
+                    oneEntry.lines.push(line);
+                }
+            }
+        }
+
+         if (oneEntry) {
+             entries[oneEntry.version] = oneEntry;
+         }
+
+        return entries;
     }
 
     parseText(text) {
@@ -523,6 +617,20 @@ class Markdown extends Component {
             }
         }
 
+        let _changeLog;
+        // try to add missing news
+        if (changeLog) {
+            // split news
+            _changeLog = this.parseChangeLog(changeLog);
+            if (_changeLog && typeof _changeLog === 'object' && this.state.adapterNews) {
+                Object.keys(this.state.adapterNews).forEach(version => {
+                    if (!_changeLog[version]) {
+                        _changeLog[version] = {version, lines: this.state.adapterNews[version].split('\\n')};
+                    }
+                });
+            }
+        }
+
         this.mounted && this.setState({
             affiliate,
             notFound: false,
@@ -531,7 +639,7 @@ class Markdown extends Component {
             loadTimeout: false,
             content,
             license,
-            changeLog,
+            changeLog: _changeLog || changeLog,
             title: _title
         });
 
@@ -552,13 +660,24 @@ class Markdown extends Component {
         text = (text || '').trim();
         let {header, body} = Utils.extractHeader(text);
 
+        if (body.startsWith('# ')) {
+            // there is no header and readme starts with
+            // ![Logo](admin/iot.png)
+            // # ioBroker IoT Adapter
+        }
+
         // remove comments like <!-- -->
         body = body.replace(/\r\n|\n/g, '§$§$');
-        body = body.replace(/<!--[^>]*-->/, '\n');
+        body = body.replace(/<!--[^>]*-->/gm, '\n');
+        body = body.replace(/<! -[^>]* ->/gm, '\n'); // translator make it wrong
         body = body.replace(/§\$§\$/g, '\n');
         body = body.replace(/\[\*\*\*\s(.+)\s\*\*\*]/g, '[***$1***]');
         body = body.replace(/\[\*\*\s(.+)\s\*\*]/g, '[**$1**]');
         body = body.replace(/\[\*\s(.+)\s\*]/g, '[*$1*]');
+        body = body.replace(/\*\*\*\s(.+)\s\*\*\*/g, '***$1***');
+        body = body.replace(/\*\*\s(.+)\s\*\*/g, '**$1**');
+        body = body.replace(/\*\s(.+)\s\*/g, '*$1*');
+        body = body.replace(/`` `(.+)```/g, '```$1```');
 
         body = Utils.removeDocsify(body);
         let {parts, content, license, changeLog, title} = Utils.decorateText(body, header, `${this.props.path && (this.props.path[0] === '/' ? this.props.path : '/' + this.props.path)}`);
@@ -594,7 +713,24 @@ class Markdown extends Component {
             // Translate language from english to actual language
             translatedFrom = I18n.t(translatedFrom);
 
-            data.push(<div key="translatedFrom" className={this.props.classes.headerTranslated} onClick={() => this.props.onNavigate && this.props.onNavigate(this.state.header.translatedFrom)} title={I18n.t('Go to original')}>{I18n.t('Translated from %s', translatedFrom)}</div>);
+            data.push(<div
+                key="translatedFrom"
+                className={this.props.classes.headerTranslated}
+                onClick={() => {
+                    if (this.props.onNavigate) {
+                        this.props.onNavigate && this.props.onNavigate(this.state.header.translatedFrom);
+                    } else {
+                        // read this.props.link
+                        fetch(this.props.link)
+                            .then(res => res.text())
+                            .then(text => this.setState({text}, () =>
+                                this.parseText()))
+                            .catch(e => window.alert(`Cannot fetch "${this.props.link}": ${e}`));
+                    }
+                }}
+                title={I18n.t('Go to original')}
+            >{I18n.t('Translated from %s', translatedFrom)}
+            </div>);
         }
 
         if (this.state.header.adapter) {
@@ -615,7 +751,7 @@ class Markdown extends Component {
         if (Object.keys(this.state.header).find(attr => ADAPTER_CARD.indexOf(attr) !== -1)) {
             data.push(<Accordion key="header" className={this.props.classes.adapterCard}>
                 <AccordionSummary className={this.props.classes.summary} classes={{expanded: this.props.classes.summaryExpanded}} expandIcon={<IconExpandMore />}>{I18n.t('Information')}</AccordionSummary>
-                <AccordionDetails><List>{
+                <AccordionActions><List>{
                     ADAPTER_CARD
                         .filter(attr => this.state.header.hasOwnProperty(attr))
                         .map(attr =>
@@ -623,20 +759,20 @@ class Markdown extends Component {
                                 <div className={this.props.classes.adapterCardAttr}>{I18n.t(attr)}: </div>
                                 <span>{attr === 'authors' ? this.formatAuthors(this.state.header[attr]) : this.state.header[attr].toString()}</span>
                             </ListItem>)}
-                </List></AccordionDetails>
+                </List></AccordionActions>
             </Accordion>);
         }
 
         if (Object.keys(this.state.header).find(attr => attr.startsWith('BADGE-'))) {
             data.push(<Accordion key="header_badges" className={this.props.classes.adapterCard}>
                 <AccordionSummary className={this.props.classes.summary} classes={{expanded: this.props.classes.summaryExpanded}} expandIcon={<IconExpandMore />}>{I18n.t('Badges')}</AccordionSummary>
-                <AccordionDetails classes={{root: this.props.classes.badgesDetails}}>{
+                <AccordionActions classes={{root: this.props.classes.badgesDetails}}>{
                     Object.keys(this.state.header).filter(attr => attr.startsWith('BADGE-'))
                         .map((attr, i) => [
                             this.state.header[attr].indexOf('nodei.co') !== -1 ? (<br key={'br' + i}/>) : null,
                             <img key={'img' + i} src={this.state.header[attr]} alt={attr.substring(6)}/>
                         ])}
-                </AccordionDetails>
+                </AccordionActions>
             </Accordion>);
         }
 
@@ -653,7 +789,7 @@ class Markdown extends Component {
                 <a className={this.props.classes.infoEdit}
                    href={this.state.header.editLink.replace(/\/edit\//, '/blob/')}
                    rel="noopener noreferrer"
-                   target="_blank"><IconGithub />{I18n.t('Edit on github')}
+                   target="_blank"><IconGithub style={{marginRight: 4}}/>{I18n.t('See on github')}
                 </a> : null}
             {this.props.editEnabled && this.editText ?
                 <div className={this.props.classes.infoEditLocal} onClick={() => {
@@ -722,12 +858,10 @@ class Markdown extends Component {
                         const level = this.state.content[item].level;
                         let   title = this.state.content[item].title.replace('&gt;', '>').replace('&lt;', '<').replace('&amp;', '&');
 
-                        return (
-                            <li key={title} style={{ fontSize: 16 - level * 2, paddingLeft: level * 8, fontWeight: !level ? 'bold' : 'normal' }}>
-                                <span onClick={() => this.onNavigate(item, link)} className={this.props.classes.contentLinks}>{title}</span>
-                                {this.state.content[item].children ? this._renderSubContent(this.state.content[item]) : null}
-                            </li>
-                        );
+                        return <li key={title} style={{ fontSize: 16 - level * 2, paddingLeft: level * 8, fontWeight: !level ? 'bold' : 'normal' }}>
+                            <span onClick={() => this.onNavigate(item, link)} className={this.props.classes.contentLinks}>{title}</span>
+                            {this.state.content[item].children ? this._renderSubContent(this.state.content[item]) : null}
+                        </li>;
                     }).filter(e => e)
                 }</ul>
             </Paper>;
@@ -745,11 +879,29 @@ class Markdown extends Component {
                     className={this.props.classes.summary}
                     classes={{expanded: this.props.classes.summaryExpanded}}
                     expandIcon={<IconExpandMore />}>{I18n.t('License')} <span className={this.props.classes.license}> {this.state.header.license}</span></AccordionSummary>
-                <AccordionDetails>
+                <AccordionActions>
                     <MarkdownView markdown={this.state.license} options={CONVERTER_OPTIONS} components={{CustomLink, CustomH}}/>
-                </AccordionDetails>
+                </AccordionActions>
             </Accordion>;
         }
+    }
+
+    renderChangeLogLines() {
+        const classes = this.props.classes;
+
+        const versions = Object.keys(this.state.changeLog);
+        versions.sort(semver.gt);
+        return <div className={classes.changeLog} key="change-log">{versions.map(version => {
+            const item = this.state.changeLog[version];
+            return <div key={version} className={classes.changeLogDiv}>
+                <div className={classes.changeLogVersion}>{version}{item.date ? <span className={classes.changeLogDate}>{item.date }</span> : ''}</div>
+                <ul className={classes.changeLogUL}>{item.lines.map((line, i) => typeof line === 'object' ?
+                    <li key={i} className={classes.changeLogLine}><span className={classes.changeLogAuthor}>{line.author}</span><span className={classes.changeLogLineText}>{line.line}</span></li>
+                    :
+                    <li key={i} className={classes.changeLogLine}><span className={classes.changeLogLineText}>{line}</span></li>
+                )}</ul>
+            </div>
+        })}</div>;
     }
 
     renderChangeLog() {
@@ -757,12 +909,16 @@ class Markdown extends Component {
             return null;
         } else {
             const CustomLink = this.customLink;
-            const CustomH = this.customH;
+            const CustomH    = this.customH;
             return <Accordion>
                 <AccordionSummary className={this.props.classes.summary} classes={{expanded: this.props.classes.summaryExpanded}} expandIcon={<IconExpandMore />}>{I18n.t('Changelog')}</AccordionSummary>
-                <AccordionDetails>
-                    <MarkdownView markdown={this.state.changeLog} options={CONVERTER_OPTIONS} components={{CustomLink, CustomH}}/>
-                </AccordionDetails>
+                <AccordionActions classes={{root: this.props.classes.changeLogAccordion}}>
+                    {typeof this.state.changeLog === 'string' ?
+                        <MarkdownView markdown={this.state.changeLog} options={CONVERTER_OPTIONS} components={{CustomLink, CustomH}}/>
+                        :
+                        this.renderChangeLogLines()
+                    }
+                </AccordionActions>
             </Accordion>;
         }
     }
@@ -798,6 +954,34 @@ class Markdown extends Component {
                 let text = link.substring(0, pos).replace(/^\[/, '');
                 let href = link.substring(pos + 2).replace(/\)$/, '');
                 line = line.replace(link, `<CustomLink text="${text}" link="${href}" />`);
+            });
+        }
+        const mm = line.match(/!?\[.*]\([^)]+\)/g);
+        if (mm) {
+            console.log('Replace: ' + line);
+            // https://raw.githubusercontent.com/ioBroker/ioBroker.iot/master/README.md
+            //                https://github.com/ioBroker/ioBroker.iot/blob/master/README.md
+            const prefixHttp = this.props.link
+                .substring(0, this.props.link.lastIndexOf('/'))
+                .replace('https://raw.githubusercontent.com/', 'https://github.com/')
+                .replace(/\/master$/, '/blob/master');
+            const prefixImage = this.props.link.substring(0, this.props.link.lastIndexOf('/'));
+            mm.forEach(link => {
+                const isImage = link.startsWith('!');
+                link = link.replace(/^!/, '');
+                const pos = link.lastIndexOf('](');
+                let text  = link.substring(0, pos).replace(/^\[/, '');
+                let href  = link.substring(pos + 2).replace(/\)$/, '');
+                if (!href.startsWith('http')) {
+                    if (isImage) {
+                        line = line.replace(link, `[${text}](${prefixImage}/${href})`);
+                    } else {
+                        // <a href="http://www.google.com" target="blank">google</a>
+                        line = line.replace(link, `<a href="${prefixHttp}/${href}" target="blank">${text}</a>`);
+                    }
+                } else if (!isImage) {
+                    line = line.replace(link, `<a href="${href}" target="blank">${text}</a>`);
+                }
             });
         }
         return line;
@@ -962,7 +1146,7 @@ class Markdown extends Component {
             }
         });
 
-        return <div className={clsx(this.props.classes.root, this.props.className)} ref={this.contentRef}>
+        return <div className={Utils.clsx(this.props.classes.root, this.props.className)} ref={this.contentRef}>
             {this.renderHeader()}
             {this.state.title && !this.state.header.adapter ? <h1>{this.state.title}</h1> : null}
             {this.renderAffiliates()}
@@ -980,7 +1164,9 @@ class Markdown extends Component {
 Markdown.propTypes = {
     language: PropTypes.string,
     onNavigate: PropTypes.func,
-    theme: PropTypes.string,
+    theme: PropTypes.object,
+    themeName: PropTypes.string,
+    themeType: PropTypes.string,
     mobile: PropTypes.bool,
     rootPath:  PropTypes.string,
     path:  PropTypes.string,
@@ -991,6 +1177,8 @@ Markdown.propTypes = {
     affiliates: PropTypes.object,
     editor: PropTypes.object,
     className: PropTypes.string,
+    socket: PropTypes.object,
+    adapter: PropTypes.string,
 };
 
 export default withStyles(styles)(Markdown);

@@ -4,11 +4,7 @@ import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
 import clsx from 'clsx';
 
-import {
-    MuiPickersUtilsProvider,
-    KeyboardTimePicker,
-    KeyboardDatePicker,
-} from '@material-ui/pickers';
+import {MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker} from '@material-ui/pickers';
 import Paper from '@material-ui/core/Paper';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -89,8 +85,13 @@ const styles = theme => ({
     },
     chart: {
         width: '100%',
-        height: `calc(100% - ${theme.mixins.toolbar.minHeight + theme.spacing(1)}px)`,
         overflow: 'hidden',
+    },
+    chartWithToolbar: {
+        height: `calc(100% - ${theme.mixins.toolbar.minHeight + theme.spacing(1)}px)`,
+    },
+    chartWithoutToolbar: {
+        height: `100%`,
     },
     selectHistoryControl: {
         width: 130,
@@ -148,11 +149,19 @@ const GRID_PADDING_RIGHT = 25;
 class ObjectChart extends Component {
     constructor(props) {
         super(props);
-        let from = new Date();
-        from.setHours(from.getHours() - 24 * 7);
-        this.start = from.getTime();
-        this.end   = new Date().getTime();
-
+        let from;
+        if (!this.props.from) {
+            from = new Date(this.props.from);
+            from.setHours(from.getHours() - 24 * 7);
+            this.start = from.getTime();
+        } else {
+            this.start = this.props.from
+        }
+        if (!this.props.end) {
+            this.end = Date.now();
+        } else {
+            this.end = this.props.end;
+        }
         let relativeRange = window.localStorage.getItem('App.relativeRange') || '30';
         let min           = parseInt(window.localStorage.getItem('App.absoluteStart'), 10) || 0;
         let max           = parseInt(window.localStorage.getItem('App.absoluteEnd'), 10)   || 0;
@@ -191,18 +200,17 @@ class ObjectChart extends Component {
 
         this.chart        = {};
 
-        this.prepareData()
-            .then(() => this.readHistoryRange())
-            .then(() => this.setRelativeInterval(relativeRange, true, () =>
-                this.forceUpdate()));
-
-        this.onChangeBound = this.onChange.bind(this);
-        this.onResizeBound = this.onResize.bind(this);
+        this.onChange = this.onChange.bind(this);
+        this.onResize = this.onResize.bind(this);
     }
 
     componentDidMount() {
-        this.props.socket.subscribeState(this.props.obj._id, this.onChangeBound);
-        window.addEventListener('resize', this.onResizeBound);
+        this.props.socket.subscribeState(this.props.obj._id, this.onChange);
+        window.addEventListener('resize', this.onResize);
+        this.prepareData()
+            .then(() => !this.props.noToolbar && this.readHistoryRange())
+            .then(() => this.setRelativeInterval(this.state.relativeRange, true, () =>
+                this.forceUpdate()));
     }
 
     componentWillUnmount() {
@@ -212,11 +220,11 @@ class ObjectChart extends Component {
         this.timeTimer && clearTimeout(this.timeTimer);
         this.timeTimer = null;
 
-        this.props.socket.unsubscribeState(this.props.obj._id, this.onChangeBound);
-        window.removeEventListener('resize', this.onResizeBound);
+        this.props.socket.unsubscribeState(this.props.obj._id, this.onChange);
+        window.removeEventListener('resize', this.onResize);
     }
 
-    onResize() {
+    onResize = () => {
         this.timerResize && clearTimeout(this.timerResize);
         this.timerResize = setTimeout(() => {
             this.timerResize = null;
@@ -224,7 +232,7 @@ class ObjectChart extends Component {
         });
     }
 
-    onChange(id, state) {
+    onChange = (id, state) => {
         if (id === this.props.obj._id &&
             state &&
             this.rangeValues &&
@@ -242,53 +250,64 @@ class ObjectChart extends Component {
 
     prepareData() {
         let list;
-        return this.getHistoryInstances()
-            .then(_list => {
-                list = _list;
-                // read default history
-                return this.props.socket.getSystemConfig();
-            })
-            .then(config => {
-                return this.props.socket.getAdapterInstances('echarts')
-                    .then(instances => {
-                        // collect all echarts instances
-                        const echartsJump = !!instances.find(item => item._id.startsWith('system.adapter.echarts.'));
 
-                        const defaultHistory = config && config.common && config.common.defaultHistory;
+        if (this.props.noToolbar) {
+            return new Promise(resolve =>
+                this.setState( {
+                    dateFormat: this.props.dateFormat.replace(/D/g, 'd').replace(/Y/g, 'y'),
+                    defaultHistory: this.props.defaultHistory,
+                    historyInstance: this.props.defaultHistory,
+                }, () => resolve()));
+        } else {
+            return this.getHistoryInstances()
+                .then(_list => {
+                    list = _list;
+                    // read default history
+                    return this.props.socket.getSystemConfig();
+                })
+                .then(config => {
+                    return this.props.socket.getAdapterInstances('echarts')
+                        .then(instances => {
+                            // collect all echarts instances
+                            const echartsJump = !!instances.find(item => item._id.startsWith('system.adapter.echarts.'));
 
-                        // find current history
-                        // first read from localstorage
-                        let historyInstance = window.localStorage.getItem('App.historyInstance') || '';
-                        if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
-                            // try default history
-                            historyInstance = defaultHistory;
-                        }
-                        if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
-                            // find first alive history
-                            historyInstance = list.find(it => it.alive);
-                            if (historyInstance) {
-                                historyInstance = historyInstance.id;
+                            const defaultHistory = config && config.common && config.common.defaultHistory;
+
+                            // find current history
+                            // first read from localstorage
+                            let historyInstance = window.localStorage.getItem('App.historyInstance') || '';
+                            if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
+                                // try default history
+                                historyInstance = defaultHistory;
                             }
-                        }
-                        // get first entry
-                        if (!historyInstance && list.length) {
-                            historyInstance = defaultHistory;
-                        }
+                            if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
+                                // find first alive history
+                                historyInstance = list.find(it => it.alive);
+                                if (historyInstance) {
+                                    historyInstance = historyInstance.id;
+                                }
+                            }
+                            // get first entry
+                            if (!historyInstance && list.length) {
+                                historyInstance = defaultHistory;
+                            }
 
-                        this.setState( {
-                            dateFormat: (config.common.dateFormat || 'dd.MM.yyyy').replace(/D/g, 'd').replace(/Y/g, 'y'),
-                            historyInstances: list,
-                            defaultHistory,
-                            historyInstance,
-                            echartsJump,
+                            this.setState( {
+                                dateFormat: (config.common.dateFormat || 'dd.MM.yyyy').replace(/D/g, 'd').replace(/Y/g, 'y'),
+                                historyInstances: list,
+                                defaultHistory,
+                                historyInstance,
+                                echartsJump,
+                            });
                         });
-                    });
-            });
+                });
+
+        }
     }
 
     getHistoryInstances() {
         const list = [];
-        const ids = [];
+        const ids  = [];
         this.props.customsInstances.forEach(instance => {
             const instObj = this.props.objects['system.adapter.' + instance];
             if (instObj && instObj.common && instObj.common.getHistory) {
@@ -374,8 +393,10 @@ class ObjectChart extends Component {
             .then(values => {
                 // merge range and chart
                 let chart = [];
-                let r = 0;
+                let r     = 0;
                 let range = this.rangeValues;
+                let minY  = null;
+                let maxY  = null;
 
                 for (let t = 0; t < values.length; t++) {
                     if (range) {
@@ -392,6 +413,12 @@ class ObjectChart extends Component {
                     } else if (chart[chart.length - 1].ts === values[t].ts && chart[chart.length - 1].val !== values[t].ts) {
                         console.error('Strange data!');
                     }
+                    if (minY === null || values[t].val < minY) {
+                        minY = values[t].val;
+                    }
+                    if (maxY === null || values[t].val > maxY) {
+                        maxY = values[t].val;
+                    }
                 }
 
                 if (range) {
@@ -406,7 +433,19 @@ class ObjectChart extends Component {
                 chart.sort((a, b) => a.ts > b.ts ? 1 : (a.ts < b.ts ? -1 : 0));
 
                 this.chartValues = chart;
+                this.minY = minY;
+                this.maxY = maxY;
 
+                if (this.minY < 10) {
+                    this.minY = Math.round(this.minY * 10) / 10;
+                } else {
+                    this.minY = Math.ceil(this.minY);
+                }
+                if (this.maxY < 10) {
+                    this.maxY = Math.round(this.maxY * 10) / 10;
+                } else {
+                    this.maxY = Math.ceil(this.maxY);
+                }
                 return chart;
             });
     }
@@ -429,21 +468,32 @@ class ObjectChart extends Component {
     }
 
     getOption() {
+        let widthAxis
+        if (this.minY !== null && this.minY !== undefined) {
+            widthAxis = (this.minY.toString() + this.unit).length * 9 + 12;
+        }
+        if (this.maxY !== null && this.maxY !== undefined) {
+            const w = (this.maxY.toString() + this.unit).length * 9 + 12;
+            if (w > widthAxis) {
+                widthAxis = w;
+            }
+        }
+
         return {
             backgroundColor: 'transparent',
             title: {
-                text: Utils.getObjectName(this.props.objects, this.props.obj._id, { language: this.props.lang }),
+                text: this.props.noToolbar ? '' : Utils.getObjectNameFromObj(this.props.obj, this.props.lang),
                 padding: [
-                    8,  // up
+                    10, // up
                     0,  // right
                     0,  // down
-                    90, // left
+                    widthAxis ? widthAxis + 10 : GRID_PADDING_LEFT + 10, // left
                 ]
             },
             grid: {
-                left: GRID_PADDING_LEFT,
+                left: widthAxis || GRID_PADDING_LEFT,
                 top: 8,
-                right: GRID_PADDING_RIGHT,
+                right: this.props.noToolbar ? 5: GRID_PADDING_RIGHT,
                 bottom: 40,
             },
             tooltip: {
@@ -483,11 +533,13 @@ class ObjectChart extends Component {
                 type: 'value',
                 boundaryGap: [0, '100%'],
                 splitLine: {
-                    show: !!this.state.splitLine
+                    show: this.props.noToolbar || !!this.state.splitLine
                 },
                 splitNumber: Math.round(this.state.chartHeight / 50),
                 axisLabel: {
                     formatter: '{value}' + this.unit,
+                    showMaxLabel: true,
+                    showMinLabel: true,
                 },
                 axisTick: {
                     alignWithLabel: true,
@@ -495,7 +547,7 @@ class ObjectChart extends Component {
             },
             toolbox: {
                 left: 'right',
-                feature: {
+                feature: this.props.noToolbar ? undefined : {
                     /*dataZoom: {
                         yAxisIndex: 'none',
                         title: this.props.t('Zoom'),
@@ -902,7 +954,7 @@ class ObjectChart extends Component {
                 option={ this.getOption() }
                 notMerge={ true }
                 lazyUpdate={ true }
-                theme={ this.props.themeName === 'dark' ? 'dark' : '' }
+                theme={ this.props.themeType === 'dark' ? 'dark' : '' }
                 style={{ height: this.state.chartHeight + 'px', width: '100%' }}
                 opts={{ renderer: 'svg' }}
                 onEvents={ {
@@ -977,7 +1029,12 @@ class ObjectChart extends Component {
     }
 
     renderToolbar() {
+        if (this.props.noToolbar) {
+            return null;
+        }
+
         const classes = this.props.classes;
+
         return <Toolbar>
             <FormControl className={ classes.selectHistoryControl }>
                 <InputLabel>{ this.props.t('History instance') }</InputLabel>
@@ -1082,17 +1139,17 @@ class ObjectChart extends Component {
                 <SplitLineIcon className={ classes.splitLineButtonIcon } />
                 { this.props.t('Show lines') }
             </Fab>
-        </Toolbar>
+        </Toolbar>;
     }
 
     render() {
-        if (!this.state.historyInstances) {
+        if (!this.state.historyInstances && !this.state.defaultHistory) {
             return <LinearProgress/>;
         }
 
         return <Paper className={ this.props.classes.paper }>
             { this.renderToolbar() }
-            <div ref={ this.divRef } className={ this.props.classes.chart }>
+            <div ref={ this.divRef } className={clsx(this.props.classes.chart, this.props.noToolbar ? this.props.classes.chartWithoutToolbar : this.props.classes.chartWithToolbar) }>
                 { this.renderChart() }
             </div>
         </Paper>;
@@ -1106,8 +1163,12 @@ ObjectChart.propTypes = {
     socket: PropTypes.object,
     obj: PropTypes.object,
     customsInstances: PropTypes.array,
-    themeName: PropTypes.string,
+    themeType: PropTypes.string,
     objects: PropTypes.object,
+    from: PropTypes.number,
+    end: PropTypes.number,
+    noToolbar: PropTypes.bool,
+    defaultHistory: PropTypes.string
 };
 
 export default withWidth()(withStyles(styles)(ObjectChart));

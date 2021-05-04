@@ -10,6 +10,7 @@ const styles = theme => ({
         background: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
         padding: 4,
+        borderRadius: 3
     },
 });
 

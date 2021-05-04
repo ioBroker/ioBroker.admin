@@ -403,7 +403,6 @@ function Adapters(main) {
                     if (user && user.length >= 2 && (that.main.config.expertMode || order[o].indexOf('js-controller') === -1)) {
                         //text += '<option value="https://github.com/' + user[1] + '/ioBroker.' + order[o] + '/tarball/master ' + order[o] + '">' + order[o] + '</option>';
                         data[order[o] + ' [' + user[1] + ']'] = null;
-
                     }
                 }
                 that.$installDialog.find('#install-github-link').mautocomplete({
@@ -1679,8 +1678,9 @@ function Adapters(main) {
         $button.off('click').on('click', function () {
             const versions = [];
             let news;
-            if (that.main.objects['system.adapter.' + adapter].common.news) {
-                news = that.main.objects['system.adapter.' + adapter].common.news;
+            // TODO: take from repo
+            if (that.main.objects['system.adapter.' + adapter].common.news || that.curRepository[adapter].news) {
+                news = that.main.objects['system.adapter.' + adapter].common.news || that.curRepository[adapter].news;
                 for (const id in news) {
                     if (news.hasOwnProperty(id)) {
                         versions.push(id);

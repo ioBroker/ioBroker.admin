@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
 
 import Button from '@material-ui/core/Button';
@@ -24,6 +23,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import ObjectCustomEditor from '../components/Object/ObjectCustomEditor';
 import ObjectHistoryData from '../components/Object/ObjectHistoryData';
 import ObjectChart from '../components/Object/ObjectChart';
+import MobileDialog from '../helpers/MobileDialog';
 
 const styles = theme => ({
     dialog: {
@@ -49,11 +49,11 @@ export const EXTENSIONS = {
     txt: ['log', 'txt', 'html', 'css', 'xml'],
 };
 
-class ObjectCustomDialog extends Component {
+class ObjectCustomDialog extends MobileDialog {
     constructor(props) {
         super(props);
 
-        let currentTab = 0;
+        let currentTab = parseInt(window.localStorage.getItem('App.objectCustomTab') || 0, 10);
         this.chartAvailable = this.isChartAvailable();
 
         if (this.chartAvailable) {
@@ -63,12 +63,15 @@ class ObjectCustomDialog extends Component {
             } else if (location.arg === 'table') {
                 currentTab = 1;
             }
+        } else {
+            currentTab = 0;
         }
 
         this.state = {
             hasChanges: false,
             currentTab,
             confirmDialog: false,
+            mobile: MobileDialog.isMobile()
         };
 
         this.saveFunc = null;
@@ -99,7 +102,7 @@ class ObjectCustomDialog extends Component {
             socket={this.props.socket}
             obj={this.props.objects[this.props.objectIDs[0]]}
             customsInstances={this.props.customsInstances}
-            themeName={this.props.themeName}
+            themeType={this.props.themeType}
             objects={this.props.objects}
         />;
     }
@@ -182,7 +185,7 @@ class ObjectCustomDialog extends Component {
             aria-labelledby="form-dialog-title"
         >
             {this.renderConfirmDialog()}
-            <DialogTitle id="form-dialog-title">{
+            <DialogTitle>{
                 this.props.objectIDs.length > 1 ?
                     this.props.t('Edit config for %s states', this.props.objectIDs.length) :
                     this.props.t('Edit config: %s', this.props.objectIDs[0])
@@ -192,6 +195,7 @@ class ObjectCustomDialog extends Component {
                     <Tabs value={this.state.currentTab} onChange={(event, newTab) => {
                         Router.doNavigate(null, null, null, newTab === 1 ? 'table' : (newTab === 2 ? 'chart' : 'config'));
                         this.setState({ currentTab: newTab });
+                        window.localStorage.setItem('App.objectCustomTab', newTab);
                     }}>
                         <Tab label={this.props.t('Custom settings')} id={'custom-settings-tab'} aria-controls={'simple-tabpanel-0'} />
                         {this.props.objectIDs.length === 1 && this.chartAvailable ? <Tab label={this.props.t('History data')} id={'history-data-tab'} aria-controls={'simple-tabpanel-1'} /> : null}
@@ -209,12 +213,26 @@ class ObjectCustomDialog extends Component {
                     disabled={!this.state.hasChanges}
                     onClick={() => this.saveFunc && this.saveFunc()}
                 >
-                    <SaveIcon />{this.props.t('Save')}
+                    {this.getButtonTitle(<SaveIcon />, this.props.t('Save'))}
+                </Button>}
+                {this.state.currentTab === 0 && <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={!this.state.hasChanges}
+                    onClick={() => {
+                        if (this.saveFunc) {
+                            this.saveFunc(error => !error && this.onClose());
+                        }  else {
+                            this.onClose();
+                        }
+                    }}
+                >
+                    {this.getButtonTitle(<SaveIcon />, this.props.t('Save & close'), <CloseIcon />)}
                 </Button>}
                 <Button
                     variant="contained"
                     onClick={() => this.onClose()} >
-                    <CloseIcon />{this.props.t('Close')}
+                    {this.getButtonTitle(<CloseIcon />, this.props.t('Close'))}
                 </Button>
             </DialogActions>
         </Dialog>;
@@ -236,4 +254,4 @@ ObjectCustomDialog.propTypes = {
     reportChangedIds: PropTypes.func,
 };
 
-export default withWidth()(withStyles(styles)(ObjectCustomDialog));
+export default withStyles(styles)(ObjectCustomDialog);

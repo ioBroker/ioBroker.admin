@@ -59,6 +59,7 @@ import { licenseDialogFunc } from '../dialogs/LicenseDialog';
 import CustomModal from '../components/CustomModal';
 import AdaptersUpdaterDialog from '../dialogs/AdaptersUpdaterDialog';
 import RatingDialog from '../dialogs/RatingDialog';
+import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
 
 const WIDTHS = {
     emptyBlock: 50,
@@ -238,6 +239,8 @@ class Adapters extends Component {
             descWidth: 300,
             showStatistics: false,
             showSetRating: null,
+            readTimeoutMs: SlowConnectionWarningDialog.getReadTimeoutMs(),
+            showSlowConnectionWarning: false,
         };
 
         this.rebuildSupported = false;
@@ -266,11 +269,32 @@ class Adapters extends Component {
         return this.wordCache[word];
     }
 
-    async componentDidMount() {
+    renderSlowConnectionWarning() {
+        if (!this.state.showSlowConnectionWarning) {
+            return null;
+        } else {
+            return <SlowConnectionWarningDialog
+                readTimeoutMs={this.state.readTimeoutMs}
+                t={this.t}
+                onClose={readTimeoutMs => {
+                    if (readTimeoutMs) {
+                        this.setState({showSlowConnectionWarning: false, readTimeoutMs}, () =>
+                            this.getAdapters()
+                                .then(() =>
+                                    this.getAdaptersInfo()));
+                    } else {
+                        this.setState({showSlowConnectionWarning: false});
+                    }
+                }}
+            />;
+        }
+    }
+
+    componentDidMount() {
         if (this.props.ready) {
-            await this.getAdapters();
-            await this.getAdaptersInfo();
-            await this.props.adaptersWorker.registerHandler(this.onAdaptersChanged);
+            this.getAdapters()
+                .then(() => this.getAdaptersInfo())
+                .then(() => this.props.adaptersWorker.registerHandler(this.onAdaptersChanged));
         }
     }
 
@@ -304,20 +328,23 @@ class Adapters extends Component {
         this.tempInstalled = this.tempInstalled || JSON.parse(JSON.stringify(this.state.installed));
 
         changes.forEach(item => {
-
             if (item.type === 'deleted') {
                 // remove from installed
                 delete this.tempInstalled[item.oldObj.common.name];
                 delete this.tempAdapters[item.id];
             } else {
                 const name = item.obj.common.name;
-                // Update attributes
-                Object.keys(this.tempInstalled[name]).forEach(attr => {
-                    if (item.obj.common[attr] !== undefined) {
-                        this.tempInstalled[name][attr] = item.obj.common[attr];
-                    }
-                })
-
+                if (this.tempInstalled[name]) {
+                    // Update attributes
+                    Object.keys(this.tempInstalled[name]).forEach(attr => {
+                        if (item.obj.common[attr] !== undefined) {
+                            this.tempInstalled[name][attr] = item.obj.common[attr];
+                        }
+                    });
+                } else {
+                    // new
+                    this.tempInstalled[item.id] = JSON.parse(JSON.stringify(item.obj.common));
+                }
                 this.tempAdapters[item.id] = item.obj;
             }
         });
@@ -368,18 +395,33 @@ class Adapters extends Component {
         });
     }
 
-    getAdapters = async () => {
-        try {
-            console.log('getAdapters')
-            const currentHost  = this.props.currentHost;
-            const adapters     = await this.props.adaptersWorker.getAdapters();
-            const installed    = await this.props.socket.getInstalled(currentHost, true).catch(e => window.alert('Cannot getInstalled: ' + e));
-            const repository   = await this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: false }, false, 10000).catch(e => window.alert('Cannot getRepository: ' + e));
-
-            this.analyseInstalled(adapters, installed, repository);
-        } catch (e) {
-            console.error(e.message);
-        }
+    getAdapters = () => {
+        console.log('getAdapters');
+        let adapters
+        let installed
+        const currentHost = this.props.currentHost;
+        return this.props.adaptersWorker.getAdapters()
+            .catch(e => window.alert('Cannot getAdapters: ' + e))
+            .then(_adapters => {
+                adapters = _adapters;
+                return this.props.socket.getInstalled(currentHost, true, this.state.readTimeoutMs)
+                    .catch(e => {
+                        window.alert('Cannot getInstalled: ' + e);
+                        e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
+                        return null;
+                    });
+            })
+            .then(_installed => {
+                installed = _installed;
+                return this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: false }, false, this.state.readTimeoutMs)
+                    .catch(e => {
+                        window.alert('Cannot getRepository: ' + e);
+                        e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
+                        return null;
+                    })
+            })
+            .then(repository =>
+                this.analyseInstalled(adapters, installed, repository))
     }
 
     getAdaptersInfo = async (updateRepo = false) => {
@@ -389,124 +431,153 @@ class Adapters extends Component {
 
         // Do not update too often
         if (Date.now() - this.state.lastUpdate > 1000) {
-            console.log('getAdaptersInfo ')
-
-            !this.state.update && this.setState({ update: true });
+            console.log('getAdaptersInfo');
 
             const currentHost = this.props.currentHost;
-            try {
-                const {installed, repository} = this.state;
-                const hostData = await this.props.socket.getHostInfo(currentHost, false, 10000).catch(e => window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`));
-                const rebuild  = await this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD').catch(e => window.alert('Cannot checkFeatureSupported: ' + e));
-                const objects  = await this.props.adaptersWorker.getAdapters(updateRepo).catch(e => window.alert('Cannot read system.adapters.*: ' + e));
-                const ratings  = await this.props.socket.getRatings(updateRepo).catch(e => window.alert('Cannot read ratings: ' + e));
+            const {installed, repository} = this.state;
 
-                this.uuid = ratings.uuid;
+            let hostData;
+            let rebuild;
+            let objects;
 
-                this.rebuildSupported = rebuild || false;
+            return new Promise(resolve => {
+                if (!this.state.update) {
+                    this.setState({ update: true }, () => resolve());
+                } else {
+                    resolve();
+                }
+            })
+                .then(() => this.props.socket.getHostInfo(currentHost, false, this.state.readTimeoutMs)
+                    .catch(e => {
+                        window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`);
+                        e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
+                    })
+                )
+                .then(_hostData => {
+                    hostData = _hostData;
+                    return this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD')
+                        .catch(e => window.alert('Cannot checkFeatureSupported: ' + e))
+                })
+                .then(_rebuild => {
+                    rebuild = _rebuild;
+                    return this.props.adaptersWorker.getAdapters(updateRepo)
+                        .catch(e => window.alert('Cannot read system.adapters.*: ' + e));
+                })
+                .then(_objects => {
+                    objects = _objects;
+                    return this.props.socket.getRatings(updateRepo)
+                        .catch(e => window.alert('Cannot read ratings: ' + e));
+                })
+                .then(ratings => {
+                    // simulation
+                    // setTimeout(() => this.setState({showSlowConnectionWarning: true}), 5000);
 
-                const nodeJsVersion = hostData['Node.js'].replace('v', '');
-                const hostOs = hostData.os;
+                    this.uuid = ratings.uuid;
 
-                const categories = {};
-                const categoriesSorted = [];
-                const categoriesExpanded = JSON.parse(window.localStorage.getItem('Adapters.expandedCategories')) || {};
+                    this.rebuildSupported = rebuild || false;
 
-                Object.keys(installed).forEach(value => {
-                    const adapter = installed[value];
-                    const _obj = objects['system.adapter.' + value];
-                    if (_obj?.common?.ignoreVersion) {
-                        adapter.ignoreVersion = _obj.common.ignoreVersion;
-                    }
+                    const nodeJsVersion = hostData['Node.js'].replace('v', '');
+                    const hostOs = hostData.os;
 
-                    if (!adapter.controller && value !== 'hosts') {
-                        if (!repository[value]) {
-                            repository[value] = JSON.parse(JSON.stringify(adapter));
-                            repository[value].version = '';
-                        }
-                    }
-                    adapter.count = 0;
-                    adapter.enabled = 0;
-                });
+                    const categories = {};
+                    const categoriesSorted = [];
+                    const categoriesExpanded = JSON.parse(window.localStorage.getItem('Adapters.expandedCategories')) || {};
 
-                const now = Date.now();
-                Object.keys(repository).forEach(value => {
-                    const adapter = repository[value];
-                    if (adapter.keywords) {
-                        adapter.keywords = adapter.keywords.map(word => word.toLowerCase());
-                    }
-                    const _installed = installed[value];
-
-                    adapter.rating = ratings[value];
-                    if (adapter.rating && adapter.rating.rating) {
-                        adapter.rating.title = [
-                            `Total rating: ${adapter.rating.rating.r} (${adapter.rating.rating.c} ${this.t('votes')})`,
-                            (_installed && _installed.version && adapter.rating[installed.version]) ? `Rating for ${installed.version}: ${adapter.rating[installed.version].r} (${adapter.rating[installed.version].c} ${this.t('votes')})` : ''
-                        ].filter(i => i).join('\n');
-                    } else {
-                        adapter.rating = { title: this.t('No rating or too few data') };
-                    }
-
-                    if (!adapter.controller) {
-                        const type = adapter.type;
-                        const installedInGroup = installed[value];
-
-                        const daysAgo = Math.round((now - new Date(adapter.versionDate).getTime()) / 86400000);
-                        if (daysAgo <= 31) {
-                            this.recentUpdatedAdapters++
-                        }
-                        if (installed[value]) {
-                            this.installedAdapters++;
+                    Object.keys(installed).forEach(value => {
+                        const adapter = installed[value];
+                        const _obj = objects['system.adapter.' + value];
+                        if (_obj?.common?.ignoreVersion) {
+                            adapter.ignoreVersion = _obj.common.ignoreVersion;
                         }
 
-                        if (!categories[type]) {
-                            categories[type] = {
-                                name: type,
-                                translation: this.t(type + '_group'),
-                                count: 1,
-                                installed: installedInGroup ? 1 : 0,
-                                adapters: [value]
-                            };
-                        } else {
-                            categories[type].count++;
-                            categories[type].adapters.push(value);
-                            if (installedInGroup) {
-                                categories[type].installed++;
+                        if (!adapter.controller && value !== 'hosts') {
+                            if (!repository[value]) {
+                                repository[value] = JSON.parse(JSON.stringify(adapter));
+                                repository[value].version = '';
                             }
                         }
-                    }
+                        adapter.count = 0;
+                        adapter.enabled = 0;
+                    });
+
+                    const now = Date.now();
+                    Object.keys(repository).forEach(value => {
+                        const adapter = repository[value];
+                        if (adapter.keywords) {
+                            adapter.keywords = adapter.keywords.map(word => word.toLowerCase());
+                        }
+                        const _installed = installed[value];
+
+                        adapter.rating = ratings[value];
+                        if (adapter.rating && adapter.rating.rating) {
+                            adapter.rating.title = [
+                                `Total rating: ${adapter.rating.rating.r} (${adapter.rating.rating.c} ${this.t('votes')})`,
+                                (_installed && _installed.version && adapter.rating[installed.version]) ? `Rating for ${installed.version}: ${adapter.rating[installed.version].r} (${adapter.rating[installed.version].c} ${this.t('votes')})` : ''
+                            ].filter(i => i).join('\n');
+                        } else {
+                            adapter.rating = { title: this.t('No rating or too few data') };
+                        }
+
+                        if (!adapter.controller) {
+                            const type = adapter.type;
+                            const installedInGroup = installed[value];
+
+                            const daysAgo = Math.round((now - new Date(adapter.versionDate).getTime()) / 86400000);
+                            if (daysAgo <= 31) {
+                                this.recentUpdatedAdapters++
+                            }
+                            if (installed[value]) {
+                                this.installedAdapters++;
+                            }
+
+                            if (!categories[type]) {
+                                categories[type] = {
+                                    name: type,
+                                    translation: this.t(type + '_group'),
+                                    count: 1,
+                                    installed: installedInGroup ? 1 : 0,
+                                    adapters: [value]
+                                };
+                            } else {
+                                categories[type].count++;
+                                categories[type].adapters.push(value);
+                                if (installedInGroup) {
+                                    categories[type].installed++;
+                                }
+                            }
+                        }
+                    });
+
+                    Object.keys(categories).sort().forEach(value =>
+                        categoriesSorted.push(categories[value]));
+
+                    const list            = JSON.parse(window.localStorage.getItem('Adapters.list'));
+                    const viewMode        = JSON.parse(window.localStorage.getItem('Adapters.viewMode'));
+                    const updateList      = JSON.parse(window.localStorage.getItem('Adapters.updateList'));
+                    const installedList   = JSON.parse(window.localStorage.getItem('Adapters.installedList'));
+                    const categoriesTiles = window.localStorage.getItem('Adapters.categoriesTiles') || 'All';
+                    const filterTiles     = window.localStorage.getItem('Adapters.filterTiles') || 'A-Z';
+                    this.allAdapters      = Object.keys(repository).length - 1;
+
+                    this.setState({
+                        filterTiles,
+                        categoriesTiles,
+                        installedList,
+                        updateList,
+                        viewMode,
+                        list,
+                        lastUpdate: Date.now(),
+                        hostData,
+                        hostOs,
+                        nodeJsVersion,
+                        categories: categoriesSorted,
+                        categoriesExpanded,
+                        init: true,
+                        update: false
+                    });
                 });
-
-                Object.keys(categories).sort().forEach(value =>
-                    categoriesSorted.push(categories[value]));
-
-                const list            = JSON.parse(window.localStorage.getItem('Adapters.list'));
-                const viewMode        = JSON.parse(window.localStorage.getItem('Adapters.viewMode'));
-                const updateList      = JSON.parse(window.localStorage.getItem('Adapters.updateList'));
-                const installedList   = JSON.parse(window.localStorage.getItem('Adapters.installedList'));
-                const categoriesTiles = window.localStorage.getItem('Adapters.categoriesTiles') || 'All';
-                const filterTiles     = window.localStorage.getItem('Adapters.filterTiles') || 'A-Z';
-                this.allAdapters      = Object.keys(repository).length - 1;
-
-                this.setState({
-                    filterTiles,
-                    categoriesTiles,
-                    installedList,
-                    updateList,
-                    viewMode,
-                    list,
-                    lastUpdate: Date.now(),
-                    hostData,
-                    hostOs,
-                    nodeJsVersion,
-                    categories: categoriesSorted,
-                    categoriesExpanded,
-                    init: true,
-                    update: false
-                });
-            } catch (error) {
-                console.error(error);
-            }
+        } else {
+            return Promise.resolve();
         }
     }
 
@@ -593,7 +664,6 @@ class Adapters extends Component {
     }
 
     static updateAvailable(oldVersion, newVersion) {
-
         try {
             return Semver.gt(newVersion, oldVersion) === true;
         } catch (e) {
@@ -941,15 +1011,16 @@ class Adapters extends Component {
                 onSetRating={installed && installed.version ? () =>
                     this.setState({ showSetRating: { adapter: value, version: installed.version}}) : null}
                 onAddInstance={() =>
-                    licenseDialogFunc(adapter.license === 'MIT', async () =>
-                        await this.addInstance(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
+                    licenseDialogFunc(adapter.license === 'MIT', async result =>
+                        result && await this.addInstance(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')
+                }
                 onDeletion={() => this.openAdapterDeletionDialog(value)}
                 onInfo={() => this.openInfoDialog(value)}
                 onRebuild={() => this.rebuild(value)}
                 onUpdate={() => this.openUpdateDialog(value)}
                 openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
-                onUpload={() => licenseDialogFunc(adapter.license === 'MIT', () =>
-                    this.upload(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
+                onUpload={() => licenseDialogFunc(adapter.license === 'MIT', result =>
+                    result && this.upload(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
             />;
         } else {
             return null;
@@ -1129,15 +1200,15 @@ class Adapters extends Component {
                     onSetRating={installed && installed.version ? () =>
                         this.setState({showSetRating: {adapter: value, version: installed.version}}) : null}
                     onAddInstance={() =>
-                        licenseDialogFunc(adapter.license === 'MIT', async () =>
-                            await this.addInstance(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
+                        licenseDialogFunc(adapter.license === 'MIT', async result =>
+                            result && await this.addInstance(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
                     onDeletion={() => this.openAdapterDeletionDialog(value)}
                     onInfo={() => this.openInfoDialog(value)}
                     onRebuild={() => this.rebuild(value)}
                     onUpdate={() => this.openUpdateDialog(value)}
                     openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
-                    onUpload={() => licenseDialogFunc(adapter.license === 'MIT', () =>
-                        this.upload(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
+                    onUpload={() => licenseDialogFunc(adapter.license === 'MIT', result =>
+                        result && this.upload(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
                 />;
             });
         }
@@ -1202,7 +1273,6 @@ class Adapters extends Component {
         }
 
         if (this.state.dialog === 'readme' && this.state.dialogProp) {
-
             const adapter = this.state.repository[this.state.dialogProp] || null;
 
             if (adapter) {
@@ -1213,6 +1283,7 @@ class Adapters extends Component {
                         themeType={this.props.themeType}
                         adapter={this.state.dialogProp}
                         link={adapter.readme || ''}
+                        socket={this.props.socket}
                         t={this.t}
                     />
                 </TabContainer>;
@@ -1380,6 +1451,7 @@ class Adapters extends Component {
             {this.getUpdater()}
             {this.getStatistics()}
             {this.renderSetRatingDialog()}
+            {this.renderSlowConnectionWarning()}
 
             {!this.state.viewMode && <div style={{
                 display: 'flex',
@@ -1415,7 +1487,7 @@ class Adapters extends Component {
                     onClose={() => this.closeAdapterDeletionDialog()}
                 />
             }
-            <GitHubInstallDialog
+            {this.state.gitHubInstallDialog && <GitHubInstallDialog
                 t={this.t}
                 open={this.state.gitHubInstallDialog}
                 categories={this.state.categories}
@@ -1423,7 +1495,7 @@ class Adapters extends Component {
                     await this.addInstance(value, undefined, debug, customUrl)}
                 repository={this.state.repository}
                 onClose={() => { this.setState({ gitHubInstallDialog: false }) }}
-            />
+            />}
             {this.state.adapterUpdateDialog &&
                 <AdapterUpdateDialog
                     open={this.state.adapterUpdateDialog}
