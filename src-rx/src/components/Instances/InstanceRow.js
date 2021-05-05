@@ -36,6 +36,8 @@ import InstanceInfo from './InstanceInfo';
 import State from '../State';
 import CustomModal from '../CustomModal';
 import LinksDialog from './LinksDialog';
+import TextWithIcon from '../TextWithIcon';
+import SelectWithIcon from "../SelectWithIcon";
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -739,19 +741,15 @@ const InstanceRow = ({
             </Select>
         </FormControl>}
         {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
-        {openDialogHost && <FormControl className={classes.formControl} variant="outlined">
-            <InputLabel>{t('Host')}</InputLabel>
-            <Select
-                variant="standard"
-                value={hostValue}
-                fullWidth
-                onChange={el => setHostValue(el.target.value)}
-            >
-                {hosts.map(item => <MenuItem key={item._id} value={item.common?.hostname || item._id.replace(/^system\.host\./, '')}>
-                    <Icon src={item.common.icon} />{item.common?.name || item._id}
-                </MenuItem>)}
-            </Select>
-        </FormControl>}
+        {openDialogHost && <SelectWithIcon
+            themeType={themeType}
+            value={hostValue}
+            list={hosts}
+            removePrefix="system.host."
+            fullWidth
+            className={classes.formControl}
+            onChange={el => setHostValue(el)}
+        />}
     </CustomModal> : null;
 
     const state = getInstanceState(id);
@@ -1186,7 +1184,7 @@ const InstanceRow = ({
                         </div>
                         {hosts.length > 1 || (hosts.length && hosts[0].common?.hostname !== host) ? <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={<HostIcon className={classes.marginRight} />} tooltip={t('Host for this instance')}>
-                                {host}
+                                {<TextWithIcon value={host} list={hosts} removePrefix="system.host." themeType={themeType}/>}
                             </InstanceInfo>
                             <Tooltip title={t('Edit')}>
                                 <IconButton

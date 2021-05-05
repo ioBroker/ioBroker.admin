@@ -1,0 +1,94 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+
+import Icon from '@iobroker/adapter-react/Components/Icon';
+import Utils from '@iobroker/adapter-react/Components/Utils';
+
+const styles = theme => ({
+    div: {
+        borderRadius: 3,
+        padding: '0 3px',
+        lineHeight: '20px',
+    },
+    icon: {
+        width: 16,
+        height: 16,
+        marginRight: 8,
+        verticalAlign: 'middle',
+        marginTop: -2
+    },
+    text: {
+        display: 'inline-block'
+    }
+});
+
+const TextWithIcon = props => {
+    let item = props.value;
+    let prefix = props.removePrefix || '';
+
+    if (typeof item === 'string') {
+        if (props.list) {
+            if (Array.isArray(props.list)) {
+                const _item = props.list.find(obj => obj._id === prefix + item)
+                if (_item) {
+                    item = {
+                        name: Utils.getObjectNameFromObj(_item, props.lang).replace('system.group.', ''),
+                        value: _item._id,
+                        icon: _item.common?.icon,
+                        color: _item.common?.color,
+                    };
+                }
+            } else if (props.list[prefix + item]) {
+                item = {
+                    name: Utils.getObjectNameFromObj(props.list[prefix + item], props.lang).replace('system.group.', ''),
+                    value: props.list[prefix + item]._id,
+                    icon: props.list[prefix + item].common?.icon,
+                    color: props.list[prefix + item].common?.color,
+                };
+            } else {
+                item = {
+                    name: item,
+                    value: prefix + item,
+                }
+            }
+        } else {
+            item = {
+                name: item,
+                value: prefix + item,
+            }
+        }
+    } else if (!item || typeof item !== 'object') {
+        item = {
+            name: '',
+            value: '',
+        }
+    } else  {
+        item = {
+            name: Utils.getObjectNameFromObj(item, props.lang).replace('system.group.', ''),
+            value: item._id,
+            icon: item.common?.icon,
+            color: item.common?.color,
+        };
+    }
+
+    const style = {color: item?.color || undefined, backgroundColor: Utils.getInvertedColor(item?.color, props.themeType)};
+
+    return <div style={Object.assign({}, props.style, style)} className={Utils.clsx(props.className, props.classes.div)} title={props.title || item.value}>
+        {item?.icon ? <Icon src={item?.icon} className={props.classes.icon} /> : null}<div className={props.classes.text}>{item?.name}</div>
+    </div>;
+}
+
+TextWithIcon.propTypes = {
+    t: PropTypes.func,
+    lang: PropTypes.string,
+    themeType: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+    list: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+    className: PropTypes.string,
+    style: PropTypes.object,
+    title: PropTypes.string,
+    removePrefix: PropTypes.string,
+};
+
+export default withStyles(styles)(TextWithIcon);
