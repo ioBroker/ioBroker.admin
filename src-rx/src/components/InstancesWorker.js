@@ -12,6 +12,7 @@ class InstancesWorker {
     }
 
     objectChangeHandler = (id, obj) => {
+        this.objects = this.objects || {};
         // if instance
         if (id.match(/^system\.adapter\.[^.]+\.\d+$/)) {
             let type;

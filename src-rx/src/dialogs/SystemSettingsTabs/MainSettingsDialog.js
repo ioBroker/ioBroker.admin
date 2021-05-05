@@ -123,6 +123,7 @@ class MainSettingsDialog extends Component {
                 id: 'currency',
                 title: 'Currency sign',
                 translate: false,
+                allowText: true,
                 values: [
                     {
                         id: '€',
@@ -247,6 +248,24 @@ class MainSettingsDialog extends Component {
 
         if (e.id === 'defaultLogLevel' && !value) {
             value = 'info';
+        }
+
+        // If value is not in known values, show text input
+        if (e.allowText && value && !e.values.find(elem => elem.id === value)) {
+            return <Grid item sm={6} xs={12} key={i}>
+                <FormControl className={classes.formControl}>
+                    <InputLabel shrink id={e.id + '-label'}>
+                        {this.props.t(e.title)}
+                    </InputLabel>
+                    <TextField
+                        id={e.id}
+                        value={value.toString()}
+                        InputLabelProps={{readOnly: false, shrink: true}}
+                        onChange={evt => this.handleChange(evt, i)}
+                        helperText={e.help ? this.props.t(e.help) : ''}
+                    />
+                </FormControl>
+            </Grid>;
         }
 
         const items = e.values.map((elem, index) => <MenuItem value={elem.id} key={index}>

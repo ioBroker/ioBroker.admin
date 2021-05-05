@@ -1298,5 +1298,6 @@
   "Log level will be saved permanently": "Poziom dziennika zostanie trwale zapisany",
   "Will be reset to the saved log level after restart of adapter": "Zostanie zresetowany do zapisanego poziomu dziennika po ponownym uruchomieniu adaptera",
   "Connected to device or service": "Połączono z urządzeniem lub usługą",
-  "Session expire in %s": "Sesja wygasa w %s"
+  "Session expire in %s": "Sesja wygasa w %s",
+  "Change log": "Dziennik zmian"
 }

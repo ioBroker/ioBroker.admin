@@ -1298,5 +1298,6 @@
   "Log level will be saved permanently": "Het logniveau wordt permanent opgeslagen",
   "Will be reset to the saved log level after restart of adapter": "Wordt gereset naar het opgeslagen logniveau na herstart van de adapter",
   "Connected to device or service": "Verbonden met apparaat of service",
-  "Session expire in %s": "Sessie verloopt in %s"
+  "Session expire in %s": "Sessie verloopt in %s",
+  "Change log": "Wijzig logboek"
 }

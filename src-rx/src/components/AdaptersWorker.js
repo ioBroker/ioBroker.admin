@@ -11,6 +11,7 @@ class AdaptersWorker {
     }
 
     objectChangeHandler = (id, obj) => {
+        this.objects = this.objects || {};
         // if instance
         if (id.match(/^system\.adapter\.[^.]+$/)) {
             let type;

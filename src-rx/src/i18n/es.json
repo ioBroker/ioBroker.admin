@@ -1298,5 +1298,6 @@
   "Log level will be saved permanently": "El nivel de registro se guardará de forma permanente",
   "Will be reset to the saved log level after restart of adapter": "Se restablecerá al nivel de registro guardado después de reiniciar el adaptador",
   "Connected to device or service": "Conectado a dispositivo o servicio",
-  "Session expire in %s": "La sesión expira en %s"
+  "Session expire in %s": "La sesión expira en %s",
+  "Change log": "Cambio de registro"
 }

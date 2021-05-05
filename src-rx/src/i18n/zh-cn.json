@@ -1298,5 +1298,6 @@
   "Log level will be saved permanently": "日志级别将被永久保存",
   "Will be reset to the saved log level after restart of adapter": "重新启动适配器后将重置为保存的日志级别",
   "Connected to device or service": "已连接到设备或服务",
-  "Session expire in %s": "会话在%s中过期"
+  "Session expire in %s": "会话在%s中过期",
+  "Change log": "变更记录"
 }

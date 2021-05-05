@@ -32,6 +32,7 @@ const styles = theme => {
             background: '#4dabf5',
             borderRadius: 3,
             paddingLeft: 10,
+            fontWeight: 'bold',
             color: theme.palette.type === 'dark' ? 'black' : 'white'
         },
         wrapperButton: {
@@ -88,7 +89,7 @@ class AdapterUpdateDialog extends Component {
             result.push(
                 <Grid item key={entry.version}>
                     <Typography className={this.props.classes.version}>
-                        {entry.version + ':'}
+                        {entry.version}
                     </Typography>
                     {news.map((value, index) => {
                         return (
@@ -138,7 +139,7 @@ class AdapterUpdateDialog extends Component {
                         </Grid>
                     }
                     {news.length && <Grid item>
-                        <Typography variant="h6" gutterBottom>{this.t('News')}</Typography>
+                        <Typography variant="h6" gutterBottom>{this.t('Change log')}</Typography>
                         <Grid
                             container
                             spacing={2}

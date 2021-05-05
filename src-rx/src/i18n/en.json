@@ -1298,5 +1298,6 @@
   "Log level will be saved permanently": "Log level will be saved permanently",
   "Will be reset to the saved log level after restart of adapter": "Will be reset to the saved log level after restart of adapter",
   "Connected to device or service": "Connected to device or service",
-  "Session expire in %s": "Session expire in %s"
+  "Session expire in %s": "Session expire in %s",
+  "Change log": "Change log"
 }

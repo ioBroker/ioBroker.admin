@@ -10,8 +10,6 @@ Marked with "!" must be in release candidate
     config: 'materialize', 'none', 'html'
     tab: 'html'
   }
-  
-- (BF) Optimize loading of hosts
 
 ## Intro
 
@@ -24,7 +22,6 @@ Marked with "!" must be in release candidate
 ## Enums
 
 ## Adapters
-<!-- - Highlight version numbers in update dialog (in news). Make it somehow visible that new version description starts. -->
 
 ## Wizard
 

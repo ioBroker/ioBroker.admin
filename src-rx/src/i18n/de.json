@@ -1298,5 +1298,6 @@
   "Log level will be saved permanently": "Die Protokollebene wird dauerhaft gespeichert",
   "Will be reset to the saved log level after restart of adapter": "Wird nach dem Neustart des Adapters auf die gespeicherte Protokollebene zurückgesetzt",
   "Connected to device or service": "Verbunden mit Gerät oder Dienst",
-  "Session expire in %s": "Sitzung läuft in %s ab"
+  "Session expire in %s": "Sitzung läuft in %s ab",
+  "Change log": "Änderungen"
 }
