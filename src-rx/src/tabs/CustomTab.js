@@ -9,14 +9,16 @@ import Utils from '../Utils';
 
 const styles = theme => ({
     root: {
-        border:     '0 solid #FFF',
+        //border:     '0 solid #FFF',
         display:    'block',
         left:       0,
         top:        0,
         width:      '100%',
         height:     '100%',
         background: 'white',
-        color:      'black'
+        color:      'black',
+        borderRadius: 3,
+        border:     '1px solid #888'
     },
 });
 

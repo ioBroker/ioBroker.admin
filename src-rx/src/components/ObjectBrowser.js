@@ -2868,9 +2868,9 @@ class ObjectBrowser extends Component {
                     </Tooltip>
                 }
             </div>
-            <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
+            {!!this.props.objectBrowserEditObject && <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
                 {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t('ra_States')}: ${Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length}`}
-            </div>
+            </div>}
             {this.props.objectEditBoolean &&
                 <Tooltip title={this.props.t('ra_Edit custom config')}>
                     <IconButton onClick={() => {
