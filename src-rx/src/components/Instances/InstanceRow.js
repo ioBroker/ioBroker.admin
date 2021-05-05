@@ -159,6 +159,9 @@ const styles = theme => ({
     hidden: {
         display: 'none'
     },
+    invisible: {
+        opacity: 0,
+    },
     buttonUpdate: {
         border: '1px solid',
         padding: '0px 7px',
@@ -846,30 +849,26 @@ const InstanceRow = ({
                         src={instance.image}
                         className={classes.instanceIcon}
                     />
-                    <div className={classes.instanceId}>
-                        {instance.id}
-                    </div>
+                    <div className={classes.instanceId}>{instance.id}</div>
                 </div>
                 <Tooltip title={t('Start/stop')}>
-                    <div>
-                        <IconButton
-                            size="small"
-                            onClick={event => {
-                                event.stopPropagation();
-                                event.preventDefault();
-                                if (running && instance.id === adminInstance) {
-                                    setShowStopAdminDialog('system.adapter.' + instance.id);
-                                } else {
-                                    extendObject('system.adapter.' + instance.id, { common: { enabled: !running } });
-                                }
-                            }}
-                            onFocus={event => event.stopPropagation()}
-                            className={clsx(classes.button, instance.canStart ?
-                                (running ? classes.enabled : classes.disabled) : classes.hide)}
-                        >
-                            {running ? <PauseIcon /> : <PlayArrowIcon />}
-                        </IconButton>
-                    </div>
+                    <IconButton
+                        size="small"
+                        onClick={event => {
+                            event.stopPropagation();
+                            event.preventDefault();
+                            if (running && instance.id === adminInstance) {
+                                setShowStopAdminDialog('system.adapter.' + instance.id);
+                            } else {
+                                extendObject('system.adapter.' + instance.id, { common: { enabled: !running } });
+                            }
+                        }}
+                        onFocus={event => event.stopPropagation()}
+                        className={clsx(classes.button, instance.canStart ?
+                            (running ? classes.enabled : classes.disabled) : classes.hide)}
+                    >
+                        {running ? <PauseIcon /> : <PlayArrowIcon />}
+                    </IconButton>
                 </Tooltip>
                 <Hidden xsDown>
                     <Tooltip title={t('Settings')}>
@@ -883,40 +882,36 @@ const InstanceRow = ({
                     </Tooltip>
                 </Hidden>
                 <Tooltip title={t('Restart')}>
-                    <div>
-                        <IconButton
-                            size="small"
-                            onClick={event => {
-                                extendObject('system.adapter.' + instance.id, {});
-                                event.stopPropagation();
-                            }}
-                            onFocus={event => event.stopPropagation()}
-                            className={clsx(classes.button, !instance.canStart && classes.hide)}
-                            disabled={!running}
-                        >
-                            <RefreshIcon />
-                        </IconButton>
-                    </div>
+                    <IconButton
+                        size="small"
+                        onClick={event => {
+                            extendObject('system.adapter.' + instance.id, {});
+                            event.stopPropagation();
+                        }}
+                        onFocus={event => event.stopPropagation()}
+                        className={clsx(classes.button, !instance.canStart && classes.hide)}
+                        disabled={!running}
+                    >
+                        <RefreshIcon />
+                    </IconButton>
                 </Tooltip>
                 <Tooltip title={t('Instance link %s', instance.id)}>
-                    <div>
-                        <IconButton
-                            size="small"
-                            className={clsx(classes.button, (!instance.links || !instance.links[0]) && classes.hide)}
-                            disabled={!running}
-                            onClick={event => {
-                                event.stopPropagation()
-                                if (instance.links.length === 1) {
-                                    window.open(instance.links[0].link, instance.id);
-                                } else {
-                                    setShowLinks(true);
-                                }
-                            }}
-                            onFocus={event => event.stopPropagation()}
-                        >
-                            <InputIcon />
-                        </IconButton>
-                    </div>
+                    <IconButton
+                        size="small"
+                        className={clsx(classes.button, (!instance.links || !instance.links[0]) && classes.hide)}
+                        disabled={!running}
+                        onClick={event => {
+                            event.stopPropagation()
+                            if (instance.links.length === 1) {
+                                window.open(instance.links[0].link, instance.id);
+                            } else {
+                                setShowLinks(true);
+                            }
+                        }}
+                        onFocus={event => event.stopPropagation()}
+                    >
+                        <InputIcon />
+                    </IconButton>
                 </Tooltip>
 
                 <Typography className={clsx(classes.secondaryHeading, classes.hidden800)} component="div">
@@ -941,7 +936,7 @@ const InstanceRow = ({
                     </div>
                 </Typography>
                 {expertMode &&
-                    <div className={classes.hidden1250} >
+                    <div className={clsx(classes.hidden1250, !running && classes.invisible)} >
                         <InstanceInfo
                             icon={<ImportExportIcon />}
                             tooltip={t('events')}
@@ -1016,9 +1011,9 @@ const InstanceRow = ({
                 <Grid item container direction="row" xs={10}>
                     <Grid item container direction="column" xs={12} sm={6} md={4}>
                         <span className={classes.instanceName}>{instance.id}</span>
-                        {instance.mode === 'daemon' && <State state={connectedToHost} >{t('Connected to host')}</State>}
-                        {instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
-                        {connected !== null &&
+                        {running && instance.mode === 'daemon' && <State state={connectedToHost} >{t('Connected to host')}</State>}
+                        {running && instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
+                        {running && connected !== null &&
                             <State state={!!connected}>
                                 {typeof connected === 'string' ? t('Connected: ') + (connected || '-') : t('Connected to device or service')}
                             </State>
@@ -1047,7 +1042,7 @@ const InstanceRow = ({
                                 </IconButton>
                             </Tooltip>
                         </div>}
-                        {expertMode &&
+                        {running && expertMode &&
                             <div className={classes.visible1250}>
                                 <InstanceInfo icon={<ImportExportIcon />} tooltip={t('events')}>
                                     <div className={classes.displayFlex}>

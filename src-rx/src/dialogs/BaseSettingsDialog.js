@@ -83,15 +83,14 @@ class BaseSettingsDialog extends Component {
                 onClose={result =>
                     this.setState({showRestart: false}, () => {
                         if (result) {
-                            // reload admin
-                            setTimeout(() =>
-                                window.location.reload(false), 500);
                             this.props.socket.restartController(this.props.currentHost)
+                                .then(() =>
+                                    setTimeout(() =>  // reload admin
+                                        window.location.reload(false), 500))
                                 .catch(e => window.alert(`Cannot restart: ${e}`));
                         }
 
                         this.props.onClose();
-
                     })}
             />;
         } else {

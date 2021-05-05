@@ -415,13 +415,13 @@ const styles = theme => ({
         animation: '$newValueAnimation 2s ease-in-out'
     },
     '@keyframes newValueAnimation': {
-        "0%": {
+        '0%': {
             color: '#00f900',
         },
-        "80%": {
+        '80%': {
             color: '#008000',
         },
-        "100%": {
+        '100%': {
             color: theme.palette.type === 'dark' ? '#fff' : '#000',
         }
     },
@@ -1338,7 +1338,7 @@ const StyledBadge = withStyles(theme => ({
 
 const SCREEN_WIDTHS = {
     // extra-small: 0px
-    xs: { idWidth: "100%", fields: [], widths: { } },
+    xs: { idWidth: '100%', fields: [], widths: { } },
     // small: 600px
     sm: { idWidth: 300, fields: ['room', 'val'], widths: { room: 100, val: 200 } },
     // medium: 960px
@@ -1439,7 +1439,6 @@ class ObjectBrowser extends Component {
         this.objectsUpdateTimer = null;
 
         this.visibleCols = props.columns || SCREEN_WIDTHS[props.width].fields;
-            console.log(2222,this.props.width)
         // remove type column if only one type must be selected
         if (props.types && props.types.length === 1) {
             const pos = this.visibleCols.indexOf('type');

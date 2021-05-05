@@ -150,8 +150,7 @@ class AdapterUpdateDialog extends Component {
             </DialogContent>
             <DialogActions className={classes.wrapperButton}>
                 {!!this.props.rightDependencies && this.props.onIgnore && <Button
-                    onClick={() =>
-                        this.props.onIgnore(version)}
+                    onClick={() => this.props.onIgnore(version)}
                     color="primary"
                 >
                     {this.t('Ignore version %s', version)}
@@ -183,7 +182,7 @@ AdapterUpdateDialog.propTypes = {
     dependencies: PropTypes.array,
     news: PropTypes.array,
     onUpdate: PropTypes.func.isRequired,
-    onIgnore: PropTypes.func.isRequired,
+    onIgnore: PropTypes.func,
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
     rightDependencies: PropTypes.bool,

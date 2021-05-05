@@ -130,7 +130,6 @@
   "Comoros": "Komory",
   "Configuration not saved.": "Konfiguracja nie została zapisana.",
   "Congo": "Kongo",
-  "Connected to %s": "Połączono z %s",
   "Connected to host": "Połączony z hostem",
   "Cook Islands": "Wyspy Cooka",
   "Copy log": "Skopiuj dziennik",
@@ -1297,5 +1296,7 @@
   "Host for this instance": "Host dla tej instancji",
   "Without restart": "Bez restartu",
   "Log level will be saved permanently": "Poziom dziennika zostanie trwale zapisany",
-  "Will be reset to the saved log level after restart of adapter": "Zostanie zresetowany do zapisanego poziomu dziennika po ponownym uruchomieniu adaptera"
+  "Will be reset to the saved log level after restart of adapter": "Zostanie zresetowany do zapisanego poziomu dziennika po ponownym uruchomieniu adaptera",
+  "Connected to device or service": "Połączono z urządzeniem lub usługą",
+  "Session expire in %s": "Sesja wygasa w %s"
 }

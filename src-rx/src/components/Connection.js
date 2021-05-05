@@ -177,7 +177,7 @@ class Connection {
             this.connected = true;
 
             if (this.waitForRestart) {
-                window.location.reload();
+                window.location.reload(false);
             } else {
                 this._subscribe(true);
                 this.onConnectionHandlers.forEach(cb => cb(true));
@@ -251,7 +251,7 @@ class Connection {
         this.isSecure = isSecure;
 
         if (this.waitForRestart) {
-            window.location.reload();
+            window.location.reload(false);
         } else {
             if (this.firstConnect) {
                 // retry strategy

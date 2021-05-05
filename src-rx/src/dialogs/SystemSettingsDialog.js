@@ -181,7 +181,7 @@ class SystemSettingsDialog extends Component {
                     this.props.expertModeFunc(this.state.systemConfig.common.expertMode);
                 }
                 if (this.state.systemConfig.common.language !== JSON.parse(this.originalConfig).common.language) {
-                    window.location.reload();
+                    window.location.reload(false);
                 }
             })
             .catch(e =>

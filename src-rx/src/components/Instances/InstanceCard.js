@@ -379,6 +379,8 @@ const InstanceCard = memo(({
     const [tierValue, setTierValue] = useState(tier);
     const [hostValue, setHostValue] = useState(host);
 
+    const [visibleEdit, handlerEdit] = useState(false);
+
     let showModal = false;
     let title;
     let help = '';
@@ -546,9 +548,7 @@ const InstanceCard = memo(({
         text={t('stop_admin', adminInstance)}
         ok={t('Stop admin')}
         onClose={result => {
-            if (result) {
-                extendObject(showStopAdminDialog, { common: { enabled: false } });
-            }
+            result && extendObject(showStopAdminDialog, { common: { enabled: false } });
             setShowStopAdminDialog(false);
         }}
     /> : null;
@@ -560,10 +560,10 @@ const InstanceCard = memo(({
                     <div className={classes.close} onClick={() => setCollapse(false)} />
                 </div>
                 <Typography gutterBottom component={'span'} variant={'body2'}>
-                        <span className={classes.instanceName}>{instance.id}</span>
-                    {instance.mode === 'daemon' && <State state={connectedToHost} >{t('Connected to host')}</State>}
-                    {instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
-                    {connected !== null &&
+                    <span className={classes.instanceName}>{instance.id}</span>
+                    {running && instance.mode === 'daemon' && <State state={connectedToHost} >{t('Connected to host')}</State>}
+                    {running && instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
+                    {running && connected !== null &&
                         <State state={!!connected}>
                             {typeof connected === 'string' ? t('Connected: ') + (connected || '-') : t('Connected to device or service')}
                         </State>
@@ -573,11 +573,11 @@ const InstanceCard = memo(({
                         v {instance.version}
                     </InstanceInfo>
 
-                    <InstanceInfo icon={<MemoryIcon />} tooltip={t('RAM usage')}>
+                    {running && <InstanceInfo icon={<MemoryIcon />} tooltip={t('RAM usage')}>
                         {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
-                    </InstanceInfo>
+                    </InstanceInfo>}
 
-                    {expertMode &&
+                    {running && expertMode &&
                         <div className={classes.displayFlex}>
                             <InstanceInfo icon={<ImportExportIcon />} tooltip={t('events')}>
                                 <div className={classes.displayFlex}>
@@ -803,8 +803,6 @@ const InstanceCard = memo(({
                 }
             }}
         />;
-
-    const [visibleEdit, handlerEdit] = useState(false);
 
     return <Card key={key} className={clsx(classes.root, hidden ? classes.hidden : '')}>
         {customModal}

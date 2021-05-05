@@ -313,6 +313,7 @@ class Instances extends Component {
             instance.host    = common.host;
             instance.name    = common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en || common.title || '' : common.title;
             instance.image   = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
+            instance.enabled = common.enabled;
             let links        = common.localLinks || common.localLink || '';
             if (links && typeof links === 'string') {
                 links = { _default: links };
@@ -683,7 +684,7 @@ class Instances extends Component {
             const currentSentry   = this.isSentry(instance.obj);
             const memoryLimitMB   = this.isMemoryLimitMB(instance.obj);
             const currentHost   = this.isCurrentHost(instance.obj);
-            
+
 
             return {
                 render: this.state.viewMode ?

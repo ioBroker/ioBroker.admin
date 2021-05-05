@@ -130,7 +130,6 @@
   "Comoros": "Komoren",
   "Configuration not saved.": "Die Konfiguration ist nicht gespeichert.",
   "Congo": "Congo",
-  "Connected to %s": "Verbunden mit %s",
   "Connected to host": "Verbunden mit Host",
   "Cook Islands": "Cook Islands",
   "Copy log": "Log kopieren",
@@ -1297,5 +1296,7 @@
   "Host for this instance": "Host für diese Instanz",
   "Without restart": "Ohne Neustart",
   "Log level will be saved permanently": "Die Protokollebene wird dauerhaft gespeichert",
-  "Will be reset to the saved log level after restart of adapter": "Wird nach dem Neustart des Adapters auf die gespeicherte Protokollebene zurückgesetzt"
+  "Will be reset to the saved log level after restart of adapter": "Wird nach dem Neustart des Adapters auf die gespeicherte Protokollebene zurückgesetzt",
+  "Connected to device or service": "Verbunden mit Gerät oder Dienst",
+  "Session expire in %s": "Sitzung läuft in %s ab"
 }

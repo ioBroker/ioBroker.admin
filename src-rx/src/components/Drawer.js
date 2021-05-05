@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
@@ -36,6 +36,7 @@ import CustomPopper from './CustomPopper';
 import CustomTab from '../tabs/CustomTab';
 import DrawerItem from './DrawerItem';
 import Adapters from '../tabs/Adapters';
+import Typography from "@material-ui/core/Typography";
 
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
@@ -114,7 +115,11 @@ const styles = theme => ({
     expand: {
         marginBottom: 5,
         marginLeft: 5
-    }
+    },
+    styleVersion: {
+        fontSize: 10,
+        color: '#ffffff5e'
+    },
 });
 
 export const STATES = {
@@ -124,34 +129,33 @@ export const STATES = {
 };
 
 const tabsInfo = {
-    'tab-intro': { order: 1, icon: <AppsIcon /> },
-    'tab-info': { order: 5, icon: <InfoIcon />, host: true },
-    'tab-adapters': { order: 10, icon: <StoreIcon />, host: true },
-    'tab-instances': { order: 15, icon: <SubtitlesIcon />, host: true },
-    'tab-objects': { order: 20, icon: <ViewListIcon /> },
-    //'tab-hosts': { order: 20, icon: <ViewListIcon /> },
-    'tab-enums': { order: 25, icon: <ArtTrackIcon /> },
-    'tab-devices': { order: 27, icon: <DvrIcon />, host: true },
-    'tab-logs': { order: 30, icon: <ViewHeadlineIcon />, host: true },
-    'tab-scenes': { order: 35, icon: <SubscriptionsIcon /> },
-    'tab-events': { order: 40, icon: <FlashOnIcon /> },
-    'tab-users': { order: 45, icon: <PersonOutlineIcon /> },
-    'tab-javascript': { order: 50 },
-    'tab-text2command-0': { order: 55, instance: 0 },
-    'tab-text2command-1': { order: 56, instance: 1 },
-    'tab-text2command-2': { order: 57, instance: 2 },
-    'tab-node-red-0': { order: 60, instance: 0 },
-    'tab-node-red-1': { order: 61, instance: 1 },
-    'tab-node-red-2': { order: 62, instance: 2 },
-    'tab-fullcalendar-0': { order: 65, instance: 0 },
-    'tab-fullcalendar-1': { order: 66, instance: 1 },
-    'tab-fullcalendar-2': { order: 67, instance: 2 },
-    'tab-echarts': { order: 70, instance: 2 },
-    'tab-eventlist-0': { order: 80, instance: 0 },
-    'tab-eventlist-1': { order: 81, instance: 1 },
-    'tab-eventlist-2': { order: 82, instance: 2 },
-    'tab-hosts': { order: 100, icon: <StorageIcon /> },
-    'tab-files': { order: 110, icon: <FilesIcon /> },
+    'tab-intro':            {order: 1,    icon: <AppsIcon />},
+    'tab-info':             {order: 5,    icon: <InfoIcon />,               host: true},
+    'tab-adapters':         {order: 10,   icon: <StoreIcon />,              host: true},
+    'tab-instances':        {order: 15,   icon: <SubtitlesIcon />,          host: true},
+    'tab-objects':          {order: 20,   icon: <ViewListIcon />},
+    'tab-enums':            {order: 25,   icon: <ArtTrackIcon />},
+    'tab-devices':          {order: 27,   icon: <DvrIcon />,                host: true},
+    'tab-logs':             {order: 30,   icon: <ViewHeadlineIcon />,       host: true},
+    'tab-scenes':           {order: 35,   icon: <SubscriptionsIcon />},
+    'tab-events':           {order: 40,   icon: <FlashOnIcon />},
+    'tab-users':            {order: 45,   icon: <PersonOutlineIcon />},
+    'tab-javascript':       {order: 50},
+    'tab-text2command-0':   {order: 55, instance: 0},
+    'tab-text2command-1':   {order: 56, instance: 1},
+    'tab-text2command-2':   {order: 57, instance: 2},
+    'tab-node-red-0':       {order: 60, instance: 0},
+    'tab-node-red-1':       {order: 61, instance: 1},
+    'tab-node-red-2':       {order: 62, instance: 2},
+    'tab-fullcalendar-0':   {order: 65, instance: 0},
+    'tab-fullcalendar-1':   {order: 66, instance: 1},
+    'tab-fullcalendar-2':   {order: 67, instance: 2},
+    'tab-echarts':          {order: 70, instance: 2},
+    'tab-eventlist-0':      {order: 80, instance: 0},
+    'tab-eventlist-1':      {order: 81, instance: 1},
+    'tab-eventlist-2':      {order: 82, instance: 2},
+    'tab-hosts':            {order: 100,  icon: <StorageIcon />},
+    'tab-files':            {order: 110,  icon: <FilesIcon />},
 };
 
 class Drawer extends Component {
@@ -212,7 +216,6 @@ class Drawer extends Component {
                     _installed.ignoreVersion !== adapter.version &&
                     Adapters.updateAvailable(_installed.version, adapter.version)
                 ) {
-                    console.log('Updatable: ' + count + ' ' + element);
                     count++;
                 }
             });
@@ -426,6 +429,7 @@ class Drawer extends Component {
                 <a href="/#easy" onClick={event => event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
                     <Avatar onClick={() => handleNavigation('easy')} className={clsx((this.props.themeName === 'colored' || this.props.themeName === 'blue') && classes.logoWhite, classes.logoSize)} alt="ioBroker" src="img/no-image.png" />
                 </a>
+                {this.props.versionAdmin && <Typography className={classes.styleVersion}>v{this.props.versionAdmin}</Typography>}
             </div>
             <IconButton onClick={() => {
                 if (this.isSwipeable() || this.props.state === STATES.compact) {
@@ -556,6 +560,7 @@ class Drawer extends Component {
                 <CustomDragLayer />
 
                 {this.getHeader()}
+
                 <List>
                     {this.getNavigationItems()}
                     {this.props.isSecure &&
@@ -622,6 +627,7 @@ Drawer.propTypes = {
     themeName: PropTypes.string,
     socket: PropTypes.object,
     ready: PropTypes.bool,
+    versionAdmin: PropTypes.string,
     expertMode: PropTypes.bool,
     handleNavigation: PropTypes.func,
 

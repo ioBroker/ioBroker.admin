@@ -383,9 +383,7 @@ class App extends Router {
 
                 expireInSec: null,
 
-                versionAdmin: {
-                    version: ''
-                }
+                versionAdmin: '',
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -494,41 +492,8 @@ class App extends Router {
                                     console.log(error);
                                 }
 
-                                newState.hosts = await this.socket.getCompactHosts();
-
-                                if (!this.state.currentHost) {
-                                    const currentHost = window.localStorage.getItem('App.currentHost');
-
-                                    const itemHost = newState.hosts.find(host => host._id === currentHost);
-
-                                    if (currentHost && itemHost) {
-                                        newState.currentHost     = itemHost._id;
-                                        newState.currentHostName = itemHost.common?.name || itemHost._id.replace('system.host.', '');
-                                    } else {
-                                        newState.currentHost     = newState.hosts[0]._id;
-                                        newState.currentHostName = newState.hosts[0].common?.name || newState.hosts[0]._id.replace('system.host.', '');
-                                    }
-                                }
-
-                                // Check that host is alive
-                                let alive;
-                                try {
-                                    alive = await this.socket.getState(newState.currentHost + '.alive');
-                                } catch (e) {
-                                    alive = null;
-                                    console.warn('Cannot get state ' + newState.currentHost + '.alive: ' + e);
-                                }
-
-                                if (!alive || !alive.val) {
-                                    // find first alive host
-                                    for (let h = 0; h < newState.hosts.length; h++) {
-                                        alive = await this.socket.getState(newState.hosts[h]._id + '.alive');
-                                        if (alive && alive.val) {
-                                            newState.currentHost     = newState.hosts[h]._id;
-                                            newState.currentHostName = newState.hosts[h].common.name;
-                                        }
-                                    }
-                                }
+                                newState.versionAdmin = (await this.socket.getVersion()).version;
+                                await this.findCurrentHost(newState);
 
                                 await this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
 
@@ -588,6 +553,44 @@ class App extends Router {
         }
     }
 
+    async findCurrentHost(newState) {
+        newState.hosts = await this.socket.getCompactHosts();
+
+        if (!this.state.currentHost) {
+            const currentHost = window.localStorage.getItem('App.currentHost');
+
+            const itemHost = newState.hosts.find(host => host._id === currentHost);
+
+            if (currentHost && itemHost) {
+                newState.currentHost     = itemHost._id;
+                newState.currentHostName = itemHost.common?.name || itemHost._id.replace('system.host.', '');
+            } else {
+                newState.currentHost     = newState.hosts[0]._id;
+                newState.currentHostName = newState.hosts[0].common?.name || newState.hosts[0]._id.replace('system.host.', '');
+            }
+        }
+
+        // Check that host is alive
+        let alive;
+        try {
+            alive = await this.socket.getState(newState.currentHost + '.alive');
+        } catch (e) {
+            alive = null;
+            console.warn('Cannot get state ' + newState.currentHost + '.alive: ' + e);
+        }
+
+        if (!alive || !alive.val) {
+            // find first alive host
+            for (let h = 0; h < newState.hosts.length; h++) {
+                alive = await this.socket.getState(newState.hosts[h]._id + '.alive');
+                if (alive && alive.val) {
+                    newState.currentHost     = newState.hosts[h]._id;
+                    newState.currentHostName = newState.hosts[h].common.name;
+                }
+            }
+        }
+    }
+
     updateExpireIn() {
         const now = Date.now();
         this.expireInSec -= (now - this.lastExecution) / 1000;
@@ -604,7 +607,7 @@ class App extends Router {
             window.alert('Session expired');
             // reconnect
             setTimeout(() =>
-                window.location.reload(), 1000);
+                window.location.reload(false), 1000);
         }
 
         this.lastExecution = now;
@@ -634,13 +637,13 @@ class App extends Router {
                 window.alert('Session timeout: ' + e);
                 // reconnect
                 setTimeout(() =>
-                    window.location.reload(), 1000);
+                    window.location.reload(false), 1000);
             })
     }
 
     onDiscoveryAlive = (name, value) => {
         if (!!(value && !!value.val) !== this.state.discoveryAlive) {
-            this.setState({ discoveryAlive: !!(value && !!value.val)});
+            this.setState({ discoveryAlive: !!(value && !!value.val) });
         }
     }
 
@@ -980,7 +983,7 @@ class App extends Router {
                         isFloatComma={this.state.systemConfig.common.isFloatComma}
                         width={this.props.width}
                         configStored={value => this.allStored(value)}
-                        executeCommand={cmd => this.executeCommand(cmd)}
+                        executeCommand={(cmd, cb) => this.executeCommand(cmd, cb)}
                         inBackgroundCommand={this.state.commandError || this.state.performed}
                     />
                 </Suspense>;
@@ -1078,7 +1081,7 @@ class App extends Router {
                         t={I18n.t}
                         navigate={Router.doNavigate}
                         currentHost={this.state.currentHost}
-                        executeCommand={cmd => this.executeCommand(cmd)}
+                        executeCommand={(cmd, cb) => this.executeCommand(cmd, cb)}
                         systemConfig={this.state.systemConfig}
                         showAdaptersWarning={this.showAdaptersWarning}
                     />
@@ -1474,11 +1477,15 @@ class App extends Router {
                         </div>
 
                         {this.renderLoggedUser()}
+
                         {this.state.drawerState !== 0 &&
                             <Grid container className={clsx(this.state.drawerState !== 0 && classes.avatarVisible, classes.avatarNotVisible)} spacing={1} alignItems="center">
                                 {(!this.state.user || this.props.width === 'xs' || this.props.width === 'sm') &&
                                     <Hidden xsDown>
-                                        <Typography>admin</Typography>
+                                        <div className={classes.wrapperName}>
+                                            <Typography>admin</Typography>
+                                            {this.state.versionAdmin && <Typography className={classes.styleVersion}>v{this.state.versionAdmin}</Typography>}
+                                        </div>
                                     </Hidden>}
                                 <Grid item>
                                     <a href="/#easy" onClick={event => event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
@@ -1502,6 +1509,7 @@ class App extends Router {
                         logsWorker={this.logsWorker}
                         logoutTitle={I18n.t('Logout')}
                         isSecure={this.socket.isSecure}
+                        versionAdmin={this.state.versionAdmin}
                         t={I18n.t}
                         lang={I18n.getLanguage()}
                         socket={this.socket}
