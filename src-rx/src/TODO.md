@@ -13,6 +13,7 @@ Marked with "!" must be in release candidate
 - Tooltips on drawer in half-closed mode  
 
 ## Intro
+- For links: jump to link by clicking of the whole card and not only link: https://github.com/ioBroker/ioBroker.admin/issues/685
 
 ## Easy Mode
 
@@ -39,6 +40,8 @@ Marked with "!" must be in release candidate
 ## Objects
 - If width of ID not defined => TODO see objectBrowser
 - Show button for configure of columns as active if auto is off
+- Show in tooltip of button which types could be created on selected node
+  - If button is disabled, show the full list of possibilities: https://github.com/ioBroker/ioBroker.admin/issues/761#issuecomment-831030077
 
 ## Files
 
@@ -47,7 +50,8 @@ Marked with "!" must be in release candidate
 
 - Allow change of log level on the fly https://github.com/ioBroker/ioBroker.admin/issues/571 system.host.HOST.logLevel (Will be reset to the saved log level after restart of controller)
 
-- Upgrade dialog => Button "Show instructions"
+- Upgrade dialog => Button "Show instructions": https://github.com/ioBroker/ioBroker.admin/issues/536
+For 
 
 
 ## Users

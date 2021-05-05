@@ -103,7 +103,7 @@ const JsControllerDialog = ({socket, hostId}) => {
                     <div className={classes.standardText}>{I18n.t('Due to the different hardware and platforms under which ioBroker runs, the js-controller has to be updated manually. Further details can be found in the appropriate section.')}</div>
 
                     <h2 className={classes.h2}>{I18n.t('General information for all platforms')}</h2>
-                    <div className={classes.standardText}>{I18n.t('For an update from js-controller 1.x to 2.x please always read the information at ')}<a href="https://forum.iobroker.net/topic/26759/js-controller-2-jetzt-f%C3%BCr-alle-im-stable" target="_blank">https://forum.iobroker.net/topic/26759/js-controller-2-jetzt-f%C3%BCr-alle-im-stable</a>{I18n.t(' read and note!')}
+                    <div className={classes.standardText}>{I18n.t('For an update from js-controller 1.x to 2.x please always read the information at ')}<a href="https://forum.iobroker.net/topic/26759/js-controller-2-jetzt-f%C3%BCr-alle-im-stable" target="_blank">forum</a>.
 </div>
                     <div className={classes.standardText}>{I18n.t('Otherwise please update the slaves first with an update of master-slave systems and the master last!')}
 </div>
@@ -112,10 +112,11 @@ const JsControllerDialog = ({socket, hostId}) => {
 
                         <div className={classes.standardText}>{I18n.t('Please execute the following commands in an SSH shell (console):')}</div>
 
-                        <div className={classes.standardTextSmall}>{I18n.t('iobroker stop')}</div>
-                        <div className={classes.standardTextSmall}>{I18n.t('iobroker update')}</div>
-                        <div className={classes.standardTextSmall}>{I18n.t('iobroker upgrade self')}</div>
-                        <div className={classes.standardTextSmall}>{I18n.t('iobroker start or reboot server, then ioBroker should restart and you can be sure that all old processes were finished.')}</div>
+                        <div className={classes.standardTextSmall}>iob backup</div>
+                        <div className={classes.standardTextSmall}>iob stop</div>
+                        <div className={classes.standardTextSmall}>iob update</div>
+                        <div className={classes.standardTextSmall}>iob upgrade self</div>
+                        <div className={classes.standardTextSmall}>iob start {I18n.t('or reboot server, then ioBroker should restart and you can be sure that all old processes were finished.')}</div>
                         <div className={classes.standardTextSmall}>{I18n.t('If the upgrade command displays Access Rights / Permission errors, then please use the install fixer (curl -sL https://iobroker.net/fix.sh | bash-) to fix these issues and upgrade command run again.')}</div>
 
                         <h2 className={classes.h2}>{I18n.t('Linux/macOS (manually installed)')}</h2>
@@ -124,10 +125,12 @@ const JsControllerDialog = ({socket, hostId}) => {
                         <div className={classes.standardText}>{I18n.t('Please execute the following commands in an SSH shell (console):')}</div>
 
                         <div className={classes.standardTextSmall}>cd {location || '/opt/iobroker'}</div>
-                        <div className={classes.standardTextSmall}>sudo iobroker stop</div>
-                        <div className={classes.standardTextSmall}>sudo iobroker update</div>
-                        <div className={classes.standardTextSmall}>sudo iobroker upgrade self</div>
-                        <div className={classes.standardTextSmall}>sudo iobroker start {I18n.t(' or server reboot, then ioBroker should restart and you can be sure that all old processes were finished.')}</div>
+                        <div className={classes.standardTextSmall}>iob backup</div>
+                        <div className={classes.standardTextSmall}>iob stop</div>
+                        <div className={classes.standardTextSmall}>iob fix</div>
+                        <div className={classes.standardTextSmall}>iob update</div>
+                        <div className={classes.standardTextSmall}>iob upgrade self</div>
+                        <div className={classes.standardTextSmall}>iob start {I18n.t(' or server reboot, then ioBroker should restart and you can be sure that all old processes were finished.')}</div>
                         <div className={classes.standardTextSmall}>{I18n.t('If the upgrade command displays permissions / permissions errors, fix them. Sometimes "sudo" is not enough and you have to run the installation as a real root (previously simply sudo su -).')}</div>
                     </>}
                     {os === 'win32' && <><h2 className={classes.h2}>{I18n.t('Windows')}</h2>
@@ -137,14 +140,16 @@ const JsControllerDialog = ({socket, hostId}) => {
                         <div className={classes.standardText}>{I18n.t('A manual installation is done with administrator rights. Please start a cmd.exe command line window as an administrator (right-click on cmd.exe and execute as administrator) and execute the following commands:')}</div>
 
                         <div className={classes.standardTextSmall}>cd {(location || 'C:\\iobroker').replace(/\//g, '\\')} {!location ? I18n.t('(or where ioBroker was installed)') : null}</div>
-                        <div className={classes.standardTextSmall}>{I18n.t('iobroker stop to stop the ioBroker service')}</div>
-                        <div className={classes.standardTextSmall}>{I18n.t('iobroker status to check if ioBroker has finished')}</div>
-                        <div className={classes.standardTextSmall}>{I18n.t('iobroker update')}</div>
-                        <div className={classes.standardTextSmall}>{I18n.t('iobroker upgrade self')}</div>
+                        <div className={classes.standardTextSmall}>iob backup</div>
+                        <div className={classes.standardTextSmall}>iob stop {I18n.t('to stop the ioBroker service')}</div>
+                        <div className={classes.standardTextSmall}>iob status {I18n.t('to check if ioBroker has finished')}</div>
+                        <div className={classes.standardTextSmall}>iob update</div>
+                        <div className={classes.standardTextSmall}>iob upgrade self</div>
                         <div className={classes.standardTextSmall}>{I18n.t('Start ioBroker service or reboot computer, then ioBroker should restart and you can be sure that all the old processes were finished.')}</div>
                     </>}
 
-                    <h2 className={classes.h2}>{I18n.t('Emergency Linux / macOS / Windows (manual reinstallation, if somehow nothing works after the update)')}</h2>
+                    <h2 className={classes.h2}>{I18n.t('Emergency Linux / macOS / Windows')}</h2>
+                    <div className={classes.standardText}>{I18n.t('(manual reinstallation, if somehow nothing works after the update)')}</div>
                     <div className={classes.standardText}>{I18n.t('On Windows first please call in the start menu under "ioBroker" the command line of the relevant ioBroker instance. The correct directory is then set automatically. On Linux or macOS please go to the ioBroker directory.')}</div>
 
                     <div className={classes.standardText}>{I18n.t('Run npm install iobroker.js-controller there. A specific version can be installed using npm install iobroker.js-controller@x.y.z (replace x.y.z with the desired version).')}</div>
