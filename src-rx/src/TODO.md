@@ -10,30 +10,14 @@ Marked with "!" must be in release candidate
     config: 'materialize', 'none', 'html'
     tab: 'html'
   }
-<!-- - Show admin version number if width > 800: https://github.com/ioBroker/ioBroker.admin/issues/820
-  - this.props.socket.getVersion -->
   
-<!-- - Check if the host is alive by setting of current host at the very beginning -->
 - (BF) Optimize loading of hosts
 
 ## Intro
 
 ## Easy Mode
-<!-- - !Show back button in strickt mode for tabs (and logo button always returns to #easy in strict mode)  -->
 
 ## Settings
-- (Base settings) Show dialog, that RESTART only works on debian systems: https://github.com/ioBroker/ioBroker.admin/issues/754
---Password:SEQ error: Error: getaddrinfo ENOTFOUND ip
-Logger error: Error: getaddrinfo ENOTFOUND ip
-spawn iobroker ENOENT
-Error: spawn iobroker ENOENT
-    at Process.ChildProcess._handle.onexit (node:internal/child_process:269:19)
-    at onErrorNT (node:internal/child_process:467:16)
-    at processTicksAndRejections (node:internal/process/task_queues:80:21)
-Error: spawn iobroker ENOENT
-    at Process.ChildProcess._handle.onexit (node:internal/child_process:269:19)
-    at onErrorNT (node:internal/child_process:467:16)
-    at processTicksAndRejections (node:internal/process/task_queues:80:21)
 
 ## Info
 
@@ -50,24 +34,21 @@ Error: spawn iobroker ENOENT
 - !On safari new coming entries have invalid time https://github.com/ioBroker/ioBroker.admin/issues/783 //not track
 
 ## Instances
-<!-- - Do not wrap information for info.connection (icon on the same line). update tooltip too (Dont forget card view) -->
-<!-- - Show color and icons of hosts in row view and everywhere where it possiobe (e.g. by edit) -->
+- Allow change of log level on the fly https://github.com/ioBroker/ioBroker.admin/issues/571 system.adapter.<adaptername>.<instance>.logLevel
 
 ## Objects
-- Add in object edit the possibility to set color and icon (icon could be uploaded as base64 and may not be bigger than 5k) and use it for text color. Add possibility to scale the images.
-  - Integrate https://react-dropzone.js.org/#!/Doka for image upload
-
-<!-- - !Layout problem by defined columns widths: https://github.com/ioBroker/ioBroker.admin/issues/698
-  - On small displays:
-    - < 700 => ID Calc(100% - 300), Room: 100, Value 200
-    - < 430 => ID (Calc100% - 200), Value 200,
-    - < 300 => ID  -->
-    !!!!!
+- If width of ID not defined => TODO see objectBrowser
+- Show button for configure of columns as active if auto is off
 
 ## Files
 
 ## Hosts
 - Update is not displayed. it should be shown as in instances with change log and so on .....
+
+- Allow change of log level on the fly https://github.com/ioBroker/ioBroker.admin/issues/571 system.host.HOST.logLevel (Will be reset to the saved log level after restart of controller)
+
+- Upgrade dialog => Button "Show instructions"
+
 
 ## Users
 

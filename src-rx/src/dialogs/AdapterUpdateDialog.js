@@ -109,6 +109,8 @@ class AdapterUpdateDialog extends Component {
 
         const version = this.props.news && this.props.news[0]?.version;
 
+        const news = this.getNews();
+
         return <Dialog
             onClose={this.props.onClose}
             open={this.props.open}
@@ -135,7 +137,7 @@ class AdapterUpdateDialog extends Component {
                             {this.getDependencies()}
                         </Grid>
                     }
-                    <Grid item>
+                    {news.length && <Grid item>
                         <Typography variant="h6" gutterBottom>{this.t('News')}</Typography>
                         <Grid
                             container
@@ -143,13 +145,13 @@ class AdapterUpdateDialog extends Component {
                             direction="column"
                             wrap="nowrap"
                         >
-                            {this.getNews()}
+                            {news}
                         </Grid>
-                    </Grid>
+                    </Grid>}
                 </Grid>
             </DialogContent>
             <DialogActions className={classes.wrapperButton}>
-                {!!this.props.rightDependencies && this.props.onIgnore && <Button
+                {!!this.props.rightDependencies && this.props.onIgnore && version && <Button
                     onClick={() => this.props.onIgnore(version)}
                     color="primary"
                 >

@@ -79,7 +79,9 @@ class BaseSettingsDialog extends Component {
     renderRestartDialog() {
         if (this.state.showRestart) {
             return <ConfirmDialog
-                text={this.props.t('Restart controller?')}
+                title={this.props.t('Please confirm')}
+                text={<><div>{this.props.t('Restart works only if controller started as system service.')}</div>
+                <div>{this.props.t('Restart controller?')}</div></>}
                 onClose={result =>
                     this.setState({showRestart: false}, () => {
                         if (result) {

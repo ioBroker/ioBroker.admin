@@ -3922,6 +3922,8 @@ class ObjectBrowser extends Component {
                 widthSum += this.columnsVisibility.buttons;
                 this.columnsVisibility.name = `calc(100% - ${widthSum + 5}px)`;
                 this.columnsVisibility.nameHeader = `calc(100% - ${widthSum + 5 + this.state.scrollBarWidth}px)`;
+            } else  {
+                // TODO: calculate width of ID
             }
         } else {
             this.columnsVisibility = {
