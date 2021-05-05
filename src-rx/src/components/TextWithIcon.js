@@ -10,16 +10,22 @@ const styles = theme => ({
         borderRadius: 3,
         padding: '0 3px',
         lineHeight: '20px',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center'
     },
     icon: {
         width: 16,
         height: 16,
         marginRight: 8,
         verticalAlign: 'middle',
-        marginTop: -2
+        // marginTop: -2
     },
     text: {
-        display: 'inline-block'
+        display: 'inline-block',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
     }
 });
 
@@ -63,7 +69,7 @@ const TextWithIcon = props => {
             name: '',
             value: '',
         }
-    } else  {
+    } else {
         item = {
             name: Utils.getObjectNameFromObj(item, props.lang).replace('system.group.', ''),
             value: item._id,
@@ -71,8 +77,8 @@ const TextWithIcon = props => {
             color: item.common?.color,
         };
     }
-
-    const style = {color: item?.color || undefined, backgroundColor: Utils.getInvertedColor(item?.color, props.themeType)};
+    
+    const style = { border:`1px solid ${Utils.invertColor(item?.color)}`, color: Utils.getInvertedColor(item?.color, props.themeType) || undefined, backgroundColor: item?.color };
 
     return <div style={Object.assign({}, props.style, style)} className={Utils.clsx(props.className, props.classes.div)} title={props.title || item.value}>
         {item?.icon ? <Icon src={item?.icon} className={props.classes.icon} /> : null}<div className={props.classes.text}>{item?.name}</div>

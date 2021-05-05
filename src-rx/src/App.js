@@ -58,17 +58,17 @@ import DiscoveryDialog from './dialogs/DiscoveryDialog';
 import SlowConnectionWarningDialog from './dialogs/SlowConnectionWarningDialog';
 
 // Tabs
-const Adapters  = React.lazy(() => import('./tabs/Adapters'));
+const Adapters = React.lazy(() => import('./tabs/Adapters'));
 const Instances = React.lazy(() => import('./tabs/Instances'));
-const Intro     = React.lazy(() => import('./tabs/Intro'));
-const Logs      = React.lazy(() => import('./tabs/Logs'));
-const Files     = React.lazy(() => import('./tabs/Files'));
-const Objects   = React.lazy(() => import('./tabs/Objects'));
-const Users     = React.lazy(() => import('./tabs/Users'));
-const Enums     = React.lazy(() => import('./tabs/Enums'));
+const Intro = React.lazy(() => import('./tabs/Intro'));
+const Logs = React.lazy(() => import('./tabs/Logs'));
+const Files = React.lazy(() => import('./tabs/Files'));
+const Objects = React.lazy(() => import('./tabs/Objects'));
+const Users = React.lazy(() => import('./tabs/Users'));
+const Enums = React.lazy(() => import('./tabs/Enums'));
 const CustomTab = React.lazy(() => import('./tabs/CustomTab'));
-const Hosts     = React.lazy(() => import('./tabs/Hosts'));
-const EasyMode  = React.lazy(() => import('./tabs/EasyMode'));
+const Hosts = React.lazy(() => import('./tabs/Hosts'));
+const EasyMode = React.lazy(() => import('./tabs/EasyMode'));
 
 const query = {};
 (window.location.search || '').replace(/^\?/, '').split('&').forEach(attr => {
@@ -235,6 +235,15 @@ const styles = theme => ({
         borderRadius: 4,
         backgroundColor: theme.palette.type === 'dark' ? '#EEE' : '#222',
         padding: 3,
+    },
+    styleVersion: {
+        fontSize: 10,
+        color: '#ffffff5e'
+    },
+    wrapperName: {
+        display: 'flex',
+        flexDirection: 'column',
+        marginRight: 10
     }
 });
 
@@ -373,6 +382,10 @@ class App extends Router {
                 showSlowConnectionWarning: false,
 
                 expireInSec: null,
+
+                versionAdmin: {
+                    version: ''
+                }
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -403,11 +416,11 @@ class App extends Router {
             if (invertedColor === '#FFFFFF' && this.state.themeType === 'dark') {
                 return true;
             } else
-            if (invertedColor === '#000000' && this.state.themeType === 'light') {
-                return true;
-            } else {
-                return false;
-            }
+                if (invertedColor === '#000000' && this.state.themeType === 'light') {
+                    return true;
+                } else {
+                    return false;
+                }
         }
     }
 
@@ -482,17 +495,13 @@ class App extends Router {
                                 }
 
                                 newState.hosts = await this.socket.getHosts();
+                                newState.versionAdmin = await this.socket.getVersion();
 
                                 if (!this.state.currentHost) {
-
-                                    const currentHost = window.localStorage.getItem('App.currentHost');
-                                    if (currentHost && newState.hosts.find(({ _id }) => _id === currentHost)) {
-                                        newState.currentHost     = newState.hosts.find(({ _id }) => _id === currentHost)._id;
-                                        newState.currentHostName = newState.hosts.find(({ _id }) => _id === currentHost).common.name;
-                                    } else {
-                                        newState.currentHost     = newState.hosts[0]._id;
-                                        newState.currentHostName = newState.hosts[0].common.name;
-                                    }
+                                    await this.findHostAlive(newState.hosts).then(({ currentHost, currentHostName }) => {
+                                        newState.currentHost = currentHost;
+                                        newState.currentHostName = currentHostName;
+                                    })
                                 }
 
                                 await this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
@@ -553,6 +562,39 @@ class App extends Router {
         }
     }
 
+    findHostAlive = (hosts) => {
+        const currentHost = window.localStorage.getItem('App.currentHost');
+        const elementHost = hosts.find(({ _id }) => _id === currentHost);
+        return new Promise(async resolve => {
+            if (currentHost && elementHost) {
+                const checkAlive = await this.socket.getState(`${currentHost}.alive`);
+                if (!!checkAlive?.val) {
+                    return resolve({
+                        currentHost: elementHost._id,
+                        currentHostName: elementHost.common.name
+                    });
+                } else {
+                    for (let instance = 0; instance < hosts.length; instance++) {
+                        let hostAlive = await this.socket.getState(`${hosts[instance]._id}.alive`);
+                        if (hostAlive && hostAlive.val) {
+                            resolve({
+                                currentHost: hosts[instance]._id,
+                                currentHostName: hosts[instance].common.name
+                            });
+                            break;
+                        }
+                    }
+                }
+            } else {
+                return resolve({
+                    currentHost: hosts[0]._id,
+                    currentHostName: hosts[0].common.name
+                });
+            }
+            // resolve(0);
+        });
+    }
+
     updateExpireIn() {
         const now = Date.now();
         this.expireInSec -= (now - this.lastExecution) / 1000;
@@ -605,7 +647,7 @@ class App extends Router {
 
     onDiscoveryAlive = (name, value) => {
         if (!!(value && !!value.val) !== this.state.discoveryAlive) {
-            this.setState({ discoveryAlive: !!(value && !!value.val)});
+            this.setState({ discoveryAlive: !!(value && !!value.val) });
         }
     }
 
@@ -681,12 +723,12 @@ class App extends Router {
                 t={I18n.t}
                 onClose={readTimeoutMs => {
                     if (readTimeoutMs) {
-                        this.setState({showSlowConnectionWarning: false, readTimeoutMs}, () =>
+                        this.setState({ showSlowConnectionWarning: false, readTimeoutMs }, () =>
                             this.getAdapters()
                                 .then(() =>
                                     this.getAdaptersInfo()));
                     } else {
-                        this.setState({showSlowConnectionWarning: false});
+                        this.setState({ showSlowConnectionWarning: false });
                     }
                 }}
             />;
@@ -701,7 +743,7 @@ class App extends Router {
         return this.socket.getCompactRepository(currentHost, false, this.state.readTimeoutMs)
             .catch(e => {
                 window.alert('Cannot getRepositoryCompact: ' + e);
-                e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
+                e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
                 return null;
             })
             .then(_repository => {
@@ -709,7 +751,7 @@ class App extends Router {
                 return this.socket.getCompactInstalled(currentHost, false, this.state.readTimeoutMs)
                     .catch(e => {
                         window.alert('Cannot getInstalled: ' + e);
-                        e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
+                        e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
                         return null;
                     });
             })
@@ -1038,7 +1080,7 @@ class App extends Router {
                         t={I18n.t}
                         navigate={Router.doNavigate}
                         currentHost={this.state.currentHost}
-                        executeCommand={cmd => this.executeCommand(cmd)}
+                        executeCommand={(cmd, cb) => this.executeCommand(cmd, cb)}
                         systemConfig={this.state.systemConfig}
                         showAdaptersWarning={this.showAdaptersWarning}
                     />
@@ -1438,7 +1480,10 @@ class App extends Router {
                             <Grid container className={clsx(this.state.drawerState !== 0 && classes.avatarVisible, classes.avatarNotVisible)} spacing={1} alignItems="center">
                                 {(!this.state.user || this.props.width === 'xs' || this.props.width === 'sm') &&
                                     <Hidden xsDown>
-                                        <Typography>admin</Typography>
+                                        <div className={classes.wrapperName}>
+                                            <Typography>admin</Typography>
+                                            {this.state.versionAdmin?.version && <Typography className={classes.styleVersion}>v.{this.state.versionAdmin.version}</Typography>}
+                                        </div>
                                     </Hidden>}
                                 <Grid item>
                                     <a href="/#easy" onClick={event => event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>

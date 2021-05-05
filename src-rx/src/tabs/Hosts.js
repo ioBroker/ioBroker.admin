@@ -26,6 +26,7 @@ import Utils from '../Utils';
 import BaseSettingsDialog from '../dialogs/BaseSettingsDialog';
 import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
 import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
+import Semver from 'semver';
 
 const styles = theme => ({
     grow: {
@@ -309,7 +310,7 @@ const Hosts = ({
             image={icon}
             title={title}
             os={platform}
-            openHostUpdateDialog={()=>openHostUpdateDialog(name)}
+            openHostUpdateDialog={() => openHostUpdateDialog(name)}
             description={getHostDescriptionAll(_id, t, classes, hostsData)[0]}
             available={repository['js-controller']?.version || '-'}
             executeCommandRemove={() => executeCommand(`host remove ${name}`)}
@@ -341,7 +342,7 @@ const Hosts = ({
             image={icon}
             title={title}
             os={platform}
-            openHostUpdateDialog={()=>openHostUpdateDialog(name)}
+            openHostUpdateDialog={() => openHostUpdateDialog(name)}
             executeCommandRemove={() => executeCommand(`host remove ${name}`)}
             dialogUpgrade={JsControllerDialogFunc}
             currentHost={currentHost === _id}
@@ -384,7 +385,7 @@ const Hosts = ({
             lang={lang}
             // showAlert={(message, type) => this.showAlert(message, type)}
             socket={socket}
-            // currentTab={this.state.currentTab}
+            // currentTab={currentTab}
             t={t}
         />
     };
@@ -447,9 +448,137 @@ const Hosts = ({
     }
 
     const update = (adapter) => {
-        executeCommand('upgrade ' + adapter);
+        console.log(222, repository['js-controller'])
+        console.log(222, hostUpdate, hosts.find(el => el.common.name === hostUpdate))
+        // executeCommand('stop', () => {
+        //     executeCommand('update ' + adapter, () => {
+        // executeCommand('upgrade self '+ adapter, () => {
+        // executeCommand('start or reboot server');
+        // });
+        //     });
+        // });
+    }
+    
+    const getDependencies = value => {
+        const adapter = repository['js-controller'];
+        const currentHostCheck = hosts.find(el => el.common.name === hostUpdate);
+        let result = [];
+
+        if (adapter) {
+            const dependencies = adapter.dependencies;
+            const nodeVersion = adapter.node;
+
+            dependencies && dependencies.length && dependencies.forEach(dependency => {
+
+                const entry = {
+                    name: '',
+                    version: null,
+                    installed: false,
+                    installedVersion: null,
+                    rightVersion: false
+                };
+
+                const checkVersion = typeof dependency !== 'string';
+                const keys = Object.keys(dependency);
+                entry.name = !checkVersion ? dependency : keys ? keys[0] : null;
+                entry.version = checkVersion ? dependency[entry.name] : null;
+
+                if (result && entry.name) {
+                    const installed = currentHostCheck.common.installedVersion;
+
+                    entry.installed = !!installed;
+                    entry.installedVersion = installed ? installed : null;
+                    entry.rightVersion = installed ? checkVersion ? Semver.satisfies(installed.version, entry.version, { includePrerelease: true }) : true : false;
+                }
+
+                result.push(entry);
+            });
+            let nodeJsVersion = currentHostCheck.native.process.versions.node;
+            if (nodeVersion) {
+                const entry = {
+                    name: 'node',
+                    version: nodeVersion,
+                    installed: true,
+                    installedVersion: nodeJsVersion,
+                    rightVersion: false
+                };
+
+                entry.rightVersion = Semver.satisfies(nodeJsVersion, nodeVersion);
+
+                result.push(entry);
+            }
+        }
+
+        return result;
+    }
+    const rightDependencies = (value) => {
+        const adapter = repository['js-controller'];
+        const currentHostCheck = hosts.find(el => el.common.name === hostUpdate);
+        let result = true;
+
+        if (adapter) {
+            const dependencies = adapter.dependencies;
+            const nodeVersion = adapter.node;
+
+            if (dependencies) {
+                if (dependencies instanceof Array) {
+                    dependencies.forEach(dependency => {
+                        const checkVersion = typeof dependency !== 'string';
+                        const keys = Object.keys(dependency);
+                        const name = !checkVersion ? dependency : keys ? keys[0] : null;
+
+                        if (result && name) {
+
+                            const installed = currentHostCheck.common.installedVersion;
+
+                            result = installed ? (checkVersion ? Semver.satisfies(installed, dependency[name], { includePrerelease: true }) : true) : false;
+                        }
+                    });
+                } else if (typeof dependencies === 'object') {
+                    Object.keys(dependencies).forEach(dependency => {
+                        if (dependency && dependencies[dependency] !== undefined && result) {
+                            const installed = currentHostCheck.common.installedVersion;
+                            const checkVersion = typeof dependencies[dependency] !== 'string';
+                            result = installed ? (checkVersion ? Semver.satisfies(installed, dependency[dependency], { includePrerelease: true }) : true) : false;
+                        }
+                    });
+                } else {
+                    console.error(`Invalid dependencies for ${value}: ${JSON.stringify(dependencies)}`);
+                }
+            }
+            let nodeJsVersion = hosts.find(el => el.common.name === hostUpdate).native.process.versions.node;
+
+            if (result && nodeVersion) {
+                result = Semver.satisfies(nodeJsVersion, nodeVersion);
+            }
+        }
+
+        return result;
     }
 
+    const getNews = (value, all = false) => {
+        const adapter = repository['js-controller'];
+        const installed = hosts.find(el => el.common.name === hostUpdate).common.installedVersion;
+        const news = [];
+
+        if (installed && adapter && adapter.news) {
+            Object.keys(adapter.news).forEach(version => {
+                try {
+                    if (Semver.gt(version, installed) || all) {
+                        news.push({
+                            version: version,
+                            news: adapter.news[version][lang] || adapter.news[version].en
+                        });
+                    }
+                } catch (e) {
+                    // ignore it
+                    console.warn(`Cannot compare "${version}" and "${installed}"`);
+                }
+            });
+        }
+
+        return news;
+    }
     const hostUpdateDialogCb = () => {
         if (!hostUpdateDialog) {
             return null;
@@ -457,33 +586,14 @@ const Hosts = ({
             return <AdapterUpdateDialog
                 open={hostUpdateDialog}
                 adapter={hostUpdate}
-                rightDependencies
                 t={t}
-                // dependencies={Adapters.getDependencies(hostUpdate)}
-                // rightDependencies={Adapters.rightDependencies(hostUpdate)}
-                // news={Adapters.getNews(hostUpdate)}
+                dependencies={getDependencies()}
+                rightDependencies={rightDependencies()}
+                news={getNews()}
                 onUpdate={() => {
                     closeHostUpdateDialog(() => update(hostUpdate));
                 }}
-                // onIgnore={ignoreVersion => {
-                //     const adapter = this.state.adapterUpdateAdapter;
-                //     this.closeAdapterUpdateDialog(() => {
-                //         this.props.socket.getObject('system.adapter.' + adapter)
-                //             .then(obj => {
-                //                 obj.common.ignoreVersion = ignoreVersion;
-                //                 return this.props.socket.setObject(obj._id, obj)
-                //             })
-                //             .then(() => {
-                //                 const updateAvailable = [...this.state.updateAvailable];
-                //                 const pos = updateAvailable.indexOf(adapter);
-                //                 if (pos !== -1) {
-                //                     updateAvailable.splice(pos, 1);
-                //                     this.setState({ updateAvailable });
-                //                 }
-                //             })
-                //     })
-                // }}
-                onClose={()=>closeHostUpdateDialog()}
+                onClose={() => closeHostUpdateDialog()}
             />
         }
     }

@@ -611,6 +611,12 @@ const styles = theme => ({
             }
         },
     },
+    '@media screen and (max-width: 700px)': {
+
+    },
+    '@media screen and (max-width: 430px)': {
+
+    },
 });
 
 function generateFile(filename, obj) {
@@ -1332,9 +1338,9 @@ const StyledBadge = withStyles(theme => ({
 
 const SCREEN_WIDTHS = {
     // extra-small: 0px
-    xs: { idWidth: 300, fields: ['room'], widths: { name: 200, room: 200 } },
+    xs: { idWidth: "100%", fields: [], widths: { } },
     // small: 600px
-    sm: { idWidth: 300, fields: ['room', 'func', 'buttons'], widths: { name: 200, room: 180, func: 180, buttons: 120 } },
+    sm: { idWidth: 300, fields: ['room', 'val'], widths: { room: 100, val: 200 } },
     // medium: 960px
     md: { idWidth: 300, fields: ['room', 'func', 'val', 'buttons'], widths: { name: 200, room: 150, func: 150, val: 120, buttons: 120 } },
     // large: 1280px
@@ -1433,7 +1439,7 @@ class ObjectBrowser extends Component {
         this.objectsUpdateTimer = null;
 
         this.visibleCols = props.columns || SCREEN_WIDTHS[props.width].fields;
-
+            console.log(2222,this.props.width)
         // remove type column if only one type must be selected
         if (props.types && props.types.length === 1) {
             const pos = this.visibleCols.indexOf('type');

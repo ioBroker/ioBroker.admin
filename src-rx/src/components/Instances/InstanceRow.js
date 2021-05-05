@@ -30,7 +30,6 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import I18n from '@iobroker/adapter-react/i18n';
 import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
 import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
-import Icon from '@iobroker/adapter-react/Components/Icon';
 
 import InstanceInfo from './InstanceInfo';
 import State from '../State';
@@ -828,8 +827,8 @@ const InstanceRow = ({
                 <div className={classes.gridStyle}>
                     <Tooltip title={<span style={{ display: 'flex', flexDirection: 'column' }}>{[instance.mode === 'daemon' ? <State key={1} state={connectedToHost} >{t('Connected to host')}</State> : '',
                     instance.mode === 'daemon' ? <State key={2} state={alive} >{t('Heartbeat')}</State> : '',
-                    connected !== null ? <State key={3} state={connected}>
-                        {t('Connected to %s', instance.adapter)}
+                    connected !== null ? <State key={3} state={!!connected}>
+                        {typeof connected === 'string' ? t('Connected: ') + (connected || '-') : t('Connected to device or service')}
                     </State> : ''
                     ]}</span>}>
                         <Avatar className={clsx(
@@ -975,7 +974,7 @@ const InstanceRow = ({
                     </InstanceInfo>
                 </Grid>
                 <Grid item className={clsx(classes.hidden1230)}>
-                    {currentHost}
+                    {<TextWithIcon value={host} list={hosts} removePrefix="system.host." themeType={themeType}/>}
                 </Grid>
             </Grid>
             <div className={classes.hidden570}>

@@ -118,11 +118,11 @@ class EasyMode extends Component {
             >
                 <Toolbar className={classes.toolBar}>
                     <div className={classes.wrapperHeader}>
-                        <CardMedia onClick={(strictMode || currentInstance?.tab) && !getLocation().dialog ? () => navigate(currentInstance?.tab ? 'easy' : 'tab-intro') : null} className={clsx(classes.img, themeName === 'colored' && classes.logoWhite, (strictMode || currentInstance?.tab) && !getLocation().dialog && classes.logoPointer)} component="img" image={'img/no-image.png'} />
+                        <CardMedia onClick={(strictMode && !getLocation().dialog) || currentInstance?.tab ? () => navigate(currentInstance?.tab ? 'easy' : 'tab-intro') : null} className={clsx(classes.img, themeName === 'colored' && classes.logoWhite, ((strictMode && !getLocation().dialog) || currentInstance?.tab) && classes.logoPointer)} component="img" image={'img/no-image.png'} />
                         <div className={classes.headerName}>{t('Easy Admin')}</div>
                     </div>
                     <div className={classes.IconButtons}>
-                        {(strictMode || currentInstance?.tab) && !getLocation().dialog && <IconButton onClick={() => navigate(currentInstance?.tab ? 'easy' : 'tab-intro')}>
+                        {((strictMode && !getLocation().dialog) || currentInstance?.tab) && <IconButton onClick={() => navigate(currentInstance?.tab ? 'easy' : 'tab-intro')}>
                             <ArrowBackIcon />
                         </IconButton>}
                         <ToggleThemeMenu t={t} toggleTheme={toggleTheme} themeName={themeName} />

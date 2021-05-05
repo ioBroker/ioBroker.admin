@@ -597,7 +597,6 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
     const [logs, setLogs] = useState({});
     const [finishInstall, setFinishInstall] = useState(false);
     const [selectLogsIndex, setSelectLogsIndex] = useState(1);
-    console.log(2222, hosts)
     return <ThemeProvider theme={theme(themeName)}>
         <Dialog
             onClose={() => onClose()}

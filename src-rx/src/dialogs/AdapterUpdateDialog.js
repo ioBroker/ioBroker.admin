@@ -17,34 +17,41 @@ import CloseIcon from '@material-ui/icons/Close';
 
 import State from '../components/State';
 
-const styles = theme => ({
-    closeButton: {
-        position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
-        color: theme.palette.grey[500],
-    },
-    typography: {
-        paddingRight: 30
-    },
-    wrapperButton:{
-
-    },
-    '@media screen and (max-width: 465px)': {
-        wrapperButton: {
-            '& *':{
-                fontSize:10
-            }
+const styles = theme => {
+    return ({
+        closeButton: {
+            position: 'absolute',
+            right: theme.spacing(1),
+            top: theme.spacing(1),
+            color: theme.palette.grey[500],
         },
-    },
-    '@media screen and (max-width: 380px)': {
-        wrapperButton: {
-            '& *':{
-                fontSize:9
-            }
+        typography: {
+            paddingRight: 30
         },
-    },
-});
+        version: {
+            background: '#4dabf5',
+            borderRadius: 3,
+            paddingLeft: 10,
+            color: theme.palette.type === 'dark' ? 'black' : 'white'
+        },
+        wrapperButton: {
+        },
+        '@media screen and (max-width: 465px)': {
+            wrapperButton: {
+                '& *': {
+                    fontSize: 10
+                }
+            },
+        },
+        '@media screen and (max-width: 380px)': {
+            wrapperButton: {
+                '& *': {
+                    fontSize: 9
+                }
+            },
+        },
+    })
+};
 
 class AdapterUpdateDialog extends Component {
 
@@ -80,7 +87,7 @@ class AdapterUpdateDialog extends Component {
 
             result.push(
                 <Grid item key={entry.version}>
-                    <Typography>
+                    <Typography className={this.props.classes.version}>
                         {entry.version + ':'}
                     </Typography>
                     {news.map((value, index) => {
@@ -122,7 +129,7 @@ class AdapterUpdateDialog extends Component {
                     wrap="nowrap"
                 >
                     {this.props.dependencies && this.props.dependencies.length > 0 &&
-                    this.props.dependencies.find(dependency=>!dependency.rightVersion) &&
+                        this.props.dependencies.find(dependency => !dependency.rightVersion) &&
                         <Grid item>
                             <Typography variant="h6" gutterBottom>{this.t('Dependencies')}</Typography>
                             {this.getDependencies()}
@@ -142,7 +149,7 @@ class AdapterUpdateDialog extends Component {
                 </Grid>
             </DialogContent>
             <DialogActions className={classes.wrapperButton}>
-                {!!this.props.rightDependencies && <Button
+                {!!this.props.rightDependencies && this.props.onIgnore && <Button
                     onClick={() =>
                         this.props.onIgnore(version)}
                     color="primary"
