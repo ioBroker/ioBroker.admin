@@ -155,14 +155,19 @@ const styles = theme => ({
         display: 'inline-block',
         borderRadius: 4,
         border: '1px gray dotted'
+    },
+    okSymbol: {
+        width: 20,
+        height: 20,
+        margin: 2,
+        borderRadius: 2,
+        backgroundColor: '#66bb6a',
     }
 });
 
 // every tab should get their data itself from server
 class Instances extends Component {
-
     constructor(props) {
-
         super(props);
 
         this.state = {
@@ -470,6 +475,12 @@ class Instances extends Component {
         Router.doNavigate('tab-instances', 'config', instance);
     }
 
+    // returns:
+    // grey   - daemon / disabled
+    // green  - daemon / run,connected,alive
+    // blue   - schedule
+    // orange - daemon / run,not connected
+    // red    - daemon / not run, not connected
     getInstanceState = obj => {
         const common = obj ? obj.common : null;
         const mode = common?.mode || '';
@@ -478,13 +489,13 @@ class Instances extends Component {
         if (common && common.enabled && (!common.webExtension || !obj.native.webInstance || mode === 'daemon')) {
             const alive = this.states[obj._id + '.alive'];
             const connected = this.states[obj._id + '.connected'];
-            const connection = this.states[obj._id + '.info.connection'];
+            const connection = this.states[(obj._id).replace('system.adapter.', '') + '.info.connection'];
 
             if (!connected?.val || !alive?.val) {
                 state = mode === 'daemon' ? 'red' : 'blue';
             }
-            if (connection && !connection?.val) {
-                state = state === 'red' ? 'red' : 'orange';
+            if (connection && !connection?.val && state !== 'red') {
+                state = 'orange';
             }
         } else {
             state = mode === 'daemon' ? 'grey' : 'blue';
@@ -594,11 +605,17 @@ class Instances extends Component {
         return headers;
     }
 
-    getModeIcon(mode) {
+    getModeIcon = (mode, state, className) => {
         if (mode === 'daemon') {
-            return <SettingsIcon />;
+            if (state === 'orange') {
+                return <WarningIcon className={className}/>;
+            } else if (state === 'green') {
+                return <div className={clsx(className, this.props.classes.okSymbol)} />;
+            } else {
+                return <SettingsIcon className={className} />;
+            }
         } else if (mode === 'schedule') {
-            return <ScheduleIcon />
+            return <ScheduleIcon className={className} />
         }
         return null;
     }
@@ -947,7 +964,7 @@ class Instances extends Component {
                         <PlayArrowIcon color={this.state.playArrow ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip>
-                {false && this.props.expertMode && <Tooltip title="sentry">
+                {/*this.props.expertMode && <Tooltip title="sentry">
                     <IconButton
                         size="small"
                         className={classes.button}
@@ -959,7 +976,7 @@ class Instances extends Component {
                             image={sentry}
                         />
                     </IconButton>
-                </Tooltip>}
+                </Tooltip>*/}
                 {this.props.expertMode && this.state.compact ?
                     <CustomSelectButton
                         title={this.t('Filter specific compact group')}

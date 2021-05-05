@@ -10,6 +10,7 @@ Marked with "!" must be in release candidate
     config: 'materialize', 'none', 'html'
     tab: 'html'
   }
+- Tooltips on drawer in half-closed mode  
 
 ## Intro
 
@@ -22,6 +23,8 @@ Marked with "!" must be in release candidate
 ## Enums
 
 ## Adapters
+- Update of available versions does not work: https://github.com/ioBroker/ioBroker.admin/issues/830
+
 
 ## Wizard
 
@@ -32,10 +35,17 @@ Marked with "!" must be in release candidate
 
 ## Instances
 - Allow change of log level on the fly https://github.com/ioBroker/ioBroker.admin/issues/571 system.adapter.<adaptername>.<instance>.logLevel
+- Change the form of symbol: https://github.com/ioBroker/ioBroker.admin/issues/834
+  - green - square
+  - yellow - triangle
+  - red - round
 
 ## Objects
 - If width of ID not defined => TODO see objectBrowser
 - Show button for configure of columns as active if auto is off
+- Open all folders ??? https://github.com/ioBroker/ioBroker.admin/issues/832
+  - This button must be only available if less than 500 nodes are visible and if disabled
+    it must be a tooltip that explains: "More than 500 nodes are visible. It is possible to open only less than 100 nodes."
 
 ## Files
 

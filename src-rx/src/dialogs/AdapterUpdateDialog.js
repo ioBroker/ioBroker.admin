@@ -192,4 +192,4 @@ AdapterUpdateDialog.propTypes = {
     t: PropTypes.func.isRequired
 }
 
-export default withStyles(styles)(AdapterUpdateDialog);
+export default  withStyles(styles)(AdapterUpdateDialog);

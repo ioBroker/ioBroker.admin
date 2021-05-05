@@ -112,9 +112,9 @@ const styles = theme => ({
         height: 0
     },
     close: {
-        width: '20px',
-        height: '20px',
-        opacity: '0.9',
+        width: 20,
+        height: 20,
+        opacity: 0.9,
         cursor: 'pointer',
         position: 'relative',
         marginLeft: 'auto',
@@ -125,19 +125,19 @@ const styles = theme => ({
         },
         '&:before': {
             position: 'absolute',
-            left: '9px',
+            left: 9,
             content: '""',
-            height: '20px',
-            width: '3px',
+            height: 20,
+            width: 3,
             backgroundColor: '#ff4f4f',
             transform: 'rotate(45deg)'
         },
         '&:after': {
             position: 'absolute',
-            left: '9px',
+            left: 9,
             content: '""',
-            height: '20px',
-            width: '3px',
+            height: 20,
+            width: 3,
             backgroundColor: '#ff4f4f',
             transform: 'rotate(-45deg)'
         },
@@ -336,7 +336,6 @@ const HostCard = ({
     showAdaptersWarning,
     openHostUpdateDialog
 }) => {
-
     const [openCollapse, setCollapse] = useState(false);
     const refEvents = useRef();
     const refWarning = useRef();

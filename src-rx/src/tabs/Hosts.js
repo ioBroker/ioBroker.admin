@@ -314,7 +314,7 @@ const Hosts = ({
             description={getHostDescriptionAll(_id, t, classes, hostsData)[0]}
             available={repository['js-controller']?.version || '-'}
             executeCommandRemove={() => executeCommand(`host remove ${name}`)}
-            dialogUpgrade={JsControllerDialogFunc}
+            dialogUpgrade={() => JsControllerDialogFunc(socket,  _id)}
             currentHost={currentHost === _id}
             installed={installedVersion}
             events={'- / -'}
@@ -344,7 +344,7 @@ const Hosts = ({
             os={platform}
             openHostUpdateDialog={() => openHostUpdateDialog(name)}
             executeCommandRemove={() => executeCommand(`host remove ${name}`)}
-            dialogUpgrade={JsControllerDialogFunc}
+            dialogUpgrade={() => JsControllerDialogFunc(socket,  _id)}
             currentHost={currentHost === _id}
             description={getHostDescriptionAll(_id, t, classes, hostsData)[1]}
             available={repository['js-controller']?.version || '-'}
@@ -458,7 +458,7 @@ const Hosts = ({
         //     });
         // });
     }
-    
+
     const getDependencies = value => {
         const adapter = repository['js-controller'];
         const currentHostCheck = hosts.find(el => el.common.name === hostUpdate);
@@ -590,9 +590,9 @@ const Hosts = ({
                 dependencies={getDependencies()}
                 rightDependencies={rightDependencies()}
                 news={getNews()}
-                onUpdate={() => {
-                    closeHostUpdateDialog(() => update(hostUpdate));
-                }}
+                onUpdate={() =>
+                    closeHostUpdateDialog(() =>
+                        update(hostUpdate))}
                 onClose={() => closeHostUpdateDialog()}
             />
         }

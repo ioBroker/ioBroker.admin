@@ -1554,6 +1554,55 @@ class Connection {
     }
 
     /**
+     * Get the host information (short version).
+     * @param {string} host
+     * @param {boolean} [update] Force update.
+     * @param {number} [timeoutMs] optional read timeout.
+     * @returns {Promise<any>}
+     */
+    getHostInfoShort(host, update, timeoutMs) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+        if (!host.startsWith('system.host.')) {
+            host += 'system.host.' + host;
+        }
+
+        if (!update && this._promises['hostInfoShort' + host]) {
+            return this._promises['hostInfoShort' + host];
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises['hostInfoShort' + host] = new Promise((resolve, reject) => {
+            let timeout = setTimeout(() => {
+                if (timeout) {
+                    timeout = null;
+                    reject('hostInfoShort timeout');
+                }
+            }, timeoutMs || this.props.cmdTimeout);
+
+            this._socket.emit('sendToHost', host, 'getHostInfoShort', null, data => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    if (data === PERMISSION_ERROR) {
+                        reject('May not read "getHostInfoShort"');
+                    } else if (!data) {
+                        reject('Cannot read "getHostInfoShort"');
+                    } else {
+                        resolve(data);
+                    }
+                }
+            });
+        });
+
+        return this._promises['hostInfoShort' + host];
+    }
+
+    /**
      * Get the repository.
      * @param {string} host
      * @param {any} [args]

@@ -2455,7 +2455,7 @@ class ObjectBrowser extends Component {
         expanded = expanded || [];
 
         root.children && root.children.forEach(item => {
-            if (item.hasVisibleChildren) {
+            if (item.data.hasVisibleChildren) {
                 expanded.push(item.data.id);
                 this.onExpandAll(item, expanded);
             }
@@ -3015,12 +3015,12 @@ class ObjectBrowser extends Component {
             >
                 <IconEdit className={classes.cellButtonsButtonIcon} />
             </IconButton>,
-            this.props.onObjectDelete ? <IconButton
+            this.props.onObjectDelete && (item.children?.length || !item.data.obj.common?.dontDelete) ? <IconButton
                 key="delete"
                 className={classes.cellButtonsButton}
                 size="small"
                 aria-label="delete"
-                onClick={() => this.props.onObjectDelete(id, !!(item.children && item.children.length), !item.data.obj.common?.dontDelete)}
+                onClick={() => this.props.onObjectDelete(id, !!item.children?.length, !item.data.obj.common?.dontDelete)}
                 title={this.texts.deleteObject}
             >
                 <IconDelete className={classes.cellButtonsButtonIcon} />
