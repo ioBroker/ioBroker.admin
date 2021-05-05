@@ -336,9 +336,10 @@ class Logs extends Component {
         this.props.logsWorker && this.props.logsWorker.enableCountErrors(false);
         this.props.logsWorker.registerHandler(this.logHandler);
         this.props.clearErrors();
+
         this.props.socket.getCompactAdapters()
             .then(adapters =>
-                this.props.hostsWorker.getHosts()
+                this.props.socket.getCompactHosts()
                     .then(hosts => new Promise(resolve =>
                         this.setState({ adapters, hosts }, () =>
                             this.props.socket.getLogsFiles()
@@ -829,7 +830,9 @@ Logs.propTypes = {
     currentHost: PropTypes.string,
     clearErrors: PropTypes.func,
     logsWorker: PropTypes.object,
+    hostsWorker: PropTypes.object,
     lang: PropTypes.string,
     t: PropTypes.func,
 };
+
 export default withWidth()(withStyles(styles)(Logs));

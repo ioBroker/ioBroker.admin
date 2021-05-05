@@ -30,7 +30,7 @@ class CustomTab extends Component {
         this.refIframe = React.createRef();
         this.registered = false;
 
-        CustomTab.getHref(this.props.instancesWorker, this.props.tab, this.props.hostname, this.props.protocol, this.props.port,  this.props.hosts,  this.props.adminInstance)
+        CustomTab.getHref(this.props.instancesWorker, this.props.tab, this.props.hostname, this.props.protocol, this.props.port, this.props.hosts,  this.props.adminInstance)
             .then(href =>
                 this.setState({href}));
     }

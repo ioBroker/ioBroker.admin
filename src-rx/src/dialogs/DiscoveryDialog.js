@@ -399,6 +399,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
             let aliveValue = await socket.getState(`${_id}.alive`);
             setAliveHosts(prev => ({ ...prev, [_id]: !aliveValue || aliveValue.val === null ? false : !!aliveValue.val }));
         });
+
         if (Object.keys(aliveHosts).filter(key => aliveHosts[key]).length > 1) {
             setCheckSelectHosts(true);
         }
@@ -597,6 +598,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
     const [logs, setLogs] = useState({});
     const [finishInstall, setFinishInstall] = useState(false);
     const [selectLogsIndex, setSelectLogsIndex] = useState(1);
+
     return <ThemeProvider theme={theme(themeName)}>
         <Dialog
             onClose={() => onClose()}

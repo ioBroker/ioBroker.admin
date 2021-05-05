@@ -44,6 +44,11 @@ const TextWithIcon = props => {
                         icon: _item.common?.icon,
                         color: _item.common?.color,
                     };
+                } else {
+                    item = {
+                        name: item,
+                        value: prefix + item,
+                    };
                 }
             } else if (props.list[prefix + item]) {
                 item = {
@@ -56,19 +61,19 @@ const TextWithIcon = props => {
                 item = {
                     name: item,
                     value: prefix + item,
-                }
+                };
             }
         } else {
             item = {
                 name: item,
                 value: prefix + item,
-            }
+            };
         }
     } else if (!item || typeof item !== 'object') {
         item = {
             name: '',
             value: '',
-        }
+        };
     } else {
         item = {
             name: Utils.getObjectNameFromObj(item, props.lang).replace('system.group.', ''),
@@ -80,8 +85,8 @@ const TextWithIcon = props => {
     
     const style = { border:`1px solid ${Utils.invertColor(item?.color)}`, color: Utils.getInvertedColor(item?.color, props.themeType) || undefined, backgroundColor: item?.color };
 
-    return <div style={Object.assign({}, props.style, style)} className={Utils.clsx(props.className, props.classes.div)} title={props.title || item.value}>
-        {item?.icon ? <Icon src={item?.icon} className={props.classes.icon} /> : null}<div className={props.classes.text}>{item?.name}</div>
+    return <div style={Object.assign({}, props.style, style)} className={Utils.clsx(props.className, props.classes.div, props.moreClasses?.root)} title={props.title || item.value}>
+        {item?.icon ? <Icon src={item?.icon} className={Utils.clsx(props.classes.icon, props.moreClasses?.icon)} /> : null}<div className={Utils.clsx(props.classes.text, props.moreClasses?.text)}>{item?.name}</div>
     </div>;
 }
 
@@ -95,6 +100,7 @@ TextWithIcon.propTypes = {
     style: PropTypes.object,
     title: PropTypes.string,
     removePrefix: PropTypes.string,
+    moreClasses: PropTypes.object,
 };
 
 export default withStyles(styles)(TextWithIcon);

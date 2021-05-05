@@ -78,11 +78,15 @@ export default withStyles(styles)(function HostSelectors({ classes, disabled, so
     useEffect(async () => {
         let hostsArray;
         try {
-            hostsArray = await socket.getHosts('');
-            hostsArray.forEach(async ({ _id }) => {
-                let aliveValue = await socket.getState(`${_id}.alive`);
-                setAlive(prev => ({ ...prev, [_id]: !aliveValue || aliveValue.val === null ? false : !!aliveValue.val }));
+            hostsArray = await socket.getCompactHosts();
+            const _alive = JSON.parse(JSON.stringify(alive));
+
+            hostsArray.forEach(async host => {
+                let aliveValue = await socket.getState(`${host._id}.alive`);
+                _alive[host._id] = !aliveValue ? false : !!aliveValue.val;
             });
+
+            setAlive(_alive);
         } catch (e) {
             window.alert('Cannot get hosts: ' + e);
             hostsArray = [];
@@ -94,7 +98,7 @@ export default withStyles(styles)(function HostSelectors({ classes, disabled, so
 
     useEffect(() => {
         if (hosts.length) {
-            const newObj = hosts.find(({ _id }) => _id === currentHost);
+            const newObj = hosts.find(host => host._id === currentHost);
             setHostSelect(newObj);
         }
     }, [currentHost, hosts]);

@@ -2399,9 +2399,8 @@ class Connection {
     }
 
     /**
-     * Get the repository (only version and icon).
+     * Get the repository in compact form (only version and icon).
      * @param {string} host
-     * @param {any} [args]
      * @param {boolean} [update] Force update.
      * @param {number} [timeoutMs] timeout in ms.
      * @returns {Promise<any>}
@@ -2446,6 +2445,30 @@ class Connection {
         });
 
         return this._promises.repoCompact;
+    }
+
+    /**
+     * Get the list of all hosts in compact form (only _id, common.name, common.icon, common.color, native.hardware.networkInterfaces)
+     * @param {boolean} [update] Force update.
+     * @returns {Promise<ioBroker.Object[]>}
+     */
+    getCompactHosts(update) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+        if (!update && this._promises.hostsCompact) {
+            return this._promises.hostsCompact;
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises.hostsCompact = new Promise((resolve, reject) =>
+            this._socket.emit('getCompactHosts', (err, systemConfig) =>
+                err ? reject(err) : resolve(systemConfig)));
+
+        return this._promises.hostsCompact;
     }
 }
 

@@ -535,11 +535,11 @@ const InstanceCard = memo(({
             list={hosts}
             removePrefix="system.host."
             fullWidth
-            className={classes.formControl}
+            className={classes.hostInfo}
             onChange={el => setHostValue(el)}
         />}
     </CustomModal>
-        : null;
+    : null;
 
     const stopAdminDialog = showStopAdminDialog ? <ConfirmDialog
         title={t('Please confirm')}
@@ -698,24 +698,23 @@ const InstanceCard = memo(({
                         </Tooltip> : null}
                     </div>}
 
-                    
                     {hosts.length > 1 || (hosts.length && hosts[0].common?.hostname !== host) ? <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
-                            <InstanceInfo icon={<HostIcon className={classes.marginRight} />} tooltip={t('Host for this instance')}>
-                                {<TextWithIcon value={host} list={hosts} removePrefix="system.host." themeType={themeType}/>}
-                            </InstanceInfo>
-                            <Tooltip title={t('Edit')}>
-                                <IconButton
-                                    size="small"
-                                    className={classes.button}
-                                    onClick={event => {
-                                        setOpenDialogHost(true);
-                                        event.stopPropagation();
-                                    }}
-                                >
-                                    <EditIcon />
-                                </IconButton>
-                            </Tooltip>
-                        </div> : null}
+                        <InstanceInfo icon={<HostIcon className={classes.marginRight} />} tooltip={t('Host for this instance')}>
+                            {<TextWithIcon value={host} list={hosts} removePrefix="system.host." themeType={themeType}/>}
+                        </InstanceInfo>
+                        <Tooltip title={t('Edit')}>
+                            <IconButton
+                                size="small"
+                                className={classes.button}
+                                onClick={event => {
+                                    setOpenDialogHost(true);
+                                    event.stopPropagation();
+                                }}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </div> : null}
 
                     <Hidden smUp>
                         <IconButton

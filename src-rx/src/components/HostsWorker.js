@@ -117,36 +117,36 @@ class HostsWorker {
         }
     };
 
-    _getNotificationsFromHots(host, update) {
-        if (!update && this.notificationPromises[host]) {
-            return this.notificationPromises[host];
+    _getNotificationsFromHots(hostId, update) {
+        if (!update && this.notificationPromises[hostId]) {
+            return this.notificationPromises[hostId];
         }
 
-        this.notificationPromises[host] = this.socket.getState(host + '.alive')
+        this.notificationPromises[hostId] = this.socket.getState(hostId + '.alive')
             .then(state => {
                 if (state && state.val) {
-                    return this.socket.getNotifications(host)
-                        .then(notifications => ({[host]: notifications}))
+                    return this.socket.getNotifications(hostId)
+                        .then(notifications => ({[hostId]: notifications}))
                         .catch(e => {
-                            console.warn(`Cannot read notifications from "${host}": ${e}`);
-                            return {[host]: null};
+                            console.warn(`Cannot read notifications from "${hostId}": ${e}`);
+                            return {[hostId]: null};
                         });
                 } else {
-                    return {[host]: null};
+                    return {[hostId]: null};
                 }
             });
 
-        return this.notificationPromises[host];
+        return this.notificationPromises[hostId];
     }
 
-    getNotifications(host, update) {
-        if (host) {
-            return this._getNotificationsFromHots(host, update);
+    getNotifications(hostId, update) {
+        if (hostId) {
+            return this._getNotificationsFromHots(hostId, update);
         } else {
-            return this.getHosts(update)
+            return this.socket.getCompactHosts(update)
                 .then(hosts => {
                     const promises = Object.keys(hosts)
-                        .map(host => this._getNotificationsFromHots(host, update));
+                        .map(hostId => this._getNotificationsFromHots(hostId, update));
 
                     return Promise.all(promises)
                         .then(pResults => {
