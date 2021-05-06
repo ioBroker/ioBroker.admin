@@ -27,6 +27,7 @@ Marked with "!" must be in release candidate
 - Update of available versions does not work: https://github.com/ioBroker/ioBroker.admin/issues/830
 - Check if adapter can be installed from github: https://github.com/ioBroker/ioBroker.admin/issues/527
   - common.nogit = true
+  - "This adapter cannot be installed from git as must be built before installation."
 
 ## Wizard
 
@@ -39,7 +40,7 @@ Marked with "!" must be in release candidate
 - Read log level from system.adapter.<adaptername>.<instance>.logLevel (subscribe on it) and show 2 levels if it differs "warn/debug" with tooltip => "saved: warn / actual: debug" 
 - Extended filter: 
   - Filter Adapters without existing instance (https://github.com/ioBroker/ioBroker.admin/issues/281)
-  - gestartet / gestoppt
+  - started / stopped
   - by mode (daemon/schedule/once/none)
   - by status (https://github.com/ioBroker/ioBroker.admin/issues/283)
       - grey - disabled
@@ -85,5 +86,3 @@ Marked with "!" must be in release candidate
 
 - On Custom-Mass-Edit: When more than 10 data points are edited show a dialog to inform use about that mass edit and let him decide to do it or not: "The changes will be applied to %1 states. Are you sure?"
 - (BF) Add progress bar if writing more than 1 object
-<!-- - time - time picker
-- date - date picker -->

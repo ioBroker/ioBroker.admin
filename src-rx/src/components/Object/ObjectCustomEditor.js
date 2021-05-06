@@ -620,6 +620,11 @@ class ObjectCustomEditor extends Component {
     }
 
     onSave = cb => {
+        if (this.props.objectIDs.length > 10) {
+            // TODO: Show confirmation dialog
+            // "The changes will be applied to %s states. Are you sure?"
+        }
+
         this.saveOneState([...this.props.objectIDs], () => {
             this.changedItems = [];
             this.newValues = {};

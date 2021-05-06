@@ -651,12 +651,12 @@ const HostRow = ({
                                 </IconButton>
                             </Tooltip>
                         }
-                        {(upgradeAvailable || (!alive && !currentHost)) ? <Tooltip title={t(alive || currentHost ? 'Upgrade' : 'Remove')}>
+                        {!alive && !currentHost ? <Tooltip title={t('Remove')}>
                             <IconButton onClick={(e) => {
-                                alive || currentHost ? dialogUpgrade() : executeCommandRemove();
+                                executeCommandRemove();
                                 e.stopPropagation();
                             }}>
-                                {alive || currentHost ? <RefreshIcon /> : <DeleteIcon />}
+                                <DeleteIcon />
                             </IconButton>
                         </Tooltip> : <div className={classes.emptyButton} />}
                     </Typography>
