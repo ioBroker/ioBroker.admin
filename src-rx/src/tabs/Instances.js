@@ -10,7 +10,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import TableCell from '@material-ui/core/TableCell';
 import Tooltip from '@material-ui/core/Tooltip';
 import Paper from '@material-ui/core/Paper';
-import { CardMedia, Hidden, InputAdornment, TextField } from '@material-ui/core';
+import { Hidden, InputAdornment, TextField } from '@material-ui/core';
 
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import RefreshIcon from '@material-ui/icons/Refresh';

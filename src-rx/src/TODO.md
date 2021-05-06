@@ -36,6 +36,7 @@ Marked with "!" must be in release candidate
 - !On safari new coming entries have invalid time https://github.com/ioBroker/ioBroker.admin/issues/783 //not track
 
 ## Instances
+- Read log level from system.adapter.<adaptername>.<instance>.logLevel (subscribe on it) and show 2 levels if it differs "warn/debug" with tooltip => "saved: warn / actual: debug" 
 - Extended filter: 
   - Filter Adapters without existing instance (https://github.com/ioBroker/ioBroker.admin/issues/281)
   - gestartet / gestoppt
