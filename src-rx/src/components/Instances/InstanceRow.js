@@ -518,11 +518,17 @@ const styles = theme => ({
     paddingRight200: {
         // paddingRight: 200
     },
-    instanceStateNotAlive1: {
+    instanceStateNotEnabled1: {
         backgroundColor: 'rgba(192, 192, 192, 0.2)'
     },
-    instanceStateNotAlive2: {
+    instanceStateNotEnabled2: {
         backgroundColor: 'rgba(192, 192, 192, 0.15)'
+    },
+    instanceStateNotAlive1: {
+        backgroundColor: 'rgba(255,14,14,0.2)'
+    },
+    instanceStateNotAlive2: {
+        backgroundColor: 'rgba(255,14,14, 0.15)'
     },
     instanceStateAliveNotConnected1: {
         backgroundColor: 'rgba(255, 177, 0, 0.1)'
@@ -829,9 +835,10 @@ const InstanceRow = ({
         <AccordionSummary
             classes={{ root: classes.row }}
             className={clsx(
-                (!connectedToHost || !alive) && (idx % 2 === 0 ? classes.instanceStateNotAlive1 : classes.instanceStateNotAlive2),
-                connectedToHost && alive && connected === false && (idx % 2 === 0 ? classes.instanceStateAliveNotConnected1 : classes.instanceStateAliveNotConnected2),
-                connectedToHost && alive && connected !== false && (idx % 2 === 0 ? classes.instanceStateAliveAndConnected1 : classes.instanceStateAliveAndConnected1)
+                (!running || instance.mode !== 'daemon') && (idx % 2 === 0 ? classes.instanceStateNotEnabled1 : classes.instanceStateNotEnabled2),
+                running && instance.mode === 'daemon' && (!connectedToHost || !alive) && (idx % 2 === 0 ? classes.instanceStateNotAlive1 : classes.instanceStateNotAlive2),
+                running && connectedToHost && alive && connected === false && (idx % 2 === 0 ? classes.instanceStateAliveNotConnected1 : classes.instanceStateAliveNotConnected2),
+                running && connectedToHost && alive && connected !== false && (idx % 2 === 0 ? classes.instanceStateAliveAndConnected1 : classes.instanceStateAliveAndConnected1)
             )}
             expandIcon={<ExpandMoreIcon />}>
             {customModal}

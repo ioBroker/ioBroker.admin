@@ -1299,5 +1299,7 @@
   "Will be reset to the saved log level after restart of adapter": "Se restablecerá al nivel de registro guardado después de reiniciar el adaptador",
   "Connected to device or service": "Conectado a dispositivo o servicio",
   "Session expire in %s": "La sesión expira en %s",
-  "Change log": "Cambio de registro"
+  "Change log": "Cambio de registro",
+  "Would you like to restart the controller for your changes to take effect?": "¿Le gustaría reiniciar el controlador para que sus cambios surtan efecto?",
+  "github_note": "Tenga en cuenta: las dependencias del adaptador no se comprueban cuando se utiliza este método de instalación. Compruébelos usted mismo. También tendrá que crear manualmente una instancia después de la instalación si es necesario."
 }

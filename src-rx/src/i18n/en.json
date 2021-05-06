@@ -1299,5 +1299,7 @@
   "Will be reset to the saved log level after restart of adapter": "Will be reset to the saved log level after restart of adapter",
   "Connected to device or service": "Connected to device or service",
   "Session expire in %s": "Session expire in %s",
-  "Change log": "Change log"
+  "Change log": "Change log",
+  "Would you like to restart the controller for your changes to take effect?": "Would you like to restart the controller for your changes to take effect?",
+  "github_note": "Please note: adapter dependencies are not checked when using this installation method. Please check them yourself. You will also have to manually create an instance after the installation if necessary."
 }
