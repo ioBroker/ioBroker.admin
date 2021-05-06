@@ -192,10 +192,10 @@ const JsControllerDialog = ({ socket, hostId }) => {
                                 window.alert(I18n.t('Copied'))
                                 copyTextToClipboard(
                                     `iob backup
-                                 iob stop
-                                 iob update
-                                 iob upgrade self
-                                 iob start`
+iob stop
+iob update
+iob upgrade self
+iob start`
                                 );
                             }} className={classes.copyButton}>
                                 <IconCopy />
@@ -230,12 +230,12 @@ const JsControllerDialog = ({ socket, hostId }) => {
                                 window.alert(I18n.t('Copied'))
                                 copyTextToClipboard(
                                     `cd ${location || '/opt/iobroker'}
-                                 iob backup
-                                 iob stop
-                                 iob fix
-                                 iob update
-                                 iob upgrade self
-                                 iob start`
+iob backup
+iob stop
+iob fix
+iob update
+iob upgrade self
+iob start`
                                 );
                             }} className={classes.copyButton}>
                                 <IconCopy />
@@ -262,11 +262,11 @@ const JsControllerDialog = ({ socket, hostId }) => {
                                 window.alert(I18n.t('Copied'))
                                 copyTextToClipboard(
                                     `cd ${(location || 'C:\\iobroker').replace(/\//g, '\\')}
-                                 iob backup
-                                 iob stop
-                                 iob status
-                                 iob update
-                                 iob upgrade self`
+iob backup
+iob stop
+iob status
+iob update
+iob upgrade self`
                                 );
                             }} className={classes.copyButton}>
                                 <IconCopy />
@@ -301,11 +301,13 @@ const JsControllerDialog = ({ socket, hostId }) => {
                                 <IconButton size="small" onClick={() => {
                                     window.alert(I18n.t('Copied'))
                                     copyTextToClipboard(
-                                        `sudo -u iobroker -H npm install iobroker.js-controller`
+                                        `cd ${os === 'win32' ? (location || 'C:\\iobroker').replace(/\//g, '\\') : (location || '/opt/iobroker')}
+sudo -u iobroker -H npm install iobroker.js-controller`
                                     );
                                 }} className={classes.copyButton}>
                                     <IconCopy />
                                 </IconButton>
+                                <div className={classes.standardTextSmall}>cd {os === 'win32' ? (location || 'C:\\iobroker').replace(/\//g, '\\') : (location || '/opt/iobroker')}</div>
                                 <div className={classes.standardTextSmall}>sudo -u iobroker -H npm install iobroker.js-controller</div>
                             </pre>
                             <div className={classes.standardTextSmall2}>{I18n.t('For systems installed manually under Linux, prefix sudo or run as root.')}</div>

@@ -36,7 +36,6 @@ Marked with "!" must be in release candidate
 - !On safari new coming entries have invalid time https://github.com/ioBroker/ioBroker.admin/issues/783 //not track
 
 ## Instances
-<!-- - Allow change of log level on the fly https://github.com/ioBroker/ioBroker.admin/issues/571 system.adapter.<adaptername>.<instance>.logLevel -->
 - Extended filter: 
   - Filter Adapters without existing instance (https://github.com/ioBroker/ioBroker.admin/issues/281)
   - gestartet / gestoppt
@@ -50,20 +49,26 @@ Marked with "!" must be in release candidate
 - Group by category https://github.com/ioBroker/ioBroker.admin/issues/293
 
 ## Objects
-<!-- - If width of ID not defined => TODO see objectBrowser -->
-<!-- - Show button for configure of columns as active if auto is off -->
+- If width of ID not defined => TODO see objectBrowser
 - Show in tooltip of button which types could be created on selected node
-  <!-- - If button is disabled, show the full list of possibilities: https://github.com/ioBroker/ioBroker.admin/issues/761#issuecomment-831030077 -->
+  - If button is disabled or object does not exits or other types, show in the tooltip the full list of possibilities: https://github.com/ioBroker/ioBroker.admin/issues/761#issuecomment-831030077
+    - Only following structures of objects are available:
+    - Folder => State
+    - Folder => Channel => State
+    - Folder => Device => Channel => state
+    - Device => channel => state
+    - Channel => State
+
+    Non-experts may create new objects only in "0_userdata.0" or "alias.0".
+    The experts may create objects everywhere but from second level (e.g. vis.0 or javascript.0).
+
+-   
+
 
 ## Files
 
 ## Hosts
-<!-- - Update is not displayed. it should be shown as in instances with change log and so on ..... -->
-
-<!-- - Allow change of log level on the fly https://github.com/ioBroker/ioBroker.admin/issues/571 system.host.HOST.logLevel (Will be reset to the saved log level after restart of controller) -->
-
-<!-- - Upgrade dialog => Button "Show instructions": https://github.com/ioBroker/ioBroker.admin/issues/536
-For  -->
+- Subscribe on hosts and update information (especially about updates)
 
 
 ## Users
