@@ -1,4 +1,4 @@
-import React, { Component, useEffect } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 
 import { DndProvider, useDrop, useDrag } from 'react-dnd'
 import { HTML5Backend, getEmptyImage } from 'react-dnd-html5-backend';
@@ -18,12 +18,16 @@ import Typography from '@material-ui/core/Typography';
 import Fab from '@material-ui/core/Fab';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import Card from '@material-ui/core/Card';
 import TextField from '@material-ui/core/TextField';
 import Popover from '@material-ui/core/Popover';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
+import Icon from '@material-ui/core/Icon';
+import IconButton from '@material-ui/core/IconButton';
 
 import AddIcon from '@material-ui/icons/Add';
+import ListIcon from '@material-ui/icons/List';
 
 import {withStyles} from '@material-ui/core/styles';
 
@@ -187,10 +191,12 @@ const styles = theme => ({
 
 const DndPreview = () => {
     const {display/*, itemType*/, item, style} = usePreview();
+    let divStyle = {...style}
+    divStyle.zIndex = 10000;
     if (!display) {
         return null;
     }
-    return <div style={style}>{item.preview}</div>;
+    return <div style={divStyle}>{item.preview}</div>;
 }
 
 function isTouchDevice() {
@@ -201,35 +207,58 @@ function isTouchDevice() {
 
 const DragObjectBrowser = (props) => {
     let browserProps = props;
-    const DragWrapper = props => {
-        let onDragEnd = (item, monitor) => {
-            const dropResult = monitor.getDropResult();
-            if (item.data && dropResult) {
-                browserProps.addItemToEnum(item.data.obj._id, dropResult.enum_id);
+    const [wrapperState, setWrapperState] = useState({DragWrapper: null});
+    useEffect(() => {
+        const DragWrapper = props => {
+            let onDragEnd = (item, monitor) => {
+                const dropResult = monitor.getDropResult();
+                if (item.data && dropResult) {
+                    browserProps.addItemToEnum(item.data.obj._id, dropResult.enum_id);
+                }
+            };
+            let dragSettings = {
+                type: 'object',
+                end: onDragEnd,
             }
-        };
-        let dragSettings = {
-            type: 'object',
-            end: onDragEnd,
+            dragSettings.item = {
+                data: props.item.data, 
+                preview: (props.item.data && props.item.data.obj ? <Card
+                    key={props.item.data.obj._id}
+                    variant="outlined"
+                    className={browserProps.classes.enumGroupMember}
+                >
+                    {
+                        props.item.data.obj.common?.icon
+                            ?
+                            <Icon
+                                className={ props.classes.icon }
+                                src={props.item.data.obj.common.icon}
+                            />
+                            :
+                            <ListIcon className={browserProps.classes.icon} />
+                    }
+                    {props.item.data.obj.common?.name ? browserProps.getName(props.item.data.obj.common?.name) : null}
+                </Card> : null)
+            };
+            const [{ isDragging }, dragRef, preview] = useDrag(dragSettings);
+            useEffect(() => {
+                preview(getEmptyImage(), { captureDraggingState: true });
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+            }, []);
+        
+            return <div ref={dragRef} style={{ backgroundColor: isDragging ? 'rgba(100,152,255,0.1)' : undefined }}>{props.children}</div>;
         }
-        dragSettings.item = {data: props.item.data, preview: props.children};
-        const [{ isDragging }, dragRef, preview] = useDrag(dragSettings);
-        useEffect(() => {
-            preview(getEmptyImage(), { captureDraggingState: true });
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, []);
+        setWrapperState({DragWrapper: DragWrapper});
+    }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
     
-        return <div ref={dragRef} style={{ backgroundColor: isDragging ? 'rgba(100,152,255,0.1)' : undefined }}>{props.children}</div>;
-    }
-    
-    return <ObjectBrowser
+    return wrapperState ? <ObjectBrowser
         t={props.t}
         socket={props.socket}
         types={['state', 'channel', 'device']}
         lang={props.lang}
         dragEnabled
-        DragWrapper={DragWrapper}
-    />
+        DragWrapper={wrapperState.DragWrapper}
+    /> : null;
 }
 
 const enumTemplates = {
@@ -249,6 +278,7 @@ class EnumsList extends Component {
         currentCategory: null,
         search: '',
         enumEditDialog: false,
+        enumTemplateDialog: false,
         enumEditDialogNew: null,
         enumDeleteDialog: false,
         members: {},
@@ -464,14 +494,14 @@ class EnumsList extends Component {
                 <DndPreview />
                 <Grid container>
                     <Grid md={6} item>
-                    <Fab 
+                    <IconButton 
                         size="small"
                         id="categoryPopoverButton"
                         className={this.props.classes.left} 
                         onClick={()=>this.setState({categoryPopoverOpen: true})}
                     >
                         <AddIcon/>
-                    </Fab>
+                    </IconButton>
                     <Popover 
                         open={this.state.categoryPopoverOpen} 
                         onClose={() => this.setState({categoryPopoverOpen: false})}
@@ -513,14 +543,14 @@ class EnumsList extends Component {
                         )}
                     </Tabs>
                         <div>
-                            <TextField value={this.state.search} onChange={e => this.setState({search: e.target.value})}/>
-                            <Fab 
+                            <TextField value={this.state.search} label={this.props.t('Filter')} onChange={e => this.setState({search: e.target.value})}/>
+                            <IconButton 
                                 size="small" 
                                 onClick={()=>this.setState({enumPopoverOpen: true})}
                                 id="enumPopoverButton"
                             >
                                 <AddIcon/>
-                            </Fab>
+                            </IconButton>
                             <Popover 
                                 open={this.state.enumPopoverOpen} 
                                 onClose={() => this.setState({enumPopoverOpen: false})}
@@ -539,7 +569,11 @@ class EnumsList extends Component {
                     <Grid md={6} item>
                         <DragObjectBrowser
                             addItemToEnum={this.addItemToEnum}
-                            {...this.props}
+                            getName={this.getName}
+                            classes={this.props.classes}
+                            t={this.props.t}
+                            socket={this.props.socket}
+                            lang={this.props.lang}
                         />
                     </Grid>
                 </Grid>
