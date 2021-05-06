@@ -31,10 +31,10 @@ class ConfigCustomEasyAccess extends ConfigGeneric {
             .then(instances => {
                 instances = instances
                     .filter(instance =>
-                        instance && instance.common && (!instance.common.noConfig || instance.common.adminTab))
+                        instance?.common?.adminUI && (instance.common.adminUI.config !== 'none' || instance.common.adminUI.tab))
                     .map(instance => ({
                         id: instance._id.replace(/^system\.adapter\./, ''),
-                        config: !instance.common.noConfig,
+                        config: instance.common.adminUI.config !== 'none',
                         adminTab: instance.common.adminTab
                     }))
                     .sort((a, b) => a.id > b.id ? 1 : (a.id < b.id ? -1 : 0));

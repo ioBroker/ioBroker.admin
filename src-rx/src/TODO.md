@@ -53,7 +53,7 @@ Marked with "!" must be in release candidate
 ## Objects
 - If width of ID not defined => TODO see objectBrowser
 - Show in tooltip of button which types could be created on selected node
-  - If button is disabled or object does not exits or other types, show in the tooltip the full list of possibilities: https://github.com/ioBroker/ioBroker.admin/issues/761#issuecomment-831030077
+  - If button is disabled or object does not exist or other types, show in the tooltip the full list of possibilities: https://github.com/ioBroker/ioBroker.admin/issues/761#issuecomment-831030077
     - Only following structures of objects are available:
     - Folder => State
     - Folder => Channel => State
@@ -63,15 +63,11 @@ Marked with "!" must be in release candidate
 
     Non-experts may create new objects only in "0_userdata.0" or "alias.0".
     The experts may create objects everywhere but from second level (e.g. vis.0 or javascript.0).
-
--   
-
-
+    
 ## Files
 
 ## Hosts
 - Subscribe on hosts and update information (especially about updates)
-
 
 ## Users
 
@@ -83,6 +79,3 @@ Marked with "!" must be in release candidate
 
 ## JSON config - Admin settings dialog (index_m.html)
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)
-
-- On Custom-Mass-Edit: When more than 10 data points are edited show a dialog to inform use about that mass edit and let him decide to do it or not: "The changes will be applied to %1 states. Are you sure?"
-- (BF) Add progress bar if writing more than 1 object

@@ -368,9 +368,9 @@ class Instances extends Component {
             });
 
             instance.canStart    = !common.onlyWWW;
-            instance.config      = !common.noConfig;
-            instance.jsonConfig  = !!common.jsonConfig;
-            instance.materialize = common.materialize      || false;
+            instance.config      = common.adminUI.config !== 'none';
+            instance.jsonConfig  = common.adminUI.config === 'json';
+            instance.materialize = common.adminUI.config === 'materialize';
             instance.compactMode = common.runAsCompactMode || false;
             instance.mode        = common.mode             || null;
             instance.loglevel    = common.loglevel         || null;

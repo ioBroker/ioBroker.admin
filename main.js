@@ -519,39 +519,6 @@ function updateRatings() {
     });
 }
 
-
-
-function removeNews() {
-    const tasks = [];
-    adapter.getObjectView('system', 'adapter', {startkey: `system.adapter.`, endkey: `system.adapter.\u9999`}, (err, doc) => {
-        if (!err && doc && doc.rows) {
-            doc.rows.forEach(item => {
-                const obj = item && item.value;
-                if (obj && obj.common && obj.common.news) {
-                    delete obj.common.news;
-                    tasks.push(obj);
-                }
-            });
-        }
-
-        adapter.getObjectView('system', 'instance', {startkey: `system.adapter.`, endkey: `system.adapter.\u9999`}, async (err, doc) => {
-            if (!err && doc && doc.rows) {
-                doc.rows.forEach(item => {
-                    const obj = item && item.value;
-                    if (obj && obj.common && obj.common.news) {
-                        delete obj.common.news;
-                        tasks.push(obj);
-                    }
-                });
-            }
-
-            for (let t = 0; t < tasks.length; t++) {
-                await adapter.setForeignObjectAsync(tasks[t]._id, tasks[t]);
-            }
-        });
-    });
-}
-
 function main(adapter) {
     // adapter.subscribeForeignStates('*');
     // adapter.subscribeForeignObjects('*');
@@ -595,7 +562,6 @@ function main(adapter) {
     });
 
     updateNews();
-    removeNews();
     updateIcons();
     validateUserData0();
 }

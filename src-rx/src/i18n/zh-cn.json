@@ -1301,5 +1301,7 @@
   "Session expire in %s": "会话在%s中过期",
   "Change log": "变更记录",
   "Would you like to restart the controller for your changes to take effect?": "您想重新启动控制器以使更改生效吗？",
-  "github_note": "请注意：使用此安装方法时，不会检查适配器的依赖性。请亲自检查一下。如果需要，您还必须在安装后手动创建实例。"
+  "github_note": "请注意：使用此安装方法时，不会检查适配器的依赖性。请亲自检查一下。如果需要，您还必须在安装后手动创建实例。",
+  "The changes will be applied to %s states. Are you sure?": "所做的更改将应用于%s个州。你确定吗？",
+  "Yes": "是的"
 }

@@ -1301,5 +1301,7 @@
   "Session expire in %s": "La sesión expira en %s",
   "Change log": "Cambio de registro",
   "Would you like to restart the controller for your changes to take effect?": "¿Le gustaría reiniciar el controlador para que sus cambios surtan efecto?",
-  "github_note": "Tenga en cuenta: las dependencias del adaptador no se comprueban cuando se utiliza este método de instalación. Compruébelos usted mismo. También tendrá que crear manualmente una instancia después de la instalación si es necesario."
+  "github_note": "Tenga en cuenta: las dependencias del adaptador no se comprueban cuando se utiliza este método de instalación. Compruébelos usted mismo. También tendrá que crear manualmente una instancia después de la instalación si es necesario.",
+  "The changes will be applied to %s states. Are you sure?": "Los cambios se aplicarán a %s estados. ¿Está seguro?",
+  "Yes": "sí"
 }

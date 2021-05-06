@@ -209,8 +209,8 @@ class Command extends Component {
                 if (adapter) {
                     this.props.socket.getObject(adapter)
                         .then(obj => {
-                            obj && !obj.common?.noConfig && Router.doNavigate('tab-instances', 'config', adapter);
-                        });                    
+                            obj && obj.common?.adminUI?.config === 'none' && Router.doNavigate('tab-instances', 'config', adapter);
+                        });
                 }
             }
             log.push(`${exitCode !== 0 ? 'ERROR: ' : ''}Process exited with code ${exitCode}`);
