@@ -1299,5 +1299,7 @@
   "Will be reset to the saved log level after restart of adapter": "Zostanie zresetowany do zapisanego poziomu dziennika po ponownym uruchomieniu adaptera",
   "Connected to device or service": "Połączono z urządzeniem lub usługą",
   "Session expire in %s": "Sesja wygasa w %s",
-  "Change log": "Dziennik zmian"
+  "Change log": "Dziennik zmian",
+  "Would you like to restart the controller for your changes to take effect?": "Czy chcesz zrestartować kontroler, aby zmiany zaczęły obowiązywać?",
+  "github_note": "Uwaga: zależności adapterów nie są sprawdzane podczas korzystania z tej metody instalacji. Sprawdź je sam. W razie potrzeby będziesz musiał również ręcznie utworzyć instancję po instalacji."
 }

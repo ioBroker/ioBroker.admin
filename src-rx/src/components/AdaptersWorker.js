@@ -2,6 +2,7 @@ class AdaptersWorker {
     constructor(socket) {
         this.socket   = socket;
         this.handlers = [];
+        this.repositoryHandlers = [];
         this.promise  = null;
 
         socket.registerConnectionHandler(this.connectionHandler);
@@ -99,6 +100,35 @@ class AdaptersWorker {
 
         if (!this.handlers.length && this.connected) {
             this.socket.unsubscribeObject('system.adapter.*', this.objectChangeHandler)
+                .catch(e => window.alert(`Cannot unsubscribe on object: ${e}`));
+        }
+    }
+
+    repoChangeHandler = (id, obj) => {
+        this.repoTimer && clearTimeout(this.repoTimer);
+        this.repoTimer = setTimeout(() => {
+            this.repoTimer = null;
+            this.repositoryHandlers.forEach(cb => cb());
+        }, 500);
+    };
+
+    registerRepositoryHandler(cb) {
+        if (!this.repositoryHandlers.includes(cb)) {
+            this.repositoryHandlers.push(cb);
+
+            if (this.repositoryHandlers.length === 1 && this.connected) {
+                this.socket.subscribeObject('system.repositories', this.repoChangeHandler)
+                    .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
+            }
+        }
+    }
+
+    unregisterRepositoryHandler(cb) {
+        const pos = this.repositoryHandlers.indexOf(cb);
+        pos !== -1 && this.repositoryHandlers.splice(pos, 1);
+
+        if (!this.repositoryHandlers.length && this.connected) {
+            this.socket.unsubscribeObject('system.repositories', this.repoChangeHandler)
                 .catch(e => window.alert(`Cannot unsubscribe on object: ${e}`));
         }
     }

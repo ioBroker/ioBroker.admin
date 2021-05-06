@@ -474,10 +474,10 @@ class App extends Router {
                                     })
                             } else {
                                 // create Workers
-                                this.logsWorker = this.logsWorker || new LogsWorker(this.socket, 1000);
+                                this.logsWorker      = this.logsWorker      || new LogsWorker(this.socket, 1000);
                                 this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
-                                this.hostsWorker = this.hostsWorker || new HostsWorker(this.socket);
-                                this.adaptersWorker = this.adaptersWorker || new AdaptersWorker(this.socket);
+                                this.hostsWorker     = this.hostsWorker     || new HostsWorker(this.socket);
+                                this.adaptersWorker  = this.adaptersWorker  || new AdaptersWorker(this.socket);
 
                                 const newState = {
                                     lang: this.socket.systemLang,
@@ -496,6 +496,8 @@ class App extends Router {
                                 await this.findCurrentHost(newState);
 
                                 await this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
+
+                                this.adaptersWorker.registerRepositoryHandler(this.repoChangeHandler)
 
                                 this.subscribeOnHostsStatus();
 
@@ -551,6 +553,11 @@ class App extends Router {
                 }
             });
         }
+    }
+
+    repoChangeHandler = () => {
+        this.readRepoAndInstalledInfo(this.state.currentHost, null, true)
+            .then(() => console.log('Repo updated!'));
     }
 
     async findCurrentHost(newState) {
@@ -731,12 +738,12 @@ class App extends Router {
         }
     }
 
-    readRepoAndInstalledInfo = async (currentHost, hosts) => {
+    readRepoAndInstalledInfo = async (currentHost, hosts, update) => {
         hosts = hosts || this.state.hosts;
         let repository;
         let installed;
 
-        return this.socket.getCompactRepository(currentHost, false, this.state.readTimeoutMs)
+        return this.socket.getCompactRepository(currentHost, update, this.state.readTimeoutMs)
             .catch(e => {
                 window.alert('Cannot getRepositoryCompact: ' + e);
                 e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
@@ -744,7 +751,7 @@ class App extends Router {
             })
             .then(_repository => {
                 repository = _repository;
-                return this.socket.getCompactInstalled(currentHost, false, this.state.readTimeoutMs)
+                return this.socket.getCompactInstalled(currentHost, update, this.state.readTimeoutMs)
                     .catch(e => {
                         window.alert('Cannot getInstalled: ' + e);
                         e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
@@ -753,7 +760,7 @@ class App extends Router {
             })
             .then(_installed => {
                 installed = _installed;
-                return this.socket.getCompactAdapters()
+                return this.socket.getCompactAdapters(update)
                     .catch(e => window.alert('Cannot read adapters: ' + e));
             })
             .then(adapters => {

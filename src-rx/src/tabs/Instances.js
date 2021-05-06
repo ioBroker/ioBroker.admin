@@ -160,6 +160,13 @@ const styles = theme => ({
         height: 20,
         margin: 2,
         borderRadius: 2,
+        //border: '2px solid #00000000',
+    },
+    okSymbolInner: {
+        width: 'calc(100% - 2px)',
+        height: 'calc(100% - 2px)',
+        borderRadius: 2,
+        margin: 1,
         backgroundColor: '#66bb6a',
     }
 });
@@ -610,7 +617,7 @@ class Instances extends Component {
             if (state === 'orange') {
                 return <WarningIcon className={className}/>;
             } else if (state === 'green') {
-                return <div className={clsx(className, this.props.classes.okSymbol)} />;
+                return <div className={clsx(className, this.props.classes.okSymbol)}><div className={this.props.classes.okSymbolInner}/></div>;
             } else {
                 return <SettingsIcon className={className} />;
             }

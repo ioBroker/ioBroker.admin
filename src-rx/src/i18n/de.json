@@ -1299,5 +1299,7 @@
   "Will be reset to the saved log level after restart of adapter": "Wird nach dem Neustart des Adapters auf die gespeicherte Protokollebene zurückgesetzt",
   "Connected to device or service": "Verbunden mit Gerät oder Dienst",
   "Session expire in %s": "Sitzung läuft in %s ab",
-  "Change log": "Änderungen"
+  "Change log": "Änderungen",
+  "Would you like to restart the controller for your changes to take effect?": "Möchten Sie den Controller neu starten, damit Ihre Änderungen wirksam werden?",
+  "github_note": "Bitte beachten: Adapterabhängigkeiten werden bei Verwendung dieser Installationsmethode nicht überprüft. Bitte überprüfen Sie sie selbst. Bei Bedarf müssen Sie nach der Installation auch manuell eine Instanz erstellen."
 }

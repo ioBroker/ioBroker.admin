@@ -25,7 +25,8 @@ Marked with "!" must be in release candidate
 
 ## Adapters
 - Update of available versions does not work: https://github.com/ioBroker/ioBroker.admin/issues/830
-
+- Check if adapter can be installed from github: https://github.com/ioBroker/ioBroker.admin/issues/527
+  - common.nogit = true
 
 ## Wizard
 
@@ -36,6 +37,17 @@ Marked with "!" must be in release candidate
 
 ## Instances
 <!-- - Allow change of log level on the fly https://github.com/ioBroker/ioBroker.admin/issues/571 system.adapter.<adaptername>.<instance>.logLevel -->
+- Extended filter: 
+  - Filter Adapters without existing instance (https://github.com/ioBroker/ioBroker.admin/issues/281)
+  - gestartet / gestoppt
+  - by mode (daemon/schedule/once/none)
+  - by status (https://github.com/ioBroker/ioBroker.admin/issues/283)
+      - grey - disabled
+      - red - enabled, but not alive
+      - orange - enabled, alive, but not connected to controller
+      - orange - enabled, alive, connected, but not connected to device or service
+      - green - enabled and OK
+- Group by category https://github.com/ioBroker/ioBroker.admin/issues/293
 
 ## Objects
 <!-- - If width of ID not defined => TODO see objectBrowser -->

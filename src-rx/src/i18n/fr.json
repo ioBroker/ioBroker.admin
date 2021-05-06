@@ -1299,5 +1299,7 @@
   "Will be reset to the saved log level after restart of adapter": "Sera réinitialisé au niveau de journal enregistré après le redémarrage de l'adaptateur",
   "Connected to device or service": "Connecté à l'appareil ou au service",
   "Session expire in %s": "La session expire dans %s",
-  "Change log": "Journal des modifications"
+  "Change log": "Journal des modifications",
+  "Would you like to restart the controller for your changes to take effect?": "Souhaitez-vous redémarrer le contrôleur pour que vos modifications prennent effet?",
+  "github_note": "Remarque: les dépendances d'adaptateur ne sont pas vérifiées lors de l'utilisation de cette méthode d'installation. Veuillez les vérifier vous-même. Vous devrez également créer manuellement une instance après l'installation si nécessaire."
 }

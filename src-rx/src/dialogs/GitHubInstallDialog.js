@@ -66,6 +66,12 @@ const useStyles = makeStyles(theme => ({
         marginLeft: theme.spacing(1),
         fontSize: 18,
         color: theme.palette.primary.main
+    },
+    warningText: {
+        color: '#f53939'
+    },
+    noteText: {
+        marginTop: theme.spacing(2),
     }
 }));
 
@@ -181,8 +187,11 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                         fontWeight: 'bold',
                         marginTop: 40
                     }}>{t('Warning!')}</div>
-                    <div style={{ color: '#f53939' }}>
+                    <div className={classes.warningText}>
                         {t('github_warning', 'NPM', 'NPM')}
+                    </div>
+                    <div className={classes.noteText} >
+                        {t('github_note')}
                     </div>
                 </Paper> : null}
                 {currentTab === 'GitHub' ? <Paper className={classes.tabPaper}>
@@ -212,8 +221,11 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                         fontWeight: 'bold',
                         marginTop: 40
                     }}>{t('Warning!')}</div>
-                    <div style={{ color: '#f53939' }}>
+                    <div className={classes.warningText}>
                         {t('github_warning', 'GitHub', 'GitHub')}
+                    </div>
+                    <div className={classes.noteText} >
+                        {t('github_note')}
                     </div>
                 </Paper> : null}
                 {currentTab === 'URL' ? <Paper className={classes.tabPaper}>
@@ -253,8 +265,11 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                         fontWeight: 'bold',
                         marginTop: 40
                     }}>{t('Warning!')}</div>
-                    <div style={{ color: '#f53939' }}>
+                    <div className={classes.warningText}>
                         {t('github_warning', 'URL', 'URL')}
+                    </div>
+                    <div className={classes.noteText} >
+                        {t('github_note')}
                     </div>
                 </Paper> : null}
             </div>

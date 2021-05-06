@@ -1299,5 +1299,7 @@
   "Will be reset to the saved log level after restart of adapter": "Verrà ripristinato al livello di registro salvato dopo il riavvio dell'adattatore",
   "Connected to device or service": "Collegato al dispositivo o al servizio",
   "Session expire in %s": "La sessione scade in %s",
-  "Change log": "Registro delle modifiche"
+  "Change log": "Registro delle modifiche",
+  "Would you like to restart the controller for your changes to take effect?": "Riavviare il controller per rendere effettive le modifiche?",
+  "github_note": "Nota: le dipendenze dell'adattatore non vengono controllate quando si utilizza questo metodo di installazione. Si prega di controllarli da soli. Se necessario, dovrai anche creare manualmente un'istanza dopo l'installazione."
 }

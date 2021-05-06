@@ -1299,5 +1299,7 @@
   "Will be reset to the saved log level after restart of adapter": "Wordt gereset naar het opgeslagen logniveau na herstart van de adapter",
   "Connected to device or service": "Verbonden met apparaat of service",
   "Session expire in %s": "Sessie verloopt in %s",
-  "Change log": "Wijzig logboek"
+  "Change log": "Wijzig logboek",
+  "Would you like to restart the controller for your changes to take effect?": "Wilt u de controller opnieuw opstarten om uw wijzigingen door te voeren?",
+  "github_note": "Let op: adapterafhankelijkheden worden niet gecontroleerd bij gebruik van deze installatiemethode. Controleer ze zelf. U zult indien nodig ook handmatig een instantie moeten aanmaken na de installatie."
 }
