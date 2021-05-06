@@ -155,18 +155,21 @@ class Login extends Component {
                             label={this.props.t('Stay signed in')}
                         />
                         <input id="origin" type="hidden" name="origin" value={window.location.search.replace('&error', '')} />
-                        {this.state.inProcess ? <div className={classes.progress}><CircularProgress /> </div> : <Button
+                        {<Button
                             type="submit"
+                            disabled={this.state.inProcess}
                             onClick={() => {
-                                this.setState({ inProcess: true });
                                 this.formRef.current.submit();
+                                // give time to firefox to send the data
+                                setTimeout(() =>
+                                    this.setState({ inProcess: true }), 50);
                             }}
                             fullWidth
                             variant="contained"
                             color="primary"
                             className={classes.submit}
                         >
-                            {this.props.t('login')}
+                            {this.state.inProcess ? <CircularProgress size={24}/> : this.props.t('login')}
                         </Button>}
                     </form>
                 </Grid>

@@ -3,15 +3,13 @@ import PropTypes from 'prop-types';
 import { Grid } from '@material-ui/core';
 
 const TabHeader = props => {
-    return (
-        <Grid
-            item
-            container
-            alignItems="center"
-        >
-            { props.children }
-        </Grid>
-    );
+    return <Grid
+        item
+        container
+        alignItems="center"
+    >
+        { props.children }
+    </Grid>;
 }
 
 TabHeader.propTypes = {

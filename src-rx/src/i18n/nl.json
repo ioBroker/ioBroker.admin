@@ -130,7 +130,6 @@
   "Comoros": "Comoren",
   "Configuration not saved.": "Configuratie niet opgeslagen.",
   "Congo": "Congo",
-  "Connected to %s": "Verbonden met %s",
   "Connected to host": "Verbonden met host",
   "Cook Islands": "Cook Eilanden",
   "Copy log": "Log kopiëren",
@@ -1297,5 +1296,8 @@
   "Host for this instance": "Host voor deze instantie",
   "Without restart": "Zonder herstart",
   "Log level will be saved permanently": "Het logniveau wordt permanent opgeslagen",
-  "Will be reset to the saved log level after restart of adapter": "Wordt gereset naar het opgeslagen logniveau na herstart van de adapter"
+  "Will be reset to the saved log level after restart of adapter": "Wordt gereset naar het opgeslagen logniveau na herstart van de adapter",
+  "Connected to device or service": "Verbonden met apparaat of service",
+  "Session expire in %s": "Sessie verloopt in %s",
+  "Change log": "Wijzig logboek"
 }

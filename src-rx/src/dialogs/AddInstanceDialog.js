@@ -117,7 +117,7 @@ class AddInstanceDialog extends Component {
                         direction="column"
                     >
                         <FormControl
-                            disabled={this.props.hosts && this.props.hosts.length <= 1 ? true : false}
+                            disabled={(this.props.hosts && this.props.hosts.length <= 1)}
                         >
                             <InputLabel id="host-label">{this.t('Host')}</InputLabel>
                             <Select

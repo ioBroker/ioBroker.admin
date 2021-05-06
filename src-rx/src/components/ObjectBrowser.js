@@ -415,13 +415,13 @@ const styles = theme => ({
         animation: '$newValueAnimation 2s ease-in-out'
     },
     '@keyframes newValueAnimation': {
-        "0%": {
+        '0%': {
             color: '#00f900',
         },
-        "80%": {
+        '80%': {
             color: '#008000',
         },
-        "100%": {
+        '100%': {
             color: theme.palette.type === 'dark' ? '#fff' : '#000',
         }
     },
@@ -600,7 +600,23 @@ const styles = theme => ({
     tooltipAccessControl: {
         display: 'flex',
         flexDirection: 'column'
-    }
+    },
+    '@media screen and (max-width: 465px)': {
+        columnsDialogInputWidth:{
+            width:50
+        },
+        fontSizeTitle: {
+            '& *':{
+                fontSize:12
+            }
+        },
+    },
+    '@media screen and (max-width: 700px)': {
+
+    },
+    '@media screen and (max-width: 430px)': {
+
+    },
 });
 
 function generateFile(filename, obj) {
@@ -1322,9 +1338,9 @@ const StyledBadge = withStyles(theme => ({
 
 const SCREEN_WIDTHS = {
     // extra-small: 0px
-    xs: { idWidth: 300, fields: ['room'], widths: { name: 200, room: 200 } },
+    xs: { idWidth: '100%', fields: [], widths: { } },
     // small: 600px
-    sm: { idWidth: 300, fields: ['room', 'func', 'buttons'], widths: { name: 200, room: 180, func: 180, buttons: 120 } },
+    sm: { idWidth: 300, fields: ['room', 'val'], widths: { room: 100, val: 200 } },
     // medium: 960px
     md: { idWidth: 300, fields: ['room', 'func', 'val', 'buttons'], widths: { name: 200, room: 150, func: 150, val: 120, buttons: 120 } },
     // large: 1280px
@@ -1423,7 +1439,6 @@ class ObjectBrowser extends Component {
         this.objectsUpdateTimer = null;
 
         this.visibleCols = props.columns || SCREEN_WIDTHS[props.width].fields;
-
         // remove type column if only one type must be selected
         if (props.types && props.types.length === 1) {
             const pos = this.visibleCols.indexOf('type');
@@ -1606,7 +1621,7 @@ class ObjectBrowser extends Component {
             });
 
         // read default history
-        props.socket.getSystemConfig()
+        props.socket.getCompactSystemConfig()
             .then(config => {
                 this.defaultHistory = config && config.common && config.common.defaultHistory;
                 if (this.defaultHistory) {
@@ -1836,14 +1851,14 @@ class ObjectBrowser extends Component {
                         this.setState({ columns });
                     }
                 }} key={id}>
-                    <ListItemIcon>
+                    {/* <ListItemIcon> */}
                         <Checkbox
                             edge="start"
                             disabled={id === 'id' || this.state.columnsAuto}
                             checked={id === 'id' || (this.state.columnsAuto ? this.visibleCols.includes(id) : (this.state.columns && this.state.columns.includes(id)))}
                             disableRipple
                         />
-                    </ListItemIcon>
+                    {/* </ListItemIcon> */}
                     <ListItemText primary={this.texts['filter_' + id] || this.props.t('ra_' + id)} />
                     <ListItemSecondaryAction>
                         <FormControl className={this.props.classes.columnsDialogInputWidth} style={{ marginTop: 0, marginBottom: 0 }} margin="dense">
@@ -1879,8 +1894,8 @@ class ObjectBrowser extends Component {
                 open={true}
                 classes={{ root: Utils.clsx(this.props.classes.dialogColumns, this.props.classes['transparent_' + this.state.columnsDialogTransparent]) }}
             >
-                <DialogTitle>{this.props.t('ra_Configure visible columns')}</DialogTitle>
-                <DialogContent>
+                <DialogTitle className={this.props.classes.fontSizeTitle}>{this.props.t('ra_Configure visible columns')}</DialogTitle>
+                <DialogContent className={this.props.classes.fontSizeTitle}>
                     <FormControlLabel
                         className={this.props.classes.switchColumnAuto}
                         control={<Switch checked={this.state.columnsAuto} onChange={() => {
@@ -2440,7 +2455,7 @@ class ObjectBrowser extends Component {
         expanded = expanded || [];
 
         root.children && root.children.forEach(item => {
-            if (item.hasVisibleChildren) {
+            if (item.data.hasVisibleChildren) {
                 expanded.push(item.data.id);
                 this.onExpandAll(item, expanded);
             }
@@ -2853,9 +2868,9 @@ class ObjectBrowser extends Component {
                     </Tooltip>
                 }
             </div>
-            <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
+            {!!this.props.objectBrowserEditObject && <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
                 {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t('ra_States')}: ${Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length}`}
-            </div>
+            </div>}
             {this.props.objectEditBoolean &&
                 <Tooltip title={this.props.t('ra_Edit custom config')}>
                     <IconButton onClick={() => {
@@ -3000,12 +3015,12 @@ class ObjectBrowser extends Component {
             >
                 <IconEdit className={classes.cellButtonsButtonIcon} />
             </IconButton>,
-            this.props.onObjectDelete ? <IconButton
+            this.props.onObjectDelete && (item.children?.length || !item.data.obj.common?.dontDelete) ? <IconButton
                 key="delete"
                 className={classes.cellButtonsButton}
                 size="small"
                 aria-label="delete"
-                onClick={() => this.props.onObjectDelete(id, !!(item.children && item.children.length), !item.data.obj.common?.dontDelete)}
+                onClick={() => this.props.onObjectDelete(id, !!item.children?.length, !item.data.obj.common?.dontDelete)}
                 title={this.texts.deleteObject}
             >
                 <IconDelete className={classes.cellButtonsButtonIcon} />
@@ -3907,6 +3922,8 @@ class ObjectBrowser extends Component {
                 widthSum += this.columnsVisibility.buttons;
                 this.columnsVisibility.name = `calc(100% - ${widthSum + 5}px)`;
                 this.columnsVisibility.nameHeader = `calc(100% - ${widthSum + 5 + this.state.scrollBarWidth}px)`;
+            } else  {
+                // TODO: calculate width of ID
             }
         } else {
             this.columnsVisibility = {

@@ -10,58 +10,49 @@ Marked with "!" must be in release candidate
     config: 'materialize', 'none', 'html'
     tab: 'html'
   }
-- Show admin version number if width > 800: https://github.com/ioBroker/ioBroker.admin/issues/820
-  - this.props.socket.getVersion
-  
-- Create SelectWithIcon Component, that could accept array [obj1, obj2] or object like {"id1": obj1, "id2": obj2} with color and icon and multi-language name
+- Tooltips on drawer in half-closed mode  
 
 ## Intro
+- For links: jump to link by clicking of the whole card and not only link: https://github.com/ioBroker/ioBroker.admin/issues/685
 
 ## Easy Mode
-- !Show back button in strickt mode for tabs (and logo button always returns to #easy in strict mode) 
 
 ## Settings
-- <!--(Base settings) Show dialog, that RESTART only works on debian systems: https://github.com/ioBroker/ioBroker.admin/issues/754-->
 
 ## Info
 
 ## Enums
 
 ## Adapters
-- Use only icons for update adapter: https://github.com/ioBroker/ioBroker.admin/issues/810
-  - "Ignore", Icon "Update", Icon "close" on mobile ()
-  
-- Save the "close when finished" in localStorage: https://github.com/ioBroker/ioBroker.admin/issues/815
-- Update adapter list by host change: https://github.com/ioBroker/ioBroker.admin/issues/819
-- Show host name in the summary (not in details) if enough space: https://github.com/ioBroker/ioBroker.admin/issues/799
-- Show number of instances in tile and row: https://github.com/ioBroker/ioBroker.admin/issues/822
+- Update of available versions does not work: https://github.com/ioBroker/ioBroker.admin/issues/830
+
 
 ## Wizard
 
 ## Discovery
-- Show icons of hosts
-
 ## Logs
-- !ON multihost no source at all - https://github.com/ioBroker/ioBroker.admin/issues/777
-- !On safari new coming entries have invalid time https://github.com/ioBroker/ioBroker.admin/issues/783
-- host sicon and name => nowrap
+- !ON multihost no source at all - https://github.com/ioBroker/ioBroker.admin/issues/777 //not track
+- !On safari new coming entries have invalid time https://github.com/ioBroker/ioBroker.admin/issues/783 //not track
 
 ## Instances
-- Invalid status of instance (only icon): https://github.com/ioBroker/ioBroker.admin/issues/816
-- Show info.connection in instance if string and not boolean: https://github.com/ioBroker/ioBroker.admin/issues/817
+- Allow change of log level on the fly https://github.com/ioBroker/ioBroker.admin/issues/571 system.adapter.<adaptername>.<instance>.logLevel
 
 ## Objects
-- Add in object edit the possibility to set color and icon (icon could be uploaded as base64 and may not be bigger than 5k) and use it for text color. Add possibility to scale the images.
-  - Integrate https://react-dropzone.js.org/#!/Doka for image upload
-
-- !Layout problem by defined columns widths: https://github.com/ioBroker/ioBroker.admin/issues/698
-- !On small display show only Icons for "Edit object dialog" buttons (see ObjectCustomDialog)
-- On small display show smaller font and smaller margins between checkbox and text: https://github.com/ioBroker/ioBroker.admin/issues/810
+- If width of ID not defined => TODO see objectBrowser
+- Show button for configure of columns as active if auto is off
+- Show in tooltip of button which types could be created on selected node
+  - If button is disabled, show the full list of possibilities: https://github.com/ioBroker/ioBroker.admin/issues/761#issuecomment-831030077
 
 ## Files
 
 ## Hosts
-- Update is not displayed. it should be shown as in instances with change log and so on
+- Update is not displayed. it should be shown as in instances with change log and so on .....
+
+- Allow change of log level on the fly https://github.com/ioBroker/ioBroker.admin/issues/571 system.host.HOST.logLevel (Will be reset to the saved log level after restart of controller)
+
+- Upgrade dialog => Button "Show instructions": https://github.com/ioBroker/ioBroker.admin/issues/536
+For 
+
 
 ## Users
 
@@ -69,10 +60,12 @@ Marked with "!" must be in release candidate
 - ! (BF) Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io) (BF)
 
 ## Login and authentication
-- show login dialog after TTL over
+- (BF) show login dialog after TTL over
 
 ## JSON config - Admin settings dialog (index_m.html)
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)
+
 - On Custom-Mass-Edit: When more than 10 data points are edited show a dialog to inform use about that mass edit and let him decide to do it or not: "The changes will be applied to %1 states. Are you sure?"
+- (BF) Add progress bar if writing more than 1 object
 - time - time picker
 - date - date picker

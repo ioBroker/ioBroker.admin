@@ -130,7 +130,6 @@
   "Comoros": "科摩罗",
   "Configuration not saved.": "配置未保存。",
   "Congo": "刚果",
-  "Connected to %s": "连接到%s",
   "Connected to host": "连接到主机",
   "Cook Islands": "库克群岛",
   "Copy log": "复制日志",
@@ -1297,5 +1296,8 @@
   "Host for this instance": "此实例的主机",
   "Without restart": "无需重启",
   "Log level will be saved permanently": "日志级别将被永久保存",
-  "Will be reset to the saved log level after restart of adapter": "重新启动适配器后将重置为保存的日志级别"
+  "Will be reset to the saved log level after restart of adapter": "重新启动适配器后将重置为保存的日志级别",
+  "Connected to device or service": "已连接到设备或服务",
+  "Session expire in %s": "会话在%s中过期",
+  "Change log": "变更记录"
 }

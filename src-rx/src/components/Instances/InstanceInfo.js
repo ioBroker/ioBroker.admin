@@ -7,7 +7,13 @@ import {
 } from '@material-ui/core';
 const styles = theme => ({
     nowrap:{
-        flexFlow: 'nowrap'
+        flexFlow: 'nowrap',
+        overflow: 'hidden'
+    },
+    width:{
+        width:'100%',
+        overflow: 'hidden'
+
     }
 })
 const InstanceInfo = props => {
@@ -27,7 +33,9 @@ const InstanceInfo = props => {
                 </Tooltip>
             }
         </Grid>
-        <Grid item>
+        <Grid 
+        className={props.classes.width}
+         item>
             <Tooltip title={ props.tooltip || '' }>
                 <Typography component="div">
                     { props.children }

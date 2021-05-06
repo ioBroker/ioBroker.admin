@@ -218,6 +218,14 @@ const styles = theme => ({
         display: 'inline-block',
         marginTop: 1,
         marginLeft: 2,
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        width: '100%',
+        textOverflow: 'ellipsis'
+    },
+    iconAndName:{
+        whiteSpace: 'nowrap',
+        display: 'flex'
     }
 });
 
@@ -245,28 +253,28 @@ class Logs extends Component {
         super(props);
 
         this.state = {
-            source:             '1',
-            severity:           'debug',
-            message:            '',
-            logDeleteDialog:    false,
-            logDownloadDialog:  null,
-            logFiles:           [],
-            logs:               null,
-            logSize:            null,
-            logErrors:          0,
-            logWarnings:        0,
-            estimatedSize:      true,
-            pause:              0,
-            pauseCount:         0,
-            pid:                JSON.parse(window.localStorage.getItem('Logs.pid')) || false,
-            adapters:           {}
+            source: '1',
+            severity: 'debug',
+            message: '',
+            logDeleteDialog: false,
+            logDownloadDialog: null,
+            logFiles: [],
+            logs: null,
+            logSize: null,
+            logErrors: 0,
+            logWarnings: 0,
+            estimatedSize: true,
+            pause: 0,
+            pauseCount: 0,
+            pid: JSON.parse(window.localStorage.getItem('Logs.pid')) || false,
+            adapters: {}
         };
 
         this.severities = {
             'silly': 0,
             'debug': 1,
-            'info':  2,
-            'warn':  3,
+            'info': 2,
+            'warn': 3,
             'error': 4
         };
 
@@ -283,8 +291,8 @@ class Logs extends Component {
                     const logSize = results.logSize;
 
                     let logWarnings = 0;
-                    let logErrors   = 0;
-                    let lastOdd     = true;
+                    let logErrors = 0;
+                    let lastOdd = true;
 
                     logs.forEach(item => {
                         lastOdd = !lastOdd;
@@ -328,13 +336,14 @@ class Logs extends Component {
         this.props.logsWorker && this.props.logsWorker.enableCountErrors(false);
         this.props.logsWorker.registerHandler(this.logHandler);
         this.props.clearErrors();
-        this.props.adaptersWorker.getAdapters()
+
+        this.props.socket.getCompactAdapters()
             .then(adapters =>
-                this.props.hostsWorker.getHosts()
+                this.props.socket.getCompactHosts()
                     .then(hosts => new Promise(resolve =>
-                            this.setState({adapters, hosts}, () =>
-                                this.props.socket.getLogsFiles()
-                                    .then(list => resolve(list))))
+                        this.setState({ adapters, hosts }, () =>
+                            this.props.socket.getLogsFiles()
+                                .then(list => resolve(list))))
                     )
                     .then(list => {
                         if (list && list.length) {
@@ -388,8 +397,8 @@ class Logs extends Component {
             logs.splice(0, logs.length - MAX_LOGS);
         }
         let logWarnings = 0;
-        let logErrors   = 0;
-        let lastOdd     = false;
+        let logErrors = 0;
+        let lastOdd = false;
         logs.forEach(item => {
             if (item.odd !== undefined) {
                 lastOdd = item.odd;
@@ -409,7 +418,7 @@ class Logs extends Component {
             }
             if (item.icon === undefined) {
                 let adapterName = item.from.replace(/\.\d+$/, '');
-                let icon = this.state.adapters['system.adapter.' + adapterName]?.common?.icon;
+                let icon = this.state.adapters['system.adapter.' + adapterName]?.icon;
                 if (icon) {
                     if (!icon.startsWith('data:image')) {
                         icon = './files/' + adapterName + '.admin/' + icon;
@@ -568,7 +577,9 @@ class Logs extends Component {
                     hover
                 >
                     <TableCell className={clsx(classes.cell, classes.cellName)}>
-                        {<Icon src={row.icon} className={classes.icon}/>}<div className={classes.name}>{row.from}</div>
+                        <div className={classes.iconAndName}>
+                            {<Icon src={row.icon} className={classes.icon} />}<div className={classes.name}>{row.from}</div>
+                        </div>
                     </TableCell>
                     {this.state.pid && <TableCell className={clsx(classes.cell, classes[severity])}>
                         {id}
@@ -685,13 +696,13 @@ class Logs extends Component {
                         <IconButton
                             onClick={() => {
                                 if (this.state.severity === 'error') {
-                                    this.setState({severity: 'debug'});
+                                    this.setState({ severity: 'debug' });
                                 } else {
                                     this.setState({ severity: 'error', logErrors: 0 })
                                 }
-                            }}                            color={this.state.severity === 'error' ? 'primary' : 'default'}
+                            }} color={this.state.severity === 'error' ? 'primary' : 'default'}
                         >
-                            <ErrorIcon/>
+                            <ErrorIcon />
                         </IconButton>
                     </Badge>
                 </Tooltip>
@@ -704,14 +715,14 @@ class Logs extends Component {
                         <IconButton
                             onClick={() => {
                                 if (this.state.severity === 'warn') {
-                                    this.setState({severity: 'debug'});
+                                    this.setState({ severity: 'debug' });
                                 } else {
                                     this.setState({ severity: 'warn', logWarnings: 0 })
                                 }
                             }}
                             color={this.state.severity === 'warn' ? 'primary' : 'default'}
                         >
-                            <WarningIcon/>
+                            <WarningIcon />
                         </IconButton>
                     </Badge>
                 </Tooltip>
@@ -819,8 +830,9 @@ Logs.propTypes = {
     currentHost: PropTypes.string,
     clearErrors: PropTypes.func,
     logsWorker: PropTypes.object,
+    hostsWorker: PropTypes.object,
     lang: PropTypes.string,
     t: PropTypes.func,
-    adaptersWorker: PropTypes.object,
 };
+
 export default withWidth()(withStyles(styles)(Logs));

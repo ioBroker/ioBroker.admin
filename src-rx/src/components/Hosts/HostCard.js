@@ -112,9 +112,9 @@ const styles = theme => ({
         height: 0
     },
     close: {
-        width: '20px',
-        height: '20px',
-        opacity: '0.9',
+        width: 20,
+        height: 20,
+        opacity: 0.9,
         cursor: 'pointer',
         position: 'relative',
         marginLeft: 'auto',
@@ -125,19 +125,19 @@ const styles = theme => ({
         },
         '&:before': {
             position: 'absolute',
-            left: '9px',
+            left: 9,
             content: '""',
-            height: '20px',
-            width: '3px',
+            height: 20,
+            width: 3,
             backgroundColor: '#ff4f4f',
             transform: 'rotate(45deg)'
         },
         '&:after': {
             position: 'absolute',
-            left: '9px',
+            left: 9,
             content: '""',
-            height: '20px',
-            width: '3px',
+            height: 20,
+            width: 3,
             backgroundColor: '#ff4f4f',
             transform: 'rotate(-45deg)'
         },
@@ -267,6 +267,35 @@ const styles = theme => ({
     emptyButton: {
         width: 48,
     },
+    greenText: {
+        color: theme.palette.success.dark,
+    },
+    curdContentFlexCenter: {
+        display: 'flex',
+        alignItems: 'center',
+        marginLeft: 4
+    },
+    wrapperAvailable: {
+        display: 'flex',
+        alignItems: 'center'
+    },
+    buttonUpdate: {
+        border: '1px solid',
+        padding: '0px 7px',
+        borderRadius: 5,
+        display: 'flex',
+        alignItems: 'center',
+        cursor: 'pointer',
+        transition: 'background 0.5s',
+        '&:hover': {
+            background: '#00800026'
+        }
+    },
+    buttonUpdateIcon: {
+        height: 20,
+        width: 20,
+        marginRight: 10
+    },
 });
 
 let outputCache = '-';
@@ -304,9 +333,9 @@ const HostCard = ({
     setBaseSettingsDialog,
     expertMode,
     hostsWorker,
-    showAdaptersWarning
+    showAdaptersWarning,
+    openHostUpdateDialog
 }) => {
-
     const [openCollapse, setCollapse] = useState(false);
     const refEvents = useRef();
     const refWarning = useRef();
@@ -405,12 +434,12 @@ const HostCard = ({
 
     useEffect(() => {
         const notificationHandler = notifications =>
-            notifications && notifications[_id] && setErrorHost({notifications: notifications[_id], count: calculateWarning(notifications[_id])});
+            notifications && notifications[_id] && setErrorHost({ notifications: notifications[_id], count: calculateWarning(notifications[_id]) });
 
         hostsWorker.registerNotificationHandler(notificationHandler);
 
         hostsWorker.getNotifications(_id)
-            .then(notifications => notifications && notifications[_id] && setErrorHost({notifications: notifications[_id], count: calculateWarning(notifications[_id])}));
+            .then(notifications => notifications && notifications[_id] && setErrorHost({ notifications: notifications[_id], count: calculateWarning(notifications[_id]) }));
 
         socket.subscribeState(`${_id}.inputCount`, eventsInputFunc);
         socket.subscribeState(`${_id}.outputCount`, eventsOutputFunc);
@@ -477,7 +506,7 @@ const HostCard = ({
                     className={classes.badge}
                     onClick={e => {
                         e.stopPropagation();
-                        showAdaptersWarning({[_id]: errorHost.notifications}, socket, _id);
+                        showAdaptersWarning({ [_id]: errorHost.notifications }, socket, _id);
                     }}
                 >{name}
                 </Badge>
@@ -503,8 +532,20 @@ const HostCard = ({
             <Typography variant="body2" color="textSecondary" component="div">
                 <div className={classes.displayFlex}>{t('Uptime')}: <div ref={refUptime} className={classes.marginLeft5}>{'-d -h'}</div></div>
             </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-                {t('Available')}: {available}
+            <Typography variant="body2" color="textSecondary" component="div" className={classes.wrapperAvailable}>
+                {t('Available')}: <div className={clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)} >
+                    {upgradeAvailable ?
+
+                        <Tooltip title={t('Update')}>
+                            <div onClick={openHostUpdateDialog} className={classes.buttonUpdate}><IconButton
+                                className={classes.buttonUpdateIcon}
+                                size="small"
+                            >
+                                <RefreshIcon />
+                            </IconButton>{available}</div>
+                        </Tooltip> :
+                        available
+                    }</div>
             </Typography>
             <Typography variant="body2" color="textSecondary" component="p">
                 {t('Installed')}: {installed}

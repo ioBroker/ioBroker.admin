@@ -1,3 +1,9 @@
+## 5.0.11 (2021-04-29)
+* (bluefox) Admin5: users management implemented
+
+## 5.0.10 (2021-04-27)
+* (bluefox) Admin5: Implemented the language filter and selector for rating with comments
+
 ## 5.0.9 (2021-04-27)
 * (bluefox) Admin5: Fixed many bugs
 

@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
@@ -36,6 +36,7 @@ import CustomPopper from './CustomPopper';
 import CustomTab from '../tabs/CustomTab';
 import DrawerItem from './DrawerItem';
 import Adapters from '../tabs/Adapters';
+import Typography from "@material-ui/core/Typography";
 
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
@@ -114,7 +115,11 @@ const styles = theme => ({
     expand: {
         marginBottom: 5,
         marginLeft: 5
-    }
+    },
+    styleVersion: {
+        fontSize: 10,
+        color: '#ffffff5e'
+    },
 });
 
 export const STATES = {
@@ -124,34 +129,33 @@ export const STATES = {
 };
 
 const tabsInfo = {
-    'tab-intro': { order: 1, icon: <AppsIcon /> },
-    'tab-info': { order: 5, icon: <InfoIcon />, host: true },
-    'tab-adapters': { order: 10, icon: <StoreIcon />, host: true },
-    'tab-instances': { order: 15, icon: <SubtitlesIcon />, host: true },
-    'tab-objects': { order: 20, icon: <ViewListIcon /> },
-    //'tab-hosts': { order: 20, icon: <ViewListIcon /> },
-    'tab-enums': { order: 25, icon: <ArtTrackIcon /> },
-    'tab-devices': { order: 27, icon: <DvrIcon />, host: true },
-    'tab-logs': { order: 30, icon: <ViewHeadlineIcon />, host: true },
-    'tab-scenes': { order: 35, icon: <SubscriptionsIcon /> },
-    'tab-events': { order: 40, icon: <FlashOnIcon /> },
-    'tab-users': { order: 45, icon: <PersonOutlineIcon /> },
-    'tab-javascript': { order: 50 },
-    'tab-text2command-0': { order: 55, instance: 0 },
-    'tab-text2command-1': { order: 56, instance: 1 },
-    'tab-text2command-2': { order: 57, instance: 2 },
-    'tab-node-red-0': { order: 60, instance: 0 },
-    'tab-node-red-1': { order: 61, instance: 1 },
-    'tab-node-red-2': { order: 62, instance: 2 },
-    'tab-fullcalendar-0': { order: 65, instance: 0 },
-    'tab-fullcalendar-1': { order: 66, instance: 1 },
-    'tab-fullcalendar-2': { order: 67, instance: 2 },
-    'tab-echarts': { order: 70, instance: 2 },
-    'tab-eventlist-0': { order: 80, instance: 0 },
-    'tab-eventlist-1': { order: 81, instance: 1 },
-    'tab-eventlist-2': { order: 82, instance: 2 },
-    'tab-hosts': { order: 100, icon: <StorageIcon /> },
-    'tab-files': { order: 110, icon: <FilesIcon /> },
+    'tab-intro':            {order: 1,    icon: <AppsIcon />},
+    'tab-info':             {order: 5,    icon: <InfoIcon />,               host: true},
+    'tab-adapters':         {order: 10,   icon: <StoreIcon />,              host: true},
+    'tab-instances':        {order: 15,   icon: <SubtitlesIcon />,          host: true},
+    'tab-objects':          {order: 20,   icon: <ViewListIcon />},
+    'tab-enums':            {order: 25,   icon: <ArtTrackIcon />},
+    'tab-devices':          {order: 27,   icon: <DvrIcon />,                host: true},
+    'tab-logs':             {order: 30,   icon: <ViewHeadlineIcon />,       host: true},
+    'tab-scenes':           {order: 35,   icon: <SubscriptionsIcon />},
+    'tab-events':           {order: 40,   icon: <FlashOnIcon />},
+    'tab-users':            {order: 45,   icon: <PersonOutlineIcon />},
+    'tab-javascript':       {order: 50},
+    'tab-text2command-0':   {order: 55, instance: 0},
+    'tab-text2command-1':   {order: 56, instance: 1},
+    'tab-text2command-2':   {order: 57, instance: 2},
+    'tab-node-red-0':       {order: 60, instance: 0},
+    'tab-node-red-1':       {order: 61, instance: 1},
+    'tab-node-red-2':       {order: 62, instance: 2},
+    'tab-fullcalendar-0':   {order: 65, instance: 0},
+    'tab-fullcalendar-1':   {order: 66, instance: 1},
+    'tab-fullcalendar-2':   {order: 67, instance: 2},
+    'tab-echarts':          {order: 70, instance: 2},
+    'tab-eventlist-0':      {order: 80, instance: 0},
+    'tab-eventlist-1':      {order: 81, instance: 1},
+    'tab-eventlist-2':      {order: 82, instance: 2},
+    'tab-hosts':            {order: 100,  icon: <StorageIcon />},
+    'tab-files':            {order: 110,  icon: <FilesIcon />},
 };
 
 class Drawer extends Component {
@@ -202,7 +206,7 @@ class Drawer extends Component {
         if (installed) {
             let count = 0;
 
-            Object.keys(installed).forEach(element => {
+            Object.keys(installed).sort().forEach(element => {
                 const _installed = installed[element];
                 const adapter = repository[element];
                 if (element !== 'js-controller' &&
@@ -223,11 +227,11 @@ class Drawer extends Component {
     }
 
     instanceChangedHandler = changes => {
-        this.getTabs();
+        this.getTabs(true);
     }
 
     componentDidMount() {
-        this.props.instancesWorker.registerHandler(this.instanceChangedHandler);
+        this.props.instancesWorker.registerHandler(this.instanceChangedHandler, true);
 
         this.onNotificationsHandler()
             .then(() => {
@@ -298,21 +302,21 @@ class Drawer extends Component {
         }
     }
 
-    getTabs() {
-        return this.props.instancesWorker.getInstances()
+    getTabs(update) {
+        return this.props.socket.getCompactInstances(update)
             .then(instances => {
                 let dynamicTabs = [];
                 if (instances) {
                     Object.keys(instances).forEach(id => {
                         const instance = instances[id];
 
-                        if (!instance.common || !instance.common.adminTab) {
+                        if (!instance || !instance.adminTab) {
                             return;
                         }
 
                         let tab = 'tab-' + id.replace('system.adapter.', '').replace(/\.\d+$/, '');
 
-                        const singleton = instance && instance.common && instance.common.adminTab && instance.common.adminTab.singleton;
+                        const singleton = instance.adminTab.singleton;
                         let instNum;
                         if (!singleton) {
                             const m = id.match(/\.(\d+)$/);
@@ -328,20 +332,20 @@ class Drawer extends Component {
 
                         let title;
 
-                        if (instance.common.adminTab.name) {
-                            if (typeof instance.common.adminTab.name === 'object') {
-                                if (instance.common.adminTab.name[this.props.lang]) {
-                                    title = instance.common.adminTab.name[this.props.lang];
-                                } else if (instance.common.adminTab.name.en) {
-                                    title = this.props.t(instance.common.adminTab.name.en);
+                        if (instance.adminTab.name) {
+                            if (typeof instance.adminTab.name === 'object') {
+                                if (instance.adminTab.name[this.props.lang]) {
+                                    title = instance.adminTab.name[this.props.lang];
+                                } else if (instance.adminTab.name.en) {
+                                    title = this.props.t(instance.adminTab.name.en);
                                 } else {
-                                    title = this.props.t(instance.common.name);
+                                    title = this.props.t(instance.name);
                                 }
                             } else {
-                                title = this.props.t(instance.common.adminTab.name);
+                                title = this.props.t(instance.adminTab.name);
                             }
                         } else {
-                            title = this.props.t(instance.common.name);
+                            title = this.props.t(instance.name);
                         }
 
 
@@ -353,13 +357,13 @@ class Drawer extends Component {
                         }
 
                         if (!obj.icon) {
-                            obj.icon = `adapter/${instance.common.name}/${instance.common.icon}`;
+                            obj.icon = `adapter/${instance.name}/${instance.icon}`;
                         }
 
                         obj.title = title;
 
                         if (!singleton) {
-                            obj.instance = instance;
+                            //obj.instance = instance;
                             if (instNum) {
                                 obj.title += ' ' + instNum;
                             }
@@ -385,29 +389,31 @@ class Drawer extends Component {
                     obj.visible = true;
                     return obj;
                 });
+
                 // Convert
-                let newObj = JSON.parse(JSON.stringify(this.props.systemConfig));
-                if (!newObj.common['tabsVisible'] || tabs.length !== newObj.common['tabsVisible'].length) {
-                    this.setState({
-                        tabs,
-                    }, async () => {
-                        newObj.common['tabsVisible'] = tabs.map(({ name, order, visible }) => ({ name, order, visible }));
-                        try {
-                            await this.props.socket.setSystemConfig(newObj).then(el => console.log('ok'));
-                        } catch (e) {
-                            window.alert('Cannot set system config: ' + e);
+                this.props.socket.getCompactSystemConfig()
+                    .then(systemConfig => {
+                        systemConfig.common.tabsVisible = systemConfig.common.tabsVisible || [];
+
+                        if (!systemConfig.common.tabsVisible || tabs.length !== systemConfig.common.tabsVisible.length) {
+                            this.setState({tabs}, () => {
+                                this.props.socket.getSystemConfig(true)
+                                    .then(newObj => {
+                                        newObj.common.tabsVisible = tabs.map(({ name, order, visible }) => ({ name, order, visible }));
+
+                                        return this.props.socket.setSystemConfig(newObj)
+                                            .catch(e => window.alert('Cannot set system config: ' + e));
+                                    })
+                            });
+                        } else {
+                            let newTabs = systemConfig.common.tabsVisible.map(({ name, visible }) => {
+                                let tab = tabs.find(el => el.name === name);
+                                tab.visible = visible;
+                                return tab;
+                            })
+                            this.setState({tabs: newTabs});
                         }
                     });
-                } else {
-                    let newTabs = newObj.common['tabsVisible'].map(({ name, visible }) => {
-                        let tab = tabs.find(el => el.name === name);
-                        tab.visible = visible;
-                        return tab;
-                    })
-                    this.setState({
-                        tabs: newTabs
-                    });
-                }
             });
     }
 
@@ -423,6 +429,7 @@ class Drawer extends Component {
                 <a href="/#easy" onClick={event => event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
                     <Avatar onClick={() => handleNavigation('easy')} className={clsx((this.props.themeName === 'colored' || this.props.themeName === 'blue') && classes.logoWhite, classes.logoSize)} alt="ioBroker" src="img/no-image.png" />
                 </a>
+                {this.props.versionAdmin && <Typography className={classes.styleVersion}>v{this.props.versionAdmin}</Typography>}
             </div>
             <IconButton onClick={() => {
                 if (this.isSwipeable() || this.props.state === STATES.compact) {
@@ -440,30 +447,26 @@ class Drawer extends Component {
         return this.props.width === 'xs' || this.props.width === 'sm';
     }
 
-    tabsEditSystemConfig = async (idx) => {
+    tabsEditSystemConfig = idx => {
         const { tabs } = this.state;
-        const { systemConfig, socket } = this.props;
+        const { socket } = this.props;
         let newTabs = JSON.parse(JSON.stringify(tabs));
         if (idx !== undefined) {
             newTabs[idx].visible = !newTabs[idx].visible;
         }
-        let newObjCopy = JSON.parse(JSON.stringify(systemConfig));
-        newObjCopy.common['tabsVisible'] = newTabs.map(({ name, order, visible }) => ({ name, order, visible }));
-        if (idx !== undefined) {
-            this.setState({ tabs: newTabs }, async () => {
-                try {
-                    await socket.setSystemConfig(newObjCopy).then(el => console.log('ok'));
-                } catch (e) {
-                    window.alert('Cannot set system config: ' + e);
+        return this.props.socket.getSystemConfig(true)
+            .then(newObjCopy => {
+                newObjCopy.common.tabsVisible = newTabs.map(({ name, order, visible }) => ({ name, order, visible }));
+
+                if (idx !== undefined) {
+                    this.setState({ tabs: newTabs }, () =>
+                        socket.setSystemConfig(newObjCopy)
+                            .catch(e => window.alert('Cannot set system config: ' + e)));
+                } else {
+                    return socket.setSystemConfig(newObjCopy)
+                        .catch(e => window.alert('Cannot set system config: ' + e));
                 }
             });
-        } else {
-            try {
-                await socket.setSystemConfig(newObjCopy).then(el => console.log('ok'));
-            } catch (e) {
-                window.alert('Cannot set system config: ' + e);
-            }
-        }
     }
 
     getNavigationItems() {
@@ -489,7 +492,8 @@ class Drawer extends Component {
                 badgeColor={logErrors ? 'error' : (logWarnings ? 'warn' : '')}
                 tabs={tabs}
                 setEndDrag={() => this.tabsEditSystemConfig()}
-                setTabs={newObj => this.setState({ tabs: newObj })}>
+                setTabs={newObj => this.setState({ tabs: newObj })}
+            >
                 <DrawerItem
                     key={tab.name}
                     editList={editList}
@@ -542,7 +546,6 @@ class Drawer extends Component {
     }
 
     render() {
-
         const { classes } = this.props;
 
         if (this.isSwipeable()) {
@@ -557,6 +560,7 @@ class Drawer extends Component {
                 <CustomDragLayer />
 
                 {this.getHeader()}
+
                 <List>
                     {this.getNavigationItems()}
                     {this.props.isSecure &&
@@ -623,6 +627,7 @@ Drawer.propTypes = {
     themeName: PropTypes.string,
     socket: PropTypes.object,
     ready: PropTypes.bool,
+    versionAdmin: PropTypes.string,
     expertMode: PropTypes.bool,
     handleNavigation: PropTypes.func,
 

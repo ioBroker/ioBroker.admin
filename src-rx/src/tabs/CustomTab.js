@@ -9,14 +9,16 @@ import Utils from '../Utils';
 
 const styles = theme => ({
     root: {
-        border:     '0 solid #FFF',
+        //border:     '0 solid #FFF',
         display:    'block',
         left:       0,
         top:        0,
         width:      '100%',
         height:     '100%',
         background: 'white',
-        color:      'black'
+        color:      'black',
+        borderRadius: 3,
+        border:     '1px solid #888'
     },
 });
 
@@ -30,7 +32,7 @@ class CustomTab extends Component {
         this.refIframe = React.createRef();
         this.registered = false;
 
-        CustomTab.getHref(this.props.instancesWorker, this.props.tab, this.props.hostname, this.props.protocol, this.props.port,  this.props.hosts,  this.props.adminInstance)
+        CustomTab.getHref(this.props.instancesWorker, this.props.tab, this.props.hostname, this.props.protocol, this.props.port, this.props.hosts,  this.props.adminInstance)
             .then(href =>
                 this.setState({href}));
     }

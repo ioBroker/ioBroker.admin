@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.14",
+        "version": "5.0.16",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -14,7 +14,34 @@
             "es": "Admin",
             "zh-cn": "Admin"
         },
+        "title": "Admin",
+        "connectionType": "local",
+        "dataSource": "push",
         "news": {
+            "5.0.16": {
+                "en": "Admin5: Fixed many bugs",
+                "de": "Admin5: Viele Fehler behoben",
+                "ru": "Admin5: Исправлено множество ошибок",
+                "pt": "Admin5: muitos bugs corrigidos",
+                "nl": "Admin5: Veel bugs opgelost",
+                "fr": "Admin5: Correction de nombreux bugs",
+                "it": "Admin5: risolti molti bug",
+                "es": "Admin5: se corrigieron muchos errores",
+                "pl": "Admin5: Naprawiono wiele błędów",
+                "zh-cn": "Admin5：修复了许多错误"
+            },
+            "5.0.15": {
+                "en": "optimized the loading process",
+                "de": "optimierte den Ladevorgang",
+                "ru": "оптимизировали процесс загрузки",
+                "pt": "otimizou o processo de carregamento",
+                "nl": "geoptimaliseerd het laadproces",
+                "fr": "optimisé le processus de chargement",
+                "it": "ottimizzato il processo di caricamento",
+                "es": "optimizado el proceso de carga",
+                "pl": "zoptymalizował proces ładowania",
+                "zh-cn": "优化了加载过程"
+            },
             "5.0.14": {
                 "en": "Admin5: Fixed many bugs",
                 "de": "Admin5: Viele Fehler behoben",
@@ -230,30 +257,6 @@
                 "es": "solución alternativa para un error socket.io agregado, mensaje de advertencia para las instalaciones de GitHub agregadas",
                 "pl": "dodano obejście dla błędu socket.io, dodano komunikat ostrzegawczy dla instalacji GitHub",
                 "zh-cn": "添加了socket.io错误的解决方法，添加了GitHub安装的警告消息"
-            },
-            "4.0.4": {
-                "en": "fix socketio client dependency",
-                "de": "Behebung der Socketio-Client-Abhängigkeit",
-                "ru": "исправить зависимость клиента socketio",
-                "pt": "corrigir dependência do cliente socketio",
-                "nl": "fix socketio client afhankelijkheid",
-                "fr": "correction de la dépendance du client socketio",
-                "it": "correzione della dipendenza client socketio",
-                "es": "arreglar la dependencia del cliente socketio",
-                "pl": "napraw zależność klienta socketio",
-                "zh-cn": "修复socketio客户端依赖性"
-            },
-            "4.0.3": {
-                "en": "Encrypted configuration was corrected.",
-                "de": "Die verschlüsselte Konfiguration wurde korrigiert.",
-                "ru": "Зашифрованная конфигурация была исправлена.",
-                "pt": "A configuração criptografada foi corrigida.",
-                "nl": "Gecodeerde configuratie is gecorrigeerd.",
-                "fr": "La configuration cryptée a été corrigée.",
-                "it": "La configurazione crittografata è stata corretta.",
-                "es": "La configuración encriptada fue corregida.",
-                "pl": "Szyfrowana konfiguracja została poprawiona.",
-                "zh-cn": "加密的配置已得到纠正。"
             }
         },
         "desc": {

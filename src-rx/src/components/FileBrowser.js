@@ -1197,10 +1197,16 @@ class FileBrowser extends Component {
 
     findItem(id, folders) {
         folders = folders || this.state.folders;
+        if (!folders) {
+            return null;
+        }
         const parts = id.split('/');
         parts.pop();
-        const parentFolder = parts.join('/');
-        return folders[parentFolder || '/'].find(item => item.id === id);
+        const parentFolder = parts.join('/') || '/';
+        if (!folders[parentFolder]) {
+            return null;
+        }
+        return folders[parentFolder].find(item => item.id === id);
     }
 
     renderInputDialog() {

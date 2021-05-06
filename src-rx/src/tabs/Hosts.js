@@ -25,6 +25,8 @@ import clsx from 'clsx';
 import Utils from '../Utils';
 import BaseSettingsDialog from '../dialogs/BaseSettingsDialog';
 import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
+import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
+import Semver from 'semver';
 
 const styles = theme => ({
     grow: {
@@ -59,7 +61,7 @@ const styles = theme => ({
         fontWeight: 600,
         alignSelf: 'center'
     },
-    widthButtons:{
+    widthButtons: {
         width: 192,
     },
     tabFlex: {
@@ -259,30 +261,30 @@ const Hosts = ({
 
     const readInfo = () => {
         return socket.getHosts(true, false, readTimeoutMs)
-            .then(hostsArray => socket.getRepository(currentHost, {update: false}, false, readTimeoutMs)
-                    .then(async repositoryProm => {
-                        const _alive = JSON.parse(JSON.stringify(alive));
+            .then(hostsArray => socket.getRepository(currentHost, { update: false }, false, readTimeoutMs)
+                .then(async repositoryProm => {
+                    const _alive = JSON.parse(JSON.stringify(alive));
 
-                        for (let h = 0; h < hostsArray.length; h++) {
-                            let aliveValue = await socket.getState(`${hostsArray[h]._id}.alive`);
-                            _alive[hostsArray[h]._id] = !aliveValue ? false : !!aliveValue.val;
-                        }
+                    for (let h = 0; h < hostsArray.length; h++) {
+                        let aliveValue = await socket.getState(`${hostsArray[h]._id}.alive`);
+                        _alive[hostsArray[h]._id] = !aliveValue ? false : !!aliveValue.val;
+                    }
 
-                        setAlive(_alive);
+                    setAlive(_alive);
 
-                        setRepository(repositoryProm);
-                        setHosts(hostsArray);
-                        filterText && hostsArray.length <= 2 && setFilterText('');
-                        const hostDataObj = await getHostsData(hostsArray, _alive);
-                        setHostsData(hostDataObj);
+                    setRepository(repositoryProm);
+                    setHosts(hostsArray);
+                    filterText && hostsArray.length <= 2 && setFilterText('');
+                    const hostDataObj = await getHostsData(hostsArray, _alive);
+                    setHostsData(hostDataObj);
 
-                        // simulation
-                        // setTimeout(() => setShowSlowConnectionWarning(true), 5000);
-                    })
-                    .catch(e => {
-                        window.alert('Cannot getRepository: ' + e);
-                        e.toString().includes('timeout') && setShowSlowConnectionWarning(true);
-                    }));
+                    // simulation
+                    // setTimeout(() => setShowSlowConnectionWarning(true), 5000);
+                })
+                .catch(e => {
+                    window.alert('Cannot getRepository: ' + e);
+                    e.toString().includes('timeout') && setShowSlowConnectionWarning(true);
+                }));
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -297,8 +299,8 @@ const Hosts = ({
         renderCard: viewMode ? <HostCard
             systemConfig={systemConfig}
             key={_id}
-            setEditDialog={() => setEditDialog({index: idx, dialogName: name})}
-            setBaseSettingsDialog={() => setBaseSettingsDialog({index: idx, dialogName: name})}
+            setEditDialog={() => setEditDialog({ index: idx, dialogName: name })}
+            setBaseSettingsDialog={() => setBaseSettingsDialog({ index: idx, dialogName: name })}
             hostsWorker={hostsWorker}
             expertMode={expertMode}
             socket={socket}
@@ -308,10 +310,11 @@ const Hosts = ({
             image={icon}
             title={title}
             os={platform}
+            openHostUpdateDialog={() => openHostUpdateDialog(name)}
             description={getHostDescriptionAll(_id, t, classes, hostsData)[0]}
             available={repository['js-controller']?.version || '-'}
             executeCommandRemove={() => executeCommand(`host remove ${name}`)}
-            dialogUpgrade={JsControllerDialogFunc}
+            dialogUpgrade={() => JsControllerDialogFunc(socket,  _id)}
             currentHost={currentHost === _id}
             installed={installedVersion}
             events={'- / -'}
@@ -339,8 +342,9 @@ const Hosts = ({
             image={icon}
             title={title}
             os={platform}
+            openHostUpdateDialog={() => openHostUpdateDialog(name)}
             executeCommandRemove={() => executeCommand(`host remove ${name}`)}
-            dialogUpgrade={JsControllerDialogFunc}
+            dialogUpgrade={() => JsControllerDialogFunc(socket,  _id)}
             currentHost={currentHost === _id}
             description={getHostDescriptionAll(_id, t, classes, hostsData)[1]}
             available={repository['js-controller']?.version || '-'}
@@ -355,9 +359,9 @@ const Hosts = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     ), [hosts, alive, repository, hostsData, classes, expertMode, viewMode]);
 
-    const [editDialog, setEditDialog] = useState({index: 0, dialogName: ''});
+    const [editDialog, setEditDialog] = useState({ index: 0, dialogName: '' });
 
-    const [baseSettingsDialog, setBaseSettingsDialog] = useState({index: 0, dialogName: ''});
+    const [baseSettingsDialog, setBaseSettingsDialog] = useState({ index: 0, dialogName: '' });
 
     const getPanels = useCallback(() => {
         const items = getAllArrayHosts.filter(el => filterText ? el.name.toLowerCase().includes(filterText.toLowerCase()) : true).map(el => viewMode ? el.renderCard : el.renderRow);
@@ -375,13 +379,13 @@ const Hosts = ({
             currentHostName={baseSettingsDialog.dialogName}
             key="base"
             onClose={() => setBaseSettingsDialog({
-                    index: 0,
-                    dialogName: ''
-                })}
+                index: 0,
+                dialogName: ''
+            })}
             lang={lang}
             // showAlert={(message, type) => this.showAlert(message, type)}
             socket={socket}
-            // currentTab={this.state.currentTab}
+            // currentTab={currentTab}
             t={t}
         />
     };
@@ -428,6 +432,172 @@ const Hosts = ({
         }
     }
 
+    const [hostUpdateDialog, setHostUpdateDialog] = useState(false);
+    const [hostUpdate, setHostUpdate] = useState(null);
+
+    const closeHostUpdateDialog = (cb) => {
+        setHostUpdateDialog(false);
+        setHostUpdate(null);
+        cb && cb();
+    }
+
+    const openHostUpdateDialog = (hostName, cb) => {
+        setHostUpdateDialog(true);
+        setHostUpdate(hostName);
+        cb && cb();
+    }
+
+    const update = (adapter) => {
+        console.log(222, repository['js-controller'])
+        console.log(222, hostUpdate, hosts.find(el => el.common.name === hostUpdate))
+        // executeCommand('stop', () => {
+        //     executeCommand('update ' + adapter, () => {
+        // executeCommand('upgrade self '+ adapter, () => {
+        // executeCommand('start or reboot server');
+        // });
+        //     });
+        // });
+    }
+
+    const getDependencies = value => {
+        const adapter = repository['js-controller'];
+        const currentHostCheck = hosts.find(el => el.common.name === hostUpdate);
+        let result = [];
+
+        if (adapter) {
+            const dependencies = adapter.dependencies;
+            const nodeVersion = adapter.node;
+
+            dependencies && dependencies.length && dependencies.forEach(dependency => {
+
+                const entry = {
+                    name: '',
+                    version: null,
+                    installed: false,
+                    installedVersion: null,
+                    rightVersion: false
+                };
+
+                const checkVersion = typeof dependency !== 'string';
+                const keys = Object.keys(dependency);
+                entry.name = !checkVersion ? dependency : keys ? keys[0] : null;
+                entry.version = checkVersion ? dependency[entry.name] : null;
+
+                if (result && entry.name) {
+                    const installed = currentHostCheck.common.installedVersion;
+
+                    entry.installed = !!installed;
+                    entry.installedVersion = installed ? installed : null;
+                    entry.rightVersion = installed ? checkVersion ? Semver.satisfies(installed.version, entry.version, { includePrerelease: true }) : true : false;
+                }
+
+                result.push(entry);
+            });
+            let nodeJsVersion = currentHostCheck.native.process.versions.node;
+            if (nodeVersion) {
+                const entry = {
+                    name: 'node',
+                    version: nodeVersion,
+                    installed: true,
+                    installedVersion: nodeJsVersion,
+                    rightVersion: false
+                };
+
+                entry.rightVersion = Semver.satisfies(nodeJsVersion, nodeVersion);
+
+                result.push(entry);
+            }
+        }
+
+        return result;
+    }
+    const rightDependencies = (value) => {
+        const adapter = repository['js-controller'];
+        const currentHostCheck = hosts.find(el => el.common.name === hostUpdate);
+        let result = true;
+
+        if (adapter) {
+            const dependencies = adapter.dependencies;
+            const nodeVersion = adapter.node;
+
+            if (dependencies) {
+                if (dependencies instanceof Array) {
+                    dependencies.forEach(dependency => {
+                        const checkVersion = typeof dependency !== 'string';
+                        const keys = Object.keys(dependency);
+                        const name = !checkVersion ? dependency : keys ? keys[0] : null;
+
+                        if (result && name) {
+
+                            const installed = currentHostCheck.common.installedVersion;
+
+                            result = installed ? (checkVersion ? Semver.satisfies(installed, dependency[name], { includePrerelease: true }) : true) : false;
+                        }
+                    });
+                } else if (typeof dependencies === 'object') {
+                    Object.keys(dependencies).forEach(dependency => {
+                        if (dependency && dependencies[dependency] !== undefined && result) {
+                            const installed = currentHostCheck.common.installedVersion;
+                            const checkVersion = typeof dependencies[dependency] !== 'string';
+                            result = installed ? (checkVersion ? Semver.satisfies(installed, dependency[dependency], { includePrerelease: true }) : true) : false;
+                        }
+                    });
+                } else {
+                    console.error(`Invalid dependencies for ${value}: ${JSON.stringify(dependencies)}`);
+                }
+            }
+            let nodeJsVersion = hosts.find(el => el.common.name === hostUpdate).native.process.versions.node;
+
+            if (result && nodeVersion) {
+                result = Semver.satisfies(nodeJsVersion, nodeVersion);
+            }
+        }
+
+        return result;
+    }
+
+    const getNews = (value, all = false) => {
+        const adapter = repository['js-controller'];
+        const installed = hosts.find(el => el.common.name === hostUpdate).common.installedVersion;
+        const news = [];
+
+        if (installed && adapter && adapter.news) {
+            Object.keys(adapter.news).forEach(version => {
+                try {
+                    if (Semver.gt(version, installed) || all) {
+                        news.push({
+                            version: version,
+                            news: adapter.news[version][lang] || adapter.news[version].en
+                        });
+                    }
+                } catch (e) {
+                    // ignore it
+                    console.warn(`Cannot compare "${version}" and "${installed}"`);
+                }
+            });
+        }
+
+        return news;
+    }
+    const hostUpdateDialogCb = () => {
+        if (!hostUpdateDialog) {
+            return null;
+        } else {
+            return <AdapterUpdateDialog
+                open={hostUpdateDialog}
+                adapter={hostUpdate}
+                t={t}
+                dependencies={getDependencies()}
+                rightDependencies={rightDependencies()}
+                news={getNews()}
+                onUpdate={() =>
+                    closeHostUpdateDialog(() =>
+                        update(hostUpdate))}
+                onClose={() => closeHostUpdateDialog()}
+            />
+        }
+    }
+
     if (!hosts.length) {
         return <LinearProgress />;
     }
@@ -436,6 +606,7 @@ const Hosts = ({
         {renderEditObjectDialog()}
         {baseSettingsSettingsDialog()}
         {renderSlowConnectionWarning()}
+        {hostUpdateDialogCb()}
         <TabHeader>
             <Tooltip title={t('Show / hide List')}>
                 <IconButton onClick={() => setViewMode(!viewMode)}>
@@ -483,7 +654,7 @@ const Hosts = ({
                             <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{t('Available')}</div>
                             <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{t('Installed')}</div>
                             <div className={clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Events')}</div>
-                            <div className={clsx(classes.tabHeaderItemButton,expertMode && classes.widthButtons)} />
+                            <div className={clsx(classes.tabHeaderItemButton, expertMode && classes.widthButtons)} />
                         </div>
                     </div>}
                 {getPanels()}

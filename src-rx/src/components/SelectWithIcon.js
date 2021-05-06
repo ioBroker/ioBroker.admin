@@ -5,7 +5,6 @@ import { withStyles } from '@material-ui/core/styles';
 import {FormControl, InputLabel, MenuItem, Select} from '@material-ui/core';
 
 import Icon from '@iobroker/adapter-react/Components/Icon';
-
 import Utils from '@iobroker/adapter-react/Components/Utils';
 
 const styles = theme => ({
@@ -54,14 +53,13 @@ class SelectWithIcon extends Component {
     }
 
     render() {
-        const item = this.state.list.find(it => it.value === this.props.value);
+        const item = this.state.list.find(it => it.value === this.props.value || (this.props.removePrefix && it.value.replace(this.props.removePrefix, '') === this.props.value));
 
         const style = this.props.value === this.props.different ? {} :
             {
                 color: item?.color || undefined,
                 backgroundColor: Utils.getInvertedColor(item?.color, this.props.themeType)
             };
-
 
         return <FormControl fullWidth={!!this.props.fullWidth} style={this.props.style} className={this.props.className}>
             <InputLabel>{this.props.label}</InputLabel>
@@ -87,7 +85,7 @@ class SelectWithIcon extends Component {
                         }
                     }
 
-                    this.props.onChange(el.target.value);
+                    this.props.onChange(this.props.removePrefix ? el.target.value.replace(this.props.removePrefix, '') : el.target.value);
                 }}
             >
                 {this.state.list.map(el => <MenuItem
@@ -114,7 +112,10 @@ SelectWithIcon.propTypes = {
     list: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
     label: PropTypes.string,
     different: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-    fullWidth: PropTypes.bool
+    fullWidth: PropTypes.bool,
+    className: PropTypes.string,
+    style: PropTypes.object,
+    removePrefix: PropTypes.string,
 };
 
 export default withStyles(styles)(SelectWithIcon);

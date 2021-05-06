@@ -32,7 +32,7 @@ import { PROGRESS } from './components/Connection';
 import Loader from '@iobroker/adapter-react/Components/Loader';
 import I18n from '@iobroker/adapter-react/i18n';
 import Router from '@iobroker/adapter-react/Components/Router';
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import Utils from './components/Utils';//adapter-react/Components/Utils';
 import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 import Icon from '@iobroker/adapter-react/Components/Icon';
 import theme from './Theme'; // @iobroker/adapter-react/Theme
@@ -235,6 +235,15 @@ const styles = theme => ({
         borderRadius: 4,
         backgroundColor: theme.palette.type === 'dark' ? '#EEE' : '#222',
         padding: 3,
+    },
+    styleVersion: {
+        fontSize: 10,
+        color: '#ffffff5e'
+    },
+    wrapperName: {
+        display: 'flex',
+        flexDirection: 'column',
+        marginRight: 10
     }
 });
 
@@ -286,6 +295,11 @@ class App extends Router {
         I18n.setLanguage((navigator.language || navigator.userLanguage || 'en').substring(0, 2).toLowerCase());
 
         this.refConfigIframe = null;
+        this.refUser = React.createRef();
+        this.refUserDiv = React.createRef();
+        this.expireInSec = null;
+        this.expireInSecInterval = null;
+        this.expireText = I18n.t('Session expire in %s', '%s');
 
         if (!query.login) {
             let drawerState = window.localStorage.getItem('App.drawerState');
@@ -366,6 +380,10 @@ class App extends Router {
 
                 readTimeoutMs: SlowConnectionWarningDialog.getReadTimeoutMs(),
                 showSlowConnectionWarning: false,
+
+                expireInSec: null,
+
+                versionAdmin: '',
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -468,24 +486,14 @@ class App extends Router {
                                 };
 
                                 try {
-                                    newState.systemConfig = await this.socket.getSystemConfig();
+                                    newState.systemConfig = await this.socket.getCompactSystemConfig();
                                     newState.wizard = !newState.systemConfig.common.licenseConfirmed;
                                 } catch (error) {
                                     console.log(error);
                                 }
 
-                                newState.hosts = await this.socket.getHosts();
-
-                                if (!this.state.currentHost) {
-                                    const currentHost = window.localStorage.getItem('App.currentHost');
-                                    if (currentHost && newState.hosts.find(({ _id }) => _id === currentHost)) {
-                                        newState.currentHost = newState.hosts.find(({ _id }) => _id === currentHost)._id;
-                                        newState.currentHostName = newState.hosts.find(({ _id }) => _id === currentHost).common.name;
-                                    } else {
-                                        newState.currentHost = newState.hosts[0]._id;
-                                        newState.currentHostName = newState.hosts[0].common.name;
-                                    }
-                                }
+                                newState.versionAdmin = (await this.socket.getVersion()).version;
+                                await this.findCurrentHost(newState);
 
                                 await this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
 
@@ -508,6 +516,9 @@ class App extends Router {
                                                             invertBackground: this.mustInvertBackground(userObj.common.color)
                                                         }
                                                     });
+
+                                                    // start ping interval
+                                                    this.makePingAuth();
                                                 })
                                         });
                                 }
@@ -542,9 +553,97 @@ class App extends Router {
         }
     }
 
+    async findCurrentHost(newState) {
+        newState.hosts = await this.socket.getCompactHosts();
+
+        if (!this.state.currentHost) {
+            const currentHost = window.localStorage.getItem('App.currentHost');
+
+            const itemHost = newState.hosts.find(host => host._id === currentHost);
+
+            if (currentHost && itemHost) {
+                newState.currentHost     = itemHost._id;
+                newState.currentHostName = itemHost.common?.name || itemHost._id.replace('system.host.', '');
+            } else {
+                newState.currentHost     = newState.hosts[0]._id;
+                newState.currentHostName = newState.hosts[0].common?.name || newState.hosts[0]._id.replace('system.host.', '');
+            }
+        }
+
+        // Check that host is alive
+        let alive;
+        try {
+            alive = await this.socket.getState(newState.currentHost + '.alive');
+        } catch (e) {
+            alive = null;
+            console.warn('Cannot get state ' + newState.currentHost + '.alive: ' + e);
+        }
+
+        if (!alive || !alive.val) {
+            // find first alive host
+            for (let h = 0; h < newState.hosts.length; h++) {
+                alive = await this.socket.getState(newState.hosts[h]._id + '.alive');
+                if (alive && alive.val) {
+                    newState.currentHost     = newState.hosts[h]._id;
+                    newState.currentHostName = newState.hosts[h].common.name;
+                }
+            }
+        }
+    }
+
+    updateExpireIn() {
+        const now = Date.now();
+        this.expireInSec -= (now - this.lastExecution) / 1000;
+        const time = Utils.formatTime(this.expireInSec);
+        if (this.refUser.current) {
+            this.refUser.current.title = this.expireText.replace('%s', time);
+        }
+        if (this.expireInSec < 120 && this.refUserDiv.current) {
+            this.refUserDiv.current.innerHTML = time;
+            this.refUserDiv.current.style.color = '#F44';
+        }
+
+        if (this.expireInSec <= 0) {
+            window.alert('Session expired');
+            // reconnect
+            setTimeout(() =>
+                window.location.reload(false), 1000);
+        }
+
+        this.lastExecution = now;
+    }
+
+    makePingAuth() {
+        this.pingAuth && clearTimeout(this.pingAuth);
+        this.pingAuth = null;
+
+        this.socket.getCurrentSession()
+            .then(data => {
+                if (data) {
+                    if (!this.expireInSecInterval) {
+                        this.expireInSecInterval = setInterval(() => this.updateExpireIn(), 1000);
+                    }
+                    this.expireInSec = data.expireInSec;
+                    this.lastExecution = Date.now();
+                    this.updateExpireIn();
+                }
+
+                /*this.pingAuth = setTimeout(() => {
+                    this.pingAuth = null;
+                    this.makePingAuth();
+                }, 30000);*/
+            })
+            .catch(e => {
+                window.alert('Session timeout: ' + e);
+                // reconnect
+                setTimeout(() =>
+                    window.location.reload(false), 1000);
+            })
+    }
+
     onDiscoveryAlive = (name, value) => {
         if (!!(value && !!value.val) !== this.state.discoveryAlive) {
-            this.setState({ discoveryAlive: !!(value && !!value.val)});
+            this.setState({ discoveryAlive: !!(value && !!value.val) });
         }
     }
 
@@ -617,7 +716,7 @@ class App extends Router {
         } else {
             return <SlowConnectionWarningDialog
                 readTimeoutMs={this.state.readTimeoutMs}
-                t={this.t}
+                t={I18n.t}
                 onClose={readTimeoutMs => {
                     if (readTimeoutMs) {
                         this.setState({showSlowConnectionWarning: false, readTimeoutMs}, () =>
@@ -637,15 +736,15 @@ class App extends Router {
         let repository;
         let installed;
 
-        return this.socket.getRepository(currentHost, { update: false }, false, this.state.readTimeoutMs)
+        return this.socket.getCompactRepository(currentHost, false, this.state.readTimeoutMs)
             .catch(e => {
-                window.alert('Cannot getRepository: ' + e);
+                window.alert('Cannot getRepositoryCompact: ' + e);
                 e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
                 return null;
             })
             .then(_repository => {
                 repository = _repository;
-                return this.socket.getInstalled(currentHost, false, this.state.readTimeoutMs)
+                return this.socket.getCompactInstalled(currentHost, false, this.state.readTimeoutMs)
                     .catch(e => {
                         window.alert('Cannot getInstalled: ' + e);
                         e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
@@ -654,14 +753,13 @@ class App extends Router {
             })
             .then(_installed => {
                 installed = _installed;
-                return this.adaptersWorker.getAdapters()
+                return this.socket.getCompactAdapters()
                     .catch(e => window.alert('Cannot read adapters: ' + e));
             })
             .then(adapters => {
-                Object.keys(adapters).forEach(id => {
-                    const adapter = adapters[id];
-                    if (installed[adapter?.common?.name] && adapter.common?.ignoreVersion) {
-                        installed[adapter.common.name].ignoreVersion = adapter.common.ignoreVersion;
+                installed && adapters && Object.keys(adapters).forEach(id => {
+                    if (installed[id] && adapters[id].iv) {
+                        installed[id].ignoreVersion = adapters[id].iv;
                     }
                 });
 
@@ -676,21 +774,30 @@ class App extends Router {
     onHostStatusChanged = (id, state) => {
         const host = this.state.hosts.find(_id => id + '.alive' === id);
         if (host) {
+            // TODO!! => update hostSelector
             console.log(`Current status ${id}: ${state?.val}`);
         }
     };
 
-    subscribeOnHostsStatus() {
-        // this.state.hosts.forEach
-        // this.socket.subscribeState(id + '.alive', this.onHostStatusChanged)
+    subscribeOnHostsStatus(hosts) {
+        hosts = hosts || this.state.hosts;
+        hosts.forEach(item =>
+            this.socket.subscribeState(item._id + '.alive', this.onHostStatusChanged));
+    }
+
+    unsubscribeOnHostsStatus() {
+        this.state.hosts && this.socket && this.state.hosts.forEach(item =>
+            this.socket.unsubscribeState(item._id + '.alive', this.onHostStatusChanged));
     }
 
     componentWillUnmount() {
         window.removeEventListener('hashchange', this.onHashChanged, false);
         this.socket.unsubscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
-        // unsubscribe
-        // this.state.hosts.forEach
-        // this.socket.unsubscribeState(id + '.alive', this.onHostStatusChanged);
+        this.pingAuth && clearTimeout(this.pingAuth);
+        this.pingAuth = null;
+        this.expireInSecInterval && clearInterval(this.expireInSecInterval);
+        this.expireInSecInterval = null;
+        this.unsubscribeOnHostsStatus();
     }
 
     /**
@@ -869,14 +976,14 @@ class App extends Router {
                         themeType={this.state.themeType}
                         theme={this.state.theme}
                         expertMode={this.state.expertMode}
-                        idHost={this.state.hosts.find(({ common: { name } }) => name === this.state.currentHostName)._id}
+                        idHost={this.state.currentHost}
                         currentHostName={this.state.currentHostName}
                         t={I18n.t}
                         dateFormat={this.state.systemConfig.common.dateFormat}
                         isFloatComma={this.state.systemConfig.common.isFloatComma}
                         width={this.props.width}
                         configStored={value => this.allStored(value)}
-                        executeCommand={cmd => this.executeCommand(cmd)}
+                        executeCommand={(cmd, cb) => this.executeCommand(cmd, cb)}
                         inBackgroundCommand={this.state.commandError || this.state.performed}
                     />
                 </Suspense>;
@@ -907,7 +1014,6 @@ class App extends Router {
                         logsWorker={this.logsWorker}
                         expertMode={this.state.expertMode}
                         currentHost={this.state.currentHost}
-                        adaptersWorker={this.adaptersWorker}
                         hostsWorker={this.hostsWorker}
                         clearErrors={cb => this.clearLogErrors(cb)}
                     />
@@ -975,7 +1081,7 @@ class App extends Router {
                         t={I18n.t}
                         navigate={Router.doNavigate}
                         currentHost={this.state.currentHost}
-                        executeCommand={cmd => this.executeCommand(cmd)}
+                        executeCommand={(cmd, cb) => this.executeCommand(cmd, cb)}
                         systemConfig={this.state.systemConfig}
                         showAdaptersWarning={this.showAdaptersWarning}
                     />
@@ -1210,10 +1316,12 @@ class App extends Router {
 
     renderLoggedUser() {
         if (this.state.user && this.props.width !== 'xs' && this.props.width !== 'sm') {
-            return <div title={this.state.user.id} className={clsx(this.props.classes.userBadge, this.state.user.invertBackground && this.props.classes.userBackground)}>
-                {this.state.user.icon ? <Icon src={this.state.user.icon} className={this.props.classes.userIcon} />
-                    : <UserIcon className={this.props.classes.userIcon} />}
-                <div style={{ color: this.state.user.color || undefined }} className={this.props.classes.userText}>{this.state.user.name}</div>
+            return <div title={this.state.user.id} className={clsx(this.props.classes.userBadge, this.state.user.invertBackground && this.props.classes.userBackground)} ref={this.refUser}>
+                {this.state.user.icon ?
+                    <Icon src={this.state.user.icon} className={this.props.classes.userIcon} />
+                    :
+                    <UserIcon className={this.props.classes.userIcon} />}
+                <div ref={this.refUserDiv} style={{ color: this.state.user.color || undefined }} className={this.props.classes.userText}>{this.state.user.name}</div>
             </div>
         } else {
             return null;
@@ -1369,11 +1477,15 @@ class App extends Router {
                         </div>
 
                         {this.renderLoggedUser()}
+
                         {this.state.drawerState !== 0 &&
                             <Grid container className={clsx(this.state.drawerState !== 0 && classes.avatarVisible, classes.avatarNotVisible)} spacing={1} alignItems="center">
                                 {(!this.state.user || this.props.width === 'xs' || this.props.width === 'sm') &&
                                     <Hidden xsDown>
-                                        <Typography>admin</Typography>
+                                        <div className={classes.wrapperName}>
+                                            <Typography>admin</Typography>
+                                            {this.state.versionAdmin && <Typography className={classes.styleVersion}>v{this.state.versionAdmin}</Typography>}
+                                        </div>
                                     </Hidden>}
                                 <Grid item>
                                     <a href="/#easy" onClick={event => event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
@@ -1397,6 +1509,7 @@ class App extends Router {
                         logsWorker={this.logsWorker}
                         logoutTitle={I18n.t('Logout')}
                         isSecure={this.socket.isSecure}
+                        versionAdmin={this.state.versionAdmin}
                         t={I18n.t}
                         lang={I18n.getLanguage()}
                         socket={this.socket}
@@ -1444,4 +1557,5 @@ class App extends Router {
         </ThemeProvider>;
     }
 }
+
 export default withWidth()(withStyles(styles)(App));

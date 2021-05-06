@@ -57,7 +57,9 @@ class BaseSettingsDialog extends Component {
             log: null,
             plugins: null,
         };
+    }
 
+    componentDidMount() {
         this.getSettings(this.state.currentHost);
     }
 
@@ -77,19 +79,20 @@ class BaseSettingsDialog extends Component {
     renderRestartDialog() {
         if (this.state.showRestart) {
             return <ConfirmDialog
-                text={this.props.t('Restart controller?')}
+                title={this.props.t('Please confirm')}
+                text={<><div>{this.props.t('Restart works only if controller started as system service.')}</div>
+                <div>{this.props.t('Restart controller?')}</div></>}
                 onClose={result =>
                     this.setState({showRestart: false}, () => {
                         if (result) {
                             this.props.socket.restartController(this.props.currentHost)
+                                .then(() =>
+                                    setTimeout(() =>  // reload admin
+                                        window.location.reload(false), 500))
                                 .catch(e => window.alert(`Cannot restart: ${e}`));
                         }
 
                         this.props.onClose();
-
-                        // reload admin
-                        setTimeout(() =>
-                            window.location.reload(false), 500);
                     })}
             />;
         } else {

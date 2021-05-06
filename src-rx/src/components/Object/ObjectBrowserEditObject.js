@@ -144,7 +144,21 @@ const styles = theme => ({
     },
     tabsPadding: {
         padding: '0px 24px'
-    }
+    },
+    '@media screen and (max-width: 465px)': {
+        wrapperButton: {
+            '& *':{
+                fontSize:10
+            }
+        },
+    },
+    '@media screen and (max-width: 380px)': {
+        wrapperButton: {
+            '& *':{
+                fontSize:9
+            }
+        },
+    },
 });
 
 class ObjectBrowserEditObject extends Component {
@@ -663,7 +677,7 @@ class ObjectBrowserEditObject extends Component {
                 {this.state.tab === 'common' ? this.renderCommonEdit() : null}
                 {this.renderSelectDialog()}
             </DialogContent>
-            <DialogActions>
+            <DialogActions className={this.props.classes.wrapperButton}>
                 {this.state.tab === 'object' && <Button onClick={e => this.onCopy(e)} disabled={this.state.error}><IconCopy />{this.props.t('Copy into clipboard')}</Button>}
                 <Button variant="contained" disabled={this.state.error || !this.state.changed} onClick={() => this.onUpdate()} color="primary"><IconCheck />{this.props.t('Write')}</Button>
                 <Button variant="contained" onClick={() => this.props.onClose()}><IconClose />{this.props.t('Cancel')}</Button>

@@ -30,12 +30,13 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import I18n from '@iobroker/adapter-react/i18n';
 import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
 import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
-import Icon from '@iobroker/adapter-react/Components/Icon';
 
 import InstanceInfo from './InstanceInfo';
 import State from '../State';
 import CustomModal from '../CustomModal';
 import LinksDialog from './LinksDialog';
+import TextWithIcon from '../TextWithIcon';
+import SelectWithIcon from '../SelectWithIcon';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -158,6 +159,9 @@ const styles = theme => ({
     hidden: {
         display: 'none'
     },
+    invisible: {
+        opacity: 0,
+    },
     buttonUpdate: {
         border: '1px solid',
         padding: '0px 7px',
@@ -216,11 +220,35 @@ const styles = theme => ({
         paddingTop: 0
     },
     smallAvatar: {
-        width: theme.spacing(3),
-        height: theme.spacing(3)
+        width: 24,
+        height: 24
     },
     statusIndicator: {
-        marginTop: 10,
+        marginTop: 8,
+    },
+    statusIcon_green: { // square
+        border: '2px solid grey',
+        borderRadius: 2,
+    },
+    statusIcon_red: { // circle
+        border: '2px solid grey',
+        borderRadius: 20,
+    },
+    statusIcon_orange: { // triangle
+        border: 0,
+        borderRadius: 0,
+    },
+    statusIcon_blue: { // watch
+        border: '2px solid grey',
+        borderRadius: 20,
+    },
+    statusIcon_gray: { // circle ?
+        border: '2px solid grey',
+        borderRadius: 20,
+    },
+    statusIcon_grey: { // circle ?
+        border: '2px solid grey',
+        borderRadius: 20,
     },
     instanceIcon: {
         height: 42,
@@ -353,6 +381,11 @@ const styles = theme => ({
             display: 'flex !important'
         },
     },
+    '@media screen and (max-width: 1230px)': {
+        hidden1230: {
+            display: 'none !important'
+        }
+    },
     '@media screen and (max-width: 1050px)': {
         hidden1050: {
             display: 'none !important'
@@ -392,7 +425,7 @@ const styles = theme => ({
             width: 100,
         },
         maxWidth300: {
-            width:`250px !important`
+            width: `250px !important`
         }
     },
     '@media screen and (max-width: 335px)': {
@@ -564,6 +597,7 @@ const InstanceRow = ({
     adminInstance,
     hosts,
     host,
+    currentHost
 }) => {
     const [openSelectCompactGroup, setOpenSelectCompactGroup] = useState(false);
     const [openDialogCron, setOpenDialogCron] = useState(false);
@@ -733,19 +767,15 @@ const InstanceRow = ({
             </Select>
         </FormControl>}
         {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
-        {openDialogHost && <FormControl className={classes.formControl} variant="outlined">
-            <InputLabel>{t('Host')}</InputLabel>
-            <Select
-                variant="standard"
-                value={hostValue}
-                fullWidth
-                onChange={el => setHostValue(el.target.value)}
-            >
-                {hosts.map(item => <MenuItem key={item._id} value={item.common?.hostname || item._id.replace(/^system\.host\./, '')}>
-                    <Icon src={item.common.icon}/>{item.common?.name || item._id}
-                </MenuItem>)}
-            </Select>
-        </FormControl>}
+        {openDialogHost && <SelectWithIcon
+            themeType={themeType}
+            value={hostValue}
+            list={hosts}
+            removePrefix="system.host."
+            fullWidth
+            className={classes.formControl}
+            onChange={el => setHostValue(el)}
+        />}
     </CustomModal> : null;
 
     const state = getInstanceState(id);
@@ -770,6 +800,14 @@ const InstanceRow = ({
             setShowStopAdminDialog(false);
         }}
     /> : null;
+
+    const stateTooltip = [
+        instance.mode === 'daemon' ? <State key={1} state={connectedToHost} >{t('Connected to host')}</State> : '',
+        instance.mode === 'daemon' ? <State key={2} state={alive} >{t('Heartbeat')}</State> : '',
+        connected !== null         ? <State key={3} state={!!connected}>
+            {typeof connected === 'string' ? t('Connected: ') + (connected || '-') : t('Connected to device or service')}
+        </State> : ''
+    ];
 
     return <Accordion key={key} square
         expanded={expanded === instance.id}
@@ -822,22 +860,24 @@ const InstanceRow = ({
             />}
             <Grid container spacing={1} alignItems="center" direction="row" wrap="nowrap">
                 <div className={classes.gridStyle}>
-                    <Avatar className={clsx(
-                        classes.smallAvatar,
-                        classes.statusIndicator,
-                        instance.mode === 'daemon' || instance.mode === 'schedule' ? classes[state] : classes.transparent
-                    )}>
-                        {getModeIcon(instance.mode)}
-                    </Avatar>
+                    <Tooltip title={<span style={{ display: 'flex', flexDirection: 'column' }}>{stateTooltip}</span>}>
+                        <div
+                            className={clsx(
+                                classes.smallAvatar,
+                                classes.statusIndicator,
+                                instance.mode === 'daemon' || instance.mode === 'schedule' ? classes[state] : classes.transparent,
+                                connectedToHost && alive && connected === false && classes.orange
+                            )}>
+                            {getModeIcon(instance.mode, state, classes['statusIcon_' + state])}
+                        </div>
+                    </Tooltip>
                     <Avatar
                         variant="square"
                         alt={instance.id}
                         src={instance.image}
                         className={classes.instanceIcon}
                     />
-                    <div className={classes.instanceId}>
-                        {instance.id}
-                    </div>
+                    <div className={classes.instanceId}>{instance.id}</div>
                 </div>
                 <Tooltip title={t('Start/stop')}>
                     <div>
@@ -930,7 +970,7 @@ const InstanceRow = ({
                     </div>
                 </Typography>
                 {expertMode &&
-                    <div className={classes.hidden1250} >
+                    <div className={clsx(classes.hidden1250, !running && classes.invisible)} >
                         <InstanceInfo
                             icon={<ImportExportIcon />}
                             tooltip={t('events')}
@@ -961,6 +1001,9 @@ const InstanceRow = ({
                     >
                         {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
                     </InstanceInfo>
+                </Grid>
+                <Grid item className={clsx(classes.hidden1230)}>
+                    {<TextWithIcon value={host} list={hosts} removePrefix="system.host." themeType={themeType}/>}
                 </Grid>
             </Grid>
             <div className={classes.hidden570}>
@@ -1002,11 +1045,11 @@ const InstanceRow = ({
                 <Grid item container direction="row" xs={10}>
                     <Grid item container direction="column" xs={12} sm={6} md={4}>
                         <span className={classes.instanceName}>{instance.id}</span>
-                        {instance.mode === 'daemon' && <State state={connectedToHost} >{t('Connected to host')}</State>}
-                        {instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
-                        {connected !== null &&
-                            <State state={connected}>
-                                {t('Connected to %s', instance.adapter)}
+                        {running && instance.mode === 'daemon' && <State state={connectedToHost} >{t('Connected to host')}</State>}
+                        {running && instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
+                        {running && connected !== null &&
+                            <State state={!!connected}>
+                                {typeof connected === 'string' ? t('Connected: ') + (connected || '-') : t('Connected to device or service')}
                             </State>
                         }
                     </Grid>
@@ -1033,7 +1076,7 @@ const InstanceRow = ({
                                 </IconButton>
                             </Tooltip>
                         </div>}
-                        {expertMode &&
+                        {running && expertMode &&
                             <div className={classes.visible1250}>
                                 <InstanceInfo icon={<ImportExportIcon />} tooltip={t('events')}>
                                     <div className={classes.displayFlex}>
@@ -1169,7 +1212,7 @@ const InstanceRow = ({
                         </div>
                         {hosts.length > 1 || (hosts.length && hosts[0].common?.hostname !== host) ? <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={<HostIcon className={classes.marginRight} />} tooltip={t('Host for this instance')}>
-                                {host}
+                                {<TextWithIcon value={host} list={hosts} removePrefix="system.host." themeType={themeType}/>}
                             </InstanceInfo>
                             <Tooltip title={t('Edit')}>
                                 <IconButton

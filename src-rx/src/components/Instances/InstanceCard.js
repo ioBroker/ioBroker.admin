@@ -39,7 +39,6 @@ import { green, red } from '@material-ui/core/colors';
 
 import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
 import I18n from '@iobroker/adapter-react/i18n';
-import Icon from '@iobroker/adapter-react/Components/Icon';
 import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 
 import sentry from '../../assets/sentry.svg';
@@ -47,6 +46,8 @@ import InstanceInfo from './InstanceInfo';
 import State from '../State';
 import CustomModal from '../CustomModal';
 import LinksDialog from './LinksDialog';
+import TextWithIcon from '../TextWithIcon';
+import SelectWithIcon from '../SelectWithIcon';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -292,6 +293,12 @@ const styles = theme => ({
     instanceStateAliveAndConnected1: {
         backgroundColor: 'rgba(0, 255, 0, 0.4)'
     },
+    instanceName: {
+        fontSize: 16,
+        padding: 4,
+        paddingBottom: 15,
+        fontWeight: 'bold'
+    },
     /*instanceStateAliveAndConnected2: {
         backgroundColor: 'rgb(0 255 0 / 14%)'
     }*/
@@ -371,6 +378,8 @@ const InstanceCard = memo(({
     const [compactGroupCountValue, setCompactGroupCountValue] = useState(compactGroupCount);
     const [tierValue, setTierValue] = useState(tier);
     const [hostValue, setHostValue] = useState(host);
+
+    const [visibleEdit, handlerEdit] = useState(false);
 
     let showModal = false;
     let title;
@@ -522,19 +531,15 @@ const InstanceCard = memo(({
             </Select>
         </FormControl>}
         {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
-        {openDialogHost && <FormControl className={classes.hostInfo} variant="outlined">
-            <InputLabel>{t('Host')}</InputLabel>
-            <Select
-                variant="standard"
-                value={hostValue}
-                fullWidth
-                onChange={el => setHostValue(el.target.value)}
-            >
-                {hosts.map(item => <MenuItem key={item._id} value={item.common?.hostname || item._id.replace(/^system\.host\./, '')}>
-                    <Icon src={item.common.icon}/>{item.common?.name || item._id}
-                </MenuItem>)}
-            </Select>
-        </FormControl>}
+        {openDialogHost && <SelectWithIcon
+            themeType={themeType}
+            value={hostValue}
+            list={hosts}
+            removePrefix="system.host."
+            fullWidth
+            className={classes.hostInfo}
+            onChange={el => setHostValue(el)}
+        />}
     </CustomModal>
     : null;
 
@@ -543,9 +548,7 @@ const InstanceCard = memo(({
         text={t('stop_admin', adminInstance)}
         ok={t('Stop admin')}
         onClose={result => {
-            if (result) {
-                extendObject(showStopAdminDialog, { common: { enabled: false } });
-            }
+            result && extendObject(showStopAdminDialog, { common: { enabled: false } });
             setShowStopAdminDialog(false);
         }}
     /> : null;
@@ -557,22 +560,24 @@ const InstanceCard = memo(({
                     <div className={classes.close} onClick={() => setCollapse(false)} />
                 </div>
                 <Typography gutterBottom component={'span'} variant={'body2'}>
-                    {instance.mode === 'daemon' && <State state={connectedToHost} >{t('Connected to host')}</State>}
-
-                    {instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
-
-                    {connected !== null &&
-                        <State state={connected}>{t('Connected to %s', instance.adapter)}</State>}
+                    <span className={classes.instanceName}>{instance.id}</span>
+                    {running && instance.mode === 'daemon' && <State state={connectedToHost} >{t('Connected to host')}</State>}
+                    {running && instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
+                    {running && connected !== null &&
+                        <State state={!!connected}>
+                            {typeof connected === 'string' ? t('Connected: ') + (connected || '-') : t('Connected to device or service')}
+                        </State>
+                    }
 
                     <InstanceInfo tooltip={t('Installed')}>
                         v {instance.version}
                     </InstanceInfo>
 
-                    <InstanceInfo icon={<MemoryIcon />} tooltip={t('RAM usage')}>
+                    {running && <InstanceInfo icon={<MemoryIcon />} tooltip={t('RAM usage')}>
                         {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
-                    </InstanceInfo>
+                    </InstanceInfo>}
 
-                    {expertMode &&
+                    {running && expertMode &&
                         <div className={classes.displayFlex}>
                             <InstanceInfo icon={<ImportExportIcon />} tooltip={t('events')}>
                                 <div className={classes.displayFlex}>
@@ -695,7 +700,7 @@ const InstanceCard = memo(({
 
                     {hosts.length > 1 || (hosts.length && hosts[0].common?.hostname !== host) ? <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                         <InstanceInfo icon={<HostIcon className={classes.marginRight} />} tooltip={t('Host for this instance')}>
-                            {host}
+                            {<TextWithIcon value={host} list={hosts} removePrefix="system.host." themeType={themeType}/>}
                         </InstanceInfo>
                         <Tooltip title={t('Edit')}>
                             <IconButton
@@ -798,8 +803,6 @@ const InstanceCard = memo(({
                 }
             }}
         />;
-
-    const [visibleEdit, handlerEdit] = useState(false);
 
     return <Card key={key} className={clsx(classes.root, hidden ? classes.hidden : '')}>
         {customModal}

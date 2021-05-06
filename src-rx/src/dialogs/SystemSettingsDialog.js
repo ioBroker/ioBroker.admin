@@ -92,7 +92,7 @@ class SystemSettingsDialog extends Component {
                 });
                 this.originalRepositories = JSON.stringify(systemRepositories);
                 newState.systemRepositories = systemRepositories;
-                return this.props.socket.getSystemConfig(true);
+                return this.props.socket.getCompactSystemConfig(true);
             })
             .then(systemConfig => {
                 this.originalConfig = JSON.stringify(systemConfig);
@@ -181,7 +181,7 @@ class SystemSettingsDialog extends Component {
                     this.props.expertModeFunc(this.state.systemConfig.common.expertMode);
                 }
                 if (this.state.systemConfig.common.language !== JSON.parse(this.originalConfig).common.language) {
-                    window.location.reload();
+                    window.location.reload(false);
                 }
             })
             .catch(e =>

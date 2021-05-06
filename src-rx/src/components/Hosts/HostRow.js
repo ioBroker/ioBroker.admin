@@ -240,7 +240,35 @@ const styles = theme => ({
     },
     badge: {
         top: 14
-    }
+    },
+    greenText: {
+        color: theme.palette.success.dark,
+    },
+    curdContentFlexCenter: {
+        display: 'flex',
+        alignItems: 'center'
+    },
+    wrapperAvailable: {
+        display: 'flex',
+        alignItems: 'center'
+    },
+    buttonUpdate: {
+        border: '1px solid',
+        padding: '0px 7px',
+        borderRadius: 5,
+        display: 'flex',
+        alignItems: 'center',
+        cursor: 'pointer',
+        transition: 'background 0.5s',
+        '&:hover': {
+            background: '#00800026'
+        }
+    },
+    buttonUpdateIcon: {
+        height: 20,
+        width: 20,
+        marginRight: 10
+    },
 });
 
 let outputCache = '-';
@@ -284,7 +312,8 @@ const HostRow = ({
     expertMode,
     setBaseSettingsDialog,
     hostsWorker,
-    showAdaptersWarning
+    showAdaptersWarning,
+    openHostUpdateDialog
 }) => {
 
     const [openCollapse, setCollapse] = useState(false);
@@ -469,8 +498,22 @@ const HostRow = ({
                 <Typography className={clsx(classes.flex, classes.hidden800)} variant="body2" color="textSecondary" component="div">
                     <div ref={refUptime}>{'-/-'}</div>
                 </Typography>
-                <Typography className={clsx(classes.flex, classes.hidden1100)} variant="body2" color="textSecondary" component="p">
-                    {available}
+                <Typography className={clsx(classes.flex, classes.hidden1100)} variant="body2" color="textSecondary" component="div">
+                    <div className={clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)} >
+                    {upgradeAvailable ?
+
+                        <Tooltip title={t('Update')}>
+                            <div onClick={(e) => { 
+                                        e.stopPropagation();
+                                        openHostUpdateDialog()}} className={classes.buttonUpdate}><IconButton
+                                className={classes.buttonUpdateIcon}
+                                size="small"
+                            >
+                                <RefreshIcon />
+                            </IconButton>{available}</div>
+                        </Tooltip> :
+                        available
+                    }</div>
                 </Typography>
                 <Typography className={clsx(classes.flex, classes.hidden1100)} variant="body2" color="textSecondary" component="p">
                     {installed}

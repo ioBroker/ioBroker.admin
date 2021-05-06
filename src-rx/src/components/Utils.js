@@ -1235,6 +1235,25 @@ class Utils {
         return text;
     }
 
+    static formatTime(seconds) {
+        if (seconds) {
+            seconds = Math.round(seconds);
+            const d = Math.floor(seconds / (3600 * 24));
+            const h = Math.floor((seconds % (3600 * 24)) / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = seconds % 60;
+            if (d) {
+                return `${d}.${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            } else if (h) {
+                return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            } else {
+                return `0:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            }
+        } else {
+            return '0:00:00';
+        }
+    }
+
     static MDtext2link(text) {
         const m = text.match(/\d+\.\)\s/);
         if (m) {

@@ -17,17 +17,42 @@ import CloseIcon from '@material-ui/icons/Close';
 
 import State from '../components/State';
 
-const styles = theme => ({
-    closeButton: {
-        position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
-        color: theme.palette.grey[500],
-    },
-    typography: {
-        paddingRight: 30
-    }
-});
+const styles = theme => {
+    return ({
+        closeButton: {
+            position: 'absolute',
+            right: theme.spacing(1),
+            top: theme.spacing(1),
+            color: theme.palette.grey[500],
+        },
+        typography: {
+            paddingRight: 30
+        },
+        version: {
+            background: '#4dabf5',
+            borderRadius: 3,
+            paddingLeft: 10,
+            fontWeight: 'bold',
+            color: theme.palette.type === 'dark' ? 'black' : 'white'
+        },
+        wrapperButton: {
+        },
+        '@media screen and (max-width: 465px)': {
+            wrapperButton: {
+                '& *': {
+                    fontSize: 10
+                }
+            },
+        },
+        '@media screen and (max-width: 380px)': {
+            wrapperButton: {
+                '& *': {
+                    fontSize: 9
+                }
+            },
+        },
+    })
+};
 
 class AdapterUpdateDialog extends Component {
 
@@ -63,8 +88,8 @@ class AdapterUpdateDialog extends Component {
 
             result.push(
                 <Grid item key={entry.version}>
-                    <Typography>
-                        {entry.version + ':'}
+                    <Typography className={this.props.classes.version}>
+                        {entry.version}
                     </Typography>
                     {news.map((value, index) => {
                         return (
@@ -84,6 +109,8 @@ class AdapterUpdateDialog extends Component {
         const { classes } = this.props;
 
         const version = this.props.news && this.props.news[0]?.version;
+
+        const news = this.getNews();
 
         return <Dialog
             onClose={this.props.onClose}
@@ -105,29 +132,28 @@ class AdapterUpdateDialog extends Component {
                     wrap="nowrap"
                 >
                     {this.props.dependencies && this.props.dependencies.length > 0 &&
-                    this.props.dependencies.find(dependency=>!dependency.rightVersion) &&
+                        this.props.dependencies.find(dependency => !dependency.rightVersion) &&
                         <Grid item>
                             <Typography variant="h6" gutterBottom>{this.t('Dependencies')}</Typography>
                             {this.getDependencies()}
                         </Grid>
                     }
-                    <Grid item>
-                        <Typography variant="h6" gutterBottom>{this.t('News')}</Typography>
+                    {news.length && <Grid item>
+                        <Typography variant="h6" gutterBottom>{this.t('Change log')}</Typography>
                         <Grid
                             container
                             spacing={2}
                             direction="column"
                             wrap="nowrap"
                         >
-                            {this.getNews()}
+                            {news}
                         </Grid>
-                    </Grid>
+                    </Grid>}
                 </Grid>
             </DialogContent>
-            <DialogActions>
-                {!!this.props.rightDependencies && <Button
-                    onClick={() =>
-                        this.props.onIgnore(version)}
+            <DialogActions className={classes.wrapperButton}>
+                {!!this.props.rightDependencies && this.props.onIgnore && version && <Button
+                    onClick={() => this.props.onIgnore(version)}
                     color="primary"
                 >
                     {this.t('Ignore version %s', version)}
@@ -159,11 +185,11 @@ AdapterUpdateDialog.propTypes = {
     dependencies: PropTypes.array,
     news: PropTypes.array,
     onUpdate: PropTypes.func.isRequired,
-    onIgnore: PropTypes.func.isRequired,
+    onIgnore: PropTypes.func,
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
     rightDependencies: PropTypes.bool,
     t: PropTypes.func.isRequired
 }
 
-export default withStyles(styles)(AdapterUpdateDialog);
+export default  withStyles(styles)(AdapterUpdateDialog);

@@ -130,7 +130,6 @@
   "Comoros": "Comores",
   "Configuration not saved.": "Configuração não está gravada.",
   "Congo": "Congo",
-  "Connected to %s": "Conectado com %s",
   "Connected to host": "Conectado com o host",
   "Cook Islands": "Ilhas Cook",
   "Copy log": "Cópiar o log",
@@ -1297,5 +1296,8 @@
   "Host for this instance": "Host para esta instância",
   "Without restart": "Sem reiniciar",
   "Log level will be saved permanently": "O nível de registro será salvo permanentemente",
-  "Will be reset to the saved log level after restart of adapter": "Será redefinido para o nível de log salvo após a reinicialização do adaptador"
+  "Will be reset to the saved log level after restart of adapter": "Será redefinido para o nível de log salvo após a reinicialização do adaptador",
+  "Connected to device or service": "Conectado ao dispositivo ou serviço",
+  "Session expire in %s": "Sessão expira em MS",
+  "Change log": "Log de alterações"
 }

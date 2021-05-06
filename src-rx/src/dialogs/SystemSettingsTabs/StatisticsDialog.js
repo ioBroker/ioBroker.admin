@@ -29,7 +29,7 @@ const styles = theme => ({
         overflow: 'auto',
         flex: 'none'
     },
-    statis: {
+    sentData: {
         padding: 15
     },
     formControl: {
@@ -133,7 +133,7 @@ class StatisticsDialog extends Component {
                 </Grid>
                 <Grid item lg={8} md={4} xs={12} className="sendData-grid"
                       style={{height: '100%', display: 'flex', flexDirection: 'column'}}>
-                    <Paper className={classes.statis}>
+                    <Paper className={classes.sentData}>
                         <Typography gutterBottom variant="h6" component="div">
                             {this.props.t('Sent data:')}
                         </Typography>

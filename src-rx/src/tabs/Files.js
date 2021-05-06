@@ -12,19 +12,15 @@ import FileEditOfAccessControl from '../dialogs/FileEditOfAccessControl';
 class Files extends Component {
     constructor(props) {
         super(props);
-
-        this.state = {
-
-        };
         this.t = this.translate;
         this.wordCache = {};
         this.objects = {};
     }
 
     componentDidMount() {
-        this.props.socket.getObjects(true, true).then(objects => {
-            this.objects = objects;
-        })
+        this.props.socket.getObjects(true, true)
+            .then(objects =>
+                this.objects = objects)
     }
 
     translate = (word, arg1, arg2) => {

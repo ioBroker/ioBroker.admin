@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import { Tooltip, AppBar, Avatar, Box, Checkbox, CircularProgress, LinearProgress, makeStyles, Paper, Step, StepLabel, Stepper, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, ThemeProvider, Typography, Select, MenuItem } from '@material-ui/core';
+import { Tooltip, AppBar, Avatar, Box, Checkbox, CircularProgress, LinearProgress, makeStyles, Paper, Step, StepLabel, Stepper, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, ThemeProvider, Typography, } from '@material-ui/core';
 
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -19,9 +19,9 @@ import ReportProblemIcon from '@material-ui/icons/ReportProblem';
 import I18n from '@iobroker/adapter-react/i18n';
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
-import Icon from '@iobroker/adapter-react/Components/Icon';
 
 import Command from '../components/Command';
+import SelectWithIcon from '../components/SelectWithIcon';
 import { licenseDialogFunc } from './LicenseDialog';
 import { GenereteInputsFunc } from './GenereteInputsModal';
 import { useStateLocal } from '../helpers/hooks/useStateLocal';
@@ -195,11 +195,12 @@ const useStyles = makeStyles((theme) => ({
     },
     wrapperSwitch: {
         display: 'flex',
-        margin: 10
+        margin: 10,
+        marginTop: 0
     },
     divSwitch: {
         display: 'flex',
-        margin: 10,
+        // margin: 10,
         alignItems: 'center',
         fontSize: 10,
         marginLeft: 0,
@@ -398,6 +399,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
             let aliveValue = await socket.getState(`${_id}.alive`);
             setAliveHosts(prev => ({ ...prev, [_id]: !aliveValue || aliveValue.val === null ? false : !!aliveValue.val }));
         });
+
         if (Object.keys(aliveHosts).filter(key => aliveHosts[key]).length > 1) {
             setCheckSelectHosts(true);
         }
@@ -523,7 +525,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                 const index = selected.indexOf(obj._id) + 1;
                 setInstallStatus(status => Object.assign({ ...status }, { [index]: 'error' }));
 
-                setLogs({ ...logs, [selected[index]]: [I18n.t('Error: license not accepted')] });
+                setLogs((logsEl) => Object.assign({ ...logsEl }, { [selected[index - 1]]: [I18n.t('Error: license not accepted')] }));
 
                 if (selected.length > index) {
                     setTimeout(() =>
@@ -542,7 +544,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                         const index = selected.indexOf(obj._id) + 1;
                         setInstallStatus((status) => Object.assign({ ...status }, { [index]: 'error' }));
 
-                        setLogs({ ...logs, [selected[index]]: [I18n.t('Error: configuration dialog canceled')] });
+                        setLogs((logsEl) => Object.assign({ ...logsEl }, { [selected[index - 1]]: [I18n.t('Error: configuration dialog canceled')] }));
 
                         if (selected.length > index) {
                             setTimeout(() =>
@@ -739,18 +741,18 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                                 </div>
                                             </TableCell>
                                             <TableCell align="left">{checkSelectHosts ?
-                                                <Select
-                                                    labelId="demo-simple-select-label"
-                                                    id="demo-simple-select"
+                                                <SelectWithIcon
+                                                    fullWidth
+                                                    lang={I18n.getLanguage()}
+                                                    list={hosts}
+                                                    t={I18n.t}
                                                     value={hostInstances[obj._id] || currentHost}
-                                                    onChange={el => {
-                                                        setHostInstances(Object.assign({ ...hostInstances }, { [obj._id]: el.target.value }));
+                                                    themeType={themeType}
+                                                    onChange={val => {
+                                                        setHostInstances(Object.assign({ ...hostInstances }, { [obj._id]: val }));
                                                     }}
-                                                >
-                                                    {Object.keys(aliveHosts).map(name => <MenuItem key={name} value={name}>
-                                                        <Icon src={hosts[name]?.common?.icon}/>{name.replace('system.host.', '')}
-                                                    </MenuItem>)}
-                                                </Select> :
+                                                />
+                                                :
                                                 '_'}</TableCell>
                                             <TableCell align="left">{buildComment(obj.comment, I18n.t)}</TableCell>
                                             <TableCell align="right" padding="checkbox">

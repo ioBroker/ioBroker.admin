@@ -173,10 +173,11 @@ class Connection {
         });
 
         this._socket.on('reconnect', () => {
+            this.onProgress(PROGRESS.READY);
             this.connected = true;
 
             if (this.waitForRestart) {
-                window.location.reload();
+                window.location.reload(false);
             } else {
                 this._subscribe(true);
                 this.onConnectionHandlers.forEach(cb => cb(true));
@@ -188,13 +189,6 @@ class Connection {
             this.subscribed = false;
             this.onProgress(PROGRESS.CONNECTING);
             this.onConnectionHandlers.forEach(cb => cb(false));
-        });
-
-        this._socket.on('reconnect', () => {
-            this.onProgress(PROGRESS.READY);
-            if (this.waitForRestart) {
-                window.location.reload();
-            }
         });
 
         this._socket.on('reauthenticate', () =>
@@ -257,7 +251,7 @@ class Connection {
         this.isSecure = isSecure;
 
         if (this.waitForRestart) {
-            window.location.reload();
+            window.location.reload(false);
         } else {
             if (this.firstConnect) {
                 // retry strategy
@@ -325,7 +319,7 @@ class Connection {
             }
 
             // Read system configuration
-            return this.getSystemConfig()
+            return this.getCompactSystemConfig()
                 .then(data => {
                     if (this.doNotLoadACL) {
                         if (this.loaded) {
@@ -1560,6 +1554,55 @@ class Connection {
     }
 
     /**
+     * Get the host information (short version).
+     * @param {string} host
+     * @param {boolean} [update] Force update.
+     * @param {number} [timeoutMs] optional read timeout.
+     * @returns {Promise<any>}
+     */
+    getHostInfoShort(host, update, timeoutMs) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+        if (!host.startsWith('system.host.')) {
+            host += 'system.host.' + host;
+        }
+
+        if (!update && this._promises['hostInfoShort' + host]) {
+            return this._promises['hostInfoShort' + host];
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises['hostInfoShort' + host] = new Promise((resolve, reject) => {
+            let timeout = setTimeout(() => {
+                if (timeout) {
+                    timeout = null;
+                    reject('hostInfoShort timeout');
+                }
+            }, timeoutMs || this.props.cmdTimeout);
+
+            this._socket.emit('sendToHost', host, 'getHostInfoShort', null, data => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    if (data === PERMISSION_ERROR) {
+                        reject('May not read "getHostInfoShort"');
+                    } else if (!data) {
+                        reject('Cannot read "getHostInfoShort"');
+                    } else {
+                        resolve(data);
+                    }
+                }
+            });
+        });
+
+        return this._promises['hostInfoShort' + host];
+    }
+
+    /**
      * Get the repository.
      * @param {string} host
      * @param {any} [args]
@@ -1766,7 +1809,7 @@ class Connection {
                 } else {
                     return Promise.reject('Not supported');
                 }
-            })
+            });
     }
 
     /**
@@ -1881,14 +1924,15 @@ class Connection {
      * @returns {Promise<ioBroker.OtherObject>}
      */
     getSystemConfig(update) {
-        if (update) {
-            this._promises.systemConfig = null;
+        if (!update && this._promises.systemConfig) {
+            return this._promises.systemConfig;
         }
-        if (!this._promises.systemConfig && !this.connected) {
+
+        if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
 
-        this._promises.systemConfig = this._promises.systemConfig || this.getObject('system.config')
+        this._promises.systemConfig = this.getObject('system.config')
             .then(systemConfig => {
                 systemConfig = systemConfig || {};
                 systemConfig.common = systemConfig.common || {};
@@ -2238,6 +2282,37 @@ class Connection {
                 resolve(user)));
     }
 
+    getCurrentSession(cmdTimeout) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        return new Promise((resolve, reject) => {
+            const controller = new AbortController();
+
+            let timeout = setTimeout(() => {
+                if (timeout) {
+                    timeout = null;
+                    controller.abort();
+                    reject('getCurrentSession timeout');
+                }
+            }, cmdTimeout || 5000);
+
+            return fetch('./session', { signal: controller.signal })
+                .then(res => res.json())
+                .then(json => {
+                    if (timeout) {
+                        clearTimeout(timeout);
+                        timeout = null;
+                        resolve(json);
+                    }
+                })
+                .catch(e => {
+                    reject('getCurrentSession: ' + e);
+                });
+        });
+    }
+
     /**
      * Read adapter ratings
      * @returns {Promise<any>}
@@ -2271,6 +2346,179 @@ class Connection {
         return this._promises.currentInstance;
     }
 
+    // returns very optimized information for adapters to minimize connection load
+    getCompactAdapters(update) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+        if (!update && this._promises.compactAdapters) {
+            return this._promises.compactAdapters;
+        }
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        this._promises.compactAdapters = new Promise((resolve, reject) =>
+            this._socket.emit('getCompactAdapters', (err, systemConfig) =>
+                err ? reject(err) : resolve(systemConfig)));
+
+        return this._promises.compactAdapters;
+    }
+
+    // returns very optimized information for adapters to minimize connection load
+    getCompactInstances(update) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+        if (!update && this._promises.compactInstances) {
+            return this._promises.compactInstances;
+        }
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises.compactInstances = new Promise((resolve, reject) =>
+            this._socket.emit('getCompactInstances', (err, systemConfig) =>
+                err ? reject(err) : resolve(systemConfig)));
+
+        return this._promises.compactInstances;
+    }
+
+    // returns very optimized information for adapters to minimize connection load
+    // reads only version of installed adapter
+    getCompactInstalled(host, update, cmdTimeout) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+
+        this._promises.installedCompact = this._promises.installedCompact || {};
+
+        if (!update && this._promises.installedCompact[host]) {
+            return this._promises.installedCompact[host];
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        if (!host.startsWith('system.host.')) {
+            host += 'system.host.' + host;
+        }
+
+        this._promises.installedCompact[host] = new Promise((resolve, reject) => {
+            let timeout = setTimeout(() => {
+                if (timeout) {
+                    timeout = null;
+                    reject('getCompactInstalled timeout');
+                }
+            }, cmdTimeout || this.props.cmdTimeout);
+
+            this._socket.emit('getCompactInstalled', host, data => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    if (data === PERMISSION_ERROR) {
+                        reject('May not read "getCompactInstalled"');
+                    } else if (!data) {
+                        reject('Cannot read "getCompactInstalled"');
+                    } else {
+                        resolve(data);
+                    }
+                }
+            });
+        });
+
+        return this._promises.installedCompact[host];
+    }
+
+    // returns very optimized information for adapters to minimize connection load
+    getCompactSystemConfig(update) {
+        if (!update && this._promises.systemConfigCommon) {
+            return this._promises.systemConfigCommon;
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises.systemConfigCommon = new Promise((resolve, reject) =>
+            this._socket.emit('getCompactSystemConfig', (err, systemConfig) =>
+                err ? reject(err) : resolve(systemConfig)));
+
+        return this._promises.systemConfigCommon;
+    }
+
+    /**
+     * Get the repository in compact form (only version and icon).
+     * @param {string} host
+     * @param {boolean} [update] Force update.
+     * @param {number} [timeoutMs] timeout in ms.
+     * @returns {Promise<any>}
+     */
+    getCompactRepository(host, update, timeoutMs) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+        if (!update && this._promises.repoCompact) {
+            return this._promises.repoCompact;
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        if (!host.startsWith('system.host.')) {
+            host += 'system.host.' + host;
+        }
+
+        this._promises.repoCompact = new Promise((resolve, reject) => {
+            let timeout = setTimeout(() => {
+                if (timeout) {
+                    timeout = null;
+                    reject('getCompactRepository timeout');
+                }
+            }, timeoutMs || this.props.cmdTimeout);
+
+            this._socket.emit('getCompactRepository', host, data => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    if (data === PERMISSION_ERROR) {
+                        reject('May not read "getCompactRepository"');
+                    } else if (!data) {
+                        reject('Cannot read "getCompactRepository"');
+                    } else {
+                        resolve(data);
+                    }
+                }
+            });
+        });
+
+        return this._promises.repoCompact;
+    }
+
+    /**
+     * Get the list of all hosts in compact form (only _id, common.name, common.icon, common.color, native.hardware.networkInterfaces)
+     * @param {boolean} [update] Force update.
+     * @returns {Promise<ioBroker.Object[]>}
+     */
+    getCompactHosts(update) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+        if (!update && this._promises.hostsCompact) {
+            return this._promises.hostsCompact;
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises.hostsCompact = new Promise((resolve, reject) =>
+            this._socket.emit('getCompactHosts', (err, systemConfig) =>
+                err ? reject(err) : resolve(systemConfig)));
+
+        return this._promises.hostsCompact;
+    }
 }
 
 Connection.Connection = {

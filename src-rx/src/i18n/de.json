@@ -130,7 +130,6 @@
   "Comoros": "Komoren",
   "Configuration not saved.": "Die Konfiguration ist nicht gespeichert.",
   "Congo": "Congo",
-  "Connected to %s": "Verbunden mit %s",
   "Connected to host": "Verbunden mit Host",
   "Cook Islands": "Cook Islands",
   "Copy log": "Log kopieren",
@@ -645,7 +644,7 @@
   "add": "Hinzufügen",
   "add children": "Tochterobjekt erzeugen",
   "add instance": "Instanz hinzufügen",
-  "add repository": "Verwahrungsort hinzufügen",
+  "add repository": "Repository hinzufügen",
   "agree": "Zustimmen",
   "alarm_group": "Alarm",
   "alive": "Läuft",
@@ -758,7 +757,7 @@
   "ioBroker certificates": "ioBroker Zertifikate",
   "ioBroker groups": "ioBroker Gruppen",
   "ioBroker hosts": "ioBroker Hosts",
-  "ioBroker repositories": "ioBroker Verwahrungsorte",
+  "ioBroker repositories": "ioBroker Repositories",
   "ioBroker users": "ioBroker Benutzer",
   "iot-system_group": "IoT Systeme",
   "iot-systems_group": "IoT Systeme",
@@ -1297,5 +1296,8 @@
   "Host for this instance": "Host für diese Instanz",
   "Without restart": "Ohne Neustart",
   "Log level will be saved permanently": "Die Protokollebene wird dauerhaft gespeichert",
-  "Will be reset to the saved log level after restart of adapter": "Wird nach dem Neustart des Adapters auf die gespeicherte Protokollebene zurückgesetzt"
+  "Will be reset to the saved log level after restart of adapter": "Wird nach dem Neustart des Adapters auf die gespeicherte Protokollebene zurückgesetzt",
+  "Connected to device or service": "Verbunden mit Gerät oder Dienst",
+  "Session expire in %s": "Sitzung läuft in %s ab",
+  "Change log": "Änderungen"
 }

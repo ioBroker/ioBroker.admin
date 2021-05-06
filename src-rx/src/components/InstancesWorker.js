@@ -12,6 +12,7 @@ class InstancesWorker {
     }
 
     objectChangeHandler = (id, obj) => {
+        this.objects = this.objects || {};
         // if instance
         if (id.match(/^system\.adapter\.[^.]+\.\d+$/)) {
             let type;
@@ -82,13 +83,13 @@ class InstancesWorker {
         }
     }
 
-    registerHandler(cb) {
+    registerHandler(cb, doNotRequestAdapters) {
         if (!this.handlers.includes(cb)) {
             this.handlers.push(cb);
 
             if (this.handlers.length === 1 && this.connected) {
                 this.socket.subscribeObject('system.adapter.*', this.objectChangeHandler)
-                    .then(() => this.getInstances())
+                    .then(() => !doNotRequestAdapters && this.getInstances())
                     .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
             }
         }

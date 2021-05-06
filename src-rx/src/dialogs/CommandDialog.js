@@ -45,7 +45,7 @@ class CommandDialog extends Component {
             max: null,
             value: null,
             progressText: '',
-            closeOnReady: false,
+            closeOnReady: JSON.parse(window.localStorage.getItem('CommandDialog.closeOnReady')) || false,
             checked: true
         };
 

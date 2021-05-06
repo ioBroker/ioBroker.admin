@@ -395,16 +395,6 @@ class Intro extends Component {
                 }));
     }
 
-    getHosts(update) {
-        if (update) {
-            this.promises.hosts = null;
-        }
-
-        this.promises.hosts = this.promises.hosts || this.props.socket.getHosts(update);
-
-        return this.promises.hosts;
-    }
-
     getInstances(update, hosts, systemConfig) {
         hosts = hosts || this.state.hosts;
 
@@ -599,7 +589,7 @@ class Intro extends Component {
             })
             .then(_systemConfig => {
                 systemConfig = _systemConfig;
-                return this.getHosts(update);
+                return this.props.socket.getCompactHosts(update);
             })
             .then(_hosts => {
                 hosts = _hosts;

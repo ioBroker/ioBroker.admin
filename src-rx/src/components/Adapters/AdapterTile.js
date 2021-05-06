@@ -420,6 +420,10 @@ const AdapterTile = ({
                 </div>}
             </div>
             <div className={classes.cardMargin10}>
+                {!!installedCount && <Typography component={'span'} className={classes.cardContentFlexBetween}>
+                    <div>{t('Installed instances')}:</div>
+                    <div>{installedCount}</div>
+                </Typography>}
                 <Typography component={'span'} className={classes.availableVersion}>
                     <div>{t('Available version:')}</div>
                     <div className={clsx(updateAvailable && classes.greenText, classes.curdContentFlexCenter)} >
@@ -446,10 +450,6 @@ const AdapterTile = ({
                         />
                     </Tooltip>
                 }{installedVersion}</div>
-                </Typography>}
-                {!!installedCount && <Typography component={'span'} className={classes.cardContentFlexBetween}>
-                    <div>{t('Installed instances')}:</div>
-                    <div>{installedCount}</div>
                 </Typography>}
             </div>
         </CardContent>

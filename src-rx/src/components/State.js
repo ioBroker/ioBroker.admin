@@ -19,6 +19,11 @@ const styles = {
     },
     cancelIcon: {
         color: red[700]
+    },
+    wrapperContent:{
+        display: 'flex',
+        flexFlow: 'nowrap',
+        alignItems: 'inherit'
     }
 };
 
@@ -36,6 +41,7 @@ class State extends Component {
         return <Grid
             item
             container
+            className={this.props.classes.wrapperContent}
             alignItems="center"
             direction="row"
             spacing={ 1 }

@@ -123,6 +123,7 @@ class MainSettingsDialog extends Component {
                 id: 'currency',
                 title: 'Currency sign',
                 translate: false,
+                allowText: true,
                 values: [
                     {
                         id: '€',
@@ -139,6 +140,10 @@ class MainSettingsDialog extends Component {
                     {
                         id: '₤',
                         title: '₤'
+                    },
+                    {
+                        id: 'CHF',
+                        title: 'CHF'
                     }
                 ]
             },
@@ -215,8 +220,8 @@ class MainSettingsDialog extends Component {
     onMap = map => {
         this.map = map;
         const center = [
-            this.props.data.common.latitude ? this.props.data.common.latitude : 50,
-            this.props.data.common.longitude ? this.props.data.common.longitude : 10
+            parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude  : 50) || 0,
+            parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : 10) || 0
         ];
 
         this.marker = window.L.marker(
@@ -243,6 +248,24 @@ class MainSettingsDialog extends Component {
 
         if (e.id === 'defaultLogLevel' && !value) {
             value = 'info';
+        }
+
+        // If value is not in known values, show text input
+        if (e.allowText && value && !e.values.find(elem => elem.id === value)) {
+            return <Grid item sm={6} xs={12} key={i}>
+                <FormControl className={classes.formControl}>
+                    <InputLabel shrink id={e.id + '-label'}>
+                        {this.props.t(e.title)}
+                    </InputLabel>
+                    <TextField
+                        id={e.id}
+                        value={value.toString()}
+                        InputLabelProps={{readOnly: false, shrink: true}}
+                        onChange={evt => this.handleChange(evt, i)}
+                        helperText={e.help ? this.props.t(e.help) : ''}
+                    />
+                </FormControl>
+            </Grid>;
         }
 
         const items = e.values.map((elem, index) => <MenuItem value={elem.id} key={index}>
@@ -362,7 +385,7 @@ class MainSettingsDialog extends Component {
 
     onMarkerDragend = evt => {
         const ll = evt.target._latlng;
-        this.doChange('latitude', ll.lat);
+        this.doChange('latitude',  ll.lat);
         this.doChange('longitude', ll.lng);
     }
 
@@ -371,8 +394,8 @@ class MainSettingsDialog extends Component {
         const selectors = this.getSettings().map((e, i) => this.getSelect(e, i));
 
         const center = [
-            this.props.data.common.latitude  ? this.props.data.common.latitude  : 50,
-            this.props.data.common.longitude ? this.props.data.common.longitude : 10
+            parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude  : 50) || 0,
+            parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : 10) || 0
         ];
 
         const { zoom } = this.state;
@@ -433,7 +456,7 @@ class MainSettingsDialog extends Component {
                         <TextField
                             id="latitude"
                             label={this.props.t('Latitude:')}
-                            value={this.props.data.common.latitude}
+                            value={this.props.data.common.latitude || 0}
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,
@@ -450,7 +473,7 @@ class MainSettingsDialog extends Component {
                         <TextField
                             id="longitude"
                             label={this.props.t('Longitude:')}
-                            value={this.props.data.common.longitude}
+                            value={this.props.data.common.longitude || 0}
                             InputLabelProps={{
                                 readOnly: false,
                                 shrink: true,

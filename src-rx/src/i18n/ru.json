@@ -130,7 +130,6 @@
   "Comoros": "Коморские острова",
   "Configuration not saved.": "Настройки не сохранены.",
   "Congo": "Конго",
-  "Connected to %s": "Соединён с %s",
   "Connected to host": "Общается с хостом",
   "Cook Islands": "Острова Кука",
   "Copy log": "Скопировать протокол",
@@ -1301,5 +1300,8 @@
   "Host for this instance": "Хост для этого экземпляра",
   "Without restart": "Без перезагрузки",
   "Log level will be saved permanently": "Уровень журнала будет сохранен навсегда",
-  "Will be reset to the saved log level after restart of adapter": "Будет сброшен до уровня сохраненного журнала после перезапуска адаптера"
+  "Will be reset to the saved log level after restart of adapter": "Будет сброшен до уровня сохраненного журнала после перезапуска адаптера",
+  "Connected to device or service": "Подключено к устройству или службе",
+  "Session expire in %s": "Сеанс истечёт через %s",
+  "Change log": "Изменения"
 }

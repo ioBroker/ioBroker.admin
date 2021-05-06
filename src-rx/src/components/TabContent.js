@@ -16,17 +16,14 @@ const styles = {
 };
 
 const TabContent = props => {
-
     const { classes } = props;
 
-    return (
-        <Grid
-            item
-            className={ clsx(classes.root, {[classes.overflowAuto]: props.overflow === 'auto'}) }
-        >
-            { props.children }
-        </Grid>
-    );
+    return <Grid
+        item
+        className={ clsx(classes.root, {[classes.overflowAuto]: props.overflow === 'auto'}) }
+    >
+        { props.children }
+    </Grid>;
 }
 
 TabContent.propTypes = {
