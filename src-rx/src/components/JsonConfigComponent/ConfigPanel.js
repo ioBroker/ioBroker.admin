@@ -38,6 +38,8 @@ import ConfigSelectSendTo from './ConfigSelectSendTo';
 import ConfigTopic from './ConfigTopic';
 import ConfigAutocomplete from './ConfigAutocomplete';
 import ConfigAutocompleteSendTo from './ConfigAutocompleteSendTo';
+import ConfigTimePicker from './ConfigTimePicker';
+import ConfigDatePicker from './ConfigDatePicker';
 
 const components = {
     text: ConfigText,
@@ -69,6 +71,8 @@ const components = {
     topic: ConfigTopic,
     autocomplete: ConfigAutocomplete,
     autocompleteSendTo: ConfigAutocompleteSendTo,
+    datePicker: ConfigDatePicker,
+    timePicker: ConfigTimePicker,
 };
 
 const styles = theme => ({

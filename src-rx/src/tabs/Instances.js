@@ -42,7 +42,6 @@ import TabHeader from '../components/TabHeader';
 import InstanceCard from '../components/Instances/InstanceCard';
 import InstanceRow from '../components/Instances/InstanceRow';
 import CustomSelectButton from '../components/CustomSelectButton';
-import sentry from '../assets/sentry.svg'
 
 const styles = theme => ({
     table: {
@@ -452,12 +451,13 @@ class Instances extends Component {
 
     subscribeStates(isUnsubscribe) {
         const func = isUnsubscribe ? this.props.socket.unsubscribeState : this.props.socket.subscribeState;
-        //func('system.adapter.*', this.onStateChange);
+        // func('system.adapter.*', this.onStateChange);
         func.call(this.props.socket, 'system.adapter.*.alive', this.onStateChange);
         func.call(this.props.socket, 'system.adapter.*.connected', this.onStateChange);
         func.call(this.props.socket, 'system.adapter.*.inputCount', this.onStateChange);
         func.call(this.props.socket, 'system.adapter.*.memRss', this.onStateChange);
         func.call(this.props.socket, 'system.adapter.*.outputCount', this.onStateChange);
+        func.call(this.props.socket, 'system.adapter.*.logLevel', this.onStateChange);
         //func('system.host.*', this.onStateChange);
         func.call(this.props.socket, 'system.host.*.diskFree', this.onStateChange);
         func.call(this.props.socket, 'system.host.*.diskSize', this.onStateChange);
@@ -643,7 +643,7 @@ class Instances extends Component {
         this.extendObject('system.adapter.' + instance.id, { common: { titleLang: value } });
 
     setLogLevel = (instance, value, logOnTheFlyValue) => {
-        this.extendObject('system.adapter.' + instance.id, { common: { loglevel: value } });
+        this.props.socket.setState(`system.adapter.${instance.id}.logLevel`, value);
     };
 
     setSchedule = (instance, value) =>
@@ -681,7 +681,6 @@ class Instances extends Component {
 
     getPanels() {
         let list = Object.keys(this.state.instances).map((id, idx) => {
-
             const instance        = this.state.instances[id];
             const running         = this.isRunning(instance.obj);
             const alive           = this.isAlive(id);
@@ -691,7 +690,7 @@ class Instances extends Component {
             const connectedToHost = this.isConnectedToHost(id);
             const connected       = this.isConnected(id);
             const name            = this.getName(instance.obj);
-            const logLevel        = instance.loglevel;
+            const logLevel        = this.states[`${id}.logLevel`]?.val || 'info';
             const tier            = instance?.obj?.common?.tier || 3;
             const loglevelIcon    = this.getLogLevelIcon(logLevel);
             const checkCompact    = this.isCompactGroupCheck(instance.adapter) && this.state.compact;

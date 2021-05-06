@@ -165,7 +165,7 @@ class AdapterUpdateDialog extends Component {
                     onClick={() => this.props.onUpdate()}
                     color="primary"
                 >
-                    {this.t('Update')}
+                    {this.props.textUpdate ? this.props.textUpdate : this.t('Update')}
                 </Button>
                 <Button
                     variant="contained"

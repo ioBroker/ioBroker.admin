@@ -408,12 +408,24 @@ const styles = theme => ({
             marginTop: 8,
         },
     },
-    '@media screen and (max-width: 570px)': {
+    hidden380: {
+        display: 'flex'
+    },
+    '@media screen and (max-width: 650px)': {
         hidden570: {
             display: 'none !important'
         },
         visible570: {
             display: 'flex !important'
+        },
+    },
+    '@media screen and (max-width: 380px)': {
+        hidden380: {
+            display: 'none !important'
+        },
+        instanceId: {
+            width: '70px !important',
+            minWidth:'70px !important'
         },
     },
     '@media screen and (max-width: 480px)': {
@@ -989,7 +1001,7 @@ const InstanceRow = ({
                 }
                 {expertMode &&
                     <Tooltip title={t('loglevel') + ' ' + logLevel}>
-                        <Avatar className={clsx(classes.smallAvatar, classes[logLevel])}>
+                        <Avatar className={clsx(classes.smallAvatar,classes.hidden380, classes[logLevel])}>
                             {loglevelIcon}
                         </Avatar>
                     </Tooltip>

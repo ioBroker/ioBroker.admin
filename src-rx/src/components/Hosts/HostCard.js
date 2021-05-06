@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 
-import { Badge, Card, CardContent, CardMedia, Fab, IconButton, Tooltip, Typography } from '@material-ui/core';
+import { Avatar, Badge, Card, CardContent, CardMedia, Fab, FormControl, FormHelperText, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from '@material-ui/core';
 
 import { withStyles } from '@material-ui/core/styles';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -15,6 +15,8 @@ import BuildIcon from '@material-ui/icons/Build';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 
 import Adapters from '../../tabs/Adapters';
+import { amber, blue, grey, red } from '@material-ui/core/colors';
+import CustomModal from '../CustomModal';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -195,7 +197,8 @@ const styles = theme => ({
     },
     enableButton: {
         display: 'flex',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        alignItems: 'center'
     },
     instanceStateNotAlive1: {
         backgroundColor: 'rgba(192, 192, 192, 0.4)'
@@ -296,6 +299,25 @@ const styles = theme => ({
         width: 20,
         marginRight: 10
     },
+    debug: {
+        backgroundColor: grey[700]
+    },
+    info: {
+        backgroundColor: blue[700]
+    },
+    warn: {
+        backgroundColor: amber[700]
+    },
+    error: {
+        backgroundColor: red[700]
+    },
+    smallAvatar: {
+        width: 24,
+        height: 24
+    },
+    formControl: {
+        display: 'flex'
+    }
 });
 
 let outputCache = '-';
@@ -307,6 +329,8 @@ let uptimeCache = '-';
 let diskFreeCache = 1;
 let diskSizeCache = 1;
 let diskWarningCache = 1;
+
+const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
 
 const HostCard = ({
     name,
@@ -334,7 +358,8 @@ const HostCard = ({
     expertMode,
     hostsWorker,
     showAdaptersWarning,
-    openHostUpdateDialog
+    openHostUpdateDialog,
+    getLogLevelIcon
 }) => {
     const [openCollapse, setCollapse] = useState(false);
     const refEvents = useRef();
@@ -432,6 +457,13 @@ const HostCard = ({
 
     const [errorHost, setErrorHost] = useState({ notifications: {}, count: 0 });
 
+    const logLevelFunc = (name, state) => {
+        if(state){
+            setLogLevelValue(state.val);
+            setLogLevelValueSelect(state.val);
+        }
+    }
+
     useEffect(() => {
         const notificationHandler = notifications =>
             notifications && notifications[_id] && setErrorHost({ notifications: notifications[_id], count: calculateWarning(notifications[_id]) });
@@ -452,6 +484,8 @@ const HostCard = ({
         socket.subscribeState(`${_id}.diskSize`, warningFunc);
         socket.subscribeState(`${_id}.diskWarning`, warningFunc);
 
+        socket.subscribeState(`${_id}.logLevel`, logLevelFunc);
+
         return () => {
             hostsWorker.unregisterNotificationHandler(notificationHandler);
             socket.unsubscribeState(`${_id}.inputCount`, eventsInputFunc);
@@ -464,15 +498,62 @@ const HostCard = ({
             socket.unsubscribeState(`${_id}.diskFree`, warningFunc);
             socket.unsubscribeState(`${_id}.diskSize`, warningFunc);
             socket.unsubscribeState(`${_id}.diskWarning`, warningFunc);
+
+            socket.unsubscribeState(`${_id}.logLevel`, logLevelFunc);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [_id, socket, classes]);
 
     const [focused, setFocused] = useState(false);
 
+    const [openDialogLogLevel, setOpenDialogLogLevel] = useState(false);
+    const [logLevelValue, setLogLevelValue] = useState(null);
+    const [logLevelValueSelect, setLogLevelValueSelect] = useState(null);
+
     const upgradeAvailable = (currentHost || alive) && Adapters.updateAvailable(installed, available);
 
+    let showModal = false;
+    let titleModal;
+    if (openDialogLogLevel) {
+        titleModal = t('Edit log level rule for %s', name);
+        showModal = true;
+    }
+
+    const customModal = showModal ? <CustomModal
+        title={titleModal}
+        open={true}
+        onApply={value => {
+            if (openDialogLogLevel) {
+                socket.setState(`${_id}.logLevel`,logLevelValueSelect);
+                setOpenDialogLogLevel(false);
+            }
+        }}
+        onClose={() => {
+            if (openDialogLogLevel) {
+                setLogLevelValueSelect(logLevelValue);
+                setOpenDialogLogLevel(false);
+            }
+        }}>
+        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined" >
+            <InputLabel>{t('log level')}</InputLabel>
+            <Select
+                variant="standard"
+                value={logLevelValueSelect}
+                fullWidth
+                onChange={el => setLogLevelValueSelect(el.target.value)}
+            >
+                {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
+                    {t(el)}
+                </MenuItem>)}
+            </Select>
+        </FormControl>}
+        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined" >
+            <FormHelperText>{t('Will be reset to the saved log level after restart of adapter')}</FormHelperText>
+        </FormControl>}
+    </CustomModal> : null;
+
     return <Card key={_id} className={clsx(classes.root, hidden ? classes.hidden : '')}>
+        {customModal}
         {(openCollapse || focused) && <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
             <CardContent className={classes.cardContentInfo}>
                 <div className={classes.cardContentDiv}>
@@ -580,6 +661,17 @@ const HostCard = ({
                             </IconButton>
                         </div>
                     </Tooltip>
+                    {expertMode && logLevelValue &&
+                        <Tooltip title={t('loglevel') + ' ' + logLevelValue}>
+                            <IconButton onClick={(event) => {
+                                setOpenDialogLogLevel(true);
+                            }}>
+                                <Avatar className={clsx(classes.smallAvatar, classes[logLevelValue])}>
+                                    {getLogLevelIcon(logLevelValue)}
+                                </Avatar>
+                            </IconButton>
+                        </Tooltip>
+                    }
                     {(upgradeAvailable || (!alive && !currentHost)) ? <Tooltip title={t(alive || currentHost ? 'Upgrade' : 'Remove')}>
                         <IconButton onClick={(alive || currentHost) ? dialogUpgrade : executeCommandRemove}>
                             {(alive || currentHost) ? <RefreshIcon /> : <DeleteIcon />}

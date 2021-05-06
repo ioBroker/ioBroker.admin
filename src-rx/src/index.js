@@ -3,6 +3,7 @@ import { version } from '../package.json';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import * as Sentry from '@sentry/browser';
 import * as SentryIntegrations from '@sentry/integrations';
+import DateFnsUtils from '@date-io/date-fns';
 
 import theme from './Theme'; // @iobroker/adapter-react/Theme
 import Utils from '@iobroker/adapter-react/Components/Utils';
@@ -10,6 +11,7 @@ import App from './App';
 
 import './index.css';
 import { ContextWrapperProvider } from './components/ContextWrapper';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 window.adapterName = 'admin';
 
@@ -19,12 +21,14 @@ let themeName = Utils.getThemeName();
 function build() {
     return ReactDOM.render(
         <MuiThemeProvider theme={theme(themeName)}>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <ContextWrapperProvider>
                 <App onThemeChange={_themeName => {
                     themeName = _themeName;
                     build();
                 }} />
             </ContextWrapperProvider>
+            </MuiPickersUtilsProvider>
         </MuiThemeProvider>,
         document.getElementById('root')
     );

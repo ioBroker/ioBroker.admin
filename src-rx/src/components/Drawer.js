@@ -118,7 +118,9 @@ const styles = theme => ({
     },
     styleVersion: {
         fontSize: 10,
-        color: '#ffffff5e'
+        color: '#ffffff5e',
+        alignSelf: 'center',
+        marginLeft: 5
     },
 });
 

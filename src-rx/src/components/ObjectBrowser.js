@@ -2752,6 +2752,7 @@ class ObjectBrowser extends Component {
                     <Tooltip title={this.props.t('ra_Configure visible columns')}>
                         <IconButton
                             key="columnSelector"
+                            color={this.state.columnsAuto?"primary":"default"}
                             onClick={() => this.setState({ columnsSelectorShow: true })}
                         >
                             <IconColumns />
@@ -3923,6 +3924,21 @@ class ObjectBrowser extends Component {
                 this.columnsVisibility.name = `calc(100% - ${widthSum + 5}px)`;
                 this.columnsVisibility.nameHeader = `calc(100% - ${widthSum + 5 + this.state.scrollBarWidth}px)`;
             } else  {
+                let widthSum = 0; // id is always visible
+                if (this.state.statesView) {
+                    widthSum += this.columnsVisibility.changedFrom;
+                    widthSum += this.columnsVisibility.qualityCode;
+                    widthSum += this.columnsVisibility.timestamp;
+                    widthSum += this.columnsVisibility.lastChange;
+                } else {
+                    widthSum += this.columnsVisibility.type;
+                    widthSum += this.columnsVisibility.role;
+                    widthSum += this.columnsVisibility.room;
+                    widthSum += this.columnsVisibility.func;
+                }
+                widthSum += this.columnsVisibility.val;
+                widthSum += this.columnsVisibility.buttons;
+                this.columnsVisibility.id = `calc(100% - ${widthSum + 5}px)`;
                 // TODO: calculate width of ID
             }
         } else {
@@ -3986,6 +4002,8 @@ class ObjectBrowser extends Component {
                 widthSum += this.columnsVisibility.val;
                 this.columnsVisibility.name = `calc(100% - ${widthSum}px)`;
                 this.columnsVisibility.nameHeader = `calc(100% - ${widthSum + 5 + this.state.scrollBarWidth}px)`;
+            }else{
+                this.columnsVisibility.id = `calc(100% - ${widthSum}px)`;
             }
         }
     }

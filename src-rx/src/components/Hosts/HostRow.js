@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
-import { Badge, CardContent, CardMedia, IconButton, Tooltip, Typography } from '@material-ui/core';
+import { Avatar, Badge, CardContent, CardMedia, FormControl, FormHelperText, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from '@material-ui/core';
 
 import RefreshIcon from '@material-ui/icons/Refresh';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -14,6 +14,8 @@ import CachedIcon from '@material-ui/icons/Cached';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 
 import Adapters from '../../tabs/Adapters';
+import CustomModal from '../CustomModal';
+import { amber, blue, grey, red } from '@material-ui/core/colors';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -269,6 +271,25 @@ const styles = theme => ({
         width: 20,
         marginRight: 10
     },
+    debug: {
+        backgroundColor: grey[700]
+    },
+    info: {
+        backgroundColor: blue[700]
+    },
+    warn: {
+        backgroundColor: amber[700]
+    },
+    error: {
+        backgroundColor: red[700]
+    },
+    smallAvatar: {
+        width: 24,
+        height: 24
+    },
+    formControl: {
+        display: 'flex'
+    }
 });
 
 let outputCache = '-';
@@ -288,6 +309,8 @@ const StyledBadge = withStyles((theme) => ({
         padding: '0 4px',
     },
 }))(Badge);
+
+const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
 
 const HostRow = ({
     name,
@@ -313,7 +336,8 @@ const HostRow = ({
     setBaseSettingsDialog,
     hostsWorker,
     showAdaptersWarning,
-    openHostUpdateDialog
+    openHostUpdateDialog,
+    getLogLevelIcon
 }) => {
 
     const [openCollapse, setCollapse] = useState(false);
@@ -414,15 +438,22 @@ const HostRow = ({
 
     const [errorHost, setErrorHost] = useState({ notifications: {}, count: 0 });
 
+    const logLevelFunc = (name, state) => {
+        if (state) {
+            setLogLevelValue(state.val);
+            setLogLevelValueSelect(state.val);
+        }
+    }
+
     useEffect(() => {
         const notificationHandler = notifications =>
-            notifications && notifications[_id] && setErrorHost({notifications: notifications[_id], count: calculateWarning(notifications[_id])});
+            notifications && notifications[_id] && setErrorHost({ notifications: notifications[_id], count: calculateWarning(notifications[_id]) });
 
         hostsWorker.registerNotificationHandler(notificationHandler);
 
         hostsWorker.getNotifications(_id)
             .then(notifications => {
-                notifications && notifications[_id] && setErrorHost({notifications: notifications[_id], count: calculateWarning(notifications[_id])});
+                notifications && notifications[_id] && setErrorHost({ notifications: notifications[_id], count: calculateWarning(notifications[_id]) });
             });
 
         socket.subscribeState(`${_id}.inputCount`, eventsInputFunc);
@@ -436,6 +467,8 @@ const HostRow = ({
         socket.subscribeState(`${_id}.diskSize`, warningFunc);
         socket.subscribeState(`${_id}.diskWarning`, warningFunc);
 
+        socket.subscribeState(`${_id}.logLevel`, logLevelFunc);
+
         return () => {
             hostsWorker.unregisterNotificationHandler(notificationHandler);
             socket.unsubscribeState(`${_id}.inputCount`, eventsInputFunc);
@@ -448,19 +481,69 @@ const HostRow = ({
             socket.unsubscribeState(`${_id}.diskFree`, warningFunc);
             socket.unsubscribeState(`${_id}.diskSize`, warningFunc);
             socket.unsubscribeState(`${_id}.diskWarning`, warningFunc);
+
+            socket.unsubscribeState(`${_id}.logLevel`, logLevelFunc);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [_id, socket, classes]);
 
+
+    const [openDialogLogLevel, setOpenDialogLogLevel] = useState(false);
+    const [logLevelValue, setLogLevelValue] = useState(null);
+    const [logLevelValueSelect, setLogLevelValueSelect] = useState(null);
+
     const upgradeAvailable = (currentHost || alive) && Adapters.updateAvailable(installed, available);
+
+    let showModal = false;
+    let titleModal;
+    if (openDialogLogLevel) {
+        titleModal = t('Edit log level rule for %s', name);
+        showModal = true;
+    }
+
+    const customModal = showModal ? <CustomModal
+        title={titleModal}
+        open={true}
+        onApply={_ => {
+            if (openDialogLogLevel) {
+                socket.setState(`${_id}.logLevel`, logLevelValueSelect);
+                setOpenDialogLogLevel(false);
+            }
+        }}
+        onClose={_ => {
+            if (openDialogLogLevel) {
+                setLogLevelValueSelect(logLevelValue);
+                setOpenDialogLogLevel(false);
+            }
+        }}>
+        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined" >
+            <InputLabel>{t('log level')}</InputLabel>
+            <Select
+                variant="standard"
+                value={logLevelValueSelect}
+                fullWidth
+                onChange={el => {
+                    setLogLevelValueSelect(el.target.value)
+                }}
+            >
+                {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
+                    {t(el)}
+                </MenuItem>)}
+            </Select>
+        </FormControl>}
+        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined" >
+            <FormHelperText>{t('Will be reset to the saved log level after restart of adapter')}</FormHelperText>
+        </FormControl>}
+    </CustomModal> : null;
 
     return <div
         style={{ border: `2px solid ${color || 'inherit'}`, borderRadius: 5 }}
-        onMouseOut={() => setFocused(false)}
-        onMouseOver={() => setFocused(true)}
-        onMouseMove={() => setFocused(true)}
-        onClick={() => setCollapse((bool) => !bool)}
+        onMouseOut={openDialogLogLevel ? null : () => setFocused(false)}
+        onMouseOver={openDialogLogLevel ? null : () => setFocused(true)}
+        onMouseMove={openDialogLogLevel ? null : () => setFocused(true)}
+        onClick={openDialogLogLevel ? null : () => setCollapse((bool) => !bool)}
         key={_id} className={clsx(classes.root, hidden ? classes.hidden : '')}>
+        {customModal}
         <div className={clsx(classes.wrapperFlex, !alive && classes.cursorNoDrop)}>
             <div className={classes.wrapperColor}>
                 <div className={clsx(classes.onOff, alive ? classes.green : classes.red)} />
@@ -476,7 +559,7 @@ const HostRow = ({
                     color="error"
                     onClick={e => {
                         e.stopPropagation();
-                        showAdaptersWarning({[_id]: errorHost.notifications}, socket, _id);
+                        showAdaptersWarning({ [_id]: errorHost.notifications }, socket, _id);
                     }}
                 >
                     <CardMedia className={classes.img} component="img" image={image || 'img/no-image.png'} />
@@ -500,20 +583,21 @@ const HostRow = ({
                 </Typography>
                 <Typography className={clsx(classes.flex, classes.hidden1100)} variant="body2" color="textSecondary" component="div">
                     <div className={clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)} >
-                    {upgradeAvailable ?
+                        {upgradeAvailable ?
 
-                        <Tooltip title={t('Update')}>
-                            <div onClick={(e) => { 
-                                        e.stopPropagation();
-                                        openHostUpdateDialog()}} className={classes.buttonUpdate}><IconButton
-                                className={classes.buttonUpdateIcon}
-                                size="small"
-                            >
-                                <RefreshIcon />
-                            </IconButton>{available}</div>
-                        </Tooltip> :
-                        available
-                    }</div>
+                            <Tooltip title={t('Update')}>
+                                <div onClick={(e) => {
+                                    e.stopPropagation();
+                                    openHostUpdateDialog()
+                                }} className={classes.buttonUpdate}><IconButton
+                                    className={classes.buttonUpdateIcon}
+                                    size="small"
+                                >
+                                        <RefreshIcon />
+                                    </IconButton>{available}</div>
+                            </Tooltip> :
+                            available
+                        }</div>
                 </Typography>
                 <Typography className={clsx(classes.flex, classes.hidden1100)} variant="body2" color="textSecondary" component="p">
                     {installed}
@@ -555,6 +639,18 @@ const HostRow = ({
                                 </IconButton>
                             </div>
                         </Tooltip>
+                        {expertMode && logLevelValue &&
+                            <Tooltip title={t('loglevel') + ' ' + logLevelValue}>
+                                <IconButton onClick={(event) => {
+                                    event.stopPropagation();
+                                    setOpenDialogLogLevel(true);
+                                }}>
+                                    <Avatar className={clsx(classes.smallAvatar, classes[logLevelValue])}>
+                                        {getLogLevelIcon(logLevelValue)}
+                                    </Avatar>
+                                </IconButton>
+                            </Tooltip>
+                        }
                         {(upgradeAvailable || (!alive && !currentHost)) ? <Tooltip title={t(alive || currentHost ? 'Upgrade' : 'Remove')}>
                             <IconButton onClick={(e) => {
                                 alive || currentHost ? dialogUpgrade() : executeCommandRemove();
