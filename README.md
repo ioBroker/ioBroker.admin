@@ -74,10 +74,8 @@ Additionally, the allowed instances should be selected in the appeared configura
 
 If this option is disabled, the simple configuration page could be accessed under http://IP:8081/configs.html
 
-## Todo
-- move html tooltips to materialize tooltips
-- tiles for hosts (additionally to table - low prior)
-- tiles for instances (additionally to table - low prior)
+## Reverse proxy
+Please be sure that you forward not only the http/https requests, but the web-socket traffic too. It is essential for communication.
 
 ## Used icons
 This project uses some icons from [Flaticon](https://www.flaticon.com/):

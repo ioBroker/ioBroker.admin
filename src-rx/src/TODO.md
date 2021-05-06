@@ -25,7 +25,8 @@ Marked with "!" must be in release candidate
 
 ## Adapters
 - Update of available versions does not work: https://github.com/ioBroker/ioBroker.admin/issues/830
-
+- Check if adapter can be installed from github: https://github.com/ioBroker/ioBroker.admin/issues/527
+  - common.nogit = true
 
 ## Wizard
 

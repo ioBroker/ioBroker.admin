@@ -2968,7 +2968,7 @@ function filterChanged(e) {
                     case 'enum':
                         if (!isCommon || obj.common[f] === undefined) return false;
                         value = obj.common[f];
-                        if (typeof value === 'object') {
+                        if (value && typeof value === 'object') {
                             value = value[systemLang] || value.en || '';
                         }
                         if ((value || '').toLowerCase().indexOf(data.filterVals[f]) === -1) {
