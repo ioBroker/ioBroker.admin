@@ -1,3 +1,312 @@
 [
-    { "_id": "hoods", "name": "Hoods", "icon": "Hoods.svg" }
+  {
+    "_id": "hoods",
+    "name": "Hoods",
+    "icon": "Hoods.svg"
+  },
+  {
+    "_id": "alarm_systems",
+    "name": "Alarm Systems",
+    "icon": "Alarm Systems.svg"
+  },
+  {
+    "_id": "battery_status",
+    "name": "Battery Status",
+    "icon": "Battery Status.svg"
+  },
+  {
+    "_id": "lightings",
+    "name": "Lightings",
+    "icon": "Lightings.svg"
+  },
+  {
+    "_id": "shading",
+    "name": "Shading",
+    "icon": "Shading.svg"
+  },
+  {
+    "_id": "irrigation",
+    "name": "Irrigation",
+    "icon": "Irrigation.svg"
+  },
+  {
+    "_id": "iron",
+    "name": "Iron",
+    "icon": "Iron.svg"
+  },
+  {
+    "_id": "computer",
+    "name": "Computer",
+    "icon": "Computer.svg"
+  },
+  {
+    "_id": "ceiling_spotlights",
+    "name": "Ceiling Spotlights",
+    "icon": "Ceiling Spotlights.svg"
+  },
+  {
+    "_id": "handle",
+    "name": "Handle",
+    "icon": "Handle.svg"
+  },
+  {
+    "_id": "power_consumption",
+    "name": "Power Consumption",
+    "icon": "Power Consumption.svg"
+  },
+  {
+    "_id": "window",
+    "name": "Window",
+    "icon": "Window.svg"
+  },
+  {
+    "_id": "garage_doors",
+    "name": "Garage Doors",
+    "icon": "Garage Doors.svg"
+  },
+  {
+    "_id": "hairdryer",
+    "name": "Hairdryer",
+    "icon": "Hairdryer.svg"
+  },
+  {
+    "_id": "hanging_lamps",
+    "name": "Hanging Lamps",
+    "icon": "Hanging Lamps.svg"
+  },
+  {
+    "_id": "doorstep",
+    "name": "Doorstep",
+    "icon": "Doorstep.svg"
+  },
+  {
+    "_id": "hot_water",
+    "name": "Hot Water",
+    "icon": "Hot Water.svg"
+  },
+  {
+    "_id": "heater",
+    "name": "Heater",
+    "icon": "Heater.svg"
+  },
+  {
+    "_id": "stove",
+    "name": "Stove",
+    "icon": "Stove.svg"
+  },
+  {
+    "_id": "louvre",
+    "name": "Louvre",
+    "icon": "Louvre.svg"
+  },
+  {
+    "_id": "coffee_makers",
+    "name": "Coffee Makers",
+    "icon": "Coffee Makers.svg"
+  },
+  {
+    "_id": "cold_water",
+    "name": "Cold Water",
+    "icon": "Cold Water.svg"
+  },
+  {
+    "_id": "climate",
+    "name": "Climate",
+    "icon": "Climate.svg"
+  },
+  {
+    "_id": "speaker",
+    "name": "Speaker",
+    "icon": "Speaker.svg"
+  },
+  {
+    "_id": "led_strip",
+    "name": "Led Strip",
+    "icon": "Led Strip.svg"
+  },
+  {
+    "_id": "light",
+    "name": "Light",
+    "icon": "Light.svg"
+  },
+  {
+    "_id": "fan",
+    "name": "Fan",
+    "icon": "Fan.svg"
+  },
+  {
+    "_id": "humidity",
+    "name": "Humidity",
+    "icon": "Humidity.svg"
+  },
+  {
+    "_id": "ventilation",
+    "name": "Ventilation",
+    "icon": "Ventilation.svg"
+  },
+  {
+    "_id": "chandelier",
+    "name": "Chandelier",
+    "icon": "Chandelier.svg"
+  },
+  {
+    "_id": "awnings",
+    "name": "Awnings",
+    "icon": "Awnings.svg"
+  },
+  {
+    "_id": "music",
+    "name": "Music",
+    "icon": "Music.svg"
+  },
+  {
+    "_id": "people",
+    "name": "People",
+    "icon": "People.svg"
+  },
+  {
+    "_id": "pool",
+    "name": "Pool",
+    "icon": "Pool.svg"
+  },
+  {
+    "_id": "pump",
+    "name": "Pump",
+    "icon": "Pump.svg"
+  },
+  {
+    "_id": "outdoor_blinds",
+    "name": "Outdoor Blinds",
+    "icon": "Outdoor Blinds.svg"
+  },
+  {
+    "_id": "mowing_machine",
+    "name": "Mowing Machine",
+    "icon": "Mowing Machine.svg"
+  },
+  {
+    "_id": "receiver",
+    "name": "Receiver",
+    "icon": "Receiver.svg"
+  },
+  {
+    "_id": "computer",
+    "name": "Computer",
+    "icon": "Computer.svg"
+  },
+  {
+    "_id": "shutters",
+    "name": "Shutters",
+    "icon": "Shutters.svg"
+  },
+  {
+    "_id": "lock",
+    "name": "Lock",
+    "icon": "Lock.svg"
+  },
+  {
+    "_id": "security",
+    "name": "Security",
+    "icon": "Security.svg"
+  },
+  {
+    "_id": "dishwashers",
+    "name": "Dishwashers",
+    "icon": "Dishwashers.svg"
+  },
+  {
+    "_id": "vacuum_cleaner",
+    "name": "Vacuum Cleaner",
+    "icon": "Vacuum Cleaner.svg"
+  },
+  {
+    "_id": "sockets",
+    "name": "Sockets",
+    "icon": "Sockets.svg"
+  },
+  {
+    "_id": "floor_lamps",
+    "name": "Floor Lamps",
+    "icon": "Floor Lamps.svg"
+  },
+  {
+    "_id": "power_consumption",
+    "name": "Power Consumption",
+    "icon": "Power Consumption.svg"
+  },
+  {
+    "_id": "temperature_sensors",
+    "name": "Temperature Sensors",
+    "icon": "Temperature Sensors.svg"
+  },
+  {
+    "_id": "table_lamps",
+    "name": "Table Lamps",
+    "icon": "Table Lamps.svg"
+  },
+  {
+    "_id": "gates",
+    "name": "Gates",
+    "icon": "Gates.svg"
+  },
+  {
+    "_id": "dryer",
+    "name": "Dryer",
+    "icon": "Dryer.svg"
+  },
+  {
+    "_id": "doors",
+    "name": "Doors",
+    "icon": "Doors.svg"
+  },
+  {
+    "_id": "tv",
+    "name": "Tv",
+    "icon": "Tv.svg"
+  },
+  {
+    "_id": "consumption",
+    "name": "Consumption",
+    "icon": "Consumption.svg"
+  },
+  {
+    "_id": "amplifier",
+    "name": "Amplifier",
+    "icon": "Amplifier.svg"
+  },
+  {
+    "_id": "curtains",
+    "name": "Curtains",
+    "icon": "Curtains.svg"
+  },
+  {
+    "_id": "sconces",
+    "name": "Sconces",
+    "icon": "Sconces.svg"
+  },
+  {
+    "_id": "washing_machines",
+    "name": "Washing Machines",
+    "icon": "Washing Machines.svg"
+  },
+  {
+    "_id": "water",
+    "name": "Water",
+    "icon": "Water.svg"
+  },
+  {
+    "_id": "water_heater",
+    "name": "Water Heater",
+    "icon": "Water Heater.svg"
+  },
+  {
+    "_id": "water_consumption",
+    "name": "Water Consumption",
+    "icon": "Water Consumption.svg"
+  },
+  {
+    "_id": "weather",
+    "name": "Weather",
+    "icon": "Weather.svg"
+  }
 ]
