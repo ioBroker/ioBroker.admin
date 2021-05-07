@@ -10,11 +10,9 @@ Marked with "!" must be in release candidate
     config: 'materialize', 'none', 'html'
     tab: 'html'
   }
-<!-- - Tooltips on drawer in half-closed mode   -->
 - News check does not work: https://github.com/ioBroker/ioBroker.admin/issues/839
 
 ## Intro
-<!-- - For links: jump to link by clicking of the whole card and not only link: https://github.com/ioBroker/ioBroker.admin/issues/685 -->
 
 ## Easy Mode
 
@@ -26,14 +24,6 @@ Marked with "!" must be in release candidate
 
 ## Adapters
 - Update of available versions does not work: https://github.com/ioBroker/ioBroker.admin/issues/830
-<!-- - Check if adapter can be installed from github: https://github.com/ioBroker/ioBroker.admin/issues/527
-- common.nogit = true -->
-<!-- - "This adapter cannot be installed from git as must be built before installation." -->
-<!-- - Filter Adapters without existing instance (https://github.com/ioBroker/ioBroker.admin/issues/281)
-  - Star icon: 
-    - Show all (standard color): "Show only installed"
-    - Show installed (primary color) "Showed only installed adapters"
-    - Show installed without instances (red) "Showed only installed adapters without instance." -->
 
 ## Wizard
 
@@ -43,35 +33,12 @@ Marked with "!" must be in release candidate
 - !On safari new coming entries have invalid time https://github.com/ioBroker/ioBroker.admin/issues/783 //not track
 
 ## Instances
-<!-- - Read log level from system.adapter.<adaptername>.<instance>.logLevel (subscribe on it) and show 2 levels if it differs "warn/debug" with tooltip => "saved: warn / actual: debug"  -->
 - Extended filter: 
+  - save all filters in localStorage  
 
-  <!-- - started / stopped
-    - If all: Show running or stopped instances
-    - If running: Showed only running instances
-    - If stopper: Showed only stopped instances -->
-  <!-- - by mode (daemon/schedule/once/none) -->
-  - by status (https://github.com/ioBroker/ioBroker.admin/issues/283)
-      - grey - disabled
-      - red - enabled, but not alive
-      - orange - enabled, alive, but not connected to controller
-      - orange - enabled, alive, connected, but not connected to device or service
-      - green - enabled and OK
 - Group by category https://github.com/ioBroker/ioBroker.admin/issues/293
 
 ## Objects
-<!-- - If width of ID not defined => TODO see objectBrowser -->
-<!-- - Show in tooltip of button which types could be created on selected node
-  - If button is disabled or object does not exist or other types, show in the tooltip the full list of possibilities: https://github.com/ioBroker/ioBroker.admin/issues/761#issuecomment-831030077
-    - Only following structures of objects are available:
-    - Folder => State
-    - Folder => Channel => State
-    - Folder => Device => Channel => state
-    - Device => channel => state
-    - Channel => State
-
-    Non-experts may create new objects only in "0_userdata.0" or "alias.0".
-    The experts may create objects everywhere but from second level (e.g. vis.0 or javascript.0). -->
     
 ## Files
 

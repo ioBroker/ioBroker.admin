@@ -1353,14 +1353,15 @@ class Adapters extends Component {
                         <StarIcon color="primary" style={{ opacity: 0.3 }} />
                     </IconButton>
                     :
-                    <Tooltip title={this.t(!this.state.installedList?
-                        'Show only installed':
-                        this.state.playArrow < 2?
-                        'Showed only installed adapters':
-                        'Showed only installed adapters without instance.')}>
+                    <Tooltip title={this.t(!this.state.installedList ?
+                        'Show only installed' :
+                        (this.state.installedList < 2 ?
+                            'Showed only installed adapters' :
+                            'Showed only installed adapters without instance.'))}>
                         <IconButton
                             onClick={() => this.changeInstalledList()}>
-                            <StarIcon style={this.state.installedList === 2?{color:'red'}:null} color={this.state.installedList && this.state.installedList<2 ? 'primary' : 'inherit'} />
+                            <StarIcon style={this.state.installedList === 2 ? {color: 'red'} : null}
+                                      color={this.state.installedList && this.state.installedList < 2 ? 'primary' : 'inherit'}/>
                         </IconButton>
                     </Tooltip>
                 }

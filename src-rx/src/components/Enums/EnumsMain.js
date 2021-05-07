@@ -223,7 +223,12 @@ const DragObjectBrowser = (props) => {
             let onDragEnd = (item, monitor) => {
                 const dropResult = monitor.getDropResult();
                 if (item.data && dropResult) {
-                    browserProps.addItemToEnum(item.data.obj._id, dropResult.enum_id);
+                    if (item.data.obj) {
+                        browserProps.addItemToEnum(item.data.obj._id, dropResult.enum_id);
+                    } else {
+                        // all children ??
+                        window.alert('TODO: Add all direct children of ' + item.id);
+                    }
                 }
             };
             let dragSettings = {
@@ -241,7 +246,7 @@ const DragObjectBrowser = (props) => {
                         props.item.data.obj.common?.icon
                             ?
                             <Icon
-                                className={ props.classes?.icon }
+                                className={ browserProps.classes.icon }
                                 src={props.item.data.obj.common.icon}
                             />
                             :
@@ -506,7 +511,7 @@ class EnumsList extends Component {
             <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
                 <DndPreview />
                 <Grid container>
-                    <Grid md={6} item>
+                    <Grid md={5} item>
                     <IconButton
                         size="small"
                         id="categoryPopoverButton"
@@ -578,7 +583,7 @@ class EnumsList extends Component {
                         {Object.values(this.state.enumsTree.children.enum.children[this.state.currentCategory].children)
                             .map((enumItem, index) => this.renderTree(enumItem, index))}
                     </Grid>
-                    <Grid md={6} item>
+                    <Grid md={7} item>
                         <DragObjectBrowser
                             addItemToEnum={this.addItemToEnum}
                             getName={this.getName}
@@ -609,17 +614,16 @@ class EnumsList extends Component {
                 classes={this.props.classes}
                 deleteEnum={this.deleteEnum}
             />
-            <EnumTemplateDialog
-                open={!!this.state.enumTemplateDialog}
+            {!!this.state.enumTemplateDialog && <EnumTemplateDialog
                 category={this.state.enumTemplateDialog}
                 onClose={()=>this.setState({enumTemplateDialog: false})}
                 t={this.props.t}
-                classes={this.props.classes}
+                classesParent={this.props.classes}
                 createEnumTemplate={this.createEnumTemplate}
                 showEnumEditDialog={this.showEnumEditDialog}
                 enums={this.state.enums}
                 getEnumTemplate={this.getEnumTemplate}
-            />
+            />}
         </>;
     }
 }
