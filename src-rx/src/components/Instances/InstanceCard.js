@@ -542,7 +542,7 @@ const InstanceCard = memo(({
             onChange={el => setHostValue(el)}
         />}
     </CustomModal>
-    : null;
+        : null;
 
     const stopAdminDialog = showStopAdminDialog ? <ConfirmDialog
         title={t('Please confirm')}
@@ -614,7 +614,7 @@ const InstanceCard = memo(({
 
                     {expertMode && <div className={classes.displayFlex}>
                         <InstanceInfo icon={loglevelIcon} tooltip={logLevelObject === logLevel ? `${t('loglevel')} ${logLevel}` : `${t('saved:')} ${logLevelObject} / ${t('actual:')} ${logLevel}`}>
-                            {logLevel}
+                            {logLevelObject === logLevel ? logLevel : `${logLevelObject} / ${logLevel}`}
                         </InstanceInfo>
                         <Tooltip title={t('Edit')}>
                             <IconButton
@@ -701,7 +701,7 @@ const InstanceCard = memo(({
 
                     {hosts.length > 1 || (hosts.length && hosts[0].common?.hostname !== host) ? <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                         <InstanceInfo icon={<HostIcon className={classes.marginRight} />} tooltip={t('Host for this instance')}>
-                            {<TextWithIcon value={host} list={hosts} removePrefix="system.host." themeType={themeType}/>}
+                            {<TextWithIcon value={host} list={hosts} removePrefix="system.host." themeType={themeType} />}
                         </InstanceInfo>
                         <Tooltip title={t('Edit')}>
                             <IconButton

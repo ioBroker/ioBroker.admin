@@ -277,22 +277,30 @@ const Hosts = ({
                 }));
     };
 
-    const updateHosts = (name, state) => {
+    const updateHosts = (hostId, state) => {
         setHosts(prevHostsArray => {
             const newHosts = JSON.parse(JSON.stringify(prevHostsArray));
-            const elementFind = prevHostsArray.find(({ _id }) => _id === name);
+            const elementFind = prevHostsArray.find(({ _id }) => _id === hostId);
             if (elementFind) {
                 const index = prevHostsArray.indexOf(elementFind);
-                newHosts[index] = state;
+                if (state) {
+                    newHosts[index] = state;
+                } else {
+                    newHosts.splice(index, 1);
+                }                
             } else {
                 newHosts.push(state);
             }
+
+            filterText && newHosts.length <= 2 && setFilterText('');
+            
             return newHosts;
         });
     }
 
     const readInfo = () => {
         socket.subscribeObject('system.host.*', updateHosts);
+        // hostsWorker.register
         socket.getHosts(true, false, readTimeoutMs)
             .then(hostsArray => socket.getRepository(currentHost, { update: false }, false, readTimeoutMs)
                 .then(async repositoryProm => {

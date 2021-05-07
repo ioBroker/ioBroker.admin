@@ -1081,7 +1081,7 @@ const InstanceRow = ({
                     <Grid container item direction="column" xs={12} sm={6} md={4} className={classes.paddingRight200}>
                         {expertMode && <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={loglevelIcon} tooltip={logLevelObject === logLevel ? `${t('loglevel')} ${logLevel}` : `${t('saved:')} ${logLevelObject} / ${t('actual:')} ${logLevel}`}>
-                                {logLevel}
+                                {logLevelObject === logLevel ? logLevel : `${logLevelObject} / ${logLevel}`}
                             </InstanceInfo>
                             <Tooltip title={t('Edit')}>
                                 <IconButton
