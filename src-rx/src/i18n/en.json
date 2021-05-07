@@ -1303,5 +1303,6 @@
   "Would you like to restart the controller for your changes to take effect?": "Would you like to restart the controller for your changes to take effect?",
   "github_note": "Please note: adapter dependencies are not checked when using this installation method. Please check them yourself. You will also have to manually create an instance after the installation if necessary.",
   "The changes will be applied to %s states. Are you sure?": "The changes will be applied to %s states. Are you sure?",
-  "Yes": "Yes"
+  "Yes": "Yes",
+  "Save & close": "Save & close"
 }
