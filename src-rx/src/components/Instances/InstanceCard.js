@@ -353,7 +353,8 @@ const InstanceCard = memo(({
     adminInstance,
     setHost,
     host,
-    hosts
+    hosts,
+    logLevelObject
 }) => {
     const [mouseOver, setMouseOver] = useState(false);
 
@@ -612,7 +613,7 @@ const InstanceCard = memo(({
                     </div>}
 
                     {expertMode && <div className={classes.displayFlex}>
-                        <InstanceInfo icon={loglevelIcon} tooltip={t('loglevel')}>
+                        <InstanceInfo icon={loglevelIcon} tooltip={logLevelObject === logLevel ? `${t('loglevel')} ${logLevel}` : `${t('saved:')} ${logLevelObject} / ${t('actual:')} ${logLevel}`}>
                             {logLevel}
                         </InstanceInfo>
                         <Tooltip title={t('Edit')}>

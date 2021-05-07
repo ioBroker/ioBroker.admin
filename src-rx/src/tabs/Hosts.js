@@ -277,8 +277,23 @@ const Hosts = ({
                 }));
     };
 
+    const updateHosts = (name, state) => {
+        setHosts(prevHostsArray => {
+            const newHosts = JSON.parse(JSON.stringify(prevHostsArray));
+            const elementFind = prevHostsArray.find(({ _id }) => _id === name);
+            if (elementFind) {
+                const index = prevHostsArray.indexOf(elementFind);
+                newHosts[index] = state;
+            } else {
+                newHosts.push(state);
+            }
+            return newHosts;
+        });
+    }
+
     const readInfo = () => {
-        return socket.getHosts(true, false, readTimeoutMs)
+        socket.subscribeObject('system.host.*', updateHosts);
+        socket.getHosts(true, false, readTimeoutMs)
             .then(hostsArray => socket.getRepository(currentHost, { update: false }, false, readTimeoutMs)
                 .then(async repositoryProm => {
                     const _alive = JSON.parse(JSON.stringify(alive));
@@ -303,6 +318,9 @@ const Hosts = ({
                     window.alert('Cannot getRepository: ' + e);
                     e.toString().includes('timeout') && setShowSlowConnectionWarning(true);
                 }));
+        return () => {
+            socket.unsubscribeObject('system.host.*', updateHosts);
+        }
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -333,7 +351,7 @@ const Hosts = ({
             description={getHostDescriptionAll(_id, t, classes, hostsData)[0]}
             available={repository['js-controller']?.version || '-'}
             executeCommandRemove={() => executeCommand(`host remove ${name}`)}
-            dialogUpgrade={() => JsControllerDialogFunc(socket,  _id)}
+            dialogUpgrade={() => JsControllerDialogFunc(socket, _id)}
             currentHost={currentHost === _id}
             installed={installedVersion}
             events={'- / -'}
@@ -364,7 +382,7 @@ const Hosts = ({
             getLogLevelIcon={getLogLevelIcon}
             openHostUpdateDialog={() => openHostUpdateDialog(name)}
             executeCommandRemove={() => executeCommand(`host remove ${name}`)}
-            dialogUpgrade={() => JsControllerDialogFunc(socket,  _id)}
+            dialogUpgrade={() => JsControllerDialogFunc(socket, _id)}
             currentHost={currentHost === _id}
             description={getHostDescriptionAll(_id, t, classes, hostsData)[1]}
             available={repository['js-controller']?.version || '-'}
@@ -503,7 +521,7 @@ const Hosts = ({
                 news={getNews()}
                 onUpdate={() =>
                     closeHostUpdateDialog(() =>
-                    JsControllerDialogFunc(socket,  hostUpdate))}
+                        JsControllerDialogFunc(socket, hostUpdate))}
                 onClose={() => closeHostUpdateDialog()}
             />
         }

@@ -927,7 +927,7 @@ class Adapters extends Component {
 
     changeInstalledList() {
         this.cache.listOfVisibleAdapter = null;
-        let installedList = !this.state.installedList;
+        let installedList = !this.state.installedList?1:this.state.installedList < 2?2:false;
         window.localStorage.setItem('Adapters.installedList', JSON.stringify(installedList));
         this.setState({ installedList });
     }
@@ -1116,7 +1116,7 @@ class Adapters extends Component {
                         show = updateAvailable;
                     }
                     if (show && this.state.installedList) {
-                        show = !!(installed && installed.version);
+                        show = this.state.installedList < 2?!!(installed && installed.version && installed.count):!!(installed && installed.version && !installed.count) ;
                     }
                     if (show) {
                         this.cache.listOfVisibleAdapter.push(value);
@@ -1341,10 +1341,14 @@ class Adapters extends Component {
                         <StarIcon color="primary" style={{ opacity: 0.3 }} />
                     </IconButton>
                     :
-                    <Tooltip title={this.t('Filter installed adapters')}>
+                    <Tooltip title={this.t(!this.state.installedList?
+                        'Show only installed':
+                        this.state.playArrow < 2?
+                        'Showed only installed adapters':
+                        'Showed only installed adapters without instance.')}>
                         <IconButton
                             onClick={() => this.changeInstalledList()}>
-                            <StarIcon color={this.state.installedList ? 'primary' : 'inherit'} />
+                            <StarIcon style={this.state.installedList === 2?{color:'red'}:null} color={this.state.installedList && this.state.installedList<2 ? 'primary' : 'inherit'} />
                         </IconButton>
                     </Tooltip>
                 }

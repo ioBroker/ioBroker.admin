@@ -72,6 +72,10 @@ const useStyles = makeStyles(theme => ({
     },
     noteText: {
         marginTop: theme.spacing(2),
+    },
+    errorTextNoGit: {
+        fontSize: 13,
+        color: '#ff1616'
     }
 }));
 
@@ -80,7 +84,7 @@ if (!Array.prototype.flat) {
     // eslint-disable-next-line
     Object.defineProperty(Array.prototype, 'flat', {
         configurable: true,
-        value: function flat () {
+        value: function flat() {
             const depth = isNaN(arguments[0]) ? 1 : Number(arguments[0]);
 
             return depth ? Array.prototype.reduce.call(this, function (acc, cur) {
@@ -120,6 +124,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                         value: el + '/' + parts[3],
                         name: `${adapter?.name} [${parts[3]}]`,
                         icon: adapter.extIcon,
+                        nogit: !!adapter.nogit
                     };
                 } else {
                     return null;
@@ -150,15 +155,15 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                         }}
                         variant="fullWidth"
                     >
-                        <Tab label={t('From npm')} wrapped icon={<img src={npmIcon} alt="npm" width={24} height={24}/>} {...a11yProps(0)}    value="npm"/>
-                        <Tab label={t('From github')} wrapped icon={<GithubIcon style={{width: 24, height: 24}} width={24} height={24}/>} {...a11yProps(0)} value="GitHub" />
-                        <Tab label={t('Custom')} wrapped icon={<UrlIcon width={24} height={24}/>} {...a11yProps(1)}      value="URL"/>
+                        <Tab label={t('From npm')} wrapped icon={<img src={npmIcon} alt="npm" width={24} height={24} />} {...a11yProps(0)} value="npm" />
+                        <Tab label={t('From github')} wrapped icon={<GithubIcon style={{ width: 24, height: 24 }} width={24} height={24} />} {...a11yProps(0)} value="GitHub" />
+                        <Tab label={t('Custom')} wrapped icon={<UrlIcon width={24} height={24} />} {...a11yProps(1)} value="URL" />
                     </Tabs>
                 </AppBar>
                 <div className={classes.title}>{t('Install or update the adapter from %s', currentTab || 'npm')}
                 </div>
                 {currentTab === 'npm' ? <Paper className={classes.tabPaper}>
-                    <div style={{display: 'flex', alignItems: 'center'}}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -170,7 +175,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                             label={t('Debug outputs')}
                         />
                     </div>
-                    <div style={{display: 'flex', alignItems: 'flex-end'}}>
+                    <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                         <SmsIcon style={{ marginRight: 10 }} />
                         <Autocomplete
                             fullWidth
@@ -195,7 +200,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                     </div>
                 </Paper> : null}
                 {currentTab === 'GitHub' ? <Paper className={classes.tabPaper}>
-                    <div style={{display: 'flex', alignItems: 'center'}}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -204,12 +209,17 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                             label={t('Debug outputs')}
                         />
                     </div>
-                    <div style={{display: 'flex', alignItems: 'flex-end'}}>
+                    <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                         <SmsIcon style={{ marginRight: 10 }} />
                         <Autocomplete
                             fullWidth
                             value={autocompleteValue}
                             getOptionSelected={(option, value) => option.name === value.name}
+                            getOptionDisabled={option => option.nogit}
+                            renderOption={option => <div>
+                                {option.name}
+                                {option.nogit && <div className={classes.errorTextNoGit}>{I18n.t("This adapter cannot be installed from git as must be built before installation.")}</div>}
+                            </div>}
                             onChange={(_, e) => setAutocompleteValue(e)}
                             options={array()}
                             getOptionLabel={option => option.name}
@@ -229,7 +239,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                     </div>
                 </Paper> : null}
                 {currentTab === 'URL' ? <Paper className={classes.tabPaper}>
-                    <div style={{display: 'flex', alignItems: 'center'}}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
                         <TextField
                             fullWidth
                             label={t('URL')}
@@ -238,13 +248,13 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                             onChange={event => setUrl(event.target.value)}
                             InputProps={{
                                 endAdornment: url ? <InputAdornment position="end">
-                                        <IconButton
-                                            size="small"
-                                            onClick={() => setUrl('')}
-                                        >
-                                            <CloseIcon />
-                                        </IconButton>
-                                    </InputAdornment> : null
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => setUrl('')}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </InputAdornment> : null
                             }}
                         />
                     </div>

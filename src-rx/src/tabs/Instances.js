@@ -25,6 +25,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import ViewCompactIcon from '@material-ui/icons/ViewCompact';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import SettingsIcon from '@material-ui/icons/Lens';
+import FilterListIcon from '@material-ui/icons/FilterList';
 
 import amber from '@material-ui/core/colors/amber';
 import blue from '@material-ui/core/colors/blue';
@@ -42,6 +43,7 @@ import TabHeader from '../components/TabHeader';
 import InstanceCard from '../components/Instances/InstanceCard';
 import InstanceRow from '../components/Instances/InstanceRow';
 import CustomSelectButton from '../components/CustomSelectButton';
+import { instanceFilterDialogCallback } from '../components/Instances/InstanceFilterDialog';
 
 const styles = theme => ({
     table: {
@@ -196,7 +198,11 @@ class Instances extends Component {
             compactGroupCount: 0,
             filterCompactGroup: 'All',
             sentry: false,
-            delete: false
+            delete: false,
+
+            //filter
+            mode:null,
+            status:null
         };
 
         this.columns = {
@@ -627,6 +633,30 @@ class Instances extends Component {
         return null;
     }
 
+    getModeFilter = (value) => {
+        let state = 'grey';
+        switch (value){
+            case 1:
+                state = 'grey';
+            break
+            case 2:
+                state = 'red';
+            break
+            case 3:
+                state = 'orange';
+            break
+            case 4:
+                state = 'blue';
+            break
+            case 5:
+                state = 'green';
+            break
+            default:
+                break
+        }
+        return state
+    }
+
     getLogLevelIcon(level) {
         if (level === 'debug') {
             return <BugReportIcon />;
@@ -697,7 +727,8 @@ class Instances extends Component {
             const connectedToHost = this.isConnectedToHost(id);
             const connected       = this.isConnected(id);
             const name            = this.getName(instance.obj);
-            const logLevel        = this.states[`${id}.logLevel`]?.val || 'info';
+            const logLevel        = this.states[`${id}.logLevel`]?.val || instance.loglevel;
+            const logLevelObject  = instance.loglevel;
             const tier            = instance?.obj?.common?.tier || 3;
             const loglevelIcon    = this.getLogLevelIcon(logLevel);
             const checkCompact    = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
@@ -745,6 +776,7 @@ class Instances extends Component {
                         setRestartSchedule={this.setRestartSchedule}
                         setName={this.setName}
                         logLevel={logLevel}
+                        logLevelObject={logLevelObject}
                         setLogLevel={this.setLogLevel}
                         inputOutput={inputOutput}
                         mode={mode}
@@ -797,6 +829,7 @@ class Instances extends Component {
                         setRestartSchedule={this.setRestartSchedule}
                         setName={this.setName}
                         logLevel={logLevel}
+                        logLevelObject={logLevelObject}
                         setLogLevel={this.setLogLevel}
                         inputOutput={inputOutput}
                         mode={mode}
@@ -816,12 +849,14 @@ class Instances extends Component {
                 nameId: instance.id,
                 compactGroup,
                 checkCompact,
-                sentry: currentSentry
+                mode:instance.mode,
+                sentry: currentSentry,
+                state: this.getInstanceState(instance.obj)
             }
         });
 
         if (this.state.playArrow) {
-            list = list.filter(({ running }) => running);
+            list = list.filter(({ running }) => this.state.playArrow < 2?running:!running);
         }
 
         if (this.state.importantDevices) {
@@ -838,6 +873,12 @@ class Instances extends Component {
                 this.state.filterCompactGroup === 'All' ||
                 (this.state.filterCompactGroup === 'default' && (compactGroup === null || compactGroup === 1)) ||
                 (this.state.filterCompactGroup === 'controller' && compactGroup === '0'))
+        }
+        if(this.state.mode){
+            list = list.filter(({ mode }) => mode === this.state.mode);
+        }
+        if(this.state.status){
+            list = list.filter(({ state }) =>this.getModeFilter(this.state.status) === state)      
         }
         if (!list.length) {
             return <div style={{
@@ -886,6 +927,13 @@ class Instances extends Component {
         this.setState(state => {
             window.localStorage.setItem(`Instances.${value}`, JSON.stringify(!state[value]));
             return ({ [value]: !state[value] });
+        });
+
+    changeStartedStopped = value =>
+        this.setState(state => {
+            const newValue = !state.playArrow?1:state.playArrow < 2?2:false;
+            window.localStorage.setItem(`Instances.playArrow`, JSON.stringify(newValue));
+            return ({ playArrow: newValue });
         });
 
     changeCompactGroup = filterCompactGroup => {
@@ -965,9 +1013,24 @@ class Instances extends Component {
                         <DevicesIcon color={this.state.importantDevices ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip> : null}
-                <Tooltip title={this.t('Show only running instances')}>
-                    <IconButton onClick={() => this.changeSetStateBool('playArrow')}>
-                        <PlayArrowIcon color={this.state.playArrow ? 'primary' : 'inherit'} />
+                <Tooltip title={this.t(!this.state.playArrow?
+                    'Show running or stopped instances':
+                    this.state.playArrow < 2?
+                    'Showed only running instances':
+                    'Showed only stopped instances')}>
+                    <IconButton onClick={() => this.changeStartedStopped(this.state.playArrow)}>
+                        <PlayArrowIcon style={this.state.playArrow === 2?{color:'red'}:null} color={this.state.playArrow && this.state.playArrow<2 ? 'primary' : 'inherit'} />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title={this.t('Filter instances')}>
+                    <IconButton onClick={() => instanceFilterDialogCallback((el)=>{
+                        if(el){
+                            this.setState(el);
+                        }
+                    },this.state.mode,this.state.status)}>
+                        <FilterListIcon 
+                        color={this.state.mode || this.state.status ? 'primary' : 'inherit'} 
+                        />
                     </IconButton>
                 </Tooltip>
                 {/*this.props.expertMode && <Tooltip title="sentry">

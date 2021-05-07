@@ -8,6 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import amber from '@material-ui/core/colors/amber';
 
@@ -66,37 +67,39 @@ const DrawerItem = props => {
             className={clsx({ [classes.selected]: selected }, compact && classes.compactBadge)}
             onClick={onClick}
         >
-            <Grid
-                container
-                spacing={1}
-                alignItems="center"
-                className={classes.noWrap}
-            >
-                <Grid item>
-                    <ListItemIcon style={{ minWidth: 0 }}>
-                        <Badge
-                            badgeContent={badgeContent || 0}
-                            color={(badgeColor === 'warn' ? 'default' : badgeColor) || 'primary'}
-                            classes={badgeColor === 'warn' ? { badge: classes.warn } : {}}
-                        >
-                            {icon}
-                        </Badge>
-                    </ListItemIcon>
-                </Grid>
-                {!compact &&
+            <Tooltip title={compact ? content : ''}>
+                <Grid
+                    container
+                    spacing={1}
+                    alignItems="center"
+                    className={classes.noWrap}
+                >
                     <Grid item>
-                        <ListItemText>
+                        <ListItemIcon style={{ minWidth: 0 }}>
                             <Badge
-                                badgeContent={badgeAdditionalContent || 0}
-                                color={(badgeAdditionalColor === 'warn' ? 'default' : badgeAdditionalColor) || 'primary'}
-                                classes={badgeAdditionalColor === 'warn' ? { badge: classes.warn } : {}}
+                                badgeContent={badgeContent || 0}
+                                color={(badgeColor === 'warn' ? 'default' : badgeColor) || 'primary'}
+                                classes={badgeColor === 'warn' ? { badge: classes.warn } : {}}
                             >
-                                {content}
+                                {icon}
                             </Badge>
-                        </ListItemText>
+                        </ListItemIcon>
                     </Grid>
-                }
-            </Grid>
+                    {!compact &&
+                        <Grid item>
+                            <ListItemText>
+                                <Badge
+                                    badgeContent={badgeAdditionalContent || 0}
+                                    color={(badgeAdditionalColor === 'warn' ? 'default' : badgeAdditionalColor) || 'primary'}
+                                    classes={badgeAdditionalColor === 'warn' ? { badge: classes.warn } : {}}
+                                >
+                                    {content}
+                                </Badge>
+                            </ListItemText>
+                        </Grid>
+                    }
+                </Grid>
+            </Tooltip>
         </ListItem>
     </div>;
 }

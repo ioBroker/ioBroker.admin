@@ -425,7 +425,7 @@ const styles = theme => ({
         },
         instanceId: {
             width: '70px !important',
-            minWidth:'70px !important'
+            minWidth: '70px !important'
         },
     },
     '@media screen and (max-width: 480px)': {
@@ -615,6 +615,7 @@ const InstanceRow = ({
     adminInstance,
     hosts,
     host,
+    logLevelObject,
     currentHost
 }) => {
     const [openSelectCompactGroup, setOpenSelectCompactGroup] = useState(false);
@@ -822,7 +823,7 @@ const InstanceRow = ({
     const stateTooltip = [
         instance.mode === 'daemon' ? <State key={1} state={connectedToHost} >{t('Connected to host')}</State> : '',
         instance.mode === 'daemon' ? <State key={2} state={alive} >{t('Heartbeat')}</State> : '',
-        connected !== null         ? <State key={3} state={!!connected}>
+        connected !== null ? <State key={3} state={!!connected}>
             {typeof connected === 'string' ? t('Connected: ') + (connected || '-') : t('Connected to device or service')}
         </State> : ''
     ];
@@ -1007,8 +1008,8 @@ const InstanceRow = ({
                     </div>
                 }
                 {expertMode &&
-                    <Tooltip title={t('loglevel') + ' ' + logLevel}>
-                        <Avatar className={clsx(classes.smallAvatar,classes.hidden380, classes[logLevel])}>
+                    <Tooltip title={logLevelObject === logLevel ? `${t('loglevel')} ${logLevel}` : `${t('saved:')} ${logLevelObject} / ${t('actual:')} ${logLevel}`}>
+                        <Avatar className={clsx(classes.smallAvatar, classes.hidden380, classes[logLevel])}>
                             {loglevelIcon}
                         </Avatar>
                     </Tooltip>
@@ -1022,7 +1023,7 @@ const InstanceRow = ({
                     </InstanceInfo>
                 </Grid>
                 <Grid item className={clsx(classes.hidden1230)}>
-                    {<TextWithIcon value={host} list={hosts} removePrefix="system.host." themeType={themeType}/>}
+                    {<TextWithIcon value={host} list={hosts} removePrefix="system.host." themeType={themeType} />}
                 </Grid>
             </Grid>
             <div className={classes.hidden570}>
@@ -1079,7 +1080,7 @@ const InstanceRow = ({
                     </Grid>
                     <Grid container item direction="column" xs={12} sm={6} md={4} className={classes.paddingRight200}>
                         {expertMode && <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
-                            <InstanceInfo icon={loglevelIcon} tooltip={t('loglevel')}>
+                            <InstanceInfo icon={loglevelIcon} tooltip={logLevelObject === logLevel ? `${t('loglevel')} ${logLevel}` : `${t('saved:')} ${logLevelObject} / ${t('actual:')} ${logLevel}`}>
                                 {logLevel}
                             </InstanceInfo>
                             <Tooltip title={t('Edit')}>
@@ -1231,7 +1232,7 @@ const InstanceRow = ({
                         </div>
                         {hosts.length > 1 || (hosts.length && hosts[0].common?.hostname !== host) ? <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={<HostIcon className={classes.marginRight} />} tooltip={t('Host for this instance')}>
-                                {<TextWithIcon value={host} list={hosts} removePrefix="system.host." themeType={themeType}/>}
+                                {<TextWithIcon value={host} list={hosts} removePrefix="system.host." themeType={themeType} />}
                             </InstanceInfo>
                             <Tooltip title={t('Edit')}>
                                 <IconButton
