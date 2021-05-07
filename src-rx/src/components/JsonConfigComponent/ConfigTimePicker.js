@@ -22,6 +22,7 @@ class ConfigTimePicker extends ConfigGeneric {
         return <KeyboardTimePicker
             fullWidth
             margin="normal"
+            format="HH:mm:ss"
             error={!!error}
             disabled={!!disabled}
             value={this.state.value === null || this.state.value === undefined ? new Date() : this.state.value}

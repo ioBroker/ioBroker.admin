@@ -672,9 +672,9 @@ const HostCard = ({
                             </IconButton>
                         </Tooltip>
                     }
-                    {(upgradeAvailable || (!alive && !currentHost)) ? <Tooltip title={t(alive || currentHost ? 'Upgrade' : 'Remove')}>
-                        <IconButton onClick={(alive || currentHost) ? dialogUpgrade : executeCommandRemove}>
-                            {(alive || currentHost) ? <RefreshIcon /> : <DeleteIcon />}
+                    {!alive && !currentHost ? <Tooltip title={t('Remove')}>
+                        <IconButton onClick={executeCommandRemove}>
+                            <DeleteIcon />
                         </IconButton>
                     </Tooltip> : <div className={classes.emptyButton} />}
                 </Typography>

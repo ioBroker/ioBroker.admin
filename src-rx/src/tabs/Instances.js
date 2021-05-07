@@ -10,7 +10,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import TableCell from '@material-ui/core/TableCell';
 import Tooltip from '@material-ui/core/Tooltip';
 import Paper from '@material-ui/core/Paper';
-import { CardMedia, Hidden, InputAdornment, TextField } from '@material-ui/core';
+import { Hidden, InputAdornment, TextField } from '@material-ui/core';
 
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -368,9 +368,9 @@ class Instances extends Component {
             });
 
             instance.canStart    = !common.onlyWWW;
-            instance.config      = !common.noConfig;
-            instance.jsonConfig  = !!common.jsonConfig;
-            instance.materialize = common.materialize      || false;
+            instance.config      = common.adminUI.config !== 'none';
+            instance.jsonConfig  = common.adminUI.config === 'json';
+            instance.materialize = common.adminUI.config === 'materialize';
             instance.compactMode = common.runAsCompactMode || false;
             instance.mode        = common.mode             || null;
             instance.loglevel    = common.loglevel         || null;

@@ -1301,5 +1301,7 @@
   "Session expire in %s": "Sessão expira em MS",
   "Change log": "Log de alterações",
   "Would you like to restart the controller for your changes to take effect?": "Você gostaria de reiniciar o controlador para que suas alterações tenham efeito?",
-  "github_note": "Observação: as dependências do adaptador não são verificadas ao usar este método de instalação. Verifique você mesmo. Você também terá que criar manualmente uma instância após a instalação, se necessário."
+  "github_note": "Observação: as dependências do adaptador não são verificadas ao usar este método de instalação. Verifique você mesmo. Você também terá que criar manualmente uma instância após a instalação, se necessário.",
+  "The changes will be applied to %s states. Are you sure?": "As alterações serão aplicadas a %s estados. Tem certeza?",
+  "Yes": "sim"
 }

@@ -1301,5 +1301,7 @@
   "Session expire in %s": "Sessie verloopt in %s",
   "Change log": "Wijzig logboek",
   "Would you like to restart the controller for your changes to take effect?": "Wilt u de controller opnieuw opstarten om uw wijzigingen door te voeren?",
-  "github_note": "Let op: adapterafhankelijkheden worden niet gecontroleerd bij gebruik van deze installatiemethode. Controleer ze zelf. U zult indien nodig ook handmatig een instantie moeten aanmaken na de installatie."
+  "github_note": "Let op: adapterafhankelijkheden worden niet gecontroleerd bij gebruik van deze installatiemethode. Controleer ze zelf. U zult indien nodig ook handmatig een instantie moeten aanmaken na de installatie.",
+  "The changes will be applied to %s states. Are you sure?": "De wijzigingen worden toegepast op %s staten. Weet je het zeker?",
+  "Yes": "Ja"
 }

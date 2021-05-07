@@ -1301,5 +1301,7 @@
   "Session expire in %s": "La session expire dans %s",
   "Change log": "Journal des modifications",
   "Would you like to restart the controller for your changes to take effect?": "Souhaitez-vous redémarrer le contrôleur pour que vos modifications prennent effet?",
-  "github_note": "Remarque: les dépendances d'adaptateur ne sont pas vérifiées lors de l'utilisation de cette méthode d'installation. Veuillez les vérifier vous-même. Vous devrez également créer manuellement une instance après l'installation si nécessaire."
+  "github_note": "Remarque: les dépendances d'adaptateur ne sont pas vérifiées lors de l'utilisation de cette méthode d'installation. Veuillez les vérifier vous-même. Vous devrez également créer manuellement une instance après l'installation si nécessaire.",
+  "The changes will be applied to %s states. Are you sure?": "Les modifications seront appliquées à %s états. Êtes-vous sûr?",
+  "Yes": "Oui"
 }

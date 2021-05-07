@@ -71,7 +71,8 @@ class ObjectCustomDialog extends MobileDialog {
             hasChanges: false,
             currentTab,
             confirmDialog: false,
-            mobile: MobileDialog.isMobile()
+            mobile: MobileDialog.isMobile(),
+            progressRunning: false,
         };
 
         this.saveFunc = null;
@@ -132,6 +133,7 @@ class ObjectCustomDialog extends MobileDialog {
             objectIDs={this.props.objectIDs}
             customsInstances={this.props.customsInstances}
             objects={this.props.objects}
+            onProgress={progressRunning => this.setState({progressRunning})}
             reportChangedIds={this.props.reportChangedIds}
             onChange={(hasChanges, update) => {
                 this.setState({ hasChanges }, () => {
@@ -197,9 +199,9 @@ class ObjectCustomDialog extends MobileDialog {
                         this.setState({ currentTab: newTab });
                         window.localStorage.setItem('App.objectCustomTab', newTab);
                     }}>
-                        <Tab label={this.props.t('Custom settings')} id={'custom-settings-tab'} aria-controls={'simple-tabpanel-0'} />
-                        {this.props.objectIDs.length === 1 && this.chartAvailable ? <Tab label={this.props.t('History data')} id={'history-data-tab'} aria-controls={'simple-tabpanel-1'} /> : null}
-                        {(varType === 'number' || varType === 'boolean') && this.props.objectIDs.length === 1 && this.chartAvailable ? <Tab label={this.props.t('Chart')} id={'chart-tab'} aria-controls={'simple-tabpanel-2'} /> : null}
+                        <Tab disabled={this.state.progressRunning} label={this.props.t('Custom settings')} id={'custom-settings-tab'} aria-controls={'simple-tabpanel-0'} />
+                        {this.props.objectIDs.length === 1 && this.chartAvailable ? <Tab disabled={this.state.progressRunning} label={this.props.t('History data')} id={'history-data-tab'} aria-controls={'simple-tabpanel-1'} /> : null}
+                        {(varType === 'number' || varType === 'boolean') && this.props.objectIDs.length === 1 && this.chartAvailable ? <Tab disabled={this.state.progressRunning} label={this.props.t('Chart')} id={'chart-tab'} aria-controls={'simple-tabpanel-2'} /> : null}
                     </Tabs>
                 </AppBar>
                 {this.state.currentTab === 0 ? <div className={this.props.classes.tabPanel}>{this.renderCustomEditor()}</div> : null}
@@ -210,7 +212,7 @@ class ObjectCustomDialog extends MobileDialog {
                 {this.state.currentTab === 0 && <Button
                     variant="contained"
                     color="primary"
-                    disabled={!this.state.hasChanges}
+                    disabled={!this.state.hasChanges || this.state.progressRunning}
                     onClick={() => this.saveFunc && this.saveFunc()}
                 >
                     {this.getButtonTitle(<SaveIcon />, this.props.t('Save'))}
@@ -218,7 +220,7 @@ class ObjectCustomDialog extends MobileDialog {
                 {this.state.currentTab === 0 && <Button
                     variant="contained"
                     color="primary"
-                    disabled={!this.state.hasChanges}
+                    disabled={!this.state.hasChanges || this.state.progressRunning}
                     onClick={() => {
                         if (this.saveFunc) {
                             this.saveFunc(error => !error && this.onClose());
@@ -230,6 +232,7 @@ class ObjectCustomDialog extends MobileDialog {
                     {this.getButtonTitle(<SaveIcon />, this.props.t('Save & close'), <CloseIcon />)}
                 </Button>}
                 <Button
+                    disabled={this.state.progressRunning}
                     variant="contained"
                     onClick={() => this.onClose()} >
                     {this.getButtonTitle(<CloseIcon />, this.props.t('Close'))}

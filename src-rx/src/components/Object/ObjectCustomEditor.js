@@ -19,6 +19,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 // Icons
 import JsonConfigComponent from '../JsonConfigComponent';
+import ConfirmDialog from "@iobroker/adapter-react/Dialogs/Confirm";
 
 const styles = theme => ({
     paper: {
@@ -113,6 +114,9 @@ class ObjectCustomEditor extends Component {
             expanded,
             newValues: {},
             progress: null,
+            maxOids: null,
+            confirmed: false,
+            showConfirmation: false
         };
 
         this.scrollDone   = false;
@@ -125,8 +129,6 @@ class ObjectCustomEditor extends Component {
         this.controls     = {};
         this.refTemplate  = {};
         this.props.customsInstances.map(id => this.refTemplate[id] = createRef());
-
-        this.maxOids      = null;
 
         this.customObj    = this.props.objectIDs.length > 1 ? {custom: {}, native: {}} : JSON.parse(JSON.stringify(this.props.objects[this.props.objectIDs[0]] || null));
 
@@ -346,8 +348,8 @@ class ObjectCustomEditor extends Component {
     isChanged(newValues) {
         newValues = newValues || this.state.newValues;
         return Object.keys(newValues)
-            .find(instance => newValues[instance] && Object.keys(newValues[instance])
-                .find(attr => !attr.startsWith('_')));
+            .find(instance => newValues[instance] === null || (newValues[instance] && Object.keys(newValues[instance])
+                .find(attr => !attr.startsWith('_'))));
     }
 
     combineNewAndOld(instance, ignoreUnderscore) {
@@ -519,12 +521,15 @@ class ObjectCustomEditor extends Component {
         _objects    = _objects    || {};
         _oldObjects = _oldObjects || {};
 
-        if (!ids || !ids.length) {            
+        if (!ids || !ids.length) {
             // save all objects
             const keys = Object.keys(_objects);
             if (!keys.length) {
+                this.setState({maxOids: null}, () =>
+                    this.props.onProgress(false));
                 cb && cb();
             } else {
+                this.setState({progress: Math.round(((this.state.maxOids - keys.length) / this.state.maxOids) * 50) + 50});
                 const id = keys.shift();
                 if (JSON.stringify(_objects[id].common) !== JSON.stringify(_oldObjects[id].common)) {
                     !this.changedIds.includes(id) && this.changedIds.push(id);
@@ -548,12 +553,14 @@ class ObjectCustomEditor extends Component {
                 }
             }
         } else {
-            // TODO progress bar
-            if (this.maxOids === null) {
-                this.maxOids = ids.length;    
+            const maxOids = this.state.maxOids || ids.length;
+            if (this.state.maxOids === null) {
+                this.setState({maxOids: ids.length}, () =>
+                    this.props.onProgress(true));
             }
 
-            this.setState({progress: Math.round((this.maxOids - ids.length) / this.maxOids)});
+            // 0 - 50
+            this.setState({progress: Math.round(((maxOids - ids.length) / maxOids) * 50)});
 
             const id = ids.shift();
             this.getObject(_objects, _oldObjects, id)
@@ -619,12 +626,40 @@ class ObjectCustomEditor extends Component {
         }
     }
 
+    renderConfirmationDialog() {
+        if (!this.state.showConfirmation) {
+            return false;
+        } else {
+            return <ConfirmDialog
+                text={this.props.t('The changes will be applied to %s states. Are you sure?', this.props.objectIDs.length)}
+                ok={this.props.t('Yes')}
+                onClose={result => {
+                    if (result) {
+                        this.setState({showConfirmation: false, confirmed: true}, () => {
+                            const cb = this.cb;
+                            this.cb = null;
+                            this.onSave(cb);
+                        });
+                    } else {
+                        this.cb = null;
+                        this.setState({showConfirmation: false});
+                    }
+                }}
+            />;
+        }
+    }
+
     onSave = cb => {
+        if (this.props.objectIDs.length > 10 && !this.state.confirmed) {
+            this.cb = cb;
+            return this.setState({showConfirmation: true});
+        }
+
         this.saveOneState([...this.props.objectIDs], () => {
             this.changedItems = [];
             this.newValues = {};
             this.commonConfig = this.getCommonConfig();
-            this.setState({ hasChanges: false, newValues: {}}, () => {
+            this.setState({ confirmed: false, hasChanges: false, newValues: {}}, () => {
                 this.props.reportChangedIds(this.changedIds);
                 this.props.onChange(false, true);
                 cb && setTimeout(() => cb(), 100);
@@ -642,8 +677,9 @@ class ObjectCustomEditor extends Component {
         let index = 0;
 
         return <Paper className={ this.props.classes.paper }>
+            {this.state.maxOids > 1 && <LinearProgress color="secondary" variant="determinate" value={this.state.progress} />}
             <div className={ this.props.classes.scrollDiv } ref={ this.scrollDivRef }>
-                {Object.keys(this.jsonConfigs).map(adapter => {
+                {this.state.maxOids === null && Object.keys(this.jsonConfigs).map(adapter => {
                     if (this.jsonConfigs[adapter]) {
                         return Object.keys(this.jsonConfigs[adapter].instanceObjs)
                             .map(instance =>
@@ -654,6 +690,7 @@ class ObjectCustomEditor extends Component {
                 })}
             </div>
             { this.renderErrorMessage() }
+            { this.renderConfirmationDialog() }
         </Paper>;
     }
 }
@@ -671,6 +708,7 @@ ObjectCustomEditor.propTypes = {
     themeName: PropTypes.string,
     themeType: PropTypes.string,
     registerSaveFunc: PropTypes.func,
+    onProgress: PropTypes.func,
     onError: PropTypes.func,
 };
 
