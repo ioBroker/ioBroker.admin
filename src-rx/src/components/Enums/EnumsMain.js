@@ -187,6 +187,15 @@ const styles = theme => ({
         flexDirection: 'row', 
         alignItems: 'center', 
         display: 'inline-flex'
+    },
+    enumTemplateDialog: {
+        overflowY: 'auto',
+        textAlign: 'center'
+    },
+    enumTemplate: {
+        display: 'inline-flex',
+        padding: 10,
+        width: 200
     }
 });
 
@@ -606,6 +615,7 @@ class EnumsList extends Component {
                 classes={this.props.classes}
                 createEnumTemplate={this.createEnumTemplate}
                 showEnumEditDialog={this.showEnumEditDialog}
+                enums={this.state.enums}
                 getEnumTemplate={this.getEnumTemplate}
             />
         </>;
