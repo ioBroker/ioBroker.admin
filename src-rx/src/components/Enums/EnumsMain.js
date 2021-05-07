@@ -10,6 +10,7 @@ import ObjectBrowser from '../../components/ObjectBrowser';
 import EnumBlock from './EnumBlock';
 import CategoryLabel from './CategoryLabel';
 import EnumEditDialog from './EnumEditDialog';
+import EnumTemplateDialog from './EnumTemplateDialog';
 import EnumDeleteDialog from './EnumDeleteDialog';
 
 import PropTypes from 'prop-types';
@@ -293,22 +294,21 @@ class EnumsList extends Component {
             "dontDelete": false,
             "enabled": true,
             "color": false,
-            "desc": ""
+            "desc": "",
+            "members": []
         },
         "native": {},
-        "_id": "enum.new",
-        "members": []
+        "_id": "enum.new"
     };
 
-    getEnumTemplate(prefix) {
+    getEnumTemplate = (prefix) => {
         let enumTemplate = JSON.parse(JSON.stringify(this.enumTemplate));
         enumTemplate._id = prefix + '.new';
         return enumTemplate
     }
 
-    createEnumTemplate(prefix, templateName) {
+    createEnumTemplate = (prefix, templateValues) => {
         let enumTemplate = this.getEnumTemplate(prefix);
-        let templateValues = enumTemplates[templateName];
         enumTemplate._id = templateValues._id;
         enumTemplate.common = {...enumTemplate.common, ...templateValues.common};
         this.props.socket.setObject(enumTemplate._id, enumTemplate).then(()=>this.updateData());
@@ -370,8 +370,11 @@ class EnumsList extends Component {
     }
 
     addItemToEnum = (itemId, enumId) => {
-        let enumItem = Object.values(this.state.enums).find(enumItem => enumItem._id === enumId);
-        let members = enumItem.common.members || [];
+        let enumItem = JSON.parse(JSON.stringify(Object.values(this.state.enums).find(enumItem => enumItem._id === enumId)));
+        if (!enumItem.common.members) {
+            enumItem.common.members = [];
+        }
+        let members = enumItem.common.members;
         if (!members.includes(itemId)) {
             members.push(itemId);
             this.props.socket.setObject(enumItem._id, enumItem).then(() => {
@@ -498,7 +501,11 @@ class EnumsList extends Component {
                         size="small"
                         id="categoryPopoverButton"
                         className={this.props.classes.left} 
-                        onClick={()=>this.setState({categoryPopoverOpen: true})}
+                        onClick={()=> {
+                            this.state.enumsTree.children.enum.children['favorites'] ?
+                                this.showEnumEditDialog(this.getEnumTemplate('enum'), true) :
+                                this.setState({categoryPopoverOpen: true});
+                        }}
                     >
                         <AddIcon/>
                     </IconButton>
@@ -510,7 +517,7 @@ class EnumsList extends Component {
                     >
                         <MenuList>
                             {this.state.enumsTree.children.enum.children['favorites'] ? null :
-                                <MenuItem onClick={()=>this.createEnumTemplate('enum', 'favorites')}>
+                                <MenuItem onClick={()=>this.createEnumTemplate('enum', enumTemplates.favorites)}>
                                     {this.props.t('Favorites')}
                                 </MenuItem>
                             }
@@ -546,23 +553,17 @@ class EnumsList extends Component {
                             <TextField value={this.state.search} label={this.props.t('Filter')} onChange={e => this.setState({search: e.target.value})}/>
                             <IconButton 
                                 size="small" 
-                                onClick={()=>this.setState({enumPopoverOpen: true})}
+                                onClick={()=>{
+                                    if (['functions', 'rooms'].includes(this.state.currentCategory)) {
+                                        this.setState({enumTemplateDialog: this.state.currentCategory});
+                                    } else {
+                                        this.showEnumEditDialog(this.getEnumTemplate('enum.' + this.state.currentCategory), true);
+                                    }
+                                }}
                                 id="enumPopoverButton"
                             >
                                 <AddIcon/>
                             </IconButton>
-                            <Popover 
-                                open={this.state.enumPopoverOpen} 
-                                onClose={() => this.setState({enumPopoverOpen: false})}
-                                anchorEl={()=>document.getElementById('enumPopoverButton')}
-                                anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
-                            >
-                                <MenuList>
-                                    <MenuItem onClick={()=>this.showEnumEditDialog(this.getEnumTemplate('enum.' + this.state.currentCategory), true)}>
-                                        {this.props.t('Custom group')}
-                                    </MenuItem>
-                                </MenuList>
-                            </Popover>
                         </div>
                         {Object.values(this.state.enumsTree.children.enum.children[this.state.currentCategory].children).map(enumItem => this.renderTree(enumItem))}
                     </Grid>
@@ -596,6 +597,16 @@ class EnumsList extends Component {
                 t={this.props.t}
                 classes={this.props.classes}
                 deleteEnum={this.deleteEnum}
+            />
+            <EnumTemplateDialog 
+                open={!!this.state.enumTemplateDialog} 
+                category={this.state.enumTemplateDialog}
+                onClose={()=>this.setState({enumTemplateDialog: false})}
+                t={this.props.t}
+                classes={this.props.classes}
+                createEnumTemplate={this.createEnumTemplate}
+                showEnumEditDialog={this.showEnumEditDialog}
+                getEnumTemplate={this.getEnumTemplate}
             />
         </>;
     }
