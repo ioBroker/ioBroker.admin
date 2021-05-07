@@ -1303,5 +1303,6 @@
   "Would you like to restart the controller for your changes to take effect?": "Czy chcesz zrestartować kontroler, aby zmiany zaczęły obowiązywać?",
   "github_note": "Uwaga: zależności adapterów nie są sprawdzane podczas korzystania z tej metody instalacji. Sprawdź je sam. W razie potrzeby będziesz musiał również ręcznie utworzyć instancję po instalacji.",
   "The changes will be applied to %s states. Are you sure?": "Zmiany zostaną zastosowane w %s stanach. Jesteś pewny?",
-  "Yes": "tak"
+  "Yes": "tak",
+  "Save & close": "Zapisz i zamknij"
 }
