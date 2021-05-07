@@ -53,6 +53,9 @@ class Utils {
 
     // Big thanks to : https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
     static invertColor(hex, bw) {
+        if (hex === undefined || hex === null || hex === '' || typeof hex !== 'string') {
+            return '';
+        }
         if (hex.indexOf('#') === 0) {
             hex = hex.slice(1);
         }
@@ -362,6 +365,42 @@ class Utils {
             result.push(callback(object[key], key));
         }
         return result;
+    }
+
+    static fixAdminUI(obj) {
+        if (obj && obj.common && !obj.common.adminUI) {
+            if (obj.common.noConfig) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'none';
+            } else if (obj.common.jsonConfig) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'json';
+            } else if (obj.common.materialize) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'materialize';
+            } else {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'html';
+            }
+
+            if (obj.common.jsonCustom) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.config = 'json';
+            } else if (obj.common.supportCustoms) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.custom = 'json';
+            }
+
+            if (obj.common.materializeTab && obj.common.adminTab) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.tab = 'materialize';
+            } else if (obj.common.adminTab) {
+                obj.common.adminUI = obj.common.adminUI || {};
+                obj.common.adminUI.tab = 'html';
+            }
+
+            obj.common.adminUI && console.warn(`Please add to "${obj._id.replace(/\.\d+$/, '')}" common.adminUI=${JSON.stringify(obj.common.adminUI)}`);
+        }
     }
 }
 

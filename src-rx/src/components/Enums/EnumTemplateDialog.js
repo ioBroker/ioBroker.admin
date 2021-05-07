@@ -26,7 +26,7 @@ function EnumTemplateDialog(props) {
     return <Dialog PaperProps={{className: props.classes.dialogPaper}} open={props.open} onClose={props.onClose}>
         <Box className={props.classes.enumTemplateDialog}>
             <h2>
-                
+
             </h2>
             <div>
                 {templates.map(template => {
@@ -39,7 +39,7 @@ function EnumTemplateDialog(props) {
                     if (props.enums['enum.' + props.category + '.' + template._id]) {
                         return null;
                     }
-                    return <div  className={props.classes.enumTemplate}>
+                    return <div key={template._id} className={props.classes.enumTemplate}>
                         <Button onClick={()=>{
                             props.onClose();
                             getSvg(image.default).then(icon => {

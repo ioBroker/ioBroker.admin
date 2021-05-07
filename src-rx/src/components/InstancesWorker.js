@@ -1,3 +1,5 @@
+import Utils from '../Utils'
+
 class InstancesWorker {
     constructor(socket) {
         this.socket   = socket;
@@ -21,6 +23,9 @@ class InstancesWorker {
                 if (obj.type !== 'instance') {
                     return;
                 }
+
+                Utils.fixAdminUI(obj);
+
                 if (this.objects[id]) {
                     oldObj = this.objects[id];
                     if (JSON.stringify(this.objects[id]) !== JSON.stringify(obj)) {

@@ -10,7 +10,8 @@ Marked with "!" must be in release candidate
     config: 'materialize', 'none', 'html'
     tab: 'html'
   }
-- Tooltips on drawer in half-closed mode  
+- Tooltips on drawer in half-closed mode 
+- News check does not work: https://github.com/ioBroker/ioBroker.admin/issues/839
 
 ## Intro
 - For links: jump to link by clicking of the whole card and not only link: https://github.com/ioBroker/ioBroker.admin/issues/685

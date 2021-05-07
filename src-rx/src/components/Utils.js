@@ -995,7 +995,10 @@ class Utils {
      * @returns {string}
      */
     static invertColor(hex, bw) {
-        if (hex.indexOf('#') === 0) {
+        if (hex === undefined || hex === null || hex === '' || typeof hex !== 'string') {
+            return '';
+        }
+        if (hex.startsWith('#')) {
             hex = hex.slice(1);
         }
         // convert 3-digit hex to 6-digits.

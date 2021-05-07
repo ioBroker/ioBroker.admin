@@ -1,5 +1,5 @@
 <svg height="512" viewBox="0 0 64 64" width="512" xmlns="http://www.w3.org/2000/svg">
-    <g>
+    <g fill="currentColor">
         <path d="m16 18a3 3 0 1 0 -3-3 3 3 0 0 0 3 3zm0-4a1 1 0 1 1 -1 1 1 1 0 0 1 1-1z"/>
         <path d="m16 26a3 3 0 1 0 -3-3 3 3 0 0 0 3 3zm0-4a1 1 0 1 1 -1 1 1 1 0 0 1 1-1z"/>
         <path d="m16 42a3 3 0 1 0 -3-3 3 3 0 0 0 3 3zm0-4a1 1 0 1 1 -1 1 1 1 0 0 1 1-1z"/>

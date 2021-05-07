@@ -567,7 +567,19 @@ class Adapters extends Component {
                         }
                     });
 
-                    Object.keys(categories).sort().forEach(value =>
+                    Object.keys(categories).sort((a, b) => {
+                        if (a === 'general' && b !== 'general') {
+                            return -1;
+                        } else if (a !== 'general' && b === 'general') {
+                            return 1;
+                        } else if (a > b) {
+                            return 1;
+                        } else if (a < b) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }
+                    }).forEach(value =>
                         categoriesSorted.push(categories[value]));
 
                     const list            = JSON.parse(window.localStorage.getItem('Adapters.list'));
