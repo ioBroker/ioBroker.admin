@@ -1,3 +1,5 @@
+import Utils from '../Utils'
+
 class AdaptersWorker {
     constructor(socket) {
         this.socket   = socket;
@@ -21,6 +23,9 @@ class AdaptersWorker {
                 if (obj.type !== 'adapter') {
                     return;
                 }
+
+                Utils.fixAdminUI(obj);
+
                 if (this.objects[id]) {
                     oldObj = this.objects[id];
                     if (JSON.stringify(this.objects[id]) !== JSON.stringify(obj)) {

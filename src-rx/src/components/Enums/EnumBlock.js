@@ -128,7 +128,7 @@ function EnumBlock(props) {
 }
 
 const EnumBlockDrag = (props) => {
-    const [{ canDrop, isOver }, drop] = useDrop(() => ({
+    const [{ canDrop, isOver, isCanDrop }, drop] = useDrop(() => ({
         accept: ['object', 'enum'],
         drop: () => ({ enum_id: props.enum._id }),
         collect: (monitor) => ({
@@ -157,7 +157,7 @@ const EnumBlockDrag = (props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    return <div ref={drop}>
+    return <div ref={drop} style={{opacity: canDrop && isOver ? 0.5 : 1 }}>
         <div ref={dragRef}>
             <div ref={widthRef}>
                 <EnumBlock isDragging={isDragging} widthRef={widthRef} {...props}/>

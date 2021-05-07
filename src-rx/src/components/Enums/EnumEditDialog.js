@@ -19,6 +19,13 @@ import ImageIcon from '@material-ui/icons/Image';
 import {IOTextField, IOColorPicker, IOFileInput} from '../IOFields/Fields';
 import Utils from '../Utils';
 
+function importAll(r) {
+    return r.keys().map(r);
+}
+
+let devicesImages = importAll(require.context('../../assets/devices', false, /\.svg$/));
+let roomsImages = importAll(require.context('../../assets/rooms', false, /\.svg$/));
+
 function EnumEditDialog(props) {
     let [originalId, setOriginalId] = useState(null);
     useEffect(()=>{
@@ -55,6 +62,13 @@ function EnumEditDialog(props) {
         let idArray = _id.split('.');
         idArray[idArray.length-1] = short;
         return idArray.join('.');
+    }
+
+    let ICONS;
+    if (props.enum._id.startsWith('enum.functions.')) {
+        ICONS = devicesImages.map(image => image.default);
+    } else if (props.enum._id.startsWith('enum.rooms.')) {
+        ICONS = roomsImages.map(image => image.default);
     }
 
     return <Dialog PaperProps={{className: props.classes.dialogPaper}} open={props.open} onClose={props.onClose}>
@@ -123,6 +137,7 @@ function EnumEditDialog(props) {
                  <Grid item xs={12} md={6}>
                     <IOFileInput 
                         label="Icon" 
+                        icons={ICONS}
                         t={props.t} 
                         value={ props.enum.common.icon }
                         onChange={fileblob=>{

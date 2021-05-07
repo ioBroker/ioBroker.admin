@@ -83,7 +83,11 @@ const TextWithIcon = props => {
         };
     }
 
-    const style = { border:`1px solid ${Utils.invertColor(item?.color)}`, color: Utils.getInvertedColor(item?.color, props.themeType, true) || undefined, backgroundColor: item?.color };
+    const style = item?.color ? {
+        border:`1px solid ${Utils.invertColor(item?.color)}`,
+        color: Utils.getInvertedColor(item?.color, props.themeType, true) || undefined,
+        backgroundColor: item?.color
+    } : {};
 
     return <div style={Object.assign({}, props.style, style)} className={Utils.clsx(props.className, props.classes.div, props.moreClasses?.root)} title={props.title || item.value}>
         {item?.icon ? <Icon src={item?.icon} className={Utils.clsx(props.classes.icon, props.moreClasses?.icon)} /> : null}<div className={Utils.clsx(props.classes.text, props.moreClasses?.text)}>{item?.name}</div>

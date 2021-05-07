@@ -1,0 +1,297 @@
+[
+  {
+    "_id": "storeroom",
+    "name": "Storeroom",
+    "icon": "Storeroom.svg"
+  },
+  {
+    "_id": "dressing_room",
+    "name": "Dressing Room",
+    "icon": "Dressing Room.svg"
+  },
+  {
+    "_id": "workspace",
+    "name": "Workspace",
+    "icon": "Workspace.svg"
+  },
+  {
+    "_id": "driveway",
+    "name": "Driveway",
+    "icon": "Driveway.svg"
+  },
+  {
+    "_id": "outdoors",
+    "name": "Outdoors",
+    "icon": "Outdoors.svg"
+  },
+  {
+    "_id": "bathroom",
+    "name": "Bathroom",
+    "icon": "Bathroom.svg"
+  },
+  {
+    "_id": "balcony",
+    "name": "Balcony",
+    "icon": "Balcony.svg"
+  },
+  {
+    "_id": "office",
+    "name": "Office",
+    "icon": "Office.svg"
+  },
+  {
+    "_id": "carport",
+    "name": "Carport",
+    "icon": "Carport.svg"
+  },
+  {
+    "_id": "attic",
+    "name": "Attic",
+    "icon": "Attic.svg"
+  },
+  {
+    "_id": "hall",
+    "name": "Hall",
+    "icon": "Hall.svg"
+  },
+  {
+    "_id": "entrance",
+    "name": "Entrance",
+    "icon": "Entrance.svg"
+  },
+  {
+    "_id": "ground_floor",
+    "name": "Ground Floor",
+    "icon": "Ground Floor.svg"
+  },
+  {
+    "_id": "dining_area",
+    "name": "Dining Area",
+    "icon": "Dining Area.svg"
+  },
+  {
+    "_id": "dining_room",
+    "name": "Dining Room",
+    "icon": "Dining Room.svg"
+  },
+  {
+    "_id": "gym",
+    "name": "Gym",
+    "icon": "Gym.svg"
+  },
+  {
+    "_id": "gallery",
+    "name": "Gallery",
+    "icon": "Gallery.svg"
+  },
+  {
+    "_id": "garage",
+    "name": "Garage",
+    "icon": "Garage.svg"
+  },
+  {
+    "_id": "wardrobe",
+    "name": "Wardrobe",
+    "icon": "Wardrobe.svg"
+  },
+  {
+    "_id": "garden",
+    "name": "Garden",
+    "icon": "Garden.svg"
+  },
+  {
+    "_id": "summer_house",
+    "name": "Summer House",
+    "icon": "Summer House.svg"
+  },
+  {
+    "_id": "guest_bathroom",
+    "name": "Guest Bathroom",
+    "icon": "Guest Bathroom.svg"
+  },
+  {
+    "_id": "guest_room",
+    "name": "Guest Room",
+    "icon": "Guest Room.svg"
+  },
+  {
+    "_id": "laundry_room",
+    "name": "Laundry Room",
+    "icon": "Laundry Room.svg"
+  },
+  {
+    "_id": "home_theater",
+    "name": "Home Theater",
+    "icon": "Home Theater.svg"
+  },
+  {
+    "_id": "boiler_room",
+    "name": "Boiler Room",
+    "icon": "Boiler Room.svg"
+  },
+  {
+    "_id": "chamber",
+    "name": "Chamber",
+    "icon": "Chamber.svg"
+  },
+  {
+    "_id": "basement,_cellar",
+    "name": "Basement, Cellar",
+    "icon": "Basement, Cellar.svg"
+  },
+  {
+    "_id": "nursery",
+    "name": "Nursery",
+    "icon": "Nursery.svg"
+  },
+  {
+    "_id": "corridor",
+    "name": "Corridor",
+    "icon": "Corridor.svg"
+  },
+  {
+    "_id": "kitchen",
+    "name": "Kitchen",
+    "icon": "Kitchen.svg"
+  },
+  {
+    "_id": "upstairs",
+    "name": "Upstairs",
+    "icon": "Upstairs.svg"
+  },
+  {
+    "_id": "office",
+    "name": "Office",
+    "icon": "Office.svg"
+  },
+  {
+    "_id": "pool",
+    "name": "Pool",
+    "icon": "Pool.svg"
+  },
+  {
+    "_id": "rear_wall",
+    "name": "Rear Wall",
+    "icon": "Rear Wall.svg"
+  },
+  {
+    "_id": "barn",
+    "name": "Barn",
+    "icon": "Barn.svg"
+  },
+  {
+    "_id": "sleeping_area",
+    "name": "Sleeping Area",
+    "icon": "Sleeping Area.svg"
+  },
+  {
+    "_id": "bedroom",
+    "name": "Bedroom",
+    "icon": "Bedroom.svg"
+  },
+  {
+    "_id": "shed",
+    "name": "Shed",
+    "icon": "Shed.svg"
+  },
+  {
+    "_id": "swimming_pool",
+    "name": "Swimming Pool",
+    "icon": "Swimming Pool.svg"
+  },
+  {
+    "_id": "dining",
+    "name": "Dining",
+    "icon": "Dining.svg"
+  },
+  {
+    "_id": "playroom",
+    "name": "Playroom",
+    "icon": "Playroom.svg"
+  },
+  {
+    "_id": "stairway",
+    "name": "Stairway",
+    "icon": "Stairway.svg"
+  },
+  {
+    "_id": "equipment_room",
+    "name": "Equipment Room",
+    "icon": "Equipment Room.svg"
+  },
+  {
+    "_id": "terrace",
+    "name": "Terrace",
+    "icon": "Terrace.svg"
+  },
+  {
+    "_id": "toilet",
+    "name": "Toilet",
+    "icon": "Toilet.svg"
+  },
+  {
+    "_id": "stairway",
+    "name": "Stairway",
+    "icon": "Stairway.svg"
+  },
+  {
+    "_id": "stairwell",
+    "name": "Stairwell",
+    "icon": "Stairwell.svg"
+  },
+  {
+    "_id": "locker_room",
+    "name": "Locker Room",
+    "icon": "Locker Room.svg"
+  },
+  {
+    "_id": "basement",
+    "name": "Basement",
+    "icon": "Basement.svg"
+  },
+  {
+    "_id": "front_yard",
+    "name": "Front Yard",
+    "icon": "Front Yard.svg"
+  },
+  {
+    "_id": "anteroom",
+    "name": "Anteroom",
+    "icon": "Anteroom.svg"
+  },
+  {
+    "_id": "washroom",
+    "name": "Washroom",
+    "icon": "Washroom.svg"
+  },
+  {
+    "_id": "wc",
+    "name": "Wc",
+    "icon": "Wc.svg"
+  },
+  {
+    "_id": "workshop",
+    "name": "Workshop",
+    "icon": "Workshop.svg"
+  },
+  {
+    "_id": "windscreen",
+    "name": "Windscreen",
+    "icon": "Windscreen.svg"
+  },
+  {
+    "_id": "living_area",
+    "name": "Living Area",
+    "icon": "Living Area.svg"
+  },
+  {
+    "_id": "living_room",
+    "name": "Living Room",
+    "icon": "Living Room.svg"
+  },
+  {
+    "_id": "living_room",
+    "name": "Living Room",
+    "icon": "Living Room.svg"
+  }
+]
