@@ -1324,5 +1324,6 @@
   "enabled, alive, but not connected to device or service": "ingeschakeld, actief, maar niet verbonden met apparaat of service",
   "enabled and OK": "ingeschakeld en OK",
   "Showed only running instances": "Alleen actieve exemplaren weergegeven",
-  "Showed only stopped instances": "Alleen gestopte instanties weergegeven"
+  "Showed only stopped instances": "Alleen gestopte instanties weergegeven",
+  "Acknowledge & close": "Erken & sluit"
 }

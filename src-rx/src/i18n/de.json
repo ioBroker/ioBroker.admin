@@ -1324,5 +1324,6 @@
   "enabled, alive, but not connected to device or service": "aktiviert, lebendig, aber nicht mit dem Gerät oder Dienst verbunden",
   "enabled and OK": "aktiviert und OK",
   "Showed only running instances": "Es werden nur laufende Instanzen angezeigt",
-  "Showed only stopped instances": "Es werden nur gestoppte Instanzen angezeigt"
+  "Showed only stopped instances": "Es werden nur gestoppte Instanzen angezeigt",
+  "Acknowledge & close": "Bestätigen und schließen"
 }

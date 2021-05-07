@@ -1324,5 +1324,6 @@
   "enabled, alive, but not connected to device or service": "已启用，仍处于活动状态，但未连接到设备或服务",
   "enabled and OK": "启用并确定",
   "Showed only running instances": "仅显示正在运行的实例",
-  "Showed only stopped instances": "仅显示停止的实例"
+  "Showed only stopped instances": "仅显示停止的实例",
+  "Acknowledge & close": "确认并关闭"
 }

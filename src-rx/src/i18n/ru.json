@@ -1328,5 +1328,6 @@
   "enabled, alive, but not connected to device or service": "включен, активен, но не подключен к устройству или службе",
   "enabled and OK": "включен и ОК",
   "Showed only running instances": "Показаны только запущенные экземпляры",
-  "Showed only stopped instances": "Показаны только остановленные экземпляры"
+  "Showed only stopped instances": "Показаны только остановленные экземпляры",
+  "Acknowledge & close": "Подтвердить и закрыть"
 }

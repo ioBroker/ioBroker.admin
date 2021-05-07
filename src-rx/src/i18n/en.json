@@ -1324,5 +1324,6 @@
   "enabled, alive, but not connected to device or service": "enabled, alive, but not connected to device or service",
   "enabled and OK": "enabled and OK",
   "Showed only running instances": "Showed only running instances",
-  "Showed only stopped instances": "Showed only stopped instances"
+  "Showed only stopped instances": "Showed only stopped instances",
+  "Acknowledge & close": "Acknowledge & close"
 }

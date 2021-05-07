@@ -81,11 +81,16 @@ class EasyMode extends Component {
             configs: this.props.configs,
             strictMode: !this.props.configs,
         };
+
+    }
+
+    componentDidMount() {
         if (!this.props.configs) {
             this.props.socket.getEasyMode()
                 .then(config => this.setState({ configs: config.configs }));
         }
     }
+
     render() {
         const {
             classes,

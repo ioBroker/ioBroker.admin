@@ -47,7 +47,7 @@ import SystemSettingsDialog from './dialogs/SystemSettingsDialog';
 import Login from './login/Login';
 import HostSelectors from './components/HostSelectors';
 import { expertModeDialogFunc } from './dialogs/ExpertModeDialog';
-import { newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
+import { checkMessages, newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
 import { adaptersWarningDialogFunc } from './dialogs/AdaptersWarningDialog';
 import ToggleThemeMenu from './components/ToggleThemeMenu';
 import LogsWorker from './components/LogsWorker';
@@ -706,14 +706,32 @@ class App extends Router {
         }
     }
 
+
     getNews = instance => async (name, newsFeed) => {
         const lastNewsId = await this.socket.getState(`admin.${instance}.info.newsLastId`);
-        if (newsFeed && JSON.parse(newsFeed?.val).length) {
-            const checkNews = JSON.parse(newsFeed?.val)?.find(el => el.id === lastNewsId?.val || !lastNewsId?.val);
-            if (checkNews) {
-                newsAdminDialogFunc(JSON.parse(newsFeed.val), lastNewsId?.val, this.state.themeName, this.state.themeType, id =>
-                    this.socket.setState(`admin.${instance}.info.newsLastId`, { val: id, ack: true }));
-            }
+        const news = JSON.parse(newsFeed?.val);
+
+        if (news && news.length && news[0].id !== lastNewsId?.val) {
+            this.socket.getUuid()
+                .then(uuid => this.socket.getHostInfo(this.state.currentHost)
+                    .then(info => this.socket.getCompactInstances()
+                        .then(instances => {
+                            const checkNews = checkMessages(news, lastNewsId?.val, {
+                                lang: I18n.getLanguage(),
+                                adapters: this.state.adapters,
+                                instances,
+                                nodeVersion: info['Node.js'],
+                                npmVersion: info.NPM,
+                                os: info.os,
+                                activeRepo: this.state.systemConfig.common.activeRepo,
+                                uuid
+                            });
+
+                            if (checkNews && checkNews.length) {
+                                newsAdminDialogFunc(checkNews, lastNewsId?.val, this.state.themeName, this.state.themeType, id =>
+                                    this.socket.setState(`admin.${instance}.info.newsLastId`, { val: id, ack: true }));
+                            }
+                        })));
         }
     }
 
@@ -770,7 +788,7 @@ class App extends Router {
                     }
                 });
 
-                this.setState({ repository, installed, hosts });
+                this.setState({ repository, installed, hosts, adapters });
             });
     }
 

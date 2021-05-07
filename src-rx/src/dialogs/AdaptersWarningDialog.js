@@ -17,6 +17,8 @@ import WarningIcon from '@material-ui/icons/Warning';
 import CancelPresentationIcon from '@material-ui/icons/CancelPresentation';
 import MemoryIcon from '@material-ui/icons/Memory';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@material-ui/icons/Close';
 
 import I18n from '@iobroker/adapter-react/i18n';
 
@@ -292,9 +294,22 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
                                     ackCallback(name);
                                     setDisabled([...disabled, name]);
                                 }}
-                                color="primary">
-                                {I18n.t('Acknowledge')}
+                                color="primary"
+                            >
+                                <CheckIcon />{I18n.t('Acknowledge')}
                             </Button>
+                            {Object.keys(message).length === 1 && <Button
+                                variant="contained"
+                                disabled={disabled.includes(name)}
+                                style={disabled.includes(name) ? {background: 'silver', marginLeft: 8} : {marginLeft: 8}}
+                                onClick={() => {
+                                    ackCallback(name);
+                                    setDisabled([...disabled, name]);
+                                    onClose();
+                                }}
+                                color="primary">
+                                {I18n.t('Acknowledge & close')}
+                            </Button>}
                         </div>
                     </TabPanel>
                     )}
@@ -305,8 +320,9 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
                     variant="contained"
                     autoFocus
                     onClick={onClose}
-                    color="primary">
-                    {I18n.t('Ok')}
+                    color="primary"
+                >
+                    <CloseIcon/>{I18n.t('Ok')}
                 </Button>
             </DialogActions>
         </Dialog >

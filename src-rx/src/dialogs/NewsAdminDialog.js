@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
+import semver from 'semver';
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -138,8 +139,14 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, themeName }) =
     };
 
     const lang = I18n.getLanguage();
-    const text = (newsArr[indexArr].content[lang] || newsArr[indexArr].content.en).replace(/='([^']*)'/g, '="$1"');
-
+    let text = newsArr[indexArr].content;
+    if (typeof text === 'object') {
+        text = (text[lang] || text.en).replace(/='([^']*)'/g, '="$1"');
+    }
+    let title = newsArr[indexArr].title;
+    if (typeof title === 'object') {
+        title = title[lang] || title.e;
+    }
     return <ThemeProvider theme={theme(themeName)}>
         <Dialog
             onClose={onClose}
@@ -151,7 +158,7 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, themeName }) =
                 <Status className={classes.img} name={newsArr[indexArr].class} />
             </div>
             <DialogTitle>{I18n.t('You have unread news!')}</DialogTitle>
-            <DialogTitle>{newsArr[indexArr].title[I18n.getLanguage()]}</DialogTitle>
+            <DialogTitle>{title}</DialogTitle>
             <DialogContent className={classes.overflowHidden} dividers>
                 <div className={classes.root}>
                     <div className={classes.pre}>
@@ -186,6 +193,115 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, themeName }) =
             </DialogActions>
         </Dialog>
     </ThemeProvider>;
+}
+
+function checkActive(adapterName, instances) {
+    return !!Object.keys(instances).filter(id => id.startsWith('adapter.system.' + adapterName + '.')).find(id => instances[id].enabled);
+}
+
+function checkConditions(condition, installedVersion) {
+    if (condition.startsWith('equals')) {
+        const vers = condition.substring(7, condition.length - 1).trim();
+        return installedVersion === vers;
+    } else if (condition.startsWith('bigger')) {
+        const vers = condition.substring(7, condition.length - 1).trim();
+        return semver.gt(vers, installedVersion);
+    } else if (condition.startsWith('smaller')) {
+        const vers = condition.substring(8, condition.length - 1).trim();
+        return semver.lt(installedVersion, vers);
+    } else if (condition.startsWith('between')) {
+        const vers1 = condition.substring(8, condition.indexOf(',')).trim();
+        const vers2 = condition.substring(condition.indexOf(',') + 1, condition.length - 1).trim();
+        return semver.gt(vers1, installedVersion) && semver.gt(vers2,  installedVersion);
+    } else {
+        return true;
+    }
+}
+
+/*const context = {
+    adapters,
+    instances,
+    nodeVersion,
+    npmVersion,
+    os,
+    activeRepo
+    uuid,
+    lang
+}*/
+
+export const checkMessages = function (messages, lastMessageId, context) {
+    const messagesToShow = [];
+
+    try {
+        const today = Date.now();
+        for (let m = 0; m < messages.length; m++) {
+            const message = messages[m];
+            if (message.id === lastMessageId) {
+                break;
+            }
+            let showIt = true;
+
+            if (showIt && message['date-start'] && new Date(message['date-start']).getTime() > today) {
+                showIt = false;
+            } else if (showIt && message['date-end'] && new Date(message['date-end']).getTime() < today) {
+                showIt = false;
+            } else if (showIt && message.conditions && Object.keys(message.conditions).length > 0) {
+                Object.keys(message.conditions).forEach(key => {
+                    if (showIt) {
+                        const adapter = context.adapters[key];
+                        const condition = message.conditions[key];
+
+                        if (!adapter && condition !== '!installed') {
+                            showIt = false;
+                        } else if (adapter && condition === '!installed') {
+                            showIt = false;
+                        } else if (adapter && condition === 'active') {
+                            showIt = checkActive(key, context.instances);
+                        } else if (adapter && condition === '!active') {
+                            showIt = !checkActive(key, context.instances);
+                        } else if (adapter) {
+                            showIt = checkConditions(condition, adapter.v);
+                        }
+                    }
+                });
+            }
+
+            if (showIt && message['node-version'] && context.nodeVersion) {
+                showIt = checkConditions(message['node-version'], context.nodeVersion);
+            }
+            if (showIt && message['npm-version'] && context.npmVersion) {
+                showIt = checkConditions(message['npm-version'], context.npmVersion);
+            }
+            if (showIt && message['os'] && context.os) {
+                showIt = context.os === message['os'];
+            }
+            if (showIt && message['repo']) {
+                showIt = context.activeRepo === message['repo'];
+            }
+            if (showIt && message['uuid']) {
+                if (Array.isArray(message['uuid'])) {
+                    showIt = context.uuid && message['uuid'].find(uuid => context.uuid === uuid);
+                } else {
+                    showIt = context.uuid && context.uuid === message['uuid'];
+                }
+            }
+
+            if (showIt) {
+                messagesToShow.push({
+                    id: message.id,
+                    title: message.title[context.lang] || message.title.en,
+                    content: message.content[context.lang] || message.content.en,
+                    'class': message.class,
+                    icon: message.icon,
+                    created: message.created
+                });
+            }
+        }
+    } catch (err) {
+
+    }
+
+    return messagesToShow;
 }
 
 export const newsAdminDialogFunc = (newsArr, current, themeName, themeType, callback) => {

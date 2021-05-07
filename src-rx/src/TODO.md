@@ -55,3 +55,5 @@ Marked with "!" must be in release candidate
 
 ## JSON config - Admin settings dialog (index_m.html)
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)
+
+- autocomplete does not work

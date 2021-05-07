@@ -2451,6 +2451,25 @@ class Connection {
 
         return this._promises.hostsCompact;
     }
+
+    /**
+     * Get uuid
+     * @returns {Promise<ioBroker.Object[]>}
+     */
+    getUuid() {
+        if (this._promises.uuid) {
+            return this._promises.uuid;
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises.uuid = this.getObject('system.meta.uuid')
+            .then(obj => obj?.native?.uuid);
+
+        return this._promises.uuid;
+    }
 }
 
 Connection.Connection = {
