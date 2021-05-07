@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.17",
+        "version": "5.0.18",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.0.18": {
+                "en": "Admin5: Fixed many bugs",
+                "de": "Admin5: Viele Fehler behoben",
+                "ru": "Admin5: Исправлено множество ошибок",
+                "pt": "Admin5: muitos bugs corrigidos",
+                "nl": "Admin5: Veel bugs opgelost",
+                "fr": "Admin5: Correction de nombreux bugs",
+                "it": "Admin5: risolti molti bug",
+                "es": "Admin5: se corrigieron muchos errores",
+                "pl": "Admin5: Naprawiono wiele błędów",
+                "zh-cn": "Admin5：修复了许多错误"
+            },
             "5.0.17": {
                 "en": "Admin5: Fixed many bugs",
                 "de": "Admin5: Viele Fehler behoben",
@@ -245,18 +257,6 @@
                 "es": "manejo de errores del servidor web optimizado, preparativos para js-controller 3",
                 "pl": "zoptymalizowana obsługa błędów serwera WWW, przygotowania do kontrolera js 3",
                 "zh-cn": "优化了Web服务器的错误处理，为js-controller 3做准备"
-            },
-            "4.0.9": {
-                "en": "The attempt to process error by the log show.",
-                "de": "Der Versuch, Fehler durch das Protokoll zu verarbeiten, wird angezeigt.",
-                "ru": "Попытка обработать ошибку в журнале.",
-                "pt": "A tentativa de processar o erro pelo log mostra.",
-                "nl": "De poging om fouten te verwerken door de logshow.",
-                "fr": "La tentative de traitement de l'erreur par le journal affiche.",
-                "it": "Il tentativo di elaborare l'errore da parte del registro.",
-                "es": "El intento de procesar el error por el registro muestra.",
-                "pl": "Próba przetworzenia błędu przez przedstawienie dziennika.",
-                "zh-cn": "尝试通过日志显示来处理错误。"
             }
         },
         "desc": {
