@@ -265,10 +265,13 @@ class EnumsList extends Component {
     }
 
     componentDidMount() {
-        this.updateData();
         if (window.localStorage.getItem('enumsClosed')) {
             this.setState({enumsClosed: JSON.parse(window.localStorage.getItem('enumsClosed'))});
         }
+        if (window.localStorage.getItem('enumCurrentCategory')) {
+            this.setCurrentCategory(window.localStorage.getItem('enumCurrentCategory'))
+        }
+        this.updateData();
     }
 
     updateData = async () => {
@@ -316,10 +319,17 @@ class EnumsList extends Component {
             currentContainer.data = currentEnum;
         }
         console.log(enumsTree);
+        this.setCurrentCategory(this.state.currentCategory && enumsTree.children.enum.children[this.state.currentCategory] ? this.state.currentCategory : Object.keys(enumsTree.children.enum.children)[0]);
         this.setState({
-            enumsTree: enumsTree,
-            currentCategory: this.state.currentCategory && enumsTree.children.enum.children[this.state.currentCategory] ? this.state.currentCategory : Object.keys(enumsTree.children.enum.children)[0]
+            enumsTree: enumsTree
         })
+    }
+
+    setCurrentCategory = category => {
+        this.setState({
+            currentCategory: category
+        })
+        window.localStorage.setItem('enumCurrentCategory', category);
     }
 
     addItemToEnum = (itemId, enumId) => {
@@ -496,7 +506,7 @@ class EnumsList extends Component {
                         value={this.state.currentCategory}
                         variant="scrollable"
                         scrollButtons="auto"
-                        onChange={(e, newTab) => this.setState({currentCategory: newTab})}
+                        onChange={(e, newTab) => this.setCurrentCategory(newTab)}
                     >
                         {Object.keys(this.state.enumsTree.children.enum.children).map((category, index) =>
                         {
