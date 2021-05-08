@@ -11,6 +11,7 @@ Marked with "!" must be in release candidate
     tab: 'html'
   }
 - News check does not work: https://github.com/ioBroker/ioBroker.admin/issues/839
+- Add to expert dialog: don't show anymore
 
 ## Intro
 
