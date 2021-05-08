@@ -3872,7 +3872,7 @@ class ObjectBrowser extends Component {
         let leaf = this.renderLeaf(root, isExpanded, classes, counter);
         let DragWrapper = this.props.DragWrapper;
         if (this.props.dragEnabled) {
-            leaf = <DragWrapper item={root}>{leaf}</DragWrapper>;
+            leaf = <DragWrapper key={root.data.id} item={root}>{leaf}</DragWrapper>;
         }
         root.data.id && items.push(leaf);
 

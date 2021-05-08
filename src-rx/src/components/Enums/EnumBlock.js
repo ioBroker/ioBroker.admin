@@ -12,6 +12,8 @@ import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
+import DownIcon from '@material-ui/icons/KeyboardArrowDown';
+import UpIcon from '@material-ui/icons/KeyboardArrowUp';
 
 import Icon from '@iobroker/adapter-react/Components/Icon';
 
@@ -24,7 +26,7 @@ function EnumBlock(props) {
     if (!props.enum.common.color) {
         textColor = null;
     }
-    let style = { cursor: 'grab', opacity, overflow: 'hidden', color: textColor }
+    let style = { opacity, color: textColor }
     if (props.enum.common.color) {
         style.backgroundColor = props.enum.common.color;
     }
@@ -124,6 +126,15 @@ function EnumBlock(props) {
                     </div>
                 </CardContent>
             </div>
+            {props.hasChildren ?
+                <IconButton style={{position: 'absolute', 'right': 0, 'bottom': 0}} onClick={()=>props.toggleEnum(props.enum._id)}>
+                    {props.closed ? 
+                        <DownIcon style={{ color: textColor }}/>
+                    : 
+                        <UpIcon style={{ color: textColor }}/>
+                    }
+                </IconButton>
+            : null}
         </Card>
 }
 

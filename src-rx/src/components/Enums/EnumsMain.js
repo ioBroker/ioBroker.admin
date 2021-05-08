@@ -25,6 +25,7 @@ import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 
 import {withStyles} from '@material-ui/core/styles';
+import { Button } from '@material-ui/core';
 
 const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, .2)';
 
@@ -42,6 +43,8 @@ const styles = theme => ({
         transition: "all 200ms ease-out",
         opacity:1,
         overflow: "hidden",
+        cursor: 'grab', 
+        position: 'relative',
         '&:hover': {
             overflowY: 'auto',
             boxShadow: boxShadowHover
@@ -231,7 +234,8 @@ class EnumsList extends Component {
         enumDeleteDialog: false,
         members: {},
         categoryPopoverOpen: false,
-        enumPopoverOpen: false
+        enumPopoverOpen: false,
+        enumsClosed: {}
     }
 
     enumTemplate = {
@@ -263,6 +267,9 @@ class EnumsList extends Component {
 
     componentDidMount() {
         this.updateData();
+        if (window.localStorage.getItem('enumsClosed')) {
+            this.setState({enumsClosed: JSON.parse(window.localStorage.getItem('enumsClosed'))});
+        }
     }
 
     updateData = async () => {
@@ -377,10 +384,15 @@ class EnumsList extends Component {
                 copyEnum={this.copyEnum}
                 key={container.data._id}
                 getName={this.getName}
+                hasChildren={Object.values(container.children).length}
+                closed={this.state.enumsClosed[container.data._id]}
+                toggleEnum={this.toggleEnum}
                 {...this.props}
             /> : null}
-            {Object.values(container.children)
-                .map((item, index) => <React.Fragment key={index}>{this.renderTree(item, index)}</React.Fragment>)}
+            {!this.state.enumsClosed[container.data._id] ? 
+                Object.values(container.children)
+                    .map((item, index) => <React.Fragment key={index}>{this.renderTree(item, index)}</React.Fragment>)
+            : null}
         </div>
     }
 
@@ -426,6 +438,13 @@ class EnumsList extends Component {
         } while (this.state.enums[newId]);
         enumItem._id = newId;
         this.props.socket.setObject(newId, enumItem).then(() => this.updateData());
+    }
+
+    toggleEnum = (enumId) => {
+        let enumsClosed = JSON.parse(JSON.stringify(this.state.enumsClosed));
+        enumsClosed[enumId] = enumsClosed[enumId] ? false : true;
+        this.setState({enumsClosed: enumsClosed});
+        window.localStorage.setItem('enumsClosed', JSON.stringify(enumsClosed));
     }
 
     changeEnumFormData = (enumItem) => {
@@ -485,6 +504,7 @@ class EnumsList extends Component {
                             let categoryData = this.state.enumsTree.children.enum.children[category].data;
                             return <Tab
                                 key={index}
+                                component={'span'}
                                 style={{backgroundColor: categoryData.common.color, borderRadius: 4}}
                                 label={<CategoryLabel
                                     categoryData={categoryData}
