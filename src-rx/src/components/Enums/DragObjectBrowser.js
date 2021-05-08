@@ -12,6 +12,9 @@ import Icon from '@material-ui/core/Icon';
 import ListIcon from '@material-ui/icons/List';
 
 const DragObjectBrowser = (props) => {
+    for (let key in props) {
+        console.log(key);
+    }
     let browserProps = props;
     const [wrapperState, setWrapperState] = useState({DragWrapper: null});
     useEffect(() => {
@@ -71,5 +74,14 @@ const DragObjectBrowser = (props) => {
         DragWrapper={wrapperState.DragWrapper}
     /> : null;
 }
+
+DragObjectBrowser.propTypes = {
+    addItemToEnum: PropTypes.func,
+    getName: PropTypes.func,
+    classes: PropTypes.object,
+    t: PropTypes.func,
+    lang: PropTypes.string,
+    socket: PropTypes.object,
+};
 
 export default DragObjectBrowser;
