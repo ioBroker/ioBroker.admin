@@ -1135,8 +1135,14 @@ class Adapters extends Component {
                         const daysAgo10 = Math.round((now - new Date(adapter.versionDate).getTime()) / 8640000);
                         const daysAgo = Math.round(daysAgo10 / 10);
 
+                        let title = adapter.titleLang || adapter.title;
+                        if (typeof title === 'object') {
+                            title = title[this.props.lang] || title.en;
+                        }
+                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '')
+
                         this.cache.adapters[value] = {
-                            title: ((adapter.title || '').toString() || '').replace('ioBroker Visualisation - ', ''),
+                            title,
                             desc: adapter.desc ? adapter.desc[this.props.lang] || adapter.desc['en'] || adapter.desc : '',
                             image: installed ? installed.localIcon : adapter.extIcon,
                             connectionType: adapter.connectionType ? adapter.connectionType : '-',

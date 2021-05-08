@@ -100,8 +100,11 @@ function EnumBlock(props) {
                             if (!member) {
                                 return null;
                             }
+                            const name = member.common?.name && props.getName(member.common?.name);
+
                             return <Card
                                 key={member._id}
+                                title={name ? props.t('Name: %s', name) + '\nID: ' +  member._id : member._id}
                                 variant="outlined"
                                 className={props.classes.enumGroupMember}
                                 style={{ color: textColor, borderColor: textColor + "40" }}
@@ -116,7 +119,7 @@ function EnumBlock(props) {
                                         :
                                         <ListIcon className={props.classes.icon} />
                                     }
-                                {member.common?.name ? props.getName(member.common?.name) : member._id}
+                                {name || member._id}
                                 <IconButton
                                     size="small"
                                     onClick={() => props.removeMemberFromEnum(member._id, props.enum._id)}
@@ -130,9 +133,9 @@ function EnumBlock(props) {
             </div>
             {props.hasChildren ?
                 <IconButton style={{position: 'absolute', 'right': 0, 'bottom': 0}} onClick={()=>props.toggleEnum(props.enum._id)}>
-                    {props.closed ? 
+                    {props.closed ?
                         <DownIcon style={{ color: textColor }}/>
-                    : 
+                    :
                         <UpIcon style={{ color: textColor }}/>
                     }
                 </IconButton>

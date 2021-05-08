@@ -42,7 +42,7 @@ const styles = theme => ({
         transition: "all 200ms ease-out",
         opacity:1,
         overflow: "hidden",
-        cursor: 'grab', 
+        cursor: 'grab',
         position: 'relative',
         '&:hover': {
             overflowY: 'auto',
@@ -398,7 +398,7 @@ class EnumsList extends Component {
                 toggleEnum={this.toggleEnum}
                 {...this.props}
             /> : null}
-            {!this.state.enumsClosed[container.data._id] ? 
+            {container.data && !this.state.enumsClosed[container.data._id] ?
                 Object.values(container.children)
                     .map((item, index) => <React.Fragment key={index}>{this.renderTree(item, index)}</React.Fragment>)
             : null}

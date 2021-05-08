@@ -2706,13 +2706,14 @@ class ObjectBrowser extends Component {
 
         let value = [
             <div key={1}>{t('Only following structures of objects are available:')}</div>,
-            <div key={2}>{t('Folder => State')}</div>,
-            <div key={3}>{t('Folder => Channel => State')}</div>,
-            <div key={4}>{t('Folder => Device => Channel => state')}</div>,
-            <div key={5}>{t('Device => channel => state')}</div>,
-            <div key={6}>{t('Channel => State')}</div>,
-            <div key={7}>{t('Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}</div>,
-            <div key={8}>{t('The experts may create objects everywhere but from second level (e.g. vis.0 or javascript.0).')}</div>,
+            <div key={2}>{t('Folder → State')}</div>,
+            <div key={3}>{t('Folder → Channel → State')}</div>,
+            <div key={4}>{t('Folder → Device → Channel → state')}</div>,
+            <div key={5}>{t('Device → channel → state')}</div>,
+            <div key={6}>{t('Channel → State')}</div>,
+            <div key={7} style={{height: 10}}/>,
+            <div key={8}>{t('Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}</div>,
+            <div key={9}>{t('The experts may create objects everywhere but from second level (e.g. vis.0 or javascript.0).')}</div>,
         ];
 
         if (this.state.selected.length || this.state.selectedNonObject) {
