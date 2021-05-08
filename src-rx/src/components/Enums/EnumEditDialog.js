@@ -1,18 +1,17 @@
 import {useState, useEffect} from 'react';
+import PropTypes from 'prop-types';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 
 import TextFieldsIcon from '@material-ui/icons/TextFields';
 import DescriptionIcon from '@material-ui/icons/Description';
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 import PageviewIcon from '@material-ui/icons/Pageview';
-import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import ColorLensIcon from '@material-ui/icons/ColorLens';
 import ImageIcon from '@material-ui/icons/Image';
 
@@ -36,7 +35,7 @@ function EnumEditDialog(props) {
         return null;
     }
 
-    let idExists = props.enums.find(enumItem => enumItem._id == props.enum._id);
+    let idExists = props.enums.find(enumItem => enumItem._id === props.enum._id);
     let idChanged = props.enum._id !== originalId;
 
     let canSave = props.enum._id !== 'system.enum.'
@@ -174,5 +173,19 @@ function EnumEditDialog(props) {
         </DialogActions> 
     </Dialog>;
 }
+
+EnumEditDialog.propTypes = {
+    enum: PropTypes.object,
+    enums: PropTypes.array,
+    isNew: PropTypes.bool,
+    change: PropTypes.func,
+    saveData: PropTypes.func,
+    onClose: PropTypes.func,
+    open: PropTypes.bool,
+    classes: PropTypes.object,
+    t: PropTypes.func,
+    lang: PropTypes.string,
+    socket: PropTypes.object,
+};
 
 export default EnumEditDialog;

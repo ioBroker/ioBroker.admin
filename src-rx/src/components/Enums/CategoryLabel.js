@@ -1,5 +1,6 @@
 import { useDrop } from 'react-dnd';
 import Color from 'color';
+import PropTypes from 'prop-types';
 
 import IconButton from '@material-ui/core/IconButton';
 
@@ -7,7 +8,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 const CategoryLabel = (props) => {
-    const [{ canDrop, isOver }, drop] = useDrop(() => ({
+    const [, drop] = useDrop(() => ({
         accept: ['enum'],
         drop: () => ({ enum_id: props.categoryData._id }),
         collect: (monitor) => ({
@@ -43,5 +44,15 @@ const CategoryLabel = (props) => {
         </IconButton> }
     </span>;
 }
+
+CategoryLabel.propTypes = {
+    categoryData: PropTypes.object,
+    showEnumEditDialog: PropTypes.func,
+    showEnumDeleteDialog: PropTypes.func,
+    classes: PropTypes.object,
+    t: PropTypes.func,
+    lang: PropTypes.string,
+    socket: PropTypes.object,
+};
 
 export default CategoryLabel;

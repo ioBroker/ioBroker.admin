@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 import Dialog from '@material-ui/core/Dialog';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -18,5 +20,15 @@ function EnumDeleteDialog(props) {
         </Box>
     </Dialog>;
 }
+
+EnumDeleteDialog.propTypes = {
+    enum: PropTypes.object,
+    onClose: PropTypes.func,
+    open: PropTypes.bool,
+    classes: PropTypes.object,
+    t: PropTypes.func,
+    lang: PropTypes.string,
+    socket: PropTypes.object,
+};
 
 export default EnumDeleteDialog;

@@ -1,12 +1,15 @@
 import { useEffect, useRef } from 'react'
-import { DragPreviewImage, useDrag, useDrop } from 'react-dnd';
+import PropTypes from 'prop-types';
+import { useDrag, useDrop } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import Color from 'color';
+
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import Icon from '@iobroker/adapter-react/Components/Icon';
+
 import IconButton from '@material-ui/core/IconButton';
-import Checkbox from '@material-ui/core/Checkbox';
 import ListIcon from '@material-ui/icons/List';
 import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
@@ -15,7 +18,6 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import DownIcon from '@material-ui/icons/KeyboardArrowDown';
 import UpIcon from '@material-ui/icons/KeyboardArrowUp';
 
-import Icon from '@iobroker/adapter-react/Components/Icon';
 
 function EnumBlock(props) {
 
@@ -176,5 +178,23 @@ const EnumBlockDrag = (props) => {
         </div>
     </div>;
 }
+
+EnumBlockDrag.propTypes = {
+    enum: PropTypes.object,
+    members: PropTypes.array,
+    moveEnum: PropTypes.func,
+    removeMemberFromEnum: PropTypes.func,
+    showEnumEditDialog: PropTypes.func,
+    showEnumDeleteDialog: PropTypes.func,
+    copyEnum: PropTypes.func,
+    getName: PropTypes.func,
+    hasChildren: PropTypes.bool,
+    closed: PropTypes.bool,
+    toggleEnum: PropTypes.func,
+    classes: PropTypes.object,
+    t: PropTypes.func,
+    lang: PropTypes.string,
+    socket: PropTypes.object,
+};
 
 export default EnumBlockDrag;

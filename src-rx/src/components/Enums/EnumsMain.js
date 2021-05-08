@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { DndProvider, useDrop, useDrag } from 'react-dnd'
+import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { usePreview } from 'react-dnd-preview'
@@ -25,7 +25,6 @@ import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 
 import {withStyles} from '@material-ui/core/styles';
-import { Button } from '@material-ui/core';
 
 const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, .2)';
 
