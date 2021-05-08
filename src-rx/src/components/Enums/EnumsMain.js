@@ -407,8 +407,6 @@ class EnumsList extends Component {
 
     showEnumEditDialog = (enumItem, isNew) => {
         enumItem = JSON.parse(JSON.stringify(enumItem));
-        enumItem.common.password = '';
-        enumItem.common.passwordRepeat = '';
         this.setState({enumEditDialog: enumItem, enumEditDialogNew: isNew});
     }
 
