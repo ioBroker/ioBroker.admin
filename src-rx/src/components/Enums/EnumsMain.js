@@ -1,34 +1,28 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { Component } from 'react';
 
 import { DndProvider, useDrop, useDrag } from 'react-dnd'
-import { HTML5Backend, getEmptyImage } from 'react-dnd-html5-backend';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { usePreview } from 'react-dnd-preview'
-
-import ObjectBrowser from '../../components/ObjectBrowser';
 
 import EnumBlock from './EnumBlock';
 import CategoryLabel from './CategoryLabel';
 import EnumEditDialog from './EnumEditDialog';
 import EnumTemplateDialog from './EnumTemplateDialog';
 import EnumDeleteDialog from './EnumDeleteDialog';
+import DragObjectBrowser from './DragObjectBrowser'
 
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Fab from '@material-ui/core/Fab';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Card from '@material-ui/core/Card';
 import TextField from '@material-ui/core/TextField';
 import Popover from '@material-ui/core/Popover';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
-import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 
 import AddIcon from '@material-ui/icons/Add';
-import ListIcon from '@material-ui/icons/List';
 
 import {withStyles} from '@material-ui/core/styles';
 
@@ -213,67 +207,6 @@ function isTouchDevice() {
     return (('ontouchstart' in window) ||
         (navigator.maxTouchPoints > 0) ||
         (navigator.msMaxTouchPoints > 0));
-}
-
-const DragObjectBrowser = (props) => {
-    let browserProps = props;
-    const [wrapperState, setWrapperState] = useState({DragWrapper: null});
-    useEffect(() => {
-        const DragWrapper = props => {
-            let onDragEnd = (item, monitor) => {
-                const dropResult = monitor.getDropResult();
-                if (item.data && dropResult) {
-                    if (item.data.obj) {
-                        browserProps.addItemToEnum(item.data.obj._id, dropResult.enum_id);
-                    } else {
-                        // all children ??
-                        window.alert('TODO: Add all direct children of ' + item.data.id);
-                    }
-                }
-            };
-            let dragSettings = {
-                type: 'object',
-                end: onDragEnd,
-            }
-            dragSettings.item = {
-                data: props.item.data,
-                preview: (props.item.data && props.item.data.obj ? <Card
-                    key={props.item.data.obj._id}
-                    variant="outlined"
-                    className={browserProps.classes.enumGroupMember}
-                >
-                    {
-                        props.item.data.obj.common?.icon
-                            ?
-                            <Icon
-                                className={ browserProps.classes.icon }
-                                src={props.item.data.obj.common.icon}
-                            />
-                            :
-                            <ListIcon className={browserProps.classes.icon} />
-                    }
-                    {props.item.data.obj.common?.name ? browserProps.getName(props.item.data.obj.common?.name) : null}
-                </Card> : null)
-            };
-            const [{ isDragging }, dragRef, preview] = useDrag(dragSettings);
-            useEffect(() => {
-                preview(getEmptyImage(), { captureDraggingState: true });
-                // eslint-disable-next-line react-hooks/exhaustive-deps
-            }, []);
-
-            return <div key={props.item.data.id} ref={dragRef} style={{ backgroundColor: isDragging ? 'rgba(100,152,255,0.1)' : undefined }}>{props.children}</div>;
-        }
-        setWrapperState({DragWrapper: DragWrapper});
-    }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
-
-    return wrapperState ? <ObjectBrowser
-        t={props.t}
-        socket={props.socket}
-        types={['state', 'channel', 'device']}
-        lang={props.lang}
-        dragEnabled
-        DragWrapper={wrapperState.DragWrapper}
-    /> : null;
 }
 
 const enumTemplates = {
