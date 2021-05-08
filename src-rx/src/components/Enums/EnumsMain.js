@@ -227,7 +227,7 @@ const DragObjectBrowser = (props) => {
                         browserProps.addItemToEnum(item.data.obj._id, dropResult.enum_id);
                     } else {
                         // all children ??
-                        window.alert('TODO: Add all direct children of ' + item.id);
+                        window.alert('TODO: Add all direct children of ' + item.data.id);
                     }
                 }
             };
@@ -261,7 +261,7 @@ const DragObjectBrowser = (props) => {
                 // eslint-disable-next-line react-hooks/exhaustive-deps
             }, []);
 
-            return <div ref={dragRef} style={{ backgroundColor: isDragging ? 'rgba(100,152,255,0.1)' : undefined }}>{props.children}</div>;
+            return <div key={props.item.data.id} ref={dragRef} style={{ backgroundColor: isDragging ? 'rgba(100,152,255,0.1)' : undefined }}>{props.children}</div>;
         }
         setWrapperState({DragWrapper: DragWrapper});
     }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
