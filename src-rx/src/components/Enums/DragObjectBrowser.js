@@ -47,7 +47,7 @@ const DragObjectBrowser = (props) => {
                             :
                             <ListIcon className={browserProps.classes.icon} />
                     }
-                    {props.item.data.obj.common?.name ? browserProps.getName(props.item.data.obj.common?.name) : null}
+                    {props.item.data.obj.common?.name ? browserProps.getName(props.item.data.obj.common?.name) : props.item.data.obj._id}
                 </Card> : null)
             };
             const [{ isDragging }, dragRef, preview] = useDrag(dragSettings);

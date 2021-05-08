@@ -114,7 +114,7 @@ function EnumBlock(props) {
                                         :
                                         <ListIcon className={props.classes.icon} />
                                     }
-                                {member.common?.name ? props.getName(member.common?.name) : null}
+                                {member.common?.name ? props.getName(member.common?.name) : member._id}
                                 <IconButton
                                     size="small"
                                     onClick={() => props.removeMemberFromEnum(member._id, props.enum._id)}
