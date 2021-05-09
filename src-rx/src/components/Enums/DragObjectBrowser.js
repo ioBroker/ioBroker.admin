@@ -23,7 +23,7 @@ const DragObjectBrowser = (props) => {
                 const dropResult = monitor.getDropResult();
                 if (item.data && dropResult) {
                     if (item.data.obj) {
-                        browserProps.addItemToEnum(item.data.obj._id, dropResult.enum_id);
+                        browserProps.addItemToEnum(item.data.obj._id, dropResult.enumId);
                     } else {
                         // all children ??
                         window.alert('TODO: Add all direct children of ' + item.data.id);
@@ -63,7 +63,8 @@ const DragObjectBrowser = (props) => {
             return <div key={props.item.data.id} ref={dragRef} style={{ backgroundColor: isDragging ? 'rgba(100,152,255,0.1)' : undefined }}>{props.children}</div>;
         }
         setWrapperState({DragWrapper: DragWrapper});
-    }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
+    }, []); // react-hooks/exhaustive-deps
 
     return wrapperState ? <ObjectBrowser
         t={props.t}

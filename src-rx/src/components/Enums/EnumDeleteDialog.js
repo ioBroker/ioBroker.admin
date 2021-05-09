@@ -11,7 +11,7 @@ function EnumDeleteDialog(props) {
     return <Dialog PaperProps={{className: props.classes.dialogPaper}} open={props.open} onClose={props.onClose}>
         <Box className={props.classes.deleteDialog}>
             <h2>
-                {props.t('Do you want to delete enum ') + props.enum.common.name + '?'}
+                {props.t('Do you want to delete enum ') + props.getName(props.enum.common.name) + '?'}
             </h2>
             <div>
                 <Button onClick={()=>props.deleteEnum(props.enum._id)}>Delete</Button>

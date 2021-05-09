@@ -423,13 +423,34 @@ class EnumsList extends Component {
             }
         })
         .then(()=>{
+            return Promise.all(Object.values(this.state.enums).map(enumChild => {
+                if (enumChild._id.startsWith(originalId + '.')) {
+                    let newEnumChild = JSON.parse(JSON.stringify(enumChild));
+                    newEnumChild._id = newEnumChild._id.replace(originalId + '.', enumItem._id + '.');
+                    return this.props.socket.setObject(newEnumChild._id, newEnumChild).then(() => 
+                        this.props.socket.delObject(enumChild._id)
+                    );
+                }
+                return null;
+            }))
+        })
+        .then(()=>{
             this.updateData();
             this.setState({enumEditDialog: false});
         });
     }
 
     deleteEnum = (enumId) => {
-        this.props.socket.delObject(enumId).then(()=>{
+        this.props.socket.delObject(enumId)
+        .then(() => {
+            return Promise.all(Object.values(this.state.enums).map(enumChild => {
+                if (enumChild._id.startsWith(enumId + '.')) {
+                    return this.props.socket.delObject(enumChild._id);
+                }
+                return null;
+            }))
+        })
+        .then(()=>{
             this.updateData();
             this.setState({enumDeleteDialog: false});
         });
@@ -458,8 +479,8 @@ class EnumsList extends Component {
         this.setState({enumEditDialog: enumItem})
     }
 
-    getName(name) {
-        return typeof(name) === 'object' ? name.en : name;
+    getName = (name) => {
+        return typeof(name) === 'object' ? name[this.props.lang] : name;
     }
 
     render() {
@@ -560,6 +581,7 @@ class EnumsList extends Component {
                 onClose={()=>this.setState({enumEditDialog: false})}
                 enums={Object.values(this.state.enums)}
                 enum={this.state.enumEditDialog}
+                getName={this.getName}
                 isNew={this.state.enumEditDialogNew}
                 t={this.props.t}
                 classes={this.props.classes}
@@ -570,6 +592,7 @@ class EnumsList extends Component {
                 open={!!this.state.enumDeleteDialog}
                 onClose={()=>this.setState({enumDeleteDialog: false})}
                 enum={this.state.enumDeleteDialog}
+                getName={this.getName}
                 t={this.props.t}
                 classes={this.props.classes}
                 deleteEnum={this.deleteEnum}

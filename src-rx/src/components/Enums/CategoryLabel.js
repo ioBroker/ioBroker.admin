@@ -10,7 +10,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 const CategoryLabel = (props) => {
     const [, drop] = useDrop(() => ({
         accept: ['enum'],
-        drop: () => ({ enum_id: props.categoryData._id }),
+        drop: () => ({ enumId: props.categoryData._id }),
         collect: (monitor) => ({
             isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),

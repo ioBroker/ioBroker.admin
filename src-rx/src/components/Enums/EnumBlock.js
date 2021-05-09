@@ -146,7 +146,7 @@ function EnumBlock(props) {
 const EnumBlockDrag = (props) => {
     const [{ canDrop, isOver, isCanDrop }, drop] = useDrop(() => ({
         accept: ['object', 'enum'],
-        drop: () => ({ enum_id: props.enum._id }),
+        drop: () => ({ enumId: props.enum._id }),
         collect: (monitor) => ({
             isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),
@@ -157,10 +157,10 @@ const EnumBlockDrag = (props) => {
     const [{ isDragging }, dragRef, preview] = useDrag(
         {
             type: 'enum',
-            item: () => {return {enum_id: props.enum._id, preview: <div style={{width: widthRef.current.offsetWidth}}><EnumBlock {...props}/></div>}},
+            item: () => {return {enumId: props.enum._id, preview: <div style={{width: widthRef.current.offsetWidth}}><EnumBlock {...props}/></div>}},
             end: (item, monitor) => {
                 const dropResult = monitor.getDropResult();
-                props.moveEnum(item.enum_id, dropResult.enum_id);
+                props.moveEnum(item.enumId, dropResult.enumId);
             },
             collect: (monitor) => ({
                 isDragging: monitor.isDragging(),

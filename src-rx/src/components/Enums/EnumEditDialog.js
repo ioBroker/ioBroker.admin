@@ -29,6 +29,7 @@ function EnumEditDialog(props) {
     let [originalId, setOriginalId] = useState(null);
     useEffect(()=>{
         setOriginalId(props.enum._id);
+    // eslint-disable-next-line
     }, [props.open]);
 
     if (!props.open) {
@@ -80,10 +81,10 @@ function EnumEditDialog(props) {
                     <IOTextField 
                         label="Name" 
                         t={props.t} 
-                        value={ props.enum.common.name }
+                        value={ props.getName(props.enum.common.name) }
                         onChange={e=>{
                             let newData = props.enum;
-                            if (!props.enum.common.dontDelete && name2Id(newData.common.name) === getShortId(newData._id)) {
+                            if (!props.enum.common.dontDelete && name2Id(props.getName(newData.common.name)) === getShortId(newData._id)) {
                                 newData._id = changeShortId(newData._id, name2Id(e.target.value));
                             }
                             newData.common.name = e.target.value;
