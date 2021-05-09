@@ -136,14 +136,16 @@ class JsonConfigComponent extends Component {
     readData() {
         this.readSettings()
             .then(() => this.props.socket.getCompactSystemConfig())
-            .then(systemConfig => {
-                if (this.props.custom) {
-                    this.setState({systemConfig: systemConfig.common});
-                } else {
-                    this.setState({systemConfig: systemConfig.common}, () =>
-                        this.props.socket.subscribeState(`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`, this.onAlive));
-                }
-            });
+            .then(systemConfig =>
+                this.props.socket.getState(`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`)
+                    .then(state => {
+                        if (this.props.custom) {
+                            this.setState({systemConfig: systemConfig.common, alive: !!(state && state.val)});
+                        } else {
+                            this.setState({systemConfig: systemConfig.common, alive: !!(state && state.val)}, () =>
+                                this.props.socket.subscribeState(`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`, this.onAlive));
+                        }
+                    }));
     }
 
     onAlive = (id, state) => {

@@ -639,7 +639,7 @@ const HostRow = ({
                                 </IconButton>
                             </div>
                         </Tooltip>
-                        {expertMode && logLevelValue &&
+                        {expertMode && logLevelValue ?
                             <Tooltip title={t('loglevel') + ' ' + logLevelValue}>
                                 <IconButton onClick={(event) => {
                                     event.stopPropagation();
@@ -649,7 +649,7 @@ const HostRow = ({
                                         {getLogLevelIcon(logLevelValue)}
                                     </Avatar>
                                 </IconButton>
-                            </Tooltip>
+                            </Tooltip> : <div className={classes.emptyButton} />
                         }
                         {!alive && !currentHost ? <Tooltip title={t('Remove')}>
                             <IconButton onClick={(e) => {

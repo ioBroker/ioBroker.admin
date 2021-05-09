@@ -106,6 +106,13 @@ function startAdapter(options) {
             return false;
         }
 
+        if (obj.command === 'autocomplete') {
+            if (obj.callback) {
+                adapter.sendTo(obj.from, obj.command, [{value: 1, label: 'first'}, {value: 2, label: 'second'}], obj.callback);
+            }
+            return;
+        }
+
         socket && socket.sendCommand(obj);
 
         return true;

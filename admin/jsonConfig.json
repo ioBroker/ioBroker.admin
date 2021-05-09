@@ -271,6 +271,14 @@
         "en": "Demo"
       },
       "items": {
+        "automcomplete": {
+          "sm": 6,
+          "label": "Autocomplete",
+          "type": "autocompleteSendTo",
+          "command": "autocomplete",
+          "jsonData": "{\"text\": ${data.prefixId || null}}"
+        },
+
         "demoPattern": {
           "label": "Pattern",
           "type": "pattern",
