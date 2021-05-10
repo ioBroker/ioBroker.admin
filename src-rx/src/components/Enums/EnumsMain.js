@@ -503,7 +503,7 @@ class EnumsList extends Component {
     }
 
     getName = (name) => {
-        return typeof(name) === 'object' ? name[this.props.lang] : name;
+        return typeof(name) === 'object' ? name[this.props.lang] || name.en : name;
     }
 
     static _isUniqueName(prefix, list, word, i) {
