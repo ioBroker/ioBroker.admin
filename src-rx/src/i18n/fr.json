@@ -1363,5 +1363,6 @@
   "Show help for this adapter": "Afficher l'aide pour cet adaptateur",
   "Instance settings": "Paramètres d'instance",
   "only in this browser session": "uniquement dans cette session de navigateur",
-  "Do not show this dialog in this browser session any more": "Ne plus afficher cette boîte de dialogue dans cette session de navigateur"
+  "Do not show this dialog in this browser session any more": "Ne plus afficher cette boîte de dialogue dans cette session de navigateur",
+  "Active repo is \"%s\"": "Le référentiel actif est \"%s\""
 }

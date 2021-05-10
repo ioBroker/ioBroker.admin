@@ -1363,5 +1363,6 @@
   "Show help for this adapter": "显示此适配器的帮助",
   "Instance settings": "实例设定",
   "only in this browser session": "仅在此浏览器会话中",
-  "Do not show this dialog in this browser session any more": "不再在此浏览器会话中显示此对话框"
+  "Do not show this dialog in this browser session any more": "不再在此浏览器会话中显示此对话框",
+  "Active repo is \"%s\"": "活动存储库为“ %s”"
 }

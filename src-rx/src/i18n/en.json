@@ -1363,5 +1363,6 @@
   "Show help for this adapter": "Show help for this adapter",
   "Instance settings": "Instance settings",
   "only in this browser session": "only in this browser session",
-  "Do not show this dialog in this browser session any more": "Do not show this dialog in this browser session any more"
+  "Do not show this dialog in this browser session any more": "Do not show this dialog in this browser session any more",
+  "Active repo is \"%s\"": "Active repository is \"%s\""
 }

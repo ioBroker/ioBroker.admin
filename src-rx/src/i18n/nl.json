@@ -1363,5 +1363,6 @@
   "Show help for this adapter": "Toon hulp voor deze adapter",
   "Instance settings": "Instantie-instellingen",
   "only in this browser session": "alleen in deze browsersessie",
-  "Do not show this dialog in this browser session any more": "Toon dit dialoogvenster niet meer in deze browsersessie"
+  "Do not show this dialog in this browser session any more": "Toon dit dialoogvenster niet meer in deze browsersessie",
+  "Active repo is \"%s\"": "Actieve opslagplaats is \"%s\""
 }

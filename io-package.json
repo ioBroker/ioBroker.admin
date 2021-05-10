@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.19",
+        "version": "5.0.20",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.0.20": {
+                "en": "Admin5: Fixed many bugs",
+                "de": "Admin5: Viele Fehler behoben",
+                "ru": "Admin5: Исправлено множество ошибок",
+                "pt": "Admin5: muitos bugs corrigidos",
+                "nl": "Admin5: Veel bugs opgelost",
+                "fr": "Admin5: Correction de nombreux bugs",
+                "it": "Admin5: risolti molti bug",
+                "es": "Admin5: se corrigieron muchos errores",
+                "pl": "Admin5: Naprawiono wiele błędów",
+                "zh-cn": "Admin5：修复了许多错误"
+            },
             "5.0.19": {
                 "en": "Admin5: Fixed many bugs",
                 "de": "Admin5: Viele Fehler behoben",
@@ -245,18 +257,6 @@
                 "es": "La vista de mosaico implementada para el navegador de archivos",
                 "pl": "Widok kafelków zaimplementowany dla przeglądarki plików",
                 "zh-cn": "为文件浏览器实现的图块视图"
-            },
-            "4.1.1": {
-                "en": "Started the development of GUI based on React (only for developers)",
-                "de": "Startete die Entwicklung einer GUI basierend auf React (nur für Entwickler)",
-                "ru": "Начата разработка графического интерфейса на основе React (только для разработчиков)",
-                "pt": "Iniciou o desenvolvimento da GUI com base no React (apenas para desenvolvedores)",
-                "nl": "Begonnen met de ontwikkeling van GUI op basis van React (alleen voor ontwikkelaars)",
-                "fr": "A commencé le développement de GUI basé sur React (uniquement pour les développeurs)",
-                "it": "Ha iniziato lo sviluppo della GUI basata su React (solo per sviluppatori)",
-                "es": "Comenzó el desarrollo de GUI basado en React (solo para desarrolladores)",
-                "pl": "Rozpoczął tworzenie GUI w oparciu o React (tylko dla programistów)",
-                "zh-cn": "开始开发基于React的GUI（仅适用于开发人员）"
             }
         },
         "desc": {

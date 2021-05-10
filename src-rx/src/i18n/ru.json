@@ -1367,5 +1367,6 @@
   "Show help for this adapter": "Показать справку по этому адаптеру",
   "Instance settings": "Настройки экземпляра",
   "only in this browser session": "только в этом сеансе браузера",
-  "Do not show this dialog in this browser session any more": "Больше не показывать это диалоговое окно в этом сеансе браузера"
+  "Do not show this dialog in this browser session any more": "Больше не показывать это диалоговое окно в этом сеансе браузера",
+  "Active repo is \"%s\"": "Активный репозиторий - \"%s\""
 }

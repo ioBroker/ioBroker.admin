@@ -79,6 +79,12 @@ const styles = theme => ({
         height: '100%',
         width: '100%',
     },
+    containerNotFullHeight: {
+        height: 'calc(100% - 22px)',
+    },
+    containerFullHeight: {
+        height: '100%',
+    },
     smallAvatar: {
         width: theme.spacing(3),
         height: theme.spacing(3)
@@ -196,6 +202,19 @@ const styles = theme => ({
     },
     buttonIcon: {
         marginRight: theme.spacing(1),
+    },
+    notStableRepo: {
+        background: '#fdee20',
+        color: '#111',
+        fontSize: 14,
+        padding: '2px 8px',
+        borderRadius: 5
+    },
+    viewModeDiv: {
+        display: 'flex',
+        flexFlow: 'wrap',
+        overflow: 'auto',
+        justifyContent: 'center'
     }
 });
 
@@ -1314,6 +1333,7 @@ class Adapters extends Component {
 
         const { classes } = this.props;
         const descHidden = this.state.descWidth < 50;
+
         return <TabContainer>
             {this.state.update &&
                 <Grid item>
@@ -1441,7 +1461,8 @@ class Adapters extends Component {
                 </Hidden>
             </TabHeader>
             {this.state.viewMode && <TabContent>
-                <TableContainer className={classes.container}>
+                {this.props.systemConfig.common.activeRepo !== 'stable' ? <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}</div> : null}
+                <TableContainer className={clsx(classes.container, this.props.systemConfig.common.activeRepo !== 'stable' ? classes.containerNotFullHeight : classes.containerFullHeight)}>
                     <Table stickyHeader size="small" className={classes.table}>
                         <TableHead>
                             <TableRow>
@@ -1480,12 +1501,10 @@ class Adapters extends Component {
             {this.renderSetRatingDialog()}
             {this.renderSlowConnectionWarning()}
 
-            {!this.state.viewMode && <div style={{
-                display: 'flex',
-                flexFlow: 'wrap',
-                overflow: 'auto',
-                justifyContent: 'center'
-            }}>{this.getTiles()}</div>}
+            {!this.state.viewMode && <>
+                {this.props.systemConfig.common.activeRepo !== 'stable' ? <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}</div> : null}
+                <div className={this.props.classes.viewModeDiv}>{this.getTiles()}</div>
+            </>}
 
             {this.state.addInstanceDialog &&
                 <AddInstanceDialog

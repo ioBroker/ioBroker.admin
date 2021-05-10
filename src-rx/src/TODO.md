@@ -4,7 +4,6 @@ Marked with "!" must be in release candidate
 
 ## Bugs
 - (BF) AdminSettings: Access to the instances: add infotexts for "Apply access rights" and "Allow access only"
-- Add to expert dialog: don't show anymore
 
 ## Intro
 - Images have different width
@@ -16,19 +15,20 @@ Marked with "!" must be in release candidate
 ## Info
 
 ## Enums
-- Find icon of object (state => channel => device)
-- Show in second row ID in state
-- Use default Icon depends on type (state, channel, device)
-- Create enums, that not exists automatically. E.g. `enum.rooms.A.kitchen` exists, but `enum.rooms.A` not, So `enum.rooms.A` must be created.
-- Update structure of enums by changes from outside
-- Expand/Collapse all in tree
-- Expand/Collapse of one enumeration to make it narrow with showing the number of objects inside
-- expand/collapse all to narrow view and back  
-- Scroll to new created/copied enumeration
+- (BF) Find icon of object (state => channel => device)
+- (BF) Show in second row ID in state
+- (BF) Use default Icon depends on type (state, channel, device)
+- (BF) Create enums, that not exists automatically. E.g. `enum.rooms.A.kitchen` exists, but `enum.rooms.A` not, So `enum.rooms.A` must be created.
+- (BF) Update structure of enums by changes from outside
+- (BF) Expand/Collapse all in tree
+- (BF) Expand/Collapse of one enumeration to make it narrow with showing the number of objects inside
+- (BF) expand/collapse all to narrow view and back  
+- (BF) Scroll to new created/copied enumeration
 
 ## Adapters
 - Update of available versions does not work: https://github.com/ioBroker/ioBroker.admin/issues/830
 - Switch of host does not make any effect: https://github.com/ioBroker/ioBroker.admin/issues/819 
+- Mobile view Updater: https://github.com/ioBroker/ioBroker.admin/issues/851
 
 ## Wizard
 

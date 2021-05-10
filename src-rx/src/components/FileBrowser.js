@@ -723,13 +723,16 @@ class FileBrowser extends Component {
 
                     if (!_checkEmpty) {
                         return Promise.all(_folders.filter(item => item.folder).map(item => this.browseFolder(item.id, _newFolders, true)))
-                            .then(() => _newFolders)
+                            .then(() => _newFolders);
                     } else {
                         return _newFolders;
                     }
                 })
-                .catch(e =>
-                    this.initialReadFinished && window.alert(`Cannot read ${adapter}${relPath ? '/' + relPath : ''}: ${e}`));
+                .catch(e => {
+                    this.initialReadFinished && window.alert(`Cannot read ${adapter}${relPath ? '/' + relPath : ''}: ${e}`);
+                    _newFolders[folderId] = [];
+                    return _newFolders;
+                });
         }
     }
 

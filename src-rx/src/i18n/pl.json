@@ -1363,5 +1363,6 @@
   "Show help for this adapter": "Pokaż pomoc dotyczącą tego adaptera",
   "Instance settings": "Ustawienia instancji",
   "only in this browser session": "tylko w tej sesji przeglądarki",
-  "Do not show this dialog in this browser session any more": "Nie pokazuj już tego okna dialogowego w tej sesji przeglądarki"
+  "Do not show this dialog in this browser session any more": "Nie pokazuj już tego okna dialogowego w tej sesji przeglądarki",
+  "Active repo is \"%s\"": "Aktywne repozytorium jest „%s”"
 }
