@@ -1354,5 +1354,14 @@
   "For systems installed manually under Linux, prefix sudo or run as root.": "For systems installed manually under Linux, prefix sudo or run as root.",
   "This way is only necessary in very few cases and please consult the forum beforehand!": "This way is only necessary in very few cases and please consult the forum beforehand!",
   "Otherwise please update the slaves first with an update of master-slave systems and the master last!": "Otherwise please update the slaves first with an update of master-slave systems and the master last!",
-  "For an update from js-controller 1.x to 2.x please always read the information at": "For an update from js-controller 1.x to 2.x please always read the information at"
+  "For an update from js-controller 1.x to 2.x please always read the information at": "For an update from js-controller 1.x to 2.x please always read the information at",
+  "You can export all objects or just the selected branch.": "You can export all objects or just the selected branch.",
+  "Select type of export": "Select type of the export",
+  "All objects": "All objects",
+  "Only selected": "Only selected",
+  "Selected %s object(s)": "Selected %s object(s)",
+  "Show help for this adapter": "Show help for this adapter",
+  "Instance settings": "Instance settings",
+  "only in this browser session": "only in this browser session",
+  "Do not show this dialog in this browser session any more": "Do not show this dialog in this browser session any more"
 }

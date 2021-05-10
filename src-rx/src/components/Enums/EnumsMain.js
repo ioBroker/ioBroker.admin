@@ -274,21 +274,20 @@ class EnumsList extends Component {
         this.updateData();
     }
 
-    updateData = async () => {
-        const enums = await this.props.socket.getForeignObjects('enum.*', 'enum');
+    updateData = async update => {
+        const enums = await this.props.socket.getEnums('', update);
         const members = {}
         for (let enumKey in enums) {
-            if (enums[enumKey].common.members) {
-                for (let memberKey in enums[enumKey].common.members) {
-                    let member = enums[enumKey].common.members[memberKey];
-                    if (!members[member]) {
-                        members[member] = await this.props.socket.getObject(member);
-                    }
+            if (enums.hasOwnProperty(enumKey) && enums[enumKey].common.members) {
+                for (let i = 0; i < enums[enumKey].common.members.length; i++) {
+                    let member = enums[enumKey].common.members[i];
+                    members[member] = members[member] || await this.props.socket.getObject(member);
                 }
             }
         }
-        this.setState({enums: enums, members: members});
-        this.createTree(enums);
+
+        this.setState({enums, members}, () =>
+            this.createTree(enums));
     }
 
     createTree(enums) {
@@ -375,9 +374,8 @@ class EnumsList extends Component {
         let members = enumItem.common.members;
         if (members.includes(memberId)) {
             members.splice(members.indexOf(memberId), 1);
-            this.props.socket.setObject(enumItem._id, enumItem).then(() => {
-                this.updateData();
-            });
+            this.props.socket.setObject(enumItem._id, enumItem)
+                .then(() => this.updateData());
         }
     }
 
@@ -427,7 +425,7 @@ class EnumsList extends Component {
                 if (enumChild._id.startsWith(originalId + '.')) {
                     let newEnumChild = JSON.parse(JSON.stringify(enumChild));
                     newEnumChild._id = newEnumChild._id.replace(originalId + '.', enumItem._id + '.');
-                    return this.props.socket.setObject(newEnumChild._id, newEnumChild).then(() => 
+                    return this.props.socket.setObject(newEnumChild._id, newEnumChild).then(() =>
                         this.props.socket.delObject(enumChild._id)
                     );
                 }
@@ -480,7 +478,7 @@ class EnumsList extends Component {
     }
 
     getName = (name) => {
-        return typeof(name) === 'object' ? name[this.props.lang] : name;
+        return typeof(name) === 'object' ? name[this.props.lang] || name.en : name;
     }
 
     render() {

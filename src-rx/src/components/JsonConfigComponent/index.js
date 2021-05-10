@@ -239,6 +239,57 @@ class JsonConfigComponent extends Component {
                     }
                 });
             }
+
+            if (attrs[attr].hidden?.alsoDependsOn) {
+                attrs[attr].hidden?.alsoDependsOn.forEach(dep => {
+                    if (!attrs[dep]) {
+                        console.error(`[JsonConfigComponent] Attribute ${dep} does not exist!`);
+                        if (dep.startsWith('data.')) {
+                            console.warn(`[JsonConfigComponent] please use "${dep.replace(/^data\./, '')}" instead of "${dep}"`);
+                        }
+                    } else {
+                        attrs[dep].hiddenDependsOn = attrs[dep].hiddenDependsOn || [];
+
+                        const depObj = {...attrs[attr], attr};
+
+                        attrs[dep].hiddenDependsOn.push(depObj);
+                    }
+                });
+            }
+
+            if (attrs[attr].label?.alsoDependsOn) {
+                attrs[attr].label?.alsoDependsOn.forEach(dep => {
+                    if (!attrs[dep]) {
+                        console.error(`[JsonConfigComponent] Attribute ${dep} does not exist!`);
+                        if (dep.startsWith('data.')) {
+                            console.warn(`[JsonConfigComponent] please use "${dep.replace(/^data\./, '')}" instead of "${dep}"`);
+                        }
+                    } else {
+                        attrs[dep].labelDependsOn = attrs[dep].labelDependsOn || [];
+
+                        const depObj = {...attrs[attr], attr};
+
+                        attrs[dep].labelDependsOn.push(depObj);
+                    }
+                });
+            }
+
+            if (attrs[attr].help?.alsoDependsOn) {
+                attrs[attr].help?.alsoDependsOn.forEach(dep => {
+                    if (!attrs[dep]) {
+                        console.error(`[JsonConfigComponent] Attribute ${dep} does not exist!`);
+                        if (dep.startsWith('data.')) {
+                            console.warn(`[JsonConfigComponent] please use "${dep.replace(/^data\./, '')}" instead of "${dep}"`);
+                        }
+                    } else {
+                        attrs[dep].helpDependsOn = attrs[dep].helpDependsOn || [];
+
+                        const depObj = {...attrs[attr], attr};
+
+                        attrs[dep].helpDependsOn.push(depObj);
+                    }
+                });
+            }
         });
     }
 
@@ -274,6 +325,7 @@ class JsonConfigComponent extends Component {
             />;
         } else if (item.type === 'panel' || !item.type) {
             return <ConfigPanel
+                isParentTab={true}
                 onCommandRunning={this.onCommandRunning}
                 commandRunning={this.state.commandRunning}
                 socket={this.props.socket}

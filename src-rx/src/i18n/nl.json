@@ -1354,5 +1354,14 @@
   "For systems installed manually under Linux, prefix sudo or run as root.": "Voor systemen die handmatig onder Linux zijn geïnstalleerd, voer je het voorvoegsel sudo uit of voer je het uit als root.",
   "This way is only necessary in very few cases and please consult the forum beforehand!": "Deze manier is slechts in zeer enkele gevallen nodig en raadpleeg daarom vooraf het forum!",
   "Otherwise please update the slaves first with an update of master-slave systems and the master last!": "Werk anders eerst de slaves bij met een update van de master-slave-systemen en als laatste de master!",
-  "For an update from js-controller 1.x to 2.x please always read the information at": "Lees voor een update van js-controller 1.x naar 2.x altijd de informatie op"
+  "For an update from js-controller 1.x to 2.x please always read the information at": "Lees voor een update van js-controller 1.x naar 2.x altijd de informatie op",
+  "You can export all objects or just the selected branch.": "U kunt alle objecten of alleen de geselecteerde tak exporteren.",
+  "Select type of export": "Selecteer het type export",
+  "All objects": "Alle objecten",
+  "Only selected": "Alleen geselecteerd",
+  "Selected %s object(s)": "%s object(en) geselecteerd",
+  "Show help for this adapter": "Toon hulp voor deze adapter",
+  "Instance settings": "Instantie-instellingen",
+  "only in this browser session": "alleen in deze browsersessie",
+  "Do not show this dialog in this browser session any more": "Toon dit dialoogvenster niet meer in deze browsersessie"
 }

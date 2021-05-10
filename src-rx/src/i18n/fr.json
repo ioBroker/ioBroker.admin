@@ -1354,5 +1354,14 @@
   "For systems installed manually under Linux, prefix sudo or run as root.": "Pour les systèmes installés manuellement sous Linux, préfixez sudo ou exécutez en tant que root.",
   "This way is only necessary in very few cases and please consult the forum beforehand!": "Cette méthode n'est nécessaire que dans de très rares cas et veuillez consulter le forum au préalable!",
   "Otherwise please update the slaves first with an update of master-slave systems and the master last!": "Sinon, veuillez d'abord mettre à jour les esclaves avec une mise à jour des systèmes maître-esclave et le maître en dernier!",
-  "For an update from js-controller 1.x to 2.x please always read the information at": "Pour une mise à jour de js-controller 1.x vers 2.x, veuillez toujours lire les informations sur"
+  "For an update from js-controller 1.x to 2.x please always read the information at": "Pour une mise à jour de js-controller 1.x vers 2.x, veuillez toujours lire les informations sur",
+  "You can export all objects or just the selected branch.": "Vous pouvez exporter tous les objets ou uniquement la branche sélectionnée.",
+  "Select type of export": "Sélectionnez le type d'export",
+  "All objects": "Tous les objets",
+  "Only selected": "Seulement sélectionné",
+  "Selected %s object(s)": "Sélection de %s objet(s)",
+  "Show help for this adapter": "Afficher l'aide pour cet adaptateur",
+  "Instance settings": "Paramètres d'instance",
+  "only in this browser session": "uniquement dans cette session de navigateur",
+  "Do not show this dialog in this browser session any more": "Ne plus afficher cette boîte de dialogue dans cette session de navigateur"
 }

@@ -987,7 +987,7 @@ class Utils {
         }
     }
 
-    // Big thanks to : https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
+    // Big thanks to: https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
     /**
      * Invert the given color
      * @param {string} hex Color in the format '#rrggbb' or '#rgb' (or without hash)

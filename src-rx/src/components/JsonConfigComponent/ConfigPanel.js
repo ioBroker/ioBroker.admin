@@ -109,7 +109,7 @@ class ConfigPanel extends ConfigGeneric {
         }
     }
 
-    renderItems(items) {
+    renderItems(items, disabled) {
         const classes = this.props.classes || {};
 
         return Object.keys(items).map(attr => {
@@ -151,6 +151,7 @@ class ConfigPanel extends ConfigGeneric {
                 customs={this.props.customs}
                 dateFormat={this.props.dateFormat}
                 isFloatComma={this.props.isFloatComma}
+                disabled={disabled}
 
                 registerOnForceUpdate={this.props.registerOnForceUpdate}
                 forceUpdate={this.props.forceUpdate}
@@ -166,20 +167,56 @@ class ConfigPanel extends ConfigGeneric {
     }
 
     render() {
-        console.log(this.props)
-        const items = this.props.schema.items;
-        const classes = this.props.classes || {};
+        const {disabled, hidden} = this.calculate(this.props.schema);
 
+        const items   = this.props.schema.items;
+        const classes = this.props.classes || {};
+        const schema  = this.props.schema;
+
+        if (hidden) {
+            if (schema.hideOnlyControl) {
+                const item = <Grid
+                    item
+                    xs={schema.xs || undefined}
+                    lg={schema.lg || undefined}
+                    md={schema.md || undefined}
+                    sm={schema.sm || undefined}
+                    style={Object.assign(
+                        {},
+                        {marginBottom: 0, /*marginRight: 8, */textAlign: 'left'},
+                        schema.style,
+                        this.props.themaType === 'dark' ? schema.darkStyle : {}
+                    )}
+                />;
+
+                if (schema.newLine) {
+                    return <>
+                        <div style={{flexBasis: '100%', height: 0}} />
+                        {item}
+                    </>
+                } else {
+                    return item;
+                }
+            } else {
+                return null;
+            }
+        } else
         if (this.props.table) {
-            return this.renderItems(items);
-        }
+            return this.renderItems(items, disabled);
+        } else
         if (this.props.custom) {
-            return <Grid key={this.props.attr} container className={classes.fullWidth} spacing={2}>
-                {this.renderItems(items)}
+            return <Grid
+                key={this.props.attr}
+                container
+                className={classes.fullWidth}
+                spacing={2}
+            >
+                {this.renderItems(items, disabled)}
             </Grid>;
         } else {
-            if (this.props.schema.collapsable) {
-                return <Accordion
+            let content;
+            if (schema.collapsable) {
+                content = <Accordion
                     key={this.props.attr}
                     className={classes.fullWidth}
                     expanded={!!this.state.expanded}
@@ -190,23 +227,50 @@ class ConfigPanel extends ConfigGeneric {
                 >
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
-                        style={Object.assign({}, this.props.schema.style, this.props.themeType ? this.props.schema.darkStyle : {})}
-                        className={clsx(classes.fullWidth, this.props.schema.color === 'primary' && classes.primary, this.props.schema.color === 'secondary' && classes.secondary)}
+                        style={Object.assign({}, schema.style, this.props.themeType ? schema.darkStyle : {})}
+                        className={clsx(classes.fullWidth, schema.color === 'primary' && classes.primary, schema.color === 'secondary' && classes.secondary)}
                     >
-                        <Typography className={classes.heading}>{this.getText(this.props.schema.label)}</Typography>
+                        <Typography className={classes.heading}>{this.getText(schema.label)}</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                         <Grid container className={classes.fullWidth + ' ' + classes.padding} spacing={2}>
-                            {this.renderItems(items)}
+                            {this.renderItems(items, disabled)}
                         </Grid>
                     </AccordionDetails>
                 </Accordion>
             } else {
-                return <div key={this.props.attr} className={(this.props.className || '') + ' ' + classes.paper}>
-                    <Grid container className={classes.fullWidth + ' ' + classes.padding} spacing={2}>
-                        {this.renderItems(items)}
+                content = <div
+                    key={this.props.attr}
+                    className={clsx(this.props.className, this.props.isParentTab && classes.paper, classes.fullWidth)}
+                >
+                    <Grid container className={clsx(classes.fullWidth, this.props.isParentTab && classes.padding)} spacing={2}>
+                        {this.renderItems(items, disabled)}
                     </Grid>
                 </div>;
+            }
+
+            if (!this.props.isParentTab) {
+                const item = <Grid
+                    item
+                    title={this.getText(schema.tooltip)}
+                    xs={schema.xs || undefined}
+                    lg={schema.lg || undefined}
+                    md={schema.md || undefined}
+                    sm={schema.sm || undefined}
+                    style={Object.assign({}, {marginBottom: 0, /*marginRight: 8, */textAlign: 'left'}, schema.style)}>
+                    {content}
+                </Grid>;
+
+                if (schema.newLine) {
+                    return <>
+                        <div style={{flexBasis: '100%', height: 0}} />
+                        {item}
+                    </>
+                } else {
+                    return item;
+                }
+            } else {
+                return content;
             }
         }
     }
@@ -230,6 +294,7 @@ ConfigPanel.propTypes = {
     dateFormat: PropTypes.string,
     isFloatComma: PropTypes.bool,
     multiEdit: PropTypes.bool,
+    isParentTab: PropTypes.bool,
 
     customObj: PropTypes.object,
     instanceObj: PropTypes.object,

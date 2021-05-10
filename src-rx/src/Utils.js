@@ -128,6 +128,16 @@ class Utils {
                 if (attr === 'secure') {
                     link = link.replace('%' + placeholder + '%', object.native[attr] ? 'https' : 'http');
                 } else {
+                    let value = object.native[attr];
+                    // workaround for port
+                    if ((attr === 'webinterfacePort' || attr === 'port') && (!value || value === '0')) {
+                        if (object.native.secure === true) {
+                            value = 443;
+                        } else {
+                            value = 80;
+                        }
+                    }
+
                     if (attr === 'bind' || attr === 'ip') {
                         let ip = object.native.bind || object.native.ip;
                         if (ip === '0.0.0.0') {
@@ -139,9 +149,9 @@ class Utils {
                             link = link.replace('%' + placeholder + '%', ip);
                         }
                     } else if (!link.includes('%' + placeholder + '%')) {
-                        link = link.replace('%native_' + placeholder + '%', object.native[attr]);
+                        link = link.replace('%native_' + placeholder + '%', value);
                     } else {
-                        link = link.replace('%' + placeholder + '%', object.native[attr]);
+                        link = link.replace('%' + placeholder + '%', value);
                     }
                 }
             } else {

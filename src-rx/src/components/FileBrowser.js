@@ -452,7 +452,9 @@ class FileBrowser extends Component {
             errorText: '',
             modalEditOfAccess: false,
             backgroundImage,
-            queueLength: 0
+            queueLength: 0,
+            loadAllFolders: false,
+            allFoldersLoaded: false,
         };
 
         this.imagePrefix = this.props.imagePrefix || './files/';
@@ -468,7 +470,7 @@ class FileBrowser extends Component {
 
     static getDerivedStateFromProps(props, state) {
         if (props.expertMode !== undefined && props.expertMode !== state.expertMode) {
-            return { expertMode: props.expertMode };
+            return { expertMode: props.expertMode, loadAllFolders: !state.allFoldersLoaded && props.expertMode };
         } else {
             return null;
         }
@@ -644,7 +646,18 @@ class FileBrowser extends Component {
                     let userData = null;
 
                     // load only adapter.admin and not other meta files like hm-rpc.0.devices.blablabla
-                    objs = objs.filter(obj => obj._id.split('.').length <= 2);
+                    objs = objs.filter(obj => {
+                        if (!this.state.expertMode) {
+                            return obj._id === '0_userdata.0' || obj._id === 'vis.0';
+                        } else {
+                            return obj._id.split('.').length <= 2;
+                        }
+                    });
+
+                    // remember, that all folders are loaded
+                    if (this.state.expertMode) {
+                        this.setState({allFoldersLoaded: true, loadFolders: false});
+                    }
 
                     objs.forEach(obj => {
                         const item = {
@@ -1565,6 +1578,17 @@ class FileBrowser extends Component {
         if (!this.props.ready) {
             return <LinearProgress key={this.props.key ? this.props.key + '_c' : 'c'} />;
         }
+
+        if (this.state.loadAllFolders && !this.foldersLoading) {
+            this.foldersLoading = true;
+            setTimeout(() => {
+                this.setState({loadAllFolders: false, folders: {}}, () => {
+                    this.foldersLoading = false;
+                    this.loadFolders();
+                });
+            }, 300);
+        }
+
 
         return <div key={this.props.key} style={this.props.style} className={Utils.clsx(this.props.classes.root, this.props.className)}>
             {this.props.showToolbar ? this.renderToolbar() : null}

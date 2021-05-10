@@ -1,3 +1,4 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -6,7 +7,6 @@ import Tab from '@material-ui/core/Tab';
 
 import ConfigGeneric from './ConfigGeneric';
 import ConfigPanel from './ConfigPanel';
-import React from "react";
 
 const styles = theme => ({
     tabs: {
@@ -44,6 +44,7 @@ class ConfigTabs extends ConfigGeneric {
             </Tabs>
             {<ConfigPanel
                 key={this.state.tab}
+                isParentTab={true}
                 onCommandRunning={this.props.onCommandRunning}
                 commandRunning={this.props.commandRunning}
                 className={this.props.classes.panel}

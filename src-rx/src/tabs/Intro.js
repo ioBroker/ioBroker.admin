@@ -111,7 +111,7 @@ class Intro extends Component {
                 const introLinks = systemConfig && systemConfig.native && systemConfig.native.introLinks ? systemConfig.native.introLinks : [];
 
                 this.introLinksOriginal = JSON.parse(JSON.stringify(introLinks));
-                this.instancesOriginal = JSON.parse(JSON.stringify(instances));
+                this.instancesOriginal  = JSON.parse(JSON.stringify(instances));
 
                 this.setState({
                     instances,
@@ -209,40 +209,38 @@ class Intro extends Component {
             if (!item.enabled && !this.state.edit) {
                 return null;
             } else {
-                return (
-                    <IntroCard
-                        key={'link' + i}
-                        image={item.image}
-                        title={item.name}
-                        action={{ link: item.link, text: item.linkName }}
-                        t={this.props.t}
-                        socket={this.props.socket}
-                        color={item.color}
-                        edit={this.state.edit}
-                        interval={item.interval}
-                        camera={item.camera}
-                        addTs={item.addTs}
+                return <IntroCard
+                    key={'link' + i}
+                    image={item.image}
+                    title={item.name}
+                    action={{ link: item.link, text: item.linkName }}
+                    t={this.props.t}
+                    socket={this.props.socket}
+                    color={item.color}
+                    edit={this.state.edit}
+                    interval={item.interval}
+                    camera={item.camera}
+                    addTs={item.addTs}
 
-                        onEdit={() => this.setState({
-                            editLink: true,
-                            editLinkIndex: i,
-                            link: JSON.parse(JSON.stringify(this.state.introLinks[i]))
-                        })}
+                    onEdit={() => this.setState({
+                        editLink: true,
+                        editLinkIndex: i,
+                        link: JSON.parse(JSON.stringify(this.state.introLinks[i]))
+                    })}
 
-                        onRemove={() => {
-                            const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
-                            introLinks.splice(i, 1);
-                            const hasUnsavedChanges = JSON.stringify(this.state.instances) !== JSON.stringify(this.instancesOriginal) ||
-                                JSON.stringify(introLinks) !== JSON.stringify(this.introLinksOriginal);
-                            this.setState({ introLinks, hasUnsavedChanges });
-                        }}
+                    onRemove={() => {
+                        const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
+                        introLinks.splice(i, 1);
+                        const hasUnsavedChanges = JSON.stringify(this.state.instances) !== JSON.stringify(this.instancesOriginal) ||
+                            JSON.stringify(introLinks) !== JSON.stringify(this.introLinksOriginal);
+                        this.setState({ introLinks, hasUnsavedChanges });
+                    }}
 
-                        enabled={item.enabled}
-                        toggleActivation={() => this.toggleLinkCard(i)}
-                    >
-                        { item.desc || ''}
-                    </IntroCard>
-                );
+                    enabled={item.enabled}
+                    toggleActivation={() => this.toggleLinkCard(i)}
+                >
+                    { item.desc || ''}
+                </IntroCard>;
             }
         });
     }
@@ -490,7 +488,7 @@ class Intro extends Component {
                                 if (!lll) {
                                     introInstances.push(instance);
                                 } else {
-                                    console.log('Double links: "' + instance.id + '" and "' + lll.id + '"');
+                                    console.log(`Double links: "${instance.id}" and "${lll.id}"`);
                                 }
                             } else if (_urls.length > 1) {
                                 _urls.forEach(url => {
@@ -499,7 +497,7 @@ class Intro extends Component {
                                     if (!lll) {
                                         introInstances.push({...instance, link: url.url, port: url.port});
                                     } else {
-                                        console.log('Double links: "' + instance.id + '" and "' + lll.id + '"');
+                                        console.log(`Double links: "${instance.id}" and "${lll.id}"`);
                                     }
                                 })
                             }

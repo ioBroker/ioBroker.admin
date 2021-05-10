@@ -17,6 +17,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { Hidden, Tooltip } from '@material-ui/core';
+import Badge from '@material-ui/core/Badge';
 
 // @material-ui/icons
 import MenuIcon from '@material-ui/icons/Menu';
@@ -244,6 +245,10 @@ const styles = theme => ({
         display: 'flex',
         flexDirection: 'column',
         marginRight: 10
+    },
+    expertBadge: {
+        marginTop: 13,
+        marginRight: 13,
     }
 });
 
@@ -1410,6 +1415,8 @@ class App extends Router {
                 </ThemeProvider>;
             }
 
+        const expertModePermanent = !window.sessionStorage.getItem('App.expertMode') || (window.sessionStorage.getItem('App.expertMode') === 'true') === !!this.state.systemConfig.common.expertMode;
+
         return <ThemeProvider theme={this.state.theme}>
             <Paper elevation={0} className={classes.root}>
                 <AppBar
@@ -1444,31 +1451,46 @@ class App extends Router {
                                 toggleTheme={this.toggleTheme}
                                 themeName={this.state.themeName}
                                 t={I18n.t} />
-                            <Tooltip title={I18n.t('Toggle expert mode')}>
-                                <IconButton
-                                    onClick={() => {
-                                        if (!!this.state.systemConfig.common.expertMode === !this.state.expertMode) {
-                                            window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
-                                            this.setState({ expertMode: !this.state.expertMode });
-                                            this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
-                                        } else {
-                                            expertModeDialogFunc(this.state.expertMode, this.state.themeType, () => {
+                            <Tooltip
+                                title={`${I18n.t('Toggle expert mode')} ${expertModePermanent ? '' : ' (' + I18n.t('only in this browser session') + ')'}`}
+                            >
+                                <Badge
+                                    color="secondary"
+                                    variant="dot"
+                                    classes={{badge: this.props.classes.expertBadge}}
+                                    invisible={expertModePermanent}
+                                >
+                                    <IconButton
+                                        onClick={() => {
+                                            if (!!this.state.systemConfig.common.expertMode === !this.state.expertMode) {
                                                 window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
                                                 this.setState({ expertMode: !this.state.expertMode });
                                                 this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
-                                            }, () => Router.doNavigate(null, 'system'));
-                                        }
-                                    }}
-                                    style={{ color: this.state.expertMode ? this.state.theme.palette.expert : undefined }}
-                                    color="default"
-                                >
-                                    <ExpertIcon
-                                        title={I18n.t('Toggle expert mode')}
-                                        glowColor={this.state.theme.palette.secondary.main}
-                                        active={this.state.expertMode}
-                                        className={clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
-                                    />
-                                </IconButton>
+                                            } else {
+                                                if (window.sessionStorage.getItem('App.doNotShowExpertDialog') === 'true') {
+                                                    window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
+                                                    this.setState({ expertMode: !this.state.expertMode });
+                                                    this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
+                                                } else {
+                                                    expertModeDialogFunc(this.state.expertMode, this.state.themeType, () => {
+                                                        window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
+                                                        this.setState({ expertMode: !this.state.expertMode });
+                                                        this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
+                                                    }, () => Router.doNavigate(null, 'system'));
+                                                }
+                                            }
+                                        }}
+                                        style={{ color: this.state.expertMode ? this.state.theme.palette.expert : undefined }}
+                                        color="default"
+                                    >
+                                        <ExpertIcon
+                                            title={I18n.t('Toggle expert mode')}
+                                            glowColor={this.state.theme.palette.secondary.main}
+                                            active={this.state.expertMode}
+                                            className={clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
+                                        />
+                                    </IconButton>
+                                </Badge>
                             </Tooltip>
                             <HostSelectors
                                 expertMode={this.state.expertMode}

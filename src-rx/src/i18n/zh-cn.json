@@ -1354,5 +1354,14 @@
   "For systems installed manually under Linux, prefix sudo or run as root.": "对于在Linux下手动安装的系统，请在sudo之前添加前缀或以root用户身份运行。",
   "This way is only necessary in very few cases and please consult the forum beforehand!": "仅在极少数情况下才需要这种方式，请事先咨询论坛！",
   "Otherwise please update the slaves first with an update of master-slave systems and the master last!": "否则，请先更新主从系统，然后再更新主服务器，以更新从服务器！",
-  "For an update from js-controller 1.x to 2.x please always read the information at": "有关从js-controller 1.x到2.x的更新，请始终阅读以下信息："
+  "For an update from js-controller 1.x to 2.x please always read the information at": "有关从js-controller 1.x到2.x的更新，请始终阅读以下信息：",
+  "You can export all objects or just the selected branch.": "您可以导出所有对象或仅导出选定的分支。",
+  "Select type of export": "选择导出类型",
+  "All objects": "所有物件",
+  "Only selected": "只选",
+  "Selected %s object(s)": "已选择%s个对象",
+  "Show help for this adapter": "显示此适配器的帮助",
+  "Instance settings": "实例设定",
+  "only in this browser session": "仅在此浏览器会话中",
+  "Do not show this dialog in this browser session any more": "不再在此浏览器会话中显示此对话框"
 }

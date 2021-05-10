@@ -273,74 +273,24 @@
       "items": {
         "automcomplete": {
           "sm": 6,
-          "label": "Autocomplete",
+          "label": "Autocomplete ${data.automcomplete}",
           "type": "autocompleteSendTo",
           "command": "autocomplete",
-          "jsonData": "{\"text\": ${data.prefixId || null}}"
+          "jsonData": "{\"text\": ${data.prefixId || null}}",
+          "help": "Autocomplete ${data._check}"
         },
-
-        "demoPattern": {
-          "label": "Pattern",
-          "type": "pattern",
-          "pattern": "my ${data.bind} ${_alive}",
-          "copyToClipboard": true
-        },
-        "prefixId": {
-          "type": "text",
-          "label": "prefix for id of linked object",
-          "maxLength": 255,
-          "sm": 4,
-          "defaultFunc": "data.linkedId.includes('.') ? data.linkedId.substring(0, data.linkedId.lastIndexOf('.')) : ''",
-          "validator": "data.prefixId.length > 0 && !(/[*?\"'`´,;:<>#/{}ß\\[\\]\\s]/).test(data.prefixId)"
-        },
-        "_header": {
-          "newLine": true,
-          "type": "divider",
-          "sm": 12
+        "_check": {
+          "type": "checkbox",
+          "label": "Checkbox"
         },
         "_accordion": {
           "newLine": true,
           "sm": 12,
           "type": "panel",
-          "collapsable": true,
+          "collapsable1": true,
+          "hidden": "data.automcomplete == 1",
           "label": "Table",
-          "color": "secondary",
-          "style": {
-            "backgroundColor": "red"
-          },
           "items": {
-            "myTable": {
-              "newLine": true,
-              "sm": 12,
-              "noDelete": false,
-              "type": "table",
-              "items": [
-                {
-                  "type": "text",
-                  "attr": "ip",
-                  "width": 100,
-                  "title": "IP",
-                  "filter": true,
-                  "sort": true
-                },
-                {
-                  "type": "number",
-                  "attr": "delay",
-                  "width": "100%",
-                  "title": "Delay",
-                  "filter": false,
-                  "sort": true
-                },
-                {
-                  "type": "checkbox",
-                  "attr": "enabled",
-                  "width": 50,
-                  "title": "Active",
-                  "filter": false,
-                  "sort": false
-                }
-              ]
-            },
             "myInstance": {
               "newLine": true,
               "sm": 6,
@@ -349,74 +299,6 @@
               "label": "History"
             }
           }
-        },
-        "myObjectId": {
-          "newLine": true,
-          "type": "objectId",
-          "onChange": {"alsoDependsOn":  ["myLanguage"], "ignoreOwnChanges": true, "calculateFunc": "data.myLanguage"},
-          "sm": 6,
-          "label": "Object ID"
-        },
-        "myCheckbox": {
-          "type": "checkbox",
-          "onChange": {"alsoDependsOn":  ["myLanguage"], "ignoreOwnChanges": true, "calculateFunc": "!!data.myLanguage"},
-          "sm": 6,
-          "label": "Checkbox"
-        },
-        "myLanguage": {
-          "newLine": true,
-          "type": "language",
-          "sm": 6,
-          "label": "Language",
-          "system": true
-        },
-        "_setState": {
-          "type": "setState",
-          "ack": true,
-          "variant": "contained",
-          "okText": "Done",
-          "val": "${data.myLanguage}",
-          "id": "javascript.0.value",
-          "label": "Test"
-        },
-        "autoComplete": {
-          "newLine": true,
-          "sm": 4,
-          "type": "autocomplete",
-          "freeSolo": true,
-          "options": [{
-            "label": "A",
-            "value": "a"
-          }, "B"]
-        },
-        "targetValues": {
-          "newLine": true,
-          "type": "table",
-          "items": [
-            {
-              "type": "text",
-              "attr": "key",
-              "title": "Key",
-              "filter": true,
-              "default": ""
-            }, {
-              "type": "text",
-              "attr": "targetDatapointId",
-              "title": "Target-Datapoint ID",
-              "default": ""
-            }, {
-              "type": "text",
-              "attr": "targetValue",
-              "title": "Target-Value",
-              "default": ""
-            }
-          ],
-          "objKeyName": "key",
-          "sm": 12,
-          "lg": 12,
-          "label":"Target-Value-List",
-          "help": "(If the user enters one of these keys in iQontrol, the defined Target-Value will be sent to the defined Target-Datapoint ID)",
-          "default": ""
         }
       }
     }

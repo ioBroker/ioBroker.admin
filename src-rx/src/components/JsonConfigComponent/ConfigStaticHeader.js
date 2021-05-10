@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
+import {Typography} from '@material-ui/core';
+
 import ConfigGeneric from './ConfigGeneric';
-import {Typography} from "@material-ui/core";
 
 const styles = theme => ({
     header: {
