@@ -144,14 +144,16 @@ function EnumBlock(props) {
 }
 
 const EnumBlockDrag = (props) => {
-    const [{ canDrop, isOver, isCanDrop }, drop] = useDrop(() => ({
+    const [{ canDrop, isOver }, drop] = useDrop(() => ({
         accept: ['object', 'enum'],
         drop: () => ({ enumId: props.enum._id }),
+        canDrop: (item, monitor) => canMeDrop(monitor, props),
         collect: (monitor) => ({
             isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),
+            
         }),
-    }));
+    }), [props.enum.common.members]);
 
     const widthRef = useRef();
     const [{ isDragging }, dragRef, preview] = useDrag(
@@ -201,3 +203,14 @@ EnumBlockDrag.propTypes = {
 };
 
 export default EnumBlockDrag;
+
+function canMeDrop(monitor, props ) {
+    if (!monitor.getItem() || !monitor.getItem().data) {
+        return true;
+    }
+    return props.enum.common.members
+        ?
+        !props.enum.common.members.includes(monitor.getItem().data.id)
+        :
+        true;
+}
