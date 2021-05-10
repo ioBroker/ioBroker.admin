@@ -1135,6 +1135,9 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
     }
 
     if (isCommon && isCommon.role && typeof isCommon.role === 'string' && isCommon.role.match(/^value\.time|^date/)) {
+        if (typeof v === 'string' && v.length === 13) { // warning, this solution only works till Nov 20 2286 18:46:39CET
+            v = parseInt(v, 10);
+        }
         v = v ? new Date(v).toString() : v;
     } else if (typeof v !== 'string') {
         v = v.toString();
@@ -2665,10 +2668,19 @@ class ObjectBrowser extends Component {
                     let json = JSON.parse(contents);
                     let len = Object.keys(json).length;
                     let id = json._id;
-                    if (id === undefined && len > 1) {
+                    if (id === undefined && len) {
                         await this.loadObjects(json);
-                        window.alert(this.props.t('ra_%s object(s) processed', Object.keys(json).length));
+                        window.alert(this.props.t('ra_%s object(s) processed', len));
                     } else {
+                        // it is only one object in form
+                        // {
+                        //    "_id": "xxx",
+                        //   "common": "yyy",
+                        //   "native": "zzz"
+                        // }
+                        if (!id) {
+                            return window.alert(this.props.t('ra_Invalid structure'));
+                        }
                         try {
                             let enums;
                             if (json.common.enums) {
@@ -2697,7 +2709,7 @@ class ObjectBrowser extends Component {
             };
             r.readAsText(f);
         } else {
-            window.alert('Failed to open JSON File');
+            window.alert(this.props.t('ra_Failed to open JSON File'));
         }
     }
 
@@ -2705,15 +2717,15 @@ class ObjectBrowser extends Component {
         const { t } = this.props;
 
         let value = [
-            <div key={1}>{t('Only following structures of objects are available:')}</div>,
-            <div key={2}>{t('Folder → State')}</div>,
-            <div key={3}>{t('Folder → Channel → State')}</div>,
-            <div key={4}>{t('Folder → Device → Channel → state')}</div>,
-            <div key={5}>{t('Device → channel → state')}</div>,
-            <div key={6}>{t('Channel → State')}</div>,
+            <div key={1}>{t('ra_Only following structures of objects are available:')}</div>,
+            <div key={2}>{t('ra_Folder → State')}</div>,
+            <div key={3}>{t('ra_Folder → Channel → State')}</div>,
+            <div key={4}>{t('ra_Folder → Device → Channel → State')}</div>,
+            <div key={5}>{t('ra_Device → Channel → State')}</div>,
+            <div key={6}>{t('ra_Channel → State')}</div>,
             <div key={7} style={{height: 10}}/>,
-            <div key={8}>{t('Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}</div>,
-            <div key={9}>{t('The experts may create objects everywhere but from second level (e.g. vis.0 or javascript.0).')}</div>,
+            <div key={8}>{t('ra_Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}</div>,
+            <div key={9}>{t('ra_The experts may create objects everywhere but from second level (e.g. "vis.0" or "javascript.0").')}</div>,
         ];
 
         if (this.state.selected.length || this.state.selectedNonObject) {
@@ -2724,22 +2736,22 @@ class ObjectBrowser extends Component {
                     switch (this.objects[id]?.type) {
                         case 'device':
                             value = [
-                                <div key={1}>{t('Only following structures of objects are available:')}</div>,
-                                <div key={5}>{t('Device => channel => state')}</div>,
+                                <div key={1}>{t('ra_Only following structures of objects are available:')}</div>,
+                                <div key={5}>{t('ra_Device → Channel → State')}</div>,
                             ];
                             break
                         case 'folder':
                             value = [
-                                <div key={1}>{t('Only following structures of objects are available:')}</div>,
-                                <div key={2}>{t('Folder => State')}</div>,
-                                <div key={3}>{t('Folder => Channel => State')}</div>,
-                                <div key={4}>{t('Folder => Device => Channel => state')}</div>,
+                                <div key={1}>{t('ra_Only following structures of objects are available:')}</div>,
+                                <div key={2}>{t('ra_Folder → State')}</div>,
+                                <div key={3}>{t('ra_Folder → Channel → State')}</div>,
+                                <div key={4}>{t('ra_Folder → Device → Channel → State')}</div>,
                             ];
                             break
                         case 'channel':
                             value = [
-                                <div key={1}>{t('Only following structures of objects are available:')}</div>,
-                                <div key={1}>{t('Channel => State')}</div>,
+                                <div key={1}>{t('ra_Only following structures of objects are available:')}</div>,
+                                <div key={1}>{t('ra_Channel → State')}</div>,
                             ];
                             break
                         default:
@@ -2747,9 +2759,9 @@ class ObjectBrowser extends Component {
                     }
                 } else if (id.startsWith('alias.0') || id.startsWith('0_userdata')) {
                     value = [
-                        <div key={1}>{t('Only following structures of objects are available:')}</div>,
-                        <div key={7}>{t('Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}</div>,
-                        <div key={8}>{t('The experts may create objects everywhere but from second level (e.g. vis.0 or javascript.0).')}</div>,
+                        <div key={1}>{t('ra_Only following structures of objects are available:')}</div>,
+                        <div key={7}>{t('ra_Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}</div>,
+                        <div key={8}>{t('ra_The experts may create objects everywhere but from second level (e.g. "vis.0" or "javascript.0").')}</div>,
                     ]
                 }
             }
@@ -3993,7 +4005,6 @@ class ObjectBrowser extends Component {
                 }
                 widthSum += this.columnsVisibility.val;
                 widthSum += this.columnsVisibility.buttons;
-                debugger
                 this.columnsVisibility.id = `calc(100% - ${widthSum + 5}px)`;
                 // TODO: calculate width of ID
             }

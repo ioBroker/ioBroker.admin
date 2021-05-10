@@ -280,28 +280,42 @@ const Hosts = ({
     const updateHosts = (hostId, state) => {
         setHosts(prevHostsArray => {
             const newHosts = JSON.parse(JSON.stringify(prevHostsArray));
-            const elementFind = prevHostsArray.find(({ _id }) => _id === hostId);
-            if (elementFind) {
-                const index = prevHostsArray.indexOf(elementFind);
-                if (state) {
-                    newHosts[index] = state;
-                } else {
-                    newHosts.splice(index, 1);
-                }                
+            if (Array.isArray(hostId)) {
+                hostId.forEach(event => {
+                    const elementFind = prevHostsArray.find(host => host._id === event.id);
+                    if (elementFind) {
+                        const index = prevHostsArray.indexOf(elementFind);
+                        if (event.obj) {
+                            newHosts[index] = event.obj;
+                        } else {
+                            newHosts.splice(index, 1);
+                        }
+                    } else {
+                        newHosts.push(event.obj);
+                    }
+                });
             } else {
-                newHosts.push(state);
+                const elementFind = prevHostsArray.find(({ _id }) => _id === hostId);
+                if (elementFind) {
+                    const index = prevHostsArray.indexOf(elementFind);
+                    if (state) {
+                        newHosts[index] = state;
+                    } else {
+                        newHosts.splice(index, 1);
+                    }
+                } else {
+                    newHosts.push(state);
+                }
             }
 
             filterText && newHosts.length <= 2 && setFilterText('');
-            
+
             return newHosts;
         });
     }
 
     const readInfo = () => {
-        socket.subscribeObject('system.host.*', updateHosts);
-        // hostsWorker.register
-        socket.getHosts(true, false, readTimeoutMs)
+        return socket.getHosts(true, false, readTimeoutMs)
             .then(hostsArray => socket.getRepository(currentHost, { update: false }, false, readTimeoutMs)
                 .then(async repositoryProm => {
                     const _alive = JSON.parse(JSON.stringify(alive));
@@ -326,13 +340,17 @@ const Hosts = ({
                     window.alert('Cannot getRepository: ' + e);
                     e.toString().includes('timeout') && setShowSlowConnectionWarning(true);
                 }));
-        return () => {
-            socket.unsubscribeObject('system.host.*', updateHosts);
-        }
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(readInfo, [refresh]);
+    useEffect(() => {
+        readInfo()
+            .then(() =>
+                hostsWorker.registerHandler(updateHosts));
+
+        return () => hostsWorker.unregisterHandler(updateHosts);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [refresh]);
 
     const getAllArrayHosts = useMemo(() => hosts.map(({
         _id,

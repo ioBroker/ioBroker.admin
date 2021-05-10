@@ -14,10 +14,14 @@ class HostsWorker {
 
     objectChangeHandler = (id, obj) => {
         // if instance
-        if (id.match(/^system\.host\.[^.]+\.\d+$/)) {
+        if (id.startsWith('system.host.')) {
             let type;
             let oldObj;
             if (obj) {
+                if (obj.type !== 'host') {
+                    return;
+                }
+
                 if (this.objects[id]) {
                     if (JSON.stringify(this.objects[id]) !== JSON.stringify(obj)) {
                         type = 'changed';

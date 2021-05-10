@@ -55,7 +55,6 @@ const styles = theme => {
 };
 
 class AdapterUpdateDialog extends Component {
-
     constructor(props) {
         super(props);
 
@@ -63,7 +62,6 @@ class AdapterUpdateDialog extends Component {
     }
 
     getDependencies() {
-
         const result = [];
 
         this.props.dependencies && this.props.dependencies.forEach(dependency => {
@@ -138,7 +136,7 @@ class AdapterUpdateDialog extends Component {
                             {this.getDependencies()}
                         </Grid>
                     }
-                    {news.length && <Grid item>
+                    {news.length ? <Grid item>
                         <Typography variant="h6" gutterBottom>{this.t('Change log')}</Typography>
                         <Grid
                             container
@@ -148,7 +146,7 @@ class AdapterUpdateDialog extends Component {
                         >
                             {news}
                         </Grid>
-                    </Grid>}
+                    </Grid> : this.t('No change log available')}
                 </Grid>
             </DialogContent>
             <DialogActions className={classes.wrapperButton}>
