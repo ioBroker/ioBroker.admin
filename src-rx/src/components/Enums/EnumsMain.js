@@ -192,6 +192,21 @@ const styles = theme => ({
         display: 'inline-flex',
         padding: 10,
         width: 200
+    },
+    addButton: {
+        boxShadow: '0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)',
+        display: 'inline',
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.text.primary,
+        '&:hover': {
+            backgroundColor: theme.palette.primary.light,
+        }
+    },
+    topPanel: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingLeft: 20
     }
 });
 
@@ -253,7 +268,9 @@ class EnumsList extends Component {
 
     getEnumTemplate = (prefix) => {
         let enumTemplate = JSON.parse(JSON.stringify(this.enumTemplate));
-        enumTemplate._id = prefix + '.new';
+        const {_id, name} = EnumsList.findNewUniqueName(prefix, Object.values(this.state.enums), this.props.t('Enum'));
+        enumTemplate._id = _id;
+        enumTemplate.common.name = name;
         return enumTemplate
     }
 
@@ -274,20 +291,21 @@ class EnumsList extends Component {
         this.updateData();
     }
 
-    updateData = async update => {
-        const enums = await this.props.socket.getEnums('', update);
+    updateData = async () => {
+        const enums = await this.props.socket.getForeignObjects('enum.*', 'enum');
         const members = {}
         for (let enumKey in enums) {
-            if (enums.hasOwnProperty(enumKey) && enums[enumKey].common.members) {
-                for (let i = 0; i < enums[enumKey].common.members.length; i++) {
-                    let member = enums[enumKey].common.members[i];
-                    members[member] = members[member] || await this.props.socket.getObject(member);
+            if (enums[enumKey].common.members) {
+                for (let memberKey in enums[enumKey].common.members) {
+                    let member = enums[enumKey].common.members[memberKey];
+                    if (!members[member]) {
+                        members[member] = await this.props.socket.getObject(member);
+                    }
                 }
             }
         }
-
-        this.setState({enums, members}, () =>
-            this.createTree(enums));
+        this.setState({enums: enums, members: members});
+        this.createTree(enums);
     }
 
     createTree(enums) {
@@ -374,8 +392,9 @@ class EnumsList extends Component {
         let members = enumItem.common.members;
         if (members.includes(memberId)) {
             members.splice(members.indexOf(memberId), 1);
-            this.props.socket.setObject(enumItem._id, enumItem)
-                .then(() => this.updateData());
+            this.props.socket.setObject(enumItem._id, enumItem).then(() => {
+                this.updateData();
+            });
         }
     }
 
@@ -388,6 +407,9 @@ class EnumsList extends Component {
                 removeMemberFromEnum={this.removeMemberFromEnum}
                 showEnumEditDialog={this.showEnumEditDialog}
                 showEnumDeleteDialog={this.showEnumDeleteDialog}
+                showEnumTemplateDialog={this.showEnumTemplateDialog}
+                currentCategory={this.state.currentCategory}
+                getEnumTemplate={this.getEnumTemplate}
                 copyEnum={this.copyEnum}
                 key={container.data._id}
                 getName={this.getName}
@@ -407,6 +429,9 @@ class EnumsList extends Component {
         enumItem = JSON.parse(JSON.stringify(enumItem));
         this.setState({enumEditDialog: enumItem, enumEditDialogNew: isNew});
     }
+
+    showEnumTemplateDialog = prefix =>
+        this.setState({enumTemplateDialog: prefix});
 
     showEnumDeleteDialog = (enumItem) => {
         this.setState({enumDeleteDialog: enumItem})
@@ -481,6 +506,19 @@ class EnumsList extends Component {
         return typeof(name) === 'object' ? name[this.props.lang] || name.en : name;
     }
 
+    static _isUniqueName(prefix, list, word, i) {
+        return !list.find(item =>
+            item._id === (prefix + '.' + word.toLowerCase() + '_' + i)
+        );
+    }
+    static findNewUniqueName(prefix, list, word) {
+        let i = 1;
+        while (!EnumsList._isUniqueName(prefix, list,  word, i)) {
+            i++;
+        }
+        return {_id: prefix + '.' + word.toLowerCase() + '_' + i, name: word + ' ' + i};
+    }
+
     render() {
         if (!this.state.enumsTree) {
             return 'loading';
@@ -490,66 +528,68 @@ class EnumsList extends Component {
                 <DndPreview />
                 <Grid container>
                     <Grid md={5} item>
-                    <IconButton
-                        size="small"
-                        id="categoryPopoverButton"
-                        className={this.props.classes.left}
-                        onClick={()=> {
-                            this.state.enumsTree.children.enum.children['favorites'] ?
-                                this.showEnumEditDialog(this.getEnumTemplate('enum'), true) :
-                                this.setState({categoryPopoverOpen: true});
-                        }}
-                    >
-                        <AddIcon/>
-                    </IconButton>
-                    <Popover
-                        open={this.state.categoryPopoverOpen}
-                        onClose={() => this.setState({categoryPopoverOpen: false})}
-                        anchorEl={()=>document.getElementById('categoryPopoverButton')}
-                        anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
-                    >
-                        <MenuList>
-                            {this.state.enumsTree.children.enum.children['favorites'] ? null :
-                                <MenuItem onClick={()=>this.createEnumTemplate('enum', enumTemplates.favorites)}>
-                                    {this.props.t('Favorites')}
+                    <div className={this.props.classes.topPanel}>
+                        <IconButton
+                            size="small"
+                            id="categoryPopoverButton"
+                            className={this.props.classes.addButton}
+                            onClick={()=> {
+                                this.state.enumsTree.children.enum.children['favorites'] ?
+                                    this.showEnumEditDialog(this.getEnumTemplate('enum'), true) :
+                                    this.setState({categoryPopoverOpen: true});
+                            }}
+                        >
+                            <AddIcon/>
+                        </IconButton>
+                        <Popover
+                            open={this.state.categoryPopoverOpen}
+                            onClose={() => this.setState({categoryPopoverOpen: false})}
+                            anchorEl={()=>document.getElementById('categoryPopoverButton')}
+                            anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+                        >
+                            <MenuList>
+                                {this.state.enumsTree.children.enum.children['favorites'] ? null :
+                                    <MenuItem onClick={()=>this.createEnumTemplate('enum', enumTemplates.favorites)}>
+                                        {this.props.t('Favorites')}
+                                    </MenuItem>
+                                }
+                                <MenuItem onClick={()=>this.showEnumEditDialog(this.getEnumTemplate('enum'), true)}>
+                                    {this.props.t('Custom enum')}
                                 </MenuItem>
+                            </MenuList>
+                        </Popover>
+                        <Tabs
+                            value={this.state.currentCategory}
+                            variant="scrollable"
+                            scrollButtons="auto"
+                            onChange={(e, newTab) => this.setCurrentCategory(newTab)}
+                        >
+                            {Object.keys(this.state.enumsTree.children.enum.children).map((category, index) =>
+                            {
+                                let categoryData = this.state.enumsTree.children.enum.children[category].data;
+                                return <Tab
+                                    key={index}
+                                    component={'span'}
+                                    style={{backgroundColor: categoryData.common.color, borderRadius: 4}}
+                                    label={<CategoryLabel
+                                        categoryData={categoryData}
+                                        showEnumEditDialog={this.showEnumEditDialog}
+                                        showEnumDeleteDialog={this.showEnumDeleteDialog}
+                                        {...this.props}
+                                    />}
+                                    value={category}
+                                />
                             }
-                            <MenuItem onClick={()=>this.showEnumEditDialog(this.getEnumTemplate('enum'), true)}>
-                                {this.props.t('Custom enum')}
-                            </MenuItem>
-                        </MenuList>
-                    </Popover>
-                    <Tabs
-                        value={this.state.currentCategory}
-                        variant="scrollable"
-                        scrollButtons="auto"
-                        onChange={(e, newTab) => this.setCurrentCategory(newTab)}
-                    >
-                        {Object.keys(this.state.enumsTree.children.enum.children).map((category, index) =>
-                        {
-                            let categoryData = this.state.enumsTree.children.enum.children[category].data;
-                            return <Tab
-                                key={index}
-                                component={'span'}
-                                style={{backgroundColor: categoryData.common.color, borderRadius: 4}}
-                                label={<CategoryLabel
-                                    categoryData={categoryData}
-                                    showEnumEditDialog={this.showEnumEditDialog}
-                                    showEnumDeleteDialog={this.showEnumDeleteDialog}
-                                    {...this.props}
-                                />}
-                                value={category}
-                            />
-                        }
-                        )}
-                    </Tabs>
-                        <div>
-                            <TextField value={this.state.search} label={this.props.t('Filter')} onChange={e => this.setState({search: e.target.value})}/>
+                            )}
+                        </Tabs>
+                    </div>
+                        <div className={this.props.classes.topPanel}>
                             <IconButton
                                 size="small"
+                                className={this.props.classes.addButton}
                                 onClick={()=>{
                                     if (['functions', 'rooms'].includes(this.state.currentCategory)) {
-                                        this.setState({enumTemplateDialog: this.state.currentCategory});
+                                        this.setState({enumTemplateDialog: 'enum.' + this.state.currentCategory});
                                     } else {
                                         this.showEnumEditDialog(this.getEnumTemplate('enum.' + this.state.currentCategory), true);
                                     }
@@ -558,6 +598,7 @@ class EnumsList extends Component {
                             >
                                 <AddIcon/>
                             </IconButton>
+                            <TextField value={this.state.search} label={this.props.t('Filter')} onChange={e => this.setState({search: e.target.value})}/>
                         </div>
                         {Object.values(this.state.enumsTree.children.enum.children[this.state.currentCategory].children)
                             .map((enumItem, index) => this.renderTree(enumItem, index))}
@@ -596,7 +637,7 @@ class EnumsList extends Component {
                 deleteEnum={this.deleteEnum}
             />
             {!!this.state.enumTemplateDialog && <EnumTemplateDialog
-                category={this.state.enumTemplateDialog}
+                prefix={this.state.enumTemplateDialog}
                 onClose={()=>this.setState({enumTemplateDialog: false})}
                 t={this.props.t}
                 classesParent={this.props.classes}

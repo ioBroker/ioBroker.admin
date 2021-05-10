@@ -55,13 +55,13 @@ class EnumTemplateDialog extends Component {
     componentDidMount() {
 
         this.setState({loading: true}, () => {
-            let templates = this.props.category === 'functions' ? devices : rooms;
+            let templates = this.props.prefix === 'enum.functions' ? devices : rooms;
             const icons = [];
 
             const promises = templates.map((template, i) => {
                 let image
                 try {
-                    image = require(`../../assets/${this.props.category === 'functions' ? 'devices' : 'rooms'}/${template.icon}`);
+                    image = require(`../../assets/${this.props.prefix === 'enum.functions' ? 'devices' : 'rooms'}/${template.icon}`);
                 } catch (e) {
                     return Promise.resolve(null);
                 }
@@ -79,7 +79,7 @@ class EnumTemplateDialog extends Component {
     }
 
     render() {
-        let templates = this.props.category === 'functions' ? devices : rooms;
+        let templates = this.props.prefix === 'enum.functions' ? devices : rooms;
 
         return <Dialog
             maxWidth="md"
@@ -88,18 +88,18 @@ class EnumTemplateDialog extends Component {
             open={true}
             onClose={this.props.onClose}
         >
-            <DialogTitle>{this.props.t(this.props.category === 'functions' ? 'Create new function' : 'Create new room')}</DialogTitle>
+            <DialogTitle>{this.props.t(this.props.prefix === 'enum.functions' ? 'Create new function' : 'Create new room')}</DialogTitle>
             <DialogContent style={{textAlign: 'center'}}>
                 {this.state.loading && <LinearProgress/>}
                 {templates.map((template, i) => {
-                    if (this.props.enums[`enum.${this.props.category}.${template._id}`]) {
+                    if (this.props.enums[`${this.props.prefix}.${template._id}`]) {
                         return null;
                     }
                     return <div key={i} className={this.props.classesParent.enumTemplate}>
                         <Button onClick={() => {
                             this.props.onClose();
-                            this.props.createEnumTemplate('enum.' + this.props.category, {
-                                _id: `enum.${this.props.category}.${template._id}`,
+                            this.props.createEnumTemplate(this.props.prefix, {
+                                _id: `${this.props.prefix}.${template._id}`,
                                 common: {
                                     name: template.name,
                                     icon: this.state.icons[i]
@@ -118,7 +118,7 @@ class EnumTemplateDialog extends Component {
                     color="primary"
                     className={this.props.classes.customGroupButton} onClick={() => {
                     this.props.onClose();
-                    this.props.showEnumEditDialog(this.props.getEnumTemplate('enum.' + this.props.category), true);
+                    this.props.showEnumEditDialog(this.props.getEnumTemplate(this.props.prefix), true);
                 }}>
                     <CustomGroup style={{marginRight: 8}}/>
                     {this.props.t('Custom group')}
@@ -130,7 +130,7 @@ class EnumTemplateDialog extends Component {
 }
 
 EnumTemplateDialog.propTypes = {
-    category: PropTypes.string,
+    prefix: PropTypes.string,
     t: PropTypes.func,
     getEnumTemplate: PropTypes.func,
     onClose: PropTypes.func,
