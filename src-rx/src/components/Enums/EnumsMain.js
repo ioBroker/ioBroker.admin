@@ -268,7 +268,9 @@ class EnumsList extends Component {
 
     getEnumTemplate = (prefix) => {
         let enumTemplate = JSON.parse(JSON.stringify(this.enumTemplate));
-        enumTemplate._id = prefix + '.new';
+        const {_id, name} = EnumsList.findNewUniqueName(prefix, Object.values(this.state.enums), this.props.t('Enum'));
+        enumTemplate._id = _id;
+        enumTemplate.common.name = name;
         return enumTemplate
     }
 
@@ -405,6 +407,9 @@ class EnumsList extends Component {
                 removeMemberFromEnum={this.removeMemberFromEnum}
                 showEnumEditDialog={this.showEnumEditDialog}
                 showEnumDeleteDialog={this.showEnumDeleteDialog}
+                showEnumTemplateDialog={this.showEnumTemplateDialog}
+                currentCategory={this.state.currentCategory}
+                getEnumTemplate={this.getEnumTemplate}
                 copyEnum={this.copyEnum}
                 key={container.data._id}
                 getName={this.getName}
@@ -424,6 +429,9 @@ class EnumsList extends Component {
         enumItem = JSON.parse(JSON.stringify(enumItem));
         this.setState({enumEditDialog: enumItem, enumEditDialogNew: isNew});
     }
+
+    showEnumTemplateDialog = prefix =>
+        this.setState({enumTemplateDialog: prefix});
 
     showEnumDeleteDialog = (enumItem) => {
         this.setState({enumDeleteDialog: enumItem})
@@ -498,6 +506,19 @@ class EnumsList extends Component {
         return typeof(name) === 'object' ? name[this.props.lang] : name;
     }
 
+    static _isUniqueName(prefix, list, word, i) {
+        return !list.find(item =>
+            item._id === (prefix + '.' + word.toLowerCase() + '_' + i)
+        );
+    }
+    static findNewUniqueName(prefix, list, word) {
+        let i = 1;
+        while (!EnumsList._isUniqueName(prefix, list,  word, i)) {
+            i++;
+        }
+        return {_id: prefix + '.' + word.toLowerCase() + '_' + i, name: word + ' ' + i};
+    }
+
     render() {
         if (!this.state.enumsTree) {
             return 'loading';
@@ -568,7 +589,7 @@ class EnumsList extends Component {
                                 className={this.props.classes.addButton}
                                 onClick={()=>{
                                     if (['functions', 'rooms'].includes(this.state.currentCategory)) {
-                                        this.setState({enumTemplateDialog: this.state.currentCategory});
+                                        this.setState({enumTemplateDialog: 'enum.' + this.state.currentCategory});
                                     } else {
                                         this.showEnumEditDialog(this.getEnumTemplate('enum.' + this.state.currentCategory), true);
                                     }
@@ -616,7 +637,7 @@ class EnumsList extends Component {
                 deleteEnum={this.deleteEnum}
             />
             {!!this.state.enumTemplateDialog && <EnumTemplateDialog
-                category={this.state.enumTemplateDialog}
+                prefix={this.state.enumTemplateDialog}
                 onClose={()=>this.setState({enumTemplateDialog: false})}
                 t={this.props.t}
                 classesParent={this.props.classes}

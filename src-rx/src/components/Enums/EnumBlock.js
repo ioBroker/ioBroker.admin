@@ -17,6 +17,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import DownIcon from '@material-ui/icons/KeyboardArrowDown';
 import UpIcon from '@material-ui/icons/KeyboardArrowUp';
+import AddIcon from '@material-ui/icons/Add';
 
 
 function EnumBlock(props) {
@@ -131,15 +132,30 @@ function EnumBlock(props) {
                     </div>
                 </CardContent>
             </div>
-            {props.hasChildren ?
-                <IconButton style={{position: 'absolute', 'right': 0, 'bottom': 0}} onClick={()=>props.toggleEnum(props.enum._id)}>
-                    {props.closed ?
-                        <DownIcon style={{ color: textColor }}/>
-                    :
-                        <UpIcon style={{ color: textColor }}/>
-                    }
+            <span style={{position: 'absolute', 'right': 0, 'bottom': 0}}>
+                <IconButton
+                    size="small"
+                    onClick={()=>{
+                        if (['functions', 'rooms'].includes(props.currentCategory)) {
+                            props.showEnumTemplateDialog(props.enum._id);
+                        } else {
+                            props.showEnumEditDialog(props.getEnumTemplate(props.enum._id), true)
+                        }
+                        
+                    }}
+                >
+                    <AddIcon style={{ color: textColor }} />
                 </IconButton>
-            : null}
+                {props.hasChildren ?
+                    <IconButton onClick={()=>props.toggleEnum(props.enum._id)}>
+                        {props.closed ?
+                            <DownIcon style={{ color: textColor }}/>
+                        :
+                            <UpIcon style={{ color: textColor }}/>
+                        }
+                    </IconButton>
+                : null}
+            </span>
         </Card>
 }
 
@@ -196,6 +212,8 @@ EnumBlockDrag.propTypes = {
     hasChildren: PropTypes.bool,
     closed: PropTypes.bool,
     toggleEnum: PropTypes.func,
+    showEnumTemplateDialog: PropTypes.func,
+    currentCategory: PropTypes.string,
     classes: PropTypes.object,
     t: PropTypes.func,
     lang: PropTypes.string,
