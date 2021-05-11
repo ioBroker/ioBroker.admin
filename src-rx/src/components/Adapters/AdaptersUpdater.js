@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import Semver from 'semver';
+import semver from 'semver';
 import clsx from 'clsx';
 
 import List from '@material-ui/core/List';
@@ -56,7 +56,7 @@ class AdaptersUpdater extends Component {
 
     static isUpdateAvailable(oldVersion, newVersion) {
         try {
-            return Semver.gt(newVersion, oldVersion) === true;
+            return semver.gt(newVersion, oldVersion) === true;
         } catch (e) {
             console.warn(`Cannot compare "${newVersion}" and "${oldVersion}"`);
             return false;
@@ -92,7 +92,7 @@ class AdaptersUpdater extends Component {
         if (installed && adapter && adapter.news) {
             Object.keys(adapter.news).forEach(version => {
                 try {
-                    if (Semver.gt(version, installed.version)) {
+                    if (semver.gt(version, installed.version)) {
                         news.push({
                             version: version,
                             news: adapter.news[version][this.props.lang] || adapter.news[version].en

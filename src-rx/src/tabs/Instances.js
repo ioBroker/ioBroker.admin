@@ -201,7 +201,7 @@ class Instances extends Component {
             compactGroupCount: 0,
             filterCompactGroup: 'All',
             sentry: false,
-            delete: false,
+            deleting: null,
 
             // filter
             filterMode: null,
@@ -313,9 +313,23 @@ class Instances extends Component {
 
         const formatted = {};
 
-        instances.sort((a, b) => a._id > b._id ? 1 : (a._id < b._id ? -1 : 0));
+        instances.sort((a, b) => {
+            const pA = a._id.split('.');
+            const pB = b._id.split('.');
+            const numA = parseInt(pA[pA.length - 1], 10);
+            const numB = parseInt(pB[pB.length - 1], 10);
+            const nameA = pA[pA.length - 2];
+            const nameB = pB[pB.length - 2];
+
+            if (nameA === nameB) {
+                return numA > numB ? 1 : (numA < numB ? -1 : 0);
+            } else {
+                return nameA > nameB ? 1 : (nameA < nameB ? -1 : 0);
+            }
+        });
 
         let compactGroupCount = 0;
+        const newState = {};
 
         instances.forEach(obj => {
             const common     = obj ? obj.common : null;
@@ -390,12 +404,17 @@ class Instances extends Component {
         });
 
         console.log('getInstances: ' + (Date.now() - start));
-        this.setState({
-            compactGroupCount,
-            processes,
-            mem: Math.round(mem),
-            instances: formatted
-        });
+
+        if (this.state.deleting && !formatted['system.adapter.' + this.state.deleting]) {
+            newState.deleting = null;
+        }
+
+        newState.compactGroupCount = compactGroupCount;
+        newState.processes = processes;
+        newState.mem = Math.round(mem);
+        newState.instances = formatted;
+
+        this.setState(newState);
     }
 
     getParamsLocalAndPanel = async () => {
@@ -694,8 +713,8 @@ class Instances extends Component {
         this.extendObject('system.adapter.' + instance.id, { common: { memoryLimitMB: value } });
 
     deletedInstances = instance => {
-        this.setState({ delete: true })
-        this.props.executeCommand('del ' + instance.id);
+        this.setState({ deleting: instance.id }, () =>
+            this.props.executeCommand('del ' + instance.id));
     }
 
     setCompact = instance =>
@@ -746,6 +765,7 @@ class Instances extends Component {
             return {
                 render: this.state.viewMode ?
                     <InstanceCard
+                        deleting={this.state.deleting === instance.id}
                         adminInstance={this.props.adminInstance}
                         alive={alive}
                         checkCompact={checkCompact}
@@ -794,6 +814,7 @@ class Instances extends Component {
                         tier={tier}
                     /> :
                     <InstanceRow
+                        deleting={this.state.deleting === instance.id}
                         adminInstance={this.props.adminInstance}
                         alive={alive}
                         checkCompact={checkCompact}
@@ -1105,6 +1126,7 @@ Instances.propTypes = {
     t: PropTypes.func,
     lang: PropTypes.string,
     expertMode: PropTypes.bool,
+    instancesWorker: PropTypes.object,
 
     hostname: PropTypes.string,
     hosts: PropTypes.array,

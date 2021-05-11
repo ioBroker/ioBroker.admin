@@ -1364,5 +1364,9 @@
   "Instance settings": "Paramètres d'instance",
   "only in this browser session": "uniquement dans cette session de navigateur",
   "Do not show this dialog in this browser session any more": "Ne plus afficher cette boîte de dialogue dans cette session de navigateur",
-  "Active repo is \"%s\"": "Le référentiel actif est \"%s\""
+  "Active repo is \"%s\"": "Le référentiel actif est \"%s\"",
+  "Log level will be reset to the saved level after the restart of the controller": "Le niveau de journal sera réinitialisé au niveau enregistré après le redémarrage du contrôleur",
+  "You can set the log level permanently in the base host settings": "Vous pouvez définir le niveau de journalisation de manière permanente dans les paramètres de base de l'hôte",
+  "Update \"%s\" to v%s": "Mettez à jour \"%s\" vers la v%s",
+  "No comments in selected language": "Aucun commentaire dans la langue sélectionnée"
 }

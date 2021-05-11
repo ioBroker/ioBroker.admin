@@ -1364,5 +1364,9 @@
   "Instance settings": "Ustawienia instancji",
   "only in this browser session": "tylko w tej sesji przeglądarki",
   "Do not show this dialog in this browser session any more": "Nie pokazuj już tego okna dialogowego w tej sesji przeglądarki",
-  "Active repo is \"%s\"": "Aktywne repozytorium jest „%s”"
+  "Active repo is \"%s\"": "Aktywne repozytorium jest „%s”",
+  "Log level will be reset to the saved level after the restart of the controller": "Poziom dziennika zostanie zresetowany do zapisanego poziomu po ponownym uruchomieniu sterownika",
+  "You can set the log level permanently in the base host settings": "Poziom logowania można ustawić na stałe w ustawieniach bazy hosta",
+  "Update \"%s\" to v%s": "Zaktualizuj „%s” do wersji %s",
+  "No comments in selected language": "Brak komentarzy w wybranym języku"
 }

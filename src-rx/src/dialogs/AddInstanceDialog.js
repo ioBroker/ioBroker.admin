@@ -161,7 +161,6 @@ class AddInstanceDialog extends Component {
                     </Button>
                     <Button
                         variant="contained"
-                        autoFocus
                         onClick={() => {
                             this.props.onClose();
                         }}

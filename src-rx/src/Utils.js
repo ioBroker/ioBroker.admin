@@ -395,7 +395,7 @@ class Utils {
 
             if (obj.common.jsonCustom) {
                 obj.common.adminUI = obj.common.adminUI || {};
-                obj.common.adminUI.config = 'json';
+                obj.common.adminUI.custom = 'json';
             } else if (obj.common.supportCustoms) {
                 obj.common.adminUI = obj.common.adminUI || {};
                 obj.common.adminUI.custom = 'json';

@@ -149,8 +149,8 @@ class HostsWorker {
         } else {
             return this.socket.getCompactHosts(update)
                 .then(hosts => {
-                    const promises = Object.keys(hosts)
-                        .map(hostId => this._getNotificationsFromHots(hostId, update));
+                    const promises = hosts
+                        .map(host => this._getNotificationsFromHots(host._id, update));
 
                     return Promise.all(promises)
                         .then(pResults => {

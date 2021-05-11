@@ -567,6 +567,20 @@ const styles = theme => ({
     },
     width150: {
         width: 150
+    },
+    deleting: {
+        position: 'relative',
+        '&:before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            zIndex: 100,
+            opacity: '.3 !important',
+            background: 'repeating-linear-gradient(135deg, #333, #333 10px, #888 10px, #888 20px)',
+        }
     }
 });
 
@@ -624,6 +638,7 @@ const InstanceRow = ({
     t,
     themeType,
     tier,
+    deleting,
 }) => {
     const [openSelectCompactGroup, setOpenSelectCompactGroup] = useState(false);
     const [openDialogCron, setOpenDialogCron] = useState(false);
@@ -835,8 +850,11 @@ const InstanceRow = ({
         </State> : ''
     ];
 
-    return <Accordion key={key} square
-        expanded={expanded === instance.id}
+    return <Accordion
+        key={key}
+        square
+        classes={{root: deleting ? classes.deleting : ''}}
+        expanded={expanded === instance.id && !deleting}
         onChange={() => {
             if (openDialogCron ||
                 openDialogSchedule ||
@@ -1327,6 +1345,7 @@ InstanceRow.propTypes = {
     setHost: PropTypes.func,
     host: PropTypes.string,
     instanceId: PropTypes.string,
+    deleting: PropTypes.bool,
 };
 
 

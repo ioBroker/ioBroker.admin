@@ -82,7 +82,15 @@ class AdapterUpdateDialog extends Component {
         const result = [];
 
         this.props.news && this.props.news.forEach(entry => {
-            const news = entry.news ? entry.news.split('\n') : [];
+            const news = (entry.news ? entry.news.split('\n') : [])
+                .map(line => line
+                    .trim()
+                    .replace(/^\*\s?/, '')
+                    .replace(/<!--[^>]*->/, '')
+                    .replace(/<! -[^>]*->/, '')
+                    .trim()
+                )
+                .filter(line => !!line)
 
             result.push(
                 <Grid item key={entry.version}>
@@ -116,7 +124,7 @@ class AdapterUpdateDialog extends Component {
         >
             <DialogTitle disableTypography={true}>
                 <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
-                    {this.t('Please confirm')}
+                    {this.t('Update "%s" to v%s', this.props.adapter, version)}
                     <IconButton className={classes.closeButton} onClick={this.props.onClose}>
                         <CloseIcon />
                     </IconButton>
@@ -151,6 +159,7 @@ class AdapterUpdateDialog extends Component {
             </DialogContent>
             <DialogActions className={classes.wrapperButton}>
                 {!!this.props.rightDependencies && this.props.onIgnore && version && <Button
+                    variant="outlined"
                     onClick={() => this.props.onIgnore(version)}
                     color="primary"
                 >
@@ -167,7 +176,6 @@ class AdapterUpdateDialog extends Component {
                 </Button>
                 <Button
                     variant="contained"
-                    autoFocus
                     onClick={() => this.props.onClose()}
                     color="default"
                 >

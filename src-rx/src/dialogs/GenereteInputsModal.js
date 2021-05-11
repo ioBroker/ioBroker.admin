@@ -245,7 +245,7 @@ const GenereteInputsModal = ({ themeType, themeName, socket, newInstances, onApp
                 obj[idx + 1] = {
                     ...el, type: types[el.type], label: el.title, text: el.def, href: el.def,
                     'sm': 6,
-                    'newLine': true,                    
+                    'newLine': true,
                 }
 
                 if (el.type === 'link') {
@@ -340,7 +340,6 @@ const GenereteInputsModal = ({ themeType, themeName, socket, newInstances, onApp
                 </Button>
                 <Button
                     variant="contained"
-                    autoFocus
                     onClick={() => {
                         onClose();
                         setTimeout(() => onCloseModal(), 0);

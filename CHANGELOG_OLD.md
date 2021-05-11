@@ -1,3 +1,6 @@
+## 5.0.16 (2021-05-05)
+* (bluefox) Admin5: Fixed many bugs
+
 ## 5.0.15 (2021-05-05)
 * (bluefox) optimized the loading process
 

@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.20",
+        "version": "5.0.21",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.0.21": {
+                "en": "Admin5: Fixed many bugs",
+                "de": "Admin5: Viele Fehler behoben",
+                "ru": "Admin5: Исправлено множество ошибок",
+                "pt": "Admin5: muitos bugs corrigidos",
+                "nl": "Admin5: Veel bugs opgelost",
+                "fr": "Admin5: Correction de nombreux bugs",
+                "it": "Admin5: risolti molti bug",
+                "es": "Admin5: se corrigieron muchos errores",
+                "pl": "Admin5: Naprawiono wiele błędów",
+                "zh-cn": "Admin5：修复了许多错误"
+            },
             "5.0.20": {
                 "en": "Admin5: Fixed many bugs",
                 "de": "Admin5: Viele Fehler behoben",
@@ -245,18 +257,6 @@
                 "es": "Fusionó los cambios de admin4",
                 "pl": "Scalono zmiany z admin4",
                 "zh-cn": "合并来自admin4的更改"
-            },
-            "5.0.0": {
-                "en": "The tile view implemented for the file browser",
-                "de": "Die für den Dateibrowser implementierte Kachelansicht",
-                "ru": "Представление плитки реализовано для файлового браузера",
-                "pt": "A visualização em bloco implementada para o navegador de arquivos",
-                "nl": "De tegelweergave geïmplementeerd voor de bestandsbrowser",
-                "fr": "La vue en mosaïque implémentée pour le navigateur de fichiers",
-                "it": "La visualizzazione affiancata implementata per il browser di file",
-                "es": "La vista de mosaico implementada para el navegador de archivos",
-                "pl": "Widok kafelków zaimplementowany dla przeglądarki plików",
-                "zh-cn": "为文件浏览器实现的图块视图"
             }
         },
         "desc": {

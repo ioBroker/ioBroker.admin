@@ -299,6 +299,20 @@ const styles = theme => ({
         paddingBottom: 15,
         fontWeight: 'bold'
     },
+    deleting: {
+        position: 'relative',
+        '&:before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            zIndex: 100,
+            opacity: '.3 !important',
+            background: 'repeating-linear-gradient(135deg, #333, #333 10px, #888 10px, #888 20px)',
+        }
+    },
     /*instanceStateAliveAndConnected2: {
         backgroundColor: 'rgb(0 255 0 / 14%)'
     }*/
@@ -355,6 +369,7 @@ const InstanceCard = memo(({
     t,
     themeType,
     tier,
+    deleting,
 }) => {
     const [mouseOver, setMouseOver] = useState(false);
 
@@ -554,8 +569,8 @@ const InstanceCard = memo(({
         }}
     /> : null;
 
-    const secondCardInfo = openCollapse || mouseOver ?
-        <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
+    const secondCardInfo = (openCollapse || mouseOver) && !deleting ?
+        <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '', deleting && classes.deleting)}>
             <CardContent classes={{ root: classes.cardContent }} className={classes.overflowAuto}>
                 <div className={classes.collapseIcon}>
                     <div className={classes.close} onClick={() => setCollapse(false)} />
@@ -937,6 +952,7 @@ InstanceCard.propTypes = {
     hosts: PropTypes.array,
     setHost: PropTypes.func,
     host: PropTypes.string,
+    deleting: PropTypes.bool,
 };
 
 export default withStyles(styles)(InstanceCard);

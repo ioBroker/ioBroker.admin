@@ -4,6 +4,8 @@ Marked with "!" must be in release candidate
 
 ## Bugs
 - (BF) AdminSettings: Access to the instances: add infotexts for "Apply access rights" and "Allow access only"
+- Notifications - mobile view: https://github.com/ioBroker/ioBroker.admin/issues/860
+- Notifications - all buttons have same color
 
 ## Intro
 - Images have different width

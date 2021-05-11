@@ -1364,5 +1364,9 @@
   "Instance settings": "Impostazioni dell'istanza",
   "only in this browser session": "solo in questa sessione del browser",
   "Do not show this dialog in this browser session any more": "Non mostrare più questa finestra di dialogo in questa sessione del browser",
-  "Active repo is \"%s\"": "Il repository attivo è \"%s\""
+  "Active repo is \"%s\"": "Il repository attivo è \"%s\"",
+  "Log level will be reset to the saved level after the restart of the controller": "Il livello di registro verrà ripristinato al livello salvato dopo il riavvio del controller",
+  "You can set the log level permanently in the base host settings": "È possibile impostare il livello di registrazione in modo permanente nelle impostazioni della base host",
+  "Update \"%s\" to v%s": "Aggiorna \"%s\" alla v%s",
+  "No comments in selected language": "Nessun commento nella lingua selezionata"
 }

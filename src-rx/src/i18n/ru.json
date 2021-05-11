@@ -1368,5 +1368,9 @@
   "Instance settings": "Настройки экземпляра",
   "only in this browser session": "только в этом сеансе браузера",
   "Do not show this dialog in this browser session any more": "Больше не показывать это диалоговое окно в этом сеансе браузера",
-  "Active repo is \"%s\"": "Активный репозиторий - \"%s\""
+  "Active repo is \"%s\"": "Активный репозиторий - \"%s\"",
+  "Log level will be reset to the saved level after the restart of the controller": "Уровень журнала будет сброшен до сохраненного уровня после перезапуска контроллера.",
+  "You can set the log level permanently in the base host settings": "Вы можете установить уровень журнала постоянно в базовых настройках хоста.",
+  "Update \"%s\" to v%s": "Обновите \"%s\" до версии v%s",
+  "No comments in selected language": "Нет комментариев на выбранном языке"
 }

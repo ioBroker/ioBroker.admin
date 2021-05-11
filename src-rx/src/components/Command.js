@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { amber, blue, red } from '@material-ui/core/colors';
 import Router from '@iobroker/adapter-react/Components/Router';
+import Utils from "../Utils";
 
 const styles = theme => ({
     log: {
@@ -203,14 +204,18 @@ class Command extends Component {
     cmdExitHandler(id, exitCode) {
         if (this.state.activeCmdId && this.state.activeCmdId === id) {
             const log = this.state.log.slice();
-            if (!window.document.hidden && exitCode === 0 && log.length && log[log.length - 1].endsWith('created') && this.props.callBack) {
+            if (!window.document.hidden && exitCode === 0 && log.length && log[log.length - 1].endsWith('created') && this.props.callback) {
                 const newArr = log[log.length - 1].split(' ');
                 const adapter = newArr.find(el => el.startsWith('system'));
                 if (adapter) {
-                    this.props.socket.getObject(adapter)
-                        .then(obj => {
-                            obj && obj.common?.adminUI?.config === 'none' && Router.doNavigate('tab-instances', 'config', adapter);
-                        });
+                    // it takes some time to creat the object
+                    setTimeout(_adapter => {
+                        this.props.socket.getObject(_adapter)
+                            .then(obj => {
+                                Utils.fixAdminUI(obj);
+                                obj && obj.common?.adminUI?.config !== 'none' && Router.doNavigate('tab-instances', 'config', _adapter);
+                            });
+                    }, 1000, adapter);
                 }
             }
             log.push(`${exitCode !== 0 ? 'ERROR: ' : ''}Process exited with code ${exitCode}`);
@@ -344,6 +349,7 @@ Command.defaultProps = {
 Command.propTypes = {
     noSpacing: PropTypes.bool,
     currentHost: PropTypes.string.isRequired,
+    callback: PropTypes.bool,
     socket: PropTypes.object.isRequired,
     onFinished: PropTypes.func.isRequired,
     ready: PropTypes.bool.isRequired,

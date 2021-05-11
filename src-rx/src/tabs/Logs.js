@@ -632,7 +632,7 @@ class Logs extends Component {
                 <Button variant="contained" autoFocus onClick={() => this.handleLogDelete()} color="primary">
                     {this.t('Ok')}
                 </Button>
-                <Button variant="contained" autoFocus onClick={() => this.closeLogDelete()} >
+                <Button variant="contained" onClick={() => this.closeLogDelete()} >
                     {this.t('Cancel')}
                 </Button>
             </DialogActions>

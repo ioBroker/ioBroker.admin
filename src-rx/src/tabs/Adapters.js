@@ -1,6 +1,6 @@
 /* eslint-disable array-callback-return */
 import React, { Component, Fragment, createRef } from 'react';
-import Semver from 'semver';
+import semver from 'semver';
 import PropTypes from "prop-types";
 import clsx from 'clsx';
 import { withStyles } from '@material-ui/core/styles';
@@ -243,7 +243,7 @@ class Adapters extends Component {
             dialog: null,
             dialogProp: null,
             filterConnectionType: false,
-            search: '',
+            search: window.localStorage.getItem('Adapter.search') || '',
             list: false,
             viewMode: false,
             updateList: false,
@@ -298,9 +298,7 @@ class Adapters extends Component {
                 onClose={readTimeoutMs => {
                     if (readTimeoutMs) {
                         this.setState({showSlowConnectionWarning: false, readTimeoutMs}, () =>
-                            this.getAdapters()
-                                .then(() =>
-                                    this.getAdaptersInfo()));
+                            this.updateAll());
                     } else {
                         this.setState({showSlowConnectionWarning: false});
                     }
@@ -311,10 +309,18 @@ class Adapters extends Component {
 
     componentDidMount() {
         if (this.props.ready) {
-            this.getAdapters()
-                .then(() => this.getAdaptersInfo())
-                .then(() => this.props.adaptersWorker.registerHandler(this.onAdaptersChanged));
+            this.updateAll()
+                .then(() => {
+                    this.state.search && this.filterAdapters();
+                    this.props.adaptersWorker.registerHandler(this.onAdaptersChanged);
+                    this.props.instancesWorker.registerHandler(this.onAdaptersChanged);
+                });
         }
+    }
+
+    updateAll(update, bigUpdate) {
+        return this.getAdapters(update, bigUpdate)
+            .then(() => this.getAdaptersInfo(update, bigUpdate));
     }
 
     componentDidUpdate() {
@@ -331,6 +337,7 @@ class Adapters extends Component {
         this.updateTimeout && clearTimeout(this.updateTimeout);
         this.updateTimeout = null;
         this.props.adaptersWorker.unregisterHandler(this.onAdaptersChanged);
+        this.props.instancesWorker.unregisterHandler(this.onAdaptersChanged);
     }
 
     static getDerivedStateFromProps() {
@@ -342,29 +349,47 @@ class Adapters extends Component {
         };
     }
 
-    onAdaptersChanged = changes => {
+    onAdaptersChanged = events => {
         this.tempAdapters  = this.tempAdapters  || JSON.parse(JSON.stringify(this.state.adapters));
         this.tempInstalled = this.tempInstalled || JSON.parse(JSON.stringify(this.state.installed));
+        this.tempInstances = this.tempInstances || JSON.parse(JSON.stringify(this.state.instances));
 
-        changes.forEach(item => {
-            if (item.type === 'deleted') {
-                // remove from installed
-                delete this.tempInstalled[item.oldObj.common.name];
-                delete this.tempAdapters[item.id];
-            } else {
-                const name = item.obj.common.name;
-                if (this.tempInstalled[name]) {
-                    // Update attributes
-                    Object.keys(this.tempInstalled[name]).forEach(attr => {
-                        if (item.obj.common[attr] !== undefined) {
-                            this.tempInstalled[name][attr] = item.obj.common[attr];
-                        }
-                    });
+        events.forEach(event => {
+            // detect if adapter or instance
+            let isInstance = !!event.id.match(/\.\d+$/);
+            if (isInstance) {
+                if (event.type === 'deleted' || !event.obj) {
+                    delete this.tempInstances[event.id];
                 } else {
-                    // new
-                    this.tempInstalled[item.id] = JSON.parse(JSON.stringify(item.obj.common));
+                    this.tempInstances[event.id] = {
+                        enabled: event.obj.common.enabled,
+                        icon:    event.obj.common.icon,
+                        name:    event.obj.common.name,
+                    };
                 }
-                this.tempAdapters[item.id] = item.obj;
+            } else {
+                if (event.type === 'deleted' || !event.obj) {
+                    // extract name from id
+                    const p = event.id.split('.');
+
+                    // remove from installed
+                    delete this.tempInstalled[p[2]];
+                    delete this.tempAdapters[event.id];
+                } else {
+                    const name = event.obj.common.name;
+                    if (this.tempInstalled[name]) {
+                        // Update attributes
+                        Object.keys(this.tempInstalled[name]).forEach(attr => {
+                            if (event.obj.common[attr] !== undefined) {
+                                this.tempInstalled[name][attr] = event.obj.common[attr];
+                            }
+                        });
+                    } else {
+                        // new
+                        this.tempInstalled[event.id] = JSON.parse(JSON.stringify(event.obj.common));
+                    }
+                    this.tempAdapters[event.id] = event.obj;
+                }
             }
         });
 
@@ -374,11 +399,15 @@ class Adapters extends Component {
             this.tempAdapters  = null;
             const installed    = this.tempInstalled;
             this.tempInstalled = null;
-            this.analyseInstalled(adapters, installed);
+            const instances    = this.tempInstances;
+            this.tempInstances = null;
+
+            this.analyseInstalled(adapters, installed, null,  () =>
+                this.calculateInfo(instances));
         }, 300);
     }
 
-    analyseInstalled(adapters, installed, repository) {
+    analyseInstalled(adapters, installed, repository, cb) {
         adapters   = adapters   || this.state.adapters;
         installed  = installed  || this.state.installed;
         repository = repository || this.state.repository;
@@ -400,29 +429,26 @@ class Adapters extends Component {
             }
         });
 
+        this.cache.listOfVisibleAdapter = null
+
         this.setState({
             adapters,
             updateAvailable,
             installed,
             repository
-        }, () => {
-            if (this.cache.listOfVisibleAdapter) {
-                this.cache.listOfVisibleAdapter = null;
-                this.buildCache();
-            }
-        });
+        }, () => cb && cb());
     }
 
-    getAdapters = () => {
-        console.log('getAdapters');
+    getAdapters = (update, bigUpdate) => {
+        console.log('[ADAPTERS] getAdapters');
         let adapters
         let installed
         const currentHost = this.props.currentHost;
-        return this.props.adaptersWorker.getAdapters()
+        return this.props.adaptersWorker.getAdapters(update)
             .catch(e => window.alert('Cannot getAdapters: ' + e))
             .then(_adapters => {
                 adapters = _adapters;
-                return this.props.socket.getInstalled(currentHost, true, this.state.readTimeoutMs)
+                return this.props.socket.getInstalled(currentHost, update, this.state.readTimeoutMs)
                     .catch(e => {
                         window.alert('Cannot getInstalled: ' + e);
                         e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
@@ -431,7 +457,7 @@ class Adapters extends Component {
             })
             .then(_installed => {
                 installed = _installed;
-                return this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: false }, false, this.state.readTimeoutMs)
+                return this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: bigUpdate }, bigUpdate, this.state.readTimeoutMs)
                     .catch(e => {
                         window.alert('Cannot getRepository: ' + e);
                         e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
@@ -439,24 +465,159 @@ class Adapters extends Component {
                     })
             })
             .then(repository =>
-                this.analyseInstalled(adapters, installed, repository))
+                this.analyseInstalled(adapters, installed, repository));
     }
 
-    getAdaptersInfo = async (updateRepo = false) => {
+    calculateInfo(instances, ratings, hostData) {
+        hostData  = hostData  || this.state.hostData;
+        ratings   = ratings   || this.state.ratings;
+        instances = instances || this.state.instances;
+
+        const adapters = this.state.adapters;
+
+        const installed = JSON.parse(JSON.stringify(this.state.installed));
+        const repository = JSON.parse(JSON.stringify(this.state.repository));
+
+        const nodeJsVersion = hostData['Node.js'].replace('v', '');
+        const hostOs = hostData.os;
+
+        const categories = {};
+        const categoriesSorted = [];
+        const categoriesExpanded = JSON.parse(window.localStorage.getItem('Adapters.expandedCategories')) || {};
+
+        Object.keys(installed).forEach(value => {
+            const adapter = installed[value];
+            if (adapters[value]?.common?.ignoreVersion) {
+                adapter.ignoreVersion = adapters[value].common.ignoreVersion;
+            }
+
+            if (!adapter.controller && value !== 'hosts') {
+                if (!repository[value]) {
+                    repository[value] = JSON.parse(JSON.stringify(adapter));
+                    repository[value].version = '';
+                }
+            }
+            adapter.count   = 0;
+            adapter.enabled = 0;
+        });
+
+        Object.keys(instances).forEach(id => {
+            const adapterName = instances[id].name;
+            if (installed[adapterName]) {
+                installed[adapterName].count++;
+            }
+        });
+
+        const now = Date.now();
+        Object.keys(repository).forEach(value => {
+            const adapter = repository[value];
+            if (adapter.keywords) {
+                adapter.keywords = adapter.keywords.map(word => word.toLowerCase());
+            }
+            const _installed = installed[value];
+
+            adapter.rating = ratings[value];
+
+            if (adapter.rating && adapter.rating.rating) {
+                adapter.rating.title = [
+                    `${this.t('Total rating:')} ${adapter.rating.rating.r} (${adapter.rating.rating.c} ${this.t('votes')})`,
+                    (_installed && _installed.version && adapter.rating[_installed.version]) ?
+                        `${this.t('Rating for')} v${_installed.version}: ${adapter.rating[_installed.version].r} (${adapter.rating[_installed.version].c} ${this.t('votes')})`
+                        : ''
+                ].filter(i => i).join('\n');
+            } else {
+                adapter.rating = { title: this.t('No rating or too few data') };
+            }
+
+            if (!adapter.controller) {
+                const type = adapter.type;
+                const installedInGroup = installed[value];
+
+                const daysAgo = Math.round((now - new Date(adapter.versionDate).getTime()) / 86400000);
+
+                if (daysAgo <= 31) {
+                    this.recentUpdatedAdapters++
+                }
+                if (installed[value]) {
+                    this.installedAdapters++;
+                }
+
+                if (!categories[type]) {
+                    categories[type] = {
+                        name: type,
+                        translation: this.t(type + '_group'),
+                        count: 1,
+                        installed: installedInGroup ? 1 : 0,
+                        adapters: [value]
+                    };
+                } else {
+                    categories[type].count++;
+                    categories[type].adapters.push(value);
+                    if (installedInGroup) {
+                        categories[type].installed++;
+                    }
+                }
+            }
+        });
+
+        Object.keys(categories).sort((a, b) => {
+            if (a === 'general' && b !== 'general') {
+                return -1;
+            } else if (a !== 'general' && b === 'general') {
+                return 1;
+            } else if (a > b) {
+                return 1;
+            } else if (a < b) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }).forEach(value =>
+            categoriesSorted.push(categories[value]));
+
+        const list            = JSON.parse(window.localStorage.getItem('Adapters.list'));
+        const viewMode        = JSON.parse(window.localStorage.getItem('Adapters.viewMode'));
+        const updateList      = JSON.parse(window.localStorage.getItem('Adapters.updateList'));
+        const installedList   = JSON.parse(window.localStorage.getItem('Adapters.installedList'));
+        const categoriesTiles = window.localStorage.getItem('Adapters.categoriesTiles') || 'All';
+        const filterTiles     = window.localStorage.getItem('Adapters.filterTiles') || 'A-Z';
+        this.allAdapters      = Object.keys(repository).length - 1;
+
+        this.setState({
+            repository,
+            installed,
+            ratings,
+            filterTiles,
+            categoriesTiles,
+            installedList,
+            instances,
+            updateList,
+            viewMode,
+            list,
+            lastUpdate: Date.now(),
+            hostData,
+            hostOs,
+            nodeJsVersion,
+            categories: categoriesSorted,
+            categoriesExpanded,
+            init: true,
+            update: false
+        });
+    }
+
+    getAdaptersInfo = update => {
         if (!this.props.currentHost) {
             return;
         }
 
         // Do not update too often
         if (Date.now() - this.state.lastUpdate > 1000) {
-            console.log('getAdaptersInfo');
+            console.log('[ADAPTERS] getAdaptersInfo');
 
             const currentHost = this.props.currentHost;
-            const {installed, repository} = this.state;
 
             let hostData;
             let rebuild;
-            let adapters;
             let ratings;
 
             return new Promise(resolve => {
@@ -466,7 +627,7 @@ class Adapters extends Component {
                     resolve();
                 }
             })
-                .then(() => this.props.socket.getHostInfo(currentHost, false, this.state.readTimeoutMs)
+                .then(() => this.props.socket.getHostInfo(currentHost, update, this.state.readTimeoutMs)
                     .catch(e => {
                         window.alert(`Cannot getHostInfo for "${currentHost}": ${e}`);
                         e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
@@ -479,20 +640,12 @@ class Adapters extends Component {
                 })
                 .then(_rebuild => {
                     rebuild = _rebuild;
-                    return this.props.socket.getCompactAdapters()
-                        .catch(e => {
-                            window.alert('Cannot read getCompactAdapters: ' + e);
-                            return {};
-                        });
-                })
-                .then(_adapters => {
-                    adapters = _adapters;
-                    return this.props.socket.getRatings(updateRepo)
+                    return this.props.socket.getRatings(update)
                         .catch(e => window.alert('Cannot read ratings: ' + e));
                 })
                 .then(_ratings => {
                     ratings = _ratings;
-                    return this.props.socket.getCompactInstances(updateRepo)
+                    return this.props.socket.getCompactInstances(update)
                         .catch(e => {
                             window.alert('Cannot read countsOfInstances: ' + e);
                             return {};
@@ -503,128 +656,8 @@ class Adapters extends Component {
                     // setTimeout(() => this.setState({showSlowConnectionWarning: true}), 5000);
 
                     this.uuid = ratings.uuid;
-
                     this.rebuildSupported = rebuild || false;
-
-                    const nodeJsVersion = hostData['Node.js'].replace('v', '');
-                    const hostOs = hostData.os;
-
-                    const categories = {};
-                    const categoriesSorted = [];
-                    const categoriesExpanded = JSON.parse(window.localStorage.getItem('Adapters.expandedCategories')) || {};
-
-                    Object.keys(installed).forEach(value => {
-                        const adapter = installed[value];
-                        if (adapters[value]?.iv) {
-                            adapter.ignoreVersion = adapters[value]?.iv;
-                        }
-
-                        if (!adapter.controller && value !== 'hosts') {
-                            if (!repository[value]) {
-                                repository[value] = JSON.parse(JSON.stringify(adapter));
-                                repository[value].version = '';
-                            }
-                        }
-                        adapter.count   = 0;
-                        adapter.enabled = 0;
-                    });
-
-                    Object.keys(instances).forEach(id => {
-                        const adapterName = instances[id].name;
-                        if (installed[adapterName]) {
-                            installed[adapterName].count++;
-                        }
-                    });
-
-                    const now = Date.now();
-                    Object.keys(repository).forEach(value => {
-                        const adapter = repository[value];
-                        if (adapter.keywords) {
-                            adapter.keywords = adapter.keywords.map(word => word.toLowerCase());
-                        }
-                        const _installed = installed[value];
-
-                        adapter.rating = ratings[value];
-
-                        if (adapter.rating && adapter.rating.rating) {
-                            adapter.rating.title = [
-                                `Total rating: ${adapter.rating.rating.r} (${adapter.rating.rating.c} ${this.t('votes')})`,
-                                (_installed && _installed.version && adapter.rating[installed.version]) ? `Rating for ${installed.version}: ${adapter.rating[installed.version].r} (${adapter.rating[installed.version].c} ${this.t('votes')})` : ''
-                            ].filter(i => i).join('\n');
-                        } else {
-                            adapter.rating = { title: this.t('No rating or too few data') };
-                        }
-
-                        if (!adapter.controller) {
-                            const type = adapter.type;
-                            const installedInGroup = installed[value];
-
-                            const daysAgo = Math.round((now - new Date(adapter.versionDate).getTime()) / 86400000);
-
-                            if (daysAgo <= 31) {
-                                this.recentUpdatedAdapters++
-                            }
-                            if (installed[value]) {
-                                this.installedAdapters++;
-                            }
-
-                            if (!categories[type]) {
-                                categories[type] = {
-                                    name: type,
-                                    translation: this.t(type + '_group'),
-                                    count: 1,
-                                    installed: installedInGroup ? 1 : 0,
-                                    adapters: [value]
-                                };
-                            } else {
-                                categories[type].count++;
-                                categories[type].adapters.push(value);
-                                if (installedInGroup) {
-                                    categories[type].installed++;
-                                }
-                            }
-                        }
-                    });
-
-                    Object.keys(categories).sort((a, b) => {
-                        if (a === 'general' && b !== 'general') {
-                            return -1;
-                        } else if (a !== 'general' && b === 'general') {
-                            return 1;
-                        } else if (a > b) {
-                            return 1;
-                        } else if (a < b) {
-                            return -1;
-                        } else {
-                            return 0;
-                        }
-                    }).forEach(value =>
-                        categoriesSorted.push(categories[value]));
-
-                    const list            = JSON.parse(window.localStorage.getItem('Adapters.list'));
-                    const viewMode        = JSON.parse(window.localStorage.getItem('Adapters.viewMode'));
-                    const updateList      = JSON.parse(window.localStorage.getItem('Adapters.updateList'));
-                    const installedList   = JSON.parse(window.localStorage.getItem('Adapters.installedList'));
-                    const categoriesTiles = window.localStorage.getItem('Adapters.categoriesTiles') || 'All';
-                    const filterTiles     = window.localStorage.getItem('Adapters.filterTiles') || 'A-Z';
-                    this.allAdapters      = Object.keys(repository).length - 1;
-
-                    this.setState({
-                        filterTiles,
-                        categoriesTiles,
-                        installedList,
-                        updateList,
-                        viewMode,
-                        list,
-                        lastUpdate: Date.now(),
-                        hostData,
-                        hostOs,
-                        nodeJsVersion,
-                        categories: categoriesSorted,
-                        categoriesExpanded,
-                        init: true,
-                        update: false
-                    });
+                    this.calculateInfo(instances, ratings, hostData);
                 });
         } else {
             return Promise.resolve();
@@ -715,9 +748,9 @@ class Adapters extends Component {
 
     static updateAvailable(oldVersion, newVersion) {
         try {
-            return Semver.gt(newVersion, oldVersion) === true;
+            return semver.gt(newVersion, oldVersion) === true;
         } catch (e) {
-            console.warn(`Cannot compare "${newVersion}" and "${oldVersion}"`);
+            console.warn(`[ADAPTERS] Cannot compare "${newVersion}" and "${oldVersion}"`);
             return false;
         }
     }
@@ -750,7 +783,11 @@ class Adapters extends Component {
 
                     entry.installed        = !!installed;
                     entry.installedVersion = installed ? installed.version : null;
-                    entry.rightVersion     = installed ? checkVersion ? Semver.satisfies(installed.version, entry.version, { includePrerelease: true }) : true : false;
+                    try {
+                        entry.rightVersion = installed ? (checkVersion ? semver.satisfies(installed.version, entry.version, { includePrerelease: true }) : true) : false;
+                    } catch (e) {
+                        entry.rightVersion = true;
+                    }
                 }
 
                 result.push(entry);
@@ -765,7 +802,11 @@ class Adapters extends Component {
                     rightVersion:     false
                 };
 
-                entry.rightVersion = Semver.satisfies(this.state.nodeJsVersion, nodeVersion);
+                try {
+                    entry.rightVersion = semver.satisfies(this.state.nodeJsVersion, nodeVersion);
+                } catch (e) {
+                    entry.rightVersion = true;
+                }
 
                 result.push(entry);
             }
@@ -793,7 +834,11 @@ class Adapters extends Component {
 
                             const installed = this.state.installed[name];
 
-                            result = installed ? (checkVersion ? Semver.satisfies(installed.version, dependency[name], { includePrerelease: true }) : true) : false;
+                            try {
+                                result = installed ? (checkVersion ? semver.satisfies(installed.version, dependency[name], { includePrerelease: true }) : true) : false;
+                            } catch (e) {
+                                result = true;
+                            }
                         }
                     });
                 } else if (typeof dependencies === 'object') {
@@ -801,16 +846,24 @@ class Adapters extends Component {
                         if (dependency && dependencies[dependency] !== undefined && result) {
                             const installed = this.state.installed[dependency];
                             const checkVersion = typeof dependencies[dependency] !== 'string';
-                            result = installed ? (checkVersion ? Semver.satisfies(installed.version, dependency[dependency], { includePrerelease: true }) : true) : false;
+                            try {
+                                result = installed ? (checkVersion ? semver.satisfies(installed.version, dependency[dependency], { includePrerelease: true }) : true) : false;
+                            } catch (e) {
+                                result = true;
+                            }
                         }
                     });
                 } else {
-                    console.error(`Invalid dependencies for ${value}: ${JSON.stringify(dependencies)}`);
+                    console.error(`[ADAPTERS] Invalid dependencies for ${value}: ${JSON.stringify(dependencies)}`);
                 }
             }
 
             if (result && nodeVersion) {
-                result = Semver.satisfies(this.state.nodeJsVersion, nodeVersion);
+                try {
+                    result = semver.satisfies(this.state.nodeJsVersion, nodeVersion);
+                } catch (e) {
+                    result = true;
+                }
             }
         }
 
@@ -860,6 +913,7 @@ class Adapters extends Component {
                 version={this.state.showSetRating.version}
                 adapter={this.state.showSetRating.adapter}
                 repository={this.state.repository}
+                currentRating={this.state.showSetRating.rating}
                 onClose={repository => {
                     if (repository) {
                         this.setState({showSetRating: null, repository});
@@ -882,7 +936,7 @@ class Adapters extends Component {
         if (installed && adapter && adapter.news) {
             Object.keys(adapter.news).forEach(version => {
                 try {
-                    if (Semver.gt(version, installed.version) || all) {
+                    if (semver.gt(version, installed.version) || all) {
                         news.push({
                             version: version,
                             news:    adapter.news[version][this.props.lang] || adapter.news[version].en
@@ -890,7 +944,7 @@ class Adapters extends Component {
                     }
                 } catch (e) {
                     // ignore it
-                    console.warn(`Cannot compare "${version}" and "${installed.version}"`);
+                    console.warn(`[ADAPTERS] Cannot compare "${version}" and "${installed.version}"`);
                 }
             });
         }
@@ -902,6 +956,7 @@ class Adapters extends Component {
         this.typingTimer && clearTimeout(this.typingTimer);
 
         this.typingTimer = setTimeout(value => {
+            window.localStorage.setItem('Adapter.search', value || '');
             this.typingTimer = null;
             this.filterAdapters(value);
         }, 300, event.target.value);
@@ -1012,7 +1067,7 @@ class Adapters extends Component {
             const installed = this.state.installed[value];
 
             if (cached.title instanceof Object || !cached.desc) {
-                console.warn(adapter);
+                console.warn('[ADAPTERS] ' + adapter);
             }
 
             return <AdapterRow
@@ -1042,8 +1097,8 @@ class Adapters extends Component {
                 rebuild={this.rebuildSupported}
                 commandRunning={this.props.commandRunning}
                 rating={adapter.rating}
-                onSetRating={installed && installed.version ? () =>
-                    this.setState({ showSetRating: { adapter: value, version: installed.version}}) : null}
+                onSetRating={() =>
+                    this.setState({ showSetRating: { adapter: value, version: installed && installed.version, rating: adapter.rating}})}
                 onAddInstance={() =>
                     licenseDialogFunc(adapter.license === 'MIT', async result =>
                         result && await this.addInstance(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')
@@ -1125,15 +1180,20 @@ class Adapters extends Component {
         const now = Date.now();
         const textDaysAgo = this.t('days ago');
 
-        const sortPopularFirst = !this.state.viewMode && this.state.filterTiles === 'Popular first';
+        const sortPopularFirst    = !this.state.viewMode && this.state.filterTiles === 'Popular first';
         const sortRecentlyUpdated = !this.state.viewMode && this.state.filterTiles === 'Recently updated';
-        const sortAZ = this.state.viewMode || this.state.filterTiles === 'A-Z';
+        const sortAZ              =  this.state.viewMode || this.state.filterTiles === 'A-Z';
 
         // get all visible adapters
         this.state.categories
             .filter(cat => this.state.viewMode || !this.state.categoriesTiles || this.state.categoriesTiles === 'All' || cat.name === this.state.categoriesTiles)
             .forEach(category => category.adapters.forEach(value => {
                 const adapter = this.state.repository[value];
+
+                if (value === 'vis-materialdesign') {
+                    console.log('[ADAPTERS] ' + value);
+                }
+
                 if (adapter && !adapter.controller) {
                     const connectionType = adapter.connectionType ? adapter.connectionType : '-';
                     const updateAvailable = this.state.updateAvailable.includes(value);
@@ -1147,7 +1207,7 @@ class Adapters extends Component {
                         show = updateAvailable;
                     }
                     if (show && this.state.installedList) {
-                        show = this.state.installedList < 2?!!(installed && installed.version && installed.count):!!(installed && installed.version && !installed.count) ;
+                        show = this.state.installedList < 2 ? !!(installed && installed.version && installed.count) : !!(installed && installed.version && !installed.count) ;
                     }
                     if (show) {
                         this.cache.listOfVisibleAdapter.push(value);
@@ -1176,7 +1236,9 @@ class Adapters extends Component {
                     }
                 }
             }));
-        this.listOfVisibleAdapterLength = this.cache.listOfVisibleAdapter.length
+
+        this.listOfVisibleAdapterLength = this.cache.listOfVisibleAdapter.length;
+
         if (sortAZ) {
             this.cache.listOfVisibleAdapter.sort();
         } else {
@@ -1189,6 +1251,7 @@ class Adapters extends Component {
                     }
             });
         }
+        console.log('[ADAPTERS] Update cache!');
     }
 
     getTiles() {
@@ -1208,7 +1271,7 @@ class Adapters extends Component {
                 const cached    = this.cache.adapters[value];
 
                 if (cached.title instanceof Object || !cached.desc) {
-                    console.warn(adapter);
+                    console.warn('[ADAPTERS] ' + adapter);
                 }
 
                 return <AdapterTile
@@ -1238,8 +1301,8 @@ class Adapters extends Component {
                     sentry={cached.sentry}
                     rebuild={this.rebuildSupported}
                     rating={adapter.rating}
-                    onSetRating={installed && installed.version ? () =>
-                        this.setState({showSetRating: {adapter: value, version: installed.version}}) : null}
+                    onSetRating={() =>
+                        this.setState({ showSetRating: { adapter: value, version: installed && installed.version, rating: adapter.rating}})}
                     onAddInstance={() =>
                         licenseDialogFunc(adapter.license === 'MIT', async result =>
                             result && await this.addInstance(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
@@ -1268,7 +1331,7 @@ class Adapters extends Component {
                 repository={this.state.repository}
                 onClose={reload =>
                     this.setState({ showUpdater: false }, () =>
-                        reload && this.getAdaptersInfo(true))}
+                        reload && this.updateAll(true, false))}
                 socket={this.props.socket}
             />;
         }
@@ -1286,7 +1349,6 @@ class Adapters extends Component {
 
     getStatistics() {
         if (this.state.showStatistics) {
-
             return <Dialog
                 open={true}
                 onClose={() => this.setState({ showStatistics: false })}
@@ -1312,7 +1374,7 @@ class Adapters extends Component {
         if (!this.state.init) {
             return <LinearProgress />;
         }
-
+        console.log('[ADAPTERS] Render');
         if (this.state.dialog === 'readme' && this.state.dialogProp) {
             const adapter = this.state.repository[this.state.dialogProp] || null;
 
@@ -1347,7 +1409,7 @@ class Adapters extends Component {
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.t('Update view')}>
-                    <IconButton onClick={() => this.getAdaptersInfo(true)}>
+                    <IconButton onClick={() => this.updateAll(true, true)}>
                         <RefreshIcon />
                     </IconButton>
                 </Tooltip>
@@ -1414,7 +1476,7 @@ class Adapters extends Component {
                 <TextField
                     inputRef={this.inputRef}
                     label={this.t('Filter by name')}
-                    defaultValue=""
+                    defaultValue={this.state.search}
                     onChange={event => this.handleFilterChange(event)}
                     InputProps={{
                         endAdornment: (
@@ -1422,6 +1484,7 @@ class Adapters extends Component {
                                 <IconButton
                                     size="small"
                                     onClick={() => {
+                                        window.localStorage.removeItem('Adapter.search');
                                         this.inputRef.current.value = '';
                                         this.setState({ search: '' }, () => this.filterAdapters());
                                     }}

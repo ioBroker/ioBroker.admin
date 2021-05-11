@@ -173,7 +173,6 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, themeName }) =
                         {newsArr[indexArr]?.link &&
                             <Button
                                 variant="contained"
-                                autoFocus
                                 className={classes.link}
                                 onClick={() => window.open(newsArr[indexArr].link, '_blank')}
                                 color="primary">
@@ -205,14 +204,26 @@ function checkConditions(condition, installedVersion) {
         return installedVersion === vers;
     } else if (condition.startsWith('bigger')) {
         const vers = condition.substring(7, condition.length - 1).trim();
-        return semver.gt(vers, installedVersion);
+        try {
+            return semver.gt(vers, installedVersion);
+        } catch (e) {
+            return false;
+        }
     } else if (condition.startsWith('smaller')) {
         const vers = condition.substring(8, condition.length - 1).trim();
-        return semver.lt(installedVersion, vers);
+        try {
+            return semver.lt(installedVersion, vers);
+        } catch (e) {
+            return false;
+        }
     } else if (condition.startsWith('between')) {
         const vers1 = condition.substring(8, condition.indexOf(',')).trim();
         const vers2 = condition.substring(condition.indexOf(',') + 1, condition.length - 1).trim();
-        return semver.gt(vers1, installedVersion) && semver.gt(vers2,  installedVersion);
+        try {
+            return semver.gt(vers1, installedVersion) && semver.gt(vers2,  installedVersion);
+        } catch (e) {
+            return false;
+        }
     } else {
         return true;
     }

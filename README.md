@@ -93,6 +93,9 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 -->
 
 ## Changelog
+### 5.0.21 (2021-05-11)
+* (bluefox) Admin5: Fixed many bugs
+
 ### 5.0.20 (2021-05-10)
 * (bluefox) Admin5: Fixed many bugs
 
@@ -103,9 +106,6 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 * (bluefox) Admin5: Fixed many bugs
 
 ### 5.0.17 (2021-05-06)
-* (bluefox) Admin5: Fixed many bugs
-
-### 5.0.16 (2021-05-05)
 * (bluefox) Admin5: Fixed many bugs
 
 ## License

@@ -1364,5 +1364,9 @@
   "Instance settings": "实例设定",
   "only in this browser session": "仅在此浏览器会话中",
   "Do not show this dialog in this browser session any more": "不再在此浏览器会话中显示此对话框",
-  "Active repo is \"%s\"": "活动存储库为“ %s”"
+  "Active repo is \"%s\"": "活动存储库为“ %s”",
+  "Log level will be reset to the saved level after the restart of the controller": "重新启动控制器后，日志级别将重置为已保存的级别",
+  "You can set the log level permanently in the base host settings": "您可以在主机基础设置中永久设置日志级别",
+  "Update \"%s\" to v%s": "将“ %s”更新为v%s",
+  "No comments in selected language": "没有以所选语言发表的评论"
 }

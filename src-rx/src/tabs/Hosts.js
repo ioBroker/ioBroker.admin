@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
+import semver from 'semver';
+import clsx from 'clsx';
 
 import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
@@ -7,6 +9,7 @@ import { withStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { InputAdornment, LinearProgress, TextField } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 
 import RefreshIcon from '@material-ui/icons/Refresh';
 import ViewListIcon from '@material-ui/icons/ViewList';
@@ -24,14 +27,11 @@ import { useStateLocal } from '../helpers/hooks/useStateLocal';
 import HostCard from '../components/Hosts/HostCard';
 import HostRow from '../components/Hosts/HostRow';
 import HostEdit from '../components/Hosts/HostEdit';
-import { Skeleton } from '@material-ui/lab';
 import { JsControllerDialogFunc } from '../dialogs/JsControllerDialog';
-import clsx from 'clsx';
 import Utils from '../Utils';
 import BaseSettingsDialog from '../dialogs/BaseSettingsDialog';
 import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
 import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
-import Semver from 'semver';
 
 const styles = theme => ({
     grow: {
@@ -519,7 +519,7 @@ const Hosts = ({
         if (installed && adapter && adapter.news) {
             Object.keys(adapter.news).forEach(version => {
                 try {
-                    if (Semver.gt(version, installed) || all) {
+                    if (semver.gt(version, installed) || all) {
                         news.push({
                             version: version,
                             news: adapter.news[version][lang] || adapter.news[version].en
