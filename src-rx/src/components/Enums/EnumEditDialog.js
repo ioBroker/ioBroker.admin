@@ -169,8 +169,8 @@ function EnumEditDialog(props) {
             </Grid>
         </DialogContent>
         <DialogActions className={props.classes.dialogActions} >
-            <Button variant="contained" color="primary" autoFocus onClick={()=>props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>Save</Button>
-            <Button variant="contained" onClick={props.onClose}>Cancel</Button>
+            <Button variant="contained" color="primary" autoFocus onClick={()=>props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>{props.t('Save')}</Button>
+            <Button variant="contained" onClick={props.onClose}>{props.t('Cancel')}</Button>
         </DialogActions> 
     </Dialog>;
 }
