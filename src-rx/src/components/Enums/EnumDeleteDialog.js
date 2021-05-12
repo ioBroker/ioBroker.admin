@@ -1,23 +1,27 @@
 import PropTypes from 'prop-types';
 
 import Dialog from '@material-ui/core/Dialog';
-import Box from '@material-ui/core/Box';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 
 function EnumDeleteDialog(props) {
     if (!props.open) {
         return null;
     }
-    return <Dialog PaperProps={{className: props.classes.dialogPaper}} open={props.open} onClose={props.onClose}>
-        <Box className={props.classes.deleteDialog}>
-            <h2>
+    return <Dialog open={props.open} onClose={props.onClose}>
+        <DialogTitle>{props.t('Please confirm')}</DialogTitle>
+        <DialogContent>
+            <DialogContentText>
                 {props.t('Do you want to delete enum "%s"?', props.getName(props.enum.common.name))}
-            </h2>
-            <div>
-                <Button onClick={()=>props.deleteEnum(props.enum._id)}>{props.t('Delete')}</Button>
-                <Button onClick={props.onClose}>{props.t('Cancel')}</Button>
-            </div>
-        </Box>
+            </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+            <Button onClick={()=>props.deleteEnum(props.enum._id)}>{props.t('Delete')}</Button>
+            <Button onClick={props.onClose}>{props.t('Cancel')}</Button>
+        </DialogActions>
     </Dialog>;
 }
 

@@ -28,7 +28,7 @@ let roomsImages = importAll(require.context('../../assets/rooms', false, /\.svg$
 function EnumEditDialog(props) {
     let [originalId, setOriginalId] = useState(null);
     useEffect(()=>{
-        setOriginalId(props.enum._id);
+        setOriginalId(props.enum?._id);
     // eslint-disable-next-line
     }, [props.open]);
 
@@ -71,7 +71,7 @@ function EnumEditDialog(props) {
         ICONS = roomsImages.map(image => image.default);
     }
 
-    return <Dialog PaperProps={{className: props.classes.dialogPaper}} open={props.open} onClose={props.onClose}>
+    return <Dialog fullWidth={props.innerWidth < 500} open={props.open} onClose={props.onClose}>
         <DialogTitle className={props.classes.dialogTitle} style={{padding:12}} >
            { props.t( "Enum parameters" ) }
         </DialogTitle>
@@ -169,8 +169,8 @@ function EnumEditDialog(props) {
             </Grid>
         </DialogContent>
         <DialogActions className={props.classes.dialogActions} >
-            <Button onClick={()=>props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>Save</Button>
-            <Button onClick={props.onClose}>Cancel</Button>
+            <Button variant="contained" color="primary" autoFocus onClick={()=>props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>Save</Button>
+            <Button variant="contained" onClick={props.onClose}>Cancel</Button>
         </DialogActions> 
     </Dialog>;
 }

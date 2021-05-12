@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Icon from '@iobroker/adapter-react/Components/Icon';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import IconButton from '@material-ui/core/IconButton';
 import ListIcon from '@material-ui/icons/List';
@@ -45,20 +46,26 @@ function EnumBlock(props) {
                         size="small"
                         onClick={()=>{props.showEnumEditDialog(props.enum, false)}}
                     >
-                        <EditIcon style={{ color: textColor }} />
+                        <Tooltip title={props.t('Edit')} placement="top">
+                            <EditIcon style={{ color: textColor }} />
+                        </Tooltip>
                     </IconButton>
                     <IconButton
                         size="small"
                         onClick={()=>{props.copyEnum(props.enum._id)}}
                     >
-                        <FileCopyIcon style={{ color: textColor }} />
+                        <Tooltip title={props.t('Copy')} placement="top">
+                            <FileCopyIcon style={{ color: textColor }} />
+                        </Tooltip>
                     </IconButton>
                     <IconButton
                         size="small"
                         onClick={()=>{props.showEnumDeleteDialog(props.enum)}}
                         disabled={props.enum.common.dontDelete}
                     >
-                        <DeleteIcon style={props.enum.common.dontDelete ? null : { color: textColor }} />
+                        <Tooltip title={props.t('Delete')} placement="top">
+                            <DeleteIcon style={props.enum.common.dontDelete ? null : { color: textColor }} />
+                        </Tooltip>
                     </IconButton>
                 </div>
                 <CardContent>
@@ -125,7 +132,9 @@ function EnumBlock(props) {
                                     size="small"
                                     onClick={() => props.removeMemberFromEnum(member._id, props.enum._id)}
                                 >
-                                    <ClearIcon  style={{ color: textColor }} />
+                                    <Tooltip title={props.t('Remove')} placement="top">
+                                        <ClearIcon  style={{ color: textColor }} />
+                                    </Tooltip>
                                 </IconButton>
                             </Card>
                         }) : null}
@@ -144,15 +153,19 @@ function EnumBlock(props) {
                         
                     }}
                 >
-                    <AddIcon style={{ color: textColor }} />
+                    <Tooltip title={props.t('Add child')} placement="top">
+                        <AddIcon style={{ color: textColor }} />
+                    </Tooltip>
                 </IconButton>
                 {props.hasChildren ?
                     <IconButton onClick={()=>props.toggleEnum(props.enum._id)}>
+                        <Tooltip title={props.closed ? props.t('Expand') : props.t('Collapse')} placement="top">
                         {props.closed ?
                             <DownIcon style={{ color: textColor }}/>
                         :
                             <UpIcon style={{ color: textColor }}/>
                         }
+                        </Tooltip>
                     </IconButton>
                 : null}
             </span>
@@ -202,7 +215,7 @@ const EnumBlockDrag = (props) => {
 
 EnumBlockDrag.propTypes = {
     enum: PropTypes.object,
-    members: PropTypes.array,
+    members: PropTypes.object,
     moveEnum: PropTypes.func,
     removeMemberFromEnum: PropTypes.func,
     showEnumEditDialog: PropTypes.func,

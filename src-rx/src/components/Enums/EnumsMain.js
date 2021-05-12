@@ -12,6 +12,8 @@ import EnumTemplateDialog from './EnumTemplateDialog';
 import EnumDeleteDialog from './EnumDeleteDialog';
 import DragObjectBrowser from './DragObjectBrowser'
 
+import Tooltip from '@material-ui/core/Tooltip';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
@@ -33,15 +35,15 @@ const styles = theme => ({
         backgroundColor:theme.palette.background.default
     } ,
     enumGroupCard2: {
-        border: "1px solid #FFF",
+        border: '1px solid #FFF',
         borderColor: theme.palette.divider,
         margin:    10,
         minHeight: 140,
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
-        transition: "all 200ms ease-out",
+        transition: 'all 200ms ease-out',
         opacity:1,
-        overflow: "hidden",
+        overflow: 'hidden',
         cursor: 'grab',
         position: 'relative',
         '&:hover': {
@@ -55,7 +57,7 @@ const styles = theme => ({
     },
     enumCardContent:
     {
-        height:"100%",
+        height:'100%',
         opacity:1
     },
     enumGroupTitle: {
@@ -80,8 +82,8 @@ const styles = theme => ({
         display: 'inline-flex',
         margin: 4,
         padding: 4,
-        backgroundColor: "#00000010",
-        border: "1px solid #FFF",
+        backgroundColor: '#00000010',
+        border: '1px solid #FFF',
         borderColor: theme.palette.text.hint,
         color: theme.palette.text.primary,
         alignItems: 'center',
@@ -90,8 +92,8 @@ const styles = theme => ({
         height: 32,
         width: 32,
         marginRight:5,
-        backgroundSize: "cover",
-        backgroundPosition:"center",
+        backgroundSize: 'cover',
+        backgroundPosition:'center',
         display: 'inline-block'
     },
     right: {
@@ -111,17 +113,17 @@ const styles = theme => ({
         // padding: 0
     },
     flex : {
-        display: "flex"
+        display: 'flex'
     },
     formControl : {
-        display: "flex",
+        display: 'flex',
         padding: 24,
         flexGrow: 1000
     },
     formContainer : {
-        display: "flex",
-        justifyContent:"center",
-        alignItems:"center"
+        display: 'flex',
+        justifyContent:'center',
+        alignItems:'center'
     },
     formIcon : {
         margin: 10,
@@ -144,30 +146,30 @@ const styles = theme => ({
         }
     },
     dialogTitle: {
-        borderBottom: "1px solid #00000020",
+        borderBottom: '1px solid #00000020',
         padding : 0,
-        width:"100%"
+        width:'100%'
     },
     dialogActions: {
-        borderTop: "1px solid #00000020",
-        width:"100%"
+        borderTop: '1px solid #00000020',
+        width:'100%'
     },
     dialogPaper: {
         overflowY: 'initial',
-        display:"flex",
-        flexDirection:"column",
-        justifyContent:"center",
-        alignItems:"center",
-        width: "calc(100% - 100px)",
-        height: "calc(100% - 100px)",
+        display:'flex',
+        flexDirection:'column',
+        justifyContent:'center',
+        alignItems:'center',
+        width: 'calc(100% - 100px)',
+        height: 'calc(100% - 100px)',
         maxWidth: 800,
-        maxHeight:  "100%"
+        maxHeight:  '100%'
     },
     dialogPaperMini : {
         maxHeight: 300
     },
     colorPicker: {
-        // position:"absolute"
+        // position:'absolute'
     },
     iconPreview: {
         maxHeight: 40,
@@ -202,11 +204,22 @@ const styles = theme => ({
             backgroundColor: theme.palette.primary.light,
         }
     },
+    filter: {
+        width: '100%',
+        paddingRight: 20
+    },
     topPanel: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         paddingLeft: 20
+    },
+    topPanel2: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: '4px 20px',
+        justifyContent: 'space-between'
     }
 });
 
@@ -242,10 +255,10 @@ class EnumsList extends Component {
         selectedTab: null,
         currentCategory: null,
         search: '',
-        enumEditDialog: false,
-        enumTemplateDialog: false,
+        enumEditDialog: null,
+        enumTemplateDialog: null,
         enumEditDialogNew: null,
-        enumDeleteDialog: false,
+        enumDeleteDialog: null,
         members: {},
         categoryPopoverOpen: false,
         enumPopoverOpen: false,
@@ -253,17 +266,17 @@ class EnumsList extends Component {
     }
 
     enumTemplate = {
-        "type": "enum",
-        "common": {
-            "name": "",
-            "dontDelete": false,
-            "enabled": true,
-            "color": false,
-            "desc": "",
-            "members": []
+        'type': 'enum',
+        'common': {
+            'name': '',
+            'dontDelete': false,
+            'enabled': true,
+            'color': false,
+            'desc': '',
+            'members': []
         },
-        "native": {},
-        "_id": "enum.new"
+        'native': {},
+        '_id': 'enum.new'
     };
 
     getEnumTemplate = (prefix) => {
@@ -335,7 +348,6 @@ class EnumsList extends Component {
             }
             currentContainer.data = currentEnum;
         }
-        console.log(enumsTree);
         this.setCurrentCategory(this.state.currentCategory && enumsTree.children.enum.children[this.state.currentCategory] ? this.state.currentCategory : Object.keys(enumsTree.children.enum.children)[0]);
         this.setState({
             enumsTree: enumsTree
@@ -413,7 +425,7 @@ class EnumsList extends Component {
                 copyEnum={this.copyEnum}
                 key={container.data._id}
                 getName={this.getName}
-                hasChildren={Object.values(container.children).length}
+                hasChildren={!!Object.values(container.children).length}
                 closed={this.state.enumsClosed[container.data._id]}
                 toggleEnum={this.toggleEnum}
                 {...this.props}
@@ -459,7 +471,7 @@ class EnumsList extends Component {
         })
         .then(()=>{
             this.updateData();
-            this.setState({enumEditDialog: false});
+            this.setState({enumEditDialog: null});
         });
     }
 
@@ -475,7 +487,7 @@ class EnumsList extends Component {
         })
         .then(()=>{
             this.updateData();
-            this.setState({enumDeleteDialog: false});
+            this.setState({enumDeleteDialog: null});
         });
     }
 
@@ -521,7 +533,7 @@ class EnumsList extends Component {
 
     render() {
         if (!this.state.enumsTree) {
-            return 'loading';
+            return <LinearProgress />;
         }
         return <>
             <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
@@ -539,7 +551,9 @@ class EnumsList extends Component {
                                     this.setState({categoryPopoverOpen: true});
                             }}
                         >
-                            <AddIcon/>
+                            <Tooltip title={this.props.t('Add enum')} placement="top">
+                                <AddIcon/>
+                            </Tooltip>
                         </IconButton>
                         <Popover
                             open={this.state.categoryPopoverOpen}
@@ -583,7 +597,14 @@ class EnumsList extends Component {
                             )}
                         </Tabs>
                     </div>
-                        <div className={this.props.classes.topPanel}>
+                        <div className={this.props.classes.topPanel2}>
+                            <TextField 
+                                value={this.state.search} 
+                                placeholder={this.props.t('Filter')} 
+                                InputLabelProps={{shrink: true}}
+                                className={this.props.classes.filter}
+                                onChange={e => this.setState({search: e.target.value})}
+                            />
                             <IconButton
                                 size="small"
                                 className={this.props.classes.addButton}
@@ -596,9 +617,10 @@ class EnumsList extends Component {
                                 }}
                                 id="enumPopoverButton"
                             >
-                                <AddIcon/>
+                                <Tooltip title={this.props.t('Add group')} placement="top">
+                                    <AddIcon/>
+                                </Tooltip>
                             </IconButton>
-                            <TextField value={this.state.search} label={this.props.t('Filter')} onChange={e => this.setState({search: e.target.value})}/>
                         </div>
                         {Object.values(this.state.enumsTree.children.enum.children[this.state.currentCategory].children)
                             .map((enumItem, index) => this.renderTree(enumItem, index))}
@@ -617,7 +639,7 @@ class EnumsList extends Component {
             </DndProvider>
             <EnumEditDialog
                 open={!!this.state.enumEditDialog}
-                onClose={()=>this.setState({enumEditDialog: false})}
+                onClose={()=>this.setState({enumEditDialog: null})}
                 enums={Object.values(this.state.enums)}
                 enum={this.state.enumEditDialog}
                 getName={this.getName}
@@ -629,7 +651,7 @@ class EnumsList extends Component {
             />
             <EnumDeleteDialog
                 open={!!this.state.enumDeleteDialog}
-                onClose={()=>this.setState({enumDeleteDialog: false})}
+                onClose={()=>this.setState({enumDeleteDialog: null})}
                 enum={this.state.enumDeleteDialog}
                 getName={this.getName}
                 t={this.props.t}
@@ -638,7 +660,7 @@ class EnumsList extends Component {
             />
             {!!this.state.enumTemplateDialog && <EnumTemplateDialog
                 prefix={this.state.enumTemplateDialog}
-                onClose={()=>this.setState({enumTemplateDialog: false})}
+                onClose={()=>this.setState({enumTemplateDialog: null})}
                 t={this.props.t}
                 classesParent={this.props.classes}
                 createEnumTemplate={this.createEnumTemplate}

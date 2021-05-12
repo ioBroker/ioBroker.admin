@@ -14,7 +14,7 @@ import Icon from '@iobroker/adapter-react/Components/Icon'
 
 import devices from '../../assets/devices/list.json';
 import rooms from '../../assets/rooms/list.json';
-import {LinearProgress} from "@material-ui/core";
+import {LinearProgress} from '@material-ui/core';
 
 function getSvg(url) {
     return fetch(url)
@@ -39,7 +39,14 @@ const styles = theme => ({
     },
     customGroupButton: {
 
-    }
+    },
+    enumTemplateButton: {
+        width: '100%',
+        justifyContent: 'end'
+    },
+    enumTemplateLabel: {
+        textAlign: 'left'
+    },
 });
 
 class EnumTemplateDialog extends Component {
@@ -55,13 +62,13 @@ class EnumTemplateDialog extends Component {
     componentDidMount() {
 
         this.setState({loading: true}, () => {
-            let templates = this.props.prefix === 'enum.functions' ? devices : rooms;
+            let templates = this.props.prefix.startsWith('enum.functions') ? devices : rooms;
             const icons = [];
 
             const promises = templates.map((template, i) => {
                 let image
                 try {
-                    image = require(`../../assets/${this.props.prefix === 'enum.functions' ? 'devices' : 'rooms'}/${template.icon}`);
+                    image = require(`../../assets/${this.props.prefix.startsWith('enum.functions') ? 'devices' : 'rooms'}/${template.icon}`);
                 } catch (e) {
                     return Promise.resolve(null);
                 }
@@ -79,7 +86,7 @@ class EnumTemplateDialog extends Component {
     }
 
     render() {
-        let templates = this.props.prefix === 'enum.functions' ? devices : rooms;
+        let templates = this.props.prefix.startsWith('enum.functions') ? devices : rooms;
 
         return <Dialog
             maxWidth="md"
@@ -88,7 +95,7 @@ class EnumTemplateDialog extends Component {
             open={true}
             onClose={this.props.onClose}
         >
-            <DialogTitle>{this.props.t(this.props.prefix === 'enum.functions' ? 'Create new function' : 'Create new room')}</DialogTitle>
+            <DialogTitle>{this.props.t(this.props.prefix.startsWith('enum.functions') ? 'Create new function' : 'Create new room')}</DialogTitle>
             <DialogContent style={{textAlign: 'center'}}>
                 {this.state.loading && <LinearProgress/>}
                 {templates.map((template, i) => {
@@ -105,9 +112,11 @@ class EnumTemplateDialog extends Component {
                                     icon: this.state.icons[i]
                                 }
                             });
-                        }}>
-                            <Icon src={this.state.icons[i]}
-                                  className={this.props.classes.icon}/>{this.props.t(template.name)}
+                        }}
+                        startIcon={<Icon src={this.state.icons[i]} className={this.props.classes.icon}/>}
+                        className={this.props.classes.enumTemplateButton}
+                        >
+                            <span className={this.props.classes.enumTemplateLabel}>{this.props.t(template.name)}</span>
                         </Button>
                     </div>
                 })}
