@@ -890,7 +890,7 @@ class Markdown extends Component {
         const classes = this.props.classes;
 
         const versions = Object.keys(this.state.changeLog);
-        versions.sort(semver.gt);
+        versions.filter(ver=>ver !== "Older").sort(semver.gt);
         return <div className={classes.changeLog} key="change-log">{versions.map(version => {
             const item = this.state.changeLog[version];
             return <div key={version} className={classes.changeLogDiv}>

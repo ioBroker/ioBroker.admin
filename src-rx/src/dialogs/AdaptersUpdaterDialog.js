@@ -17,7 +17,9 @@ import { Tooltip } from '@material-ui/core';
 import AdaptersUpdater from '../components/Adapters/AdaptersUpdater';
 import Command from '../components/Command';
 
-const styles = theme => ({
+const styles = theme => {
+    console.log(2222,theme)
+    return({
     dialogRoot: {
         height: 'calc(100% - 64px)',
     },
@@ -27,8 +29,21 @@ const styles = theme => ({
     },
     checkbox:{
         marginRight:10
-    }
-});
+    },
+    appBar:{
+        flexWrap: 'wrap',
+        position: 'sticky',
+        bottom: 0
+    },
+    '@media screen and (max-width: 650px)': {
+        hidden570: {
+            display: 'none !important'
+        },
+        visible570: {
+            display: 'flex !important'
+        },
+    },
+})};
 
 class AdaptersUpdaterDialog extends Component {
     constructor(props) {
@@ -115,8 +130,8 @@ class AdaptersUpdaterDialog extends Component {
                     /></Tooltip>}
                 </div>
             </DialogTitle>
-            <DialogContent style={{ height: '100%', overflow: 'hidden' }}>
-                <Grid container direction="row" style={{ height: 'calc(100% - 50px)', overflow: 'hidden' }}>
+            <DialogContent style={{ height: '100%' }}>
+                <Grid container direction="row" style={{ overflow: 'hidden' }}>
                     <Grid item style={{ height: '100%', overflow: 'hidden', width: this.state.current ? 250 : '100%' }}>
                         <div style={{ height: '100%', overflow: 'auto' }}>
                             <AdaptersUpdater

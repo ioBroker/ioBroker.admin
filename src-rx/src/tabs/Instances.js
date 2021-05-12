@@ -10,7 +10,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import TableCell from '@material-ui/core/TableCell';
 import Tooltip from '@material-ui/core/Tooltip';
 import Paper from '@material-ui/core/Paper';
-import { Hidden, InputAdornment, TextField } from '@material-ui/core';
+import { Avatar, Hidden, InputAdornment, TextField } from '@material-ui/core';
 
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -25,7 +25,10 @@ import CloseIcon from '@material-ui/icons/Close';
 import ViewCompactIcon from '@material-ui/icons/ViewCompact';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import SettingsIcon from '@material-ui/icons/Lens';
-import FilterListIcon from '@material-ui/icons/FilterList';
+import FolderIcon from '@material-ui/icons/Folder';
+import FolderOpenIcon from '@material-ui/icons/FolderOpen';
+import filterIcon from '../assets/filter.svg';
+import ListIcon from '@material-ui/icons/List';
 
 import amber from '@material-ui/core/colors/amber';
 import blue from '@material-ui/core/colors/blue';
@@ -44,6 +47,7 @@ import InstanceCard from '../components/Instances/InstanceCard';
 import InstanceRow from '../components/Instances/InstanceRow';
 import CustomSelectButton from '../components/CustomSelectButton';
 import { instanceFilterDialogCallback } from '../components/Instances/InstanceFilterDialog';
+import InstanceCategory from '../components/Instances/InstanceCategory';
 
 const styles = theme => ({
     table: {
@@ -170,6 +174,15 @@ const styles = theme => ({
         borderRadius: 2,
         margin: 1,
         backgroundColor: '#66bb6a',
+    },
+    square: {
+        width: 24,
+        height: 24,
+        filter: theme.palette.type === 'dark' ? 'brightness(0) invert(1)' : 'grayscale(100%)',
+        opacity: theme.palette.type === 'dark' ? 1 : 0.8
+    },
+    primary: {
+        filter: 'invert(0%) sepia(90%) saturate(300%) hue-rotate(-537deg) brightness(99%) contrast(97%)'
     }
 });
 
@@ -188,6 +201,9 @@ class Instances extends Component {
             playArrow: false,
             importantDevices: false,
             viewMode: false,
+            viewCategory: false,
+            folderOpen: false,
+            rebuild: false,
             hostData: null,
             processes: null,
             mem: null,
@@ -201,20 +217,23 @@ class Instances extends Component {
             delete: false,
 
             //filter
-            mode:null,
-            status:null
+            mode: window.localStorage.getItem('instances.mode') ?
+                window.localStorage.getItem('instances.mode') === 'null' ?
+                    null :
+                    window.localStorage.getItem('instances.mode') : null,
+            status: JSON.parse(window.localStorage.getItem('instances.status')) || null
         };
 
         this.columns = {
             instance: { onlyExpert: false },
-            actions:  { onlyExpert: false },
-            title:    { onlyExpert: false },
+            actions: { onlyExpert: false },
+            title: { onlyExpert: false },
             schedule: { onlyExpert: false },
-            restart:  { onlyExpert: true },
-            log:      { onlyExpert: true },
+            restart: { onlyExpert: true },
+            log: { onlyExpert: true },
             ramLimit: { onlyExpert: true },
-            events:   { onlyExpert: true },
-            ram:      { onlyExpert: false }
+            events: { onlyExpert: true },
+            ram: { onlyExpert: false }
         };
 
         this.promises = {};
@@ -315,23 +334,23 @@ class Instances extends Component {
         let compactGroupCount = 0;
 
         instances.forEach(obj => {
-            const common     = obj ? obj.common : null;
-            const objId      = obj._id.split('.');
+            const common = obj ? obj.common : null;
+            const objId = obj._id.split('.');
             const instanceId = objId[objId.length - 1];
 
             if (common.compactGroup && typeof common.compactGroup === 'number' && compactGroupCount < common.compactGroup) {
                 compactGroupCount = common.compactGroup;
             }
 
-            const instance   = {};
-            instance.id      = obj._id.replace('system.adapter.', '');
-            instance.obj     = obj;
+            const instance = {};
+            instance.id = obj._id.replace('system.adapter.', '');
+            instance.obj = obj;
             instance.compact = !!common.compact;
-            instance.host    = common.host;
-            instance.name    = common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en || common.title || '' : common.title;
-            instance.image   = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
+            instance.host = common.host;
+            instance.name = common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en || common.title || '' : common.title;
+            instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
             instance.enabled = common.enabled;
-            let links        = common.localLinks || common.localLink || '';
+            let links = common.localLinks || common.localLink || '';
             if (links && typeof links === 'string') {
                 links = { _default: links };
             }
@@ -342,48 +361,48 @@ class Instances extends Component {
                 instance.links = instance.links || [];
                 let link = links[linkName];
                 if (typeof link === 'string') {
-                    link = {link};
+                    link = { link };
                 }
 
                 const urls = Utils.replaceLink(link.link, common.name, instanceId, {
-                    objects:       instancesWorker,
-                    hostname:      this.props.hostname,
-                    protocol:      this.props.protocol,
-                    port:          this.props.port,
-                    hosts:         this.props.hosts,
+                    objects: instancesWorker,
+                    hostname: this.props.hostname,
+                    protocol: this.props.protocol,
+                    port: this.props.port,
+                    hosts: this.props.hosts,
                     adminInstance: this.props.adminInstance,
                 }) || [];
 
                 if (urls.length === 1) {
                     instance.links.push({
-                        name:  linkName === '_default' ? (names.length === 1 ? '' : this.t('default')) : this.t(linkName),
-                        link:  urls[0].url,
-                        port:  urls[0].port,
+                        name: linkName === '_default' ? (names.length === 1 ? '' : this.t('default')) : this.t(linkName),
+                        link: urls[0].url,
+                        port: urls[0].port,
                         color: link.color,
                     });
                 } else if (urls.length > 1) {
                     urls.forEach(item => {
                         instance.links.push({
-                            name:  linkName === '_default' ? (names.length === 1 ? '' : this.t('default')) : this.t(linkName),
-                            link:  item.url,
-                            port:  item.port,
+                            name: linkName === '_default' ? (names.length === 1 ? '' : this.t('default')) : this.t(linkName),
+                            link: item.url,
+                            port: item.port,
                             color: link.color,
                         });
                     });
                 }
             });
 
-            instance.canStart    = !common.onlyWWW;
-            instance.config      = common.adminUI.config !== 'none';
-            instance.jsonConfig  = common.adminUI.config === 'json';
+            instance.canStart = !common.onlyWWW;
+            instance.config = common.adminUI.config !== 'none';
+            instance.jsonConfig = common.adminUI.config === 'json';
             instance.materialize = common.adminUI.config === 'materialize';
             instance.compactMode = common.runAsCompactMode || false;
-            instance.mode        = common.mode             || null;
-            instance.loglevel    = common.loglevel         || null;
-            instance.adapter     = common.name             || null;
-            instance.version     = common.version          || null;
+            instance.mode = common.mode || null;
+            instance.loglevel = common.loglevel || null;
+            instance.adapter = common.name || null;
+            instance.version = common.version || null;
 
-            formatted[obj._id]   = instance;
+            formatted[obj._id] = instance;
         });
 
         console.log('getInstances: ' + (Date.now() - start));
@@ -402,6 +421,7 @@ class Instances extends Component {
         const importantDevices = JSON.parse(window.localStorage.getItem('Instances.importantDevices'));
         const playArrow = JSON.parse(window.localStorage.getItem('Instances.playArrow'));
         const viewMode = JSON.parse(window.localStorage.getItem('Instances.viewMode'));
+        const viewCategory = JSON.parse(window.localStorage.getItem('Instances.viewCategory'));
         let filterCompactGroup = JSON.parse(window.localStorage.getItem('Instances.filterCompactGroup'));
         if (!filterCompactGroup && filterCompactGroup !== 0) {
             filterCompactGroup = 'All';
@@ -412,6 +432,7 @@ class Instances extends Component {
             importantDevices,
             playArrow,
             viewMode,
+            viewCategory
         });
     }
 
@@ -621,9 +642,9 @@ class Instances extends Component {
     getModeIcon = (mode, state, className) => {
         if (mode === 'daemon') {
             if (state === 'orange') {
-                return <WarningIcon className={className}/>;
+                return <WarningIcon className={className} />;
             } else if (state === 'green') {
-                return <div className={clsx(className, this.props.classes.okSymbol)}><div className={this.props.classes.okSymbolInner}/></div>;
+                return <div className={clsx(className, this.props.classes.okSymbol)}><div className={this.props.classes.okSymbolInner} /></div>;
             } else {
                 return <SettingsIcon className={className} />;
             }
@@ -635,22 +656,22 @@ class Instances extends Component {
 
     getModeFilter = (value) => {
         let state = 'grey';
-        switch (value){
+        switch (value) {
             case 1:
                 state = 'grey';
-            break
+                break
             case 2:
                 state = 'red';
-            break
+                break
             case 3:
                 state = 'orange';
-            break
+                break
             case 4:
                 state = 'blue';
-            break
+                break
             case 5:
                 state = 'green';
-            break
+                break
             default:
                 break
         }
@@ -718,26 +739,26 @@ class Instances extends Component {
 
     getPanels() {
         let list = Object.keys(this.state.instances).map((id, idx) => {
-            const instance        = this.state.instances[id];
-            const running         = this.isRunning(instance.obj);
-            const alive           = this.isAlive(id);
-            const compactGroup    = this.isCompactGroup(instance.obj);
-            const compact         = this.isCompact(instance.obj);
-            const supportCompact  = instance.compact || false;
+            const instance = this.state.instances[id];
+            const running = this.isRunning(instance.obj);
+            const alive = this.isAlive(id);
+            const compactGroup = this.isCompactGroup(instance.obj);
+            const compact = this.isCompact(instance.obj);
+            const supportCompact = instance.compact || false;
             const connectedToHost = this.isConnectedToHost(id);
-            const connected       = this.isConnected(id);
-            const name            = this.getName(instance.obj);
-            const logLevel        = this.states[`${id}.logLevel`]?.val || instance.loglevel;
-            const logLevelObject  = instance.loglevel;
-            const tier            = instance?.obj?.common?.tier || 3;
-            const loglevelIcon    = this.getLogLevelIcon(logLevel);
-            const checkCompact    = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
-            const inputOutput     = this.getInputOutput(id);
-            const mode            = this.isModeSchedule(instance.obj);
-            const checkSentry     = this.isSentryCheck(instance.adapter);
-            const currentSentry   = this.isSentry(instance.obj);
-            const memoryLimitMB   = this.isMemoryLimitMB(instance.obj);
-            const currentHost   = this.isCurrentHost(instance.obj);
+            const connected = this.isConnected(id);
+            const name = this.getName(instance.obj);
+            const logLevel = this.states[`${id}.logLevel`]?.val || instance.loglevel;
+            const logLevelObject = instance.loglevel;
+            const tier = instance?.obj?.common?.tier || 3;
+            const loglevelIcon = this.getLogLevelIcon(logLevel);
+            const checkCompact = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
+            const inputOutput = this.getInputOutput(id);
+            const mode = this.isModeSchedule(instance.obj);
+            const checkSentry = this.isSentryCheck(instance.adapter);
+            const currentSentry = this.isSentry(instance.obj);
+            const memoryLimitMB = this.isMemoryLimitMB(instance.obj);
+            const currentHost = this.isCurrentHost(instance.obj);
 
 
             return {
@@ -849,14 +870,15 @@ class Instances extends Component {
                 nameId: instance.id,
                 compactGroup,
                 checkCompact,
-                mode:instance.mode,
+                mode: instance.mode,
                 sentry: currentSentry,
-                state: this.getInstanceState(instance.obj)
+                state: this.getInstanceState(instance.obj),
+                category: instance.obj.common.type || 'visualisation',
             }
         });
 
         if (this.state.playArrow) {
-            list = list.filter(({ running }) => this.state.playArrow < 2?running:!running);
+            list = list.filter(({ running }) => this.state.playArrow < 2 ? running : !running);
         }
 
         if (this.state.importantDevices) {
@@ -874,11 +896,11 @@ class Instances extends Component {
                 (this.state.filterCompactGroup === 'default' && (compactGroup === null || compactGroup === 1)) ||
                 (this.state.filterCompactGroup === 'controller' && compactGroup === '0'))
         }
-        if(this.state.mode){
+        if (this.state.mode) {
             list = list.filter(({ mode }) => mode === this.state.mode);
         }
-        if(this.state.status){
-            list = list.filter(({ state }) =>this.getModeFilter(this.state.status) === state)      
+        if (this.state.status) {
+            list = list.filter(({ state }) => this.getModeFilter(this.state.status) === state)
         }
         if (!list.length) {
             return <div style={{
@@ -887,6 +909,27 @@ class Instances extends Component {
                 textAlign: 'center'
             }}>{this.t('all items are filtered out')}</div>
         }
+
+        if (!this.state.viewMode && this.state.viewCategory) {
+            let categoryArray = [];
+            list.forEach(({ category }, idx) => {
+                if (categoryArray.indexOf(category) === -1) {
+                    categoryArray.push(category)
+                }
+            })
+            categoryArray = categoryArray.sort();
+            return categoryArray.map(name => {
+                return <InstanceCategory
+                    key={name}
+                    name={name}
+                    folderOpen={this.state.folderOpen}
+                    rebuild={this.state.rebuild}
+                >
+                    {list.filter(({ category }) => category === name).map(({ render }) => render)}
+                </InstanceCategory>
+            })
+        }
+
         return list.map(({ render }) => render);
     }
 
@@ -931,7 +974,7 @@ class Instances extends Component {
 
     changeStartedStopped = value =>
         this.setState(state => {
-            const newValue = !state.playArrow?1:state.playArrow < 2?2:false;
+            const newValue = !state.playArrow ? 1 : state.playArrow < 2 ? 2 : false;
             window.localStorage.setItem(`Instances.playArrow`, JSON.stringify(newValue));
             return ({ playArrow: newValue });
         });
@@ -1003,6 +1046,23 @@ class Instances extends Component {
                         {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
                     </IconButton>
                 </Tooltip>
+
+                {!this.state.viewMode && <Tooltip title={this.t('Category')}>
+                    <IconButton onClick={() => this.changeSetStateBool('viewCategory')}>
+                        <ListIcon color={this.state.viewCategory ? 'primary' : 'inherit'} />
+                    </IconButton>
+                </Tooltip>}
+                {!this.state.viewMode && this.state.viewCategory && <><Tooltip title={this.t('expand all')}>
+                    <IconButton onClick={() => this.setState({ folderOpen: true, rebuild: !this.state.rebuild })}>
+                        <FolderOpenIcon />
+                    </IconButton>
+                </Tooltip>
+                    <Tooltip title={this.t('collapse all')}>
+                        <IconButton onClick={() => this.setState({ folderOpen: false, rebuild: !this.state.rebuild })}>
+                            <FolderIcon />
+                        </IconButton>
+                    </Tooltip>
+                </>}
                 <Tooltip title={this.t('Reload')}>
                     <IconButton onClick={() => this.getData(true)}>
                         <RefreshIcon />
@@ -1013,24 +1073,24 @@ class Instances extends Component {
                         <DevicesIcon color={this.state.importantDevices ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip> : null}
-                <Tooltip title={this.t(!this.state.playArrow?
-                    'Show running or stopped instances':
-                    this.state.playArrow < 2?
-                    'Showed only running instances':
-                    'Showed only stopped instances')}>
+                <Tooltip title={this.t(!this.state.playArrow ?
+                    'Show running or stopped instances' :
+                    this.state.playArrow < 2 ?
+                        'Showed only running instances' :
+                        'Showed only stopped instances')}>
                     <IconButton onClick={() => this.changeStartedStopped(this.state.playArrow)}>
-                        <PlayArrowIcon style={this.state.playArrow === 2?{color:'red'}:null} color={this.state.playArrow && this.state.playArrow<2 ? 'primary' : 'inherit'} />
+                        <PlayArrowIcon style={this.state.playArrow === 2 ? { color: 'red' } : null} color={this.state.playArrow && this.state.playArrow < 2 ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.t('Filter instances')}>
-                    <IconButton onClick={() => instanceFilterDialogCallback((el)=>{
-                        if(el){
+                    <IconButton onClick={() => instanceFilterDialogCallback((el) => {
+                        if (el) {
                             this.setState(el);
+                            window.localStorage.setItem(`instances.mode`, el.mode);
+                            window.localStorage.setItem(`instances.status`, el.status);
                         }
-                    },this.state.mode,this.state.status)}>
-                        <FilterListIcon 
-                        color={this.state.mode || this.state.status ? 'primary' : 'inherit'} 
-                        />
+                    }, this.state.mode, this.state.status)}>
+                        <Avatar variant="square" className={clsx(classes.square, (this.state.mode || this.state.status) && classes.primary)} src={filterIcon} />
                     </IconButton>
                 </Tooltip>
                 {/*this.props.expertMode && <Tooltip title="sentry">

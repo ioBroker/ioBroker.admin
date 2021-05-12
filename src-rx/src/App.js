@@ -977,6 +977,7 @@ class App extends Router {
                         hostname={this.state.hostname}
                         port={this.state.port}
                         adminInstance={this.adminInstance}
+                        repository={this.state.repository}
 
                         hosts={this.state.hosts}
                         themeName={this.state.themeName}

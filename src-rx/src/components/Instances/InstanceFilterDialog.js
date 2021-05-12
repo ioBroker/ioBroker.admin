@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import FilterListIcon from '@material-ui/icons/FilterList';
+import WarningIcon from '@material-ui/icons/Warning';
+import ScheduleIcon from '@material-ui/icons/Schedule';
+import SettingsIcon from '@material-ui/icons/Lens';
+import filterIcon from '../../assets/filter.svg';
 
 import I18n from '@iobroker/adapter-react/i18n';
-import { Card, Checkbox, DialogTitle, FormControlLabel, makeStyles, MenuItem, Select, ThemeProvider } from '@material-ui/core';
+import { Avatar, Card, Checkbox, DialogTitle, FormControlLabel, makeStyles, MenuItem, Select, ThemeProvider } from '@material-ui/core';
 
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
@@ -43,9 +46,55 @@ const useStyles = makeStyles((theme) => ({
     slect: {
         minWidth: 200
     },
-    checkbox:{
-        minWidth:130
-    }
+    checkbox: {
+        minWidth: 130
+    },
+    statusIcon_1: { // circle
+        border: '2px solid grey',
+        borderRadius: 20,
+        color: 'grey'
+    },
+    statusIcon_2: { // square
+        border: '2px solid grey',
+        borderRadius: 20,
+        color: '#d32f2f'
+    },
+    statusIcon_3: { // triangle
+        border: 0,
+        borderRadius: 0,
+        color: '#ffa726'
+    },
+    statusIcon_4: { // watch
+        border: '2px solid grey',
+        borderRadius: 20,
+        color: '#0055a9'
+    },
+    statusIcon_5: { // circle ?
+        border: '2px solid grey',
+        borderRadius: 20,
+    },
+    statusIcon_6: { // circle ?
+        border: '2px solid grey',
+        borderRadius: 20,
+    },
+    menuWrapper: {
+        display: 'flex',
+        alignItems: 'center'
+    },
+    iconWrapper: {
+        marginRight: 10
+    },
+    textWrapper: {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
+    },
+    square: {
+        width: 24,
+        height: 24,
+        marginRight:10,
+        filter: 'invert(0%) sepia(90%) saturate(300%) hue-rotate(-537deg) brightness(99%) contrast(97%)'
+    },
 }));
 
 const modeArray = ['none', 'daemon', 'schedule', 'once'];
@@ -56,7 +105,34 @@ const statusArray = [
     'enabled, alive, but not connected to controller',
     'enabled, alive, connected, but not connected to device or service',
     'enabled and OK'
-]
+];
+
+const getModeIcon = (idx, className) => {
+    if (idx === 1) {
+        return <SettingsIcon className={className} />;
+
+    } else if (idx === 2) {
+        return <SettingsIcon className={className} />;
+    } else if (idx === 3) {
+        return <WarningIcon className={className} />;
+    } else if (idx === 4) {
+        return <ScheduleIcon className={className} />
+    } else if (idx === 5) {
+        return <div style={{
+            width: 20,
+            height: 20,
+            margin: 2,
+            borderRadius: 2,
+        }} className={className}><div style={{
+            width: 'calc(100% - 2px)',
+            height: 'calc(100% - 2px)',
+            borderRadius: 2,
+            margin: 1,
+            backgroundColor: '#66bb6a',
+        }} /></div>;
+    }
+    return null;
+}
 
 const InstanceFilterDialog = ({ cb, mode, status }) => {
     const classes = useStyles();
@@ -79,7 +155,12 @@ const InstanceFilterDialog = ({ cb, mode, status }) => {
             open={open}
             classes={{ paper: classes.paper }}
         >
-            <DialogTitle style={{ display: 'flex' }}><FilterListIcon style={{ marginRight: 5 }} color="primary" />{I18n.t('Filter instances')}</DialogTitle>
+            <DialogTitle style={{ display: 'flex' }}>
+                <div style={{ display: 'flex' }}>
+                    <Avatar variant="square" className={classes.square} src={filterIcon} />
+                    {I18n.t('Filter instances')}
+                </div>
+            </DialogTitle>
             <DialogContent className={classes.overflowHidden} dividers>
                 <Card className={classes.root}>
                     <div className={classes.rowBlock}>
@@ -135,8 +216,15 @@ const InstanceFilterDialog = ({ cb, mode, status }) => {
                                 }
                             }}
                         >
-                            {statusArray.map((el,idx) => <MenuItem key={el} value={idx}>
-                                {I18n.t(el)}
+                            {statusArray.map((el, idx) => <MenuItem key={el} value={idx}>
+                                <div className={classes.menuWrapper}>
+                                    {idx > 0 && <div className={classes.iconWrapper}>
+                                        {getModeIcon(idx, classes['statusIcon_' + idx])}
+                                    </div>}
+                                    <div className={classes.textWrapper}>
+                                        {I18n.t(el)}
+                                    </div>
+                                </div>
                             </MenuItem>)}
                         </Select>
                     </div>

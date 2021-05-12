@@ -134,8 +134,42 @@ const useStyles = makeStyles((theme) => ({
     },
     heading: {
         display: 'flex',
-        alignItems: 'center'
-    }
+        alignItems: 'center',
+        overflow: 'hidden'
+    },
+    headingTop: {
+        display: 'flex',
+        alignItems: 'center',
+    },
+    classNameBox: {
+        padding: 24
+    },
+    textStyle: {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
+    },
+    content: {
+        overflow: 'hidden'
+    },
+    '@media screen and (max-width: 550px)': {
+        classNameBox: {
+            padding: 10
+        },
+        message: {
+            flexWrap: 'wrap'
+        },
+        textStyle: {
+            fontSize: '2.9vw'
+        },
+        terminal: {
+            fontSize: '2.9vw',
+            marginLeft: 0
+        },
+        silver: {
+            fontSize: '2.9vw',
+        }
+    },
 }));
 
 const Status = ({ name, ...props }) => {
@@ -174,7 +208,7 @@ const a11yProps = (index) => {
     };
 }
 
-const TabPanel = ({ children, value, index, ...other }) => {
+const TabPanel = ({ children, value, index, classNameBox, ...other }) => {
     return (
         <div
             role="tabpanel"
@@ -184,7 +218,7 @@ const TabPanel = ({ children, value, index, ...other }) => {
             {...other}
         >
             {value === index && (
-                <Box p={3}>
+                <Box className={classNameBox}>
                     <Typography component="div">{children}</Typography>
                 </Box>
             )}
@@ -200,9 +234,9 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
     const [disabled, setDisabled] = useState([]);
     const [expanded, setExpanded] = useState(false);
 
-    const onClose = () =>{
+    const onClose = () => {
         setOpen(false);
-        if(node){
+        if (node) {
             document.body.removeChild(node);
             node = null;
         }
@@ -222,7 +256,7 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
             open={open}
             classes={{ paper: classes.paper }}
         >
-            <h2 className={classes.heading}><Status name="heading" />{I18n.t("Adapter warnings")}</h2>
+            <h2 className={classes.headingTop}><Status name="heading" />{I18n.t("Adapter warnings")}</h2>
             <DialogContent className={clsx(classes.flex, classes.overflowHidden)} dividers>
                 <div className={classes.root}>
                     <AppBar position="static" color="default">
@@ -245,6 +279,7 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
                     </AppBar>
                     {Object.keys(message).map((name, idx) => <TabPanel
                         className={classes.overflowAuto}
+                        classNameBox={classes.classNameBox}
                         key={`tabPanel-${name}`}
                         style={black ? { color: 'black' } : null}
                         value={value}
@@ -265,12 +300,16 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
                                 return <Accordion style={black ? null : { background: '#c0c0c052' }} key={nameInst} expanded={expanded === `${name}-${nameInst}`} onChange={handleChangeAccordion(`${name}-${nameInst}`)}>
                                     <AccordionSummary
                                         expandIcon={<ExpandMoreIcon />}
+                                        classes={{ content: classes.content }}
                                         aria-controls="panel1bh-content"
                                         id="panel1bh-header"
                                     >
                                         <Typography className={classes.heading}>
                                             <CardMedia className={classes.img2} component="img" image={icon} />
-                                            {nameInst.replace(/^system\.adapter\./, '')}</Typography>
+                                            <div className={classes.textStyle}>
+                                                {nameInst.replace(/^system\.adapter\./, '')}
+                                            </div>
+                                        </Typography>
                                     </AccordionSummary>
                                     <AccordionDetails className={classes.column}>
                                         {message[name].instances[nameInst].messages.map(el =>
@@ -287,7 +326,7 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
                                 variant="contained"
                                 autoFocus
                                 disabled={disabled.includes(name)}
-                                style={disabled.includes(name) ? {background: 'silver'} : null}
+                                style={disabled.includes(name) ? { background: 'silver' } : null}
                                 onClick={() => {
                                     ackCallback(name);
                                     setDisabled([...disabled, name]);
@@ -295,6 +334,18 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
                                 color="primary">
                                 {I18n.t('Acknowledge')}
                             </Button>
+                            {Object.keys(message).length === 1 && <Button
+                                variant="contained"
+                                disabled={disabled.includes(name)}
+                                style={disabled.includes(name) ? { background: 'silver', marginLeft: 8 } : { marginLeft: 8 }}
+                                onClick={() => {
+                                    ackCallback(name);
+                                    setDisabled([...disabled, name]);
+                                    onClose();
+                                }}
+                                color="primary">
+                                {I18n.t('Acknowledge & close')}
+                            </Button>}
                         </div>
                     </TabPanel>
                     )}
