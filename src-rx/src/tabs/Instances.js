@@ -702,7 +702,7 @@ class Instances extends Component {
         if (logOnTheFlyValue) {
             this.props.socket.setState(`system.adapter.${instance.id}.logLevel`, value);
         } else {
-            this.extendObject('system.adapter.' + instance.id, { common: { logLevel: value } });
+            this.extendObject('system.adapter.' + instance.id, { common: { loglevel: value } });
         }
     };
 

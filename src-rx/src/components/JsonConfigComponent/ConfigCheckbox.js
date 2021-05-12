@@ -3,6 +3,8 @@ import { withStyles } from '@material-ui/core/styles';
 
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
 
 import ConfigGeneric from './ConfigGeneric';
 
@@ -14,7 +16,8 @@ class ConfigCheckbox extends ConfigGeneric {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         let isIndeterminate = Array.isArray(value);
 
-        return <FormControlLabel
+        return <FormControl className={this.props.classes.fullWidth}>
+            <FormControlLabel
             onClick={e => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -34,7 +37,9 @@ class ConfigCheckbox extends ConfigGeneric {
                 disabled={!!disabled}
             />}
             label={this.getText(this.props.schema.label)}
-        />;
+        />
+        {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
+        </FormControl>
     }
 }
 

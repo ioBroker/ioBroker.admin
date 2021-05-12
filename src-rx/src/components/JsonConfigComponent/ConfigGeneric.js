@@ -3,11 +3,13 @@ import PropTypes from 'prop-types';
 
 import Grid from '@material-ui/core/Grid';
 
-import I18n from '@iobroker/adapter-react/i18n';
-import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 import IconInfo from '@material-ui/icons/Info';
 import IconWarning from '@material-ui/icons/Warning';
 import IconError from '@material-ui/icons/Error';
+
+import I18n from '@iobroker/adapter-react/i18n';
+import Utils from '@iobroker/adapter-react/Components/Utils';
+import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 
 class ConfigGeneric extends Component {
     static DIFFERENT_VALUE = '__different__';
@@ -339,9 +341,19 @@ class ConfigGeneric extends Component {
 
     renderHelp(text, link, noTranslation) {
         if (!link) {
-            return this.getText(text, noTranslation) || '';
+            text = this.getText(text, noTranslation) || '';
+            if (text && text.includes('<a ')) {
+                return Utils.renderTextWithA(text);
+            } else {
+                return text;
+            }
         } else {
-            return <a href={link} target="_blank" rel="noreferrer">{this.getText(text, noTranslation)}</a>;
+            return <a
+                href={link}
+                target="_blank"
+                rel="noreferrer"
+                style={{color: this.props.themeType === 'dark' ? '#eee' : '#111'}}
+            >{this.getText(text, noTranslation)}</a>;
         }
     }
 

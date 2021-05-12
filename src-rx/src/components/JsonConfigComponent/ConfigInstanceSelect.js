@@ -23,7 +23,8 @@ class ConfigInstanceSelect extends ConfigGeneric {
         this.props.socket.getAdapterInstances(this.props.schema.adapter)
             .then(instances => {
                 const selectOptions = instances.map(instance => ({
-                    value: instance._id.replace(/^system\.adapter\./, ''),
+                    value: this.props.schema.long ? instance._id :
+                        (this.props.schema.short ? instance._id.split('.').pop() : instance._id.replace(/^system\.adapter\./, '')),
                     label: `${instance.common.name} [${instance._id.replace(/^system\.adapter\./, '')}]`
                 }));
 

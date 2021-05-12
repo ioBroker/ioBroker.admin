@@ -1312,8 +1312,8 @@
   "Install or update the adapter from %s": "Установите или обновите адаптер с %s",
   "Show running or stopped instances": "Показать запущенные или остановленные экземпляры",
   "Filter instances": "Фильтровать экземпляры",
-  "saved:": "сохранено:",
-  "actual:": "действительный:",
+  "saved:": "Сохранено:",
+  "actual:": "Действует:",
   "Show only installed": "Показать только установленные драйвера",
   "Showed only installed adapters without instance.": "Показаны только установленные адаптеры без экземпляра.",
   "Showed only installed adapters": "Показаны только установленные адаптеры",
@@ -1374,5 +1374,8 @@
   "Update \"%s\" to v%s": "Обновите \"%s\" до версии v%s",
   "No comments in selected language": "Нет комментариев на выбранном языке",
   "Total rating:": "Общий рейтинг:",
-  "Rating for": "Рейтинг для"
+  "Rating for": "Рейтинг для",
+  "repeat": "повтор",
+  "Import settings from JSON file": "Импортировать настройки из файла JSON",
+  "Export setting to JSON file": "Настройки экспорта в файл JSON"
 }

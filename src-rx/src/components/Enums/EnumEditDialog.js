@@ -75,12 +75,12 @@ function EnumEditDialog(props) {
         <DialogTitle className={props.classes.dialogTitle} style={{padding:12}} >
            { props.t( 'Enum parameters' ) }
         </DialogTitle>
-        <DialogContent >
+        <DialogContent>
             <Grid  container spacing={4} className={props.classes.dialog}>
                 <Grid item xs={12} md={6}>
-                    <IOTextField 
-                        label="Name" 
-                        t={props.t} 
+                    <IOTextField
+                        label="Name"
+                        t={props.t}
                         value={ props.getName(props.enum.common.name) }
                         onChange={e=>{
                             let newData = props.enum;
@@ -96,9 +96,9 @@ function EnumEditDialog(props) {
                     />
                 </Grid>
                  <Grid item xs={12} md={6}>
-                    <IOTextField 
-                        label="ID edit" 
-                        t={props.t} 
+                    <IOTextField
+                        label="ID edit"
+                        t={props.t}
                         disabled={props.enum.common.dontDelete}
                         value={ props.enum._id.split('.')[props.enum._id.split('.').length-1] }
                         onChange={e=>{
@@ -111,9 +111,9 @@ function EnumEditDialog(props) {
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <IOTextField 
-                        label="ID preview" 
-                        t={props.t} 
+                    <IOTextField
+                        label="ID preview"
+                        t={props.t}
                         disabled
                         value={ props.enum._id }
                         icon={PageviewIcon}
@@ -121,9 +121,9 @@ function EnumEditDialog(props) {
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <IOTextField 
-                        label="Description" 
-                        t={props.t} 
+                    <IOTextField
+                        label="Description"
+                        t={props.t}
                         value={ props.enum.common.desc }
                         onChange={e=>{
                             let newData = props.enum;
@@ -135,10 +135,10 @@ function EnumEditDialog(props) {
                     />
                 </Grid>
                  <Grid item xs={12} md={6}>
-                    <IOFileInput 
-                        label="Icon" 
+                    <IOFileInput
+                        label="Icon"
                         icons={ICONS}
-                        t={props.t} 
+                        t={props.t}
                         value={ props.enum.common.icon }
                         onChange={fileblob=>{
                             let newData = props.enum;
@@ -148,12 +148,12 @@ function EnumEditDialog(props) {
                         previewClassName={props.classes.iconPreview}
                         icon={ImageIcon}
                         classes={props.classes}
-                    />                
+                    />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <IOColorPicker 
-                        label="Color" 
-                        t={props.t} 
+                    <IOColorPicker
+                        label="Color"
+                        t={props.t}
                         value={ props.enum.common.color }
                         previewClassName={props.classes.iconPreview}
                         onChange={color=>{
@@ -171,7 +171,7 @@ function EnumEditDialog(props) {
         <DialogActions className={props.classes.dialogActions} >
             <Button variant="contained" color="primary" autoFocus onClick={()=>props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>{props.t('Save')}</Button>
             <Button variant="contained" onClick={props.onClose}>{props.t('Cancel')}</Button>
-        </DialogActions> 
+        </DialogActions>
     </Dialog>;
 }
 

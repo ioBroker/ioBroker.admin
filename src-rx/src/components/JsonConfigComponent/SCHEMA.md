@@ -20,6 +20,7 @@ Possible types:
 
 - `text` - Text component
   - `maxLength` - max length of text in field
+  - `readOnly` - read only field
 
 - `number`
   - `min` - minimal value
@@ -97,10 +98,15 @@ Possible types:
 - `instance`
  - `adapter` - name of adapter
  - `allowDeactivate` - if true. Additional option "deactivate" is shown
+ - `long` - value will look like `system.adapter.ADAPTER.0` and not `ADAPTER.0`
+ - `short` - value will look like `0` and not `ADAPTER.0`
 
 - `chips` - user can enter the word, and it will be added (see cloud => services => White list)
 
-- `!alive` - just indication if the instance is alive, and it could be used in "hidden" and "disabled" (will not be saved in config)
+- `alive` - just indication if the instance is alive, and it could be used in "hidden" and "disabled" (will not be saved in config)
+  - `instance` - check if the instance is alive. If not defined, it will be used current instance. You can use `${data.number}` pattern in the text.
+  - `textAlive` - default text is `Instance %s is alive`, where %s will be replaced by `ADAPTER.0`.
+  - `textNotAlive` - default text is `Instance %s is not alive`, where %s will be replaced by `ADAPTER.0`.
   
   Just text: Instance is running, Instance is not running
 
@@ -226,6 +232,18 @@ adapter.on('message', obj => {
     The result of command must be an array in form `["value1", {"value": "value2", "label": "Value2"}, ...]`
     See `selectSendTo` for handler example 
 
+- `textSendTo`
+  Shows readonly control with the given from the instance values.
+  - `container` - div, text
+  - `copyToClipboard` - if true - show button
+  - `alsoDependsOn` - by change of which attributes, the command must be resent
+  - `command` - sendTo command
+  - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to backend
+  - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to backend if jsonData is not defined.
+ 
+  To use this option, your adapter must implement message handler:
+    The result of command must be an array in form `"text"`
+    See `selectSendTo` for handler example
 
 ## Common attributes of controls
 All types could have:

@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.21",
+        "version": "5.0.22",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.0.22": {
+                "en": "Admin5: Fixed some bugs",
+                "de": "Admin5: Einige Fehler wurden behoben",
+                "ru": "Admin5: Исправлены некоторые ошибки",
+                "pt": "Admin5: Corrigido alguns bugs",
+                "nl": "Admin5: enkele bugs opgelost",
+                "fr": "Admin5: Correction de quelques bugs",
+                "it": "Admin5: risolti alcuni bug",
+                "es": "Admin5: se corrigieron algunos errores",
+                "pl": "Admin5: Naprawiono kilka błędów",
+                "zh-cn": "Admin5：修复了一些错误"
+            },
             "5.0.21": {
                 "en": "Admin5: Fixed many bugs",
                 "de": "Admin5: Viele Fehler behoben",
@@ -245,18 +257,6 @@
                 "es": "Admin5: muchas funciones nuevas implementadas",
                 "pl": "Admin5: Zaimplementowano wiele nowych funkcji",
                 "zh-cn": "Admin5：已实现许多新功能"
-            },
-            "5.0.2": {
-                "en": "Merged the changes from admin4",
-                "de": "Die Änderungen von admin4 wurden zusammengeführt",
-                "ru": "Слил изменения от admin4",
-                "pt": "Mesclou as alterações de admin4",
-                "nl": "Samengevoegd de wijzigingen van admin4",
-                "fr": "Fusion des modifications de admin4",
-                "it": "Fuse le modifiche da admin4",
-                "es": "Fusionó los cambios de admin4",
-                "pl": "Scalono zmiany z admin4",
-                "zh-cn": "合并来自admin4的更改"
             }
         },
         "desc": {

@@ -566,7 +566,12 @@ class Drawer extends Component {
                 <List>
                     {this.getNavigationItems()}
                     {this.props.isSecure &&
-                        <DrawerItem onClick={this.props.onLogout} text={this.props.t('Logout')} icon={<LogoutIcon />} />
+                        <DrawerItem
+                            compact={!this.isSwipeable() && this.props.state !== STATES.opened}
+                            onClick={this.props.onLogout}
+                            text={this.props.t('Logout')}
+                            icon={<LogoutIcon />}
+                        />
                     }
                 </List>
                 {this.props.state === STATES.opened && <div style={{
@@ -596,7 +601,11 @@ class Drawer extends Component {
                 <List className={classes.list}>
                     {this.getNavigationItems()}
                     {this.props.isSecure &&
-                        <DrawerItem onClick={this.props.onLogout} text={this.props.t('Logout')} icon={<LogoutIcon />} />
+                        <DrawerItem
+                            compact={!this.isSwipeable() && this.props.state !== STATES.opened}
+                            onClick={this.props.onLogout} text={this.props.t('Logout')}
+                            icon={<LogoutIcon />}
+                        />
                     }
                 </List>
                 {this.props.state === STATES.opened && <div style={{

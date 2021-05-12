@@ -11,10 +11,10 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import Router from '@iobroker/adapter-react/Components/Router';
 import Icon from '@iobroker/adapter-react/Components/Icon';
+import HelpIcon from '@material-ui/icons/Help';
 
 import JsonConfig from '../components/JsonConfig';
 
-import HelpIcon from '@material-ui/icons/Help';
 
 const styles = theme => ({
     root: {
@@ -48,6 +48,7 @@ class Config extends Component {
             checkedExist: false,
         };
     }
+
     componentDidMount() {
         // receive messages from IFRAME
         const eventFunc = window.addEventListener ? 'addEventListener' : 'attachEvent';

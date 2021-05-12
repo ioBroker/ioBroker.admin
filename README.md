@@ -22,7 +22,7 @@ User interface for configuration and administration of ioBroker.
 - %native_someField% - get someField from `native` of this adapter instance
 
 ## Scheduled restart
-Some adapters re not stable or connection disappear after one or two days.
+Some adapters are not stable or connection disappear after one or two days.
 To fix this there is a scheduled restart setting.
 To activate scheduled restart just define CRON condition when to restart adapter.
 
@@ -93,6 +93,9 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 -->
 
 ## Changelog
+### 5.0.22 (2021-05-12)
+* (bluefox) Admin5: Fixed some bugs
+
 ### 5.0.21 (2021-05-11)
 * (bluefox) Admin5: Fixed many bugs
 
@@ -103,9 +106,6 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 * (bluefox) Admin5: Fixed many bugs
 
 ### 5.0.18 (2021-05-07)
-* (bluefox) Admin5: Fixed many bugs
-
-### 5.0.17 (2021-05-06)
 * (bluefox) Admin5: Fixed many bugs
 
 ## License

@@ -1370,5 +1370,8 @@
   "Update \"%s\" to v%s": "Zaktualizuj „%s” do wersji %s",
   "No comments in selected language": "Brak komentarzy w wybranym języku",
   "Total rating:": "Ocena łączna:",
-  "Rating for": "Ocena dla"
+  "Rating for": "Ocena dla",
+  "repeat": "powtarzać",
+  "Import settings from JSON file": "Importuj ustawienia z pliku JSON",
+  "Export setting to JSON file": "Eksportuj ustawienia do pliku JSON"
 }

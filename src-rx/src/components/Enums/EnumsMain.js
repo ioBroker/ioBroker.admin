@@ -104,8 +104,6 @@ const styles = theme => ({
         marginRight:10
     },
     dialog: {
-        // padding: 10,
-
         // maxWidth: '100vw',
         // maxHeight: '100vh',
         // overflowY: 'auto',
@@ -598,9 +596,9 @@ class EnumsList extends Component {
                         </Tabs>
                     </div>
                         <div className={this.props.classes.topPanel2}>
-                            <TextField 
-                                value={this.state.search} 
-                                placeholder={this.props.t('Filter')} 
+                            <TextField
+                                value={this.state.search}
+                                placeholder={this.props.t('Filter')}
                                 InputLabelProps={{shrink: true}}
                                 className={this.props.classes.filter}
                                 onChange={e => this.setState({search: e.target.value})}
