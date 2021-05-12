@@ -13,13 +13,14 @@ import Paper from  '@material-ui/core/Paper';
 import FormControlLabel from  '@material-ui/core/FormControlLabel';
 import Checkbox from  '@material-ui/core/Checkbox';
 
-import DialogError from '@iobroker/adapter-react/Dialogs/Error';
-
+// Icons
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-// Icons
-import JsonConfigComponent from '../JsonConfigComponent';
+import DialogError from '@iobroker/adapter-react/Dialogs/Error';
 import ConfirmDialog from "@iobroker/adapter-react/Dialogs/Confirm";
+
+import JsonConfigComponent from '../JsonConfigComponent';
+import Utils from '../../Utils';
 
 const styles = theme => ({
     paper: {
@@ -179,12 +180,16 @@ class ObjectCustomEditor extends Component {
     }
 
     getCustomTemplate(adapter) {
-        const ad = this.props.objects['system.adapter.' + adapter];
+        const ad = this.props.objects['system.adapter.' + adapter] ? JSON.parse(JSON.stringify(this.props.objects['system.adapter.' + adapter])) : null;
+
         if (!ad) {
             console.error('Cannot find adapter ' + ad);
             return Promise.resolve(null);
         } else {
-            if (ad.common?.jsonCustom) {
+
+            Utils.fixAdminUI(ad);
+
+            if (ad.common?.adminUI.custom === 'json') {
                 return this.props.socket.readFile(adapter + '.admin', 'jsonCustom.json')
                     .then(json => {
                         try {
@@ -379,8 +384,17 @@ class ObjectCustomEditor extends Component {
 
         const disabled = this.jsonConfigs[adapter] && this.jsonConfigs[adapter].json?.disabled;
 
-        if (disabled && this.jsonConfigs[adapter].json.hidden) {
+        const data = this.combineNewAndOld(instance);
+
+        if (disabled && this.jsonConfigs[adapter].json.hidden === true) {
             return null;
+        }
+
+        if (typeof this.jsonConfigs[adapter].json.hidden === 'string') {
+            // evaluate function
+            if (this._executeCustom(this.jsonConfigs[adapter].json.hidden, data, customObj, instanceObj, this.jsonConfigs[adapter].json.items, 'enabled', [])) {
+                return null;
+            }
         }
 
         return <Accordion
@@ -450,7 +464,7 @@ class ObjectCustomEditor extends Component {
                             multiEdit={this.props.objectIDs.length > 1}
 
                             schema={this.jsonConfigs[adapter].json}
-                            data={this.combineNewAndOld(instance)}
+                            data={data}
                             onError={error =>
                                 this.setState({error}, () => this.props.onError && this.props.onError(error))}
                             onValueChange={(attr, value) => {

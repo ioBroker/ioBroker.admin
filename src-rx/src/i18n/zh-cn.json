@@ -1368,5 +1368,7 @@
   "Log level will be reset to the saved level after the restart of the controller": "重新启动控制器后，日志级别将重置为已保存的级别",
   "You can set the log level permanently in the base host settings": "您可以在主机基础设置中永久设置日志级别",
   "Update \"%s\" to v%s": "将“ %s”更新为v%s",
-  "No comments in selected language": "没有以所选语言发表的评论"
+  "No comments in selected language": "没有以所选语言发表的评论",
+  "Total rating:": "总评分：",
+  "Rating for": "评分"
 }

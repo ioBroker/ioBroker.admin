@@ -28,8 +28,9 @@ Marked with "!" must be in release candidate
 - (BF) Scroll to new created/copied enumeration
 
 ## Adapters
-- Update of available versions does not work: https://github.com/ioBroker/ioBroker.admin/issues/830
-- Switch of host does not make any effect: https://github.com/ioBroker/ioBroker.admin/issues/819 
+- (BF) Update of available versions does not work: https://github.com/ioBroker/ioBroker.admin/issues/830
+- Switch of host does not make any effect: 
+   
 - Mobile view Updater: https://github.com/ioBroker/ioBroker.admin/issues/851
 
 ## Wizard
@@ -50,6 +51,7 @@ Marked with "!" must be in release candidate
 ## Files
 
 ## Hosts
+- List of hosts does not update itself if new host added or removed
 
 ## Users
 

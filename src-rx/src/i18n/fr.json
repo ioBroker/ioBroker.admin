@@ -1368,5 +1368,7 @@
   "Log level will be reset to the saved level after the restart of the controller": "Le niveau de journal sera réinitialisé au niveau enregistré après le redémarrage du contrôleur",
   "You can set the log level permanently in the base host settings": "Vous pouvez définir le niveau de journalisation de manière permanente dans les paramètres de base de l'hôte",
   "Update \"%s\" to v%s": "Mettez à jour \"%s\" vers la v%s",
-  "No comments in selected language": "Aucun commentaire dans la langue sélectionnée"
+  "No comments in selected language": "Aucun commentaire dans la langue sélectionnée",
+  "Total rating:": "Note totale:",
+  "Rating for": "Évaluation pour"
 }

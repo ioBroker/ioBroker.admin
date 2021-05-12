@@ -167,6 +167,10 @@ Possible types:
   - `text`
   - `size` - 1-5 => h1-h5
 
+- `cron`
+  - `complex` - show CRON with "minutes", "seconds" and so on 
+  - `simple` - show simple CRON settings
+
 - `selectSendTo`
   Shows drop down menu with the given from the instance values. 
   - `command` - sendTo command
@@ -416,6 +420,7 @@ or
 We suggest to use variant 2, as it will be possible to process the texts with weblate.
 
 ## JS Functions
+### Configuration dialog
 JS functions is:
 ```
 const myValidator = "_alive === true && data.options.myType == 2";
@@ -426,6 +431,31 @@ const isValid = func(data, systemConfig.common, instanceAlive, adapter.common, t
 
 ```
 If alive status changes, so all fields must be updated, validated, disabled, hidden anew.
+
+Following variables are available in JS function in custom settings:
+- data - native settings for this instance
+- _system - system configuration
+- _alive - is instance is alive
+- _common - common settings for this instance
+- _socket - socket
+
+### Custom settings dialog
+JS functions is:
+```
+const myValidator = "customObj.common.type === 'boolean' && data.options.myType == 2";
+
+const func = new Function('data', '_system', 'instanceObj', 'customObj', '_socket', myValidator.includes('return') ? myValidator : 'return ' + myValidator); // e.g. "_alive === true"
+
+const isValid = func(data || this.props.data, this.props.systemConfig, instanceObj, customObj, this.props.socket);
+
+```
+
+Following variables are available in JS function in custom settings:
+- data - current custom settings
+- _system - system configuration
+- instanceObj - adapter instance object
+- customObj - current object itself
+- _socket - socket
 
 ## Custom component
 ```

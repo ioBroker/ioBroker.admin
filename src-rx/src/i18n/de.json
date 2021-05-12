@@ -1368,5 +1368,7 @@
   "Log level will be reset to the saved level after the restart of the controller": "Die Protokollebene wird nach dem Neustart der Steuerung auf die gespeicherte Ebene zurückgesetzt",
   "You can set the log level permanently in the base host settings": "Sie können die Protokollstufe dauerhaft in den Host-Basiseinstellungen festlegen",
   "Update \"%s\" to v%s": "Aktualisieren \"%s\" auf v%s",
-  "No comments in selected language": "Keine Kommentare in der ausgewählten Sprache"
+  "No comments in selected language": "Keine Kommentare in der ausgewählten Sprache",
+  "Total rating:": "Gesamtbewertung:",
+  "Rating for": "Bewertung für"
 }

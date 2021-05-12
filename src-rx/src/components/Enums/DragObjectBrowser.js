@@ -57,7 +57,7 @@ const DragObjectBrowser = (props) => {
                 // eslint-disable-next-line react-hooks/exhaustive-deps
             }, []);
 
-            return <div key={props.item.data.id} ref={dragRef} style={{ backgroundColor: isDragging ? 'rgba(100,152,255,0.1)' : undefined }}>{props.children}</div>;
+            return <div key={props.item.data.id} className={props.className || ''} ref={dragRef} style={{ backgroundColor: isDragging ? 'rgba(100,152,255,0.1)' : undefined }}>{props.children}</div>;
         }
         setWrapperState({DragWrapper: DragWrapper});
     // eslint-disable-next-line
@@ -70,6 +70,7 @@ const DragObjectBrowser = (props) => {
         lang={props.lang}
         dragEnabled
         DragWrapper={wrapperState.DragWrapper}
+        levelPadding={10}
     /> : null;
 }
 
