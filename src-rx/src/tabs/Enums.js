@@ -27,10 +27,8 @@ class Enums extends Component {
         }
 
         return <TabContainer>
-            <TabContent overflow="auto">
-                <div>
-                    <EnumsMain {...this.props} />
-                </div>
+            <TabContent style={{display: 'flex', flexDirection: 'column', overflow:"auto" }}>
+                <EnumsMain {...this.props} />
             </TabContent>
         </TabContainer>;
     }
