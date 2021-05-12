@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
-import { Grid, LinearProgress, Paper, Switch, Typography } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+
 import { amber, blue, red } from '@material-ui/core/colors';
+
+import { Grid, LinearProgress, Paper, Switch, Typography } from '@material-ui/core';
+
 import Router from '@iobroker/adapter-react/Components/Router';
-import Utils from "../Utils";
+
+import Utils from '../Utils';
 
 const styles = theme => ({
     log: {

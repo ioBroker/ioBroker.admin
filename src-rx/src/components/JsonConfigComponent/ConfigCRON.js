@@ -7,7 +7,8 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import { Button, TextField } from '@material-ui/core';
 
-import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
+import DialogCron from '@iobroker/adapter-react/Dialogs/Cron';
+import I18n from '@iobroker/adapter-react/i18n';
 
 import ConfigGeneric from './ConfigGeneric';
 
@@ -25,20 +26,17 @@ const styles = theme => ({
     }
 });
 
-class ConfigObjectId extends ConfigGeneric {
+class ConfigCRON extends ConfigGeneric {
     async componentDidMount() {
         super.componentDidMount();
         const { data, attr } = this.props;
         const value = ConfigGeneric.getValue(data, attr) || '';
-        this.setState({ value, initialized: true});
+        this.setState({ value});
     }
 
     renderItem(error, disabled, defaultValue) {
-        if (!this.state.initialized) {
-            return null;
-        }
-        const { classes, schema, socket, attr } = this.props;
-        const { value, showSelectId } = this.state;
+        const { classes, schema, attr } = this.props;
+        const { value, showDialog } = this.state;
 
         return <FormControl className={classes.fullWidth}>
             <InputLabel shrink>{this.getText(schema.label)}</InputLabel>
@@ -61,29 +59,27 @@ class ConfigObjectId extends ConfigGeneric {
                     className={this.props.classes.button}
                     size="small"
                     variant="outlined"
-                    onClick={() => this.setState({ showSelectId: true })}
+                    onClick={() => this.setState({ showDialog: true })}
                 >...</Button>
             </div>
-            {showSelectId ? <DialogSelectID
-                imagePrefix="../.."
-                dateFormat={this.props.dateFormat}
-                isFloatComma={this.props.isFloatComma}
-                dialogName={'admin.' + this.props.adapterName}
-                themeType={this.props.themeType}
-                socket={socket}
-                statesOnly={schema.all === undefined ? true : schema.all}
-                selected={value}
-                onClose={() => this.setState({ showSelectId: false })}
+            {showDialog ? <DialogCron
+                title={I18n.t('Define schedule')}
+                simple={schema.simple}
+                complex={schema.complex}
+                cron={value}
+                language={I18n.getLanguage()}
+                onClose={() => this.setState({ showDialog: false })}
+                cancel={I18n.t('Cancel')}
+                ok={I18n.t('Ok')}
                 onOk={value =>
-                    this.setState({ showSelectId: false, value }, () =>
+                    this.setState({ showDialog: false, value }, () =>
                         this.onChange(attr, value))}
             /> : null}
         </FormControl>;
     }
 }
 
-ConfigObjectId.propTypes = {
-    socket: PropTypes.object.isRequired,
+ConfigCRON.propTypes = {
     themeType: PropTypes.string,
     themeName: PropTypes.string,
     style: PropTypes.object,
@@ -96,4 +92,4 @@ ConfigObjectId.propTypes = {
     isFloatComma: PropTypes.bool,
 };
 
-export default withStyles(styles)(ConfigObjectId);
+export default withStyles(styles)(ConfigCRON);

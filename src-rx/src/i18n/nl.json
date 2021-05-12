@@ -1368,5 +1368,7 @@
   "Log level will be reset to the saved level after the restart of the controller": "Het logniveau wordt gereset naar het opgeslagen niveau na het opnieuw opstarten van de controller",
   "You can set the log level permanently in the base host settings": "U kunt het logniveau permanent instellen in de hostbasisinstellingen",
   "Update \"%s\" to v%s": "Update \"%s\" naar v%s",
-  "No comments in selected language": "Geen opmerkingen in geselecteerde taal"
+  "No comments in selected language": "Geen opmerkingen in geselecteerde taal",
+  "Total rating:": "Totale waardering:",
+  "Rating for": "Beoordeling voor"
 }

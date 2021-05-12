@@ -179,7 +179,7 @@ const JsControllerDialog = ({ socket, hostId }) => {
                     <div className={classes.standardText}>{I18n.t('Due to the different hardware and platforms under which ioBroker runs, the js-controller has to be updated manually. Further details can be found in the appropriate section.')}</div>
 
                     <h2 className={classes.h2}>{I18n.t('General information for all platforms')}</h2>
-                    <div className={classes.standardText}>{I18n.t('For an update from js-controller 1.x to 2.x please always read the information at ')}<a href="https://forum.iobroker.net/topic/26759/js-controller-2-jetzt-f%C3%BCr-alle-im-stable" target="_blank">forum</a>.
+                    <div className={classes.standardText}>{I18n.t('For an update from js-controller 1.x to 2.x please always read the information at')} <a href="https://forum.iobroker.net/topic/26759/js-controller-2-jetzt-f%C3%BCr-alle-im-stable" target="_blank">forum</a>.
 </div>
                     <div className={classes.standardText}>{I18n.t('Otherwise please update the slaves first with an update of master-slave systems and the master last!')}
                     </div>

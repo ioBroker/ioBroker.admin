@@ -320,7 +320,7 @@ class Adapters extends Component {
 
     updateAll(update, bigUpdate) {
         return this.getAdapters(update, bigUpdate)
-            .then(() => this.getAdaptersInfo(update, bigUpdate));
+            .then(() => this.getAdaptersInfo(update));
     }
 
     componentDidUpdate() {
@@ -429,7 +429,7 @@ class Adapters extends Component {
             }
         });
 
-        this.cache.listOfVisibleAdapter = null
+        this.cache.listOfVisibleAdapter = null;
 
         this.setState({
             adapters,
@@ -582,6 +582,8 @@ class Adapters extends Component {
         const categoriesTiles = window.localStorage.getItem('Adapters.categoriesTiles') || 'All';
         const filterTiles     = window.localStorage.getItem('Adapters.filterTiles') || 'A-Z';
         this.allAdapters      = Object.keys(repository).length - 1;
+
+        this.cache.listOfVisibleAdapter = null;
 
         this.setState({
             repository,
@@ -1168,7 +1170,7 @@ class Adapters extends Component {
         this.listOfVisibleAdapterLength = count !== undefined ? count : this.listOfVisibleAdapterLength;
 
         if (!count) {
-            return <tr><td colSpan={4} style={{ padding: 16, fontSize: 18 }}>{this.t('all items are filtered out')}</td></tr>;
+            return !this.state.update && <tr><td colSpan={4} style={{ padding: 16, fontSize: 18 }}>{this.t('all items are filtered out')}</td></tr>;
         } else {
             return rows;
         }
@@ -1260,7 +1262,7 @@ class Adapters extends Component {
         }
 
         if (!this.cache.listOfVisibleAdapter.length) {
-            return <div style={{
+            return !this.state.update && <div style={{
                 margin: 20,
                 fontSize: 26
             }}>{this.props.t('all items are filtered out')}</div>;
@@ -1409,7 +1411,7 @@ class Adapters extends Component {
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.t('Update view')}>
-                    <IconButton onClick={() => this.updateAll(true, true)}>
+                    <IconButton onClick={() => this.updateAll(true)}>
                         <RefreshIcon />
                     </IconButton>
                 </Tooltip>

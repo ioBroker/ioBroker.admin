@@ -1368,5 +1368,7 @@
   "Log level will be reset to the saved level after the restart of the controller": "Log level will be reset to the saved level after the restart of the controller",
   "You can set the log level permanently in the base host settings": "You can set the log level permanently in the host base settings",
   "Update \"%s\" to v%s": "Update \"%s\" to v%s",
-  "No comments in selected language": "No comments in selected language"
+  "No comments in selected language": "No comments in selected language",
+  "Total rating:": "Total rating:",
+  "Rating for": "Rating for"
 }

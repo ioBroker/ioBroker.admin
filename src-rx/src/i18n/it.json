@@ -1368,5 +1368,7 @@
   "Log level will be reset to the saved level after the restart of the controller": "Il livello di registro verrà ripristinato al livello salvato dopo il riavvio del controller",
   "You can set the log level permanently in the base host settings": "È possibile impostare il livello di registrazione in modo permanente nelle impostazioni della base host",
   "Update \"%s\" to v%s": "Aggiorna \"%s\" alla v%s",
-  "No comments in selected language": "Nessun commento nella lingua selezionata"
+  "No comments in selected language": "Nessun commento nella lingua selezionata",
+  "Total rating:": "Valutazione totale:",
+  "Rating for": "Valutazione per"
 }

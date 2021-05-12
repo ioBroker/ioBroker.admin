@@ -287,18 +287,19 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
                         <div className={classes.button}>
                             <Button
                                 variant="contained"
-                                autoFocus
+                                autoFocus={Object.keys(message).length !== 1}
                                 disabled={disabled.includes(name)}
                                 style={disabled.includes(name) ? {background: 'silver'} : null}
                                 onClick={() => {
                                     ackCallback(name);
                                     setDisabled([...disabled, name]);
                                 }}
-                                color="primary"
+                                color={Object.keys(message).length !== 1 ? 'primary' : 'default'}
                             >
                                 <CheckIcon />{I18n.t('Acknowledge')}
                             </Button>
                             {Object.keys(message).length === 1 && <Button
+                                autoFocus
                                 variant="contained"
                                 disabled={disabled.includes(name)}
                                 style={disabled.includes(name) ? {background: 'silver', marginLeft: 8} : {marginLeft: 8}}
@@ -318,9 +319,7 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
             <DialogActions>
                 <Button
                     variant="contained"
-                    autoFocus
                     onClick={onClose}
-                    color="primary"
                 >
                     <CloseIcon/>{I18n.t('Ok')}
                 </Button>

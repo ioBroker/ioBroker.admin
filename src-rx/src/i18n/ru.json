@@ -1372,5 +1372,7 @@
   "Log level will be reset to the saved level after the restart of the controller": "Уровень журнала будет сброшен до сохраненного уровня после перезапуска контроллера.",
   "You can set the log level permanently in the base host settings": "Вы можете установить уровень журнала постоянно в базовых настройках хоста.",
   "Update \"%s\" to v%s": "Обновите \"%s\" до версии v%s",
-  "No comments in selected language": "Нет комментариев на выбранном языке"
+  "No comments in selected language": "Нет комментариев на выбранном языке",
+  "Total rating:": "Общий рейтинг:",
+  "Rating for": "Рейтинг для"
 }

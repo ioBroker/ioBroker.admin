@@ -18,7 +18,6 @@ import {
 import CloseIcon from '@material-ui/icons/Close';
 
 import Command from '../components/Command';
-import I18n from "@iobroker/adapter-react/i18n";
 
 const styles = theme => ({
     closeButton: {
