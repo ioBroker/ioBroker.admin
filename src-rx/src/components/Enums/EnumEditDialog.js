@@ -73,7 +73,7 @@ function EnumEditDialog(props) {
 
     return <Dialog fullWidth={props.innerWidth < 500} open={props.open} onClose={props.onClose}>
         <DialogTitle className={props.classes.dialogTitle} style={{padding:12}} >
-           { props.t( "Enum parameters" ) }
+           { props.t( 'Enum parameters' ) }
         </DialogTitle>
         <DialogContent >
             <Grid  container spacing={4} className={props.classes.dialog}>
