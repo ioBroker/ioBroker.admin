@@ -18,32 +18,39 @@ import AdaptersUpdater from '../components/Adapters/AdaptersUpdater';
 import Command from '../components/Command';
 
 const styles = theme => {
-    console.log(2222,theme)
-    return({
-    dialogRoot: {
-        height: 'calc(100% - 64px)',
-    },
-    wrapperHead: {
-        justifyContent: 'space-between',
-        display: 'flex'
-    },
-    checkbox:{
-        marginRight:10
-    },
-    appBar:{
-        flexWrap: 'wrap',
-        position: 'sticky',
-        bottom: 0
-    },
-    '@media screen and (max-width: 650px)': {
-        hidden570: {
-            display: 'none !important'
+    return ({
+        dialogRoot: {
+            height: 'calc(100% - 64px)',
         },
-        visible570: {
-            display: 'flex !important'
+        wrapperHead: {
+            justifyContent: 'space-between',
+            display: 'flex'
         },
-    },
-})};
+        checkbox: {
+            marginRight: 10
+        },
+        appBar: {
+            flexWrap: 'wrap',
+            position: 'sticky',
+            bottom: -10,
+            background: theme.name === "blue" ? '#3e454a' : theme.name === "dark" ? '#3b3b3b' : 'white'
+        },
+        container:{
+            overflow: 'hidden',
+            height: 'calc(100% - 48px)'
+        },
+        '@media screen and (max-width: 602px)': {
+            container: {
+                height: 'auto'
+            }
+        },
+        '@media screen and (max-width: 500px)': {
+            content: {
+                padding: 8
+            }
+        },
+    })
+};
 
 class AdaptersUpdaterDialog extends Component {
     constructor(props) {
@@ -130,8 +137,8 @@ class AdaptersUpdaterDialog extends Component {
                     /></Tooltip>}
                 </div>
             </DialogTitle>
-            <DialogContent style={{ height: '100%' }}>
-                <Grid container direction="row" style={{ overflow: 'hidden' }}>
+            <DialogContent classes={{ root: this.props.classes.content }} style={{ height: '100%' }}>
+                <Grid container direction="row" className={this.props.classes.container}>
                     <Grid item style={{ height: '100%', overflow: 'hidden', width: this.state.current ? 250 : '100%' }}>
                         <div style={{ height: '100%', overflow: 'auto' }}>
                             <AdaptersUpdater
@@ -154,7 +161,7 @@ class AdaptersUpdaterDialog extends Component {
                                 }} />
                         </div>
                     </Grid>
-                    {!!this.state.current && <Grid item style={{ height: '100%', overflow: 'hidden', width: 'calc(100% - 260px)' }}>
+                    {!!this.state.current && <Grid item style={{ height: '100%', overflow: 'hidden', width: 'calc(100% - 260px)', minWidth: 240 }}>
                         <Command
                             noSpacing={true}
                             key={this.state.current}

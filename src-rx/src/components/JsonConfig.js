@@ -40,6 +40,57 @@ const styles = {
     }
 };
 
+/**
+ * Decrypt the password/value with given key
+ *  Usage:
+ *  ```
+ *     function load(settings, onChange) {
+ *          if (settings.password) {
+ *              settings.password = decrypt(systemSecret, settings.password);
+ *              // same as
+ *              settings.password = decrypt(settings.password);
+ *          }
+ *          // ...
+ *     }
+ *  ```
+ * @param {string} key - Secret key
+ * @param {string} value - value to decrypt
+ * @returns {string}
+ */
+function decrypt(key, value) {
+    let result = '';
+    for (let i = 0; i < value.length; i++) {
+        result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+    }
+    return result;
+}
+
+/**
+ * Encrypt the password/value with given key
+ *  Usage:
+ *  ```
+ *     function save(callback) {
+ *          ...
+ *          if (obj.password) {
+ *              obj.password = encrypt(systemSecret, obj.password);
+ *              // same as
+ *              obj.password = decrypt(obj.password);
+ *          }
+ *          ...
+ *    }
+ *  ```
+ * @param {string} key - Secret key
+ * @param {string} value - value to encrypt
+ * @returns {string}
+ */
+function encrypt(key, value) {
+    let result = '';
+    for (let i = 0; i < value.length; i++) {
+        result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+    }
+    return result;
+}
+
 class JsonConfig extends Router {
     constructor(props) {
         super(props);
@@ -124,6 +175,24 @@ class JsonConfig extends Router {
 
     getInstanceObject() {
         return this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`)
+            .then(obj => {
+                // decode all native attributes listed in obj.encryptedNative
+                if (Array.isArray(obj.encryptedNative)) {
+                    return this.props.socket.getSystemConfig()
+                        .then(systemConfig => {
+                            this.secret = systemConfig.native.secret;
+
+                            obj.encryptedNative.forEach(attr => {
+                                if (obj.native[attr]) {
+                                    obj.native[attr] = decrypt(this.secret, obj.native[attr]);
+                                }
+                            });
+                            return obj;
+                        });
+                } else {
+                    return obj;
+                }
+            })
             .catch(e => window.alert('[JsonConfig] Cannot read instance object: ' + e));
     }
 
@@ -145,16 +214,25 @@ class JsonConfig extends Router {
         if (doSave) {
             const obj = await this.getInstanceObject();
 
-            for (const a in this.state.data) {
-                if (this.state.data.hasOwnProperty(a)) {
-                    ConfigGeneric.setValue(obj.native, a, this.state.data[a]);
+            for (const attr in this.state.data) {
+                if (this.state.data.hasOwnProperty(attr)) {
+                    ConfigGeneric.setValue(obj.native, attr, this.state.data[attr]);
                 }
             }
 
             try {
+                // encode all native attributes listed in obj.encryptedNative
+                if (Array.isArray(obj.encryptedNative)) {
+                    obj.encryptedNative.forEach(attr => {
+                        if (obj.native[attr]) {
+                            obj.native[attr] = encrypt(this.secret, obj.native[attr]);
+                        }
+                    });
+                }
+
                 await this.props.socket.setObject(obj._id, obj);
             } catch (e) {
-                window.alert('[JsonConfig] Cannot set object: ' + e);
+                window.alert(`[JsonConfig] Cannot set object: ${e}`);
             }
 
             this.setState({changed: false, data: obj.native, updateData: this.state.updateData + 1}, () =>
@@ -226,6 +304,7 @@ JsonConfig.propTypes = {
     instance: PropTypes.number,
     isFloatComma: PropTypes.bool,
     dateFormat: PropTypes.string,
+    secret: PropTypes.string,
 
     socket: PropTypes.object,
 

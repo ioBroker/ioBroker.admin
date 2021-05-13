@@ -4,7 +4,7 @@ Marked with "!" must be in release candidate
 
 ## Bugs
 - (BF) AdminSettings: Access to the instances: add infotexts for "Apply access rights" and "Allow access only"
-- Notifications - mobile view: https://github.com/ioBroker/ioBroker.admin/issues/860
+<!-- - Notifications - mobile view: https://github.com/ioBroker/ioBroker.admin/issues/860 -->
 - Notifications - all buttons have same color
 <!-- Opening Adapter Readme with icon (?) will end in white page - https://github.com/ioBroker/ioBroker.admin/issues/863 -->
 <!-- Lining up buttons in Adapter warning - mobile view https://github.com/ioBroker/ioBroker.admin/issues/860 --> 
@@ -32,8 +32,8 @@ Marked with "!" must be in release candidate
 - (BF) Update of available versions does not work: https://github.com/ioBroker/ioBroker.admin/issues/830
 - Switch of host does not make any effect: 
    
-- Mobile view Updater: https://github.com/ioBroker/ioBroker.admin/issues/851
-- As the license agreement not loaded, the button accept must be disabled.
+<!-- - Mobile view Updater: https://github.com/ioBroker/ioBroker.admin/issues/851 -->
+<!-- - As the license agreement not loaded, the button accept must be disabled. -->
 
 
 ## Wizard

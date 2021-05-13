@@ -154,6 +154,9 @@ const useStyles = makeStyles((theme) => ({
     content: {
         overflow: 'hidden'
     },
+    buttonStyle: {
+        margin: 3
+    },
     '@media screen and (max-width: 550px)': {
         classNameBox: {
             padding: 10
@@ -170,7 +173,10 @@ const useStyles = makeStyles((theme) => ({
         },
         silver: {
             fontSize: '2.9vw',
-        }
+        },
+        buttonStyle: {
+            fontSize: '2.9vw',
+        },
     },
 }));
 
@@ -329,6 +335,7 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
                                 autoFocus={Object.keys(message).length !== 1}
                                 disabled={disabled.includes(name)}
                                 style={disabled.includes(name) ? { background: 'silver' } : null}
+                                className={classes.buttonStyle}
                                 onClick={() => {
                                     ackCallback(name);
                                     setDisabled([...disabled, name]);
@@ -340,7 +347,8 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
                             {Object.keys(message).length === 1 && <Button
                                 variant="contained"
                                 disabled={disabled.includes(name)}
-                                style={disabled.includes(name) ? { background: 'silver', marginLeft: 8 } : { marginLeft: 8 }}
+                                className={classes.buttonStyle}
+                                style={disabled.includes(name) ? { background: 'silver' } : null}
                                 onClick={() => {
                                     ackCallback(name);
                                     setDisabled([...disabled, name]);
@@ -359,7 +367,7 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
                     variant="contained"
                     onClick={onClose}
                 >
-                    <CloseIcon/>{I18n.t('Ok')}
+                    <CloseIcon />{I18n.t('Ok')}
                 </Button>
             </DialogActions>
         </Dialog >

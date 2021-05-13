@@ -37,9 +37,14 @@ const LicenseDialog = ({ url, cb }) => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
     const [text, setText] = useState('');
+    const [disabled, setDisabled] = useState(true);
 
     useEffect(() => {
-        fetch(url).then(el => el.text()).then(el => setText(el))
+        setDisabled(true);
+        fetch(url).then(el => el.text()).then(el => {
+            setDisabled(false);
+            setText(el);
+        }).catch(()=>setDisabled(false))
     }, [url])
     const onClose = () => {
         setOpen(false);
@@ -67,6 +72,7 @@ const LicenseDialog = ({ url, cb }) => {
             <DialogActions>
                 <Button
                     variant="contained"
+                    disabled={disabled}
                     autoFocus
                     onClick={() => {
                         onClose();

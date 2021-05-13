@@ -10,7 +10,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import TableCell from '@material-ui/core/TableCell';
 import Tooltip from '@material-ui/core/Tooltip';
 import Paper from '@material-ui/core/Paper';
-import { Avatar, Hidden, InputAdornment, TextField } from '@material-ui/core';
+import { Hidden, InputAdornment, TextField } from '@material-ui/core';
 
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -27,7 +27,6 @@ import ScheduleIcon from '@material-ui/icons/Schedule';
 import SettingsIcon from '@material-ui/icons/Lens';
 import FolderIcon from '@material-ui/icons/Folder';
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
-import filterIcon from '../assets/filter.svg';
 import ListIcon from '@material-ui/icons/List';
 import {FaFilter as FilterListIcon} from 'react-icons/fa';
 
@@ -221,13 +220,14 @@ class Instances extends Component {
             deleting: null,
 
             //filter
-            mode: window.localStorage.getItem('instances.mode') ?
-                window.localStorage.getItem('instances.mode') === 'null' ?
+            filterMode: window.localStorage.getItem('Instances.filterMode') ?
+                window.localStorage.getItem('Instances.filterMode') === 'null' ?
                     null :
-                    window.localStorage.getItem('instances.mode') : null,
-            status: JSON.parse(window.localStorage.getItem('instances.status')) || null,
-            filterMode: null,
-            filterStatus: null
+                    window.localStorage.getItem('Instances.filterMode') : null,
+            filterStatus: window.localStorage.getItem('Instances.filterStatus') ?
+            window.localStorage.getItem('Instances.filterStatus') === 'null' ?
+                null :
+                window.localStorage.getItem('Instances.filterStatus') : null,
         };
 
         this.columns = {
@@ -726,7 +726,7 @@ class Instances extends Component {
         if (logOnTheFlyValue) {
             this.props.socket.setState(`system.adapter.${instance.id}.logLevel`, value);
         } else {
-            this.extendObject('system.adapter.' + instance.id, { common: { logLevel: value } });
+            this.extendObject('system.adapter.' + instance.id, { common: { loglevel: value } });
         }
     };
 
@@ -1000,6 +1000,12 @@ class Instances extends Component {
             return ({ [value]: !state[value] });
         });
 
+    changeSetState = (name,value) =>
+        this.setState(state => {
+            window.localStorage.setItem(`Instances.${name}`, value);
+            return ({ [name]: value });
+        });
+
     changeStartedStopped = value =>
         this.setState(state => {
             const newValue = !state.playArrow ? 1 : state.playArrow < 2 ? 2 : false;
@@ -1112,8 +1118,13 @@ class Instances extends Component {
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.t('Filter instances')}>
-                    <IconButton onClick={() => instanceFilterDialogCallback(newState =>
-                        newState && this.setState(newState), this.state.filterMode, this.state.filterStatus, this.getModeIcon)}>
+                    <IconButton onClick={() => instanceFilterDialogCallback(newState =>{
+                        if(newState){
+                            this.setState(newState);
+                            this.changeSetState('filterMode',newState.filterMode);
+                            this.changeSetState('filterStatus',newState.filterStatus);
+                            } 
+                        }, this.state.filterMode, this.state.filterStatus, this.getModeIcon)}>
                         <FilterListIcon style={{width: 16, height: 16}} className={this.state.filterMode || this.state.filterStatus ? classes.filterActive : ''}/>
                     </IconButton>
                 </Tooltip>

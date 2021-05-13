@@ -1308,8 +1308,8 @@
   "Install or update the adapter from %s": "Installieren oder aktualisieren Sie den Adapter von %s",
   "Show running or stopped instances": "Laufende oder gestoppte Instanzen anzeigen",
   "Filter instances": "Instanzen filtern",
-  "saved:": "Gerettet:",
-  "actual:": "tatsächlich:",
+  "saved:": "Gespeichert:",
+  "actual:": "Tatsächlich:",
   "Show only installed": "Nur installierte Adapter anzeigen",
   "Showed only installed adapters without instance.": "Es werden nur installierte Adapter ohne Instanz angezeigt.",
   "Showed only installed adapters": "Es werden nur installierte Adapter angezeigt",
@@ -1370,5 +1370,8 @@
   "Update \"%s\" to v%s": "Aktualisieren \"%s\" auf v%s",
   "No comments in selected language": "Keine Kommentare in der ausgewählten Sprache",
   "Total rating:": "Gesamtbewertung:",
-  "Rating for": "Bewertung für"
+  "Rating for": "Bewertung für",
+  "repeat": "wiederholen",
+  "Import settings from JSON file": "Importieren Sie die Einstellungen aus der JSON-Datei",
+  "Export setting to JSON file": "Exporteinstellung in JSON-Datei"
 }

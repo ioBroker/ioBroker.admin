@@ -41,8 +41,11 @@ import ConfigAutocompleteSendTo from './ConfigAutocompleteSendTo';
 import ConfigTimePicker from './ConfigTimePicker';
 import ConfigDatePicker from './ConfigDatePicker';
 import ConfigCRON from './ConfigCRON';
+import ConfigAlive from './ConfigAlive';
+import ConfigTextSendTo from './ConfigTextSendTo';
 
 const components = {
+    alive: ConfigAlive,
     autocomplete: ConfigAutocomplete,
     autocompleteSendTo: ConfigAutocompleteSendTo,
     certificate: ConfigCertificateSelect,
@@ -72,6 +75,7 @@ const components = {
     staticText: ConfigStaticText,
     table: ConfigTable,
     text: ConfigText,
+    textSendTo: ConfigTextSendTo,
     timePicker: ConfigTimePicker,
     topic: ConfigTopic,
     user: ConfigUser,

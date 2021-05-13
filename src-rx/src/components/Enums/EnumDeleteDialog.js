@@ -19,8 +19,8 @@ function EnumDeleteDialog(props) {
             </DialogContentText>
         </DialogContent>
         <DialogActions>
-            <Button onClick={()=>props.deleteEnum(props.enum._id)}>{props.t('Delete')}</Button>
-            <Button onClick={props.onClose}>{props.t('Cancel')}</Button>
+            <Button variant="contained" color="primary" onClick={()=>props.deleteEnum(props.enum._id)}>{props.t('Delete')}</Button>
+            <Button variant="contained" autoFocus onClick={props.onClose}>{props.t('Cancel')}</Button>
         </DialogActions>
     </Dialog>;
 }

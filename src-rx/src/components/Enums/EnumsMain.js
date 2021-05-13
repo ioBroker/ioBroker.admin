@@ -3,7 +3,8 @@ import React, { Component } from 'react';
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
-import { usePreview } from 'react-dnd-preview'
+import { usePreview } from 'react-dnd-preview';
+import clsx from 'clsx';
 
 import EnumBlock from './EnumBlock';
 import CategoryLabel from './CategoryLabel';
@@ -31,6 +32,22 @@ import {withStyles} from '@material-ui/core/styles';
 const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, .2)';
 
 const styles = theme => ({
+    mainGridCont: {
+        height: '100%',
+        overflowY:'auto'
+    },
+    childGridCont: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%'
+    },
+    childGridContWide: {
+        height: '100%',
+    },
+    blocksContainer: {
+        overflowY: 'auto',
+        overflowX: 'hidden'
+    },
     canDrop:{
         backgroundColor:theme.palette.background.default
     } ,
@@ -104,8 +121,6 @@ const styles = theme => ({
         marginRight:10
     },
     dialog: {
-        // padding: 10,
-
         // maxWidth: '100vw',
         // maxHeight: '100vh',
         // overflowY: 'auto',
@@ -538,8 +553,8 @@ class EnumsList extends Component {
         return <>
             <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
                 <DndPreview />
-                <Grid container>
-                    <Grid md={5} item>
+                <Grid container spacing={2} className={this.props.classes.mainGridCont}>
+                    <Grid item xs={12} md={6} className={clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
                     <div className={this.props.classes.topPanel}>
                         <IconButton
                             size="small"
@@ -598,9 +613,9 @@ class EnumsList extends Component {
                         </Tabs>
                     </div>
                         <div className={this.props.classes.topPanel2}>
-                            <TextField 
-                                value={this.state.search} 
-                                placeholder={this.props.t('Filter')} 
+                            <TextField
+                                value={this.state.search}
+                                placeholder={this.props.t('Filter')}
                                 InputLabelProps={{shrink: true}}
                                 className={this.props.classes.filter}
                                 onChange={e => this.setState({search: e.target.value})}
@@ -622,10 +637,13 @@ class EnumsList extends Component {
                                 </Tooltip>
                             </IconButton>
                         </div>
-                        {Object.values(this.state.enumsTree.children.enum.children[this.state.currentCategory].children)
-                            .map((enumItem, index) => this.renderTree(enumItem, index))}
+                        <div className={this.props.classes.blocksContainer}>
+                            {Object.values(this.state.enumsTree.children.enum.children[this.state.currentCategory].children)
+                                .map((enumItem, index) => this.renderTree(enumItem, index))}
+                        </div>
                     </Grid>
-                    <Grid md={7} item>
+                    <Grid item xs={12} md={6} className={clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
+                    <div className={this.props.classes.blocksContainer}>
                         <DragObjectBrowser
                             addItemToEnum={this.addItemToEnum}
                             getName={this.getName}
@@ -634,6 +652,7 @@ class EnumsList extends Component {
                             socket={this.props.socket}
                             lang={this.props.lang}
                         />
+                    </div>
                     </Grid>
                 </Grid>
             </DndProvider>

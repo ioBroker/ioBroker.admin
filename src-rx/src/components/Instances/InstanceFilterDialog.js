@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import clsx from 'clsx';
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -16,7 +15,7 @@ import { Avatar, Card, Checkbox, DialogTitle, FormControlLabel, makeStyles, Menu
 
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
-import {green, grey, orange, red} from "@material-ui/core/colors";
+import { green, grey, orange, red } from "@material-ui/core/colors";
 
 let node = null;
 
@@ -50,7 +49,7 @@ const useStyles = makeStyles(theme => ({
         minWidth: 200
     },
     checkbox: {
-        minWidth: 130
+        minWidth: 160
     },
     statusIcon_1: { // circle
         border: '2px solid grey',
@@ -95,10 +94,8 @@ const useStyles = makeStyles(theme => ({
     square: {
         width: 24,
         height: 24,
-        marginRight:10,
+        marginRight: 10,
         filter: 'invert(0%) sepia(90%) saturate(300%) hue-rotate(-537deg) brightness(99%) contrast(97%)'
-    },checkbox:{
-        minWidth:130
     },
     statusIcon_green: { // square
         border: '2px solid grey',
@@ -194,15 +191,15 @@ const getModeIcon = (idx, className) => {
 }
 
 const statusArray = {
-    none: {text: 'none', _class: '', status: ''},
-    disabled: {text: 'disabled', _class: 'statusIcon_grey', status: 'grey'},
-    not_alive: {text: 'enabled, but not alive', _class: 'statusIcon_red', status: 'red'},
-    alive_not_connected: {text: 'enabled, alive, but not connected to controller', _class: 'statusIcon_orange', status: 'orange'},
-    alive_no_device: {text: 'enabled, alive, but not connected to device or service', _class: 'statusIcon_orangeDevice', status: 'orange'},
-    ok: {text: 'enabled and OK', _class: 'statusIcon_green', status: 'green'}
+    none: { text: 'none', _class: '', status: '' },
+    disabled: { text: 'disabled', _class: 'statusIcon_grey', status: 'grey' },
+    not_alive: { text: 'enabled, but not alive', _class: 'statusIcon_red', status: 'red' },
+    alive_not_connected: { text: 'enabled, alive, but not connected to controller', _class: 'statusIcon_orange', status: 'orange' },
+    alive_no_device: { text: 'enabled, alive, but not connected to device or service', _class: 'statusIcon_orangeDevice', status: 'orange' },
+    ok: { text: 'enabled and OK', _class: 'statusIcon_green', status: 'green' }
 };
 
-const InstanceFilterDialog = ({ cb, filterMode, filterStatus, getModeIcon }) => {
+const InstanceFilterDialog = ({ cb, filterMode, filterStatus }) => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
 
@@ -276,21 +273,19 @@ const InstanceFilterDialog = ({ cb, filterMode, filterStatus, getModeIcon }) => 
                             variant="standard"
                             value={statusCheck || 'none'}
                             className={classes.select}
-                            renderValue={item => <span className={classes.menuValue}>
-                                {statusArray[item].status ? getModeIcon('daemon', statusArray[item].status, clsx(classes[statusArray[item].status], statusArray[item]._class, classes.icon)) : null}
-                                {I18n.t(statusArray[item].text)}
-                            </span>}
                             onChange={el => {
-                                if (statusArray[el.target.value] === 'none') {
+                                if (el.target.value === 'none') {
                                     setStatusCheck(null);
                                 } else {
                                     setStatusCheck(el.target.value);
                                 }
                             }}
                         >
-                            {Object.keys(statusArray).map(name => <MenuItem key={name} value={name}>
-                                {statusArray[name].status ? getModeIcon('daemon', statusArray[name].status, clsx(classes[statusArray[name].status], classes[statusArray[name]._class], classes.icon)) : null}
-                                {I18n.t(statusArray[name].text)}
+                            {Object.keys(statusArray).map((name, idx) => <MenuItem key={name} value={name}>
+                                <div className={classes.menuWrapper}>
+                                    {statusArray[name].status ? <div className={classes.iconWrapper}>{getModeIcon(idx, classes[`statusIcon_${idx}`])}</div> : null}
+                                    <div className={classes.textWrapper}>{I18n.t(statusArray[name].text)}</div>
+                                </div>
                             </MenuItem>)}
                         </Select>
                     </div>

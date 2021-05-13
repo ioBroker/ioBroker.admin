@@ -1370,5 +1370,8 @@
   "Update \"%s\" to v%s": "Update \"%s\" naar v%s",
   "No comments in selected language": "Geen opmerkingen in geselecteerde taal",
   "Total rating:": "Totale waardering:",
-  "Rating for": "Beoordeling voor"
+  "Rating for": "Beoordeling voor",
+  "repeat": "herhaling",
+  "Import settings from JSON file": "Importeer instellingen uit JSON-bestand",
+  "Export setting to JSON file": "Export instelling naar JSON-bestand"
 }

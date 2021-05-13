@@ -28,7 +28,15 @@ const styles = theme => ({
     updateDone: {
         background: '#5ef05e80',
         opacity: 0.7,
-    }
+    },
+    '@media screen and (max-width: 400px)': {
+        minWidth:{
+            minWidth:32
+        },
+        listItem:{
+            paddingLeft:2
+        }
+    },
 });
 
 class AdaptersUpdater extends Component {
@@ -122,7 +130,7 @@ class AdaptersUpdater extends Component {
                 classes={{root: clsx(this.props.classes.listItem, this.props.updated.includes(adapter) && this.props.classes.updateDone)}}
                 ref={this.state.current === adapter && this.currentRef}
             >
-                <ListItemIcon>
+                <ListItemIcon className={this.props.classes.minWidth}>
                     <Avatar
                         variant="square"
                         alt={adapter}

@@ -20,7 +20,6 @@ class ConfigPattern extends ConfigGeneric {
             InputProps={{
                 endAdornment: this.props.schema.copyToClipboard ?
                     <IconButton
-                        disabled={!!this.props.onPaste}
                         size="small"
                         onClick={e => {
                             copy(this.getPattern(this.props.schema.pattern));
