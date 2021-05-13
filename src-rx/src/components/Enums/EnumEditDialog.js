@@ -1,18 +1,17 @@
 import {useState, useEffect} from 'react';
+import PropTypes from 'prop-types';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 
 import TextFieldsIcon from '@material-ui/icons/TextFields';
 import DescriptionIcon from '@material-ui/icons/Description';
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 import PageviewIcon from '@material-ui/icons/Pageview';
-import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import ColorLensIcon from '@material-ui/icons/ColorLens';
 import ImageIcon from '@material-ui/icons/Image';
 
@@ -29,14 +28,15 @@ let roomsImages = importAll(require.context('../../assets/rooms', false, /\.svg$
 function EnumEditDialog(props) {
     let [originalId, setOriginalId] = useState(null);
     useEffect(()=>{
-        setOriginalId(props.enum._id);
+        setOriginalId(props.enum?._id);
+    // eslint-disable-next-line
     }, [props.open]);
 
     if (!props.open) {
         return null;
     }
 
-    let idExists = props.enums.find(enumItem => enumItem._id == props.enum._id);
+    let idExists = props.enums.find(enumItem => enumItem._id === props.enum._id);
     let idChanged = props.enum._id !== originalId;
 
     let canSave = props.enum._id !== 'system.enum.'
@@ -71,7 +71,7 @@ function EnumEditDialog(props) {
         ICONS = roomsImages.map(image => image.default);
     }
 
-    return <Dialog PaperProps={{className: props.classes.dialogPaper}} open={props.open} onClose={props.onClose}>
+    return <Dialog fullWidth={props.innerWidth < 500} open={props.open} onClose={props.onClose}>
         <DialogTitle className={props.classes.dialogTitle} style={{padding:12}} >
            { props.t( "Enum parameters" ) }
         </DialogTitle>
@@ -81,10 +81,10 @@ function EnumEditDialog(props) {
                     <IOTextField 
                         label="Name" 
                         t={props.t} 
-                        value={ props.enum.common.name }
+                        value={ props.getName(props.enum.common.name) }
                         onChange={e=>{
                             let newData = props.enum;
-                            if (!props.enum.common.dontDelete && name2Id(newData.common.name) === getShortId(newData._id)) {
+                            if (!props.enum.common.dontDelete && name2Id(props.getName(newData.common.name)) === getShortId(newData._id)) {
                                 newData._id = changeShortId(newData._id, name2Id(e.target.value));
                             }
                             newData.common.name = e.target.value;
@@ -169,10 +169,24 @@ function EnumEditDialog(props) {
             </Grid>
         </DialogContent>
         <DialogActions className={props.classes.dialogActions} >
-            <Button onClick={()=>props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>Save</Button>
-            <Button onClick={props.onClose}>Cancel</Button>
+            <Button variant="contained" color="primary" autoFocus onClick={()=>props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>Save</Button>
+            <Button variant="contained" onClick={props.onClose}>Cancel</Button>
         </DialogActions> 
     </Dialog>;
 }
+
+EnumEditDialog.propTypes = {
+    enum: PropTypes.object,
+    enums: PropTypes.array,
+    isNew: PropTypes.bool,
+    change: PropTypes.func,
+    saveData: PropTypes.func,
+    onClose: PropTypes.func,
+    open: PropTypes.bool,
+    classes: PropTypes.object,
+    t: PropTypes.func,
+    lang: PropTypes.string,
+    socket: PropTypes.object,
+};
 
 export default EnumEditDialog;

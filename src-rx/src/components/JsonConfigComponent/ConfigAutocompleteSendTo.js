@@ -18,12 +18,15 @@ class ConfigAutocompleteSendTo extends ConfigGeneric {
     componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-        const selectOptions = this.props.schema.options.map(item => typeof item === 'string' ? {label: item, value: item} : JSON.parse(JSON.stringify(item)));
+        const selectOptions = this.props.schema.options ?
+            this.props.schema.options.map(item => typeof item === 'string' ? {label: item, value: item} : JSON.parse(JSON.stringify(item)))
+            :
+            [];
 
         if (this.props.alive) {
             let data = this.props.schema.data;
             if (data === undefined && this.props.schema.jsonData) {
-                data = this.getPattern(this.props.schema.jsonData, {}, this.props.data);
+                data = this.getPattern(this.props.schema.jsonData);
                 try {
                     data = JSON.parse(data);
                 } catch (e) {
@@ -37,7 +40,10 @@ class ConfigAutocompleteSendTo extends ConfigGeneric {
 
             this.props.socket.sendTo(this.props.adapterName + '.' + this.props.instance, this.props.schema.command || 'send', data)
                 .then(list => {
-                    list.forEach(item => selectOptions.push(typeof item === 'string' ? {label: item, value: item} : JSON.parse(JSON.stringify(item))));
+                    if (list && Array.isArray(list)) {
+                        list.forEach(item =>
+                            selectOptions.push(typeof item === 'string' ? {label: item, value: item} : JSON.parse(JSON.stringify(item))));
+                    }
 
                     // if __different
                     if (Array.isArray(value)) {
@@ -75,35 +81,58 @@ class ConfigAutocompleteSendTo extends ConfigGeneric {
             options.unshift(item);
         } else {
             // eslint-disable-next-line
-            item = this.state.value !== null && this.state.value !== undefined && options.find(item => item.value == this.state.value); // let "==" be and not ===
+            item = this.state.value !== null && this.state.value !== undefined &&
+                // eslint-disable-next-line
+                options.find(item => item.value == this.state.value); // let "==" be and not ===
+
             if (this.state.value !== null && this.state.value !== undefined && !item) {
                 item = {value: this.state.value, label: this.state.value};
                 options.push(item);
             }
+            item = item || null;
         }
 
-        return <Autocomplete
-            className={this.props.classes.indeterminate}
-            fullWidth
-            freeSolo={!!this.props.schema.freeSolo}
-            value={item}
-            //getOptionSelected={(option, value) => option.value === value.value}
-            onChange={(_, value) => {
-                const val = typeof value === 'object' ? (value ? value.value : '') : value;
-                this.setState({value: val}, () => this.onChange(this.props.attr, val));
-            }}
-            options={options}
-            getOptionLabel={option => option.label}
-            renderInput={params => <TextField
-                {...params}
-                inputProps={{maxLength: this.props.schema.maxLength || this.props.schema.max || undefined}}
+        if (!options.length) {
+            return <TextField
+                fullWidth
+                value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
                 error={!!error}
+                disabled={!!disabled}
+                inputProps={{maxLength: this.props.schema.maxLength || this.props.schema.max || undefined}}
+                onChange={e => {
+                    const value = e.target.value;
+                    this.setState({value}, () =>
+                        this.onChange(this.props.attr, (value || '').trim()));
+                }}
                 placeholder={this.getText(this.props.schema.placeholder)}
                 label={this.getText(this.props.schema.label)}
                 helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
-                disabled={!!disabled}
-            />}
-        />;
+            />;
+        } else {
+            return <Autocomplete
+                value={item}
+                fullWidth
+                freeSolo={!!this.props.schema.freeSolo}
+                options={options}
+                getOptionLabel={option => option.label}
+                className={this.props.classes.indeterminate}
+                onChange={(_, value) => {
+                    const val = typeof value === 'object' ? (value ? value.value : '') : value;
+                    this.setState({value: val}, () => this.onChange(this.props.attr, val));
+                }}
+                renderInput={(params) =>
+                    <TextField
+                        {...params}
+                        // inputProps are important and will be given in params
+                        // inputProps={{maxLength: this.props.schema.maxLength || this.props.schema.max || undefined}}
+                        error={!!error}
+                        placeholder={this.getText(this.props.schema.placeholder)}
+                        label={this.getText(this.props.schema.label)}
+                        helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
+                        disabled={!!disabled}
+                    />}
+            />;
+        }
     }
 }
 

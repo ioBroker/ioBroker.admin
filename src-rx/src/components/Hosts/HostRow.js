@@ -289,7 +289,10 @@ const styles = theme => ({
     },
     formControl: {
         display: 'flex'
-    }
+    },
+    baseSettingsButton: {
+        transform: 'rotate(45deg)',
+    },
 });
 
 let outputCache = '-';
@@ -329,7 +332,7 @@ const HostRow = ({
     socket,
     setEditDialog,
     currentHost,
-    dialogUpgrade,
+    //dialogUpgrade,
     executeCommandRemove,
     systemConfig,
     expertMode,
@@ -339,7 +342,6 @@ const HostRow = ({
     openHostUpdateDialog,
     getLogLevelIcon
 }) => {
-
     const [openCollapse, setCollapse] = useState(false);
     const [focused, setFocused] = useState(false);
 
@@ -532,7 +534,8 @@ const HostRow = ({
             </Select>
         </FormControl>}
         {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined" >
-            <FormHelperText>{t('Will be reset to the saved log level after restart of adapter')}</FormHelperText>
+            <FormHelperText>{t('Log level will be reset to the saved level after the restart of the controller')}</FormHelperText>
+            <FormHelperText>{t('You can set the log level permanently in the base host settings')}<BuildIcon className={classes.baseSettingsButton} /></FormHelperText>
         </FormControl>}
     </CustomModal> : null;
 
@@ -639,7 +642,7 @@ const HostRow = ({
                                 </IconButton>
                             </div>
                         </Tooltip>
-                        {expertMode && logLevelValue &&
+                        {expertMode && logLevelValue ?
                             <Tooltip title={t('loglevel') + ' ' + logLevelValue}>
                                 <IconButton onClick={(event) => {
                                     event.stopPropagation();
@@ -649,7 +652,7 @@ const HostRow = ({
                                         {getLogLevelIcon(logLevelValue)}
                                     </Avatar>
                                 </IconButton>
-                            </Tooltip>
+                            </Tooltip> : <div className={classes.emptyButton} />
                         }
                         {!alive && !currentHost ? <Tooltip title={t('Remove')}>
                             <IconButton onClick={(e) => {

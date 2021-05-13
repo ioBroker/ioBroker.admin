@@ -238,6 +238,10 @@ const styles = theme => ({
         border: 0,
         borderRadius: 0,
     },
+    statusIcon_orangeDevice: { // triangle
+        border: 0,
+        borderRadius: 0,
+    },
     statusIcon_blue: { // watch
         border: '2px solid grey',
         borderRadius: 20,
@@ -290,6 +294,10 @@ const styles = theme => ({
     orange: {
         //backgroundColor: orange[700]
         color: orange[400]
+    },
+    orangeDevice: {
+        //backgroundColor: orange[700]
+        color: orange[300]
     },
     transparent: {
         color: 'transparent',
@@ -559,6 +567,20 @@ const styles = theme => ({
     },
     width150: {
         width: 150
+    },
+    deleting: {
+        position: 'relative',
+        '&:before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            zIndex: 100,
+            opacity: '.3 !important',
+            background: 'repeating-linear-gradient(135deg, #333, #333 10px, #888 10px, #888 20px)',
+        }
     }
 });
 
@@ -566,57 +588,57 @@ const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
 const arrayTier = [{ value: 1, desc: '1: Logic adapters' }, { value: 2, desc: '2: Data provider adapters' }, { value: 3, desc: '3: Other adapters' }];
 
 const InstanceRow = ({
-    name,
-    classes,
-    expertMode,
-    instance,
-    running,
-    id,
-    extendObject,
-    openConfig,
-    connectedToHost,
+    adminInstance,
     alive,
+    checkCompact,
+    checkSentry,
+    classes,
+    compact,
+    compactGroup,
+    compactGroupCount,
     connected,
+    connectedToHost,
+    currentSentry,
+    deletedInstances,
+    expanded,
+    expertMode,
+    extendObject,
+    getInstanceStatus,
     getMemory,
-    loglevelIcon,
+    getModeIcon,
     getRestartSchedule,
     getSchedule,
-    key,
-    checkCompact,
-    compactGroup,
-    setCompactGroup,
-    compactGroupCount,
-    setCompact,
-    compact,
-    supportCompact,
-    getInstanceState,
-    getModeIcon,
-    expanded,
     handleChange,
-    checkSentry,
-    currentSentry,
-    setSentry,
-    setRestartSchedule,
-    setName,
-    logLevel,
-    setLogLevel,
-    inputOutput,
-    mode,
-    setSchedule,
-    deletedInstances,
-    memoryLimitMB,
-    setMemoryLimitMB,
-    t,
-    idx,
-    tier,
-    setTier,
-    setHost,
-    themeType,
-    adminInstance,
-    hosts,
     host,
+    hosts,
+    id,
+    idx,
+    inputOutput,
+    instance,
+    key,
+    logLevel,
     logLevelObject,
-    currentHost
+    loglevelIcon,
+    memoryLimitMB,
+    mode,
+    name,
+    openConfig,
+    running,
+    setCompact,
+    setCompactGroup,
+    setHost,
+    setLogLevel,
+    setMemoryLimitMB,
+    setName,
+    setRestartSchedule,
+    setSchedule,
+    setSentry,
+    setTier,
+    supportCompact,
+    t,
+    themeType,
+    tier,
+    deleting,
 }) => {
     const [openSelectCompactGroup, setOpenSelectCompactGroup] = useState(false);
     const [openDialogCron, setOpenDialogCron] = useState(false);
@@ -797,7 +819,7 @@ const InstanceRow = ({
         />}
     </CustomModal> : null;
 
-    const state = getInstanceState(id);
+    const status = getInstanceStatus(id);
 
     const linksDialog = showLinks ? <LinksDialog
         image={instance.image}
@@ -824,12 +846,15 @@ const InstanceRow = ({
         instance.mode === 'daemon' ? <State key={1} state={connectedToHost} >{t('Connected to host')}</State> : '',
         instance.mode === 'daemon' ? <State key={2} state={alive} >{t('Heartbeat')}</State> : '',
         connected !== null ? <State key={3} state={!!connected}>
-            {typeof connected === 'string' ? t('Connected: ') + (connected || '-') : t('Connected to device or service')}
+            {typeof connected === 'string' ? t('Connected:') + ' ' + (connected || '-') : t('Connected to device or service')}
         </State> : ''
     ];
 
-    return <Accordion key={key} square
-        expanded={expanded === instance.id}
+    return <Accordion
+        key={key}
+        square
+        classes={{root: deleting ? classes.deleting : ''}}
+        expanded={expanded === instance.id && !deleting}
         onChange={() => {
             if (openDialogCron ||
                 openDialogSchedule ||
@@ -885,10 +910,10 @@ const InstanceRow = ({
                             className={clsx(
                                 classes.smallAvatar,
                                 classes.statusIndicator,
-                                instance.mode === 'daemon' || instance.mode === 'schedule' ? classes[state] : classes.transparent,
-                                connectedToHost && alive && connected === false && classes.orange
+                                instance.mode === 'daemon' || instance.mode === 'schedule' ? classes[status] : classes.transparent,
+                                connectedToHost && alive && connected === false && classes.orangeDevice
                             )}>
-                            {getModeIcon(instance.mode, state, classes['statusIcon_' + state])}
+                            {getModeIcon(instance.mode, status, classes['statusIcon_' + status])}
                         </div>
                     </Tooltip>
                     <Avatar
@@ -1069,7 +1094,7 @@ const InstanceRow = ({
                         {running && instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
                         {running && connected !== null &&
                             <State state={!!connected}>
-                                {typeof connected === 'string' ? t('Connected: ') + (connected || '-') : t('Connected to device or service')}
+                                {typeof connected === 'string' ? t('Connected:') + ' ' + (connected || '-') : t('Connected to device or service')}
                             </State>
                         }
                     </Grid>
@@ -1320,6 +1345,7 @@ InstanceRow.propTypes = {
     setHost: PropTypes.func,
     host: PropTypes.string,
     instanceId: PropTypes.string,
+    deleting: PropTypes.bool,
 };
 
 

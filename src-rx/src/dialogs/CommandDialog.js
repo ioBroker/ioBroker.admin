@@ -80,7 +80,7 @@ class CommandDialog extends Component {
                     commandError={this.props.commandError}
                     errorFunc={this.props.errorFunc}
                     performed={this.props.performed}
-                    callBack={this.props.callBack}
+                    callback={this.props.callback}
                     cmd={this.props.cmd}
                     onFinished={() => this.state.closeOnReady && this.props.onClose()}
                     onSetCommandRunning={running => this.props.onSetCommandRunning(running)}
@@ -110,7 +110,6 @@ class CommandDialog extends Component {
                     </Button>
                     <Button
                         variant="contained"
-                        autoFocus
                         disabled={!this.props.inBackground}
                         onClick={this.props.onClose}
                         color="default">
@@ -127,10 +126,18 @@ CommandDialog.propTypes = {
     confirmText: PropTypes.string,
     header: PropTypes.string,
     onClose: PropTypes.func.isRequired,
+    callback: PropTypes.bool,
     onInBackground: PropTypes.func.isRequired,
     visible: PropTypes.bool.isRequired,
     ready: PropTypes.bool.isRequired,
     onSetCommandRunning: PropTypes.func.isRequired,
+    cmd: PropTypes.string,
+    errorFunc: PropTypes.func,
+    performed: PropTypes.func,
+    inBackground: PropTypes.func,
+    commandError: PropTypes.bool,
+    socket: PropTypes.object.isRequired,
+    currentHost: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(CommandDialog);

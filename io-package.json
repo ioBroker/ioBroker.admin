@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.17",
+        "version": "5.0.21",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,54 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.0.21": {
+                "en": "Admin5: Fixed many bugs",
+                "de": "Admin5: Viele Fehler behoben",
+                "ru": "Admin5: Исправлено множество ошибок",
+                "pt": "Admin5: muitos bugs corrigidos",
+                "nl": "Admin5: Veel bugs opgelost",
+                "fr": "Admin5: Correction de nombreux bugs",
+                "it": "Admin5: risolti molti bug",
+                "es": "Admin5: se corrigieron muchos errores",
+                "pl": "Admin5: Naprawiono wiele błędów",
+                "zh-cn": "Admin5：修复了许多错误"
+            },
+            "5.0.20": {
+                "en": "Admin5: Fixed many bugs",
+                "de": "Admin5: Viele Fehler behoben",
+                "ru": "Admin5: Исправлено множество ошибок",
+                "pt": "Admin5: muitos bugs corrigidos",
+                "nl": "Admin5: Veel bugs opgelost",
+                "fr": "Admin5: Correction de nombreux bugs",
+                "it": "Admin5: risolti molti bug",
+                "es": "Admin5: se corrigieron muchos errores",
+                "pl": "Admin5: Naprawiono wiele błędów",
+                "zh-cn": "Admin5：修复了许多错误"
+            },
+            "5.0.19": {
+                "en": "Admin5: Fixed many bugs",
+                "de": "Admin5: Viele Fehler behoben",
+                "ru": "Admin5: Исправлено множество ошибок",
+                "pt": "Admin5: muitos bugs corrigidos",
+                "nl": "Admin5: Veel bugs opgelost",
+                "fr": "Admin5: Correction de nombreux bugs",
+                "it": "Admin5: risolti molti bug",
+                "es": "Admin5: se corrigieron muchos errores",
+                "pl": "Admin5: Naprawiono wiele błędów",
+                "zh-cn": "Admin5：修复了许多错误"
+            },
+            "5.0.18": {
+                "en": "Admin5: Fixed many bugs",
+                "de": "Admin5: Viele Fehler behoben",
+                "ru": "Admin5: Исправлено множество ошибок",
+                "pt": "Admin5: muitos bugs corrigidos",
+                "nl": "Admin5: Veel bugs opgelost",
+                "fr": "Admin5: Correction de nombreux bugs",
+                "it": "Admin5: risolti molti bug",
+                "es": "Admin5: se corrigieron muchos errores",
+                "pl": "Admin5: Naprawiono wiele błędów",
+                "zh-cn": "Admin5：修复了许多错误"
+            },
             "5.0.17": {
                 "en": "Admin5: Fixed many bugs",
                 "de": "Admin5: Viele Fehler behoben",
@@ -209,54 +257,6 @@
                 "es": "Fusionó los cambios de admin4",
                 "pl": "Scalono zmiany z admin4",
                 "zh-cn": "合并来自admin4的更改"
-            },
-            "5.0.0": {
-                "en": "The tile view implemented for the file browser",
-                "de": "Die für den Dateibrowser implementierte Kachelansicht",
-                "ru": "Представление плитки реализовано для файлового браузера",
-                "pt": "A visualização em bloco implementada para o navegador de arquivos",
-                "nl": "De tegelweergave geïmplementeerd voor de bestandsbrowser",
-                "fr": "La vue en mosaïque implémentée pour le navigateur de fichiers",
-                "it": "La visualizzazione affiancata implementata per il browser di file",
-                "es": "La vista de mosaico implementada para el navegador de archivos",
-                "pl": "Widok kafelków zaimplementowany dla przeglądarki plików",
-                "zh-cn": "为文件浏览器实现的图块视图"
-            },
-            "4.1.1": {
-                "en": "Started the development of GUI based on React (only for developers)",
-                "de": "Startete die Entwicklung einer GUI basierend auf React (nur für Entwickler)",
-                "ru": "Начата разработка графического интерфейса на основе React (только для разработчиков)",
-                "pt": "Iniciou o desenvolvimento da GUI com base no React (apenas para desenvolvedores)",
-                "nl": "Begonnen met de ontwikkeling van GUI op basis van React (alleen voor ontwikkelaars)",
-                "fr": "A commencé le développement de GUI basé sur React (uniquement pour les développeurs)",
-                "it": "Ha iniziato lo sviluppo della GUI basata su React (solo per sviluppatori)",
-                "es": "Comenzó el desarrollo de GUI basado en React (solo para desarrolladores)",
-                "pl": "Rozpoczął tworzenie GUI w oparciu o React (tylko dla programistów)",
-                "zh-cn": "开始开发基于React的GUI（仅适用于开发人员）"
-            },
-            "4.0.10": {
-                "en": "webserver error handling optimized, preparations for js-controller 3",
-                "de": "Webserver Fehlerbehandlung optimiert, Vorbereitungen für js-controller 3",
-                "ru": "Оптимизирована обработка ошибок веб-сервера, подготовка к js-controller 3",
-                "pt": "manipulação de erros do servidor da web otimizada, preparativos para o controlador js 3",
-                "nl": "webserver foutafhandeling geoptimaliseerd, voorbereidingen voor js-controller 3",
-                "fr": "gestion des erreurs du serveur Web optimisée, préparations pour js-controller 3",
-                "it": "ottimizzazione della gestione degli errori del server web, preparazione per js-controller 3",
-                "es": "manejo de errores del servidor web optimizado, preparativos para js-controller 3",
-                "pl": "zoptymalizowana obsługa błędów serwera WWW, przygotowania do kontrolera js 3",
-                "zh-cn": "优化了Web服务器的错误处理，为js-controller 3做准备"
-            },
-            "4.0.9": {
-                "en": "The attempt to process error by the log show.",
-                "de": "Der Versuch, Fehler durch das Protokoll zu verarbeiten, wird angezeigt.",
-                "ru": "Попытка обработать ошибку в журнале.",
-                "pt": "A tentativa de processar o erro pelo log mostra.",
-                "nl": "De poging om fouten te verwerken door de logshow.",
-                "fr": "La tentative de traitement de l'erreur par le journal affiche.",
-                "it": "Il tentativo di elaborare l'errore da parte del registro.",
-                "es": "El intento de procesar el error por el registro muestra.",
-                "pl": "Próba przetworzenia błędu przez przedstawienie dziennika.",
-                "zh-cn": "尝试通过日志显示来处理错误。"
             }
         },
         "desc": {

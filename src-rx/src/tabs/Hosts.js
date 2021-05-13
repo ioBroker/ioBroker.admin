@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
+import semver from 'semver';
+import clsx from 'clsx';
 
 import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
@@ -7,6 +9,7 @@ import { withStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { InputAdornment, LinearProgress, TextField } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 
 import RefreshIcon from '@material-ui/icons/Refresh';
 import ViewListIcon from '@material-ui/icons/ViewList';
@@ -24,14 +27,11 @@ import { useStateLocal } from '../helpers/hooks/useStateLocal';
 import HostCard from '../components/Hosts/HostCard';
 import HostRow from '../components/Hosts/HostRow';
 import HostEdit from '../components/Hosts/HostEdit';
-import { Skeleton } from '@material-ui/lab';
 import { JsControllerDialogFunc } from '../dialogs/JsControllerDialog';
-import clsx from 'clsx';
 import Utils from '../Utils';
 import BaseSettingsDialog from '../dialogs/BaseSettingsDialog';
 import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
 import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
-import Semver from 'semver';
 
 const styles = theme => ({
     grow: {
@@ -280,28 +280,42 @@ const Hosts = ({
     const updateHosts = (hostId, state) => {
         setHosts(prevHostsArray => {
             const newHosts = JSON.parse(JSON.stringify(prevHostsArray));
-            const elementFind = prevHostsArray.find(({ _id }) => _id === hostId);
-            if (elementFind) {
-                const index = prevHostsArray.indexOf(elementFind);
-                if (state) {
-                    newHosts[index] = state;
-                } else {
-                    newHosts.splice(index, 1);
-                }                
+            if (Array.isArray(hostId)) {
+                hostId.forEach(event => {
+                    const elementFind = prevHostsArray.find(host => host._id === event.id);
+                    if (elementFind) {
+                        const index = prevHostsArray.indexOf(elementFind);
+                        if (event.obj) {
+                            newHosts[index] = event.obj;
+                        } else {
+                            newHosts.splice(index, 1);
+                        }
+                    } else {
+                        newHosts.push(event.obj);
+                    }
+                });
             } else {
-                newHosts.push(state);
+                const elementFind = prevHostsArray.find(({ _id }) => _id === hostId);
+                if (elementFind) {
+                    const index = prevHostsArray.indexOf(elementFind);
+                    if (state) {
+                        newHosts[index] = state;
+                    } else {
+                        newHosts.splice(index, 1);
+                    }
+                } else {
+                    newHosts.push(state);
+                }
             }
 
             filterText && newHosts.length <= 2 && setFilterText('');
-            
+
             return newHosts;
         });
     }
 
     const readInfo = () => {
-        socket.subscribeObject('system.host.*', updateHosts);
-        // hostsWorker.register
-        socket.getHosts(true, false, readTimeoutMs)
+        return socket.getHosts(true, false, readTimeoutMs)
             .then(hostsArray => socket.getRepository(currentHost, { update: false }, false, readTimeoutMs)
                 .then(async repositoryProm => {
                     const _alive = JSON.parse(JSON.stringify(alive));
@@ -326,13 +340,17 @@ const Hosts = ({
                     window.alert('Cannot getRepository: ' + e);
                     e.toString().includes('timeout') && setShowSlowConnectionWarning(true);
                 }));
-        return () => {
-            socket.unsubscribeObject('system.host.*', updateHosts);
-        }
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(readInfo, [refresh]);
+    useEffect(() => {
+        readInfo()
+            .then(() =>
+                hostsWorker.registerHandler(updateHosts));
+
+        return () => hostsWorker.unregisterHandler(updateHosts);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [refresh]);
 
     const getAllArrayHosts = useMemo(() => hosts.map(({
         _id,
@@ -501,7 +519,7 @@ const Hosts = ({
         if (installed && adapter && adapter.news) {
             Object.keys(adapter.news).forEach(version => {
                 try {
-                    if (Semver.gt(version, installed) || all) {
+                    if (semver.gt(version, installed) || all) {
                         news.push({
                             version: version,
                             news: adapter.news[version][lang] || adapter.news[version].en

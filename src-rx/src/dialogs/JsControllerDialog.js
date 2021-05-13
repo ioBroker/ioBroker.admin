@@ -179,7 +179,7 @@ const JsControllerDialog = ({ socket, hostId }) => {
                     <div className={classes.standardText}>{I18n.t('Due to the different hardware and platforms under which ioBroker runs, the js-controller has to be updated manually. Further details can be found in the appropriate section.')}</div>
 
                     <h2 className={classes.h2}>{I18n.t('General information for all platforms')}</h2>
-                    <div className={classes.standardText}>{I18n.t('For an update from js-controller 1.x to 2.x please always read the information at ')}<a href="https://forum.iobroker.net/topic/26759/js-controller-2-jetzt-f%C3%BCr-alle-im-stable" target="_blank">forum</a>.
+                    <div className={classes.standardText}>{I18n.t('For an update from js-controller 1.x to 2.x please always read the information at')} <a href="https://forum.iobroker.net/topic/26759/js-controller-2-jetzt-f%C3%BCr-alle-im-stable" target="_blank">forum</a>.
 </div>
                     <div className={classes.standardText}>{I18n.t('Otherwise please update the slaves first with an update of master-slave systems and the master last!')}
                     </div>
@@ -249,8 +249,8 @@ iob start`
                             <div className={classes.standardTextSmall}>iob start</div>
                         </pre>
 
-                        <div className={clsx(classes.standardTextSmall2)}>{I18n.t(' or server reboot, then ioBroker should restart and you can be sure that all old processes were finished.')}</div>
-                            <div className={clsx(classes.standardTextSmall2)}>{I18n.t('If the upgrade command displays permissions / permissions errors, fix them. Sometimes "sudo" is not enough and you have to run the installation as a real root (previously simply sudo su -).')}</div>
+                        <div className={clsx(classes.standardTextSmall2)}>{I18n.t('or reboot server, then ioBroker should restart and you can be sure that all old processes were finished.')}</div>
+                        <div className={clsx(classes.standardTextSmall2)}>{I18n.t('If the upgrade command displays permissions / permissions errors, fix them. Sometimes "sudo" is not enough and you have to run the installation as a real root (previously simply sudo su -).')}</div>
                     </>}
                     {os === 'win32' && <><h2 className={classes.h2}>{I18n.t('Windows')}</h2>
                         <div className={classes.standardText}>{I18n.t('For updating ioBroker on Windows, download the appropriate installer with the desired js-controller version from the download page ')}<a href="https://www.iobroker.net/#en/download" target="_blank">https://www.iobroker.net/#en/download</a>{I18n.t(' and make the update with it. With the Windows Installer, previously manually installed servers or installations from other operating systems can be migrated to Windows and updated.')}</div>
@@ -325,7 +325,7 @@ sudo -u iobroker -H npm install iobroker.js-controller`
                         onClose();
                     }}
                     color="default">
-                    {I18n.t('show all changelog')}
+                    {I18n.t('Show whole changelog')}
                 </Button>
                 <Button
                     variant="contained"

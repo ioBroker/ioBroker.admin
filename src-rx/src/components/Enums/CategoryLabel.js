@@ -1,15 +1,17 @@
 import { useDrop } from 'react-dnd';
 import Color from 'color';
+import PropTypes from 'prop-types';
 
+import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 const CategoryLabel = (props) => {
-    const [{ canDrop, isOver }, drop] = useDrop(() => ({
+    const [, drop] = useDrop(() => ({
         accept: ['enum'],
-        drop: () => ({ enum_id: props.categoryData._id }),
+        drop: () => ({ enumId: props.categoryData._id }),
         collect: (monitor) => ({
             isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),
@@ -24,7 +26,7 @@ const CategoryLabel = (props) => {
     return <span ref={drop} className={props.classes.categoryTitle} style={{color: textColor}}>
         {props.categoryData.common.icon ? <span
             className={ props.classes.icon }
-            style={{ backgroundImage: "url(" + props.categoryData.common.icon + ")" }}
+            style={{ backgroundImage: 'url(' + props.categoryData.common.icon + ')' }}
         /> : null}
         {typeof props.categoryData.common.name === 'string' ? props.categoryData.common.name : props.categoryData.common.name.en}
         <IconButton
@@ -32,16 +34,30 @@ const CategoryLabel = (props) => {
             style={{color: props.categoryData.common.color ? textColor : null}}
             onClick={()=>{props.showEnumEditDialog(props.categoryData, false)}}
         >
-            <EditIcon />
+            <Tooltip title={props.t('Edit')} placement="top">
+                <EditIcon />
+            </Tooltip>
         </IconButton>
         {props.categoryData.common.dontDelete ? null : <IconButton
             size="small"
             style={{color: props.categoryData.common.color ? textColor : null}}
             onClick={()=>{props.showEnumDeleteDialog(props.categoryData)}}
         >
-            <DeleteIcon />
+            <Tooltip title={props.t('Delete')} placement="top">
+                <DeleteIcon />
+            </Tooltip>
         </IconButton> }
     </span>;
 }
+
+CategoryLabel.propTypes = {
+    categoryData: PropTypes.object,
+    showEnumEditDialog: PropTypes.func,
+    showEnumDeleteDialog: PropTypes.func,
+    classes: PropTypes.object,
+    t: PropTypes.func,
+    lang: PropTypes.string,
+    socket: PropTypes.object,
+};
 
 export default CategoryLabel;

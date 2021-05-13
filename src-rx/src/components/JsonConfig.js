@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
 import LinearProgress from '@material-ui/core/LinearProgress';
+import Tooltip from '@material-ui/core/Tooltip';
+import Fab from '@material-ui/core/Fab';
+import PublishIcon from "@material-ui/icons/Publish";
 
 import SaveCloseButtons from '@iobroker/adapter-react/Components/SaveCloseButtons';
 import Router from '@iobroker/adapter-react/Components/Router';
@@ -12,10 +15,7 @@ import I18n from '@iobroker/adapter-react/i18n';
 
 import JsonConfigComponent from './JsonConfigComponent';
 import ConfigCustomEasyAccess from './JsonConfigComponent/ConfigCustomEasyAccess';
-import ConfigGeneric from "./JsonConfigComponent/ConfigGeneric";
-import Tooltip from "@material-ui/core/Tooltip";
-import Fab from "@material-ui/core/Fab";
-import PublishIcon from "@material-ui/icons/Publish";
+import ConfigGeneric from './JsonConfigComponent/ConfigGeneric';
 import Utils from './Utils';
 
 const styles = {
@@ -77,12 +77,12 @@ class JsonConfig extends Router {
                     let json = JSON.parse(contents);
                     this.setState({data: json});
                 } catch (err) {
-                    window.alert(I18n.t('Failed to parse JSON file'));
+                    window.alert(I18n.t('[JsonConfig] Failed to parse JSON file'));
                 }
             };
             r.readAsText(f);
         } else {
-            window.alert(I18n.t('Failed to open JSON File'));
+            window.alert(I18n.t('[JsonConfig] Failed to open JSON File'));
         }
     }
 
@@ -116,15 +116,15 @@ class JsonConfig extends Router {
                 try {
                     return JSON.parse(data);
                 } catch (e) {
-                    window.alert('Cannot parse json config!');
+                    window.alert('[JsonConfig] Cannot parse json config!');
                 }
             })
-            .catch(e => window.alert('Cannot read file: ' + e));
+            .catch(e => window.alert('[JsonConfig] Cannot read file: ' + e));
     }
 
     getInstanceObject() {
         return this.props.socket.getObject(`system.adapter.${this.props.adapterName}.${this.props.instance}`)
-            .catch(e => window.alert('Cannot read instance object: ' + e));
+            .catch(e => window.alert('[JsonConfig] Cannot read instance object: ' + e));
     }
 
     renderConfirmDialog() {
@@ -154,7 +154,7 @@ class JsonConfig extends Router {
             try {
                 await this.props.socket.setObject(obj._id, obj);
             } catch (e) {
-                window.alert('Cannot set object: ' + e);
+                window.alert('[JsonConfig] Cannot set object: ' + e);
             }
 
             this.setState({changed: false, data: obj.native, updateData: this.state.updateData + 1}, () =>
@@ -167,7 +167,7 @@ class JsonConfig extends Router {
             }
         }
     }
-    
+
     componentDidUpdate = (prevProps, prevState) => {
         if(prevState.changed !== this.state.changed){
             this.props.configStored(!this.state.changed);

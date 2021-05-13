@@ -299,6 +299,20 @@ const styles = theme => ({
         paddingBottom: 15,
         fontWeight: 'bold'
     },
+    deleting: {
+        position: 'relative',
+        '&:before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            zIndex: 100,
+            opacity: '.3 !important',
+            background: 'repeating-linear-gradient(135deg, #333, #333 10px, #888 10px, #888 20px)',
+        }
+    },
     /*instanceStateAliveAndConnected2: {
         backgroundColor: 'rgb(0 255 0 / 14%)'
     }*/
@@ -308,53 +322,54 @@ const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
 const arrayTier = [{ value: 1, desc: "1: Logic adapters" }, { value: 2, desc: "2: Data provider adapters" }, { value: 3, desc: "3: Other adapters" }];
 
 const InstanceCard = memo(({
-    name,
-    classes,
-    image,
-    expertMode,
-    hidden,
-    instance,
-    running,
-    id,
-    extendObject,
-    openConfig,
-    connectedToHost,
+    adminInstance,
     alive,
+    checkCompact,
+    checkSentry,
+    classes,
+    compact,
+    compactGroup,
+    compactGroupCount,
     connected,
+    connectedToHost,
+    currentSentry,
+    deletedInstances,
+    expertMode,
+    extendObject,
     getMemory,
-    loglevelIcon,
     getRestartSchedule,
     getSchedule,
-    key,
-    checkCompact,
-    compactGroup,
-    setCompactGroup,
-    compactGroupCount,
-    setCompact,
-    compact,
-    supportCompact,
-    checkSentry,
-    currentSentry,
-    setSentry,
-    setRestartSchedule,
-    setName,
-    logLevel,
-    setLogLevel,
-    inputOutput,
-    mode,
-    setSchedule,
-    deletedInstances,
-    memoryLimitMB,
-    setMemoryLimitMB,
-    t,
-    tier,
-    setTier,
-    themeType,
-    adminInstance,
-    setHost,
+    hidden,
     host,
     hosts,
-    logLevelObject
+    id,
+    image,
+    inputOutput,
+    instance,
+    key,
+    logLevel,
+    logLevelObject,
+    loglevelIcon,
+    memoryLimitMB,
+    mode,
+    name,
+    openConfig,
+    running,
+    setCompact,
+    setCompactGroup,
+    setHost,
+    setLogLevel,
+    setMemoryLimitMB,
+    setName,
+    setRestartSchedule,
+    setSchedule,
+    setSentry,
+    setTier,
+    supportCompact,
+    t,
+    themeType,
+    tier,
+    deleting,
 }) => {
     const [mouseOver, setMouseOver] = useState(false);
 
@@ -554,8 +569,8 @@ const InstanceCard = memo(({
         }}
     /> : null;
 
-    const secondCardInfo = openCollapse || mouseOver ?
-        <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '')}>
+    const secondCardInfo = (openCollapse || mouseOver) && !deleting ?
+        <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : '', deleting && classes.deleting)}>
             <CardContent classes={{ root: classes.cardContent }} className={classes.overflowAuto}>
                 <div className={classes.collapseIcon}>
                     <div className={classes.close} onClick={() => setCollapse(false)} />
@@ -566,7 +581,7 @@ const InstanceCard = memo(({
                     {running && instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
                     {running && connected !== null &&
                         <State state={!!connected}>
-                            {typeof connected === 'string' ? t('Connected: ') + (connected || '-') : t('Connected to device or service')}
+                            {typeof connected === 'string' ? t('Connected:') + ' ' + (connected || '-') : t('Connected to device or service')}
                         </State>
                     }
 
@@ -937,6 +952,7 @@ InstanceCard.propTypes = {
     hosts: PropTypes.array,
     setHost: PropTypes.func,
     host: PropTypes.string,
+    deleting: PropTypes.bool,
 };
 
 export default withStyles(styles)(InstanceCard);

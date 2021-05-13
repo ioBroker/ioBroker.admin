@@ -17,6 +17,8 @@ import WarningIcon from '@material-ui/icons/Warning';
 import CancelPresentationIcon from '@material-ui/icons/CancelPresentation';
 import MemoryIcon from '@material-ui/icons/Memory';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@material-ui/icons/Close';
 
 import I18n from '@iobroker/adapter-react/i18n';
 
@@ -324,15 +326,16 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
                         <div className={classes.button}>
                             <Button
                                 variant="contained"
-                                autoFocus
+                                autoFocus={Object.keys(message).length !== 1}
                                 disabled={disabled.includes(name)}
                                 style={disabled.includes(name) ? { background: 'silver' } : null}
                                 onClick={() => {
                                     ackCallback(name);
                                     setDisabled([...disabled, name]);
                                 }}
-                                color="primary">
-                                {I18n.t('Acknowledge')}
+                                color={Object.keys(message).length !== 1 ? 'primary' : 'default'}
+                            >
+                                <CheckIcon />{I18n.t('Acknowledge')}
                             </Button>
                             {Object.keys(message).length === 1 && <Button
                                 variant="contained"
@@ -354,10 +357,9 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
             <DialogActions>
                 <Button
                     variant="contained"
-                    autoFocus
                     onClick={onClose}
-                    color="primary">
-                    {I18n.t('Ok')}
+                >
+                    <CloseIcon/>{I18n.t('Ok')}
                 </Button>
             </DialogActions>
         </Dialog >

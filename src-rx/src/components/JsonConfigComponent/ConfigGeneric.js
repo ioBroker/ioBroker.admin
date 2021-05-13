@@ -62,7 +62,11 @@ class ConfigGeneric extends Component {
 
     onUpdate = data => {
         const value = ConfigGeneric.getValue(data || this.props.data, this.props.attr) || '';
-        this.setState({ value});
+        if (this.state.value !== value) {
+            this.setState({ value });
+        } else {
+            this.forceUpdate();
+        }
     }
 
     static getValue(data, attr) {
@@ -102,10 +106,25 @@ class ConfigGeneric extends Component {
         if (!text) {
             return '';
         }
+
         if (typeof text === 'string') {
-            return noTranslation ? text : I18n.t(text);
+            text = noTranslation ? text : I18n.t(text);
+            if (text.includes('${')) {
+                return this.getPattern(text);
+            } else {
+                return text;
+            }
         } else if (text && typeof text === 'object') {
-            return text[this.lang] || text.en || '';
+            if (text.func) {
+                // calculate pattern
+                if (typeof text.func === 'object') {
+                    return this.getPattern(text.func[this.lang] || text.func.en || '');
+                } else {
+                    this.getPattern(text.func);
+                }
+            } else {
+                return text[this.lang] || text.en || '';
+            }
         }
     }
 
@@ -180,6 +199,7 @@ class ConfigGeneric extends Component {
                     }
                 }
             }
+
             const changed = [];
             if (this.props.schema.onChangeDependsOn) {
                 for (let z = 0; z < this.props.schema.onChangeDependsOn.length; z++) {
@@ -197,6 +217,27 @@ class ConfigGeneric extends Component {
                             changed.push(dep.attr);
                         }
                     }
+                }
+            }
+
+            if (this.props.schema.hiddenDependsOn) {
+                for (let z = 0; z < this.props.schema.hiddenDependsOn.length; z++) {
+                    const dep = this.props.schema.hiddenDependsOn[z];
+                    dep.hidden && changed.push(dep.attr);
+                }
+            }
+
+            if (this.props.schema.labelDependsOn) {
+                for (let z = 0; z < this.props.schema.labelDependsOn.length; z++) {
+                    const dep = this.props.schema.labelDependsOn[z];
+                    dep.hidden && changed.push(dep.attr);
+                }
+            }
+
+            if (this.props.schema.helpDependsOn) {
+                for (let z = 0; z < this.props.schema.helpDependsOn.length; z++) {
+                    const dep = this.props.schema.helpDependsOn[z];
+                    dep.hidden && changed.push(dep.attr);
                 }
             }
 
@@ -325,7 +366,7 @@ class ConfigGeneric extends Component {
         const schema = this.props.schema;
 
         if (hidden) {
-            if (this.props.schema.hideOnlyControl) {
+            if (schema.hideOnlyControl) {
                 const item = <Grid
                     item
                     xs={schema.xs || undefined}
@@ -335,8 +376,8 @@ class ConfigGeneric extends Component {
                     style={Object.assign(
                         {},
                         {marginBottom: 0, /*marginRight: 8, */textAlign: 'left'},
-                        this.props.schema.style,
-                        this.props.themaType === 'dark' ? this.props.schema.darkStyle : {}
+                        schema.style,
+                        this.props.themaType === 'dark' ? schema.darkStyle : {}
                     )}
                 />;
 
@@ -351,33 +392,33 @@ class ConfigGeneric extends Component {
             } else {
                 return null;
             }
-        }
-
-        const item = <Grid
-            item
-            title={this.getText(this.props.schema.tooltip)}
-            xs={schema.xs || undefined}
-            lg={schema.lg || undefined}
-            md={schema.md || undefined}
-            sm={schema.sm || undefined}
-            style={Object.assign({}, {marginBottom: 0, /*marginRight: 8, */textAlign: 'left'}, this.props.schema.style)}>
-            {this.renderItem(error, disabled || this.props.commandRunning, defaultValue)}
-        </Grid>;
-
-        if (schema.newLine) {
-            return <>
-                <div style={{flexBasis: '100%', height: 0}} />
-                {this.renderConfirmDialog()}
-                {item}
-            </>
         } else {
-            if (this.state.confirmDialog) {
+            const item = <Grid
+                item
+                title={this.getText(schema.tooltip)}
+                xs={schema.xs || undefined}
+                lg={schema.lg || undefined}
+                md={schema.md || undefined}
+                sm={schema.sm || undefined}
+                style={Object.assign({}, {marginBottom: 0, /*marginRight: 8, */textAlign: 'left'}, schema.style)}>
+                {this.renderItem(error, disabled || this.props.commandRunning || this.props.disabled, defaultValue)}
+            </Grid>;
+
+            if (schema.newLine) {
                 return <>
+                    <div style={{flexBasis: '100%', height: 0}} />
                     {this.renderConfirmDialog()}
                     {item}
-                </>;
+                </>
             } else {
-                return item;
+                if (this.state.confirmDialog) {
+                    return <>
+                        {this.renderConfirmDialog()}
+                        {item}
+                    </>;
+                } else {
+                    return item;
+                }
             }
         }
     }
@@ -395,6 +436,7 @@ ConfigGeneric.propTypes = {
     onChange: PropTypes.func,
     customs: PropTypes.object,
     forceUpdate: PropTypes.func.isRequired,
+    disabled: PropTypes.bool,
 
     systemConfig: PropTypes.object,
     alive: PropTypes.bool,

@@ -55,7 +55,6 @@ const styles = theme => {
 };
 
 class AdapterUpdateDialog extends Component {
-
     constructor(props) {
         super(props);
 
@@ -63,7 +62,6 @@ class AdapterUpdateDialog extends Component {
     }
 
     getDependencies() {
-
         const result = [];
 
         this.props.dependencies && this.props.dependencies.forEach(dependency => {
@@ -84,7 +82,15 @@ class AdapterUpdateDialog extends Component {
         const result = [];
 
         this.props.news && this.props.news.forEach(entry => {
-            const news = entry.news ? entry.news.split('\n') : [];
+            const news = (entry.news ? entry.news.split('\n') : [])
+                .map(line => line
+                    .trim()
+                    .replace(/^\*\s?/, '')
+                    .replace(/<!--[^>]*->/, '')
+                    .replace(/<! -[^>]*->/, '')
+                    .trim()
+                )
+                .filter(line => !!line)
 
             result.push(
                 <Grid item key={entry.version}>
@@ -118,7 +124,7 @@ class AdapterUpdateDialog extends Component {
         >
             <DialogTitle disableTypography={true}>
                 <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
-                    {this.t('Please confirm')}
+                    {this.t('Update "%s" to v%s', this.props.adapter, version)}
                     <IconButton className={classes.closeButton} onClick={this.props.onClose}>
                         <CloseIcon />
                     </IconButton>
@@ -138,7 +144,7 @@ class AdapterUpdateDialog extends Component {
                             {this.getDependencies()}
                         </Grid>
                     }
-                    {news.length && <Grid item>
+                    {news.length ? <Grid item>
                         <Typography variant="h6" gutterBottom>{this.t('Change log')}</Typography>
                         <Grid
                             container
@@ -148,11 +154,12 @@ class AdapterUpdateDialog extends Component {
                         >
                             {news}
                         </Grid>
-                    </Grid>}
+                    </Grid> : this.t('No change log available')}
                 </Grid>
             </DialogContent>
             <DialogActions className={classes.wrapperButton}>
                 {!!this.props.rightDependencies && this.props.onIgnore && version && <Button
+                    variant="outlined"
                     onClick={() => this.props.onIgnore(version)}
                     color="primary"
                 >
@@ -169,7 +176,6 @@ class AdapterUpdateDialog extends Component {
                 </Button>
                 <Button
                     variant="contained"
-                    autoFocus
                     onClick={() => this.props.onClose()}
                     color="default"
                 >

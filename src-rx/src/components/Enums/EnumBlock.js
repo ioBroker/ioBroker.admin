@@ -1,19 +1,25 @@
 import { useEffect, useRef } from 'react'
-import { DragPreviewImage, useDrag, useDrop } from 'react-dnd';
+import PropTypes from 'prop-types';
+import { useDrag, useDrop } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import Color from 'color';
+
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import Icon from '@iobroker/adapter-react/Components/Icon';
+import Tooltip from '@material-ui/core/Tooltip';
+
 import IconButton from '@material-ui/core/IconButton';
-import Checkbox from '@material-ui/core/Checkbox';
 import ListIcon from '@material-ui/icons/List';
 import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
+import DownIcon from '@material-ui/icons/KeyboardArrowDown';
+import UpIcon from '@material-ui/icons/KeyboardArrowUp';
+import AddIcon from '@material-ui/icons/Add';
 
-import Icon from '@iobroker/adapter-react/Components/Icon';
 
 function EnumBlock(props) {
 
@@ -24,7 +30,7 @@ function EnumBlock(props) {
     if (!props.enum.common.color) {
         textColor = null;
     }
-    let style = { cursor: 'grab', opacity, overflow: 'hidden', color: textColor }
+    let style = { opacity, color: textColor }
     if (props.enum.common.color) {
         style.backgroundColor = props.enum.common.color;
     }
@@ -40,20 +46,26 @@ function EnumBlock(props) {
                         size="small"
                         onClick={()=>{props.showEnumEditDialog(props.enum, false)}}
                     >
-                        <EditIcon style={{ color: textColor }} />
+                        <Tooltip title={props.t('Edit')} placement="top">
+                            <EditIcon style={{ color: textColor }} />
+                        </Tooltip>
                     </IconButton>
                     <IconButton
                         size="small"
                         onClick={()=>{props.copyEnum(props.enum._id)}}
                     >
-                        <FileCopyIcon style={{ color: textColor }} />
+                        <Tooltip title={props.t('Copy')} placement="top">
+                            <FileCopyIcon style={{ color: textColor }} />
+                        </Tooltip>
                     </IconButton>
                     <IconButton
                         size="small"
                         onClick={()=>{props.showEnumDeleteDialog(props.enum)}}
                         disabled={props.enum.common.dontDelete}
                     >
-                        <DeleteIcon style={props.enum.common.dontDelete ? null : { color: textColor }} />
+                        <Tooltip title={props.t('Delete')} placement="top">
+                            <DeleteIcon style={props.enum.common.dontDelete ? null : { color: textColor }} />
+                        </Tooltip>
                     </IconButton>
                 </div>
                 <CardContent>
@@ -96,8 +108,11 @@ function EnumBlock(props) {
                             if (!member) {
                                 return null;
                             }
+                            const name = member.common?.name && props.getName(member.common?.name);
+
                             return <Card
                                 key={member._id}
+                                title={name ? props.t('Name: %s', name) + '\nID: ' +  member._id : member._id}
                                 variant="outlined"
                                 className={props.classes.enumGroupMember}
                                 style={{ color: textColor, borderColor: textColor + "40" }}
@@ -112,39 +127,71 @@ function EnumBlock(props) {
                                         :
                                         <ListIcon className={props.classes.icon} />
                                     }
-                                {member.common?.name ? props.getName(member.common?.name) : null}
+                                {name || member._id}
                                 <IconButton
                                     size="small"
                                     onClick={() => props.removeMemberFromEnum(member._id, props.enum._id)}
                                 >
-                                    <ClearIcon  style={{ color: textColor }} />
+                                    <Tooltip title={props.t('Remove')} placement="top">
+                                        <ClearIcon  style={{ color: textColor }} />
+                                    </Tooltip>
                                 </IconButton>
                             </Card>
                         }) : null}
                     </div>
                 </CardContent>
             </div>
+            <span style={{position: 'absolute', 'right': 0, 'bottom': 0}}>
+                <IconButton
+                    size="small"
+                    onClick={()=>{
+                        if (['functions', 'rooms'].includes(props.currentCategory)) {
+                            props.showEnumTemplateDialog(props.enum._id);
+                        } else {
+                            props.showEnumEditDialog(props.getEnumTemplate(props.enum._id), true)
+                        }
+                        
+                    }}
+                >
+                    <Tooltip title={props.t('Add child')} placement="top">
+                        <AddIcon style={{ color: textColor }} />
+                    </Tooltip>
+                </IconButton>
+                {props.hasChildren ?
+                    <IconButton onClick={()=>props.toggleEnum(props.enum._id)}>
+                        <Tooltip title={props.closed ? props.t('Expand') : props.t('Collapse')} placement="top">
+                        {props.closed ?
+                            <DownIcon style={{ color: textColor }}/>
+                        :
+                            <UpIcon style={{ color: textColor }}/>
+                        }
+                        </Tooltip>
+                    </IconButton>
+                : null}
+            </span>
         </Card>
 }
 
 const EnumBlockDrag = (props) => {
-    const [{ canDrop, isOver, isCanDrop }, drop] = useDrop(() => ({
+    const [{ canDrop, isOver }, drop] = useDrop(() => ({
         accept: ['object', 'enum'],
-        drop: () => ({ enum_id: props.enum._id }),
+        drop: () => ({ enumId: props.enum._id }),
+        canDrop: (item, monitor) => canMeDrop(monitor, props),
         collect: (monitor) => ({
             isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),
+            
         }),
-    }));
+    }), [props.enum.common.members]);
 
     const widthRef = useRef();
     const [{ isDragging }, dragRef, preview] = useDrag(
         {
             type: 'enum',
-            item: () => {return {enum_id: props.enum._id, preview: <div style={{width: widthRef.current.offsetWidth}}><EnumBlock {...props}/></div>}},
+            item: () => {return {enumId: props.enum._id, preview: <div style={{width: widthRef.current.offsetWidth}}><EnumBlock {...props}/></div>}},
             end: (item, monitor) => {
                 const dropResult = monitor.getDropResult();
-                props.moveEnum(item.enum_id, dropResult.enum_id);
+                props.moveEnum(item.enumId, dropResult.enumId);
             },
             collect: (monitor) => ({
                 isDragging: monitor.isDragging(),
@@ -166,4 +213,35 @@ const EnumBlockDrag = (props) => {
     </div>;
 }
 
+EnumBlockDrag.propTypes = {
+    enum: PropTypes.object,
+    members: PropTypes.object,
+    moveEnum: PropTypes.func,
+    removeMemberFromEnum: PropTypes.func,
+    showEnumEditDialog: PropTypes.func,
+    showEnumDeleteDialog: PropTypes.func,
+    copyEnum: PropTypes.func,
+    getName: PropTypes.func,
+    hasChildren: PropTypes.bool,
+    closed: PropTypes.bool,
+    toggleEnum: PropTypes.func,
+    showEnumTemplateDialog: PropTypes.func,
+    currentCategory: PropTypes.string,
+    classes: PropTypes.object,
+    t: PropTypes.func,
+    lang: PropTypes.string,
+    socket: PropTypes.object,
+};
+
 export default EnumBlockDrag;
+
+function canMeDrop(monitor, props ) {
+    if (!monitor.getItem() || !monitor.getItem().data) {
+        return true;
+    }
+    return props.enum.common.members
+        ?
+        !props.enum.common.members.includes(monitor.getItem().data.id)
+        :
+        true;
+}

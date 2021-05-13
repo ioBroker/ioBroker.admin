@@ -4,17 +4,12 @@ Marked with "!" must be in release candidate
 
 ## Bugs
 - (BF) AdminSettings: Access to the instances: add infotexts for "Apply access rights" and "Allow access only"
-- !(BF) General: Support the new io-package fields that replace materialize and materializeTab (but we need to be backward compatible)
-  common.adminUI: {
-    custom: 'json''
-    config: 'materialize', 'none', 'html'
-    tab: 'html'
-  }
-- News check does not work: https://github.com/ioBroker/ioBroker.admin/issues/839
+- Notifications - mobile view: https://github.com/ioBroker/ioBroker.admin/issues/860
+- Notifications - all buttons have same color
 <!-- Opening Adapter Readme with icon (?) will end in white page - https://github.com/ioBroker/ioBroker.admin/issues/863 -->
 <!-- Lining up buttons in Adapter warning - mobile view https://github.com/ioBroker/ioBroker.admin/issues/860 --> 
-
 ## Intro
+- Images have different width
 
 ## Easy Mode
 
@@ -23,9 +18,24 @@ Marked with "!" must be in release candidate
 ## Info
 
 ## Enums
+- (BF) Find icon of object (state => channel => device)
+- (BF) Show in second row ID in state
+- (BF) Use default Icon depends on type (state, channel, device)
+- (BF) Create enums, that not exists automatically. E.g. `enum.rooms.A.kitchen` exists, but `enum.rooms.A` not, So `enum.rooms.A` must be created.
+- (BF) Update structure of enums by changes from outside
+- (BF) Expand/Collapse all in tree
+- (BF) Expand/Collapse of one enumeration to make it narrow with showing the number of objects inside
+- (BF) expand/collapse all to narrow view and back  
+- (BF) Scroll to new created/copied enumeration
 
 ## Adapters
 - (BF) Update of available versions does not work: https://github.com/ioBroker/ioBroker.admin/issues/830
+- Switch of host does not make any effect: 
+   
+- Mobile view Updater: https://github.com/ioBroker/ioBroker.admin/issues/851
+- As the license agreement not loaded, the button accept must be disabled.
+
+
 ## Wizard
 
 ## Discovery
@@ -34,23 +44,13 @@ Marked with "!" must be in release candidate
 - !On safari new coming entries have invalid time https://github.com/ioBroker/ioBroker.admin/issues/783 //not track
 
 ## Instances
-<!-- - Extended filter:  -->
-
-  <!-- - by mode (daemon/schedule/once/none) -->
-  <!-- - by status (https://github.com/ioBroker/ioBroker.admin/issues/283)
-      - grey - disabled
-      - red - enabled, but not alive
-      - orange - enabled, alive, but not connected to controller
-      - orange - enabled, alive, connected, but not connected to device or service
-      - green - enabled and OK -->
-<!-- - Group by category https://github.com/ioBroker/ioBroker.admin/issues/293 -->
 
 ## Objects
 
 ## Files
 
 ## Hosts
-<!-- - Subscribe on hosts and update information (especially about updates) -->
+- List of hosts does not update itself if new host added or removed
 
 ## Users
 

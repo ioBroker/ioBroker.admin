@@ -17,6 +17,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { Hidden, Tooltip } from '@material-ui/core';
+import Badge from '@material-ui/core/Badge';
 
 // @material-ui/icons
 import MenuIcon from '@material-ui/icons/Menu';
@@ -47,7 +48,7 @@ import SystemSettingsDialog from './dialogs/SystemSettingsDialog';
 import Login from './login/Login';
 import HostSelectors from './components/HostSelectors';
 import { expertModeDialogFunc } from './dialogs/ExpertModeDialog';
-import { newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
+import { checkMessages, newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
 import { adaptersWarningDialogFunc } from './dialogs/AdaptersWarningDialog';
 import ToggleThemeMenu from './components/ToggleThemeMenu';
 import LogsWorker from './components/LogsWorker';
@@ -238,12 +239,16 @@ const styles = theme => ({
     },
     styleVersion: {
         fontSize: 10,
-        color: '#ffffff5e'
+        color: theme.palette.type === 'dark' ? '#ffffff5e' : '#0000005e',
     },
     wrapperName: {
         display: 'flex',
         flexDirection: 'column',
         marginRight: 10
+    },
+    expertBadge: {
+        marginTop: 13,
+        marginRight: 13,
     }
 });
 
@@ -497,7 +502,8 @@ class App extends Router {
 
                                 await this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
 
-                                this.adaptersWorker.registerRepositoryHandler(this.repoChangeHandler)
+                                this.adaptersWorker.registerRepositoryHandler(this.repoChangeHandler);
+                                this.adaptersWorker.registerHandler(this.adaptersChangeHandler);
 
                                 this.subscribeOnHostsStatus();
 
@@ -523,6 +529,14 @@ class App extends Router {
                                                     this.makePingAuth();
                                                 })
                                         });
+                                }
+
+                                if (this.state.cmd && this.state.cmd.endsWith(' admin')) {
+                                    // close command dialog after reconnect (may be admin was restarted and update is now finished)
+                                    setTimeout(() =>
+                                        this.closeCmdDialog(() =>
+                                            this.setState({ commandRunning: false })),
+                                        500);
                                 }
 
                                 this.setState(newState, () =>
@@ -558,6 +572,38 @@ class App extends Router {
     repoChangeHandler = () => {
         this.readRepoAndInstalledInfo(this.state.currentHost, null, true)
             .then(() => console.log('Repo updated!'));
+    }
+
+    adaptersChangeHandler = events => {
+        // update installed
+        //
+        const installed = JSON.parse(JSON.stringify(this.state.installed));
+        let changed = false;
+        events.forEach(event => {
+            const parts = event.id.split('.');
+            const adapter = parts[2];
+            if (event.type === 'delete' || !event.obj) {
+                if (installed[adapter]) {
+                    changed = true;
+                    delete installed[adapter];
+                }
+            } else {
+                if (installed[adapter]) {
+                    Object.keys(installed[adapter])
+                        .forEach(attr => {
+                            if (installed[adapter][attr] !== event.obj.common[attr]) {
+                                installed[adapter][attr] = event.obj.common[attr];
+                                changed = true;
+                            }
+                        });
+                } else {
+                    installed[adapter] = {version: event.obj.common.version};
+                    changed = true;
+                }
+            }
+        });
+
+        changed && this.setState({installed});
     }
 
     async findCurrentHost(newState) {
@@ -706,14 +752,32 @@ class App extends Router {
         }
     }
 
+
     getNews = instance => async (name, newsFeed) => {
         const lastNewsId = await this.socket.getState(`admin.${instance}.info.newsLastId`);
-        if (newsFeed && JSON.parse(newsFeed?.val).length) {
-            const checkNews = JSON.parse(newsFeed?.val)?.find(el => el.id === lastNewsId?.val || !lastNewsId?.val);
-            if (checkNews) {
-                newsAdminDialogFunc(JSON.parse(newsFeed.val), lastNewsId?.val, this.state.themeName, this.state.themeType, id =>
-                    this.socket.setState(`admin.${instance}.info.newsLastId`, { val: id, ack: true }));
-            }
+        const news = JSON.parse(newsFeed?.val);
+
+        if (news && news.length && news[0].id !== lastNewsId?.val) {
+            this.socket.getUuid()
+                .then(uuid => this.socket.getHostInfo(this.state.currentHost)
+                    .then(info => this.socket.getCompactInstances()
+                        .then(instances => {
+                            const checkNews = checkMessages(news, lastNewsId?.val, {
+                                lang: I18n.getLanguage(),
+                                adapters: this.state.adapters,
+                                instances,
+                                nodeVersion: info['Node.js'],
+                                npmVersion: info.NPM,
+                                os: info.os,
+                                activeRepo: this.state.systemConfig.common.activeRepo,
+                                uuid
+                            });
+
+                            if (checkNews && checkNews.length) {
+                                newsAdminDialogFunc(checkNews, lastNewsId?.val, this.state.themeName, this.state.themeType, id =>
+                                    this.socket.setState(`admin.${instance}.info.newsLastId`, { val: id, ack: true }));
+                            }
+                        })));
         }
     }
 
@@ -770,7 +834,7 @@ class App extends Router {
                     }
                 });
 
-                this.setState({ repository, installed, hosts });
+                this.setState({ repository, installed, hosts, adapters });
             });
     }
 
@@ -799,7 +863,11 @@ class App extends Router {
 
     componentWillUnmount() {
         window.removeEventListener('hashchange', this.onHashChanged, false);
-        this.socket.unsubscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
+        this.socket && this.socket.unsubscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
+
+        this.adaptersWorker && this.adaptersWorker.unregisterRepositoryHandler(this.repoChangeHandler);
+        this.adaptersWorker && this.adaptersWorker.unregisterHandler(this.adaptersChangeHandler);
+
         this.pingAuth && clearTimeout(this.pingAuth);
         this.pingAuth = null;
         this.expireInSecInterval && clearInterval(this.expireInSecInterval);
@@ -1251,37 +1319,39 @@ class App extends Router {
         });
     }
 
-    executeCommand(cmd, callBack = false) {
+    executeCommand(cmd, callback = false) {
         if (this.state.performed || this.state.commandError) {
             return this.setState({
                 cmd: null,
                 cmdDialog: false,
                 commandError: false,
                 performed: false,
-                callBack: false
+                callback: false
             }, () => {
                 this.setState({
                     cmd,
                     cmdDialog: true,
-                    callBack
+                    callback
                 });
             });
+        } else {
+            console.log('Execute: ' + cmd);
+            this.setState({
+                cmd,
+                cmdDialog: true,
+                callback
+            });
         }
-        this.setState({
-            cmd,
-            cmdDialog: true,
-            callBack
-        });
     }
 
-    closeCmdDialog() {
+    closeCmdDialog(cb) {
         this.setState({
             cmd: null,
             cmdDialog: false,
             commandError: false,
             performed: false,
-            callBack: false
-        });
+            callback: false
+        }, () => cb && cb());
     }
 
     renderWizardDialog() {
@@ -1302,12 +1372,11 @@ class App extends Router {
         return this.state.cmd ?
             <CommandDialog
                 onSetCommandRunning={commandRunning => this.setState({ commandRunning })}
-                onClose={() => {
-                    this.closeCmdDialog();
-                    this.setState({ commandRunning: false })
-                }}
+                onClose={() =>
+                    this.closeCmdDialog(() =>
+                        this.setState({ commandRunning: false }))}
                 visible={this.state.cmdDialog}
-                callBack={this.state.callBack}
+                callback={this.state.callback}
                 header={I18n.t('Command')}
                 onInBackground={() => this.setState({ cmdDialog: false })}
                 cmd={this.state.cmd}
@@ -1393,6 +1462,8 @@ class App extends Router {
                 </ThemeProvider>;
             }
 
+        const expertModePermanent = !window.sessionStorage.getItem('App.expertMode') || (window.sessionStorage.getItem('App.expertMode') === 'true') === !!this.state.systemConfig.common.expertMode;
+
         return <ThemeProvider theme={this.state.theme}>
             <Paper elevation={0} className={classes.root}>
                 <AppBar
@@ -1427,31 +1498,46 @@ class App extends Router {
                                 toggleTheme={this.toggleTheme}
                                 themeName={this.state.themeName}
                                 t={I18n.t} />
-                            <Tooltip title={I18n.t('Toggle expert mode')}>
-                                <IconButton
-                                    onClick={() => {
-                                        if (!!this.state.systemConfig.common.expertMode === !this.state.expertMode) {
-                                            window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
-                                            this.setState({ expertMode: !this.state.expertMode });
-                                            this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
-                                        } else {
-                                            expertModeDialogFunc(this.state.expertMode, this.state.themeType, () => {
+                            <Tooltip
+                                title={`${I18n.t('Toggle expert mode')} ${expertModePermanent ? '' : ' (' + I18n.t('only in this browser session') + ')'}`}
+                            >
+                                <Badge
+                                    color="secondary"
+                                    variant="dot"
+                                    classes={{badge: this.props.classes.expertBadge}}
+                                    invisible={expertModePermanent}
+                                >
+                                    <IconButton
+                                        onClick={() => {
+                                            if (!!this.state.systemConfig.common.expertMode === !this.state.expertMode) {
                                                 window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
                                                 this.setState({ expertMode: !this.state.expertMode });
                                                 this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
-                                            }, () => Router.doNavigate(null, 'system'));
-                                        }
-                                    }}
-                                    style={{ color: this.state.expertMode ? this.state.theme.palette.expert : undefined }}
-                                    color="default"
-                                >
-                                    <ExpertIcon
-                                        title={I18n.t('Toggle expert mode')}
-                                        glowColor={this.state.theme.palette.secondary.main}
-                                        active={this.state.expertMode}
-                                        className={clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
-                                    />
-                                </IconButton>
+                                            } else {
+                                                if (window.sessionStorage.getItem('App.doNotShowExpertDialog') === 'true') {
+                                                    window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
+                                                    this.setState({ expertMode: !this.state.expertMode });
+                                                    this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
+                                                } else {
+                                                    expertModeDialogFunc(this.state.expertMode, this.state.themeType, () => {
+                                                        window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
+                                                        this.setState({ expertMode: !this.state.expertMode });
+                                                        this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
+                                                    }, () => Router.doNavigate(null, 'system'));
+                                                }
+                                            }
+                                        }}
+                                        style={{ color: this.state.expertMode ? this.state.theme.palette.expert : undefined }}
+                                        color="default"
+                                    >
+                                        <ExpertIcon
+                                            title={I18n.t('Toggle expert mode')}
+                                            glowColor={this.state.theme.palette.secondary.main}
+                                            active={this.state.expertMode}
+                                            className={clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
+                                        />
+                                    </IconButton>
+                                </Badge>
                             </Tooltip>
                             <HostSelectors
                                 expertMode={this.state.expertMode}

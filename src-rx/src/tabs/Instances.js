@@ -29,6 +29,7 @@ import FolderIcon from '@material-ui/icons/Folder';
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import filterIcon from '../assets/filter.svg';
 import ListIcon from '@material-ui/icons/List';
+import {FaFilter as FilterListIcon} from 'react-icons/fa';
 
 import amber from '@material-ui/core/colors/amber';
 import blue from '@material-ui/core/colors/blue';
@@ -183,6 +184,9 @@ const styles = theme => ({
     },
     primary: {
         filter: 'invert(0%) sepia(90%) saturate(300%) hue-rotate(-537deg) brightness(99%) contrast(97%)'
+    },
+    filterActive: {
+        color: theme.palette.primary.main
     }
 });
 
@@ -214,14 +218,16 @@ class Instances extends Component {
             compactGroupCount: 0,
             filterCompactGroup: 'All',
             sentry: false,
-            delete: false,
+            deleting: null,
 
             //filter
             mode: window.localStorage.getItem('instances.mode') ?
                 window.localStorage.getItem('instances.mode') === 'null' ?
                     null :
                     window.localStorage.getItem('instances.mode') : null,
-            status: JSON.parse(window.localStorage.getItem('instances.status')) || null
+            status: JSON.parse(window.localStorage.getItem('instances.status')) || null,
+            filterMode: null,
+            filterStatus: null
         };
 
         this.columns = {
@@ -329,9 +335,23 @@ class Instances extends Component {
 
         const formatted = {};
 
-        instances.sort((a, b) => a._id > b._id ? 1 : (a._id < b._id ? -1 : 0));
+        instances.sort((a, b) => {
+            const pA = a._id.split('.');
+            const pB = b._id.split('.');
+            const numA = parseInt(pA[pA.length - 1], 10);
+            const numB = parseInt(pB[pB.length - 1], 10);
+            const nameA = pA[pA.length - 2];
+            const nameB = pB[pB.length - 2];
+
+            if (nameA === nameB) {
+                return numA > numB ? 1 : (numA < numB ? -1 : 0);
+            } else {
+                return nameA > nameB ? 1 : (nameA < nameB ? -1 : 0);
+            }
+        });
 
         let compactGroupCount = 0;
+        const newState = {};
 
         instances.forEach(obj => {
             const common = obj ? obj.common : null;
@@ -406,12 +426,17 @@ class Instances extends Component {
         });
 
         console.log('getInstances: ' + (Date.now() - start));
-        this.setState({
-            compactGroupCount,
-            processes,
-            mem: Math.round(mem),
-            instances: formatted
-        });
+
+        if (this.state.deleting && !formatted['system.adapter.' + this.state.deleting]) {
+            newState.deleting = null;
+        }
+
+        newState.compactGroupCount = compactGroupCount;
+        newState.processes = processes;
+        newState.mem = Math.round(mem);
+        newState.instances = formatted;
+
+        this.setState(newState);
     }
 
     getParamsLocalAndPanel = async () => {
@@ -513,12 +538,13 @@ class Instances extends Component {
     // grey   - daemon / disabled
     // green  - daemon / run,connected,alive
     // blue   - schedule
+    // orangeDevice - daemon / run, connected to controller, not connected to device
     // orange - daemon / run,not connected
     // red    - daemon / not run, not connected
-    getInstanceState = obj => {
+    getInstanceStatus = obj => {
         const common = obj ? obj.common : null;
         const mode = common?.mode || '';
-        let state = mode === 'daemon' ? 'green' : 'blue';
+        let status = mode === 'daemon' ? 'green' : 'blue';
 
         if (common && common.enabled && (!common.webExtension || !obj.native.webInstance || mode === 'daemon')) {
             const alive = this.states[obj._id + '.alive'];
@@ -526,16 +552,16 @@ class Instances extends Component {
             const connection = this.states[(obj._id).replace('system.adapter.', '') + '.info.connection'];
 
             if (!connected?.val || !alive?.val) {
-                state = mode === 'daemon' ? 'red' : 'blue';
+                status = mode === 'daemon' ? 'red' : 'orangeDevice';
             }
-            if (connection && !connection?.val && state !== 'red') {
-                state = 'orange';
+            if (connection && !connection?.val && status !== 'red') {
+                status = 'orange';
             }
         } else {
-            state = mode === 'daemon' ? 'grey' : 'blue';
+            status = mode === 'daemon' ? 'grey' : 'blue';
         }
 
-        return state;
+        return status;
     }
 
     isRunning = obj => {
@@ -639,12 +665,12 @@ class Instances extends Component {
         return headers;
     }
 
-    getModeIcon = (mode, state, className) => {
+    getModeIcon = (mode, status, className) => {
         if (mode === 'daemon') {
-            if (state === 'orange') {
-                return <WarningIcon className={className} />;
-            } else if (state === 'green') {
-                return <div className={clsx(className, this.props.classes.okSymbol)}><div className={this.props.classes.okSymbolInner} /></div>;
+            if (status === 'orange') {
+                return <WarningIcon className={className}/>;
+            } else if (status === 'green') {
+                return <div className={clsx(className, this.props.classes.okSymbol)}><div className={this.props.classes.okSymbolInner}/></div>;
             } else {
                 return <SettingsIcon className={className} />;
             }
@@ -654,29 +680,25 @@ class Instances extends Component {
         return null;
     }
 
-    getModeFilter = (value) => {
-        let state = 'grey';
-        switch (value) {
-            case 1:
-                state = 'grey';
-                break
-            case 2:
-                state = 'red';
-                break
-            case 3:
-                state = 'orange';
-                break
-            case 4:
-                state = 'blue';
-                break
-            case 5:
-                state = 'green';
-                break
+    getStatusFilter = value => {
+        switch (value){
+            case 'not_alive':
+                return 'red';
+
+            case 'alive_no_device':
+                return 'orangeDevice';
+
+            case 'alive_not_connected':
+                return 'orange';
+
+            case 'ok':
+                return 'green';
+
+            case 'disabled':
             default:
-                break
+                return 'grey';
         }
-        return state
-    }
+    };
 
     getLogLevelIcon(level) {
         if (level === 'debug') {
@@ -701,7 +723,11 @@ class Instances extends Component {
         this.extendObject('system.adapter.' + instance.id, { common: { titleLang: value } });
 
     setLogLevel = (instance, value, logOnTheFlyValue) => {
-        this.props.socket.setState(`system.adapter.${instance.id}.logLevel`, value);
+        if (logOnTheFlyValue) {
+            this.props.socket.setState(`system.adapter.${instance.id}.logLevel`, value);
+        } else {
+            this.extendObject('system.adapter.' + instance.id, { common: { logLevel: value } });
+        }
     };
 
     setSchedule = (instance, value) =>
@@ -711,8 +737,8 @@ class Instances extends Component {
         this.extendObject('system.adapter.' + instance.id, { common: { memoryLimitMB: value } });
 
     deletedInstances = instance => {
-        this.setState({ delete: true })
-        this.props.executeCommand('del ' + instance.id);
+        this.setState({ deleting: instance.id }, () =>
+            this.props.executeCommand('del ' + instance.id));
     }
 
     setCompact = instance =>
@@ -760,109 +786,110 @@ class Instances extends Component {
             const memoryLimitMB = this.isMemoryLimitMB(instance.obj);
             const currentHost = this.isCurrentHost(instance.obj);
 
-
             return {
                 render: this.state.viewMode ?
                     <InstanceCard
-                        currentHost={currentHost}
-                        t={this.t}
-                        key={instance.id}
-                        name={name}
-                        image={instance.image}
-                        tier={tier}
-                        setTier={this.setTier}
-                        instance={instance}
-                        running={running}
-                        compactGroupCount={this.state.compactGroupCount}
-                        compactGroup={compactGroup}
-                        compact={compact}
-                        supportCompact={supportCompact}
-                        setCompact={this.setCompact}
-                        setCompactGroup={this.setCompactGroup}
-                        checkCompact={checkCompact}
-                        id={id}
-                        extendObject={this.extendObject}
-                        openConfig={this.openConfig}
-                        connectedToHost={connectedToHost}
+                        deleting={this.state.deleting === instance.id}
+                        adminInstance={this.props.adminInstance}
                         alive={alive}
-                        connected={connected}
-                        getMemory={this.getMemory}
-                        loglevelIcon={loglevelIcon}
-                        getRestartSchedule={() => this.getRestartSchedule(instance.obj)}
-                        expertMode={this.props.expertMode}
-                        getSchedule={() => this.getSchedule(instance.obj)}
+                        checkCompact={checkCompact}
                         checkSentry={checkSentry}
+                        compact={compact}
+                        compactGroup={compactGroup}
+                        compactGroupCount={this.state.compactGroupCount}
+                        connected={connected}
+                        connectedToHost={connectedToHost}
+                        currentHost={currentHost}
                         currentSentry={currentSentry}
-                        setSentry={this.setSentry}
-                        setRestartSchedule={this.setRestartSchedule}
-                        setName={this.setName}
+                        deletedInstances={this.deletedInstances}
+                        expertMode={this.props.expertMode}
+                        extendObject={this.extendObject}
+                        getMemory={this.getMemory}
+                        getRestartSchedule={() => this.getRestartSchedule(instance.obj)}
+                        getSchedule={() => this.getSchedule(instance.obj)}
+                        host={instance.host}
+                        hosts={this.props.hosts}
+                        id={id}
+                        image={instance.image}
+                        inputOutput={inputOutput}
+                        instance={instance}
+                        key={instance.id}
                         logLevel={logLevel}
                         logLevelObject={logLevelObject}
-                        setLogLevel={this.setLogLevel}
-                        inputOutput={inputOutput}
-                        mode={mode}
-                        setSchedule={this.setSchedule}
-                        deletedInstances={this.deletedInstances}
+                        loglevelIcon={loglevelIcon}
                         memoryLimitMB={memoryLimitMB}
-                        setMemoryLimitMB={this.setMemoryLimitMB}
+                        mode={mode}
+                        name={name}
+                        openConfig={this.openConfig}
+                        running={running}
+                        setCompact={this.setCompact}
+                        setCompactGroup={this.setCompactGroup}
                         setHost={this.setHost}
+                        setLogLevel={this.setLogLevel}
+                        setMemoryLimitMB={this.setMemoryLimitMB}
+                        setName={this.setName}
+                        setRestartSchedule={this.setRestartSchedule}
+                        setSchedule={this.setSchedule}
+                        setSentry={this.setSentry}
+                        setTier={this.setTier}
+                        supportCompact={supportCompact}
+                        t={this.t}
                         themeType={this.props.themeType}
-                        adminInstance={this.props.adminInstance}
-                        hosts={this.props.hosts}
-                        host={instance.host}
+                        tier={tier}
                     /> :
                     <InstanceRow
-                        currentHost={currentHost}
-                        idx={idx}
-                        t={this.t}
-                        key={instance.id}
-                        name={name}
-                        tier={tier}
-                        setTier={this.setTier}
-                        image={instance.image}
-                        instance={instance}
-                        running={running}
-                        compactGroupCount={this.state.compactGroupCount}
-                        compactGroup={compactGroup}
-                        supportCompact={supportCompact}
-                        compact={compact}
-                        getInstanceState={() => this.getInstanceState(instance.obj)}
-                        getModeIcon={this.getModeIcon}
-                        setCompact={this.setCompact}
-                        setCompactGroup={this.setCompactGroup}
-                        checkCompact={checkCompact}
-                        id={id}
-                        extendObject={this.extendObject}
-                        openConfig={this.openConfig}
-                        connectedToHost={connectedToHost}
+                        deleting={this.state.deleting === instance.id}
+                        adminInstance={this.props.adminInstance}
                         alive={alive}
+                        checkCompact={checkCompact}
+                        checkSentry={checkSentry}
+                        compact={compact}
+                        compactGroup={compactGroup}
+                        compactGroupCount={this.state.compactGroupCount}
                         connected={connected}
-                        getMemory={this.getMemory}
-                        loglevelIcon={loglevelIcon}
-                        getRestartSchedule={() => this.getRestartSchedule(instance.obj)}
+                        connectedToHost={connectedToHost}
+                        currentHost={currentHost}
+                        currentSentry={currentSentry}
+                        deletedInstances={this.deletedInstances}
+                        expanded={this.state.expanded}
                         expertMode={this.props.expertMode}
+                        extendObject={this.extendObject}
+                        getInstanceStatus={() => this.getInstanceStatus(instance.obj)}
+                        getMemory={this.getMemory}
+                        getModeIcon={this.getModeIcon}
+                        getRestartSchedule={() => this.getRestartSchedule(instance.obj)}
                         getSchedule={() => this.getSchedule(instance.obj)}
                         handleChange={this.handleChange}
-                        expanded={this.state.expanded}
-                        checkSentry={checkSentry}
-                        currentSentry={currentSentry}
-                        setSentry={this.setSentry}
-                        setRestartSchedule={this.setRestartSchedule}
-                        setName={this.setName}
+                        host={instance.host}
+                        hosts={this.props.hosts}
+                        id={id}
+                        idx={idx}
+                        image={instance.image}
+                        inputOutput={inputOutput}
+                        instance={instance}
+                        key={instance.id}
                         logLevel={logLevel}
                         logLevelObject={logLevelObject}
-                        setLogLevel={this.setLogLevel}
-                        inputOutput={inputOutput}
-                        mode={mode}
-                        setSchedule={this.setSchedule}
-                        deletedInstances={this.deletedInstances}
+                        loglevelIcon={loglevelIcon}
                         memoryLimitMB={memoryLimitMB}
-                        setMemoryLimitMB={this.setMemoryLimitMB}
+                        mode={mode}
+                        name={name}
+                        openConfig={this.openConfig}
+                        running={running}
+                        setCompact={this.setCompact}
+                        setCompactGroup={this.setCompactGroup}
                         setHost={this.setHost}
+                        setLogLevel={this.setLogLevel}
+                        setMemoryLimitMB={this.setMemoryLimitMB}
+                        setName={this.setName}
+                        setRestartSchedule={this.setRestartSchedule}
+                        setSchedule={this.setSchedule}
+                        setSentry={this.setSentry}
+                        setTier={this.setTier}
+                        supportCompact={supportCompact}
+                        t={this.t}
                         themeType={this.props.themeType}
-                        adminInstance={this.props.adminInstance}
-                        hosts={this.props.hosts}
-                        host={instance.host}
+                        tier={tier}
                     />,
                 running,
                 host: instance.host,
@@ -872,8 +899,8 @@ class Instances extends Component {
                 checkCompact,
                 mode: instance.mode,
                 sentry: currentSentry,
-                state: this.getInstanceState(instance.obj),
                 category: instance.obj.common.type || 'visualisation',
+                status: this.getInstanceStatus(instance.obj)
             }
         });
 
@@ -896,11 +923,12 @@ class Instances extends Component {
                 (this.state.filterCompactGroup === 'default' && (compactGroup === null || compactGroup === 1)) ||
                 (this.state.filterCompactGroup === 'controller' && compactGroup === '0'))
         }
-        if (this.state.mode) {
-            list = list.filter(({ mode }) => mode === this.state.mode);
+        if (this.state.filterMode) {
+            list = list.filter(item => item.mode === this.state.filterMode);
         }
-        if (this.state.status) {
-            list = list.filter(({ state }) => this.getModeFilter(this.state.status) === state)
+        if (this.state.filterStatus) {
+            const status = this.getStatusFilter(this.state.filterStatus)
+            list = list.filter(item => status === item.status);
         }
         if (!list.length) {
             return <div style={{
@@ -1005,23 +1033,23 @@ class Instances extends Component {
             if (instance) {
                 return <Paper className={classes.paper}>
                     <Config
-                        menuPadding={this.props.menuPadding}
-                        className={classes.iframe}
                         adapter={instance.id.split('.')[0]}
-                        instance={parseInt(instance.id.split('.')[1])}
-                        materialize={instance.materialize}
-                        jsonConfig={instance.jsonConfig}
-                        socket={this.props.socket}
-                        themeName={this.props.themeName}
-                        themeType={this.props.themeType}
-                        theme={this.props.theme}
-                        width={this.props.width}
-                        t={this.t}
-                        lang={this.props.lang}
-                        icon={instance.image}
+                        className={classes.iframe}
                         configStored={this.props.configStored}
                         dateFormat={this.props.dateFormat}
+                        icon={instance.image}
+                        instance={parseInt(instance.id.split('.')[1])}
                         isFloatComma={this.props.isFloatComma}
+                        jsonConfig={instance.jsonConfig}
+                        lang={this.props.lang}
+                        materialize={instance.materialize}
+                        menuPadding={this.props.menuPadding}
+                        socket={this.props.socket}
+                        t={this.t}
+                        theme={this.props.theme}
+                        themeName={this.props.themeName}
+                        themeType={this.props.themeType}
+                        width={this.props.width}
                     />
                 </Paper>;
             }
@@ -1079,18 +1107,14 @@ class Instances extends Component {
                         'Showed only running instances' :
                         'Showed only stopped instances')}>
                     <IconButton onClick={() => this.changeStartedStopped(this.state.playArrow)}>
-                        <PlayArrowIcon style={this.state.playArrow === 2 ? { color: 'red' } : null} color={this.state.playArrow && this.state.playArrow < 2 ? 'primary' : 'inherit'} />
+                        <PlayArrowIcon style={this.state.playArrow === 2 ? {color: 'red'} : null}
+                                       color={this.state.playArrow && this.state.playArrow < 2 ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.t('Filter instances')}>
-                    <IconButton onClick={() => instanceFilterDialogCallback((el) => {
-                        if (el) {
-                            this.setState(el);
-                            window.localStorage.setItem(`instances.mode`, el.mode);
-                            window.localStorage.setItem(`instances.status`, el.status);
-                        }
-                    }, this.state.mode, this.state.status)}>
-                        <Avatar variant="square" className={clsx(classes.square, (this.state.mode || this.state.status) && classes.primary)} src={filterIcon} />
+                    <IconButton onClick={() => instanceFilterDialogCallback(newState =>
+                        newState && this.setState(newState), this.state.filterMode, this.state.filterStatus, this.getModeIcon)}>
+                        <FilterListIcon style={{width: 16, height: 16}} className={this.state.filterMode || this.state.filterStatus ? classes.filterActive : ''}/>
                     </IconButton>
                 </Tooltip>
                 {/*this.props.expertMode && <Tooltip title="sentry">
@@ -1164,6 +1188,7 @@ Instances.propTypes = {
     t: PropTypes.func,
     lang: PropTypes.string,
     expertMode: PropTypes.bool,
+    instancesWorker: PropTypes.object,
 
     hostname: PropTypes.string,
     hosts: PropTypes.array,

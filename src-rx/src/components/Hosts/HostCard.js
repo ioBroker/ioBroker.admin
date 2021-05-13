@@ -317,7 +317,10 @@ const styles = theme => ({
     },
     formControl: {
         display: 'flex'
-    }
+    },
+    baseSettingsButton: {
+        transform: 'rotate(45deg)',
+    },
 });
 
 let outputCache = '-';
@@ -352,7 +355,7 @@ const HostCard = ({
     setEditDialog,
     executeCommandRemove,
     currentHost,
-    dialogUpgrade,
+    //dialogUpgrade,
     systemConfig,
     setBaseSettingsDialog,
     expertMode,
@@ -548,7 +551,8 @@ const HostCard = ({
             </Select>
         </FormControl>}
         {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined" >
-            <FormHelperText>{t('Will be reset to the saved log level after restart of adapter')}</FormHelperText>
+            <FormHelperText>{t('Log level will be reset to the saved level after the restart of the controller')}</FormHelperText>
+            <FormHelperText>{t('You can set the log level permanently in the base host settings')}<BuildIcon className={classes.baseSettingsButton} /></FormHelperText>
         </FormControl>}
     </CustomModal> : null;
 

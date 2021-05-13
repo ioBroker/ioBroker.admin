@@ -916,7 +916,6 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
             <DialogActions>
                 {step > 0 && step !== 4 && <Button
                     variant="contained"
-                    autoFocus
                     disabled={step === 0}
                     onClick={() => {
                         if (step === 2) {
@@ -942,7 +941,6 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     <Tooltip title={step === 0 ? I18n.t('Skip discovery process and go to install with last scan results') : ''}>
                         <Button
                             variant="contained"
-                            autoFocus
                             disabled={!discoveryData || !discoveryData?.native?.lastScan || step === 2 || disableScanner || (step === 1 && !selected.length)}
                             onClick={() => {
                                 stepUp();
@@ -959,7 +957,6 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                 }
                 <Button
                     variant="contained"
-                    autoFocus
                     disabled={disableScanner}
                     onClick={() => onClose()}
                     color={step === 2 ? 'primary' : 'default'}

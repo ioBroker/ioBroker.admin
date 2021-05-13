@@ -14,10 +14,14 @@ class HostsWorker {
 
     objectChangeHandler = (id, obj) => {
         // if instance
-        if (id.match(/^system\.host\.[^.]+\.\d+$/)) {
+        if (id.startsWith('system.host.')) {
             let type;
             let oldObj;
             if (obj) {
+                if (obj.type !== 'host') {
+                    return;
+                }
+
                 if (this.objects[id]) {
                     if (JSON.stringify(this.objects[id]) !== JSON.stringify(obj)) {
                         type = 'changed';
@@ -145,8 +149,8 @@ class HostsWorker {
         } else {
             return this.socket.getCompactHosts(update)
                 .then(hosts => {
-                    const promises = Object.keys(hosts)
-                        .map(hostId => this._getNotificationsFromHots(hostId, update));
+                    const promises = hosts
+                        .map(host => this._getNotificationsFromHots(host._id, update));
 
                     return Promise.all(promises)
                         .then(pResults => {

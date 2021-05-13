@@ -118,7 +118,7 @@ const styles = theme => ({
     },
     styleVersion: {
         fontSize: 10,
-        color: '#ffffff5e',
+        color: theme.palette.type === 'dark' ? '#ffffff5e' : '#0000005e',
         alignSelf: 'center',
         marginLeft: 5
     },
@@ -289,12 +289,12 @@ class Drawer extends Component {
 
     componentWillUnmount() {
         this.props.instancesWorker.unregisterHandler(this.instanceChangedHandler);
-        this.props.hostsWorker.registerNotificationHandler(this.onNotificationsHandler);
+        this.props.hostsWorker.unregisterNotificationHandler(this.onNotificationsHandler);
 
         if (this.logsHandlerRegistered) {
             this.logsHandlerRegistered = false;
-            this.props.logsWorker.registerErrorCountHandler(this.onErrorsUpdates);
-            this.props.logsWorker.registerWarningCountHandler(this.onWarningsUpdates);
+            this.props.logsWorker.unregisterErrorCountHandler(this.onErrorsUpdates);
+            this.props.logsWorker.unregisterWarningCountHandler(this.onWarningsUpdates);
         }
     }
 
