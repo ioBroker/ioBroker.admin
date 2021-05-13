@@ -11,10 +11,12 @@ import ClearIcon from '@material-ui/icons/Clear';
 import ColorPicker from './ColorPicker';
 import IconSelector from './IconSelector';
 
+import Icon from '@iobroker/adapter-react/Components/Icon';
+
 export function IOTextField(props) {
-    let Icon = props.icon;
+    let IconCustom = props.icon;
     return <div className={props.classes.formContainer}>
-        {Icon ? <Icon className={ props.classes.formIcon } /> : null}
+        {IconCustom ? <IconCustom className={ props.classes.formIcon } /> : null}
         <FormControl className={props.classes.formControl}>
             <InputLabel shrink>
                 { props.t(props.label)}
@@ -37,9 +39,9 @@ export function IOTextField(props) {
 }
 
 let IOColorPicker = function (props) {
-    let Icon = props.icon;
+    let IconCustom = props.icon;
     return <div className="">
-        {Icon ? <Icon className={ props.classes.formIcon } /> : null}
+        {IconCustom ? <IconCustom className={ props.classes.formIcon } /> : null}
         <ColorPicker
             variant="standard"
             label={props.t(props.label)}
@@ -73,7 +75,7 @@ IOColorPicker.propTypes = {
 export {IOColorPicker};
 
 let IOFileInput = function (props) {
-    let Icon = props.icon;
+    let IconCustom = props.icon;
 
     const onDrop = useCallback(acceptedFiles => {
         const reader = new FileReader();
@@ -89,22 +91,23 @@ let IOFileInput = function (props) {
       const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop});
 
       return <div className={props.classes.formContainer}>
-        {Icon ? <Icon className={ props.classes.formIcon }/> : null}
+        {IconCustom ? <IconCustom className={ props.classes.formIcon }/> : null}
         <FormControl className={props.classes.formControl} style={{padding: 3}}>
             <InputLabel shrink>
                 { props.t(props.label)}
             </InputLabel>
             <div className={ props.classes.formContainer }>
                 {props.value ?
-                    <>
-                        <img alt="" className={props.previewClassName} src={props.value}/>
+                    <div style={{width: 32 + 24, height: 32, whiteSpace: 'nowrap', lineHeight: '32px', marginRight: 8}}>
+                        <Icon alt="" className={props.previewClassName} src={props.value}/>
                         <IconButton
+                            style={{verticalAlign: 'top'}}
                             size="small"
                             onClick={() => props.onChange('')}
                         >
                             <ClearIcon/>
                         </IconButton>
-                    </>
+                    </div>
                     :
                     <IconSelector icons={props.icons} onSelect={base64 => props.onChange(base64)} t={props.t}/>
                 }
@@ -121,4 +124,5 @@ let IOFileInput = function (props) {
         </FormControl>
     </div>;
 };
+
 export {IOFileInput};

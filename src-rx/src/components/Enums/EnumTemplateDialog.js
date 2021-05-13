@@ -7,29 +7,16 @@ import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import {LinearProgress} from '@material-ui/core';
 
 import CustomGroup from '@material-ui/icons/Brush';
 
-import Icon from '@iobroker/adapter-react/Components/Icon'
+import Icon from '@iobroker/adapter-react/Components/Icon';
 
 import devices from '../../assets/devices/list.json';
 import rooms from '../../assets/rooms/list.json';
-import {LinearProgress} from '@material-ui/core';
 
-function getSvg(url) {
-    return fetch(url)
-        .then(response => response.blob())
-        .then(blob => {
-            return new Promise(resolve => {
-                const reader = new FileReader();
-                reader.onload = function () {
-                    resolve(this.result);
-                };
-                reader.readAsDataURL(blob);
-            });
-        });
-}
-
+import Utils from '../../Utils';
 
 const styles = theme => ({
     icon: {
@@ -56,32 +43,29 @@ class EnumTemplateDialog extends Component {
         this.state = {
             icons: [],
             loading: true,
-        }
+        };
     }
 
     componentDidMount() {
-
         this.setState({loading: true}, () => {
             let templates = this.props.prefix.startsWith('enum.functions') ? devices : rooms;
             const icons = [];
 
             const promises = templates.map((template, i) => {
-                let image
+                let image;
                 try {
                     image = require(`../../assets/${this.props.prefix.startsWith('enum.functions') ? 'devices' : 'rooms'}/${template.icon}`);
                 } catch (e) {
                     return Promise.resolve(null);
                 }
-                return getSvg(image.default)
-                    .then(icon => {
-                        icons[i] = icon;
-                    });
+                return Utils.getSvg(image.default)
+                    .then(icon =>
+                        icons[i] = icon);
             });
 
             Promise.all(promises)
-                .then(() => {
-                    this.setState({icons, loading: false});
-                });
+                .then(() =>
+                    this.setState({icons, loading: false}));
         });
     }
 
@@ -101,24 +85,25 @@ class EnumTemplateDialog extends Component {
                 {templates.map((template, i) => {
                     if (this.props.enums[`${this.props.prefix}.${template._id}`]) {
                         return null;
+                    } else {
+                        return <div key={i} className={this.props.classesParent.enumTemplate}>
+                            <Button onClick={() => {
+                                this.props.onClose();
+                                this.props.createEnumTemplate(this.props.prefix, {
+                                    _id: `${this.props.prefix}.${template._id}`,
+                                    common: {
+                                        name: template.name,
+                                        icon: this.state.icons[i]
+                                    }
+                                });
+                            }}
+                                    startIcon={<Icon src={this.state.icons[i]} className={this.props.classes.icon}/>}
+                                    className={this.props.classes.enumTemplateButton}
+                            >
+                                <span className={this.props.classes.enumTemplateLabel}>{this.props.t(template.name)}</span>
+                            </Button>
+                        </div>;
                     }
-                    return <div key={i} className={this.props.classesParent.enumTemplate}>
-                        <Button onClick={() => {
-                            this.props.onClose();
-                            this.props.createEnumTemplate(this.props.prefix, {
-                                _id: `${this.props.prefix}.${template._id}`,
-                                common: {
-                                    name: template.name,
-                                    icon: this.state.icons[i]
-                                }
-                            });
-                        }}
-                        startIcon={<Icon src={this.state.icons[i]} className={this.props.classes.icon}/>}
-                        className={this.props.classes.enumTemplateButton}
-                        >
-                            <span className={this.props.classes.enumTemplateLabel}>{this.props.t(template.name)}</span>
-                        </Button>
-                    </div>
                 })}
             </DialogContent>
             <DialogActions>

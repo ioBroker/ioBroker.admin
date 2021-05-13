@@ -20,7 +20,6 @@ import ColorLensIcon from '@material-ui/icons/ColorLens';
 import ImageIcon from '@material-ui/icons/Image';
 
 import {IOTextField, IOFileInput, IOColorPicker} from '../IOFields/Fields';
-import IconSelector from '../IOFields/IconSelector';
 
 import Utils from '../Utils';
 
@@ -82,7 +81,7 @@ function GroupEditDialog(props) {
         if (props.isNew) {
             const icon = GROUPS_ICONS[Math.round(Math.random() * (GROUPS_ICONS.length - 1))];
 
-            icon && IconSelector.getSvg(icon)
+            icon && Utils.getSvg(icon)
                 .then(fileBlob => {
                     let newData = Utils.clone(props.group);
                     newData.common.icon = fileBlob;

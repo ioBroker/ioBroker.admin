@@ -31,7 +31,6 @@ import User9 from '../../assets/users/user9.svg';
 import User10 from '../../assets/users/user10.svg';
 import User11 from '../../assets/users/user11.svg';
 import User12 from '../../assets/users/user12.svg';
-import IconSelector from "../IOFields/IconSelector";
 
 const USER_ICONS = [User1, User2, User3, User4, User5, User6, User7, User8, User9, User10, User11, User12];
 
@@ -43,7 +42,7 @@ function UserEditDialog(props) {
         if (props.isNew) {
             const icon = USER_ICONS[Math.round(Math.random() * (USER_ICONS.length - 1))];
 
-            icon && IconSelector.getSvg(icon)
+            icon && Utils.getSvg(icon)
                 .then(fileBlob => {
                     let newData = Utils.clone(props.user);
                     newData.common.icon = fileBlob;

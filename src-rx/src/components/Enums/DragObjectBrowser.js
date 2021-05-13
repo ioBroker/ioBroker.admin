@@ -13,7 +13,9 @@ import ListIcon from '@material-ui/icons/List';
 
 const DragObjectBrowser = (props) => {
     let browserProps = props;
+
     const [wrapperState, setWrapperState] = useState({DragWrapper: null});
+
     useEffect(() => {
         const DragWrapper = props => {
             let onDragEnd = (item, monitor) => {
@@ -27,10 +29,12 @@ const DragObjectBrowser = (props) => {
                     }
                 }
             };
+
             let dragSettings = {
                 type: 'object',
                 end: onDragEnd,
-            }
+            };
+
             dragSettings.item = {
                 data: props.item.data,
                 preview: (props.item.data && props.item.data.obj ? <Card
@@ -51,13 +55,22 @@ const DragObjectBrowser = (props) => {
                     {props.item.data.obj.common?.name ? browserProps.getName(props.item.data.obj.common?.name) : props.item.data.obj._id}
                 </Card> : null)
             };
+
             const [{ isDragging }, dragRef, preview] = useDrag(dragSettings);
+
             useEffect(() => {
                 preview(getEmptyImage(), { captureDraggingState: true });
                 // eslint-disable-next-line react-hooks/exhaustive-deps
             }, []);
 
-            return <div key={props.item.data.id} className={props.className || ''} ref={dragRef} style={{ backgroundColor: isDragging ? 'rgba(100,152,255,0.1)' : undefined }}>{props.children}</div>;
+            return <div
+                key={props.item.data.id}
+                className={props.className || ''}
+                ref={dragRef}
+                style={{ backgroundColor: isDragging ? 'rgba(100,152,255,0.1)' : undefined }}
+            >
+                {props.children}
+            </div>;
         }
         setWrapperState({DragWrapper: DragWrapper});
     // eslint-disable-next-line

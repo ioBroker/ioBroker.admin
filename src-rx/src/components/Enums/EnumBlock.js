@@ -19,10 +19,12 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import DownIcon from '@material-ui/icons/KeyboardArrowDown';
 import UpIcon from '@material-ui/icons/KeyboardArrowUp';
 import AddIcon from '@material-ui/icons/Add';
+import IconChannel from '@iobroker/adapter-react/icons/IconChannel';
+import IconDevice from '@iobroker/adapter-react/icons/IconDevice';
+import IconState from '@iobroker/adapter-react/icons/IconState';
 
 
 function EnumBlock(props) {
-
     const opacity = props.isDragging ? 0 : 1;
 
     let textColor = !props.enum || !props.enum.common || !props.enum.common.color || Color(props.enum.common.color).hsl().object().l > 50 ? '#000000' : '#FFFFFF';
@@ -30,149 +32,158 @@ function EnumBlock(props) {
     if (!props.enum.common.color) {
         textColor = null;
     }
-    let style = { opacity, color: textColor }
+
+    let style = { opacity, color: textColor };
+
     if (props.enum.common.color) {
         style.backgroundColor = props.enum.common.color;
     }
+
     return <Card
-            style={ style }
-            className={props.classes.enumGroupCard2}
-
-
-        >
-            <div className={props.classes.enumCardContent}>
-                <div className={props.classes.right}>
-                    <IconButton
-                        size="small"
-                        onClick={()=>{props.showEnumEditDialog(props.enum, false)}}
-                    >
-                        <Tooltip title={props.t('Edit')} placement="top">
-                            <EditIcon style={{ color: textColor }} />
-                        </Tooltip>
-                    </IconButton>
-                    <IconButton
-                        size="small"
-                        onClick={()=>{props.copyEnum(props.enum._id)}}
-                    >
-                        <Tooltip title={props.t('Copy')} placement="top">
-                            <FileCopyIcon style={{ color: textColor }} />
-                        </Tooltip>
-                    </IconButton>
-                    <IconButton
-                        size="small"
-                        onClick={()=>{props.showEnumDeleteDialog(props.enum)}}
-                        disabled={props.enum.common.dontDelete}
-                    >
-                        <Tooltip title={props.t('Delete')} placement="top">
-                            <DeleteIcon style={props.enum.common.dontDelete ? null : { color: textColor }} />
-                        </Tooltip>
-                    </IconButton>
-                </div>
-                <CardContent>
-                    <Typography gutterBottom component="div" className={props.classes.enumGroupTitle}>
-                        {
-                            props.enum.common.icon
-                                ?
-                                <Icon
-                                    className={ props.classes.icon }
-                                    src={props.enum.common.icon}
-                                />
-                                :
-                                <ListIcon className={props.classes.icon} />
-                        }
-                        <div>
-                            <div>
-                                <span className={props.classes.enumGroupEnumName}>
-                                    {props.getName(props.enum.common.name)}
-                                </span>
-                                <span className={props.classes.enumGroupEnumID}>
-                                    {props.enum._id}
-                                </span>
-                            </div>
-                            <span>
-                            {
-                                props.enum.common.desc !== ''
-                                    ?
-                                    <div className={props.classes.enumName}>
-                                        {props.getName(props.enum.common.desc)}
-                                    </div>
-                                    :
-                                    null
-                            }
-                            </span>
-                        </div>
-                    </Typography>
-                    <div >
-                        {props.enum?.common?.members ? props.enum.common.members.map(memberId => {
-                            let member = props.members[memberId];
-                            if (!member) {
-                                return null;
-                            }
-                            const name = member.common?.name && props.getName(member.common?.name);
-
-                            return <Card
-                                key={member._id}
-                                title={name ? props.t('Name: %s', name) + '\nID: ' +  member._id : member._id}
-                                variant="outlined"
-                                className={props.classes.enumGroupMember}
-                                style={{ color: textColor, borderColor: textColor + "40" }}
-                            >
-                                {
-                                    member.common?.icon
-                                        ?
-                                        <Icon
-                                            className={ props.classes.icon }
-                                            src={member.common.icon}
-                                        />
-                                        :
-                                        <ListIcon className={props.classes.icon} />
-                                    }
-                                {name || member._id}
-                                <IconButton
-                                    size="small"
-                                    onClick={() => props.removeMemberFromEnum(member._id, props.enum._id)}
-                                >
-                                    <Tooltip title={props.t('Remove')} placement="top">
-                                        <ClearIcon  style={{ color: textColor }} />
-                                    </Tooltip>
-                                </IconButton>
-                            </Card>
-                        }) : null}
-                    </div>
-                </CardContent>
-            </div>
-            <span style={{position: 'absolute', 'right': 0, 'bottom': 0}}>
+        style={ style }
+        className={props.classes.enumGroupCard2}
+    >
+        <div className={props.classes.enumCardContent}>
+            <div className={props.classes.right}>
                 <IconButton
                     size="small"
-                    onClick={()=>{
-                        if (['functions', 'rooms'].includes(props.currentCategory)) {
-                            props.showEnumTemplateDialog(props.enum._id);
-                        } else {
-                            props.showEnumEditDialog(props.getEnumTemplate(props.enum._id), true)
-                        }
-                        
-                    }}
+                    onClick={() => {props.showEnumEditDialog(props.enum, false)}}
                 >
-                    <Tooltip title={props.t('Add child')} placement="top">
-                        <AddIcon style={{ color: textColor }} />
+                    <Tooltip title={props.t('Edit')} placement="top">
+                        <EditIcon style={{ color: textColor }} />
                     </Tooltip>
                 </IconButton>
-                {props.hasChildren ?
-                    <IconButton onClick={()=>props.toggleEnum(props.enum._id)}>
-                        <Tooltip title={props.closed ? props.t('Expand') : props.t('Collapse')} placement="top">
-                        {props.closed ?
-                            <DownIcon style={{ color: textColor }}/>
-                        :
-                            <UpIcon style={{ color: textColor }}/>
+                <IconButton
+                    size="small"
+                    onClick={() => {props.copyEnum(props.enum._id)}}
+                >
+                    <Tooltip title={props.t('Copy')} placement="top">
+                        <FileCopyIcon style={{ color: textColor }} />
+                    </Tooltip>
+                </IconButton>
+                <IconButton
+                    size="small"
+                    onClick={() => {props.showEnumDeleteDialog(props.enum)}}
+                    disabled={props.enum.common.dontDelete}
+                >
+                    <Tooltip title={props.t('Delete')} placement="top">
+                        <DeleteIcon style={props.enum.common.dontDelete ? null : { color: textColor }} />
+                    </Tooltip>
+                </IconButton>
+            </div>
+            <CardContent>
+                <Typography gutterBottom component="div" className={props.classes.enumGroupTitle}>
+                    {
+                        props.enum.common.icon ?
+                            <Icon
+                                className={ props.classes.icon }
+                                src={props.enum.common.icon}
+                            />
+                            :
+                            <ListIcon className={props.classes.icon} />
+                    }
+                    <div>
+                        <div>
+                            <span className={props.classes.enumGroupEnumName}>
+                                {props.getName(props.enum.common.name)}
+                            </span>
+                            <span className={props.classes.enumGroupEnumID}>
+                                {props.enum._id}
+                            </span>
+                        </div>
+                        <span>
+                        {
+                            props.enum.common.desc !== '' ?
+                                <div className={props.classes.enumName}>
+                                    {props.getName(props.enum.common.desc)}
+                                </div>
+                                :
+                                null
                         }
-                        </Tooltip>
-                    </IconButton>
-                : null}
-            </span>
-        </Card>
+                        </span>
+                    </div>
+                </Typography>
+                <div>
+                    {props.enum?.common?.members ? props.enum.common.members.map(memberId => {
+                        let member = props.members[memberId];
+                        if (!member) {
+                            return null;
+                        }
+
+                        const name = member.common?.name && props.getName(member.common?.name);
+
+                        let icon = member.common?.icon;
+                        if (!icon) {
+                            // try to find by channel and device
+
+                        }
+
+                        return <Card
+                            key={member._id}
+                            title={name ? props.t('Name: %s', name) + '\nID: ' +  member._id : member._id}
+                            variant="outlined"
+                            className={props.classes.enumGroupMember}
+                            style={{ color: textColor, borderColor: textColor + '40' }}
+                        >
+                            {
+                                icon ?
+                                    <Icon
+                                        className={ props.classes.icon }
+                                        src={member.common.icon}
+                                    />
+                                    :
+                                    (member.type === 'state' ? <IconState className={props.classes.icon} />
+                                    : (member.type === 'channel' ? <IconChannel className={props.classes.icon} />
+                                        : member.type === 'device' ? <IconDevice className={props.classes.icon} /> : <ListIcon className={props.classes.icon} />
+                                        )
+                                    )
+                                }
+                            {name || member._id}
+                            {name ? <div className={props.classes.secondLine}>{member._id}</div> : null}
+                            <IconButton
+                                size="small"
+                                onClick={() => props.removeMemberFromEnum(member._id, props.enum._id)}
+                            >
+                                <Tooltip title={props.t('Remove')} placement="top">
+                                    <ClearIcon style={{ color: textColor }} />
+                                </Tooltip>
+                            </IconButton>
+                        </Card>
+                    }) : null}
+                </div>
+            </CardContent>
+        </div>
+        <span style={{position: 'absolute', right: 0, bottom: 0}}>
+            <IconButton
+                size="small"
+                onClick={() => {
+                    if (['functions', 'rooms'].includes(props.currentCategory)) {
+                        props.showEnumTemplateDialog(props.enum._id);
+                    } else {
+                        props.showEnumEditDialog(props.getEnumTemplate(props.enum._id), true);
+                    }
+                }}
+            >
+                <Tooltip title={props.t('Add child')} placement="top">
+                    <AddIcon style={{ color: textColor }} />
+                </Tooltip>
+            </IconButton>
+            {props.hasChildren ?
+                <IconButton onClick={() => props.toggleEnum(props.enum._id)}>
+                    <Tooltip title={props.closed ? props.t('Expand') : props.t('Collapse')} placement="top">
+                    {props.closed ?
+                        <DownIcon style={{ color: textColor }}/>
+                    :
+                        <UpIcon style={{ color: textColor }}/>
+                    }
+                    </Tooltip>
+                </IconButton>
+            : null}
+        </span>
+    </Card>;
 }
 
-const EnumBlockDrag = (props) => {
+const EnumBlockDrag = props => {
     const [{ canDrop, isOver }, drop] = useDrop(() => ({
         accept: ['object', 'enum'],
         drop: () => ({ enumId: props.enum._id }),
@@ -180,11 +191,11 @@ const EnumBlockDrag = (props) => {
         collect: (monitor) => ({
             isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),
-            
         }),
     }), [props.enum.common.members]);
 
     const widthRef = useRef();
+
     const [{ isDragging }, dragRef, preview] = useDrag(
         {
             type: 'enum',
@@ -199,6 +210,7 @@ const EnumBlockDrag = (props) => {
             }),
         }
     );
+
     useEffect(() => {
         preview(getEmptyImage(), { captureDraggingState: true });
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -239,8 +251,8 @@ function canMeDrop(monitor, props ) {
     if (!monitor.getItem() || !monitor.getItem().data) {
         return true;
     }
-    return props.enum.common.members
-        ?
+
+    return props.enum.common.members ?
         !props.enum.common.members.includes(monitor.getItem().data.id)
         :
         true;

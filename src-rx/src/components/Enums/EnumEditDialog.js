@@ -26,27 +26,12 @@ let devicesImages = importAll(require.context('../../assets/devices', false, /\.
 let roomsImages = importAll(require.context('../../assets/rooms', false, /\.svg$/));
 
 function EnumEditDialog(props) {
-    let [originalId, setOriginalId] = useState(null);
-    useEffect(()=>{
-        setOriginalId(props.enum?._id);
-    // eslint-disable-next-line
-    }, [props.open]);
-
-    if (!props.open) {
-        return null;
-    }
-
     let idExists = props.enums.find(enumItem => enumItem._id === props.enum._id);
-    let idChanged = props.enum._id !== originalId;
 
     let canSave = props.enum._id !== 'system.enum.'
 
     if (props.isNew) {
         if (idExists) {
-            canSave = false;
-        }
-    } else {
-        if (idExists && idChanged) {
             canSave = false;
         }
     }
@@ -71,7 +56,7 @@ function EnumEditDialog(props) {
         ICONS = roomsImages.map(image => image.default);
     }
 
-    return <Dialog fullWidth={props.innerWidth < 500} open={props.open} onClose={props.onClose}>
+    return <Dialog fullWidth={props.innerWidth < 500} open={true} onClose={props.onClose}>
         <DialogTitle className={props.classes.dialogTitle} style={{padding:12}} >
            { props.t( 'Enum parameters' ) }
         </DialogTitle>
@@ -88,7 +73,7 @@ function EnumEditDialog(props) {
                                 newData._id = changeShortId(newData._id, name2Id(e.target.value));
                             }
                             newData.common.name = e.target.value;
-                            props.change(newData);
+                            props.onChange(newData);
                         }}
                         autoComplete="off"
                         icon={TextFieldsIcon}
@@ -104,7 +89,7 @@ function EnumEditDialog(props) {
                         onChange={e=>{
                             let newData = props.enum;
                             newData._id = changeShortId(newData._id, name2Id(e.target.value));
-                            props.change(newData);
+                            props.onChange(newData);
                         }}
                         icon={LocalOfferIcon}
                         classes={props.classes}
@@ -128,7 +113,7 @@ function EnumEditDialog(props) {
                         onChange={e=>{
                             let newData = props.enum;
                             newData.common.desc = e.target.value;
-                            props.change(newData);
+                            props.onChange(newData);
                         }}
                         icon={DescriptionIcon}
                         classes={props.classes}
@@ -143,7 +128,7 @@ function EnumEditDialog(props) {
                         onChange={fileblob=>{
                             let newData = props.enum;
                             newData.common.icon = fileblob;
-                            props.change(newData);
+                            props.onChange(newData);
                         }}
                         previewClassName={props.classes.iconPreview}
                         icon={ImageIcon}
@@ -159,7 +144,7 @@ function EnumEditDialog(props) {
                         onChange={color=>{
                             let newData = props.enum;
                             newData.common.color = color;
-                            props.change(newData);
+                            props.onChange(newData);
                         }}
                         icon={ColorLensIcon}
                         className={props.classes.colorPicker}
@@ -169,7 +154,7 @@ function EnumEditDialog(props) {
             </Grid>
         </DialogContent>
         <DialogActions className={props.classes.dialogActions} >
-            <Button variant="contained" color="primary" autoFocus onClick={()=>props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>{props.t('Save')}</Button>
+            <Button variant="contained" color="primary" autoFocus onClick={() => props.saveData(props.isNew ? null : props.enum._id)} disabled={!canSave || !props.changed}>{props.t('Save')}</Button>
             <Button variant="contained" onClick={props.onClose}>{props.t('Cancel')}</Button>
         </DialogActions>
     </Dialog>;
@@ -179,10 +164,10 @@ EnumEditDialog.propTypes = {
     enum: PropTypes.object,
     enums: PropTypes.array,
     isNew: PropTypes.bool,
-    change: PropTypes.func,
+    onChange: PropTypes.func,
     saveData: PropTypes.func,
     onClose: PropTypes.func,
-    open: PropTypes.bool,
+    changed: PropTypes.bool,
     classes: PropTypes.object,
     t: PropTypes.func,
     lang: PropTypes.string,

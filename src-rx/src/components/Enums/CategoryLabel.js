@@ -18,7 +18,7 @@ const CategoryLabel = (props) => {
         }),
     }));
 
-    let textColor = null
+    let textColor = null;
     if (props.categoryData.common.color) {
         textColor = Color(props.categoryData.common.color).hsl().object().l > 50 ? '#000000' : '#FFFFFF';
     }
@@ -32,7 +32,7 @@ const CategoryLabel = (props) => {
         <IconButton
             size="small"
             style={{color: props.categoryData.common.color ? textColor : null}}
-            onClick={()=>{props.showEnumEditDialog(props.categoryData, false)}}
+            onClick={() => {props.showEnumEditDialog(props.categoryData, false)}}
         >
             <Tooltip title={props.t('Edit')} placement="top">
                 <EditIcon />
@@ -41,7 +41,7 @@ const CategoryLabel = (props) => {
         {props.categoryData.common.dontDelete ? null : <IconButton
             size="small"
             style={{color: props.categoryData.common.color ? textColor : null}}
-            onClick={()=>{props.showEnumDeleteDialog(props.categoryData)}}
+            onClick={() => {props.showEnumDeleteDialog(props.categoryData)}}
         >
             <Tooltip title={props.t('Delete')} placement="top">
                 <DeleteIcon />

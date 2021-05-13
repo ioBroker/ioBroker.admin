@@ -64,8 +64,10 @@ const InstanceCategory = ({
             setOpen(folderOpen);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [folderOpen, rebuild])
+    }, [folderOpen, rebuild]);
+
     const [open, setOpen] = useState(folderOpen);
+
     return <Accordion
         defaultExpanded={folderOpen}
         expanded={open} onChange={() => setOpen(!open)}
@@ -82,7 +84,7 @@ const InstanceCategory = ({
                 {children}
             </div>
         </AccordionDetails>
-    </Accordion >;
+    </Accordion>;
 }
 
 InstanceCategory.propTypes = {

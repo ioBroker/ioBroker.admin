@@ -187,8 +187,8 @@ const styles = theme => ({
         // position:'absolute'
     },
     iconPreview: {
-        maxHeight: 40,
-        maxWidth: 40,
+        height: 40,
+        width: 40,
     },
     mainDescription: {
         fontSize: '200%'

@@ -1416,6 +1416,20 @@ class Utils {
         }
         return states;
     }
+
+    static getSvg(url) {
+        return fetch(url)
+            .then(response => response.blob())
+            .then(blob => {
+                return new Promise(resolve => {
+                    const reader = new FileReader();
+                    reader.onload = function() {
+                        resolve(this.result);
+                    };
+                    reader.readAsDataURL(blob);
+                });
+            }) ;
+    }
 }
 
 export default Utils;

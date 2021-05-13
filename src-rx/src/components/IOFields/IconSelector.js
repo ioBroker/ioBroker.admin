@@ -7,34 +7,49 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 import CloseIcon from '@material-ui/icons/Close';
+
+import Icon from '@iobroker/adapter-react/Components/Icon';
+
+import Utils from '../Utils';
 
 class IconSelector extends Component {
     constructor(props) {
         super(props);
         this.state = {
             opened: false,
-        }
+        };
     }
 
-    static getSvg(url) {
-        return fetch(url)
-            .then(response => response.blob())
-            .then(blob => {
-                return new Promise(resolve => {
-                    const reader = new FileReader();
-                    reader.onload = function() {
-                        resolve(this.result);
-                    };
-                    reader.readAsDataURL(blob);
-                });
-            }) ;
+    componentDidMount() {
+        this.setState({loading: true}, () => {
+            const icons = [];
+
+            const promises = this.props.icons.map((href, i) => {
+                if (href.startsWith('data:')) {
+                    icons[i] = href;
+                    return Promise.resolve();
+                } else {
+                    return Utils.getSvg(href)
+                        .then(icon =>
+                            icons[i] = icon);
+                }
+            });
+
+            Promise.all(promises)
+                .then(() =>
+                    this.setState({icons, loading: false}));
+        });
     }
 
     render() {
         if (!this.props.icons) {
             return null;
+        }
+        if (this.state.loading) {
+            return <LinearProgress />;
         }
 
         return <>
@@ -47,15 +62,14 @@ class IconSelector extends Component {
                 <DialogTitle>{this.props.t('Select predefined icon')}</DialogTitle>
                 <DialogContent>
                     <div style={{width: 340}}>
-                        {this.props.icons.map((href, i) => (
+                        {this.state.icons.map((icon, i) => (
                             <IconButton
                                 key={i}
                                 onClick={e =>
                                     this.setState({opened: false}, () =>
-                                        IconSelector.getSvg(href)
-                                            .then(base64 => this.props.onSelect(base64)))}
+                                       this.props.onSelect(icon))}
                             >
-                                <img src={href} alt={i} style={{width: 32, height: 32, borderRadius: 5}}/>
+                                <Icon src={icon} alt={i} style={{width: 32, height: 32, borderRadius: 5}}/>
                             </IconButton>
                         ))}
                     </div>

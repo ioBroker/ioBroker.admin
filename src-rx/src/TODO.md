@@ -1,5 +1,4 @@
 # Todo
-
 Marked with "!" must be in release candidate
 
 ## Bugs
@@ -7,7 +6,8 @@ Marked with "!" must be in release candidate
 <!-- - Notifications - mobile view: https://github.com/ioBroker/ioBroker.admin/issues/860 -->
 - Notifications - all buttons have same color
 <!-- Opening Adapter Readme with icon (?) will end in white page - https://github.com/ioBroker/ioBroker.admin/issues/863 -->
-<!-- Lining up buttons in Adapter warning - mobile view https://github.com/ioBroker/ioBroker.admin/issues/860 --> 
+<!-- Lining up buttons in Adapter warning - mobile view https://github.com/ioBroker/ioBroker.admin/issues/860 -->
+
 ## Intro
 - Images have different width
 
@@ -18,15 +18,15 @@ Marked with "!" must be in release candidate
 ## Info
 
 ## Enums
-- (BF) Find icon of object (state => channel => device)
-- (BF) Show in second row ID in state
-- (BF) Use default Icon depends on type (state, channel, device)
-- (BF) Create enums, that not exists automatically. E.g. `enum.rooms.A.kitchen` exists, but `enum.rooms.A` not, So `enum.rooms.A` must be created.
-- (BF) Update structure of enums by changes from outside
-- (BF) Expand/Collapse all in tree
-- (BF) Expand/Collapse of one enumeration to make it narrow with showing the number of objects inside
-- (BF) expand/collapse all to narrow view and back  
-- (BF) Scroll to new created/copied enumeration
+- Find icon of object (state => channel => device)
+- Show in second row ID in state
+- Use default Icon depends on type (state, channel, device)
+- Create enums, that not exists automatically. E.g. `enum.rooms.A.kitchen` exists, but `enum.rooms.A` not, So `enum.rooms.A` must be created.
+- Update structure of enums by changes from outside
+- Expand/Collapse all in tree
+- Expand/Collapse of one enumeration to make it narrow with showing the number of objects inside
+- expand/collapse all to narrow view and back  
+- Scroll to new created/copied enumeration
 
 ## Adapters
 - (BF) Update of available versions does not work: https://github.com/ioBroker/ioBroker.admin/issues/830
@@ -34,7 +34,6 @@ Marked with "!" must be in release candidate
    
 <!-- - Mobile view Updater: https://github.com/ioBroker/ioBroker.admin/issues/851 -->
 <!-- - As the license agreement not loaded, the button accept must be disabled. -->
-
 
 ## Wizard
 
