@@ -15,7 +15,6 @@ import HelpIcon from '@material-ui/icons/Help';
 
 import JsonConfig from '../components/JsonConfig';
 
-
 const styles = theme => ({
     root: {
         height: '100%',
@@ -47,6 +46,16 @@ class Config extends Component {
         this.state ={
             checkedExist: false,
         };
+
+        this.refIframe = React.createRef();
+        this.registered = false;
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (!this.registered && this.refIframe.contentWindow) {
+            this.registered = true;
+            this.props.onRegisterIframeRef(this.refIframe);
+        }
     }
 
     componentDidMount() {
@@ -70,17 +79,23 @@ class Config extends Component {
             this.setState({checkedExist: true});
         }
 
+        if (!this.registered && this.refIframe.contentWindow) {
+            this.registered = true;
+            this.props.onRegisterIframeRef(this.refIframe);
+        }
+
         emit(eventName, event => this.closeConfig(event), false);
     }
 
     componentWillUnmount() {
-
         const eventFunc = window.removeEventListener ? 'removeEventListener' : 'detachEvent';
         const emit = window[eventFunc];
         const eventName = eventFunc === 'detachEvent' ? 'onmessage' : 'message';
 
         emit(eventName, event => this.closeConfig(event), false);
-    }
+
+        this.registered && this.props.onUnregisterIframeRef(this.refIframe);
+   }
 
     closeConfig(event) {
         if (event.data === 'close' || event.message === 'close') {
@@ -135,9 +150,11 @@ class Config extends Component {
         } else {
             const src = `adapter/${this.props.adapter}/` +
                 `${this.props.tab ? this.state.checkedExist : (this.props.materialize ? 'index_m.html' : 'index.html')}?` +
-                `${this.props.instance}`;//&react=${this.props.themeName}`;
+                `${this.props.instance}&newReact=true`;//&react=${this.props.themeName}`;
+
             if (this.state.checkedExist) {
                 return <iframe
+                    ref={el => this.refIframe = el}
                     title="config"
                     className={this.props.className}
                     src={src}>

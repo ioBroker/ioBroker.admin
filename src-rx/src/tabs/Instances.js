@@ -1058,6 +1058,9 @@ class Instances extends Component {
                         themeName={this.props.themeName}
                         themeType={this.props.themeType}
                         width={this.props.width}
+
+                        onRegisterIframeRef={ref => this.props.onRegisterIframeRef(ref)}
+                        onUnregisterIframeRef={ref => this.props.onUnregisterIframeRef(ref)}
                     />
                 </Paper>;
             }
@@ -1217,6 +1220,9 @@ Instances.propTypes = {
     menuPadding: PropTypes.number,
     isFloatComma: PropTypes.bool,
     dateFormat: PropTypes.string,
+
+    onRegisterIframeRef: PropTypes.func,
+    onUnregisterIframeRef: PropTypes.func,
 };
 
 export default withWidth()(withStyles(styles)(Instances));

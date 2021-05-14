@@ -73,7 +73,7 @@
     "test:unit": "mocha test/unit --exit",
     "test:integration": "mocha test/integration --exit",
     "release": "release-script",
-    "beforePush": "node node_modules/gulp/bin/gulp.js",
+    "prepublishOnly": "node node_modules/gulp/bin/gulp.js",
     "build": "node node_modules/gulp/bin/gulp.js"
   },
   "author": "bluefox <dogafox@gmail.com>"

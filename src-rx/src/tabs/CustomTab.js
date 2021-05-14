@@ -97,12 +97,21 @@ class CustomTab extends Component {
                     href = hrefs ? hrefs[0]?.url : '';
                 }
 
+                href += `${href.includes('?') ? '&' : '?'}newReact=true`;
+
                 return href;
             });
     }
 
     componentWillUnmount() {
-        this.props.onUnregisterIframeRef();
+        this.registered && this.props.onUnregisterIframeRef(this.refIframe);
+    }
+
+    componentDidMount() {
+        if (!this.registered && this.refIframe.contentWindow) {
+            this.registered = true;
+            this.props.onRegisterIframeRef(this.refIframe);
+        }
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {

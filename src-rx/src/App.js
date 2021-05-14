@@ -1063,6 +1063,13 @@ class App extends Router {
                         configStored={value => this.allStored(value)}
                         executeCommand={(cmd, cb) => this.executeCommand(cmd, cb)}
                         inBackgroundCommand={this.state.commandError || this.state.performed}
+
+                        onRegisterIframeRef={ref => this.refConfigIframe = ref}
+                        onUnregisterIframeRef={ref => {
+                            if (this.refConfigIframe === ref) {
+                                this.refConfigIframe = null;
+                            }
+                        }}
                     />
                 </Suspense>;
             } else if (this.state.currentTab.tab === 'tab-intro') {
@@ -1193,7 +1200,11 @@ class App extends Router {
                             expertMode={this.state.expertMode}
                             lang={I18n.getLanguage()}
                             onRegisterIframeRef={ref => this.refConfigIframe = ref}
-                            onUnregisterIframeRef={() => this.refConfigIframe = null}
+                            onUnregisterIframeRef={ref => {
+                                if (this.refConfigIframe === ref) {
+                                    this.refConfigIframe = null;
+                                }
+                            }}
                         />
                     </Suspense>;
                 }
