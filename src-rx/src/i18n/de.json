@@ -1057,7 +1057,7 @@
     "authors": "Autoren",
     "Edit on github": "Auf Github bearbeiten",
     "Debug outputs": "Debug-Ausgaben",
-    "Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!": "Installieren Sie keine Adapter von GitHub, es sei denn, Sie werden von einem Entwickler dazu aufgefordert oder Sie sind sich zu 100% sicher, was Sie tun! Adapter auf GitHub funktionieren möglicherweise nicht wie gewünscht (sie befinden sich noch in der Entwicklung). Installieren Sie sie nur, wenn Sie an einem Test teilnehmen! Bitte warten Sie auf eine offizielle Veröffentlichung!",
+    "Don't install adapters from GitHub unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on GitHub may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!": "Installiere keine Adapter von GitHub, es sei denn, ein Entwickler fordert dich hierzu auf oder du bist dir zu 100% sicher, was du machst! Adapter auf GitHub funktionieren möglicherweise nicht wie gewünscht (Adapter befindet sich noch in der Entwicklung). Installiere den Adapter über GitHub nur, um an einem Test teilzunehmen! Bitte warte auf eine offizielle Veröffentlichung!",
     "URL or file path": "URL oder Dateipfad",
     "Filter local connection type": "Lokalen Verbindungstyp filtern",
     "all items are filtered out": "Alle Elemente werden herausgefiltert",
