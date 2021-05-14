@@ -1171,7 +1171,7 @@
     "State type": "Zustandstyp",
     "Use this button:": "Dieses Symbol verwenden:",
     "If you need to save the mode all the time, you can do this in the system settings.": "Wenn der Modus dauerhaft gespeichert werden soll, dann kann dies in den Systemeinstellungen eingestellt werden.",
-    "Now the expert mode will be active only during this browser session.": "Jetzt ist der Expertenmodus nur während dieser Browsersitzung aktiv.",
+    "Now the expert mode will be active only during this browser session.": "Der Expertenmodus ist jetzt nur für diese Browsersitzung aktiv.",
     "Adapter cannot request the exactly device status and the status will be guessed on the last sent command": "Der Adapter kann den genauen Gerätestatus nicht anfordern, der Status wird an Hand des zuletzt gesendeten Befehl erraten",
     "climate_group": "Klima",
     "time-and-date_group": "Zeit und Datum",
