@@ -69,7 +69,6 @@
   "main": "main.js",
   "scripts": {
     "test": "npm run test:package && npm run test:unit",
-    "prepare": "node node_modules/gulp/bin/gulp default",
     "test:package": "mocha test/package --exit",
     "test:unit": "mocha test/unit --exit",
     "test:integration": "mocha test/integration --exit",

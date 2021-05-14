@@ -17,37 +17,7 @@ on:
   pull_request: {}
 
 jobs:
-  # Performs quick checks before the expensive test runs
-  check-and-lint:
-    if: contains(github.event.head_commit.message, '[skip ci]') == false
-
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: ['14']
-
-    steps:
-      - uses: actions/checkout@v1
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-
-
-      - name: Install Dependencies
-        run: npm install
-
-#      - name: Perform a type check
-#        run: npm run check:ts
-#        env:
-#          CI: true
-      # - name: Lint TypeScript code
-      #   run: npm run lint
-#      - name: Test package files
-#        run: npm run test:package
-
-  prepare:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -55,13 +25,13 @@ jobs:
         with:
           node-version: 14
       - run: npm i
-      - run: npm run prepare
+      - run: npm run build
 
   # Runs adapter tests on all supported node versions and OSes
   adapter-tests:
     if: contains(github.event.head_commit.message, '[skip ci]') == false
 
-    needs: [check-and-lint, prepare]
+    needs: [build]
 
     runs-on: ${{ matrix.os }}
     strategy:
