@@ -1,4 +1,3 @@
-import {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 
 import Dialog from '@material-ui/core/Dialog';
@@ -57,7 +56,7 @@ function EnumEditDialog(props) {
     }
 
     return <Dialog fullWidth={props.innerWidth < 500} open={true} onClose={props.onClose}>
-        <DialogTitle className={props.classes.dialogTitle} style={{padding:12}} >
+        <DialogTitle className={props.classes.dialogTitle} style={{padding: 12}} >
            { props.t( 'Enum parameters' ) }
         </DialogTitle>
         <DialogContent>

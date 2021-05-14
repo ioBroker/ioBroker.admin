@@ -86,7 +86,6 @@ import IconState from '@iobroker/adapter-react/icons/IconState';
 import IconClosed from '@iobroker/adapter-react/icons/IconClosed';
 import IconOpen from '@iobroker/adapter-react/icons/IconOpen';
 import IconClearFilter from '@iobroker/adapter-react/icons/IconClearFilter';
-import {FaCopy as CopyIcon} from "react-icons/fa";
 
 const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;

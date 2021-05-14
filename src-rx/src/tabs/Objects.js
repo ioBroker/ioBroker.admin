@@ -2,7 +2,6 @@ import withWidth from '@material-ui/core/withWidth';
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 import { withStyles } from '@material-ui/core/styles';
 
 import Dialog from '@material-ui/core/Dialog';
