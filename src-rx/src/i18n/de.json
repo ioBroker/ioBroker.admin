@@ -1185,7 +1185,7 @@
     "Change color theme": "Farbthema ändern",
     "Change current host": "Aktuellen Host ändern ",
     "Discovery devices": "Erkennungsgeräte",
-    "Delete with children": "Mit Unterobjekten löschen",
+    "Delete with children": "Ganzen Objektbaum löschen",
     "Delete one item": "Dieses Objekt löschen",
     "Delete object(s)": "Objekt(e) löschen",
     "When enabled adapter instances can run in one or few processes to save RAM usage.": "Wenn diese Option aktiviert ist, können Adapterinstanzen in einem oder wenigen Prozessen ausgeführt werden, um die RAM-Nutzung zu sparen.",
