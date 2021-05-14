@@ -4091,11 +4091,11 @@ class ObjectBrowser extends Component {
         } else {
             this.columnsVisibility = {
                 id:   columnsWidths.id || SCREEN_WIDTHS[this.props.width].idWidth,
-                name: columns.includes('name') ? columnsWidths.name || WIDTHS.name || SCREEN_WIDTHS.xl.widths.name : 0,
-                type: columns.includes('type') ? columnsWidths.type || WIDTHS.type || SCREEN_WIDTHS.xl.widths.type : 0,
-                role: columns.includes('role') ? columnsWidths.role || WIDTHS.role || SCREEN_WIDTHS.xl.widths.role : 0,
-                room: columns.includes('room') ? columnsWidths.room || WIDTHS.room || SCREEN_WIDTHS.xl.widths.room : 0,
-                func: columns.includes('func') ? columnsWidths.func || WIDTHS.func || SCREEN_WIDTHS.xl.widths.func : 0
+                name: columns.includes('name') ? columnsWidths.name || WIDTHS.name || SCREEN_WIDTHS[this.props.width].widths.name : 0,
+                type: columns.includes('type') ? columnsWidths.type || WIDTHS.type || SCREEN_WIDTHS[this.props.width].widths.type : 0,
+                role: columns.includes('role') ? columnsWidths.role || WIDTHS.role || SCREEN_WIDTHS[this.props.width].widths.role : 0,
+                room: columns.includes('room') ? columnsWidths.room || WIDTHS.room || SCREEN_WIDTHS[this.props.width].widths.room : 0,
+                func: columns.includes('func') ? columnsWidths.func || WIDTHS.func || SCREEN_WIDTHS[this.props.width].widths.func : 0
             };
             let widthSum = this.columnsVisibility.id; // id is always visible
             if (this.columnsVisibility.name) {
@@ -4150,8 +4150,12 @@ class ObjectBrowser extends Component {
                 this.columnsVisibility.name = `calc(100% - ${widthSum}px)`;
                 this.columnsVisibility.nameHeader = `calc(100% - ${widthSum + 5 + this.state.scrollBarWidth}px)`;
             } else {
-                const newWidth = Object.keys(this.columnsVisibility).reduce((accumulator, name) =>
-                    name === 'id' ? accumulator : accumulator + this.columnsVisibility[name], 0);
+                const newWidth = Object.keys(this.columnsVisibility).reduce((accumulator, name) =>{
+                    if(name === 'id' || typeof this.columnsVisibility[name] === 'string' || !this.columnsVisibility[name]){
+                        return accumulator;
+                    }else{
+                        return  accumulator + this.columnsVisibility[name]
+                    }}, 0);
                 this.columnsVisibility.id = `calc(100% - ${newWidth}px)`;
             }
         }
@@ -4171,7 +4175,6 @@ class ObjectBrowser extends Component {
                 <IconClose className={classes.buttonClearFilterIcon} />
             </IconButton>;
         }
-
         return <div className={classes.headerRow} >
             <div className={classes.headerCell} style={{ width: this.columnsVisibility.id }}>{this.getFilterInput('id')}</div>
             {this.columnsVisibility.name ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.nameHeader }}>{this.getFilterInput('name')}</div> : null}
