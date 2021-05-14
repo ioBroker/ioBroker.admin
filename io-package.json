@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.22",
+        "version": "5.0.23",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.0.23": {
+                "en": "Admin5: GUI fixes",
+                "de": "Admin5: GUI-Korrekturen",
+                "ru": "Admin5: исправления графического интерфейса",
+                "pt": "Admin5: Correções de GUI",
+                "nl": "Admin5: GUI-fixes",
+                "fr": "Admin5: correctifs de l'interface graphique",
+                "it": "Admin5: correzioni della GUI",
+                "es": "Admin5: correcciones de GUI",
+                "pl": "Admin5: poprawki GUI",
+                "zh-cn": "Admin5：GUI修复"
+            },
             "5.0.22": {
                 "en": "Admin5: Fixed some bugs",
                 "de": "Admin5: Einige Fehler wurden behoben",
@@ -245,18 +257,6 @@
                 "es": "Admin5: se corrigieron muchos errores",
                 "pl": "Admin5: Naprawiono wiele błędów",
                 "zh-cn": "Admin5：修复了许多错误"
-            },
-            "5.0.3": {
-                "en": "Admin5: Many new features implemented",
-                "de": "Admin5: Viele neue Funktionen implementiert",
-                "ru": "Admin5: реализовано много новых функций",
-                "pt": "Admin5: Muitos novos recursos implementados",
-                "nl": "Admin5: Veel nieuwe functies geïmplementeerd",
-                "fr": "Admin5: de nombreuses nouvelles fonctionnalités implémentées",
-                "it": "Admin5: molte nuove funzionalità implementate",
-                "es": "Admin5: muchas funciones nuevas implementadas",
-                "pl": "Admin5: Zaimplementowano wiele nowych funkcji",
-                "zh-cn": "Admin5：已实现许多新功能"
             }
         },
         "desc": {
