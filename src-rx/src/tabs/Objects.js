@@ -145,9 +145,9 @@ class Objects extends Component {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="contained" onClick={() => this.setState({ deleteObjectShow: null })}><IconCancel className={this.props.classes.buttonIcon} />{this.t('ra_Cancel')}</Button>
-                    {this.state.deleteObjectShow.hasChildren ? <Button variant="contained" classes={{label: this.props.classes.buttonText}} onClick={() => this.onDelete(true)}><IconDeleteAll className={clsx(this.props.classes.buttonAll, this.props.classes.buttonIcon)} />{this.t('Delete with children')}</Button> : null}
-                    {this.state.deleteObjectShow.exists ? <Button variant="contained" classes={{label: this.props.classes.buttonText}} onClick={() => this.onDelete(false)} color="primary"><IconDeleteOne className={this.props.classes.buttonIcon} />{this.t('Delete one item')}</Button> : null}
+                    {this.state.deleteObjectShow.hasChildren ? <Button variant="contained" classes={{label: this.props.classes.buttonText}} onClick={() => this.onDelete(true)} startIcon={<IconDeleteAll className={this.props.classes.buttonAll} />}>{this.t('Delete with children')}</Button> : null}
+                    {this.state.deleteObjectShow.exists ? <Button variant="contained" classes={{label: this.props.classes.buttonText}} onClick={() => this.onDelete(false)} color="primary" startIcon={<IconDeleteOne />} autoFocus>{this.t('Delete one item')}</Button> : null}
+                    <Button variant="contained" onClick={() => this.setState({ deleteObjectShow: null })} startIcon={<IconCancel />}>{this.t('ra_Cancel')}</Button>
                 </DialogActions>
             </Dialog>;
         }

@@ -218,6 +218,7 @@ class Drawer extends Component {
                     _installed.ignoreVersion !== adapter.version &&
                     Adapters.updateAvailable(_installed.version, adapter.version)
                 ) {
+                    console.log('Updateable: ' + element)
                     count++;
                 }
             });

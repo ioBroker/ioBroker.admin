@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
+
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-
-import I18n from '@iobroker/adapter-react/i18n';
 import {DialogTitle, makeStyles, ThemeProvider} from '@material-ui/core';
 
+import IconClose from '@material-ui/icons/Close';
+import IconCheck from '@material-ui/icons/Check';
+
+import I18n from '@iobroker/adapter-react/i18n';
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 
@@ -37,20 +40,22 @@ const LicenseDialog = ({ url, cb }) => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
     const [text, setText] = useState('');
-    const [disabled, setDisabled] = useState(true);
+    const [loaded, setLoaded] = useState(true);
 
     useEffect(() => {
-        setDisabled(true);
+        setLoaded(true);
         fetch(url).then(el => el.text()).then(el => {
-            setDisabled(false);
+            setLoaded(false);
             setText(el);
-        }).catch(()=>setDisabled(false))
-    }, [url])
+        }).catch(() => setLoaded(false))
+    }, [url]);
+
     const onClose = () => {
         setOpen(false);
         document.body.removeChild(node);
         node = null;
-    }
+    };
+
     return <ThemeProvider theme={theme(Utils.getThemeName())}>
         <Dialog
             onClose={onClose}
@@ -72,12 +77,13 @@ const LicenseDialog = ({ url, cb }) => {
             <DialogActions>
                 <Button
                     variant="contained"
-                    disabled={disabled}
+                    disabled={loaded}
                     autoFocus
                     onClick={() => {
                         onClose();
                         cb(true);
                     }}
+                    startIcon={<IconCheck/>}
                     color="primary">
                     {I18n.t('Accept')}
                 </Button>
@@ -87,6 +93,7 @@ const LicenseDialog = ({ url, cb }) => {
                         onClose();
                         cb(false);
                     }}
+                    startIcon={<IconClose/>}
                     color="default">
                     {I18n.t('Close')}
                 </Button>

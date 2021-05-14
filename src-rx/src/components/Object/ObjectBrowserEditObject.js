@@ -25,9 +25,10 @@ import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 
 import IconClose from '@material-ui/icons/Close';
-import IconCopy from '@iobroker/adapter-react/icons/IconCopy';
 import IconCheck from '@material-ui/icons/Check';
 import AddIcon from '@material-ui/icons/Add';
+import {FaClipboard as IconCopyClipboard} from 'react-icons/fa';
+import IconCopy from '@material-ui/icons/FileCopy';
 
 import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
 import Utils from '@iobroker/adapter-react/Components/Utils';
@@ -56,7 +57,6 @@ const styles = theme => ({
     dialog: {
         height: 'calc(100% - 64px)'
     },
-
     aliasIdEdit: {
         width: 400 - 32,
     },
@@ -81,7 +81,6 @@ const styles = theme => ({
         flexFlow: 'wrap',
         display: 'flex'
     },
-
     commonWrapper: {
         width: 500,
         minWidth: 300
@@ -172,7 +171,10 @@ class ObjectBrowserEditObject extends Component {
             readError: this.checkFunction(this.props.obj.common?.alias?.read, false),
             writeError: this.checkFunction(this.props.obj.common?.alias?.write, true),
             tab: window.localStorage.getItem((this.props.dialogName || 'App') + '.editTab') || 'object',
+            showCopyDialog: false,
         };
+
+        this.isMobile = window.innerWidth < 850;
 
         this.originalObj = JSON.stringify(this.props.obj, null, 2);
     }
@@ -386,7 +388,8 @@ class ObjectBrowserEditObject extends Component {
                 className={classes.buttonAdd}
                 variant="contained"
                 color="secondary"
-                onClick={cb}><AddIcon />{t('add %s', nameKey)}</Button>
+                startIcon={<AddIcon />}
+                onClick={cb}>{t('add %s', nameKey)}</Button>
         </div>;
     }
 
@@ -633,6 +636,65 @@ class ObjectBrowserEditObject extends Component {
         window.alert(this.props.t('ra_Copied'));
     }
 
+    onClone(oldId, newId, cb) {
+        const newObj = JSON.parse(JSON.stringify(this.props.objects[oldId]));
+        delete newObj.from;
+        delete newObj.ts;
+        delete newObj.user;
+        newObj._id = newId;
+        this.props.objects[newObj._id] = newObj; // bad practise, but no time to wait till this object will be created
+        this.props.onNewObject(newObj);
+    }
+
+    renderCopyDialog() {
+        if (!this.state.showCopyDialog) {
+            return null;
+        } else {
+            return <Dialog
+                open={true}
+                maxWidth="md"
+                fullWidth
+                onClose={() => this.setState({showCopyDialog: false})}
+            >
+                <DialogTitle>{this.props.t('Enter new ID for this object')}</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        fullWidth
+                        label={this.props.t('New object ID')}
+                        value={this.state.newId}
+                        onKeyDown={e => {
+                            if (e.keyCode === 13 && !this.props.objects[this.state.newId]) {
+                                this.setState({showCopyDialog: ''});
+                                this.onClone(this.state.showCopyDialog, this.state.newId);
+                            }
+                        }}
+                        onChange={e => this.setState({newId: e.target.value})}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        disabled={!!this.props.objects[this.state.newId]}
+                        onClick={() => {
+                            this.setState({showCopyDialog: ''});
+                            this.onClone(this.state.showCopyDialog, this.state.newId);
+                        }}
+                        color="primary"
+                        startIcon={<IconCopy />}
+                    >
+                        {this.props.t('Clone')}
+                    </Button>
+                    <Button
+                        onClick={() => this.setState({showCopyDialog: ''})}
+                        startIcon={<IconClose />}
+                    >
+                        {this.props.t('Cancel')}
+                    </Button>
+                </DialogActions>
+            </Dialog>;
+        }
+    }
+
     render() {
         const withAlias = this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state';
 
@@ -649,6 +711,7 @@ class ObjectBrowserEditObject extends Component {
             <DialogTitle id="edit-value-dialog-title">{this.props.t('Edit object:')} <span className={this.props.classes.id}>{this.props.obj._id}</span></DialogTitle>
 
             {this.renderTabs()}
+            {this.renderCopyDialog()}
             <DialogContent>
                 {this.state.tab === 'object' ?
                     <div className={clsx(this.props.classes.divWithoutTitle, withAlias && this.props.classes.divWithoutTitleAndTab, this.state.error && this.props.classes.error)}>
@@ -678,9 +741,29 @@ class ObjectBrowserEditObject extends Component {
                 {this.renderSelectDialog()}
             </DialogContent>
             <DialogActions className={this.props.classes.wrapperButton}>
-                {this.state.tab === 'object' && <Button onClick={e => this.onCopy(e)} disabled={this.state.error}><IconCopy />{this.props.t('Copy into clipboard')}</Button>}
-                <Button variant="contained" disabled={this.state.error || !this.state.changed} onClick={() => this.onUpdate()} color="primary"><IconCheck />{this.props.t('Write')}</Button>
-                <Button variant="contained" onClick={() => this.props.onClose()}><IconClose />{this.props.t('Cancel')}</Button>
+                {<Button
+                    onClick={() => this.setState({showCopyDialog: this.props.obj._id, newId: this.props.obj._id})}
+                    disabled={this.state.error || this.state.changed}
+                    title={this.props.t('Create a copy of this object')}
+                ><IconCopy/></Button>}
+                <div style={{flexGrow: 1}}/>
+                {this.state.tab === 'object' && <Button
+                    onClick={e => this.onCopy(e)}
+                    disabled={this.state.error}
+                    title={this.isMobile ? this.props.t('Copy into clipboard') : ''}
+                    startIcon={<IconCopyClipboard />}
+                >{this.isMobile ? null : this.props.t('Copy into clipboard')}</Button>}
+                <Button
+                    variant="contained"
+                    disabled={this.state.error || !this.state.changed}
+                    onClick={() => this.onUpdate()}
+                    startIcon={<IconCheck />}
+                    color="primary">{this.props.t('Write')}</Button>
+                <Button
+                    variant="contained"
+                    onClick={() => this.props.onClose()}
+                    startIcon={<IconClose />}
+                >{this.props.t('Cancel')}</Button>
             </DialogActions>
         </Dialog>;
     }
@@ -697,6 +780,7 @@ ObjectBrowserEditObject.propTypes = {
     objects: PropTypes.object,
     dateFormat: PropTypes.string,
     isFloatComma: PropTypes.bool,
+    onNewObject: PropTypes.func,
 
     t: PropTypes.func,
 };

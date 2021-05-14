@@ -1,12 +1,10 @@
 # Todo
 Marked with "!" must be in release candidate
 
+- close command dialog after reconnection
+
 ## Bugs
 - (BF) AdminSettings: Access to the instances: add infotexts for "Apply access rights" and "Allow access only"
-<!-- - Notifications - mobile view: https://github.com/ioBroker/ioBroker.admin/issues/860 -->
-- Notifications - all buttons have same color
-<!-- Opening Adapter Readme with icon (?) will end in white page - https://github.com/ioBroker/ioBroker.admin/issues/863 -->
-<!-- Lining up buttons in Adapter warning - mobile view https://github.com/ioBroker/ioBroker.admin/issues/860 -->
 
 ## Intro
 - Images have different width
@@ -20,7 +18,6 @@ Marked with "!" must be in release candidate
 ## Enums
 - Find icon of object (state => channel => device)
 - Show in second row ID in state
-- Use default Icon depends on type (state, channel, device)
 - Create enums, that not exists automatically. E.g. `enum.rooms.A.kitchen` exists, but `enum.rooms.A` not, So `enum.rooms.A` must be created.
 - Update structure of enums by changes from outside
 - Expand/Collapse all in tree
@@ -29,12 +26,7 @@ Marked with "!" must be in release candidate
 - Scroll to new created/copied enumeration
 
 ## Adapters
-- (BF) Update of available versions does not work: https://github.com/ioBroker/ioBroker.admin/issues/830
-- Switch of host does not make any effect: 
    
-<!-- - Mobile view Updater: https://github.com/ioBroker/ioBroker.admin/issues/851 -->
-<!-- - As the license agreement not loaded, the button accept must be disabled. -->
-
 ## Wizard
 
 ## Discovery
@@ -49,7 +41,8 @@ Marked with "!" must be in release candidate
 ## Files
 
 ## Hosts
-- List of hosts does not update itself if new host added or removed
+- List of hosts does not update itself if new host added or removed, the same is for alive
+- Scroll only hosts in row view, not the header
 
 ## Users
 

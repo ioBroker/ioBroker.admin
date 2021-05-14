@@ -671,7 +671,7 @@ class Adapters extends Component {
             this.setState({
                 addInstanceDialog: true,
                 addInstanceAdapter: adapter,
-                addInstanceHost: this.props.currentHostName
+                addInstanceHost: this.props.currentHost.replace(/^system\.adapter\./, '')
             });
         } else {
             if (instance && !customUrl) {
@@ -681,7 +681,7 @@ class Adapters extends Component {
                     return this.setState({ addInstanceError: true });
                 }
             }
-            this.props.executeCommand(`${customUrl ? 'url' : 'add'} ${adapter} ${instance ? instance + ' ' : ''}--host ${this.props.currentHostName} ${debug ? '--debug' : ''}`, true);
+            this.props.executeCommand(`${customUrl ? 'url' : 'add'} ${adapter} ${instance ? instance + ' ' : ''}--host ${this.props.currentHost.replace(/^system\.host\./, '')} ${debug ? '--debug' : ''}`, true);
         }
     }
 
@@ -1013,9 +1013,12 @@ class Adapters extends Component {
         this.setState({ updateList });
     }
 
-    changeInstalledList() {
+    changeInstalledList(onlyInstalled) {
         this.cache.listOfVisibleAdapter = null;
-        let installedList = !this.state.installedList?1:this.state.installedList < 2?2:false;
+        let installedList = !this.state.installedList ? 1 : this.state.installedList < 2 ? 2 : false;
+        if (!installedList && onlyInstalled) {
+            installedList = 1;
+        }
         window.localStorage.setItem('Adapters.installedList', JSON.stringify(installedList));
         this.setState({ installedList });
     }
@@ -1209,7 +1212,7 @@ class Adapters extends Component {
                         show = updateAvailable;
                     }
                     if (show && this.state.installedList) {
-                        show = this.state.installedList < 2 ? !!(installed && installed.version && installed.count) : !!(installed && installed.version && !installed.count) ;
+                        show = this.state.installedList < 2 ? !!(installed && installed.version) : !!(installed && installed.version && !installed.count) ;
                     }
                     if (show) {
                         this.cache.listOfVisibleAdapter.push(value);
@@ -1438,9 +1441,8 @@ class Adapters extends Component {
                     </IconButton>
                  </Tooltip>*/}
                 {this.state.updateList ?
-                    <IconButton
-                        disabled={true}>
-                        <StarIcon color="primary" style={{ opacity: 0.3 }} />
+                    <IconButton onClick={() => this.changeInstalledList(true)}>
+                        <StarIcon color="primary" style={{ opacity: 0.3, color: this.state.installedList === 2 ? 'red' : undefined }} />
                     </IconButton>
                     :
                     <Tooltip title={this.t(!this.state.installedList ?
@@ -1687,7 +1689,6 @@ Adapters.propTypes = {
     socket: PropTypes.object,
     hosts: PropTypes.array,
     currentHost: PropTypes.string,
-    currentHostName: PropTypes.string,
     ready: PropTypes.bool,
     t: PropTypes.func,
     lang: PropTypes.string,

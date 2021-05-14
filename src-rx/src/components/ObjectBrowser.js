@@ -86,6 +86,7 @@ import IconState from '@iobroker/adapter-react/icons/IconState';
 import IconClosed from '@iobroker/adapter-react/icons/IconClosed';
 import IconOpen from '@iobroker/adapter-react/icons/IconOpen';
 import IconClearFilter from '@iobroker/adapter-react/icons/IconClearFilter';
+import {FaCopy as CopyIcon} from "react-icons/fa";
 
 const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
@@ -1787,7 +1788,13 @@ class ObjectBrowser extends Component {
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" onClick={() => this.setState({ error: '' })} color="primary" autoFocus><IconCheck className={this.props.classes.buttonIcon} />{this.props.t('ra_Ok')}</Button>
+                <Button
+                    variant="contained"
+                    onClick={() => this.setState({ error: '' })}
+                    color="primary"
+                    autoFocus
+                    startIcon={<IconCheck />}
+                >{this.props.t('ra_Ok')}</Button>
             </DialogActions>
         </Dialog> : null;
     }
@@ -2000,9 +2007,12 @@ class ObjectBrowser extends Component {
                     </List>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="contained" onClick={() => this.setState({ columnsSelectorShow: false })} color="primary">
-                        <IconClose className={this.props.classes.buttonIcon} />{this.texts['close']}
-                    </Button>
+                    <Button
+                        variant="contained"
+                        onClick={() => this.setState({ columnsSelectorShow: false })}
+                        color="primary"
+                        startIcon={<IconClose />}
+                    >{this.texts['close']}</Button>
                 </DialogActions>
             </Dialog>
         }
@@ -2733,7 +2743,7 @@ class ObjectBrowser extends Component {
                 <DialogActions>
                     <Button variant="contained" onClick={() => this.setState({showExportDialog: false}, () => this._exportObjects(true))}>{this.props.t('All objects')}</Button>
                     <Button variant="contained" autoFocus color="primary" onClick={() => this.setState({showExportDialog: false}, () => this._exportObjects(false))}>{this.props.t('Only selected')}</Button>
-                    <Button variant="contained" onClick={() => this.setState({showExportDialog: false})}>{this.props.t('Cancel')}</Button>
+                    <Button variant="contained" onClick={() => this.setState({showExportDialog: false})} startIcon={<IconClose/>}>{this.props.t('Cancel')}</Button>
                 </DialogActions>
             </Dialog>;
         }
@@ -3573,8 +3583,9 @@ class ObjectBrowser extends Component {
                         onClick={() => this.onColumnsEditCustomDialogClose(true)}
                         disabled={!this.state.customColumnDialogValueChanged}
                         color="primary"
+                        startIcon={<IconCheck /> }
                     >
-                        <IconCheck className={this.props.classes.buttonIcon} /> {this.props.t('ra_Update')}
+                        {this.props.t('ra_Update')}
                     </Button>
                     <Button variant="contained" onClick={() => this.onColumnsEditCustomDialogClose()}><IconClose className={this.props.classes.buttonIcon} />{this.props.t('Cancel')}</Button>
                 </DialogActions>
@@ -4287,6 +4298,7 @@ class ObjectBrowser extends Component {
         const ObjectBrowserEditObject = this.props.objectBrowserEditObject;
 
         return <ObjectBrowserEditObject
+            key={this.state.editObjectDialog}
             obj={this.objects[this.state.editObjectDialog]}
             roleArray={this.info.roles}
             objects={this.objects}
@@ -4297,6 +4309,10 @@ class ObjectBrowser extends Component {
             dialogName={this.props.dialogName}
             t={this.props.t}
             expertMode={this.state.filter.expertMode}
+            onNewObject={obj =>
+                this.props.socket.setObject(obj._id, obj)
+                    .then(() => this.setState({ editObjectDialog: obj._id }, () => this.onSelect(obj._id)))
+                    .catch(e => this.showError('Cannot write object: ' + e))}
             onClose={obj => {
                 this.setState({ editObjectDialog: '' });
                 if (obj) {

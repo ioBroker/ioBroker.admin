@@ -2,7 +2,11 @@ import I18n from '@iobroker/adapter-react/i18n';
 import React, { useEffect } from 'react';
 
 
-const InfoPanel = ({socket,idHost,memRssId,currentHostName,instances}) => {
+const InfoPanel = ({socket, idHost, memRssId, currentHost, instances}) => {
+    if (currentHost.startsWith('system.host.')) {
+        currentHost = currentHost.replace(/^system\.host./, '');
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect( async () => {
         socket.getHostInfo(idHost, null, 10000)
@@ -20,7 +24,7 @@ const InfoPanel = ({socket,idHost,memRssId,currentHostName,instances}) => {
                 if (!inst || !inst.common) {
                     return
                 }
-                if (inst.common.host !== currentHostName) {
+                if (inst.common.host !== currentHost) {
                     return
                 }
                 if (inst.common.enabled && inst.common.mode === 'daemon') {
@@ -33,9 +37,9 @@ const InfoPanel = ({socket,idHost,memRssId,currentHostName,instances}) => {
             }
         }
         let memState;
-        let memAvailable = await socket.getState(`system.host.${currentHostName}.memAvailable`)
-        let freemem = await socket.getState(`system.host.${currentHostName}.freemem`)
-        let object = await socket.getObjecI18n.t(`system.host.${currentHostName}`)
+        let memAvailable = await socket.getState(`system.host.${currentHost}.memAvailable`)
+        let freemem = await socket.getState(`system.host.${currentHost}.freemem`)
+        let object = await socket.getObjecI18n.t(`system.host.${currentHost}`)
         if (memAvailable) {
             memState = memAvailable;
         } else if (freemem) {
@@ -56,7 +60,7 @@ const InfoPanel = ({socket,idHost,memRssId,currentHostName,instances}) => {
         ${Math.round(this.state.hostData['Disk free'] / (this.state.hostData['Disk size'] / 100))}%,
          ${I18n.t('Total RAM usage')}: ${this.state.mem} Mb / ${I18n.t('Free')}: 
          ${this.state.percent}% = ${this.state.memFree} Mb [${I18n.t('Host')}: 
-         ${currentHostName} - ${this.state.processes} ${I18n.t('processes')}]`
+         ${currentHost} - ${this.state.processes} ${I18n.t('processes')}]`
         }
     </div>
 }

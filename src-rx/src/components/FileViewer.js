@@ -172,7 +172,9 @@ class FileViewer extends Component {
             <DialogActions>
                 {this.state.copyPossible ?
                     <Button
-                        onClick={e => Utils.copyToClipboard(this.state.text || this.state.code, e)} >
+                        onClick={e => Utils.copyToClipboard(this.state.text || this.state.code, e)}
+                        startIcon={<CopyIcon />}
+                    >
                         <CopyIcon />
                         {this.props.t('Copy content')}
                     </Button> : null}
@@ -181,15 +183,16 @@ class FileViewer extends Component {
                         disabled={this.state.editingValue === this.state.code || this.state.editingValue === this.state.text}
                         variant="contained"
                         onClick={this.writeFile64}
+                        startIcon={<SaveIcon />}
                     >
-                        <SaveIcon />
                         {this.props.t('Save')}
                     </Button> : null}
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
-                    color="primary">
-                    <CloseIcon />
+                    color="primary"
+                    startIcon={<CloseIcon />}
+                >
                     {this.props.t('Close')}
                 </Button>
             </DialogActions>

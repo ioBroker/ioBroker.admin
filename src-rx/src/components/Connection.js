@@ -1724,6 +1724,10 @@ class Connection {
                             }
                         }, this.props.cmdTimeout);
 
+                        if (host.startsWith('system.host.')) {
+                            host = host.replace(/^system\.host\./, '');
+                        }
+
                         this._socket.emit('sendToHost', host, 'readBaseSettings', null, data => {
                             if (timeout) {
                                 clearTimeout(timeout);

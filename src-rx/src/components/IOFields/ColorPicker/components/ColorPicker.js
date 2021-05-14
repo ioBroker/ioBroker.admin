@@ -54,7 +54,7 @@ const ColorPicker =
         <Popover
             open={showPicker}
             onClose={() => setShowPicker(false)}
-            anchorEl={()=>fieldRef.current}
+            anchorEl={() => fieldRef.current}
             anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
         >
             <PickerDialog

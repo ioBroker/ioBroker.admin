@@ -67,7 +67,7 @@ const styles = theme => ({
         alignSelf: 'center'
     },
     widthButtons: {
-        width: 192,
+        width: 240,
     },
     tabFlex: {
         display: 'flex',

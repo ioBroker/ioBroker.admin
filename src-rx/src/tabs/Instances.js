@@ -202,7 +202,7 @@ class Instances extends Component {
             dialogProp: null,
             states: null,
             playArrow: false,
-            importantDevices: false,
+            onlyCurrentHost: false,
             viewMode: false,
             viewCategory: false,
             folderOpen: false,
@@ -310,7 +310,7 @@ class Instances extends Component {
         Object.keys(instancesWorker).forEach(el =>
             instances.push(instancesWorker[el]));
 
-        let memRssId = `system.host.${this.props.currentHostName}.memRss`;
+        let memRssId = `${this.props.currentHost}.memRss`;
         this.states[memRssId] = this.states[memRssId] || (await this.props.socket.getState(memRssId));
 
         const host = this.states[memRssId];
@@ -440,10 +440,10 @@ class Instances extends Component {
     }
 
     getParamsLocalAndPanel = async () => {
-        const compact = await this.props.socket.readBaseSettings(this.props.currentHostName)
+        const compact = await this.props.socket.readBaseSettings(this.props.currentHost)
             .then(e => !!e.config?.system?.compact);
 
-        const importantDevices = JSON.parse(window.localStorage.getItem('Instances.importantDevices'));
+        const onlyCurrentHost = JSON.parse(window.localStorage.getItem('Instances.onlyCurrentHost'));
         const playArrow = JSON.parse(window.localStorage.getItem('Instances.playArrow'));
         const viewMode = JSON.parse(window.localStorage.getItem('Instances.viewMode'));
         const viewCategory = JSON.parse(window.localStorage.getItem('Instances.viewCategory'));
@@ -454,7 +454,7 @@ class Instances extends Component {
         this.setState({
             filterCompactGroup,
             compact,
-            importantDevices,
+            onlyCurrentHost,
             playArrow,
             viewMode,
             viewCategory
@@ -764,6 +764,8 @@ class Instances extends Component {
     }
 
     getPanels() {
+        const currentHostNoPrefix = this.props.currentHost.replace(/^system.host./, '');
+
         let list = Object.keys(this.state.instances).map((id, idx) => {
             const instance = this.state.instances[id];
             const running = this.isRunning(instance.obj);
@@ -908,8 +910,8 @@ class Instances extends Component {
             list = list.filter(({ running }) => this.state.playArrow < 2 ? running : !running);
         }
 
-        if (this.state.importantDevices) {
-            list = list.filter(({ host }) => host === this.props.currentHostName)
+        if (this.state.onlyCurrentHost) {
+            list = list.filter(({ host }) => host === currentHostNoPrefix);
         }
 
         if (this.state.filterText) {
@@ -968,7 +970,7 @@ class Instances extends Component {
     }
 
     async getHostsData() {
-        this.props.socket.getHostInfo(this.props.idHost, false, 10000)
+        this.props.socket.getHostInfo(this.props.currentHost, false, 10000)
             .catch(error => {
                 window.alert('Cannot read host information: ' + error);
                 return {};
@@ -976,9 +978,9 @@ class Instances extends Component {
             .then(hostData => this.setState({ hostData }));
 
         let memState;
-        let memAvailable = await this.props.socket.getState(`system.host.${this.props.currentHostName}.memAvailable`)
-        let freemem = await this.props.socket.getState(`system.host.${this.props.currentHostName}.freemem`)
-        let object = await this.props.socket.getObject(`system.host.${this.props.currentHostName}`)
+        let memAvailable = await this.props.socket.getState(`${this.props.currentHost}.memAvailable`)
+        let freemem = await this.props.socket.getState(`${this.props.currentHost}.freemem`)
+        let object = await this.props.socket.getObject(`${this.props.currentHost}`)
         if (memAvailable) {
             memState = memAvailable;
         } else if (freemem) {
@@ -1103,8 +1105,8 @@ class Instances extends Component {
                     </IconButton>
                 </Tooltip>
                 {this.props.hosts.length > 1 ? <Tooltip title={this.t('Show instances only for current host')}>
-                    <IconButton onClick={() => this.changeSetStateBool('importantDevices')}>
-                        <DevicesIcon color={this.state.importantDevices ? 'primary' : 'inherit'} />
+                    <IconButton onClick={() => this.changeSetStateBool('onlyCurrentHost')}>
+                        <DevicesIcon color={this.state.onlyCurrentHost ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip> : null}
                 <Tooltip title={this.t(!this.state.playArrow ?
@@ -1123,7 +1125,7 @@ class Instances extends Component {
                             this.setState(newState);
                             this.changeSetState('filterMode',newState.filterMode);
                             this.changeSetState('filterStatus',newState.filterStatus);
-                            } 
+                            }
                         }, this.state.filterMode, this.state.filterStatus, this.getModeIcon)}>
                         <FilterListIcon style={{width: 16, height: 16}} className={this.state.filterMode || this.state.filterStatus ? classes.filterActive : ''}/>
                     </IconButton>

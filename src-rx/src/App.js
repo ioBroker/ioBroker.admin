@@ -49,7 +49,7 @@ import Login from './login/Login';
 import HostSelectors from './components/HostSelectors';
 import { expertModeDialogFunc } from './dialogs/ExpertModeDialog';
 import { checkMessages, newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
-import { adaptersWarningDialogFunc } from './dialogs/AdaptersWarningDialog';
+import { hostWarningDialogFunc } from './dialogs/HostWarningDialog';
 import ToggleThemeMenu from './components/ToggleThemeMenu';
 import LogsWorker from './components/LogsWorker';
 import InstancesWorker from './components/InstancesWorker';
@@ -247,8 +247,8 @@ const styles = theme => ({
         marginRight: 10
     },
     expertBadge: {
-        marginTop: 13,
-        marginRight: 13,
+        marginTop: 11,
+        marginRight: 11,
     }
 });
 
@@ -389,6 +389,8 @@ class App extends Router {
                 expireInSec: null,
 
                 versionAdmin: '',
+
+                forceUpdateAdapters: 0,
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -447,10 +449,20 @@ class App extends Router {
                             connected: false
                         });
                     } else if (progress === PROGRESS.READY) {
-                        this.setState({
+                        const newState = {
                             connected: true,
                             progress: 100
-                        });
+                        };
+                        if (this.state.cmd && this.state.cmd.endsWith(' admin')) {
+                            // close command dialog after reconnect (may be admin was restarted and update is now finished)
+                            newState.commandRunning = false;
+                            newState.forceUpdateAdapters = this.state.forceUpdateAdapters + 1;
+
+                            this.closeCmdDialog(() =>
+                                this.setState(newState));
+                        } else {
+                            this.setState(newState);
+                        }
                     } else {
                         this.setState({
                             connected: true,
@@ -529,14 +541,6 @@ class App extends Router {
                                                     this.makePingAuth();
                                                 })
                                         });
-                                }
-
-                                if (this.state.cmd && this.state.cmd.endsWith(' admin')) {
-                                    // close command dialog after reconnect (may be admin was restarted and update is now finished)
-                                    setTimeout(() =>
-                                        this.closeCmdDialog(() =>
-                                            this.setState({ commandRunning: false })),
-                                        500);
                                 }
 
                                 this.setState(newState, () =>
@@ -738,7 +742,7 @@ class App extends Router {
         if (result && result.system && Object.keys(result.system.categories).length) {
             return this.instancesWorker.getInstances()
                 .then(instances => {
-                    adaptersWarningDialogFunc(
+                    hostWarningDialogFunc(
                         result.system.categories,
                         this.state.systemConfig.common.dateFormat,
                         this.state.themeType,
@@ -751,7 +755,6 @@ class App extends Router {
             return Promise.resolve();
         }
     }
-
 
     getNews = instance => async (name, newsFeed) => {
         const lastNewsId = await this.socket.getState(`admin.${instance}.info.newsLastId`);
@@ -1009,7 +1012,7 @@ class App extends Router {
 
                 return <Suspense fallback={<Connecting />}>
                     <Adapters
-                        key="adapters"
+                        key={'adapters_' + this.state.currentHost + '_' + this.state.forceUpdateAdapters}
                         theme={this.state.theme}
                         themeName={this.state.themeName}
                         adaptersWorker={this.adaptersWorker}
@@ -1019,7 +1022,6 @@ class App extends Router {
                         socket={this.socket}
                         hosts={this.state.hosts}
                         currentHost={this.state.currentHost}
-                        currentHostName={this.state.currentHostName}
                         ready={this.state.ready}
                         t={I18n.t}
                         lang={I18n.getLanguage()}
@@ -1052,7 +1054,7 @@ class App extends Router {
                         themeType={this.state.themeType}
                         theme={this.state.theme}
                         expertMode={this.state.expertMode}
-                        idHost={this.state.currentHost}
+                        currentHost={this.state.currentHost}
                         currentHostName={this.state.currentHostName}
                         t={I18n.t}
                         dateFormat={this.state.systemConfig.common.dateFormat}

@@ -119,7 +119,7 @@ class WizardSettingsTab extends Component {
                         longitude:      obj.common.longitude,
                         latitude:       obj.common.latitude,
                         firstDayOfWeek: obj.common.firstDayOfWeek || 'monday',
-                    },()=>this.updateMap()));
+                    }, () => this.updateMap()));
     }
 
     positionReady(position) {

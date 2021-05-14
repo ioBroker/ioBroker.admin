@@ -234,7 +234,7 @@ const TabPanel = ({ children, value, index, classNameBox, ...other }) => {
     );
 }
 
-const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, themeName, instances }) => {
+const HostWarningDialog = ({ message, ackCallback, dateFormat, themeType, themeName, instances }) => {
     const classes = useStyles();
 
     const [open, setOpen] = useState(true);
@@ -341,8 +341,9 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
                                     setDisabled([...disabled, name]);
                                 }}
                                 color={Object.keys(message).length !== 1 ? 'primary' : 'default'}
+                                startIcon={<CheckIcon />}
                             >
-                                <CheckIcon />{I18n.t('Acknowledge')}
+                                {I18n.t('Acknowledge')}
                             </Button>
                             {Object.keys(message).length === 1 && <Button
                                 variant="contained"
@@ -354,6 +355,7 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
                                     setDisabled([...disabled, name]);
                                     onClose();
                                 }}
+                                startIcon={<><CheckIcon /><CloseIcon /></>}
                                 color="primary">
                                 {I18n.t('Acknowledge & close')}
                             </Button>}
@@ -366,19 +368,20 @@ const AdaptersWarningDialog = ({ message, ackCallback, dateFormat, themeType, th
                 <Button
                     variant="contained"
                     onClick={onClose}
+                    startIcon={<CloseIcon />}
                 >
-                    <CloseIcon />{I18n.t('Ok')}
+                    {I18n.t('Ok')}
                 </Button>
             </DialogActions>
         </Dialog >
     </ThemeProvider >;
 }
 
-export const adaptersWarningDialogFunc = (message, dateFormat, themeType, themeName, instances, ackCallback) => {
+export const hostWarningDialogFunc = (message, dateFormat, themeType, themeName, instances, ackCallback) => {
     if (!node) {
         node = document.createElement('div');
         node.id = 'renderModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<AdaptersWarningDialog instances={instances} message={message} themeName={themeName} themeType={themeType} dateFormat={dateFormat} ackCallback={ackCallback} />, node);
+    return ReactDOM.render(<HostWarningDialog instances={instances} message={message} themeName={themeName} themeType={themeType} dateFormat={dateFormat} ackCallback={ackCallback} />, node);
 }

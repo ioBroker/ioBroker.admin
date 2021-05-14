@@ -140,6 +140,7 @@ export default withStyles(styles)(function HostSelectors({ classes, disabled, so
             {hosts.map(({ _id, common: { name, icon, color } }, idx) =>
                 <MenuItem
                     key={_id}
+                    button
                     disabled={!alive[_id]}
                     selected={_id === currentHost}
                     style={{ background: color || 'inherit' }}
