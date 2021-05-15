@@ -1373,5 +1373,9 @@
   "Rating for": "Avaliação para",
   "repeat": "repetir",
   "Import settings from JSON file": "Importar configurações do arquivo JSON",
-  "Export setting to JSON file": "Exportar configuração para arquivo JSON"
+  "Export setting to JSON file": "Exportar configuração para arquivo JSON",
+  "Add child": "Adicionar subcategoria",
+  "Clone": "Clone",
+  "Expand": "Expandir",
+  "Category": "Categoria"
 }

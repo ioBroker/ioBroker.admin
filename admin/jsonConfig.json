@@ -283,6 +283,10 @@
           "type": "checkbox",
           "label": "Checkbox"
         },
+        "selectId": {
+          "type": "objectId",
+          "label": "Object ID"
+        },
         "_accordion": {
           "newLine": true,
           "sm": 12,

@@ -275,59 +275,63 @@ const enumTemplates = {
     }
 };
 
+const ENUM_TEMPLATE = {
+    type: 'enum',
+    common: {
+        name: '',
+        enabled: true,
+        color: false,
+        desc: '',
+        members: []
+    },
+    native: {},
+};
+
 class EnumsList extends Component {
-    state = {
-        enums: null,
-        enumsTree: null,
-        selectedTab: null,
-        currentCategory: null,
-        search: '',
-        enumEditDialog: null,
-        enumTemplateDialog: null,
-        enumEditDialogNew: null,
-        enumDeleteDialog: null,
-        members: {},
-        categoryPopoverOpen: false,
-        enumPopoverOpen: false,
-        enumsClosed: {}
+    constructor(props) {
+        super(props);
+
+        let enumsClosed = {};
+        try {
+            enumsClosed = window.localStorage.getItem('enumsClosed') ? JSON.parse(window.localStorage.getItem('enumsClosed')) : {};
+        } catch (e) {
+
+        }
+
+        this.state = {
+            enums: null,
+            enumsTree: null,
+            selectedTab: null,
+            currentCategory: window.localStorage.getItem('enumCurrentCategory') || '',
+            search: '',
+            enumEditDialog: null,
+            enumTemplateDialog: null,
+            enumEditDialogNew: null,
+            enumDeleteDialog: null,
+            members: {},
+            categoryPopoverOpen: false,
+            enumPopoverOpen: false,
+            enumsClosed,
+        };
     }
 
-    enumTemplate = {
-        'type': 'enum',
-        'common': {
-            'name': '',
-            'dontDelete': false,
-            'enabled': true,
-            'color': false,
-            'desc': '',
-            'members': []
-        },
-        'native': {},
-        '_id': 'enum.new'
-    };
-
     getEnumTemplate = (prefix) => {
-        let enumTemplate = JSON.parse(JSON.stringify(this.enumTemplate));
+        let enumTemplate = JSON.parse(JSON.stringify(ENUM_TEMPLATE));
         const {_id, name} = EnumsList.findNewUniqueName(prefix, Object.values(this.state.enums), this.props.t('Enum'));
         enumTemplate._id = _id;
         enumTemplate.common.name = name;
-        return enumTemplate
+        return enumTemplate;
     }
 
     createEnumTemplate = (prefix, templateValues) => {
         let enumTemplate = this.getEnumTemplate(prefix);
         enumTemplate._id = templateValues._id;
         enumTemplate.common = {...enumTemplate.common, ...templateValues.common};
-        this.props.socket.setObject(enumTemplate._id, enumTemplate).then(() => this.updateData());
+        this.props.socket.setObject(enumTemplate._id, enumTemplate)
+            .then(() => this.updateData());
     }
 
     componentDidMount() {
-        if (window.localStorage.getItem('enumsClosed')) {
-            this.setState({enumsClosed: JSON.parse(window.localStorage.getItem('enumsClosed'))});
-        }
-        if (window.localStorage.getItem('enumCurrentCategory')) {
-            this.setCurrentCategory(window.localStorage.getItem('enumCurrentCategory'))
-        }
         this.updateData();
     }
 
@@ -335,7 +339,7 @@ class EnumsList extends Component {
         const enums = await this.props.socket.getForeignObjects('enum.*', 'enum');
         const members = {}
         for (let enumKey in enums) {
-            if (enums[enumKey].common.members) {
+            if (enums[enumKey].common?.members) {
                 for (let memberKey in enums[enumKey].common.members) {
                     let member = enums[enumKey].common.members[memberKey];
                     if (!members[member]) {
@@ -344,6 +348,7 @@ class EnumsList extends Component {
                 }
             }
         }
+
         this.setState({enums: enums, members: members});
         this.createTree(enums);
     }
@@ -380,13 +385,16 @@ class EnumsList extends Component {
     }
 
     setCurrentCategory = category => {
-        this.setState({currentCategory: category});
-        window.localStorage.setItem('enumCurrentCategory', category);
+        if (category !== this.state.currentCategory) {
+            this.setState({currentCategory: category});
+            window.localStorage.setItem('enumCurrentCategory', category);
+        }
     }
 
     addItemToEnum = (itemId, enumId) => {
         let enumItem = JSON.parse(JSON.stringify(Object.values(this.state.enums).find(enumItem => enumItem._id === enumId)));
-        if (!enumItem.common.members) {
+        if (!enumItem.common?.members) {
+            enumItem.common = enumItem.common || {};
             enumItem.common.members = [];
         }
         let members = enumItem.common.members;
@@ -460,7 +468,7 @@ class EnumsList extends Component {
                 Object.values(container.children)
                     .map((item, index) => <React.Fragment key={index}>{this.renderTree(item, index)}</React.Fragment>)
             : null}
-        </div>
+        </div>;
     }
 
     showEnumEditDialog = (enumItem, isNew) => {
@@ -605,13 +613,12 @@ class EnumsList extends Component {
                             scrollButtons="auto"
                             onChange={(e, newTab) => this.setCurrentCategory(newTab)}
                         >
-                            {Object.keys(this.state.enumsTree.children.enum.children).map((category, index) =>
-                            {
+                            {Object.keys(this.state.enumsTree.children.enum.children).map((category, index) => {
                                 let categoryData = this.state.enumsTree.children.enum.children[category].data;
                                 return <Tab
                                     key={index}
                                     component={'span'}
-                                    style={{backgroundColor: categoryData.common.color, borderRadius: 4}}
+                                    style={{backgroundColor: categoryData.common?.color || undefined, borderRadius: 4}}
                                     label={<CategoryLabel
                                         categoryData={categoryData}
                                         showEnumEditDialog={this.showEnumEditDialog}

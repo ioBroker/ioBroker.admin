@@ -1377,5 +1377,9 @@
   "Rating for": "Рейтинг для",
   "repeat": "повтор",
   "Import settings from JSON file": "Импортировать настройки из файла JSON",
-  "Export setting to JSON file": "Настройки экспорта в файл JSON"
+  "Export setting to JSON file": "Настройки экспорта в файл JSON",
+  "Add child": "Добавить подкатегорию",
+  "Clone": "Клонировать",
+  "Expand": "Расширять",
+  "Category": "Категория"
 }

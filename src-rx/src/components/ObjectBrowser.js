@@ -4150,12 +4150,13 @@ class ObjectBrowser extends Component {
                 this.columnsVisibility.name = `calc(100% - ${widthSum}px)`;
                 this.columnsVisibility.nameHeader = `calc(100% - ${widthSum + 5 + this.state.scrollBarWidth}px)`;
             } else {
-                const newWidth = Object.keys(this.columnsVisibility).reduce((accumulator, name) =>{
-                    if(name === 'id' || typeof this.columnsVisibility[name] === 'string' || !this.columnsVisibility[name]){
+                const newWidth = Object.keys(this.columnsVisibility).reduce((accumulator, name) => {
+                    if (name === 'id' || typeof this.columnsVisibility[name] === 'string' || !this.columnsVisibility[name]) {
                         return accumulator;
-                    }else{
-                        return  accumulator + this.columnsVisibility[name]
-                    }}, 0);
+                    } else {
+                        return  accumulator + this.columnsVisibility[name];
+                    }},
+                0);
                 this.columnsVisibility.id = `calc(100% - ${newWidth}px)`;
             }
         }

@@ -1373,5 +1373,9 @@
   "Rating for": "Beoordeling voor",
   "repeat": "herhaling",
   "Import settings from JSON file": "Importeer instellingen uit JSON-bestand",
-  "Export setting to JSON file": "Export instelling naar JSON-bestand"
+  "Export setting to JSON file": "Export instelling naar JSON-bestand",
+  "Add child": "Voeg een subcategorie toe",
+  "Clone": "Kloon",
+  "Expand": "Uitbreiden",
+  "Category": "Categorie"
 }

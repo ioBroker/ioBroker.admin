@@ -2,6 +2,7 @@ class HostsWorker {
     constructor(socket) {
         this.socket = socket;
         this.handlers = [];
+        this.aliveHandlers = [];
         this.notificationsHandlers = [];
         this.promise = null;
         this.notificationPromises = {};
@@ -10,6 +11,7 @@ class HostsWorker {
 
         this.connected = this.socket.isConnected();
         this.objects = {};
+        this.aliveStates = {};
     }
 
     objectChangeHandler = (id, obj) => {
@@ -48,6 +50,37 @@ class HostsWorker {
         }
     }
 
+    aliveChangeHandler = (id, state) => {
+        // if instance
+        if (id.startsWith('system.host.') && id.endsWith('.alive')) {
+            let type;
+            id = id.replace(/\.alive$/, '');
+            if (state) {
+                if (this.aliveStates[id] !== undefined) {
+                    if ((!!this.aliveStates[id]) !== (!!state?.val)) {
+                        type = 'changed';
+                        this.aliveStates[id] = !!state?.val;
+                    } else {
+                        // no changes
+                        return;
+                    }
+                } else {
+                    type = 'new';
+                    this.aliveStates[id] = !!state?.val;
+                }
+            } else {
+                if (this.aliveStates[id]) {
+                    type = 'deleted';
+                    delete this.aliveStates[id];
+                } else {
+                    // deleted unknown instance
+                    return;
+                }
+            }
+            this.aliveHandlers.forEach(cb => cb([{id, alive: this.aliveStates[id], type}]));
+        }
+    }
+
     getHosts(update) {
         if (!update && this.promise) {
             return this.promise;
@@ -77,8 +110,13 @@ class HostsWorker {
                     .then(hosts => Object.keys(hosts)
                         .forEach(id => this.objectChangeHandler(id, hosts[id])));
             }
+            if (this.aliveHandlers.length) {
+                this.socket.subscribeState('system.host.*.alive', this.aliveChangeHandler);
+            }
         } else if (!isConnected && this.connected) {
             this.connected = false;
+            Object.keys(this.aliveStates)
+                .forEach(id => this.aliveHandlers[id] = false);
         }
     }
 
@@ -100,6 +138,26 @@ class HostsWorker {
             if (!this.handlers.length && this.connected) {
                 this.socket.unsubscribeObject('system.host.*', this.objectChangeHandler)
                     .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
+            }
+        }
+    }
+
+    registerAliveHandler(cb) {
+        if (!this.aliveHandlers.includes(cb)) {
+            this.aliveHandlers.push(cb);
+
+            if (this.aliveHandlers.length === 1 && this.connected) {
+                this.socket.subscribeState('system.host.*.alive', this.aliveChangeHandler);
+            }
+        }
+    }
+
+    unregisterAliveHandler(cb) {
+        const pos = this.aliveHandlers.indexOf(cb);
+        if (pos !== -1) {
+            this.aliveHandlers.splice(pos, 1);
+            if (!this.aliveHandlers.length && this.connected) {
+                this.socket.unsubscribeState('system.host.*.alive', this.aliveChangeHandler);
             }
         }
     }

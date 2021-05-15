@@ -441,7 +441,8 @@ class Instances extends Component {
 
     getParamsLocalAndPanel = async () => {
         const compact = await this.props.socket.readBaseSettings(this.props.currentHost)
-            .then(e => !!e.config?.system?.compact);
+            .then(e => !!e.config?.system?.compact)
+            .catch(e => window.alert(`Cannot read compact mode by host "${this.props.currentHost}": ${e}`));
 
         const onlyCurrentHost = JSON.parse(window.localStorage.getItem('Instances.onlyCurrentHost'));
         const playArrow = JSON.parse(window.localStorage.getItem('Instances.playArrow'));

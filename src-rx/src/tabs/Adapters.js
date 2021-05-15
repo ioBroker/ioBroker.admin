@@ -260,6 +260,8 @@ class Adapters extends Component {
             showSetRating: null,
             readTimeoutMs: SlowConnectionWarningDialog.getReadTimeoutMs(),
             showSlowConnectionWarning: false,
+            adapterToUpdate: '',
+            adapterInstallVersion: '',
         };
 
         this.rebuildSupported = false;
@@ -457,7 +459,7 @@ class Adapters extends Component {
             })
             .then(_installed => {
                 installed = _installed;
-                return this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: bigUpdate }, bigUpdate, this.state.readTimeoutMs)
+                return this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: bigUpdate }, update, this.state.readTimeoutMs)
                     .catch(e => {
                         window.alert('Cannot getRepository: ' + e);
                         e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
@@ -697,8 +699,8 @@ class Adapters extends Component {
         this.props.executeCommand('del ' + adapter);
     }
 
-    update(adapter) {
-        this.props.executeCommand('upgrade ' + adapter);
+    update(adapter, version) {
+        this.props.executeCommand('upgrade ' + adapter + '@' + version);
     }
 
     closeAddInstanceDialog() {
@@ -886,25 +888,17 @@ class Adapters extends Component {
         Router.doNavigate('tab-adapters', 'readme', adapter);
     }
 
-    openUpdateDialog(adapter) {
-        this.setState({
-            adapterUpdateDialog: true,
-            adapterUpdateAdapter: adapter
-        });
+    openUpdateDialog(adapterToUpdate) {
+        this.setState({adapterToUpdate});
     }
 
-    openInstallVersionDialog(adapter) {
-        this.setState({
-            adapterInstallVersionDialog: true,
-            adapterInstallVersion: adapter
-        });
+    openInstallVersionDialog(adapterInstallVersion) {
+        this.setState({adapterInstallVersion});
     }
 
     closeAdapterUpdateDialog(cb) {
-        this.setState({
-            adapterUpdateDialog: false,
-            adapterUpdateAdapter: null
-        }, () => cb && cb());
+        this.setState({adapterToUpdate: ''}, () =>
+            cb && cb());
     }
 
     renderSetRatingDialog() {
@@ -1414,7 +1408,7 @@ class Adapters extends Component {
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.t('Update view')}>
-                    <IconButton onClick={() => this.updateAll(true)}>
+                    <IconButton onClick={() => this.updateAll(true, true)}>
                         <RefreshIcon />
                     </IconButton>
                 </Tooltip>
@@ -1609,25 +1603,26 @@ class Adapters extends Component {
                 repository={this.state.repository}
                 onClose={() => { this.setState({ gitHubInstallDialog: false }) }}
             />}
-            {this.state.adapterUpdateDialog &&
+            {this.state.adapterToUpdate &&
                 <AdapterUpdateDialog
-                    open={this.state.adapterUpdateDialog}
-                    adapter={this.state.adapterUpdateAdapter}
+                    open={true}
+                    adapter={this.state.adapterToUpdate}
+                    adapterObject={this.state.repository[this.state.adapterToUpdate]}
                     t={this.t}
-                    dependencies={this.getDependencies(this.state.adapterUpdateAdapter)}
-                    rightDependencies={this.rightDependencies(this.state.adapterUpdateAdapter)}
-                    news={this.getNews(this.state.adapterUpdateAdapter)}
-                    onUpdate={() => {
-                        const adapter = this.state.adapterUpdateAdapter;
-                        this.closeAdapterUpdateDialog(() => this.update(adapter));
+                    dependencies={this.getDependencies(this.state.adapterToUpdate)}
+                    rightDependencies={this.rightDependencies(this.state.adapterToUpdate)}
+                    news={this.getNews(this.state.adapterToUpdate)}
+                    onUpdate={version => {
+                        const adapter = this.state.adapterToUpdate;
+                        this.closeAdapterUpdateDialog(() => this.update(adapter, version));
                     }}
                     onIgnore={ignoreVersion => {
-                        const adapter = this.state.adapterUpdateAdapter;
+                        const adapter = this.state.adapterToUpdate;
                         this.closeAdapterUpdateDialog(() => {
                             this.props.socket.getObject('system.adapter.' + adapter)
                                 .then(obj => {
                                     obj.common.ignoreVersion = ignoreVersion;
-                                    return this.props.socket.setObject(obj._id, obj)
+                                    return this.props.socket.setObject(obj._id, obj);
                                 })
                                 .then(() => {
                                     const updateAvailable = [...this.state.updateAvailable];
@@ -1636,30 +1631,24 @@ class Adapters extends Component {
                                         updateAvailable.splice(pos, 1);
                                         this.setState({ updateAvailable });
                                     }
-                                })
-                        })
+                                });
+                        });
                     }}
                     onClose={() => this.closeAdapterUpdateDialog()}
                 />
             }
-            {this.state.adapterInstallVersionDialog &&
+            {this.state.adapterInstallVersion &&
                 <CustomModal
-                    open={this.state.adapterInstallVersionDialog}
+                    open={true}
                     title={this.t('Please select specific version of %s', this.state.adapterInstallVersion)}
                     applyButton={false}
-                    onClose={() => this.setState({
-                        adapterInstallVersionDialog: false,
-                        adapterInstallVersion: null
-                    })}
+                    onClose={() => this.setState({adapterInstallVersion: ''})}
                 >
                     <div className={classes.containerVersion}>
                         {this.getNews(this.state.adapterInstallVersion, true).map(({ version, news }) => {
                             return <div className={classes.currentVersion} onClick={() => {
                                 this.update(`${this.state.adapterInstallVersion}@${version}`);
-                                this.setState({
-                                    adapterInstallVersionDialog: false,
-                                    adapterInstallVersion: null
-                                });
+                                this.setState({adapterInstallVersion: ''});
                             }}>
                                 <ListItemText
                                     primary={version}

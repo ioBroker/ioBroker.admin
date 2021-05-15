@@ -150,7 +150,7 @@ class Config extends Component {
         } else {
             const src = `adapter/${this.props.adapter}/` +
                 `${this.props.tab ? this.state.checkedExist : (this.props.materialize ? 'index_m.html' : 'index.html')}?` +
-                `${this.props.instance}&newReact=true`;//&react=${this.props.themeName}`;
+                `${this.props.instance || 0}&newReact=true`;//&react=${this.props.themeName}`;
 
             if (this.state.checkedExist) {
                 return <iframe

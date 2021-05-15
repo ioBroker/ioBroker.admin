@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -16,7 +17,6 @@ import ImageIcon from '@material-ui/icons/Image';
 
 import {IOTextField, IOColorPicker, IOFileInput} from '../IOFields/Fields';
 import Utils from '../Utils';
-import { withStyles } from '@material-ui/core';
 
 function importAll(r) {
     return r.keys().map(r);
@@ -29,7 +29,8 @@ const styles = theme => ({
     contentRoot:{
         padding: '16px 24px'
     }
-})
+});
+
 function EnumEditDialog(props) {
     let idExists = props.enums.find(enumItem => enumItem._id === props.enum._id);
 
@@ -65,7 +66,7 @@ function EnumEditDialog(props) {
         <DialogTitle className={props.classes.dialogTitle} style={{padding: 12}} >
            { props.t( 'Enum parameters' ) }
         </DialogTitle>
-        <DialogContent classes={{root:props.classes.contentRoot}}>
+        <DialogContent classes={{root: props.classes.contentRoot}}>
             <Grid  container spacing={4} className={props.classes.dialog}>
                 <Grid item xs={12} md={6}>
                     <IOTextField

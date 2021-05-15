@@ -122,7 +122,10 @@ class BaseSettingsDialog extends Component {
             plugins: this.state.plugins,
         };
 
-        this.props.socket.writeBaseSettings(host || this.state.currentHost, settings)
+        // merge with some new settings, that may be not yet supported by Admin
+        const newSettings = Object.assign({}, this.originalSettings, settings);
+
+        this.props.socket.writeBaseSettings(host || this.state.currentHost, newSettings)
             .then(() => {
                 this.originalSettings = JSON.parse(JSON.stringify(settings));
                 // ask about restart

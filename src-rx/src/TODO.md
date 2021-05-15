@@ -1,8 +1,6 @@
 # Todo
 Marked with "!" must be in release candidate
 
-- close command dialog after reconnection
-
 ## Bugs
 - (BF) AdminSettings: Access to the instances: add infotexts for "Apply access rights" and "Allow access only"
 
@@ -26,6 +24,7 @@ Marked with "!" must be in release candidate
 - Scroll to new created/copied enumeration
 
 ## Adapters
+- on multihost system, the add of some adapter does not update number of instances
    
 ## Wizard
 
@@ -41,7 +40,6 @@ Marked with "!" must be in release candidate
 ## Files
 
 ## Hosts
-- List of hosts does not update itself if new host added or removed, the same is for alive
 - Scroll only hosts in row view, not the header
 
 ## Users

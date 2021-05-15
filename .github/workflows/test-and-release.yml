@@ -101,8 +101,6 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Create a clean build
-        run: npm run build
       - name: Publish package to npm
         run: |
           npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}

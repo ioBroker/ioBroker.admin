@@ -1,5 +1,7 @@
 import {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core';
+import clsx from 'clsx';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -33,6 +35,12 @@ import User11 from '../../assets/users/user11.svg';
 import User12 from '../../assets/users/user12.svg';
 
 const USER_ICONS = [User1, User2, User3, User4, User5, User6, User7, User8, User9, User10, User11, User12];
+
+const styles = theme => ({
+    contentRoot:{
+        padding: '16px 24px'
+    }
+});
 
 function UserEditDialog(props) {
     let [originalId, setOriginalId] = useState(null);
@@ -94,7 +102,7 @@ function UserEditDialog(props) {
         <DialogTitle className={props.classes.dialogTitle} style={{ padding: 12 }} >
            { props.t( 'User parameters' ) }
         </DialogTitle>
-        <DialogContent className={props.innerWidth < 500 ? props.classes.narrowContent : ''}>
+        <DialogContent classes={{root: clsx(props.innerWidth < 500 && props.classes.narrowContent, props.classes.contentRoot)}}>
             <Grid container spacing={props.innerWidth < 500 ? 1 : 4} className={props.classes.dialog}>
                 <Grid item xs={12} md={6}>
                     <IOTextField
@@ -241,4 +249,4 @@ UserEditDialog.propTypes = {
     innerWidth: PropTypes.number,
 };
 
-export default UserEditDialog;
+export default withStyles(styles)(UserEditDialog);

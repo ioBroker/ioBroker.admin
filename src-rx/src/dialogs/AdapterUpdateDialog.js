@@ -114,7 +114,7 @@ class AdapterUpdateDialog extends Component {
     render() {
         const { classes } = this.props;
 
-        const version = this.props.news && this.props.news[0]?.version;
+        const version = this.props.adapterObject?.version;
 
         const news = this.getNews();
 
@@ -168,8 +168,8 @@ class AdapterUpdateDialog extends Component {
                 <Button
                     variant="contained"
                     autoFocus
-                    disabled={!this.props.rightDependencies}
-                    onClick={() => this.props.onUpdate()}
+                    disabled={!this.props.rightDependencies || !version || !this.props.adapterObject}
+                    onClick={() => this.props.onUpdate(version)}
                     color="primary"
                 >
                     {this.props.textUpdate ? this.props.textUpdate : this.t('Update')}
@@ -188,6 +188,7 @@ class AdapterUpdateDialog extends Component {
 
 AdapterUpdateDialog.propTypes = {
     adapter: PropTypes.string.isRequired,
+    adapterObject: PropTypes.object.isRequired,
     dependencies: PropTypes.array,
     news: PropTypes.array,
     onUpdate: PropTypes.func.isRequired,

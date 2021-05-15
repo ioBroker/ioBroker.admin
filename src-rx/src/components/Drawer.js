@@ -218,7 +218,6 @@ class Drawer extends Component {
                     _installed.ignoreVersion !== adapter.version &&
                     Adapters.updateAvailable(_installed.version, adapter.version)
                 ) {
-                    console.log('Updateable: ' + element)
                     count++;
                 }
             });
@@ -398,24 +397,28 @@ class Drawer extends Component {
                     .then(systemConfig => {
                         systemConfig.common.tabsVisible = systemConfig.common.tabsVisible || [];
 
-                        if (!systemConfig.common.tabsVisible || tabs.length !== systemConfig.common.tabsVisible.length) {
-                            this.setState({tabs}, () => {
-                                this.props.socket.getSystemConfig(true)
-                                    .then(newObj => {
-                                        newObj.common.tabsVisible = tabs.map(({ name, order, visible }) => ({ name, order, visible }));
-
-                                        return this.props.socket.setSystemConfig(newObj)
-                                            .catch(e => window.alert('Cannot set system config: ' + e));
-                                    })
+                        if (systemConfig.common.tabsVisible) {
+                            tabs.forEach(tab => {
+                                const it = systemConfig.common.tabsVisible.find(el => el.name === tab.name);
+                                if (it) {
+                                    tab.visible = it.visible;
+                                }
                             });
-                        } else {
-                            let newTabs = systemConfig.common.tabsVisible.map(({ name, visible }) => {
-                                let tab = tabs.find(el => el.name === name);
-                                tab.visible = visible;
-                                return tab;
-                            })
-                            this.setState({tabs: newTabs});
                         }
+
+                        this.setState({tabs}, () => {
+                            const tabsVisible = tabs.map(({ name, order, visible }) => ({ name, order, visible }));
+
+                            if (JSON.stringify(tabsVisible) !== JSON.stringify(systemConfig.common.tabsVisible)) {
+                                this.props.socket.getSystemConfig(true)
+                                    .then(systemConfig => {
+                                        systemConfig.common.tabsVisible = tabsVisible;
+
+                                        return this.props.socket.setSystemConfig(systemConfig)
+                                            .catch(e => window.alert('Cannot set system config: ' + e));
+                                    });
+                            }
+                        });
                     });
             });
     }

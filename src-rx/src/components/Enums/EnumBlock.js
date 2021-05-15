@@ -57,7 +57,7 @@ function EnumBlock(props) {
                     size="small"
                     onClick={() => {props.copyEnum(props.enum._id)}}
                 >
-                    <Tooltip title={props.t('Copy')} placement="top">
+                    <Tooltip title={props.t('Clone')} placement="top">
                         <FileCopyIcon style={{ color: textColor }} />
                     </Tooltip>
                 </IconButton>

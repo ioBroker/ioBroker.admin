@@ -1006,7 +1006,8 @@ class Utils {
             hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
         }
         if (hex.length !== 6) {
-            throw new Error('Invalid HEX color.');
+            console.warn('Cannot invert color: ' + hex);
+            return hex;
         }
         let r = parseInt(hex.slice(0, 2), 16);
         let g = parseInt(hex.slice(2, 4), 16);

@@ -1373,5 +1373,9 @@
   "Rating for": "评分",
   "repeat": "重复",
   "Import settings from JSON file": "从JSON文件导入设置",
-  "Export setting to JSON file": "将设置导出到JSON文件"
+  "Export setting to JSON file": "将设置导出到JSON文件",
+  "Add child": "添加子类别",
+  "Clone": "克隆",
+  "Expand": "扩张",
+  "Category": "类别"
 }

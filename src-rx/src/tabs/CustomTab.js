@@ -68,13 +68,13 @@ class CustomTab extends Component {
 
                 if (!href) {
                     if (instance.common.materializeTab) {
-                        href = `adapter/${adapter}/tab_m.html`;
+                        href = `adapter/${adapter}/tab_m.html${instNum !== null && instNum !== undefined ? '?' + instNum : ''}`;
                     } else {
-                        href = `adapter/${adapter}/tab.html`;
+                        href = `adapter/${adapter}/tab.html${instNum !== null && instNum !== undefined ? '?' + instNum : ''}`;
                     }
                 }
 
-                if (!instance.common.adminTab.singleton) {
+                if (!instance.common.adminTab.singleton && instNum !== null && instNum !== undefined) {
                     href += `${href.includes('?') ? '&' : '?'}instance=${instNum}`;
                 }
 
@@ -97,7 +97,8 @@ class CustomTab extends Component {
                     href = hrefs ? hrefs[0]?.url : '';
                 }
 
-                href += `${href.includes('?') ? '&' : '?'}newReact=true`;
+                // add at the end the instance, as some adapters make bullshit like: window.location.search.slice(-1) || 0;
+                href += `${href.includes('?') ? '&' : '?'}newReact=true${instNum !== null && instNum !== undefined ? '&' + instNum : ''}`;
 
                 return href;
             });

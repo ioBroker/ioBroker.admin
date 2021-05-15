@@ -124,7 +124,9 @@ const JsControllerDialog = ({ socket, hostId }) => {
         .then(data => {
             data.location && setLocation(data.location);
             setOS(data.os); // win32, linux, darwin, freebsd, android
-        });
+        })
+        .catch(e =>
+            window.alert(`Cannot get information about host "${hostId}": ${e}`));
 
     const onClose = () => {
         setOpen(false);

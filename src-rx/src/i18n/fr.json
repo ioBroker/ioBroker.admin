@@ -1373,5 +1373,9 @@
   "Rating for": "Évaluation pour",
   "repeat": "répéter",
   "Import settings from JSON file": "Importer les paramètres depuis un fichier JSON",
-  "Export setting to JSON file": "Exporter le paramètre vers un fichier JSON"
+  "Export setting to JSON file": "Exporter le paramètre vers un fichier JSON",
+  "Add child": "Ajouter une sous-catégorie",
+  "Clone": "Cloner",
+  "Expand": "Développer",
+  "Category": "Catégorie"
 }

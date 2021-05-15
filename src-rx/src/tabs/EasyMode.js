@@ -27,7 +27,7 @@ const styles = theme => ({
         height: '100%',
         overflowY: 'auto',
     },
-    controlHeigth: {
+    controlHeight: {
         display: 'flex',
         flexFlow: 'wrap',
         justifyContent: 'center'
@@ -153,15 +153,19 @@ class EasyMode extends Component {
                         configStored={configStored}
                         dateFormat={dateFormat}
                         isFloatComma={isFloatComma}
+
+                        onRegisterIframeRef={ref => this.props.onRegisterIframeRef(ref)}
+                        onUnregisterIframeRef={ref => this.props.onUnregisterIframeRef(ref)}
                     />
                 </Paper> :
                 <div className={classes.wrapperCard}>
-                    <div className={classes.controlHeigth}>
+                    <div className={classes.controlHeight}>
                         {configs
                             .sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
                             .map(el => <EasyModeCard key={el.id} navigate={() => navigate(null, 'config', el.id)} {...el} />)}
                     </div>
-                </div>}
+                </div>
+            }
         </Paper>;
     }
 }
@@ -173,5 +177,8 @@ EasyMode.propTypes = {
     configs: PropTypes.array,
     socket: PropTypes.object,
     t: PropTypes.func,
+
+    onRegisterIframeRef: PropTypes.func,
+    onUnregisterIframeRef: PropTypes.func,
 };
 export default withStyles(styles)(EasyMode);

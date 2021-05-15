@@ -1470,6 +1470,12 @@ class App extends Router {
                             dateFormat={this.state.systemConfig?.common.dateFormat}
                             systemConfig={this.state.systemConfig}
                             t={I18n.t}
+                            onRegisterIframeRef={ref => this.refConfigIframe = ref}
+                            onUnregisterIframeRef={ref => {
+                                if (this.refConfigIframe === ref) {
+                                    this.refConfigIframe = null;
+                                }
+                            }}
                         />
                     </Suspense>
                 </ThemeProvider>;
@@ -1555,6 +1561,7 @@ class App extends Router {
                             <HostSelectors
                                 expertMode={this.state.expertMode}
                                 socket={this.socket}
+                                hostsWorker={this.hostsWorker}
                                 currentHost={this.state.currentHost}
                                 setCurrentHost={(hostName, host) => {
                                     this.setState({
