@@ -1,3 +1,6 @@
+## 5.0.19 (2021-05-09)
+* (bluefox) Admin5: Fixed many bugs
+
 ## 5.0.18 (2021-05-07)
 * (bluefox) Admin5: Fixed many bugs
 
