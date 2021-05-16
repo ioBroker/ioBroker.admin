@@ -156,6 +156,9 @@ const tabsInfo = {
     'tab-eventlist-0':      {order: 80, instance: 0},
     'tab-eventlist-1':      {order: 81, instance: 1},
     'tab-eventlist-2':      {order: 82, instance: 2},
+    'tab-backitup-0':       {order: 90, instance: 0},
+    'tab-backitup-1':       {order: 91, instance: 1},
+    'tab-backitup-2':       {order: 92, instance: 2},
     'tab-hosts':            {order: 100,  icon: <StorageIcon />},
     'tab-files':            {order: 110,  icon: <FilesIcon />},
 };
