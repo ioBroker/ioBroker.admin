@@ -34,6 +34,8 @@ Marked with "!" must be in release candidate
 - !On safari new coming entries have invalid time https://github.com/ioBroker/ioBroker.admin/issues/783 //not track
 
 ## Instances
+- Save expand state of categories
+- Make text bigger in categories
 
 ## Objects
 

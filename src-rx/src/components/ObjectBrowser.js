@@ -2040,7 +2040,7 @@ class ObjectBrowser extends Component {
         // Remove unused subscribed
         for (let i = this.subscribes.length - 1; i >= 0; i--) {
             !this.recordStates.includes(this.subscribes[i]) &&
-                this.unsubscribe(this.subscribes[i]);
+            this.unsubscribe(this.subscribes[i]);
         }
         this.recordStates = [];
     }
@@ -2696,7 +2696,7 @@ class ObjectBrowser extends Component {
                 }
             }
 
-           return result;
+            return result;
         } else {
             return [];
         }
@@ -2900,36 +2900,36 @@ class ObjectBrowser extends Component {
                     </IconButton>
                 </Tooltip>
                 {this.props.showExpertButton &&
-                    <Tooltip title={this.props.t('ra_expertMode')}>
-                        <IconButton
-                            key="expertMode"
-                            color={this.state.filter.expertMode ? 'secondary' : 'default'}
-                            onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
-                        >
-                            <IconExpert />
-                        </IconButton>
-                    </Tooltip>
+                <Tooltip title={this.props.t('ra_expertMode')}>
+                    <IconButton
+                        key="expertMode"
+                        color={this.state.filter.expertMode ? 'secondary' : 'default'}
+                        onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
+                    >
+                        <IconExpert />
+                    </IconButton>
+                </Tooltip>
                 }
                 {!this.props.disableColumnSelector &&
-                    <Tooltip title={this.props.t('ra_Configure visible columns')}>
-                        <IconButton
-                            key="columnSelector"
-                            color={this.state.columnsAuto ? 'primary' : 'default'}
-                            onClick={() => this.setState({ columnsSelectorShow: true })}
-                        >
-                            <IconColumns />
-                        </IconButton>
-                    </Tooltip>
+                <Tooltip title={this.props.t('ra_Configure visible columns')}>
+                    <IconButton
+                        key="columnSelector"
+                        color={this.state.columnsAuto ? 'primary' : 'default'}
+                        onClick={() => this.setState({ columnsSelectorShow: true })}
+                    >
+                        <IconColumns />
+                    </IconButton>
+                </Tooltip>
                 }
                 {this.state.expandAllVisible &&
-                    <Tooltip title={this.props.t('ra_Expand all nodes')}>
-                        <IconButton
-                            key="expandAll"
-                            onClick={() => this.onExpandAll()}
-                        >
-                            <IconOpen />
-                        </IconButton>
-                    </Tooltip>
+                <Tooltip title={this.props.t('ra_Expand all nodes')}>
+                    <IconButton
+                        key="expandAll"
+                        onClick={() => this.onExpandAll()}
+                    >
+                        <IconOpen />
+                    </IconButton>
+                </Tooltip>
                 }
                 <Tooltip title={this.props.t('ra_Collapse all nodes')}>
                     <IconButton
@@ -2969,63 +2969,63 @@ class ObjectBrowser extends Component {
 
                 {this.props.objectAddBoolean ?
                     (<Tooltip title={this.toolTipObjectCreating()}>
-                        <div>
-                            <IconButton disabled={!allowObjectCreation} onClick={() =>
-                                this.setState({ modalNewObj: true })}
-                            >
-                                <AddIcon />
-                            </IconButton>
-                        </div>
-                    </Tooltip>
+                            <div>
+                                <IconButton disabled={!allowObjectCreation} onClick={() =>
+                                    this.setState({ modalNewObj: true })}
+                                >
+                                    <AddIcon />
+                                </IconButton>
+                            </div>
+                        </Tooltip>
                     ) : null
                 }
 
                 {this.props.objectImportExport &&
-                    <Tooltip title={this.props.t('ra_Add objects tree from JSON file')}>
-                        <IconButton onClick={() => {
-                            const input = document.createElement('input');
-                            input.setAttribute('type', 'file');
-                            input.setAttribute('id', 'files');
-                            input.setAttribute('opacity', 0);
-                            input.addEventListener('change', e => this.handleJsonUpload(e), false);
-                            input.click();
-                        }}>
-                            <PublishIcon />
-                        </IconButton>
-                    </Tooltip>
+                <Tooltip title={this.props.t('ra_Add objects tree from JSON file')}>
+                    <IconButton onClick={() => {
+                        const input = document.createElement('input');
+                        input.setAttribute('type', 'file');
+                        input.setAttribute('id', 'files');
+                        input.setAttribute('opacity', 0);
+                        input.addEventListener('change', e => this.handleJsonUpload(e), false);
+                        input.click();
+                    }}>
+                        <PublishIcon />
+                    </IconButton>
+                </Tooltip>
                 }
                 {this.props.objectImportExport && (!!this.state.selected.length || this.state.selectedNonObject) &&
-                    <Tooltip title={this.props.t('ra_Save objects tree as JSON file')}>
-                        <IconButton onClick={() => this.setState({showExportDialog: this._getSelectedIdsForExport().length})}>
-                            <PublishIcon style={{ transform: 'rotate(180deg)' }} />
-                        </IconButton>
-                    </Tooltip>
+                <Tooltip title={this.props.t('ra_Save objects tree as JSON file')}>
+                    <IconButton onClick={() => this.setState({showExportDialog: this._getSelectedIdsForExport().length})}>
+                        <PublishIcon style={{ transform: 'rotate(180deg)' }} />
+                    </IconButton>
+                </Tooltip>
                 }
             </div>
             {!!this.props.objectBrowserEditObject && <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
                 {`${this.props.t('ra_Objects')}: ${Object.keys(this.info.objects).length}, ${this.props.t('ra_States')}: ${Object.keys(this.info.objects).filter(el => this.info.objects[el].type === 'state').length}`}
             </div>}
             {this.props.objectEditBoolean &&
-                <Tooltip title={this.props.t('ra_Edit custom config')}>
-                    <IconButton onClick={() => {
-                        // get all visible states
-                        const ids = getVisibleItems(this.root, 'state', this.objects);
+            <Tooltip title={this.props.t('ra_Edit custom config')}>
+                <IconButton onClick={() => {
+                    // get all visible states
+                    const ids = getVisibleItems(this.root, 'state', this.objects);
 
-                        if (ids.length) {
-                            this.pauseSubscribe(true);
+                    if (ids.length) {
+                        this.pauseSubscribe(true);
 
-                            if (ids.length === 1) {
-                                window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', this.state.selected[0]);
-                                this.props.router && this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
-                            }
-                            this.setState({ customDialog: ids });
-                        } else {
-                            this.setState({ toast: this.props.t('ra_please select object') });
+                        if (ids.length === 1) {
+                            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', this.state.selected[0]);
+                            this.props.router && this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
                         }
-                    }}>
-                        <BuildIcon />
-                    </IconButton>
-                </Tooltip>
+                        this.setState({ customDialog: ids });
+                    } else {
+                        this.setState({ toast: this.props.t('ra_please select object') });
+                    }
+                }}>
+                    <BuildIcon />
+                </IconButton>
+            </Tooltip>
             }
         </div>;
     }
@@ -3748,7 +3748,7 @@ class ObjectBrowser extends Component {
 
         const checkbox =
             this.props.multiSelect &&
-                this.objects[id] && (!this.props.types || this.props.types.includes(this.objects[id].type)) ?
+            this.objects[id] && (!this.props.types || this.props.types.includes(this.objects[id].type)) ?
                 <Checkbox
                     className={classes.checkBox}
                     checked={this.state.selected.includes(id)}
@@ -3782,45 +3782,45 @@ class ObjectBrowser extends Component {
 
         const alias = id.startsWith('alias.') && item.data.obj?.common?.alias?.id ?
             (readWriteAlias ?
-                <div className={classes.cellIdAliasReadWriteDiv}>
-                    {item.data.obj.common.alias.id.read ? <div
+                    <div className={classes.cellIdAliasReadWriteDiv}>
+                        {item.data.obj.common.alias.id.read ? <div
+                            onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                this.onSelect(item.data.obj.common.alias.id.read);
+                                setTimeout(() => {
+                                    this.expandAllSelected(() =>
+                                        this.scrollToItem(item.data.obj.common.alias.id.read));
+                                }, 100);
+                            }}
+                            className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
+                        >←{item.data.obj.common.alias.id.read}</div> : null}
+                        {item.data.obj.common.alias.id.write ? <div
+                            onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                this.onSelect(item.data.obj.common.alias.id.write);
+                                setTimeout(() => {
+                                    this.expandAllSelected(() =>
+                                        this.scrollToItem(item.data.obj.common.alias.id.write));
+                                }, 100);
+                            }}
+                            className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
+                        >→{item.data.obj.common.alias.id.write}</div> : null}
+                    </div>
+                    :
+                    <div
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
-                            this.onSelect(item.data.obj.common.alias.id.read);
+                            this.onSelect(item.data.obj.common.alias.id);
                             setTimeout(() => {
                                 this.expandAllSelected(() =>
-                                    this.scrollToItem(item.data.obj.common.alias.id.read));
+                                    this.scrollToItem(item.data.obj.common.alias.id));
                             }, 100);
                         }}
-                        className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
-                    >←{item.data.obj.common.alias.id.read}</div> : null}
-                    {item.data.obj.common.alias.id.write ? <div
-                        onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            this.onSelect(item.data.obj.common.alias.id.write);
-                            setTimeout(() => {
-                                this.expandAllSelected(() =>
-                                    this.scrollToItem(item.data.obj.common.alias.id.write));
-                            }, 100);
-                        }}
-                        className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
-                    >→{item.data.obj.common.alias.id.write}</div> : null}
-                </div>
-                :
-                <div
-                    onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        this.onSelect(item.data.obj.common.alias.id);
-                        setTimeout(() => {
-                            this.expandAllSelected(() =>
-                                this.scrollToItem(item.data.obj.common.alias.id));
-                        }, 100);
-                    }}
-                    className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasAlone)}
-                >→{item.data.obj.common.alias.id}</div>
+                        className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasAlone)}
+                    >→{item.data.obj.common.alias.id}</div>
             ) : null;
 
         let checkColor = item.data?.obj?.common?.color;
@@ -4151,12 +4151,12 @@ class ObjectBrowser extends Component {
                 this.columnsVisibility.nameHeader = `calc(100% - ${widthSum + 5 + this.state.scrollBarWidth}px)`;
             } else {
                 const newWidth = Object.keys(this.columnsVisibility).reduce((accumulator, name) => {
-                    if (name === 'id' || typeof this.columnsVisibility[name] === 'string' || !this.columnsVisibility[name]) {
-                        return accumulator;
-                    } else {
-                        return  accumulator + this.columnsVisibility[name];
-                    }},
-                0);
+                        if (name === 'id' || typeof this.columnsVisibility[name] === 'string' || !this.columnsVisibility[name]) {
+                            return accumulator;
+                        } else {
+                            return  accumulator + this.columnsVisibility[name];
+                        }},
+                    0);
                 this.columnsVisibility.id = `calc(100% - ${newWidth}px)`;
             }
         }
@@ -4176,6 +4176,7 @@ class ObjectBrowser extends Component {
                 <IconClose className={classes.buttonClearFilterIcon} />
             </IconButton>;
         }
+
         return <div className={classes.headerRow} >
             <div className={classes.headerCell} style={{ width: this.columnsVisibility.id }}>{this.getFilterInput('id')}</div>
             {this.columnsVisibility.name ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.nameHeader }}>{this.getFilterInput('name')}</div> : null}

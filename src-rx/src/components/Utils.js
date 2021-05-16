@@ -612,7 +612,7 @@ class Utils {
                             now = new Date(year, a[1] - 1, a[0]);
                         }
                     } else
-                    // DD MM
+                        // DD MM
                     if (Utils.dateFormat[0][0] === 'D' && Utils.dateFormat[1][0] === 'M') {
                         now = new Date(year, a[1] - 1, a[0]);
                         if (Math.abs(now.getTime - Date.now()) > 3600000 * 24 * 10) {
@@ -640,26 +640,34 @@ class Utils {
      * @returns {string | JSX.Element[]}
      */
     static renderTextWithA(text) {
-        let m = text.match(/<a [^<]+<\/a>/);
+        let m = text.match(/<a [^<]+<\/a>|<br\/?>/);
         if (m) {
             const result = [];
             let key = 1;
             do {
-                let href = m[0].match(/href="([^"]+)"/) || m[0].match(/href='([^']+)'/);
-                let target = m[0].match(/target="([^"]+)"/) || m[0].match(/target='([^']+)'/);
-                let rel = m[0].match(/rel="([^"]+)"/) || m[0].match(/rel='([^']+)'/);
-                const title = m[0].match(/>([^<]*)</);
-
                 const p = text.split(m[0]);
                 p[0] && result.push(<span key={'a' + (key++)}>{p[0]}</span>);
-                // eslint-disable-next-line
-                result.push(<a key={'a' + (key++)} href={href ? href[1] : ''} target={target ? target[1] : '_blank'} rel={rel ? rel[1] : ''}>{title ? title[1] : ''}</a>);
+
+                if (m[0].startsWith('<br')) {
+                    result.push(<br key={'a' + (key++)} />);
+                } else {
+                    let href = m[0].match(/href="([^"]+)"/) || m[0].match(/href='([^']+)'/);
+                    let target = m[0].match(/target="([^"]+)"/) || m[0].match(/target='([^']+)'/);
+                    let rel = m[0].match(/rel="([^"]+)"/) || m[0].match(/rel='([^']+)'/);
+                    const title = m[0].match(/>([^<]*)</);
+
+                    // eslint-disable-next-line
+                    result.push(<a key={'a' + (key++)} href={href ? href[1] : ''} target={target ? target[1] : '_blank'} rel={rel ? rel[1] : ''}>{title ? title[1] : ''}</a>);
+                }
+
                 text = p[1];
-                m = text && text.match(/<a [^<]+<\/a>/);
+
+                m = text && text.match(/<a [^<]+<\/a>|<br\/?>/);
                 if (!m) {
                     p[1] && result.push(<span key={'a' + (key++)}>{p[1]}</span>);
                 }
             } while (m);
+
             return result;
         } else {
             return text;
@@ -1401,7 +1409,7 @@ class Utils {
                     states = null;
                 }
             } else
-            // if old format val1:text1;val2:text2
+                // if old format val1:text1;val2:text2
             if (typeof states === 'string') {
                 const parts = states.split(';');
                 states = {};
