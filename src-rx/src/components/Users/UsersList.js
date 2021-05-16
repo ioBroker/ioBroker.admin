@@ -439,12 +439,12 @@ class UsersList extends Component {
             item._id === ('system.user.' + word.toLowerCase() + '_' + i) ||
             item.common.name === word + ' ' + i);
     }
-    static findNewUniqueName(list, word) {
+    static findNewUniqueName(isGroup, list, word) {
         let i = 1;
         while (!UsersList._isUniqueName(list,  word, i)) {
             i++;
         }
-        return {_id: 'system.user.' + word.toLowerCase() + '_' + i, name: word + ' ' + i};
+        return {_id: `system.${isGroup ? 'group' : 'user'}.${word.toLowerCase()}_${i}`, name: word + ' ' + i};
     }
 
     render() {
@@ -465,7 +465,7 @@ class UsersList extends Component {
                                 size="small"
                                 className={this.props.classes.right}
                                 onClick={() => {
-                                    const {_id, name} = UsersList.findNewUniqueName(this.state.groups, this.props.t('Group'));
+                                    const {_id, name} = UsersList.findNewUniqueName(true, this.state.groups, this.props.t('Group'));
                                     const template = JSON.parse(JSON.stringify(GROUP_TEMPLATE));
                                     template._id = _id;
                                     template.common.name = name;
@@ -495,7 +495,7 @@ class UsersList extends Component {
                                 size="small"
                                 className={this.props.classes.right}
                                 onClick={() => {
-                                    const {_id, name} = UsersList.findNewUniqueName(this.state.users, this.props.t('User'));
+                                    const {_id, name} = UsersList.findNewUniqueName(false,  this.state.users, this.props.t('User'));
                                     const template = JSON.parse(JSON.stringify(USER_TEMPLATE));
                                     template._id = _id;
                                     template.common.name = name;

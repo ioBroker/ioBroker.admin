@@ -249,7 +249,7 @@ class RatingDialog extends Component {
                 <Rating
                     className={this.props.classes.rating}
                     name={this.props.adapter}
-                    value={this.props.version ? this.state.ratingNumber : this.props.currentRating && this.props.currentRating.rating.r}
+                    value={this.props.version ? this.state.ratingNumber : this.props.currentRating?.rating && this.props.currentRating.rating.r}
                     size="large"
                     readOnly={!this.props.version}
                     onChange={(event, newValue) =>

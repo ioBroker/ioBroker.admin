@@ -351,7 +351,7 @@ const InstanceCard = memo(({
     logLevelObject,
     loglevelIcon,
     memoryLimitMB,
-    mode,
+    modeSchedule,
     name,
     openConfig,
     running,
@@ -642,7 +642,7 @@ const InstanceCard = memo(({
                         </Tooltip>
                     </div>}
 
-                    {mode && <div className={classes.displayFlex}>
+                    {modeSchedule && <div className={classes.displayFlex}>
                         <InstanceInfo icon={<ScheduleIcon />} tooltip={t('schedule_group')}>
                             {getSchedule(id) || '-'}
                         </InstanceInfo>

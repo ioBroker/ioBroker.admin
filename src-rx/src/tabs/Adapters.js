@@ -964,7 +964,6 @@ class Adapters extends Component {
 
     expandAll() {
         this.setState(oldState => {
-
             const categories = oldState.categories;
             const categoriesExpanded = oldState.categoriesExpanded;
 

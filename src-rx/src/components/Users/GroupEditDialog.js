@@ -44,8 +44,7 @@ function PermsTab(props) {
         });
     }
 
-    return <Grid container spacing={props.innerWidth < 500 ? 1 : 4} className={props.classes.dialog} key="PermsTab">
-        {
+    return <Grid container spacing={props.innerWidth < 500 ? 1 : 4} className={props.classes.dialog} key="PermsTab">{
             mapObject(props.group.common.acl, (block, blockKey) =>
                 <Grid item xs={12} md={12} key={blockKey}>
                     <h2 className={props.classes.permHeaders}>{props.t('group_acl_' + blockKey)}</h2>
@@ -53,7 +52,7 @@ function PermsTab(props) {
                         <FormControlLabel
                             key={permKey}
                             control={<Checkbox
-                                disabled={props.group.common.dontDelete}
+                                disabled={props.group._id === 'system.group.administrator'}
                                 checked={perm}
                                 onChange={e => {
                                     let newData = Utils.clone(props.group);
@@ -65,10 +64,9 @@ function PermsTab(props) {
                             labelPlacement="top"
                         />
                     )}
-                </Grid>
-            )
+                </Grid>)
         }
-    </Grid>
+    </Grid>;
 }
 
 function GroupEditDialog(props) {

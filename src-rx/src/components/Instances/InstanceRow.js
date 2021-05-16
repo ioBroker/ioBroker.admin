@@ -608,7 +608,7 @@ const InstanceRow = ({
     getModeIcon,
     getRestartSchedule,
     getSchedule,
-    handleChange,
+    onExpandRow,
     host,
     hosts,
     id,
@@ -620,7 +620,7 @@ const InstanceRow = ({
     logLevelObject,
     loglevelIcon,
     memoryLimitMB,
-    mode,
+    modeSchedule,
     name,
     openConfig,
     running,
@@ -867,7 +867,7 @@ const InstanceRow = ({
                 openDialogHost) {
                 return;
             }
-            handleChange(instance.id);
+            onExpandRow(instance.id);
         }}>
         {linksDialog}
         <AccordionSummary
@@ -1141,7 +1141,7 @@ const InstanceRow = ({
                                 {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
                             </InstanceInfo>
                         </Grid>
-                        {mode && <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
+                        {modeSchedule && <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={<ScheduleIcon />} tooltip={t('schedule_group')}>
                                 {getSchedule(id) || '-'}
                             </InstanceInfo>
@@ -1346,6 +1346,7 @@ InstanceRow.propTypes = {
     host: PropTypes.string,
     instanceId: PropTypes.string,
     deleting: PropTypes.bool,
+    onExpandRow: PropTypes.func,
 };
 
 

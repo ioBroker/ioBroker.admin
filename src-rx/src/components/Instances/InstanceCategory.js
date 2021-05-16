@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import {
@@ -30,7 +30,9 @@ const styles = theme => ({
         paddingLeft: 8,
         flexDirection: 'row-reverse',
         minHeight: '48px !important',
-        height: 48
+        height: 48,
+        fontWeight: 'bold',
+        fontSize: 16
     },
     iconStyle: {
         marginRight: 10
@@ -56,21 +58,12 @@ const InstanceCategory = ({
     key,
     children,
     classes,
-    folderOpen,
-    rebuild
+    expanded,
+    onExpand,
 }) => {
-    useEffect(() => {
-        if (folderOpen !== open) {
-            setOpen(folderOpen);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [folderOpen, rebuild]);
-
-    const [open, setOpen] = useState(folderOpen);
-
     return <Accordion
-        defaultExpanded={folderOpen}
-        expanded={open} onChange={() => setOpen(!open)}
+        expanded={!!expanded}
+        onChange={() => onExpand(!expanded)}
         classes={{ root: classes.accordion }} key={key} square>
         <AccordionSummary
             classes={{ root: classes.row }}
