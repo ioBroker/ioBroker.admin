@@ -10,6 +10,12 @@ var systemConfig;
 var socket   = io.connect('/', {path: parts.join('/') + '/socket.io'});
 var query    = window.location.search.replace(/^\?/, '').split('&');
 var instance = query[0];
+var isTab = false;
+if(isNaN(instance)){
+	instance = 0;
+	isTab = true;
+}
+var noFooter = (query.indexOf('noFooter') > -1);
 var common   = null; // common information of adapter
 var host     = null; // host object on which the adapter runs
 var changed  = false;
@@ -185,12 +191,12 @@ function preInit () {
         '<button id="close" class="translateB" style="float: right;">cancel</button>&nbsp;' +
         '</div>');
     */
-    $body.append(
-        '<div class="m"><nav class="dialog-config-buttons nav-wrapper footer">' +
-        '   <a class="btn btn-active btn-save"><i class="material-icons left">save</i><span class="translate">save</span></a> ' +
-        '   <a class="btn btn-save-close"><i class="material-icons left">save</i><i class="material-icons left">close</i><span class="translate">saveclose</span></a> ' +
-        '   <a class="btn btn-cancel"><i class="material-icons left">close</i><span class="translate">close</span></a>' +
-        '</nav></div>');
+    var footer = '<div class="m"><nav class="dialog-config-buttons nav-wrapper footer"' + (noFooter ? ' style="visibility: hidden;"' : '') + '>';
+    footer +=	 '   <a class="btn btn-active btn-save"><i class="material-icons left">save</i><span class="translate">save</span></a> ';
+    footer +=	 '   <a class="btn btn-save-close"' + (isTab ? ' style="visibility: hidden;"' : '') + '><i class="material-icons left">save</i><i class="material-icons left">close</i><span class="translate">saveclose</span></a> ';
+    footer +=	 '   <a class="btn btn-cancel"' + (isTab ? ' style="visibility: hidden;"' : '') + '><i class="material-icons left">close</i><span class="translate">close</span></a>';
+    footer +=	 '</nav></div>';
+    $body.append(footer);
 
     var $navButtons = $('.dialog-config-buttons');
     $navButtons.find('.btn-save').on('click', function () {
