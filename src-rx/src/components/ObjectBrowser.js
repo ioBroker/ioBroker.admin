@@ -3878,6 +3878,7 @@ class ObjectBrowser extends Component {
                 </Grid>
                 <Grid
                     item
+                    title={id}
                     className={classes.cellIdSpan}
                     style={{
                         background: invertBackground,
@@ -3902,7 +3903,7 @@ class ObjectBrowser extends Component {
                     {iconItem}
                 </Grid>
                 <div style={{ color: checkColor }}>
-                    <IconCopy className={Utils.clsx(classes.cellCopyButton, 'copyButton')} onClick={(e) => this.onCopy(e, id)} />
+                    <IconCopy className={Utils.clsx(classes.cellCopyButton, 'copyButton')} onClick={e => this.onCopy(e, id)} />
                 </div>
             </Grid>
             {this.columnsVisibility.name ? <div className={classes.cellName} style={{ width: this.columnsVisibility.name }}>{(item.data?.title) || ''}</div> : null}

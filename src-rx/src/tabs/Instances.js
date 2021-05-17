@@ -997,8 +997,6 @@ class Instances extends Component {
         if (!this.state.viewMode && this.state.viewCategory) {
             let categoryArray = [];
 
-            console.log('Render: ' + JSON.stringify(this.state.expandedFolder));
-
             list.forEach(({ category }) => !categoryArray.includes(category) && categoryArray.push(category));
 
             categoryArray.sort((a, b) => {

@@ -355,7 +355,7 @@ class Drawer extends Component {
                         if (tabsInfo[tab]) {
                             obj = Object.assign({ name: tab }, tabsInfo[tab]);
                         } else {
-                            obj = { name: tab, order: 200 };
+                            obj = { name: tab, order: instance.adminTab.order !== undefined ? instance.adminTab.order : 200};
                         }
 
                         if (!obj.icon) {

@@ -119,7 +119,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
             .map(el => {
                 const adapter = repository[el]
                 if (!adapter?.controller) {
-                    const parts = (adapter.extIcon || adapter.meta || adapter.readme).split('/');
+                    const parts = (adapter.extIcon || adapter.meta || adapter.readme || '').split('/');
                     return {
                         value: el + '/' + parts[3],
                         name: `${adapter?.name} [${parts[3]}]`,

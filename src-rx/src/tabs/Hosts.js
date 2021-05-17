@@ -541,7 +541,8 @@ const Hosts = ({
             return <AdapterUpdateDialog
                 open={hostUpdateDialog}
                 adapter={hostUpdate}
-                t={t}
+                adapterObject={repository['js-controller']}
+                t={props.t}
                 textUpdate={t('Show instructions')}
                 rightDependencies
                 news={getNews()}

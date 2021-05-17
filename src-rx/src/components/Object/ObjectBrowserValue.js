@@ -151,7 +151,7 @@ class ObjectBrowserValue extends Component {
             let type = this.props.type || typeof this.props.value;
 
             if (type === 'number') {
-                if (typeof this.value !== 'number') {
+                if (typeof this.value === 'string') {
                     this.value = parseFloat(this.value.replace(',', '.')) || 0;
                 }
             } else if (type === 'boolean') {
@@ -159,7 +159,7 @@ class ObjectBrowserValue extends Component {
             }
         } else
         if (this.state.type === 'number') {
-            if (typeof this.value !== 'number') {
+            if (typeof this.value === 'string') {
                 this.value = parseFloat(this.value.replace(',', '.')) || 0;
             }
         } else if (this.state.type === 'boolean') {

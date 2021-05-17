@@ -406,6 +406,15 @@ class App extends Router {
         }
     }
 
+    static getDerivedStateFromError(error) {
+        // Update state so the next render will show the fallback UI.
+        return { hasGlobalError: error };
+    }
+
+    componentDidCatch(error, info) {
+        this.setState({hasGlobalError: error, hasGlobalErrorInfo: info});
+    }
+
     setUnsavedData(hasUnsavedData) {
         if (hasUnsavedData !== this.state.unsavedDataInDialog) {
             this.setState({ unsavedDataInDialog: hasUnsavedData });
@@ -440,6 +449,7 @@ class App extends Router {
 
             this.socket = new Connection({
                 name: 'admin',
+                admin5Only: true,
                 port: this.getPort(),
                 autoSubscribes: ['system.adapter.*'], // do not subscribe on '*' and really we don't need a 'system.adapter.*' too. Every tab must subscribe itself on everything that it needs
                 autoSubscribeLog: true,
@@ -763,15 +773,17 @@ class App extends Router {
         if (news && news.length && news[0].id !== lastNewsId?.val) {
             this.socket.getUuid()
                 .then(uuid => this.socket.getHostInfo(this.state.currentHost)
+                    .catch(() => null)
                     .then(info => this.socket.getCompactInstances()
+                        .catch(() => null)
                         .then(instances => {
                             const checkNews = checkMessages(news, lastNewsId?.val, {
                                 lang: I18n.getLanguage(),
                                 adapters: this.state.adapters,
-                                instances,
-                                nodeVersion: info['Node.js'],
-                                npmVersion: info.NPM,
-                                os: info.os,
+                                instances: instances || [],
+                                nodeVersion: info ? info['Node.js'] || '?' : '?',
+                                npmVersion: info ? info.NPM || '?' : '?',
+                                os: info ? info.os || '?' : '?',
                                 activeRepo: this.state.systemConfig.common.activeRepo,
                                 uuid
                             });
@@ -794,9 +806,7 @@ class App extends Router {
                 onClose={readTimeoutMs => {
                     if (readTimeoutMs) {
                         this.setState({showSlowConnectionWarning: false, readTimeoutMs}, () =>
-                            this.getAdapters()
-                                .then(() =>
-                                    this.getAdaptersInfo()));
+                            this.readRepoAndInstalledInfo(this.state.currentHost));
                     } else {
                         this.setState({showSlowConnectionWarning: false});
                     }
@@ -1441,45 +1451,64 @@ class App extends Router {
     render() {
         const { classes } = this.props;
         const small = this.props.width === 'xs' || this.props.width === 'sm';
+
+        if (this.state.hasGlobalError) {
+            const message = this.state.hasGlobalError.message;
+            const stack = this.state.hasGlobalError.stack;
+
+            return <div style={{textAlign: 'center', fontSize: 22, marginTop: 50, height: 'calc(100% - 50px)', overflow: 'auto'}}>
+                <h1 style={{color: '#F00'}}>Error in GUI!</h1>
+                Please open the browser console (F12), copy error text from there and create the issue on <a href="https://github.com/ioBroker/ioBroker.admin/issues" target="_blank" rel="noreferrer">github</a><br/>
+                Without this information it is not possible to analyse the error.<br/>
+                It should looks like <br/>
+                <img src="img/browserError.png" alt="error"/><br/>
+                If in the second line you will see <code style={{style: '#888', fontFamily: 'monospace', fontSize: 16}}>at :3000/static/js/main.chunk.js:36903</code> and not the normal file name,<br/>
+                please try to reproduce an error with opened browser console. In this case the special "map" files will be loaded and the developers can see the real name of functions and files.
+
+                <div style={{color: '#F88', fontSize: 14, marginTop: 20}}>{message}</div>
+                <pre style={{color: '#F88', fontSize: 12, fontFamily: 'monospace', textAlign: 'left', marginTop: 20, padding: 20}}>{(stack || '').split('\n').join((line, i) => <div key={i}>{line}<br/></div>)}</pre>
+            </div>;
+        }
+
         if (this.state.login) {
             return <ThemeProvider theme={this.state.theme}>
                 <Login t={I18n.t} />
             </ThemeProvider>;
         } else
-            if (!this.state.ready) {
-                return <ThemeProvider theme={this.state.theme}>
-                    <Loader theme={this.state.themeType} />
-                </ThemeProvider>;
-            } else if (this.state.strictEasyMode || this.state.currentTab.tab === 'easy') {
-                return <ThemeProvider theme={this.state.theme}>
-                    {!this.state.connected && <Connecting />}
-                    <Suspense fallback={<Connecting />}>
-                        <EasyMode
-                            navigate={Router.doNavigate}
-                            getLocation={Router.getLocation}
-                            location={this.state.currentTab}
-                            toggleTheme={this.toggleTheme}
-                            themeName={this.state.themeName}
-                            themeType={this.state.themeType}
-                            theme={this.state.theme}
-                            width={this.props.width}
-                            configs={this.state.easyModeConfigs}
-                            socket={this.socket}
-                            configStored={value => this.allStored(value)}
-                            isFloatComma={this.state.systemConfig?.common.isFloatComma}
-                            dateFormat={this.state.systemConfig?.common.dateFormat}
-                            systemConfig={this.state.systemConfig}
-                            t={I18n.t}
-                            onRegisterIframeRef={ref => this.refConfigIframe = ref}
-                            onUnregisterIframeRef={ref => {
-                                if (this.refConfigIframe === ref) {
-                                    this.refConfigIframe = null;
-                                }
-                            }}
-                        />
-                    </Suspense>
-                </ThemeProvider>;
-            }
+        if (!this.state.ready) {
+            return <ThemeProvider theme={this.state.theme}>
+                <Loader theme={this.state.themeType} />
+            </ThemeProvider>;
+        } else if (this.state.strictEasyMode || this.state.currentTab.tab === 'easy') {
+            return <ThemeProvider theme={this.state.theme}>
+                {!this.state.connected && <Connecting />}
+                <Suspense fallback={<Connecting />}>
+                    <EasyMode
+                        navigate={Router.doNavigate}
+                        getLocation={Router.getLocation}
+                        location={this.state.currentTab}
+                        toggleTheme={this.toggleTheme}
+                        themeName={this.state.themeName}
+                        themeType={this.state.themeType}
+                        theme={this.state.theme}
+                        width={this.props.width}
+                        configs={this.state.easyModeConfigs}
+                        socket={this.socket}
+                        configStored={value => this.allStored(value)}
+                        isFloatComma={this.state.systemConfig?.common.isFloatComma}
+                        dateFormat={this.state.systemConfig?.common.dateFormat}
+                        systemConfig={this.state.systemConfig}
+                        t={I18n.t}
+                        onRegisterIframeRef={ref => this.refConfigIframe = ref}
+                        onUnregisterIframeRef={ref => {
+                            if (this.refConfigIframe === ref) {
+                                this.refConfigIframe = null;
+                            }
+                        }}
+                    />
+                </Suspense>
+            </ThemeProvider>;
+        }
 
         const expertModePermanent = !window.sessionStorage.getItem('App.expertMode') || (window.sessionStorage.getItem('App.expertMode') === 'true') === !!this.state.systemConfig.common.expertMode;
 
