@@ -58,8 +58,12 @@ function startAdapter(options) {
                 }
             }
 
-            if (id === 'system.repositories') {
-                writeUpdateInfo(adapter);
+            if (id === 'system.repositories' || id.match(/^system\.adapter\.[^.]+$/)) {
+                adapter.updaterTimeout && clearTimeout(adapter.updaterTimeout);
+                adapter.updaterTimeout = setTimeout(() => {
+                    adapter.updaterTimeout = null;
+                    writeUpdateInfo(adapter);
+                }, 5000);
             }
         } else {
             //console.log('objectDeleted: ' + id);
@@ -130,6 +134,9 @@ function startAdapter(options) {
         adapter.ratingTimeout && clearTimeout(adapter.ratingTimeout);
         adapter.ratingTimeout = null;
 
+        adapter.updaterTimeout && clearTimeout(adapter.updaterTimeout);
+        adapter.updaterTimeout = null;
+
         try {
             adapter.log.info('terminating http' + (adapter.config.secure ? 's' : '') + ' server on port ' + adapter.config.port);
             webServer.close();
@@ -146,6 +153,7 @@ function startAdapter(options) {
 }
 
 function createUpdateInfo(adapter) {
+    const promises = [];
     // create connected object and state
     let updatesNumberObj = objects[adapter.namespace + '.info.updatesNumber'];
 
@@ -204,7 +212,7 @@ function createUpdateInfo(adapter) {
             native: {}
         };
 
-        adapter.setObject(obj._id, obj);
+        promises.push(adapter.setObjectAsync(obj._id, obj));
     }
 
     let updatesJsonObj = objects[adapter.namespace + '.info.updatesJson'];
@@ -224,7 +232,7 @@ function createUpdateInfo(adapter) {
             native: {}
         };
 
-        adapter.setObject(obj._id, obj);
+        promises.push(adapter.setObjectAsync(obj._id, obj));
     }
 
     let lastUpdateCheckObj = objects[adapter.namespace + '.info.lastUpdateCheck'];
@@ -244,8 +252,10 @@ function createUpdateInfo(adapter) {
             native: {}
         };
 
-        adapter.setObject(obj._id, obj);
+        promises.push(adapter.setObjectAsync(obj._id, obj));
     }
+
+    return Promise.all(promises);
 }
 
 // Helper methods
@@ -285,6 +295,7 @@ function writeUpdateInfo(adapter, sources) {
     let list  = [];
     let updatesJson = {};
     let newUpdateIndicator = false;
+
     adapter.getState('info.updatesJson', (err, state) => {
         let oldUpdates;
         if (state && state.val) {
@@ -292,6 +303,7 @@ function writeUpdateInfo(adapter, sources) {
         } else {
             oldUpdates = {};
         }
+
         Object.keys(sources).forEach(name => {
             try {
                 if (installed[name] && installed[name].version && sources[name].version) {
@@ -311,7 +323,7 @@ function writeUpdateInfo(adapter, sources) {
                     }
                 }
             } catch (err) {
-                adapter.log.warn('Error on version check for ' + name + ': ' + err);
+                adapter.log.warn(`Error on version check for ${name}: ${err}`);
             }
         });
 
@@ -626,8 +638,8 @@ function getData(adapter, callback) {
                 adapter.config.tmpPathAllow = true;
             }
 
-            createUpdateInfo(adapter);
-            writeUpdateInfo(adapter);
+            createUpdateInfo(adapter)
+                .then(() => writeUpdateInfo(adapter));
         }
 
         callback && callback(adapter);

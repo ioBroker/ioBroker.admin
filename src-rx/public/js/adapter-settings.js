@@ -212,8 +212,8 @@ function preInit () {
     if (!noFooter) {
         var footer = '<div class="m"><nav class="dialog-config-buttons nav-wrapper footer">';
         footer += '   <a class="btn btn-active btn-save"><i class="material-icons left">save</i><span class="translate">save</span></a> ';
-        footer += isTab ? '' : '   <a class="btn btn-save-close"><i class="material-icons left">save</i><i class="material-icons left">close</i><span class="translate">saveclose</span></a> ';
-        footer += isTab ? '' : '   <a class="btn btn-cancel"><i class="material-icons left">close</i><span class="translate">close</span></a>';
+        footer += '   <a class="btn btn-save-close"><i class="material-icons left">save</i><i class="material-icons left">close</i><span class="translate">saveclose</span></a> ';
+        footer += '   <a class="btn btn-cancel"><i class="material-icons left">close</i><span class="translate">close</span></a>';
         footer += '</nav></div>';
 
         $body.append(footer);

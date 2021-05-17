@@ -343,7 +343,11 @@ class EnumsList extends Component {
                 for (let memberKey in enums[enumKey].common.members) {
                     let member = enums[enumKey].common.members[memberKey];
                     if (!members[member]) {
-                        members[member] = await this.props.socket.getObject(member);
+                        try {
+                            members[member] = await this.props.socket.getObject(member);
+                        } catch (e) {
+                            window.alert('Cannot read member "' + member + '"');
+                        }
                     }
                 }
             }

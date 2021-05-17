@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react'
+import {withStyles} from '@material-ui/core';
+import clsx from 'clsx';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -68,6 +70,12 @@ function PermsTab(props) {
         }
     </Grid>;
 }
+
+const styles = theme => ({
+    contentRoot:{
+        padding: '16px 24px'
+    }
+});
 
 function GroupEditDialog(props) {
     const [tab, setTab] = useState(0);
@@ -236,7 +244,7 @@ function GroupEditDialog(props) {
                 <Tab label={props.t('Permissions')} value={1} />
             </Tabs>
         </DialogTitle>
-        <DialogContent className={props.innerWidth < 500 ? props.classes.narrowContent : ''}>
+        <DialogContent classes={{root: clsx(props.innerWidth < 500 ? props.classes.narrowContent : '', props.classes.contentRoot)}}>
             { selectedTab }
         </DialogContent>
         <DialogActions className={props.classes.dialogActions} >
@@ -259,4 +267,4 @@ GroupEditDialog.propTypes = {
     innerWidth: PropTypes.number,
 };
 
-export default GroupEditDialog;
+export default withStyles(styles)(GroupEditDialog);

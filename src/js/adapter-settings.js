@@ -8,8 +8,32 @@ if (location.pathname.match(/^\/admin\//)) {
 
 var systemConfig;
 var socket   = io.connect('/', {path: parts.join('/') + '/socket.io'});
-var query    = window.location.search.replace(/^\?/, '').split('&');
-var instance = query[0];
+var query = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, '');
+var args = {};
+
+// parse parameters
+query.trim().split('&').filter(function (t) {return t.trim();}).forEach(function (b, i) {
+    const parts = b.split('=');
+    if (!i && parts.length === 1 && !isNaN(parseInt(b, 10))) {
+        args.instance = parseInt(b,  10);
+    }
+    var name = parts[0];
+    args[name] = parts.length === 2 ? parts[1] : true;
+
+    if (name === 'instance') {
+        args.instance = parseInt( args.instance,  10) || 0;
+    }
+
+    if (args[name] === 'true') {
+        args[name] = true;
+    } else if (args[name] === 'false') {
+        args[name] = false;
+    }
+});
+
+var isTab    = !!window.location.pathname.match(/tab(_m)?\.html/);
+var instance = args.instance;
+var noFooter = args.noFooter;
 var common   = null; // common information of adapter
 var host     = null; // host object on which the adapter runs
 var changed  = false;
@@ -135,7 +159,7 @@ function preInit () {
         "es": "Ajustes principales",
         "pl": "Ustawienia główne",
         "zh-cn": "主要设置"
-      };
+    };
 
     systemDictionary["Let's Encrypt SSL"] = {
         "en": "Let's Encrypt Certificates",
@@ -148,7 +172,7 @@ function preInit () {
         "es": "Let's Encrypt Certificados",
         "pl": "Let's Encrypt certyfikaty",
         "zh-cn": "Let's Encrypt证书"
-      };
+    };
     systemDictionary["Please activate secure communication"] = {
         "en": "Please activate secure communication",
         "de": "Bitte sichere Kommunikation aktivieren",
@@ -160,7 +184,7 @@ function preInit () {
         "es": "Por favor active la comunicación segura",
         "pl": "Aktywuj bezpieczną komunikację",
         "zh-cn": "请激活安全通信"
-      };
+    };
 
     if (socket.connected) {
         loadSystemConfig(function () {
@@ -185,14 +209,18 @@ function preInit () {
         '<button id="close" class="translateB" style="float: right;">cancel</button>&nbsp;' +
         '</div>');
     */
-    $body.append(
-        '<div class="m"><nav class="dialog-config-buttons nav-wrapper footer">' +
-        '   <a class="btn btn-active btn-save"><i class="material-icons left">save</i><span class="translate">save</span></a> ' +
-        '   <a class="btn btn-save-close"><i class="material-icons left">save</i><i class="material-icons left">close</i><span class="translate">saveclose</span></a> ' +
-        '   <a class="btn btn-cancel"><i class="material-icons left">close</i><span class="translate">close</span></a>' +
-        '</nav></div>');
+    if (!noFooter) {
+        var footer = '<div class="m"><nav class="dialog-config-buttons nav-wrapper footer">';
+        footer += '   <a class="btn btn-active btn-save"><i class="material-icons left">save</i><span class="translate">save</span></a> ';
+        footer += '   <a class="btn btn-save-close"><i class="material-icons left">save</i><i class="material-icons left">close</i><span class="translate">saveclose</span></a> ';
+        footer += '   <a class="btn btn-cancel"><i class="material-icons left">close</i><span class="translate">close</span></a>';
+        footer += '</nav></div>';
+
+        $body.append(footer);
+    }
 
     var $navButtons = $('.dialog-config-buttons');
+
     $navButtons.find('.btn-save').on('click', function () {
         if (typeof save === 'undefined') {
             alert('Please implement save function in your admin/index.html');
@@ -1784,13 +1812,13 @@ function showSelectIdDialog(val, callback) {
  */
 function values2table(divId, values, onChange, onReady, maxRaw) {
     if (typeof values === 'function') {
-		typeof onChange === 'number' ? maxRaw = onChange : maxRaw = null;
+        typeof onChange === 'number' ? maxRaw = onChange : maxRaw = null;
         onChange = values;
         values   = divId;
         divId    = '';
     }
 
-	if (typeof onReady === 'number') {
+    if (typeof onReady === 'number') {
         maxRaw = onReady;
         onReady = null;
     } else if (typeof maxRaw === 'undefined') {
@@ -1806,10 +1834,10 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
         $div = $('#' + divId);
     }
     var $add = $div.find('.table-button-add');
-	$add.data('raw', values.length);
+    $add.data('raw', values.length);
 
-	if (maxRaw) {
-	    $add.data('maxraw', maxRaw);
+    if (maxRaw) {
+        $add.data('maxraw', maxRaw);
     }
 
     if (!$add.data('inited')) {
@@ -1858,7 +1886,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             getEnums('rooms', function (err, list) {
                 var result = {};
                 var trRooms = _('nonerooms');
-				if (trRooms !== 'nonerooms') {
+                if (trRooms !== 'nonerooms') {
                     result[_('none')] = trRooms;
                 } else {
                     result[_('none')] = '';
@@ -1898,7 +1926,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             getEnums('functions', function (err, list) {
                 var result = {};
                 var trFuncs = _('nonefunctions');
-				if (trFuncs !== 'nonefunctions') {
+                if (trFuncs !== 'nonefunctions') {
                     result[_('none')] = trFuncs;
                 } else {
                     result[_('none')] = '';
@@ -1942,7 +1970,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     type:    $(this).data('type') || 'text',
                     def:     $(this).data('default'),
                     style:   $(this).data('style'),
-					tdstyle: $(this).data('tdstyle')
+                    tdstyle: $(this).data('tdstyle')
                 };
                 if (obj.type === 'checkbox') {
                     if (obj.def === 'false') {
@@ -1998,15 +2026,15 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                 text += '<td';
                 var line    = '';
                 var style   = '';
-				var tdstyle = '';
+                var tdstyle = '';
                 if (names[i]) {
-					if (names[i].name !== '_index') {
+                    if (names[i].name !== '_index') {
                         tdstyle = names[i].tdstyle || '';
                         if (tdstyle && tdstyle[0] !== ';') {
                             tdstyle = ';' + tdstyle;
                         }
                     }
-					if (names[i].name === '_index') {
+                    if (names[i].name === '_index') {
                         style = (names[i].style ? names[i].style : 'text-align: right;');
                         line += (v + 1);
                     } else if (names[i].type === 'checkbox') {

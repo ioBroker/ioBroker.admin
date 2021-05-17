@@ -2584,7 +2584,8 @@ class ObjectBrowser extends Component {
                 const en = {
                     _id: this.objects[_id]._id,
                     common: JSON.parse(JSON.stringify(this.objects[_id].common)),
-                    native: this.objects[_id].native
+                    native: this.objects[_id].native,
+                    type: 'enum',
                 };
                 if (en.common) {
                     delete en.common.members;
@@ -2701,6 +2702,7 @@ class ObjectBrowser extends Component {
             return [];
         }
     }
+
     _exportObjects(isAll) {
         if (isAll) {
             generateFile('allObjects.json', this.objects);

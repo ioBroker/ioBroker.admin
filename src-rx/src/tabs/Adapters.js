@@ -1237,19 +1237,31 @@ class Adapters extends Component {
 
         this.listOfVisibleAdapterLength = this.cache.listOfVisibleAdapter.length;
 
-        if (sortAZ) {
-            this.cache.listOfVisibleAdapter.sort();
-        } else {
-            this.cache.listOfVisibleAdapter.sort((a, b) => {
-                if (sortPopularFirst) {
-                    return this.state.repository[b].stat - this.state.repository[a].stat;
-                } else
-                    if (sortRecentlyUpdated) {
-                        return this.cache.adapters[a].daysAgo - this.cache.adapters[b].daysAgo;
-                    }
-            });
-        }
-        console.log('[ADAPTERS] Update cache!');
+        const repo = this.state.repository;
+        const adapters = this.state.adapters;
+        const installed = this.state.installed;
+
+        this.cache.listOfVisibleAdapter.sort((a, b) => {
+            if (sortAZ) {
+                if (installed[a] && installed[b]) {
+                    return a > b ? 1 : (a < b ? -1 : 0);
+                } else if (installed[a]) {
+                    return -1;
+                } else if (installed[b]) {
+                    return 1;
+                } else {
+                    return a > b ? 1 : (a < b ? -1 : 0);
+                }
+            } else
+            if (sortPopularFirst) {
+                return repo[b].stat - repo[a].stat;
+            } else
+                if (sortRecentlyUpdated) {
+                    return adapters[a].daysAgo - adapters[b].daysAgo;
+                }
+        });
+
+        // console.log('[ADAPTERS] Update cache!');
     }
 
     getTiles() {
