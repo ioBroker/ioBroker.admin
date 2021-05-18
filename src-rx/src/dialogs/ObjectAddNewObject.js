@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 
 import { FormControl, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
 
@@ -32,7 +32,7 @@ const TYPES = {
     folder:  {name: 'Folder', value: 'folder'}
 };
 
-const ObjectAddNewContent = ({ onClose, onApply, open, selected, extendObject, objects }) => {
+const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objects }) => {
     const names = {
         state:   I18n.t('New state'),
         channel: I18n.t('New channel'),
@@ -84,6 +84,38 @@ const ObjectAddNewContent = ({ onClose, onApply, open, selected, extendObject, o
         return name.toString().replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_');
     }
 
+    const onLocalApply = () => {
+        const newObj = {
+            common: {
+                name,
+                desc: I18n.t('Manually created'),
+            },
+            type
+        };
+
+        if (type === 'state') {
+            newObj.common = {
+                ...newObj.common,
+                role: '',
+                type: stateType,
+                read: true,
+                write: true,
+                def: stateDefValues[stateType]
+            };
+        } else if (type !== 'folder') {
+            newObj.common = {
+                ...newObj.common,
+                role: '',
+                icon: '',
+            };
+        } else {
+            delete newObj.common.desc;
+        }
+
+        setObject(`${selected}.${name.split(' ').join('_')}`, newObj)
+            .then(() => onApply());
+    }
+
     return <CustomModal
         open={open}
         fullWidth
@@ -91,37 +123,7 @@ const ObjectAddNewContent = ({ onClose, onApply, open, selected, extendObject, o
         titleButtonApply="add"
         applyDisabled={!name || !unique || !types.length}
         onClose={onClose}
-        onApply={() => {
-            const newObj = {
-                common: {
-                    name,
-                    desc: I18n.t('Manually created'),
-                },
-                type
-            };
-
-            if (type === 'state') {
-                newObj.common = {
-                    ...newObj.common,
-                    role: '',
-                    type: stateType,
-                    read: true,
-                    write: true,
-                    def: stateDefValues[stateType]
-                };
-            } else if (type !== 'folder') {
-                newObj.common = {
-                    ...newObj.common,
-                    role: '',
-                    icon: '',
-                };
-            } else {
-                delete newObj.common.desc;
-            }
-
-            extendObject(`${selected}.${name.split(' ').join('_')}`, newObj);
-            onApply();
-        }}>
+        onApply={() => onLocalApply()}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{
                 margin: 10,
@@ -132,15 +134,6 @@ const ObjectAddNewContent = ({ onClose, onApply, open, selected, extendObject, o
                 style={{ margin: '5px 0' }}
                 disabled
                 value={selected}
-            />
-            <TextField
-                label={I18n.t('Name')}
-                style={{ margin: '5px 0' }}
-                value={name}
-                onChange={el => {
-                    setUnique(!objects[buildId(el.target.value)]);
-                    setName(el.target.value);
-                }}
             />
             <FormControl style={{ marginTop: 10, marginBottom: 10 }}>
                 <InputLabel>{I18n.t('Type')}</InputLabel>
@@ -156,8 +149,7 @@ const ObjectAddNewContent = ({ onClose, onApply, open, selected, extendObject, o
                 >
                     {types.map(el => <MenuItem key={el.value} value={el.value}>{I18n.t(el.name)}</MenuItem>)}
                 </Select>
-            </FormControl>
-            {type === 'state' && <FormControl >
+            </FormControl>            {type === 'state' && <FormControl >
                 <InputLabel>{I18n.t('State type')}</InputLabel>
                 <Select
                     value={stateType}
@@ -166,8 +158,24 @@ const ObjectAddNewContent = ({ onClose, onApply, open, selected, extendObject, o
                     {stateTypeArray.map(el => <MenuItem key={el} value={el}>{el}</MenuItem>)}
                 </Select>
             </FormControl>}
+            <TextField
+                label={I18n.t('Name')}
+                style={{ margin: '5px 0' }}
+                autoFocus
+                value={name}
+                onKeyDown={e => {
+                    if (e.keyCode === 13) {
+                        e.preventDefault();
+                        name && onLocalApply();
+                    }
+                }}
+                onChange={el => {
+                    setUnique(!objects[buildId(el.target.value)]);
+                    setName(el.target.value);
+                }}
+            />
         </div>
     </CustomModal>;
 }
 
-export default ObjectAddNewContent;
+export default ObjectAddNewObject;

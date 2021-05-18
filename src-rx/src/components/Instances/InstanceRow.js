@@ -1015,7 +1015,7 @@ const InstanceRow = ({
                     </div>
                 </Typography>
                 {expertMode &&
-                    <div className={clsx(classes.hidden1250, !running && classes.invisible)} >
+                    <div className={clsx(classes.hidden1250, (instance.mode !== 'daemon' || !running) && classes.invisible)} >
                         <InstanceInfo
                             icon={<ImportExportIcon />}
                             tooltip={t('events')}
@@ -1039,7 +1039,7 @@ const InstanceRow = ({
                         </Avatar>
                     </Tooltip>
                 }
-                <Grid item className={clsx(classes.hidden1050, classes.width150)}>
+                <Grid item className={clsx(classes.hidden1050, classes.width150, (instance.mode !== 'daemon' || !running) && classes.invisible)}>
                     <InstanceInfo
                         icon={<MemoryIcon />}
                         tooltip={t('RAM usage')}

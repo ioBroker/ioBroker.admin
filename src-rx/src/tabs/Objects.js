@@ -24,7 +24,7 @@ import Router from '@iobroker/adapter-react/Components/Router';
 import ObjectBrowserValue from '../components/Object/ObjectBrowserValue';
 import ObjectBrowserEditObject from '../components/Object/ObjectBrowserEditObject';
 import ObjectBrowserEditRole from '../components/Object/ObjectBrowserEditRole';
-import ObjectAddNewContent from '../dialogs/ObjectAddNewContent';
+import ObjectAddNewObject from '../dialogs/ObjectAddNewObject';
 import ObjectEditOfAccessControl from '../dialogs/ObjectEditOfAccessControl';
 
 const styles = theme => ({
@@ -192,10 +192,10 @@ class Objects extends Component {
                 objectImportExport
                 objectEditOfAccessControl
                 modalNewObject={context =>
-                    <ObjectAddNewContent
+                    <ObjectAddNewObject
                         objects={context.objects}
                         open={context.state.modalNewObj}
-                        extendObject={(id, data) => context.extendObject(id, data)}
+                        setObject={(id, data) => context.setObject(id, data)}
                         selected={context.state.selected[0] || context.state.selectedNonObject}
                         onClose={() => context.setState({ modalNewObj: false })}
                         onApply={() => context.setState({ modalNewObj: false })} />

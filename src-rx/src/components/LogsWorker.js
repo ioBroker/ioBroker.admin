@@ -14,6 +14,8 @@ class LogsWorker {
         this.connected            = this.socket.isConnected();
         this.maxLogs              = maxLogs || 1000;
         this.logs                 = null;
+        this.isSafari             = navigator.vendor && navigator.vendor.includes('Apple') &&
+                                    navigator.userAgent && !navigator.userAgent.includes('CriOS') && !navigator.userAgent.includes('FxiOS');
 
         socket.registerLogHandler(this.logHandler);
         socket.registerConnectionHandler(this.connectionHandler);
@@ -69,7 +71,22 @@ class LogsWorker {
         const warnings = this.warnings;
 
         const obj = this._processLine(line);
-        obj && this.handlers.forEach(handler => handler && handler([obj], JSON.stringify(line).length - 65));
+
+        if (obj) {
+            this.newLogs = this.newLogs || [];
+            this.newLogs.push(obj);
+
+            if (!this.logTimeout) {
+                this.logTimeout = setTimeout(() => {
+                    this.logTimeout = null;
+                    const newLogs = this.newLogs;
+                    this.newLogs = null;
+
+                    this.handlers.forEach(handler =>
+                        handler && handler(newLogs, JSON.stringify(line).length - 65));
+                }, 200);
+            }
+        }
 
         if (errors !== this.errors) {
             this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
@@ -161,8 +178,16 @@ class LogsWorker {
             const time = line.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/);
 
             if (time && time.length > 0) {
-                const tt = time[0].split(' ');
-                let ts = new Date(tt[0] + 'T' + tt[1]).getTime();
+                let ts;
+                // Safari sucks. It is very idiotic browser and because of it, we must parse every number apart
+                if (this.isSafari) {
+                    // parse every number
+                    const tt = line.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{3})/);
+                    ts = new Date(parseInt(tt[1], 10), parseInt(tt[2], 10) - 1, parseInt(tt[3], 10), parseInt(tt[4], 10), parseInt(tt[5], 10), parseInt(tt[6], 10), parseInt(tt[7], 10)).getTime();
+                } else {
+                    const tt = time[0].split(' ');
+                    ts = new Date(tt[0] + 'T' + tt[1]).getTime();
+                }
                 let key = ts;
 
                 if (lastKey && lastKey <= ts) {
@@ -170,7 +195,7 @@ class LogsWorker {
                 }
 
                 // detect from
-                const from = line.match(/: (host\..+? |\D+\.\d+ \()/);
+                const from = line.match(/: (host\..+? |[-\w]+\.\d+ \()/);
 
                 obj = {
                     key,
@@ -252,9 +277,6 @@ class LogsWorker {
 
                 this.logs = [];
                 let lastKey;
-                if (lines && lines.length && lines[0].ts) {
-                    lines.sort((a, b) => a.ts > b.ts ? 1 : (a.ts < b.ts ? -1 : 0));
-                }
 
                 lines.forEach(line => {
                     const obj = this._processLine(line, lastKey);
@@ -262,6 +284,10 @@ class LogsWorker {
                         lastKey = obj.key;
                     }
                 });
+
+                if (lines && lines.length && lines[0].ts) {
+                    lines.sort((a, b) => a.ts > b.ts ? 1 : (a.ts < b.ts ? -1 : 0));
+                }
 
                 this.logSize = logSize;
 

@@ -458,8 +458,8 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
     const stepDown = () => setStep(step - 1);
 
     const extendObject = (id, data) =>
-        socket.extendObject(id, data, error =>
-            error && window.alert(error));
+        socket.extendObject(id, data)
+            .catch(error => window.alert(error));
 
     const discoverScanner = async () => {
         setDisableScanner(true);

@@ -619,6 +619,12 @@ class EnumsList extends Component {
                         >
                             {Object.keys(this.state.enumsTree.children.enum.children).map((category, index) => {
                                 let categoryData = this.state.enumsTree.children.enum.children[category].data;
+                                categoryData = categoryData || {
+                                    _id: this.state.enumsTree.children.enum.children[category].id,
+                                    common: {
+                                        name: this.state.enumsTree.children.enum.children[category].id.split('.').pop()
+                                    }
+                                };
                                 return <Tab
                                     key={index}
                                     component={'span'}

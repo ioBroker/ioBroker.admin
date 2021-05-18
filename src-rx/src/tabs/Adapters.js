@@ -1176,11 +1176,12 @@ class Adapters extends Component {
         this.cache.listOfVisibleAdapter = [];
         this.cache.adapters = {};
         const now = Date.now();
-        const textDaysAgo = this.t('days ago');
+        const textDaysAgo1 = this.t('1 %d days ago');
+        const textDaysAgo2 = this.t('vor %d Tagen');
+        const textDaysAgo = this.t('vor %d Tagen');
 
         const sortPopularFirst    = !this.state.viewMode && this.state.filterTiles === 'Popular first';
         const sortRecentlyUpdated = !this.state.viewMode && this.state.filterTiles === 'Recently updated';
-        const sortAZ              =  this.state.viewMode || this.state.filterTiles === 'A-Z';
 
         // get all visible adapters
         this.state.categories
@@ -1229,7 +1230,9 @@ class Adapters extends Component {
                             sentry: !!(adapter.plugins && adapter.plugins.sentry),
                             daysAgo: daysAgo10,
                             stat: sortPopularFirst && adapter.stat,
-                            daysAgoText: sortRecentlyUpdated && daysAgo ? `${daysAgo} ${textDaysAgo}` : ''
+                            daysAgoText: sortRecentlyUpdated && daysAgo ?
+                                daysAgo === 1 ? textDaysAgo1.replace('%d', 1) :
+                                    (daysAgo === 2 ? textDaysAgo2.replace('%d', 2) : textDaysAgo.replace('%d', daysAgo)) : ''
                         }
                     }
                 }
@@ -1242,7 +1245,17 @@ class Adapters extends Component {
         const installed = this.state.installed;
 
         this.cache.listOfVisibleAdapter.sort((a, b) => {
-            if (sortAZ) {
+            if (sortPopularFirst) {
+                return repo[b].stat - repo[a].stat;
+            } else
+            if (sortRecentlyUpdated) {
+                if (!adapters[a]) {
+                    return 1;
+                } else if (!adapters[b]) {
+                    return -11;
+                }
+                return adapters[a].daysAgo - adapters[b].daysAgo;
+            } else {
                 if (installed[a] && installed[b]) {
                     return a > b ? 1 : (a < b ? -1 : 0);
                 } else if (installed[a]) {
@@ -1252,13 +1265,7 @@ class Adapters extends Component {
                 } else {
                     return a > b ? 1 : (a < b ? -1 : 0);
                 }
-            } else
-            if (sortPopularFirst) {
-                return repo[b].stat - repo[a].stat;
-            } else
-                if (sortRecentlyUpdated) {
-                    return adapters[a].daysAgo - adapters[b].daysAgo;
-                }
+            }
         });
 
         // console.log('[ADAPTERS] Update cache!');

@@ -463,7 +463,7 @@ class App extends Router {
                             connected: true,
                             progress: 100
                         };
-                        if (this.state.cmd && this.state.cmd.endsWith(' admin')) {
+                        if (this.state.cmd && this.state.cmd.match(/ admin(@[-._\d\w]+)?$/)) {
                             // close command dialog after reconnect (may be admin was restarted and update is now finished)
                             newState.commandRunning = false;
                             newState.forceUpdateAdapters = this.state.forceUpdateAdapters + 1;

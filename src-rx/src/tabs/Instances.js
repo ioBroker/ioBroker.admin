@@ -541,8 +541,8 @@ class Instances extends Component {
     }
 
     extendObject = (id, data) => {
-        this.props.socket.extendObject(id, data, error =>
-            error && window.alert(error));
+        this.props.socket.extendObject(id, data)
+            .catch(error => window.alert(error));
     }
 
     openConfig = (instance) => {

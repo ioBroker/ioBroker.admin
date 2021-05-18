@@ -300,7 +300,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
             setOwnerUsers(el => el.filter(({ value }) => value !== 'different'));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [applyToChildren, stateOwnerUser, stateOwnerGroup, differentOwner, differentGroup]);
+    }, [applyToChildren, /*stateOwnerUser, stateOwnerGroup,*/ differentOwner, differentGroup]);
 
     if (!ids.length) {
         return <LinearProgress />;

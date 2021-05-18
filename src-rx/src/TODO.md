@@ -24,7 +24,6 @@ Marked with "!" must be in release candidate
 - Scroll to new created/copied enumeration
 
 ## Adapters
-- on multihost system, the add of some adapter does not update number of instances
    
 ## Wizard
 
@@ -36,7 +35,8 @@ Marked with "!" must be in release candidate
 ## Instances
 
 ## Objects
-- Tooltips for longer IDs
+- layout in select ID 
+- Add mode view owners (by switching "1") / owner / ownerGroup / objectACL / state ACL
 
 ## Files
 

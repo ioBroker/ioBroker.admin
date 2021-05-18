@@ -4363,10 +4363,13 @@ class ObjectBrowser extends Component {
         />;
     }
 
-    extendObject = (id, data) => {
-        return this.props.socket.extendObject(id, data, error =>
-            error && window.alert(error));
-    }
+    extendObject = (id, data) =>
+        this.props.socket.extendObject(id, data)
+            .catch(error => window.alert(error));
+
+    setObject = (id, data) =>
+        this.props.socket.setObject(id, data)
+            .catch(error => window.alert(error));
 
     /**
      * The rendering method of this component.
