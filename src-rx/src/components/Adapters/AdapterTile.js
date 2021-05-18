@@ -164,6 +164,9 @@ const styles = theme => ({
         paddingTop: 16,
         color: theme.palette.type === 'dark' ? '#333' : '#333'
     },
+    adapterWithAgo: {
+        width: 'calc(100% - 145px)',
+    },
     description: {
         color: theme.palette.type === 'dark' ? '#222' : 'inherit'
     },
@@ -355,13 +358,14 @@ const AdapterTile = ({
         </div>}
         <div className={clsx(classes.imageBlock,
             installedVersion ? classes.installed : '',
-            installedVersion && installedVersion !== version && updateAvailable ? classes.update : '')}>
+            installedVersion && installedVersion !== version && updateAvailable ? classes.update : '')}
+        >
             <CardMedia
                 className={classes.img}
                 component="img"
                 image={image || 'img/no-image.png'}
             />
-            {!stat && !versionDate ? <div className={classes.adapter}>{adapter}</div> : null}
+            <div className={clsx(classes.adapter, (stat || versionDate) && classes.adapterWithAgo)}>{adapter}</div>
             <div className={classes.versionDate}>{stat || versionDate}</div>
             {!stat && !versionDate ? <div
                 onClick={onSetRating ? () => onSetRating() : undefined}

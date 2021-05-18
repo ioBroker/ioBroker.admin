@@ -1176,9 +1176,10 @@ class Adapters extends Component {
         this.cache.listOfVisibleAdapter = [];
         this.cache.adapters = {};
         const now = Date.now();
+        const textDaysAgo0 = this.t('0 %d days ago');
         const textDaysAgo1 = this.t('1 %d days ago');
-        const textDaysAgo2 = this.t('vor %d Tagen');
-        const textDaysAgo = this.t('vor %d Tagen');
+        const textDaysAgo2 = this.t('2 %d days ago');
+        const textDaysAgo = this.t('5 %d days ago');
 
         const sortPopularFirst    = !this.state.viewMode && this.state.filterTiles === 'Popular first';
         const sortRecentlyUpdated = !this.state.viewMode && this.state.filterTiles === 'Recently updated';
@@ -1219,6 +1220,8 @@ class Adapters extends Component {
                         }
                         title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '')
 
+                        const _daysAgo10 = daysAgo % 100 <= 10 || daysAgo % 100 >= 20 ? daysAgo % 10 : 5;
+
                         this.cache.adapters[value] = {
                             title,
                             desc: adapter.desc ? adapter.desc[this.props.lang] || adapter.desc['en'] || adapter.desc : '',
@@ -1230,9 +1233,10 @@ class Adapters extends Component {
                             sentry: !!(adapter.plugins && adapter.plugins.sentry),
                             daysAgo: daysAgo10,
                             stat: sortPopularFirst && adapter.stat,
-                            daysAgoText: sortRecentlyUpdated && daysAgo ?
-                                daysAgo === 1 ? textDaysAgo1.replace('%d', 1) :
-                                    (daysAgo === 2 ? textDaysAgo2.replace('%d', 2) : textDaysAgo.replace('%d', daysAgo)) : ''
+                            daysAgoText: sortRecentlyUpdated && (daysAgo || daysAgo === 0) ?
+                                daysAgo === 0 ? textDaysAgo0 :
+                                    (_daysAgo10 === 1 ? textDaysAgo1.replace('%d', daysAgo) :
+                                        (_daysAgo10 === 2 || _daysAgo10 === 3 || _daysAgo10 === 4 ? textDaysAgo2.replace('%d', daysAgo) : textDaysAgo.replace('%d', daysAgo))) : ''
                         }
                     }
                 }
@@ -1241,7 +1245,7 @@ class Adapters extends Component {
         this.listOfVisibleAdapterLength = this.cache.listOfVisibleAdapter.length;
 
         const repo = this.state.repository;
-        const adapters = this.state.adapters;
+        const adapters = this.cache.adapters;
         const installed = this.state.installed;
 
         this.cache.listOfVisibleAdapter.sort((a, b) => {
@@ -1250,11 +1254,15 @@ class Adapters extends Component {
             } else
             if (sortRecentlyUpdated) {
                 if (!adapters[a]) {
-                    return 1;
+                    return -1;
                 } else if (!adapters[b]) {
-                    return -11;
+                    return 1;
                 }
-                return adapters[a].daysAgo - adapters[b].daysAgo;
+                if (adapters[a].daysAgo === adapters[b].daysAgo) {
+                    return a > b ? 1 : (a < b ? -1 : 0);
+                } else {
+                    return adapters[a].daysAgo - adapters[b].daysAgo;
+                }
             } else {
                 if (installed[a] && installed[b]) {
                     return a > b ? 1 : (a < b ? -1 : 0);
