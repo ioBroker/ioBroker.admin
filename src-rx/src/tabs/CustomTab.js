@@ -17,8 +17,9 @@ const styles = theme => ({
         height:     '100%',
         background: 'white',
         color:      'black',
-        borderRadius: 4,
-        boxShadow: '0 2px 2px 0 rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%), 0 1px 5px 0 rgb(0 0 0 / 20%)',
+        border-radius: 4,
+        box-shadow: '0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)',
+        border: '0px solid #888'
     },
 });
 
