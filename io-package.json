@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.27",
+        "version": "5.0.28",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.0.28": {
+                "en": "Admin5: GUI fixes",
+                "de": "Admin5: GUI-Korrekturen",
+                "ru": "Admin5: исправления графического интерфейса",
+                "pt": "Admin5: Correções de GUI",
+                "nl": "Admin5: GUI-fixes",
+                "fr": "Admin5: correctifs de l'interface graphique",
+                "it": "Admin5: correzioni della GUI",
+                "es": "Admin5: correcciones de GUI",
+                "pl": "Admin5: poprawki GUI",
+                "zh-cn": "Admin5：GUI修复"
+            },
             "5.0.27": {
                 "en": "Admin5: GUI fixes",
                 "de": "Admin5: GUI-Korrekturen",
@@ -245,18 +257,6 @@
                 "es": "Admin5: se corrigieron muchos errores",
                 "pl": "Admin5: Naprawiono wiele błędów",
                 "zh-cn": "Admin5：修复了许多错误"
-            },
-            "5.0.8": {
-                "en": "Admin5: Implemented rating with comments",
-                "de": "Admin5: Bewertung mit Kommentaren implementiert",
-                "ru": "Admin5: Реализовал рейтинг с комментариями",
-                "pt": "Admin5: Avaliação implementada com comentários",
-                "nl": "Admin5: Beoordeling met opmerkingen geïmplementeerd",
-                "fr": "Admin5: Évaluation mise en œuvre avec commentaires",
-                "it": "Admin5: valutazione implementata con commenti",
-                "es": "Admin5: Calificación implementada con comentarios",
-                "pl": "Admin5: Zaimplementowano ocenę z komentarzami",
-                "zh-cn": "Admin5：已实施评分并带有注释"
             }
         },
         "desc": {
