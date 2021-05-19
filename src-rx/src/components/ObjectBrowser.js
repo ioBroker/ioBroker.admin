@@ -4043,17 +4043,17 @@ class ObjectBrowser extends Component {
         if (columnsAuto) {
             this.columnsVisibility = {
                 id:          SCREEN_WIDTHS[this.props.width].idWidth,
-                name:        this.visibleCols.includes('name')        ? WIDTHS.name        : 0,
-                type:        this.visibleCols.includes('type')        ? WIDTHS.type        : 0,
-                role:        this.visibleCols.includes('role')        ? WIDTHS.role        : 0,
-                room:        this.visibleCols.includes('room')        ? WIDTHS.room        : 0,
-                func:        this.visibleCols.includes('func')        ? WIDTHS.func        : 0,
-                changedFrom: this.visibleCols.includes('changedFrom') ? WIDTHS.changedFrom : 0,
-                qualityCode: this.visibleCols.includes('qualityCode') ? WIDTHS.qualityCode : 0,
-                timestamp:   this.visibleCols.includes('timestamp')   ? WIDTHS.timestamp   : 0,
-                lastChange:  this.visibleCols.includes('lastChange')  ? WIDTHS.lastChange  : 0,
-                val:         this.visibleCols.includes('val')         ? WIDTHS.val         : 0,
-                buttons:     this.visibleCols.includes('buttons')     ? WIDTHS.buttons     : 0,
+                name:        this.visibleCols.includes('name')        ? WIDTHS.name         || 0 : 0,
+                type:        this.visibleCols.includes('type')        ? WIDTHS.type         || 0 : 0,
+                role:        this.visibleCols.includes('role')        ? WIDTHS.role         || 0 : 0,
+                room:        this.visibleCols.includes('room')        ? WIDTHS.room         || 0 : 0,
+                func:        this.visibleCols.includes('func')        ? WIDTHS.func         || 0 : 0,
+                changedFrom: this.visibleCols.includes('changedFrom') ? WIDTHS.changedFrom  || 0 : 0,
+                qualityCode: this.visibleCols.includes('qualityCode') ? WIDTHS.qualityCode  || 0 : 0,
+                timestamp:   this.visibleCols.includes('timestamp')   ? WIDTHS.timestamp    || 0 : 0,
+                lastChange:  this.visibleCols.includes('lastChange')  ? WIDTHS.lastChange   || 0 : 0,
+                val:         this.visibleCols.includes('val')         ? WIDTHS.val          || 0 : 0,
+                buttons:     this.visibleCols.includes('buttons')     ? WIDTHS.buttons      || 0 : 0,
             };
 
             if (this.columnsVisibility.name) {
@@ -4094,11 +4094,11 @@ class ObjectBrowser extends Component {
         } else {
             this.columnsVisibility = {
                 id:   columnsWidths.id || SCREEN_WIDTHS[this.props.width].idWidth,
-                name: columns.includes('name') ? columnsWidths.name || WIDTHS.name || SCREEN_WIDTHS[this.props.width].widths.name : 0,
-                type: columns.includes('type') ? columnsWidths.type || WIDTHS.type || SCREEN_WIDTHS[this.props.width].widths.type : 0,
-                role: columns.includes('role') ? columnsWidths.role || WIDTHS.role || SCREEN_WIDTHS[this.props.width].widths.role : 0,
-                room: columns.includes('room') ? columnsWidths.room || WIDTHS.room || SCREEN_WIDTHS[this.props.width].widths.room : 0,
-                func: columns.includes('func') ? columnsWidths.func || WIDTHS.func || SCREEN_WIDTHS[this.props.width].widths.func : 0
+                name: columns.includes('name') ? columnsWidths.name || WIDTHS.name || SCREEN_WIDTHS[this.props.width].widths.name || 0 : 0,
+                type: columns.includes('type') ? columnsWidths.type || WIDTHS.type || SCREEN_WIDTHS[this.props.width].widths.type || 0 : 0,
+                role: columns.includes('role') ? columnsWidths.role || WIDTHS.role || SCREEN_WIDTHS[this.props.width].widths.role || 0 : 0,
+                room: columns.includes('room') ? columnsWidths.room || WIDTHS.room || SCREEN_WIDTHS[this.props.width].widths.room || 0 : 0,
+                func: columns.includes('func') ? columnsWidths.func || WIDTHS.func || SCREEN_WIDTHS[this.props.width].widths.func || 0 : 0
             };
             let widthSum = this.columnsVisibility.id; // id is always visible
             if (this.columnsVisibility.name) {
