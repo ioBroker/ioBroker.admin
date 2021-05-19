@@ -63,7 +63,7 @@ const styles = theme => ({
         }
     },
     collapse: {
-        height: 150,
+        height: 160,
         backgroundColor: 'rgba(128, 128, 128, 0.1)',
         // position: 'absolute',
         width: '100%',
@@ -86,7 +86,7 @@ const styles = theme => ({
             height: 0
         },
         '100%': {
-            height: 150,
+            height: 160,
         }
     },
     footerBlock: {
