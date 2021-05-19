@@ -2970,16 +2970,16 @@ class ObjectBrowser extends Component {
                 </Tooltip>}
 
                 {this.props.objectAddBoolean ?
-                    (<Tooltip title={this.toolTipObjectCreating()}>
-                            <div>
-                                <IconButton disabled={!allowObjectCreation} onClick={() =>
-                                    this.setState({ modalNewObj: true })}
-                                >
-                                    <AddIcon />
-                                </IconButton>
-                            </div>
-                        </Tooltip>
-                    ) : null
+                    <Tooltip title={this.toolTipObjectCreating()}>
+                        <div>
+                            <IconButton disabled={!allowObjectCreation} onClick={() =>
+                                this.setState({ modalNewObj: true })}
+                            >
+                                <AddIcon />
+                            </IconButton>
+                        </div>
+                    </Tooltip>
+                    : null
                 }
 
                 {this.props.objectImportExport &&

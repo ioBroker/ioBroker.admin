@@ -350,7 +350,6 @@ class Drawer extends Component {
                             title = this.props.t(instance.name);
                         }
 
-
                         let obj;
                         if (tabsInfo[tab]) {
                             obj = Object.assign({ name: tab }, tabsInfo[tab]);
@@ -387,9 +386,20 @@ class Drawer extends Component {
 
                 // add dynamic tabs
                 tabs = tabs.concat(dynamicTabs);
-                tabs = tabs.filter(obj => obj).map(obj => {
-                    obj.visible = true;
-                    return obj;
+
+                tabs = tabs.filter(obj => obj);
+                tabs.forEach(obj => obj.visible = true);
+
+                tabs.sort((a, b) => {
+                    if (a.order && b.order) {
+                        return a.order - b.order;
+                    } else if (a.order) {
+                        return -1;
+                    } else if (b.order) {
+                        return 1;
+                    } else {
+                        return a.name > b.name ? -1 : (a.name > b.name ? 1 : 0);
+                    }
                 });
 
                 // Convert
@@ -397,17 +407,32 @@ class Drawer extends Component {
                     .then(systemConfig => {
                         systemConfig.common.tabsVisible = systemConfig.common.tabsVisible || [];
 
-                        if (systemConfig.common.tabsVisible) {
-                            tabs.forEach(tab => {
-                                const it = systemConfig.common.tabsVisible.find(el => el.name === tab.name);
-                                if (it) {
-                                    tab.visible = it.visible;
-                                }
-                            });
-                        }
+                        tabs.forEach(tab => {
+                            const it = systemConfig.common.tabsVisible.find(el => el.name === tab.name);
+                            if (it) {
+                                tab.visible = it.visible;
+                            }
+                        });
+
+                        const map = {}
+                        systemConfig.common.tabsVisible.forEach((item, i) => map[item.name] = i);
+
+                        tabs.sort((a, b) => {
+                            const aa = map[a.name];
+                            const bb = map[b.name];
+                            if (aa !== undefined && bb !== undefined) {
+                                return aa - bb;
+                            } else if (aa) {
+                                return -1;
+                            } else if (bb) {
+                                return 1;
+                            } else {
+                                return 0;
+                            }
+                        });
 
                         this.setState({tabs}, () => {
-                            const tabsVisible = tabs.map(({ name, order, visible }) => ({ name, order, visible }));
+                            const tabsVisible = tabs.map(({ name, visible }) => ({ name, visible }));
 
                             if (JSON.stringify(tabsVisible) !== JSON.stringify(systemConfig.common.tabsVisible)) {
                                 this.props.socket.getSystemConfig(true)
@@ -462,7 +487,7 @@ class Drawer extends Component {
         }
         return this.props.socket.getSystemConfig(true)
             .then(newObjCopy => {
-                newObjCopy.common.tabsVisible = newTabs.map(({ name, order, visible }) => ({ name, order, visible }));
+                newObjCopy.common.tabsVisible = newTabs.map(({ name, visible }) => ({ name, visible }));
 
                 if (idx !== undefined) {
                     this.setState({ tabs: newTabs }, () =>

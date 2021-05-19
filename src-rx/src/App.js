@@ -449,7 +449,7 @@ class App extends Router {
 
             this.socket = new Connection({
                 name: 'admin',
-                admin5Only: true,
+                admin5only: true,
                 port: this.getPort(),
                 autoSubscribes: ['system.adapter.*'], // do not subscribe on '*' and really we don't need a 'system.adapter.*' too. Every tab must subscribe itself on everything that it needs
                 autoSubscribeLog: true,
@@ -463,7 +463,7 @@ class App extends Router {
                             connected: true,
                             progress: 100
                         };
-                        if (this.state.cmd && this.state.cmd.match(/ admin(@[-._\d\w]+)?$/)) {
+                        if (this.state.cmd && this.state.cmd.match(/ admin(@[-.\w]+)?$/)) {
                             // close command dialog after reconnect (may be admin was restarted and update is now finished)
                             newState.commandRunning = false;
                             newState.forceUpdateAdapters = this.state.forceUpdateAdapters + 1;

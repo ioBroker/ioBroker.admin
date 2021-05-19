@@ -72,7 +72,7 @@ class Connection {
         this.loadTimer = null;
         this.loadCounter = 0;
         this.certPromise = null;
-        this.admin5Only = this.props.admin5Only || false;
+        this.admin5only = this.props.admin5only || false;
 
         /** @type {((connected: boolean) => void)[]} */
         this.onConnectionHandlers = [];
@@ -320,7 +320,7 @@ class Connection {
             }
 
             // Read system configuration
-            return (this.admin5Only ? this.getCompactSystemConfig() : this.getSystemConfig())
+            return (this.admin5only ? this.getCompactSystemConfig() : this.getSystemConfig())
                 .then(data => {
                     if (this.doNotLoadACL) {
                         if (this.loaded) {
@@ -355,7 +355,6 @@ class Connection {
                                 this.props.onReady && this.props.onReady(this.objects);
                             });
                     } else {
-                        this.objects = {'system.config': data};
                         this.onProgress(PROGRESS.READY);
                         this.props.onReady && this.props.onReady(this.objects);
                     }
