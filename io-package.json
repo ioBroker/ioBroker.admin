@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.28",
+        "version": "5.0.29",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.0.29": {
+                "en": "Admin5: Fixed reorder of the items in menu",
+                "de": "Admin5: Neuordnung der Elemente im Menü behoben",
+                "ru": "Admin5: Исправлен переупорядочение пунктов в меню.",
+                "pt": "Admin5: Reordenação corrigida dos itens no menu",
+                "nl": "Admin5: Vaste herschikking van de items in het menu",
+                "fr": "Admin5: Correction de la réorganisation des éléments dans le menu",
+                "it": "Admin5: corretto riordino degli elementi nel menu",
+                "es": "Admin5: reordenamiento fijo de los elementos en el menú",
+                "pl": "Admin5: Naprawiono zmianę kolejności elementów w menu",
+                "zh-cn": "Admin5：修复了菜单中项目的重新排序"
+            },
             "5.0.28": {
                 "en": "Admin5: GUI fixes",
                 "de": "Admin5: GUI-Korrekturen",
@@ -245,18 +257,6 @@
                 "es": "Admin5: implementó el filtro de idioma y el selector para calificar con comentarios",
                 "pl": "Admin5: Zaimplementowano filtr i selektor języka do oceny z komentarzami",
                 "zh-cn": "Admin5：实现了语言过滤器和选择器，以对评论进行评分"
-            },
-            "5.0.9": {
-                "en": "Admin5: Fixed many bugs",
-                "de": "Admin5: Viele Fehler behoben",
-                "ru": "Admin5: Исправлено множество ошибок",
-                "pt": "Admin5: muitos bugs corrigidos",
-                "nl": "Admin5: Veel bugs opgelost",
-                "fr": "Admin5: Correction de nombreux bugs",
-                "it": "Admin5: risolti molti bug",
-                "es": "Admin5: se corrigieron muchos errores",
-                "pl": "Admin5: Naprawiono wiele błędów",
-                "zh-cn": "Admin5：修复了许多错误"
             }
         },
         "desc": {
