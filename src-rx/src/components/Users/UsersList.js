@@ -52,7 +52,7 @@ const styles = theme => ({
         border: '1px solid #FFF',
         borderColor: theme.palette.divider,
         margin:    10,
-        minHeight: 140,
+        minHeight: 150,
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
         transition: 'all 200ms ease-out',
