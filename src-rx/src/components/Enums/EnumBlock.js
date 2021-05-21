@@ -119,6 +119,7 @@ class EnumBlock extends Component {
         return <Card
             style={style}
             className={classes.enumGroupCard2}
+            id={props.enum._id}
         >
             <div className={classes.enumCardContent}>
                 <div className={classes.right}>

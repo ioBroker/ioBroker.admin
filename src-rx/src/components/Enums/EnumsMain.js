@@ -155,7 +155,7 @@ class EnumsList extends Component {
             search: '',
             enumEditDialog: null,
             enumTemplateDialog: null,
-            enumEditDialogNew: null,
+            enumEditDialogNew: false,
             enumDeleteDialog: null,
             members: {},
             categoryPopoverOpen: false,
@@ -177,7 +177,44 @@ class EnumsList extends Component {
         enumTemplate._id = templateValues._id;
         enumTemplate.common = {...enumTemplate.common, ...templateValues.common};
         this.props.socket.setObject(enumTemplate._id, enumTemplate)
-            .then(() => this.updateData());
+            .then(() => {
+                this.updateData();
+
+                const newId = enumTemplate._id;
+                // check that parent is opened
+                let parts = newId.split('.');
+                parts.pop();
+                let changed = false;
+                const enumsClosed = JSON.parse(JSON.stringify(this.state.enumsClosed));
+
+                while (parts.length > 2) {
+                    const parentId = parts.join('.');
+                    if (enumsClosed[parentId]) {
+                        delete enumsClosed[parentId];
+                        changed = true;
+                    }
+                    parts = parentId.split('.');
+                    parts.pop();
+                }
+
+                if (changed) {
+                    this.setState({enumsClosed}, () => {
+                        setTimeout(() => {
+                            const el = document.getElementById(newId);
+                            if (el) {
+                                el.scrollIntoView(true);
+                            }
+                        }, 300);
+                    });
+                } else {
+                    setTimeout(() => {
+                        const el = document.getElementById(newId);
+                        if (el) {
+                            el.scrollIntoView(true);
+                        }
+                    }, 300);
+                }
+            });
     }
 
     componentDidMount() {
@@ -255,6 +292,7 @@ class EnumsList extends Component {
             members.push(itemId);
             this.props.socket.setObject(enumItem._id, enumItem).then(() => {
                 this.updateData();
+
             });
         }
     }
@@ -341,29 +379,63 @@ class EnumsList extends Component {
 
     saveEnum = originalId => {
         let enumItem = JSON.parse(JSON.stringify(this.state.enumEditDialog));
-        this.props.socket.setObject(enumItem._id, enumItem)
-        .then(() => {
-            if (originalId && originalId !== this.state.enumEditDialog._id) {
-                return this.props.socket.delObject(originalId);
-            }
-        })
-        .then(() => {
-            return Promise.all(Object.values(this.state.enums).map(enumChild => {
-                if (enumChild._id.startsWith(originalId + '.')) {
-                    let newEnumChild = JSON.parse(JSON.stringify(enumChild));
-                    newEnumChild._id = newEnumChild._id.replace(originalId + '.', enumItem._id + '.');
+        let newId = this.state.enumEditDialog._id;
 
-                    return this.props.socket.setObject(newEnumChild._id, newEnumChild).then(() =>
-                        this.props.socket.delObject(enumChild._id));
-                } else {
-                    return null;
+        this.props.socket.setObject(enumItem._id, enumItem)
+            .then(() => {
+                if (originalId && originalId !== this.state.enumEditDialog._id) {
+                    return this.props.socket.delObject(originalId);
                 }
-            }))
-        })
-        .then(() => {
-            this.updateData();
-            this.setState({enumEditDialog: null});
-        });
+            })
+            .then(() => {
+                return Promise.all(Object.values(this.state.enums).map(enumChild => {
+                    if (enumChild._id.startsWith(originalId + '.')) {
+                        let newEnumChild = JSON.parse(JSON.stringify(enumChild));
+                        newEnumChild._id = newEnumChild._id.replace(originalId + '.', enumItem._id + '.');
+
+                        return this.props.socket.setObject(newEnumChild._id, newEnumChild).then(() =>
+                            this.props.socket.delObject(enumChild._id));
+                    } else {
+                        return null;
+                    }
+                }))
+            })
+            .then(() => {
+                const wasNew = this.state.enumEditDialogNew;
+                this.updateData();
+                const newState = {enumEditDialog: null, enumEditDialogNew: false}
+
+                if (wasNew) {
+                    // check that parent is opened
+                    let parts = this.state.enumEditDialog._id.split('.');
+                    parts.pop();
+                    let changed = false;
+                    const enumsClosed = JSON.parse(JSON.stringify(this.state.enumsClosed));
+
+                    while (parts.length > 2) {
+                        const parentId = parts.join('.');
+                        if (enumsClosed[parentId]) {
+                            delete enumsClosed[parentId];
+                            changed = true;
+                        }
+                        parts = parentId.split('.');
+                        parts.pop();
+                    }
+
+                    if (changed) {
+                        newState.enumsClosed = enumsClosed;
+                    }
+                }
+
+                this.setState(newState, () => {
+                    wasNew && setTimeout(() => {
+                        const el = document.getElementById(newId);
+                        if (el) {
+                            el.scrollIntoView(true);
+                        }
+                    }, 300);
+                });
+            });
     }
 
     deleteEnum = (enumId) => {
