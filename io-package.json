@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.30",
+        "version": "5.0.31",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.0.31": {
+                "en": "Admin5: Improved the enumerations",
+                "de": "Admin5: Die Aufzählungen wurden verbessert",
+                "ru": "Admin5: Улучшены перечисления",
+                "pt": "Admin5: Melhorou as enumerações",
+                "nl": "Admin5: Verbeterde opsommingen",
+                "fr": "Admin5: Amélioration des énumérations",
+                "it": "Admin5: migliorate le enumerazioni",
+                "es": "Admin5: se mejoraron las enumeraciones",
+                "pl": "Admin5: Poprawiono wyliczenia",
+                "zh-cn": "Admin5：改进了枚举"
+            },
             "5.0.30": {
                 "en": "Admin5: Fixed update of objects",
                 "de": "Admin5: Aktualisierung von Objekten behoben",
@@ -245,18 +257,6 @@
                 "es": "Admin5: se corrigieron muchos errores",
                 "pl": "Admin5: Naprawiono wiele błędów",
                 "zh-cn": "Admin5：修复了许多错误"
-            },
-            "5.0.11": {
-                "en": "Admin5: users management implemented",
-                "de": "Admin5: Benutzerverwaltung implementiert",
-                "ru": "Admin5: реализовано управление пользователями",
-                "pt": "Admin5: gerenciamento de usuários implementado",
-                "nl": "Admin5: gebruikersbeheer geïmplementeerd",
-                "fr": "Admin5: gestion des utilisateurs implémentée",
-                "it": "Admin5: implementata la gestione degli utenti",
-                "es": "Admin5: gestión de usuarios implementada",
-                "pl": "Admin5: zaimplementowano zarządzanie użytkownikami",
-                "zh-cn": "Admin5：已实施用户管理"
             }
         },
         "desc": {
