@@ -184,7 +184,6 @@ class HostSelectors extends Component {
                                 src={selectedHostObj?.common?.icon || 'img/no-image.png'}
                             />
                             <div className={this.props.classes.name}>{selectedHostObj?.common?.name}</div>
-
                         </div>
                     </Button>
                 </div>

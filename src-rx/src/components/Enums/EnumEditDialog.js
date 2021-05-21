@@ -20,6 +20,8 @@ import Utils from '../Utils';
 
 import devices from '../../assets/devices/list.json';
 import rooms from '../../assets/rooms/list.json';
+import CloseIcon from "@material-ui/icons/Close";
+import CheckIcon from "@material-ui/icons/Check";
 
 const styles = theme => ({
     contentRoot:{
@@ -208,8 +210,8 @@ function EnumEditDialog(props) {
             </Grid>
         </DialogContent>
         <DialogActions className={props.classes.dialogActions} >
-            <Button variant="contained" color="primary" autoFocus onClick={() => props.saveData(props.isNew ? null : props.enum._id)} disabled={!canSave || !props.changed}>{props.t('Save')}</Button>
-            <Button variant="contained" onClick={props.onClose}>{props.t('Cancel')}</Button>
+            <Button variant="contained" color="primary" autoFocus onClick={() => props.saveData(props.isNew ? null : props.enum._id)} disabled={!canSave || !props.changed}  startIcon={<CheckIcon />}>{props.t('Save')}</Button>
+            <Button variant="contained" onClick={props.onClose} startIcon={<CloseIcon />}>{props.t('Cancel')}</Button>
         </DialogActions>
     </Dialog>;
 }

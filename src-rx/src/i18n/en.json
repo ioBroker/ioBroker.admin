@@ -1380,5 +1380,8 @@
   "Category": "Category",
   "0 %d days ago": "today",
   "Add group": "Add new category item",
-  "Add enum": "Add new category"
+  "Add enum": "Add new category",
+  "Save & Close": "Save & Close",
+  "API key": "API key",
+  "Restart works only if controller started as system service.": "Restart works only if controller started as system service."
 }

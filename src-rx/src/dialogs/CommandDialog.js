@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 
 import PropTypes from 'prop-types';
 
@@ -16,6 +16,7 @@ import {
 } from '@material-ui/core';
 
 import CloseIcon from '@material-ui/icons/Close';
+import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 
 import Command from '../components/Command';
 
@@ -107,12 +108,15 @@ class CommandDialog extends Component {
                         onClick={this.props.onInBackground}
                         color="primary">
                         {this.props.confirmText || this.props.t('In background')}
+                        startIcon={<OpenInBrowserIcon />}
                     </Button>
                     <Button
                         variant="contained"
                         disabled={!this.props.inBackground}
                         onClick={this.props.onClose}
-                        color="default">
+                        color="default"
+                        startIcon={<CloseIcon />}
+                    >
                         {this.props.t('Close')}
                     </Button>
                 </div>

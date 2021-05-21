@@ -15,6 +15,7 @@ import I18n from '@iobroker/adapter-react/i18n';
 
 import theme from '@iobroker/adapter-react/Theme';
 import ConfigPanel from '../components/JsonConfigComponent/ConfigPanel';
+import CheckIcon from "@material-ui/icons/Check";
 
 let node = null;
 
@@ -335,7 +336,9 @@ const GenereteInputsModal = ({ themeType, themeName, socket, newInstances, onApp
                             onClose();
                         }
                     }}
-                    color="primary">
+                    color="primary"
+                    startIcon={<CheckIcon/>}
+                >
                     {I18n.t('Apply')}
                 </Button>
                 <Button
@@ -344,8 +347,9 @@ const GenereteInputsModal = ({ themeType, themeName, socket, newInstances, onApp
                         onClose();
                         setTimeout(() => onCloseModal(), 0);
                     }}
-                    color="default">
-                    <CloseIcon />
+                    color="default"
+                    startIcon={<CloseIcon />}
+                >
                     {I18n.t('Close')}
                 </Button>
             </DialogActions>

@@ -17,6 +17,8 @@ import PageviewIcon from '@material-ui/icons/Pageview';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import ColorLensIcon from '@material-ui/icons/ColorLens';
 import ImageIcon from '@material-ui/icons/Image';
+import IconCancel from '@material-ui/icons/Close';
+import IconCheck from '@material-ui/icons/Check';
 
 import {IOTextField, IOColorPicker, IOFileInput} from '../IOFields/Fields';
 import Utils from '../Utils';
@@ -33,6 +35,7 @@ import User9 from '../../assets/users/user9.svg';
 import User10 from '../../assets/users/user10.svg';
 import User11 from '../../assets/users/user11.svg';
 import User12 from '../../assets/users/user12.svg';
+
 
 const USER_ICONS = [User1, User2, User3, User4, User5, User6, User7, User8, User9, User10, User11, User12];
 
@@ -233,8 +236,8 @@ function UserEditDialog(props) {
             </Grid>
         </DialogContent>
         <DialogActions className={props.classes.dialogActions} >
-            <Button variant="contained" color="primary" autoFocus onClick={() => props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>{props.t('Save')}</Button>
-            <Button variant="contained" onClick={props.onClose}>{props.t('Cancel')}</Button>
+            <Button variant="contained" color="primary" autoFocus onClick={() => props.saveData(props.isNew ? null : originalId)} disabled={!canSave} startIcon={<IconCheck/>}>{props.t('Save')}</Button>
+            <Button variant="contained" onClick={props.onClose} startIcon={<IconCancel/>}>{props.t('Cancel')}</Button>
         </DialogActions>
     </Dialog>;
 }

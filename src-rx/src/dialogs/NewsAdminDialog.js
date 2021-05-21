@@ -15,6 +15,7 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import I18n from '@iobroker/adapter-react/i18n';
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
+import CheckIcon from "@material-ui/icons/Check";
 
 let node = null;
 
@@ -175,7 +176,8 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, themeName }) =
                                 variant="contained"
                                 className={classes.link}
                                 onClick={() => window.open(newsArr[indexArr].link, '_blank')}
-                                color="primary">
+                                color="primary"
+                            >
                                 {newsArr[indexArr].linkTitle ? newsArr[indexArr].linkTitle[lang] ? newsArr[indexArr].linkTitle[lang] : newsArr[indexArr].linkTitle : I18n.t('Link')}
                             </Button>}
                     </div>
@@ -186,7 +188,9 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, themeName }) =
                     variant="contained"
                     autoFocus
                     onClick={onClose}
-                    color="primary">
+                    color="primary"
+                    startIcon={<CheckIcon/>}
+                >
                     {I18n.t('Acknowledge')}
                 </Button>
             </DialogActions>

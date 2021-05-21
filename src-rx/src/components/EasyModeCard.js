@@ -77,32 +77,36 @@ const styles = theme => ({
         fontSize: 15,
     }
 });
+
+function getText(text, lang) {
+    if (text && typeof text === 'object') {
+        return text[lang] || text.en || '';
+    } else {
+        return text || '';
+    }
+}
+
 const EasyModeCard = ({
     classes,
     icon,
     id,
     key,
     desc,
+    lang,
     navigate
 }) => {
     return <Card onClick={navigate} key={key} className={classes.root}>
-        <div className={clsx(
-            classes.imageBlock, classes.instanceStateNotAlive1,
-        )}>
+        <div className={clsx(classes.imageBlock, classes.instanceStateNotAlive1)}>
             <CardMedia className={classes.img} component="img" image={`adapter/${id.split('.')[0]}/${icon}` || 'img/no-image.png'} />
         </div>
         <div className={classes.wrapperDesc}>
-            <div className={classes.desc}>{desc}</div>
+            <div className={classes.desc}>{getText(desc, lang)}</div>
             <div className={classes.adapter}>{id}</div>
         </div>
     </Card>
 }
 
 EasyModeCard.propTypes = {
-    /**
-     * Link and text
-     * {link: 'https://example.com', text: 'example.com'}
-     */
     t: PropTypes.func,
 };
 

@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 
@@ -16,6 +16,8 @@ import { Tooltip } from '@material-ui/core';
 
 import AdaptersUpdater from '../components/Adapters/AdaptersUpdater';
 import Command from '../components/Command';
+import CheckIcon from "@material-ui/icons/Check";
+import CloseIcon from "@material-ui/icons/Close";
 
 const styles = theme => {
     return ({
@@ -224,10 +226,12 @@ class AdaptersUpdaterDialog extends Component {
                     onClick={() => this.onStartUpdate()}
                     color="primary"
                     autoFocus
+                    startIcon={<CheckIcon/>}
                 >
                     {this.props.t('Update')}
                 </Button>
-                <Button variant="contained" onClick={() => this.props.onClose(!!this.state.updated.length)} disabled={this.state.inProcess}>
+                <Button variant="contained" onClick={() => this.props.onClose(!!this.state.updated.length)} disabled={this.state.inProcess}
+                        startIcon={<CloseIcon />}>
                     {this.props.t('Close')}
                 </Button>
             </DialogActions>

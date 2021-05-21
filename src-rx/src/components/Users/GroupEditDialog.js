@@ -35,6 +35,8 @@ import Group7 from '../../assets/groups/group7.svg';
 import Group8 from '../../assets/groups/group8.svg';
 import Group9 from '../../assets/groups/group9.svg';
 import Group10 from '../../assets/groups/group10.svg';
+import IconCancel from "@material-ui/icons/Close";
+import IconCheck from "@material-ui/icons/Check";
 
 const GROUPS_ICONS = [Group1, Group2, Group3, Group4, Group5, Group6, Group7, Group8, Group9, Group10];
 
@@ -251,8 +253,8 @@ function GroupEditDialog(props) {
             { selectedTab }
         </DialogContent>
         <DialogActions className={props.classes.dialogActions} >
-            <Button variant="contained" color="primary" autoFocus onClick={() => props.saveData(props.isNew ? null : originalId)} disabled={!canSave}>{props.t('Save')}</Button>
-            <Button variant="contained" onClick={props.onClose}>{props.t('Cancel')}</Button>
+            <Button variant="contained" color="primary" autoFocus onClick={() => props.saveData(props.isNew ? null : originalId)} disabled={!canSave} startIcon={<IconCheck />}>{props.t('Save')}</Button>
+            <Button variant="contained" onClick={props.onClose} startIcon={<IconCancel />}>{props.t('Cancel')}</Button>
         </DialogActions>
     </Dialog>;
 }

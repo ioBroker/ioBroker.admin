@@ -24,7 +24,8 @@ const CustomSelectButton = ({ arrayItem, title, onClick, value, contained, butto
                 className={classes.button}
                 variant={contained ? 'contained' : 'outlined'}
                 color="primary"
-                onClick={e => setAnchorEl(e.currentTarget)}>
+                onClick={e => setAnchorEl(e.currentTarget)}
+            >
                 {buttonIcon || null}{value}
             </Button>
         </Tooltip>

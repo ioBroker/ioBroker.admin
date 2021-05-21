@@ -175,7 +175,6 @@ class FileViewer extends Component {
                         onClick={e => Utils.copyToClipboard(this.state.text || this.state.code, e)}
                         startIcon={<CopyIcon />}
                     >
-                        <CopyIcon />
                         {this.props.t('Copy content')}
                     </Button> : null}
                 {this.state.editing ?

@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -26,6 +26,8 @@ import CloseIcon from '@material-ui/icons/Close';
 // icons
 import IntroCard from '../components/IntroCard';
 import UploadImage from '../components/UploadImage';
+import AddIcon from "@material-ui/icons/Add";
+import CheckIcon from "@material-ui/icons/Check";
 
 
 const styles = theme => ({
@@ -305,15 +307,17 @@ class EditIntroLinkDialog extends Component {
                                 interval: this.state.interval,
                             });
                         }}
-                        color="primary">
+                        color="primary"
+                        startIcon={this.props.isNew ? <AddIcon/> : <CheckIcon/>}
+                    >
                         {this.props.isNew ? this.props.t('Add') : this.props.t('Save')}
                     </Button>
                     <Button
                         variant="contained"
-                        onClick={() => {
-                            this.props.onClose();
-                        }}
-                        color="default">
+                        onClick={() => this.props.onClose()}
+                        color="default"
+                        startIcon={<CloseIcon />}
+                    >
                         {this.props.t('Close')}
                     </Button>
                 </DialogActions>

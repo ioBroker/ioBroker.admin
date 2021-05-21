@@ -173,7 +173,9 @@ class HostEdit extends Component {
                 className={classes.buttonAdd}
                 variant="contained"
                 color="secondary"
-                onClick={cb}><AddIcon />{t('Add ' + nameKey)}</Button>
+                onClick={cb}
+                startIcon={<AddIcon />}
+            >{t('Add ' + nameKey)}</Button>
         </div>
     }
     buttonRemoveKey(nameKey, cb) {
@@ -255,8 +257,8 @@ class HostEdit extends Component {
                 }
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" disabled={this.state.error || !this.state.changed} onClick={() => this.onUpdate()} color="primary"><IconCheck />{this.props.t('Write')}</Button>
-                <Button variant="contained" onClick={() => this.props.onClose()}><IconClose />{this.props.t('Cancel')}</Button>
+                <Button variant="contained" disabled={this.state.error || !this.state.changed} onClick={() => this.onUpdate()} color="primary" startIcon={<IconCheck />}>{this.props.t('Write')}</Button>
+                <Button variant="contained" onClick={() => this.props.onClose()} startIcon={<IconClose />}>{this.props.t('Cancel')}</Button>
             </DialogActions>
         </Dialog>;
     }

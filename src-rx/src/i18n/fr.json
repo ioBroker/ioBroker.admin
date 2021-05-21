@@ -1380,5 +1380,8 @@
   "Category": "Catégorie",
   "0 %d days ago": "aujourd'hui",
   "Add group": "Ajouter un nouvel élément de catégorie",
-  "Add enum": "Ajouter une nouvelle catégorie"
+  "Add enum": "Ajouter une nouvelle catégorie",
+  "Save & Close": "Sauvegarder et fermer",
+  "API key": "Clé API",
+  "Restart works only if controller started as system service.": "Le redémarrage ne fonctionne que si le contrôleur a démarré en tant que service système."
 }

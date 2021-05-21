@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -13,6 +13,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 
 import CloseIcon from '@material-ui/icons/Close';
+import CheckIcon from "@material-ui/icons/Check";
 
 const styles = theme => ({
     formControl: {
@@ -68,6 +69,7 @@ class AdapterDeletionDialog extends Component {
                             this.props.onClose();
                         }}
                         color="primary"
+                        startIcon={<CheckIcon/>}
                     >
                         {this.t('Ok')}
                     </Button>
@@ -78,6 +80,7 @@ class AdapterDeletionDialog extends Component {
                             this.props.onClose();
                         }}
                         color="default"
+                        startIcon={<CloseIcon />}
                     >
                         {this.t('Close')}
                     </Button>

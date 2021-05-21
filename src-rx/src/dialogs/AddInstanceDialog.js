@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -17,6 +17,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
+import AddIcon from '@material-ui/icons/Add';
 
 const styles = theme => ({
     formControl: {
@@ -156,15 +157,17 @@ class AddInstanceDialog extends Component {
                             this.props.onClick();
                             this.props.onClose();
                         }}
-                        color="primary">
+                        color="primary"
+                        startIcon={<AddIcon/>}
+                    >
                         {this.t('Add')}
                     </Button>
                     <Button
                         variant="contained"
-                        onClick={() => {
-                            this.props.onClose();
-                        }}
-                        color="default">
+                        onClick={() => this.props.onClose()}
+                        color="default"
+                        startIcon={<CloseIcon />}
+                    >
                         {this.t('Close')}
                     </Button>
                 </DialogActions>

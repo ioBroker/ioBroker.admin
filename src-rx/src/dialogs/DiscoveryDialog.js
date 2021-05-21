@@ -923,8 +923,9 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                         }
                         stepDown();
                     }}
-                    color="default">
-                    <NavigateBeforeIcon />
+                    color="default"
+                    startIcon={<NavigateBeforeIcon />}
+                >
                     {I18n.t('Back')}
                 </Button>
                 }
@@ -933,8 +934,9 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     autoFocus
                     disabled={disableScanner}
                     onClick={discoverScanner}
-                    color="primary">
-                    <SearchIcon />
+                    color="primary"
+                    startIcon={<SearchIcon />}
+                >
                     {I18n.t('Discover')}
                 </Button>}
                 {step !== 2 && step !== 4 &&
@@ -949,8 +951,8 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                 }
                             }}
                             color={step === 1 ? 'primary' : 'default'}
+                            startIcon={step === 1 ? <LibraryAddIcon /> : <NavigateNextIcon />}
                         >
-                            {step === 1 ? <LibraryAddIcon /> : <NavigateNextIcon />}
                             {I18n.t(step === 1 ? 'Create instances' : 'Use last scan')}
                         </Button>
                     </Tooltip>
@@ -960,8 +962,9 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     disabled={disableScanner}
                     onClick={() => onClose()}
                     color={step === 2 ? 'primary' : 'default'}
+                    startIcon={<CloseIcon />}
                 >
-                    <CloseIcon />{I18n.t(step === 2 ? 'Finish' : 'Close')}
+                    {I18n.t(step === 2 ? 'Finish' : 'Close')}
                 </Button>
             </DialogActions>
         </Dialog>

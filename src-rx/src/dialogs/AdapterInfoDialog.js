@@ -7,6 +7,9 @@ import { Button } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
 import { Toolbar } from '@material-ui/core';
 
+import CloseIcon from '@material-ui/icons/Close';
+import LinkIcon from '@material-ui/icons/Link';
+
 import Router from '@iobroker/adapter-react/Components/Router';
 import I18n from '@iobroker/adapter-react/i18n';
 import Loader from '@iobroker/adapter-react/Components/Loader';
@@ -240,6 +243,7 @@ class AdapterInfoDialog extends Component {
                                 variant="contained"
                                 color="primary"
                                 onClick={ () => this.openTab(this.props.link) }
+                                startIcon={<LinkIcon />}
                             >
                                 { this.t('Open original') }
                             </Button>
@@ -249,6 +253,7 @@ class AdapterInfoDialog extends Component {
                                 variant="contained"
                                 color="default"
                                 onClick={ () => this.closeDialog() }
+                                startIcon={<CloseIcon />}
                             >
                                 { this.t('Close') }
                             </Button>

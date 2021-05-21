@@ -20,12 +20,13 @@ import devices from '../../assets/devices/list.json';
 import rooms from '../../assets/rooms/list.json';
 
 import Utils from '../Utils';
+import CloseIcon from "@material-ui/icons/Close";
 
 const styles = theme => ({
     icon: {
         width: 32,
         height: 32,
-        marginRight: theme.spacing(1),
+        //marginRight: theme.spacing(1),
     },
     customGroupButton: {
 
@@ -151,8 +152,9 @@ class EnumTemplateDialog extends Component {
                                 }}
                                 //startIcon={<Icon src={this.state.icons[i]} className={this.props.classes.icon}/>}
                                 className={this.props.classes.enumTemplateButton}
+                                startIcon={<Icon src={this.state.icons[i]} className={this.props.classes.icon}/>}
                             >
-                                <Icon src={this.state.icons[i]} className={this.props.classes.icon}/><span className={this.props.classes.enumTemplateLabel}>{this.getName(template)}</span>
+                                <span className={this.props.classes.enumTemplateLabel}>{this.getName(template)}</span>
                             </Button>;
                     } else {
                         return null;
@@ -169,11 +171,11 @@ class EnumTemplateDialog extends Component {
                         this.props.onClose();
                         this.props.showEnumEditDialog(this.props.getEnumTemplate(this.props.prefix), true);
                     }}
+                    startIcon={<CustomGroup />}
                 >
-                    <CustomGroup style={{marginRight: 8}}/>
                     {this.props.t('Custom group')}
                 </Button>
-                <Button variant="contained" onClick={this.props.onClose}>{this.props.t('Cancel')}</Button>
+                <Button variant="contained" onClick={this.props.onClose} startIcon={<CloseIcon />}>{this.props.t('Cancel')}</Button>
             </DialogActions>
         </Dialog>;
     }

@@ -10,11 +10,10 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import { Button, TextField } from '@material-ui/core';
 
 import CloseIcon from '@material-ui/icons/Close';
+import {TimeIcon} from "@material-ui/pickers/_shared/icons/TimeIcon";
+import CheckIcon from "@material-ui/icons/Check";
 
 const styles = theme => ({
-    buttonIcon: {
-        marginRight: theme.spacing(1),
-    },
     buttonLabel: {
         whiteSpace: 'nowrap',
     },
@@ -73,6 +72,7 @@ class SlowConnectionWarningDialog extends Component {
                         SlowConnectionWarningDialog.saveReadTimeoutMs(60000);
                         this.props.onClose(60000);
                     }}
+                    startIcon={<TimeIcon/>}
                 >
                     {this.props.t('Set timeout to 1 minute')}
                 </Button>
@@ -86,14 +86,17 @@ class SlowConnectionWarningDialog extends Component {
                         SlowConnectionWarningDialog.saveReadTimeoutMs(readTimeoutMs);
                         this.props.onClose(readTimeoutMs);
                     }}
+                    startIcon={<CheckIcon/>}
                 >
                     {this.props.t('Apply')}
                 </Button>
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
-                    color="default">
-                    <CloseIcon className={this.props.classes.buttonIcon} />{this.props.t('Cancel')}
+                    color="default"
+                    startIcon={<CloseIcon />}
+                >
+                    {this.props.t('Cancel')}
                 </Button>
             </DialogActions>
         </Dialog>;

@@ -1385,8 +1385,8 @@ class Adapters extends Component {
                     <div className={this.props.classes.counters}>{this.t('Last month updated adapters')}: <span style={{ paddingLeft: 6, fontWeight: 'bold' }}>{this.recentUpdatedAdapters}</span></div>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="contained" onClick={() => this.setState({ showStatistics: false })} color="primary" autoFocus>
-                        <CloseIcon />{this.props.t('Close')}
+                    <Button variant="contained" onClick={() => this.setState({ showStatistics: false })} color="primary" autoFocus startIcon={<CloseIcon />}>
+                        {this.props.t('Close')}
                     </Button>
                 </DialogActions>
             </Dialog>;

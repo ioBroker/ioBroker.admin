@@ -4,6 +4,8 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, withStyle
 import PropTypes from 'prop-types';
 import i18n from '@iobroker/adapter-react/i18n';
 import clsx from 'clsx';
+import CheckIcon from "@material-ui/icons/Check";
+import CloseIcon from "@material-ui/icons/Close";
 
 const styles = theme => ({
     modalWrapper: {
@@ -51,6 +53,7 @@ const CustomModal = ({ title, fullWidth, help, maxWidth, progress, icon, applyDi
                 // className={className}
                 autoComplete="off"
                 fullWidth
+                autoFocus
                 variant="outlined"
                 size="medium"
                 // rows={10}
@@ -63,10 +66,21 @@ const CustomModal = ({ title, fullWidth, help, maxWidth, progress, icon, applyDi
             {help ? <div>{help}</div> : null}
         </DialogContent>
         <DialogActions>
-            {applyButton && <Button disabled={progress || (applyDisabled && defaultValue === value)} onClick={() => onApply(textInput ? value : '')} variant="contained" color="primary">
+            {applyButton && <Button
+                startIcon={<CheckIcon/>}
+                disabled={progress || (applyDisabled && defaultValue === value)}
+                onClick={() => onApply(textInput ? value : '')}
+                variant="contained"
+                color="primary"
+            >
                 {i18n.t(titleButtonApply)}
             </Button>}
-            <Button onClick={onClose} disabled={progress} variant="contained">
+            <Button
+                onClick={onClose}
+                disabled={progress}
+                variant="contained"
+                startIcon={<CloseIcon/>}
+            >
                 {i18n.t(titleButtonClose)}
             </Button>
         </DialogActions>

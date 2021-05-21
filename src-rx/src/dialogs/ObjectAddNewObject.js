@@ -67,7 +67,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
                 types.push(TYPES.folder);
                 initialType = 'folder';
             } else {
-                initialType = 'device';
+                initialType = 'state';
             }
         }
     } else {
@@ -96,7 +96,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
         if (type === 'state') {
             newObj.common = {
                 ...newObj.common,
-                role: '',
+                role: 'state',
                 type: stateType,
                 read: true,
                 write: true,

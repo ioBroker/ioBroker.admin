@@ -14,9 +14,7 @@ Marked with "!" must be in release candidate
 ## Info
 
 ## Enums
-- Find icon of object (state => channel => device)
 - Create enums, that not exists automatically. E.g. `enum.rooms.A.kitchen` exists, but `enum.rooms.A` not, So `enum.rooms.A` must be created.
-- Update structure of enums by changes from outside
 - Expand/Collapse of one enumeration to make it narrow with showing the number of objects inside
 - expand/collapse all to narrow view and back  
 
@@ -34,6 +32,7 @@ Marked with "!" must be in release candidate
 ## Objects
 - layout in select ID 
 - Add mode view owners (by switching "1") / owner / ownerGroup / objectACL / state ACL
+- Add small icons for enums in the list
 
 ## Files
 

@@ -27,6 +27,7 @@ import Paper from  '@material-ui/core/Paper';
 //Icons
 import {FaCrosshairs as GeoIcon} from 'react-icons/all';
 import PinSVG from '../../assets/pin.svg';
+import IconCheck from "@material-ui/icons/Check";
 
 const TOOLBAR_HEIGHT = 64;
 const SETTINGS_WIDTH = 300;
@@ -589,7 +590,7 @@ class WizardSettingsTab extends Component {
                     city:         this.state.city,
                     longitude:    this.state.longitude,
                     latitude:     this.state.latitude,
-                }) }>{ this.props.t('Save') }</Button>
+                }) } startIcon={<IconCheck/>}>{ this.props.t('Save') }</Button>
                 <div className={ this.props.classes.grow }/>
             </Toolbar>
         </Paper>;

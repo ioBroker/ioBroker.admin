@@ -161,7 +161,10 @@ class EnumsList extends Component {
             categoryPopoverOpen: false,
             enumPopoverOpen: false,
             enumsClosed,
+            updating: []
         };
+
+        this.fastUpdate = false;
     }
 
     getEnumTemplate = prefix => {
@@ -172,92 +175,158 @@ class EnumsList extends Component {
         return enumTemplate;
     }
 
+    scrollToEnum(enumId) {
+        // check that parent is opened
+        let parts = enumId.split('.');
+        parts.pop();
+        let changed = false;
+        const enumsClosed = JSON.parse(JSON.stringify(this.state.enumsClosed));
+
+        while (parts.length > 2) {
+            const parentId = parts.join('.');
+            if (enumsClosed[parentId]) {
+                delete enumsClosed[parentId];
+                changed = true;
+            }
+            parts = parentId.split('.');
+            parts.pop();
+        }
+
+        if (changed) {
+            this.setState({enumsClosed}, () => {
+                setTimeout(() => {
+                    const el = document.getElementById(enumId);
+                    el && el.scrollIntoView(true);
+                }, 400);
+            });
+        } else {
+            setTimeout(() => {
+                const el = document.getElementById(enumId);
+                el && el.scrollIntoView(true);
+            }, 400);
+        }
+    }
+
+    addUpdating(id) {
+        if (!this.state.updating.includes(id)) {
+            const updating = [...this.state.updating];
+            updating.push(id);
+            return new Promise(resolve => this.setState({updating}, () => resolve()));
+        } else {
+            return Promise.resolve();
+        }
+    }
+
     createEnumTemplate = (prefix, templateValues) => {
         let enumTemplate = this.getEnumTemplate(prefix);
         enumTemplate._id = templateValues._id;
         enumTemplate.common = {...enumTemplate.common, ...templateValues.common};
-        this.props.socket.setObject(enumTemplate._id, enumTemplate)
-            .then(() => {
-                this.updateData();
 
-                const newId = enumTemplate._id;
-                // check that parent is opened
-                let parts = newId.split('.');
-                parts.pop();
-                let changed = false;
-                const enumsClosed = JSON.parse(JSON.stringify(this.state.enumsClosed));
+        this.scrollToItem = enumTemplate._id;
 
-                while (parts.length > 2) {
-                    const parentId = parts.join('.');
-                    if (enumsClosed[parentId]) {
-                        delete enumsClosed[parentId];
-                        changed = true;
-                    }
-                    parts = parentId.split('.');
-                    parts.pop();
+        this.addUpdating(enumTemplate._id)
+            .then(() => this.props.socket.setObject(enumTemplate._id, enumTemplate))
+            .catch(e => window.alert('Cannot create enum: ' + e));
+    }
+
+    async componentDidMount() {
+        await this.updateData();
+        this.props.socket.subscribeObject('enum.*', this.onObjectChange);
+    }
+
+    componentWillUnmount() {
+        this.props.socket.unsubscribeObject('enum.*', this.onObjectChange);
+        this.updateTimeout && clearTimeout(this.updateTimeout);
+        this.updateTimeout = null;
+    }
+
+    onObjectChange = (id, obj) => {
+        let changed;
+
+        if (id.startsWith('enum.')) {
+            if (obj) {
+                const oldObj = (this.changeEnums && this.changeEnums[id]) || this.state.enums[id];
+                if (!oldObj || (oldObj && JSON.stringify(oldObj) !== JSON.stringify(obj))) {
+                    this.changeEnums = this.changeEnums || JSON.parse(JSON.stringify(this.state.enums));
+                    this.changeEnums[id] = obj;
+                    changed = true;
                 }
+            } else {
+                if ((this.changeEnums && this.changeEnums[id]) || (!this.changeEnums && this.state.enums[id])) {
+                    this.changeEnums = this.changeEnums || JSON.parse(JSON.stringify(this.state.enums));
+                    delete this.changeEnums[id];
+                    changed = true;
+                }
+            }
+        }
 
-                if (changed) {
-                    this.setState({enumsClosed}, () => {
-                        setTimeout(() => {
-                            const el = document.getElementById(newId);
-                            if (el) {
-                                el.scrollIntoView(true);
-                            }
-                        }, 300);
-                    });
-                } else {
-                    setTimeout(() => {
-                        const el = document.getElementById(newId);
-                        if (el) {
-                            el.scrollIntoView(true);
+        if (changed) {
+            this.updateTimeout && clearTimeout(this.updateTimeout);
+
+            // collect events
+            this.updateTimeout = setTimeout(() => {
+                this.updateTimeout = null;
+                const changeEnums = this.changeEnums
+                this.changeEnums = null;
+                this.updateData(changeEnums)
+                    .then(() => {
+                        if (this.scrollToItem) {
+                            this.scrollToEnum(this.scrollToItem);
+                            this.scrollToItem = null;
                         }
-                    }, 300);
-                }
-            });
+                    })
+                    .catch(() => {});
+            }, this.fastUpdate ? 0 : 200);
+
+            this.fastUpdate = false;
+        }
     }
 
-    componentDidMount() {
-        this.updateData();
-    }
+    updateData = async enums => {
+        enums = enums || (await this.props.socket.getForeignObjects('enum.*', 'enum'));
+        const members = {};
 
-    updateData = async () => {
-        const enums = await this.props.socket.getForeignObjects('enum.*', 'enum');
-        const members = {}
-        for (let enumKey in enums) {
-            if (enums[enumKey].common?.members) {
-                for (let memberKey in enums[enumKey].common.members) {
-                    let member = enums[enumKey].common.members[memberKey];
+        const ids = Object.keys(enums);
+
+        // read all members of all enumerations
+        for (let i = 0; i < ids.length; i++) {
+            const id = ids[i];
+            if (enums[id].common?.members) {
+                for (let j = 0; j < enums[id].common.members.length; j++) {
+                    let member = enums[id].common.members[j];
                     if (!members[member]) {
                         try {
                             members[member] = await this.props.socket.getObject(member);
                         } catch (e) {
-                            window.alert('Cannot read member "' + member + '"');
+                            window.alert(`Cannot read member "${member}"`);
                         }
                     }
                 }
             }
         }
 
-        this.setState({enums: enums, members: members});
-        this.createTree(enums);
+        this.setState({enums, members, updating: []}, () =>
+            this.buildTree(enums));
     }
 
-    createTree(enums) {
+    buildTree(enums) {
         let enumsTree = {
             data: null,
             children: {},
             id: ''
         };
 
-        for (let i in enums) {
-            let id = enums[i]._id;
-            let currentEnum = enums[i];
+        const ids = Object.keys(enums);
+
+        for (let i = 0; i < ids.length; i++) {
+            let id = ids[i];
+            let currentEnum = enums[id];
             let idParts = id.split('.');
             let currentContainer = enumsTree;
             let currentParts = [];
-            for (let i2 in idParts) {
-                let currentPart = idParts[i2]
+
+            for (let p = 0; p < idParts.length; p++) {
+                let currentPart = idParts[p];
                 currentParts.push(currentPart);
                 if (!currentContainer.children[currentPart]) {
                     currentContainer.children[currentPart] = {
@@ -270,19 +339,26 @@ class EnumsList extends Component {
             }
             currentContainer.data = currentEnum;
         }
-        this.setCurrentCategory(this.state.currentCategory && enumsTree.children.enum.children[this.state.currentCategory] ? this.state.currentCategory : Object.keys(enumsTree.children.enum.children)[0]);
-        this.setState({enumsTree});
+
+        this.setCurrentCategory(
+            this.state.currentCategory &&
+            enumsTree.children.enum.children[this.state.currentCategory] ?
+                this.state.currentCategory :
+                Object.keys(enumsTree.children.enum.children)[0],
+            () => this.setState({enumsTree}));
     }
 
-    setCurrentCategory = category => {
-        if (category !== this.state.currentCategory) {
-            this.setState({currentCategory: category});
-            window.localStorage.setItem('enumCurrentCategory', category);
+    setCurrentCategory = (currentCategory, cb) => {
+        if (currentCategory !== this.state.currentCategory) {
+            this.setState({currentCategory}, () => cb && cb());
+            window.localStorage.setItem('enumCurrentCategory', currentCategory);
+        } else {
+            cb && cb();
         }
     }
 
     addItemToEnum = (itemId, enumId) => {
-        let enumItem = JSON.parse(JSON.stringify(Object.values(this.state.enums).find(enumItem => enumItem._id === enumId)));
+        let enumItem = JSON.parse(JSON.stringify(this.state.enums[enumId]));
         if (!enumItem.common?.members) {
             enumItem.common = enumItem.common || {};
             enumItem.common.members = [];
@@ -290,14 +366,27 @@ class EnumsList extends Component {
         let members = enumItem.common.members;
         if (!members.includes(itemId)) {
             members.push(itemId);
-            this.props.socket.setObject(enumItem._id, enumItem).then(() => {
-                this.updateData();
 
-            });
+            this.fastUpdate = true;
+            this.props.socket.setObject(enumItem._id, enumItem)
+                .catch(e => window.alert('Cannot set enum: ' + e));
         }
     }
 
-    moveEnum = (fromId, toId) => {
+    removeMemberFromEnum = (memberId, enumId) => {
+        let enumItem = JSON.parse(JSON.stringify(this.state.enums[enumId]));
+        let members = enumItem.common.members;
+        const pos = members.indexOf(memberId);
+        if (pos !== -1) {
+            members.splice(pos, 1);
+
+            this.fastUpdate = true;
+            this.props.socket.setObject(enumItem._id, enumItem)
+                .catch(e => window.alert('Cannot update enum: ' + e));
+        }
+    }
+
+    moveEnum = async (fromId, toId) => {
         if (toId.startsWith(fromId)) {
             return;
         }
@@ -305,37 +394,40 @@ class EnumsList extends Component {
         fromPrefix.pop();
         fromPrefix = fromPrefix.join('.');
         let toPrefix = toId;
+
         if (fromPrefix === toPrefix) {
             return;
         }
-        Promise.all(Object.keys(this.state.enums).map(async id => {
-            let enumItem = this.state.enums[id];
-            if (id.startsWith(fromId)) {
-                let newId = id.replace(fromPrefix, toPrefix);
-                let newEnum = JSON.parse(JSON.stringify(enumItem));
-                newEnum._id = newId;
-                return this.props.socket.setObject(newId, enumItem).then(
-                    this.props.socket.delObject(id)
-                );
+
+        const ids = Object.keys(this.state.enums);
+
+        const updating = [...this.state.updating];
+
+        try {
+            for (let i = 0; i < ids.length; i++) {
+                let enumItem = this.state.enums[ids[i]];
+                if (ids[i].startsWith(fromId)) {
+                    let newId = ids[i].replace(fromPrefix, toPrefix);
+                    let newEnum = JSON.parse(JSON.stringify(enumItem));
+                    newEnum._id = newId;
+                    !updating.includes(ids[i]) && updating.push(ids[i]);
+                    await this.props.socket.setObject(newId, enumItem);
+                    await this.props.socket.delObject(ids[i]);
+                }
             }
-        })).then(() => this.updateData())
-    }
-
-    removeMemberFromEnum = (memberId, enumId) => {
-        let enumItem = this.state.enums[enumId];
-        let members = enumItem.common.members;
-        if (members.includes(memberId)) {
-            members.splice(members.indexOf(memberId), 1);
-
-            this.props.socket.setObject(enumItem._id, enumItem).then(() =>
-                this.updateData());
+        } catch (e) {
+            window.alert('Cannot move enum: ' + e)
         }
+
+        this.setState({updating});
     }
 
     renderTree(container, key, level) {
-        return <div style={{paddingLeft: level ? 32 : 0}} key={container.data ? container.data._id : key }>
-            {container.data && (!this.state.search || container.data._id.toLowerCase().includes(this.state.search.toLowerCase())) ?
+        return <div style={{paddingLeft: level ? 32 : 0}} key={container.id || key }>
+            {!this.state.search || container.id.toLowerCase().includes(this.state.search.toLowerCase()) ?
                 <EnumBlock
+                    updating={this.state.updating.includes(container.id)}
+                    id={container.id}
                     enum={container.data}
                     members={this.state.members}
                     moveEnum={this.moveEnum}
@@ -346,10 +438,9 @@ class EnumsList extends Component {
                     currentCategory={this.state.currentCategory}
                     getEnumTemplate={this.getEnumTemplate}
                     copyEnum={this.copyEnum}
-                    key={container.data._id}
                     getName={this.getName}
-                    hasChildren={!!Object.values(container.children).length}
-                    closed={this.state.enumsClosed[container.data._id]}
+                    hasChildren={!!Object.keys(container.children).length}
+                    closed={this.state.enumsClosed[container.id]}
                     toggleEnum={this.toggleEnum}
 
                     t={this.props.t}
@@ -359,7 +450,7 @@ class EnumsList extends Component {
                 />
                 : null
             }
-            {container.data && !this.state.enumsClosed[container.data._id] ?
+            {!this.state.enumsClosed[container.id] ?
                 Object.values(container.children)
                     .map((item, index) => <React.Fragment key={index}>{this.renderTree(item, index, level + 1)}</React.Fragment>)
             : null}
@@ -377,81 +468,58 @@ class EnumsList extends Component {
     showEnumDeleteDialog = enumItem =>
         this.setState({enumDeleteDialog: enumItem});
 
-    saveEnum = originalId => {
+    saveEnum = async originalId => {
         let enumItem = JSON.parse(JSON.stringify(this.state.enumEditDialog));
-        let newId = this.state.enumEditDialog._id;
 
-        this.props.socket.setObject(enumItem._id, enumItem)
-            .then(() => {
-                if (originalId && originalId !== this.state.enumEditDialog._id) {
-                    return this.props.socket.delObject(originalId);
+        if (this.state.enumEditDialogNew) {
+            this.scrollToItem = this.state.enumEditDialog._id;
+        }
+
+        const updating = [...this.state.updating];
+
+        !updating.includes(enumItem._id) && updating.push(enumItem._id);
+
+        await this.props.socket.setObject(enumItem._id, enumItem);
+
+        if (originalId && originalId !== this.state.enumEditDialog._id) {
+            await this.props.socket.delObject(originalId);
+
+            const ids = Object.keys(this.state.enums);
+            for (let i = 0; i < ids.length; i++) {
+                const id = ids[i];
+                if (id.startsWith(originalId + '.')) {
+                    let newEnumChild = JSON.parse(JSON.stringify(this.state.enums[id]));
+                    newEnumChild._id = newEnumChild._id.replace(originalId + '.', enumItem._id + '.');
+
+                    !updating.includes(id) && updating.push(id);
+                    await this.props.socket.setObject(newEnumChild._id, newEnumChild);
+                    await this.props.socket.delObject(id);
                 }
-            })
-            .then(() => {
-                return Promise.all(Object.values(this.state.enums).map(enumChild => {
-                    if (enumChild._id.startsWith(originalId + '.')) {
-                        let newEnumChild = JSON.parse(JSON.stringify(enumChild));
-                        newEnumChild._id = newEnumChild._id.replace(originalId + '.', enumItem._id + '.');
+            }
+        }
 
-                        return this.props.socket.setObject(newEnumChild._id, newEnumChild).then(() =>
-                            this.props.socket.delObject(enumChild._id));
-                    } else {
-                        return null;
-                    }
-                }))
-            })
-            .then(() => {
-                const wasNew = this.state.enumEditDialogNew;
-                this.updateData();
-                const newState = {enumEditDialog: null, enumEditDialogNew: false}
-
-                if (wasNew) {
-                    // check that parent is opened
-                    let parts = this.state.enumEditDialog._id.split('.');
-                    parts.pop();
-                    let changed = false;
-                    const enumsClosed = JSON.parse(JSON.stringify(this.state.enumsClosed));
-
-                    while (parts.length > 2) {
-                        const parentId = parts.join('.');
-                        if (enumsClosed[parentId]) {
-                            delete enumsClosed[parentId];
-                            changed = true;
-                        }
-                        parts = parentId.split('.');
-                        parts.pop();
-                    }
-
-                    if (changed) {
-                        newState.enumsClosed = enumsClosed;
-                    }
-                }
-
-                this.setState(newState, () => {
-                    wasNew && setTimeout(() => {
-                        const el = document.getElementById(newId);
-                        if (el) {
-                            el.scrollIntoView(true);
-                        }
-                    }, 300);
-                });
-            });
+        this.setState({enumEditDialog: null, enumEditDialogNew: false, updating});
     }
 
-    deleteEnum = (enumId) => {
-        this.props.socket.delObject(enumId)
-        .then(() =>
-            Promise.all(Object.values(this.state.enums).map(enumChild => {
-                if (enumChild._id.startsWith(enumId + '.')) {
-                    return this.props.socket.delObject(enumChild._id);
-                } else {
-                    return null;
+    deleteEnum = async enumId => {
+        const updating = [...this.state.updating];
+        try {
+            !updating.includes(enumId) && updating.push(enumId);
+
+            this.state.enums[enumId] && (await this.props.socket.delObject(enumId));
+            const ids = Object.keys(this.state.enums);
+            for (let i = 0; i < ids.length; i++) {
+                const id = ids[i];
+                if (id.startsWith(enumId + '.')) {
+                    !updating.includes(id) && updating.push(id);
+                    this.state.enums[enumId] && (await this.props.socket.delObject(id));
                 }
-            })))
-        .then(() => {
-            this.updateData();
-            this.setState({enumDeleteDialog: null});
-        });
+            }
+        } catch (e) {
+            window.alert('Cannot delete enum: ' + e);
+        }
+
+        this.setState({enumDeleteDialog: null, updating});
     }
 
     copyEnum = enumId => {
@@ -464,7 +532,9 @@ class EnumsList extends Component {
         } while (this.state.enums[newId]);
 
         enumItem._id = newId;
-        this.props.socket.setObject(newId, enumItem).then(() => this.updateData());
+
+        this.props.socket.setObject(newId, enumItem)
+            .catch(e => window.alert('Cannot delete enum: ' + e));
     }
 
     toggleEnum = enumId => {
@@ -480,7 +550,7 @@ class EnumsList extends Component {
     }
 
     getName = name =>
-        typeof(name) === 'object' ? name[this.props.lang] || name.en : name;
+        name && typeof name === 'object' ? name[this.props.lang] || name.en || '': name || '';
 
     static _isUniqueName(prefix, list, word, i) {
         return !list.find(item =>

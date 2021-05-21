@@ -16,6 +16,8 @@ import { Avatar, Card, Checkbox, DialogTitle, FormControlLabel, makeStyles, Menu
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import { green, grey, orange, red } from "@material-ui/core/colors";
+import IconCheck from "@material-ui/icons/Check";
+import IconClose from "@material-ui/icons/Close";
 
 let node = null;
 
@@ -303,7 +305,9 @@ const InstanceFilterDialog = ({ cb, filterMode, filterStatus }) => {
                             filterStatus: statusCheck
                         });
                     }}
-                    color="primary">
+                    color="primary"
+                    startIcon={<IconCheck />}
+                >
                     {I18n.t('Apply')}
                 </Button>
                 <Button
@@ -312,7 +316,8 @@ const InstanceFilterDialog = ({ cb, filterMode, filterStatus }) => {
                         onClose();
                         cb && cb(false);
                     }}
-                    color="default">
+                    startIcon={<IconClose />}
+                >
                     {I18n.t('Close')}
                 </Button>
             </DialogActions>

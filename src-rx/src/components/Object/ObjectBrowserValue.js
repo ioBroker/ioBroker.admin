@@ -29,6 +29,8 @@ import Switch from '@material-ui/core/Switch';
 import ChartIcon from '@material-ui/icons/ShowChart';
 
 import ObjectChart from './ObjectChart';
+import IconCancel from "@material-ui/icons/Close";
+import IconCheck from "@material-ui/icons/Check";
 
 const styles = theme => ({
     input: {
@@ -403,8 +405,8 @@ class ObjectBrowserValue extends Component {
                 </form>
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" onClick={ () => this.onUpdate() } color="primary">{ this.props.t('Set value') }</Button>
-                <Button variant="contained" onClick={ () => this.props.onClose() }>{ this.props.t('Cancel') }</Button>
+                <Button variant="contained" onClick={ () => this.onUpdate() } color="primary" startIcon={<IconCheck />}>{ this.props.t('Set value') }</Button>
+                <Button variant="contained" onClick={ () => this.props.onClose() } startIcon={<IconCancel />}>{ this.props.t('Cancel') }</Button>
             </DialogActions>
         </Dialog>;
     }

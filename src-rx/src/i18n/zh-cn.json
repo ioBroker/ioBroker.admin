@@ -1380,5 +1380,8 @@
   "Category": "类别",
   "0 %d days ago": "今天",
   "Add group": "添加新的类别项目",
-  "Add enum": "新增类别"
+  "Add enum": "新增类别",
+  "Save & Close": "保存并关闭",
+  "API key": "API密钥",
+  "Restart works only if controller started as system service.": "仅当控制器作为系统服务启动时，重新启动才有效。"
 }

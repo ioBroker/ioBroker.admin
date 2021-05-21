@@ -81,7 +81,6 @@ class EasyMode extends Component {
             configs: this.props.configs,
             strictMode: !this.props.configs,
         };
-
     }
 
     componentDidMount() {
@@ -162,23 +161,27 @@ class EasyMode extends Component {
                     <div className={classes.controlHeight}>
                         {configs
                             .sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
-                            .map(el => <EasyModeCard key={el.id} navigate={() => navigate(null, 'config', el.id)} {...el} />)}
+                            .map(el => <EasyModeCard
+                                key={el.id}
+                                lang={this.props.lang}
+                                navigate={() => navigate(null, 'config', el.id)}
+                                {...el}
+                            />)}
                     </div>
                 </div>
             }
         </Paper>;
     }
 }
-// EasyMode.defaultProps = {
-//     configs: []
-// }
 
 EasyMode.propTypes = {
     configs: PropTypes.array,
     socket: PropTypes.object,
     t: PropTypes.func,
+    lang: PropTypes.string,
 
     onRegisterIframeRef: PropTypes.func,
     onUnregisterIframeRef: PropTypes.func,
 };
+
 export default withStyles(styles)(EasyMode);

@@ -1185,8 +1185,8 @@
   "Change color theme": "Farbthema ändern",
   "Change current host": "Aktuellen Host ändern ",
   "Discovery devices": "Erkennungsgeräte",
-    "Delete with children": "Ganzen Objektbaum",
-    "Delete one item": "Dieses Objekt",
+  "Delete with children": "Ganzen Objektbaum",
+  "Delete one item": "Dieses Objekt",
   "Delete object(s)": "Objekt(e) löschen",
   "When enabled adapter instances can run in one or few processes to save RAM usage.": "Wenn diese Option aktiviert ist, können Adapterinstanzen in einem oder wenigen Prozessen ausgeführt werden, um die RAM-Nutzung zu sparen.",
   "When activated this host can be discovered by other iobroker installations in your network to become the master of a multihost system.": "Bei Aktivierung kann dieser Host von anderen ioBroker-Installationen in Ihrem Netzwerk erkannt werden, um der Master eines Multihost-Systems zu werden.",
@@ -1380,5 +1380,8 @@
   "Category": "Kategorie",
   "0 %d days ago": "heute",
   "Add group": "Neues Kategorieelement hinzufügen",
-  "Add enum": "Neue Kategorie hinzufügen"
+  "Add enum": "Neue Kategorie hinzufügen",
+  "Save & Close": "Speichern und schließen",
+  "API key": "API-Schlüssel",
+  "Restart works only if controller started as system service.": "Neustart funktioniert nur, wenn der Controller als Systemdienst gestartet wurde."
 }

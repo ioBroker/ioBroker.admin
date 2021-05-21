@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -16,6 +16,7 @@ import { Typography } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 
 import State from '../components/State';
+import CheckIcon from "@material-ui/icons/Check";
 
 const styles = theme => {
     return ({
@@ -171,6 +172,7 @@ class AdapterUpdateDialog extends Component {
                     disabled={!this.props.rightDependencies || !version || !this.props.adapterObject}
                     onClick={() => this.props.onUpdate(version)}
                     color="primary"
+                    startIcon={<CheckIcon/>}
                 >
                     {this.props.textUpdate ? this.props.textUpdate : this.t('Update')}
                 </Button>
@@ -178,6 +180,7 @@ class AdapterUpdateDialog extends Component {
                     variant="contained"
                     onClick={() => this.props.onClose()}
                     color="default"
+                    startIcon={<CloseIcon />}
                 >
                     {this.t('Close')}
                 </Button>

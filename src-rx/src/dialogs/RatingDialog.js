@@ -21,9 +21,6 @@ import VoteIcon from '@material-ui/icons/HowToVote';
 import CloseIcon from '@material-ui/icons/Close';
 
 const styles = theme => ({
-    buttonIcon: {
-        marginRight: theme.spacing(1),
-    },
     rating: {
         marginBottom: 20,
     },
@@ -296,15 +293,18 @@ class RatingDialog extends Component {
                             this.props.onClose();
                         }
                     }}
+                    startIcon={<VoteIcon />}
                 >
-                    <VoteIcon className={this.props.classes.buttonIcon} />{this.props.t('Rate')}
+                    {this.props.t('Rate')}
                 </Button>}
                 <Button
                     autoFocus={!this.props.version}
                     variant="contained"
                     onClick={() => this.props.onClose()}
-                    color="default">
-                    <CloseIcon className={this.props.classes.buttonIcon} />{this.props.t('Close')}
+                    color="default"
+                    startIcon={<CloseIcon />}
+                >
+                    {this.props.t('Close')}
                 </Button>
             </DialogActions>
         </Dialog>;

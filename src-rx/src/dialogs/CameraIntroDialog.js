@@ -1,4 +1,4 @@
-import { createRef, Component } from 'react';
+import React, { createRef, Component } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -115,7 +115,9 @@ class EditIntroLinkDialog extends Component {
                             e.stopPropagation();
                             this.props.onClose();
                         }}
-                        color="primary">
+                        color="primary"
+                        startIcon={<CloseIcon />}
+                    >
                         {this.props.t('Close')}
                     </Button>
                 </DialogActions>

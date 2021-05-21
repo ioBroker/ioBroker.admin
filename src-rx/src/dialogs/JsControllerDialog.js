@@ -14,6 +14,8 @@ import I18n from '@iobroker/adapter-react/i18n';
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import clsx from 'clsx';
+import CloseIcon from "@material-ui/icons/Close";
+import DescriptionIcon from "@material-ui/icons/Description";
 
 let node = null;
 
@@ -326,13 +328,17 @@ sudo -u iobroker -H npm install iobroker.js-controller`
                         window.open('https://github.com/ioBroker/ioBroker.js-controller/blob/master/CHANGELOG.md', '_blank')
                         onClose();
                     }}
-                    color="default">
+                    color="default"
+                    startIcon={<DescriptionIcon />}
+                >
                     {I18n.t('Show whole changelog')}
                 </Button>
                 <Button
                     variant="contained"
                     onClick={onClose}
-                    color="primary">
+                    color="primary"
+                    startIcon={<CloseIcon />}
+                >
                     {I18n.t('Ok')}
                 </Button>
             </DialogActions>

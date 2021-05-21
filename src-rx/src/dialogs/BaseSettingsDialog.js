@@ -56,6 +56,7 @@ class BaseSettingsDialog extends Component {
             states: null,
             log: null,
             plugins: null,
+            saving: false,
         };
     }
 
@@ -125,12 +126,14 @@ class BaseSettingsDialog extends Component {
         // merge with some new settings, that may be not yet supported by Admin
         const newSettings = Object.assign({}, this.originalSettings, settings);
 
-        this.props.socket.writeBaseSettings(host || this.state.currentHost, newSettings)
-            .then(() => {
-                this.originalSettings = JSON.parse(JSON.stringify(settings));
-                // ask about restart
-                this.setState({hasChanges: [], showRestart: true});
-            });
+        this.setState({saving: true}, () => {
+            this.props.socket.writeBaseSettings(host || this.state.currentHost, newSettings)
+                .then(() => {
+                    this.originalSettings = JSON.parse(JSON.stringify(settings));
+                    // ask about restart
+                    this.setState({hasChanges: [], showRestart: true, saving: false}, () => this.props.onClose());
+                });
+        });
     }
 
     updateSettings(name, settings) {
@@ -261,10 +264,19 @@ class BaseSettingsDialog extends Component {
                 {this.renderRestartDialog()}
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" disabled={!this.state.hasChanges.length} onClick={() => this.onSave()}
-                        color="primary"><CheckIcon/>{this.props.t('Save')}</Button>
-                <Button variant="contained"
-                        onClick={() => this.state.hasChanges.length ? this.setState({confirmExit: true}) : this.props.onClose()}><CloseIcon/>{this.state.hasChanges.length ? this.props.t('Cancel') : this.props.t('Close')}
+                <Button
+                    variant="contained"
+                    disabled={!this.state.hasChanges.length || this.state.saving}
+                    onClick={() => this.onSave()}
+                    color="primary"
+                    startIcon={<CheckIcon/>}
+                >{this.props.t('Save & Close')}</Button>
+                <Button
+                    variant="contained"
+                    disabled={this.state.saving}
+                    onClick={() => this.state.hasChanges.length ? this.setState({confirmExit: true}) : this.props.onClose()}
+                    startIcon={<CloseIcon/>}
+                >{this.state.hasChanges.length ? this.props.t('Cancel') : this.props.t('Close')}
                 </Button>
             </DialogActions>
         </Dialog>

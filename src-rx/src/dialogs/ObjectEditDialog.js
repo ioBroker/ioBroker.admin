@@ -12,6 +12,7 @@ import MonacoEditor from 'react-monaco-editor';
 
 // Icons
 import CloseIcon from '@material-ui/icons/Close';
+import CheckIcon from "@material-ui/icons/Check";
 
 const styles = theme => ({
     dialog: {
@@ -87,13 +88,17 @@ class ObjectEditDialog extends Component {
                     variant="contained"
                     color="primary"
                     disabled={!this.state.changed}
-                    onClick={() => this.onSave()} >
-                    <CloseIcon />{this.props.t('Save')}
+                    onClick={() => this.onSave()}
+                    startIcon={<CheckIcon />}
+                >
+                    {this.props.t('Save')}
                 </Button>
                 <Button
                     variant="contained"
-                    onClick={() => this.props.onClose()} >
-                    <CloseIcon />{this.props.t('Close')}
+                    onClick={() => this.props.onClose()}
+                    startIcon={<CloseIcon />}
+                >
+                    {this.props.t('Close')}
                 </Button>
             </DialogActions>
         </Dialog>;

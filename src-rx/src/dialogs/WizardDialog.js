@@ -147,7 +147,7 @@ class WizardDialog extends Component {
                                 this.setState( {activeStep: this.state.activeStep + 1 + (obj.common.licenseConfirmed ? 0 : 0) }))
                     }>
                     { this.props.t('Start wizard') } <PlayArrowIcon className={ this.props.classes.playIcon }/></Button>
-                <div  className={ this.props.classes.grow }/>
+                <div className={ this.props.classes.grow }/>
             </Toolbar>
         </div>;
     }
@@ -288,7 +288,7 @@ class WizardDialog extends Component {
             </div>
             <Toolbar className={ this.props.classes.toolbar }>
                 <div className={ this.props.classes.grow }/>
-                <Button variant="contained" color="primary" onClick={ async () => await this.onClose() }><CheckIcon/>{ this.props.t('Finish') }</Button>
+                <Button variant="contained" color="primary" onClick={ async () => await this.onClose() } startIcon={<CheckIcon/>}>{ this.props.t('Finish') }</Button>
                 <div className={ this.props.classes.grow }/>
             </Toolbar>
         </div>;

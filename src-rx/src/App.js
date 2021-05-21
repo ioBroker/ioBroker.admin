@@ -51,10 +51,11 @@ import { expertModeDialogFunc } from './dialogs/ExpertModeDialog';
 import { checkMessages, newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
 import { hostWarningDialogFunc } from './dialogs/HostWarningDialog';
 import ToggleThemeMenu from './components/ToggleThemeMenu';
-import LogsWorker from './components/LogsWorker';
-import InstancesWorker from './components/InstancesWorker';
-import HostsWorker from './components/HostsWorker';
-import AdaptersWorker from './components/AdaptersWorker';
+import LogsWorker from './components/Wrokers/LogsWorker';
+import InstancesWorker from './components/Wrokers/InstancesWorker';
+import HostsWorker from './components/Wrokers/HostsWorker';
+import AdaptersWorker from './components/Wrokers/AdaptersWorker';
+import ObjectsWorker from './components/Wrokers/ObjectsWorker';
 import DiscoveryDialog from './dialogs/DiscoveryDialog';
 import SlowConnectionWarningDialog from './dialogs/SlowConnectionWarningDialog';
 
@@ -228,6 +229,7 @@ const styles = theme => ({
         verticalAlign: 'middle',
         fontSize: 16,
         maxWidth: 100,
+        whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         display: 'inline-block'
@@ -505,6 +507,7 @@ class App extends Router {
                                 this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
                                 this.hostsWorker     = this.hostsWorker     || new HostsWorker(this.socket);
                                 this.adaptersWorker  = this.adaptersWorker  || new AdaptersWorker(this.socket);
+                                this.objectsWorker   = this.objectsWorker   || new ObjectsWorker(this.socket);
 
                                 const newState = {
                                     lang: this.socket.systemLang,
@@ -1157,6 +1160,7 @@ class App extends Router {
                         themeName={this.state.themeName}
                         themeType={this.state.themeType}
                         expertMode={this.state.expertMode}
+                        objectsWorker={this.objectsWorker}
                         lang={I18n.getLanguage()}
                         socket={this.socket}
                         dateFormat={this.state.systemConfig.common.dateFormat}
@@ -1499,6 +1503,7 @@ class App extends Router {
                         dateFormat={this.state.systemConfig?.common.dateFormat}
                         systemConfig={this.state.systemConfig}
                         t={I18n.t}
+                        lang={I18n.getLanguage()}
                         onRegisterIframeRef={ref => this.refConfigIframe = ref}
                         onUnregisterIframeRef={ref => {
                             if (this.refConfigIframe === ref) {

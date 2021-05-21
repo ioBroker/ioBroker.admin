@@ -15,6 +15,7 @@ import { DialogTitle, IconButton, makeStyles, ThemeProvider, Typography } from '
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import ExpertIcon from '@iobroker/adapter-react/icons/IconExpert';
+import CheckIcon from "@material-ui/icons/Check";
 
 let node = null;
 
@@ -129,7 +130,9 @@ const ExpertModeDialog = ({ boolSettings, func, buttonIcon, themeType }) => {
                     variant="contained"
                     autoFocus
                     onClick={onClose}
-                    color="primary">
+                    color="primary"
+                    startIcon={<CheckIcon/>}
+                >
                     {I18n.t('Ok')}
                 </Button>
             </DialogActions>

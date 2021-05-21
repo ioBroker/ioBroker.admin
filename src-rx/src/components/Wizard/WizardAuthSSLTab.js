@@ -2,6 +2,7 @@ import { createRef, Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
+
 import Grid from '@material-ui/core/Grid';
 import Toolbar from '@material-ui/core/Grid';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -14,6 +15,8 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import FormGroup from '@material-ui/core/FormGroup';
+
+import IconCheck from '@material-ui/icons/Check';
 
 const TOOLBAR_HEIGHT = 64;
 
@@ -90,7 +93,7 @@ class WizardAuthSSLTab extends Component {
                     </Grid>
                     <Grid item>
                         <FormControl className={this.props.classes.input}>
-                            <InputLabel>Age</InputLabel>
+                            <InputLabel>{this.props.t('Certificates')}</InputLabel>
                             <Select
                                 value={this.state.secure}
                                 onChange={e => this.setState({secure: e.target.value})}
@@ -107,7 +110,7 @@ class WizardAuthSSLTab extends Component {
             </form>
             <Toolbar className={ this.props.classes.toolbar }>
                 <div className={ this.props.classes.grow }/>
-                <Button  color="primary" variant="contained" onClick={ () => this.props.onDone({auth: this.state.auth, secure: this.state.secure}) }>{ this.props.t('Apply') }</Button>
+                <Button color="primary" variant="contained" onClick={ () => this.props.onDone({auth: this.state.auth, secure: this.state.secure}) } startIcon={<IconCheck/>}>{ this.props.t('Apply') }</Button>
             </Toolbar>
         </Paper>;
     }

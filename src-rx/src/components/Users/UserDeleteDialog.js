@@ -21,8 +21,8 @@ function UserDeleteDialog(props) {
             </DialogContentText>
         </DialogContent>
         <DialogActions>
-            <Button variant="contained" color="primary" onClick={() => props.deleteUser(props.user._id)}><IconDelete style={{marginRight: 8}}/>{props.t('Delete')}</Button>
-            <Button variant="contained" autoFocus onClick={props.onClose}><IconCancel style={{marginRight: 8}}/>{props.t('Cancel')}</Button>
+            <Button variant="contained" color="primary" onClick={() => props.deleteUser(props.user._id)} startIcon={<IconDelete />}>{props.t('Delete')}</Button>
+            <Button variant="contained" autoFocus onClick={props.onClose} startIcon={<IconCancel/>}>{props.t('Cancel')}</Button>
         </DialogActions>
     </Dialog>;
 }

@@ -573,9 +573,6 @@ const styles = theme => ({
     enumCheckbox: {
         minWidth: 0,
     },
-    buttonIcon: {
-        marginRight: theme.spacing(1),
-    },
     backgroundDef: {
         backgroundColor: theme.palette.background.default
     },
@@ -1394,6 +1391,8 @@ const SCREEN_WIDTHS = {
     },
 };
 
+let objectsAlreadyLoaded = false;
+
 /**
  * @extends {React.Component<import('./types').ObjectBrowserProps>}
  */
@@ -1581,8 +1580,13 @@ class ObjectBrowser extends Component {
         this.levelPadding = props.levelPadding || ITEM_LEVEL;
 
         this.calculateColumnsVisibility();
+    }
 
-        props.socket.getObjects(true, true)
+    loadAllObjects(update) {
+        const props = this.props;
+
+        return new Promise(resolve => this.setState({updating: true}, () => resolve()))
+            .then(() => this.props.objectsWorker ? this.props.objectsWorker.getObjects(update) : props.socket.getObjects(update, true))
             .then(objects => {
                 this.systemConfig = objects['system.config'] || {};
                 this.systemConfig.common = this.systemConfig.common || {};
@@ -1617,34 +1621,10 @@ class ObjectBrowser extends Component {
                     this.objects = objects;
                 }
 
-                const { info, root } = buildTree(this.objects, this.props);
-                this.root = root;
-                this.info = info;
-
-                // Show first selected item
-                let node = this.state.selected && this.state.selected.length && findNode(this.root, this.state.selected[0]);
-
-                // If selected ID is not visible, reset filter
-                if (node && !applyFilter(node, this.state.filter, this.state.lang, this.objects, null, null, props.customFilter, props.types)) {
-                    // reset filter
-                    this.setState({ filter: Object.assign({}, DEFAULT_FILTER) }, () => {
-                        this.setState({ loaded: true }, () =>
-                            this.expandAllSelected(() =>
-                                this.onAfterSelect()));
-                    });
-                } else {
-                    this.setState({ loaded: true }, () =>
-                        this.expandAllSelected(() =>
-                            this.onAfterSelect()));
-                }
-            });
-
-        // read default history
-        props.socket.getCompactSystemConfig()
-            .then(config => {
-                this.defaultHistory = config && config.common && config.common.defaultHistory;
+                // read default history
+                this.defaultHistory = this.systemConfig.common.defaultHistory;
                 if (this.defaultHistory) {
-                    return props.socket.getState('system.adapter.' + this.defaultHistory + '.alive')
+                    props.socket.getState('system.adapter.' + this.defaultHistory + '.alive')
                         .then(state => {
                             if (!state || !state.val) {
                                 this.defaultHistory = '';
@@ -1652,11 +1632,34 @@ class ObjectBrowser extends Component {
                         })
                         .catch(e => window.alert('Cannot get state: ' + e));
                 }
+
+                return this.getAdditionalColumns();
             })
-            .then(() => this.getAdditionalColumns())
             .then(columnsForAdmin => {
                 this.calculateColumnsVisibility(null, null, columnsForAdmin);
-                this.setState({ columnsForAdmin });
+
+                const { info, root } = buildTree(this.objects, this.props);
+                this.root = root;
+                this.info = info;
+
+                // Show first selected item
+                let node = this.state.selected && this.state.selected.length && findNode(this.root, this.state.selected[0]);
+
+                this.lastAppliedFilter = null;
+
+                // If selected ID is not visible, reset filter
+                if (node && !applyFilter(node, this.state.filter, this.state.lang, this.objects, null, null, props.customFilter, props.types)) {
+                    // reset filter
+                    this.setState({ filter: Object.assign({}, DEFAULT_FILTER), columnsForAdmin }, () => {
+                        this.setState({ loaded: true, updating: false }, () =>
+                            this.expandAllSelected(() =>
+                                this.onAfterSelect()));
+                    });
+                } else {
+                    this.setState({ loaded: true, updating: false, columnsForAdmin }, () =>
+                        this.expandAllSelected(() =>
+                            this.onAfterSelect()));
+                }
             })
             .catch(e => this.showError(e));
     }
@@ -1729,14 +1732,27 @@ class ObjectBrowser extends Component {
      * Called when component is mounted.
      */
     componentDidMount() {
-        this.props.socket.subscribeObject('*', this.onObjectChange);
+        this.loadAllObjects(!objectsAlreadyLoaded)
+            .then(() => {
+                if (this.props.objectsWorker) {
+                    this.props.objectsWorker.registerHandler(this.onObjectChange);
+                } else {
+                    this.props.socket.subscribeObject('*', this.onObjectChange);
+                }
+
+                objectsAlreadyLoaded = true;
+            });
     }
 
     /**
      * Called when component is unmounted.
      */
     componentWillUnmount() {
-        this.props.socket.unsubscribeObject('*', this.onObjectChange);
+        if (this.props.objectsWorker) {
+            this.props.objectsWorker.unregisterHandler(this.onObjectChange, true);
+        } else {
+            this.props.socket.unsubscribeObject('*', this.onObjectChange);
+        }
 
         // remove all subscribes
         this.subscribes.forEach(pattern => {
@@ -1745,26 +1761,23 @@ class ObjectBrowser extends Component {
         });
 
         this.subscribes = [];
+        this.objects = {};
     }
 
     /**
      * Called when component is mounted.
      */
-    async refreshComponent() {
-        try {
-            await this.props.socket.unsubscribeObject('*', this.onObjectChange);
-        } catch (e) {
-            window.alert('Cannot unsubscribe object: ' + e);
-        }
-
+    refreshComponent() {
         // remove all subscribes
-        this.subscribes.forEach(async pattern => {
+        this.subscribes.forEach(pattern => {
             console.log('- unsubscribe ' + pattern);
-            await this.props.socket.unsubscribeState(pattern, this.onStateChange);
+            this.props.socket.unsubscribeState(pattern, this.onStateChange);
         });
 
         this.subscribes = [];
-        await this.props.socket.subscribeObject('*', this.onObjectChange);
+
+        this.loadAllObjects(true)
+            .then(() => console.log('updated!'));
     }
 
     /**
@@ -2161,29 +2174,49 @@ class ObjectBrowser extends Component {
      * @param {import('./types').OldObject} oldObj
      */
     onObjectChange = (id, obj, oldObj) => {
-        console.log('> objectChange ' + id);
 
-        this.objects = this.objects || [];
+        let newState;
 
-        if (id.startsWith('system.adapter.') && obj && obj.type === 'adapter') {
-            let columnsForAdmin = JSON.parse(JSON.stringify(this.state.columnsForAdmin));
-            this.parseObjectForAdmins(columnsForAdmin, obj);
-            if (JSON.stringify(this.state.columnsForAdmin) !== JSON.stringify(columnsForAdmin)) {
-                this.setState({ columnsForAdmin });
+        if (Array.isArray(id)) {
+            id.forEach(event => {
+                console.log('> objectChange ' + event.id);
+
+                if (event.id.startsWith('system.adapter.') && event.obj && event.obj.type === 'adapter') {
+                    let columnsForAdmin = JSON.parse(JSON.stringify(this.state.columnsForAdmin));
+
+                    this.parseObjectForAdmins(columnsForAdmin, event.obj);
+
+                    if (JSON.stringify(this.state.columnsForAdmin) !== JSON.stringify(columnsForAdmin)) {
+                        newState= { columnsForAdmin };
+                    }
+                }
+            });
+        } else {
+            console.log('> objectChange ' + id);
+            this.objects = this.objects || [];
+
+            if (id.startsWith('system.adapter.') && obj && obj.type === 'adapter') {
+                let columnsForAdmin = JSON.parse(JSON.stringify(this.state.columnsForAdmin));
+                this.parseObjectForAdmins(columnsForAdmin, obj);
+                if (JSON.stringify(this.state.columnsForAdmin) !== JSON.stringify(columnsForAdmin)) {
+                    newState = { columnsForAdmin };
+                }
             }
-        }
 
-        if (this.objects[id]) {
-            if (obj) {
-                this.objects[id] = obj;
-            } else {
+            if (this.objects[id]) {
+                if (obj) {
+                    this.objects[id] = obj;
+                } else {
+                    delete this.objects[id];
+                }
+            } else if (this.objects[id]) {
                 delete this.objects[id];
             }
-        } else if (this.objects[id]) {
-            delete this.objects[id];
         }
 
-        if (!this.objectsUpdateTimer) {
+        newState && this.setState(newState);
+
+        if (!this.objectsUpdateTimer && this.objects) {
             this.objectsUpdateTimer = setTimeout(() => {
                 this.objectsUpdateTimer = null;
                 const { info, root } = buildTree(this.objects, this.props);
@@ -2204,12 +2237,10 @@ class ObjectBrowser extends Component {
      * @param {string} id
      */
     subscribe(id) {
-        if (this.subscribes.indexOf(id) === -1) {
+        if (!this.subscribes.includes(id)) {
             this.subscribes.push(id);
             console.log('+ subscribe ' + id);
-            if (!this.pausedSubscribes) {
-                this.props.socket.subscribeState(id, this.onStateChange);
-            }
+            !this.pausedSubscribes && this.props.socket.subscribeState(id, this.onStateChange);
         }
     }
 
@@ -2897,9 +2928,11 @@ class ObjectBrowser extends Component {
             }}>
 
                 <Tooltip title={this.props.t('ra_Refresh tree')}>
-                    <IconButton onClick={() => this.refreshComponent()}>
-                        <RefreshIcon />
-                    </IconButton>
+                    <div>
+                        <IconButton onClick={() => this.refreshComponent()} disabled={this.state.updating}>
+                            <RefreshIcon />
+                        </IconButton>
+                    </div>
                 </Tooltip>
                 {this.props.showExpertButton &&
                 <Tooltip title={this.props.t('ra_expertMode')}>
@@ -3588,7 +3621,11 @@ class ObjectBrowser extends Component {
                     >
                         {this.props.t('ra_Update')}
                     </Button>
-                    <Button variant="contained" onClick={() => this.onColumnsEditCustomDialogClose()}><IconClose className={this.props.classes.buttonIcon} />{this.props.t('Cancel')}</Button>
+                    <Button
+                        variant="contained"
+                        onClick={() => this.onColumnsEditCustomDialogClose()}
+                        startIcon={<IconClose />}
+                    >{this.props.t('Cancel')}</Button>
                 </DialogActions>
             </Dialog>;
         } else {
@@ -4493,6 +4530,9 @@ ObjectBrowser.propTypes = {
     ]),
     types: PropTypes.array,   // optional ['state', 'instance', 'channel']
     columns: PropTypes.array, // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
+
+    objectsWorker: PropTypes.object,  // optional cache of objects
+
     dragSettings: PropTypes.object,
     DragWrapper: PropTypes.func,
     dragEnabled: PropTypes.bool,

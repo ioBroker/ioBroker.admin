@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
@@ -54,6 +54,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { FaPlusSquare as InsertIcon} from 'react-icons/fa';
 import { FaDownload as ExportIcon} from 'react-icons/fa';
+import IconDelete from "@material-ui/icons/Delete";
+import IconClose from "@material-ui/icons/Close";
 
 const localeMap = {
     en: enLocale,
@@ -869,10 +871,14 @@ class ObjectHistoryData extends Component {
                 />
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" onClick={ () =>
-                    this.setState({ areYouSure: false, suppressMessage: this.state.suppressMessage && Date.now() }, () => this.onDelete())
-                } color="primary" autoFocus>{ this.props.t('Delete') }</Button>
-                <Button variant="contained" onClick={ () => this.setState({ areYouSure: false }) } color="secondary">{ this.props.t('Cancel') }</Button>
+                <Button
+                    variant="contained"
+                    onClick={ () => this.setState({ areYouSure: false, suppressMessage: this.state.suppressMessage && Date.now() }, () => this.onDelete())}
+                    color="primary"
+                    autoFocus
+                    startIcon={<IconDelete />}
+                >{ this.props.t('Delete') }</Button>
+                <Button variant="contained" onClick={ () => this.setState({ areYouSure: false }) } color="secondary" startIcon={<IconClose />}>{ this.props.t('Cancel') }</Button>
             </DialogActions>
         </Dialog>;
     }

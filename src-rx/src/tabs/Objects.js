@@ -158,6 +158,7 @@ class Objects extends Component {
             <ObjectBrowser
                 key="browser"
                 dialogName="admin"
+                objectsWorker={this.props.objectsWorker}
                 prefix={this.props.prefix}
                 defaultFilters={this.filters}
                 statesOnly={this.props.statesOnly}
@@ -232,6 +233,7 @@ Objects.propTypes = {
     expertMode: PropTypes.bool,
     isFloatComma: PropTypes.bool,
     dateFormat: PropTypes.string,
+    objectsWorker: PropTypes.object,
 };
 
 /** @type {typeof Objects} */

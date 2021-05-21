@@ -8,6 +8,7 @@ import Toolbar from '@material-ui/core/Grid';
 
 import Button from '@material-ui/core/Button';
 import Paper from  '@material-ui/core/Paper';
+import IconCheck from "@material-ui/icons/Check";
 
 const TOOLBAR_HEIGHT = 64;
 
@@ -85,6 +86,14 @@ class WizardPasswordTab extends Component {
                                     autoComplete: 'off',
                                 },
                             }}
+                            onKeyDown={e => {
+                                if (e.keyCode === 13 && this.state.password && !this.state.errorPassword) {
+                                    const el = window.document.getElementById('admin_password');
+                                    if (el) {
+                                        el.focus();
+                                    }
+                                }
+                            }}
                             autoComplete="off"
                             className={ this.props.classes.input }
                             ref={ this.focusRef }
@@ -100,10 +109,14 @@ class WizardPasswordTab extends Component {
                         <TextField
                             inputProps={{
                                 autoComplete: 'new-password',
-                                form: {
-                                    autoComplete: 'off',
-                                },
+                                form: {autoComplete: 'off'},
+                                id: 'admin_password'
                             }}
+                            onKeyDown={e => {
+                                if (e.keyCode === 13 && this.state.password && !this.state.errorPassword && !this.state.errorPasswordRepeat) {
+                                    this.props.onDone(this.state.password);
+                                }
+                            } }
                             autoComplete="off"
                             className={ this.props.classes.input }
                             label={ this.props.t('Repeat administrator password') }
@@ -118,7 +131,7 @@ class WizardPasswordTab extends Component {
             </form>
             <Toolbar className={ this.props.classes.toolbar }>
                 <div className={ this.props.classes.grow }/>
-                <Button  color="primary" variant={"contained"} onClick={ () => this.props.onDone(this.state.password) } disabled={ !!this.state.errorPasswordRepeat || this.state.errorPassword }>{ this.props.t('Set administrator password') }</Button>
+                <Button  color="primary" variant={"contained"} onClick={ () => this.props.onDone(this.state.password) } disabled={ !!this.state.errorPasswordRepeat || this.state.errorPassword } startIcon={<IconCheck/>}>{ this.props.t('Set administrator password') }</Button>
             </Toolbar>
         </Paper>;
     }

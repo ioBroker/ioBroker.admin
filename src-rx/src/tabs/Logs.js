@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 
@@ -50,6 +50,7 @@ import Utils from '../Utils';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
+import CheckIcon from "@material-ui/icons/Check";
 
 const MAX_LOGS = 3000;
 
@@ -629,10 +630,10 @@ class Logs extends Component {
                 </Typography>
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" autoFocus onClick={() => this.handleLogDelete()} color="primary">
+                <Button variant="contained" autoFocus onClick={() => this.handleLogDelete()} color="primary" startIcon={<CheckIcon />}>
                     {this.t('Ok')}
                 </Button>
-                <Button variant="contained" onClick={() => this.closeLogDelete()} >
+                <Button variant="contained" onClick={() => this.closeLogDelete()} startIcon={<CloseIcon />}>
                     {this.t('Cancel')}
                 </Button>
             </DialogActions>

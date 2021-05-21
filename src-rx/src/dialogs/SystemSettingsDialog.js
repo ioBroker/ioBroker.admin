@@ -144,48 +144,50 @@ class SystemSettingsDialog extends Component {
     }
 
     onSave() {
-        console.log(this.state.systemConfig.common.language, JSON.parse(this.originalConfig).common.language)
-        return this.props.socket.getSystemConfig(true)
-            .then(systemConfig => {
-                systemConfig = systemConfig || {};
-                if (JSON.stringify(systemConfig.common) !== JSON.stringify(this.state.systemConfig.common)) {
-                    return this.props.socket.setSystemConfig(this.state.systemConfig);
-                } else {
-                    return Promise.resolve();
-                }
-            })
-            .then(() => this.props.socket.setObject('system.certificates', this.state.systemCertificates))
-            .then(() => this.props.socket.getObject('system.repositories'))
-            .then(systemRepositories => {
-                systemRepositories = systemRepositories || {};
-                systemRepositories.native = systemRepositories.native || {};
-                systemRepositories.native.repositories = systemRepositories.native.repositories || {};
-                const newRepo = JSON.parse(JSON.stringify(this.state.systemRepositories.native.repositories));
+        this.setState({saving: true}, () => {
+            return this.props.socket.getSystemConfig(true)
+                .then(systemConfig => {
+                    systemConfig = systemConfig || {};
+                    if (JSON.stringify(systemConfig.common) !== JSON.stringify(this.state.systemConfig.common)) {
+                        return this.props.socket.setSystemConfig(this.state.systemConfig);
+                    } else {
+                        return Promise.resolve();
+                    }
+                })
+                .then(() => this.props.socket.setObject('system.certificates', this.state.systemCertificates))
+                .then(() => this.props.socket.getObject('system.repositories'))
+                .then(systemRepositories => {
+                    systemRepositories = systemRepositories || {};
+                    systemRepositories.native = systemRepositories.native || {};
+                    systemRepositories.native.repositories = systemRepositories.native.repositories || {};
+                    const newRepo = JSON.parse(JSON.stringify(this.state.systemRepositories.native.repositories));
 
-                // merge new and existing info
-                Object.keys(newRepo).forEach(repo => {
-                    if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].json) {
-                        newRepo[repo].json = systemRepositories.native.repositories[repo].json;
+                    // merge new and existing info
+                    Object.keys(newRepo).forEach(repo => {
+                        if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].json) {
+                            newRepo[repo].json = systemRepositories.native.repositories[repo].json;
+                        }
+                        if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].hash) {
+                            newRepo[repo].hash = systemRepositories.native.repositories[repo].hash;
+                        }
+                    });
+                    systemRepositories.native.repositories = newRepo;
+                    return this.props.socket.setObject('system.repositories', systemRepositories);
+                }).then(() => {
+                    // this.getSettings();
+                    alert(this.props.t('Settings saved'));
+                    this.props.onClose();
+                    if (this.state.systemConfig.common.expertMode !== JSON.parse(this.originalConfig).common.expertMode) {
+                        this.props.expertModeFunc(this.state.systemConfig.common.expertMode);
                     }
-                    if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].hash) {
-                        newRepo[repo].hash = systemRepositories.native.repositories[repo].hash;
+                    if (this.state.systemConfig.common.language !== JSON.parse(this.originalConfig).common.language) {
+                        window.location.reload(false);
                     }
-                });
-                systemRepositories.native.repositories = newRepo;
-                return this.props.socket.setObject('system.repositories', systemRepositories);
-            }).then(() => {
-                // this.getSettings();
-                alert(this.props.t('Settings saved'));
-                this.props.onClose();
-                if (this.state.systemConfig.common.expertMode !== JSON.parse(this.originalConfig).common.expertMode) {
-                    this.props.expertModeFunc(this.state.systemConfig.common.expertMode);
-                }
-                if (this.state.systemConfig.common.language !== JSON.parse(this.originalConfig).common.language) {
-                    window.location.reload(false);
-                }
-            })
-            .catch(e =>
-                window.alert(`Cannot save system configuration: ${e}`));
+                })
+                .then(() => this.setState({saving: false}))
+                .catch(e =>
+                    window.alert(`Cannot save system configuration: ${e}`));
+        });
     }
 
     getTabs() {
@@ -340,6 +342,7 @@ class SystemSettingsDialog extends Component {
                             {tabs}
                         </Tabs>
                         <IconButton
+                            disabled={this.state.saving}
                             edge="start"
                             color="inherit"
                             onClick={() => changed ? this.setState({ confirmExit: true }) : this.props.onClose()}
@@ -355,18 +358,19 @@ class SystemSettingsDialog extends Component {
             <DialogActions>
                 <Button
                     variant="contained"
-                    disabled={!changed}
+                    disabled={!changed || this.state.saving}
                     onClick={() => this.onSave()}
                     color="primary"
+                    startIcon={<CheckIcon/>}
                 >
-                    <CheckIcon />
-                    {this.props.t('Save')}
+                    {this.props.t('Save & Close')}
                 </Button>
                 <Button
                     variant="contained"
+                    disabled={this.state.saving}
                     onClick={() => changed ? this.setState({ confirmExit: true }) : this.props.onClose()}
+                    startIcon={<CloseIcon/>}
                 >
-                    <CloseIcon />
                     {changed ? this.props.t('Cancel') : this.props.t('Close')}
                 </Button>
             </DialogActions>

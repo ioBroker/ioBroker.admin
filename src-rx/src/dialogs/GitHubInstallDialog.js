@@ -18,6 +18,7 @@ import { FaGithub as GithubIcon } from 'react-icons/fa';
 import UrlIcon from '@material-ui/icons/Language';
 
 import I18n from '@iobroker/adapter-react/i18n';
+import CheckIcon from "@material-ui/icons/Check";
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -311,7 +312,9 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                     onClose();
                     closeInit();
                 }}
-                color="primary">
+                color="primary"
+                startIcon={<CheckIcon/>}
+            >
                 {t('Install')}
             </Button>
             <Button
@@ -320,7 +323,9 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                     onClose();
                     closeInit();
                 }}
-                color="default">
+                color="default"
+                startIcon={<CloseIcon />}
+            >
                 {t('Close')}
             </Button>
         </DialogActions>

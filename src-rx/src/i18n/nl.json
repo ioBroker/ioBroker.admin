@@ -1380,5 +1380,8 @@
   "Category": "Categorie",
   "0 %d days ago": "vandaag",
   "Add group": "Nieuw categorie-item toevoegen",
-  "Add enum": "Voeg een nieuwe categorie toe"
+  "Add enum": "Voeg een nieuwe categorie toe",
+  "Save & Close": "Opslaan en sluiten",
+  "API key": "API sleutel",
+  "Restart works only if controller started as system service.": "Opnieuw opstarten werkt alleen als de controller is gestart als systeemservice."
 }

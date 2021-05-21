@@ -23,8 +23,8 @@ function GroupDeleteDialog(props) {
             </DialogContentText>
         </DialogContent>
         <DialogActions className={props.classes.dialogActions} >
-            <Button variant="contained" color="primary" onClick={() => props.deleteGroup(props.group._id)}><IconDelete style={{marginRight: 8}}/>{props.t('Delete')}</Button>
-            <Button variant="contained" autoFocus onClick={props.onClose}><IconCancel style={{marginRight: 8}}/>{props.t('Cancel')}</Button>
+            <Button variant="contained" color="primary" onClick={() => props.deleteGroup(props.group._id)} startIcon={<IconDelete />}>{props.t('Delete')}</Button>
+            <Button variant="contained" autoFocus onClick={props.onClose} startIcon={<IconCancel />}>{props.t('Cancel')}</Button>
          </DialogActions>
     </Dialog>;
 }

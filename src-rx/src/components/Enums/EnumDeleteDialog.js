@@ -6,6 +6,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
+import DeleteIcon from "@material-ui/icons/Delete";
+import CloseIcon from "@material-ui/icons/Close";
 
 function EnumDeleteDialog(props) {
     if (!props.open) {
@@ -20,8 +22,8 @@ function EnumDeleteDialog(props) {
             </DialogContentText>
         </DialogContent>
         <DialogActions>
-            <Button variant="contained" autoFocus color="primary" onClick={() => props.deleteEnum(props.enum._id)}>{props.t('Delete')}</Button>
-            <Button variant="contained" onClick={props.onClose}>{props.t('Cancel')}</Button>
+            <Button variant="contained" autoFocus color="primary" onClick={() => props.deleteEnum(props.enum._id)} startIcon={<DeleteIcon />}>{props.t('Delete')}</Button>
+            <Button variant="contained" onClick={props.onClose} startIcon={<CloseIcon />}>{props.t('Cancel')}</Button>
         </DialogActions>
     </Dialog>;
 }

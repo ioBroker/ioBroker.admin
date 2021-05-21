@@ -9,6 +9,7 @@ import Paper from  '@material-ui/core/Paper';
 
 import IconCloud from '@material-ui/icons/Public';
 import IconCloudPro from '@material-ui/icons/Language';
+import IconCheck from "@material-ui/icons/Check";
 
 const TOOLBAR_HEIGHT = 64;
 
@@ -56,9 +57,6 @@ const styles = theme => ({
     button: {
         marginRight: theme.spacing(2),
     },
-    buttonIcon: {
-        marginRight: theme.spacing(1),
-    }
 });
 
 class WizardPortForwarding extends Component {
@@ -100,18 +98,20 @@ class WizardPortForwarding extends Component {
                             color="secondary"
                             variant="contained"
                             onClick={ () => window.open('https://iobroker.pro', 'help') }
-                        ><IconCloudPro className={this.props.classes.buttonIcon}/>ioBroker.pro</Button>
+                            startIcon={<IconCloudPro />}
+                        >ioBroker.pro</Button>
                         <Button
                             color="secondary"
                             variant="contained"
                             onClick={ () => window.open('https://iobroker.net', 'help') }
-                        ><IconCloud className={this.props.classes.buttonIcon}/>ioBroker.net</Button>
+                            startIcon={<IconCloud />}
+                        >ioBroker.net</Button>
                     </Grid>
                 </Grid>
             </form>
             <Toolbar className={ this.props.classes.toolbar }>
                 <div className={ this.props.classes.grow }/>
-                <Button color="primary" variant="contained" onClick={ () => this.props.onDone(this.state.password) }>{ this.props.t('Understand') }</Button>
+                <Button color="primary" variant="contained" onClick={ () => this.props.onDone(this.state.password) } startIcon={<IconCheck/>}>{ this.props.t('Understand') }</Button>
             </Toolbar>
         </Paper>;
     }
