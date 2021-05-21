@@ -98,6 +98,8 @@ function UserEditDialog(props) {
         fullWidth={props.innerWidth < 500}
         open={props.open}
         onClose={props.onClose}
+        disableEscapeKeyDown
+        disableBackdropClick
     >
         <DialogTitle className={props.classes.dialogTitle} style={{ padding: 12 }} >
            { props.t( 'User parameters' ) }
@@ -200,6 +202,7 @@ function UserEditDialog(props) {
                         icons={USER_ICONS}
                         label="Icon"
                         t={props.t}
+                        lang={props.lang}
                         value={ props.user.common.icon }
                         onChange={fileBlob => {
                             let newData = Utils.clone(props.user);

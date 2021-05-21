@@ -11,7 +11,7 @@ import Icon from '@material-ui/core/Icon';
 
 import ListIcon from '@material-ui/icons/List';
 
-const DragObjectBrowser = (props) => {
+const DragObjectBrowser = props => {
     let browserProps = props;
 
     const [wrapperState, setWrapperState] = useState({DragWrapper: null});
@@ -40,17 +40,17 @@ const DragObjectBrowser = (props) => {
                 preview: (props.item.data && props.item.data.obj ? <Card
                     key={props.item.data.obj._id}
                     variant="outlined"
-                    className={browserProps.classes.enumGroupMember}
+                    className={browserProps.classesParent.enumGroupMember}
                 >
                     {
                         props.item.data.obj.common?.icon
                             ?
                             <Icon
-                                className={ browserProps.classes.icon }
+                                className={ browserProps.classesParent.icon }
                                 src={props.item.data.obj.common.icon}
                             />
                             :
-                            <ListIcon className={browserProps.classes.icon} />
+                            <ListIcon className={browserProps.classesParent.icon} />
                     }
                     {props.item.data.obj.common?.name ? browserProps.getName(props.item.data.obj.common?.name) : props.item.data.obj._id}
                 </Card> : null)
@@ -90,7 +90,7 @@ const DragObjectBrowser = (props) => {
 DragObjectBrowser.propTypes = {
     addItemToEnum: PropTypes.func,
     getName: PropTypes.func,
-    classes: PropTypes.object,
+    classesParent: PropTypes.object,
     t: PropTypes.func,
     lang: PropTypes.string,
     socket: PropTypes.object,

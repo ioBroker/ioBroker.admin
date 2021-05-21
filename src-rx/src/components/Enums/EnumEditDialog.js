@@ -18,28 +18,59 @@ import ImageIcon from '@material-ui/icons/Image';
 import {IOTextField, IOColorPicker, IOFileInput} from '../IOFields/Fields';
 import Utils from '../Utils';
 
-function importAll(r) {
-    return r.keys().map(r);
-}
-
-let devicesImages = importAll(require.context('../../assets/devices', false, /\.svg$/));
-let roomsImages = importAll(require.context('../../assets/rooms', false, /\.svg$/));
+import devices from '../../assets/devices/list.json';
+import rooms from '../../assets/rooms/list.json';
 
 const styles = theme => ({
     contentRoot:{
         padding: '16px 24px'
-    }
+    },
+    dialogTitle: {
+        borderBottom: '1px solid #00000020',
+        padding : 0,
+        width:'100%'
+    },
+    dialogActions: {
+        borderTop: '1px solid #00000020',
+        width:'100%'
+    },
+    dialog: {
+        // maxWidth: '100vw',
+        // maxHeight: '100vh',
+        // overflowY: 'auto',
+        // overflowX: 'hidden',
+        // padding: 0
+    },
+    iconPreview: {
+        height: 32,
+        width: 32,
+    },
+    colorPicker: {
+        // position:'absolute'
+    },
+    formIcon : {
+        margin: 10,
+        opacity: 0.6
+    },
+    formContainer : {
+        display: 'flex',
+        justifyContent:'center',
+        alignItems:'center'
+    },
+    formControl : {
+        display: 'flex',
+        padding: 24,
+        flexGrow: 1000
+    },
 });
 
 function EnumEditDialog(props) {
     let idExists = props.enums.find(enumItem => enumItem._id === props.enum._id);
 
-    let canSave = props.enum._id !== 'system.enum.'
+    let canSave = props.enum._id !== 'system.enum.';
 
-    if (props.isNew) {
-        if (idExists) {
-            canSave = false;
-        }
+    if (props.isNew && idExists) {
+        canSave = false;
     }
 
     const getShortId = _id => {
@@ -57,12 +88,28 @@ function EnumEditDialog(props) {
 
     let ICONS;
     if (props.enum._id.startsWith('enum.functions.')) {
-        ICONS = devicesImages.map(image => image.default);
+        ICONS = devices;
+        ICONS.forEach(item => {
+            if (!item.icon.startsWith('/')) {
+                item.icon = require(`../../assets/devices/${item.icon}`).default
+            }
+        });
     } else if (props.enum._id.startsWith('enum.rooms.')) {
-        ICONS = roomsImages.map(image => image.default);
+        ICONS = rooms;
+        ICONS.forEach(item => {
+            if (!item.icon.startsWith('/')) {
+                item.icon = require(`../../assets/rooms/${item.icon}`).default
+            }
+        });
     }
 
-    return <Dialog fullWidth={props.innerWidth < 500} open={true} onClose={props.onClose}>
+    return <Dialog
+        fullWidth={props.innerWidth < 500}
+        open={true}
+        onClose={props.onClose}
+        disableEscapeKeyDown
+        disableBackdropClick
+    >
         <DialogTitle className={props.classes.dialogTitle} style={{padding: 12}} >
            { props.t( 'Enum parameters' ) }
         </DialogTitle>
@@ -130,10 +177,11 @@ function EnumEditDialog(props) {
                         label="Icon"
                         icons={ICONS}
                         t={props.t}
+                        lang={props.lang}
                         value={ props.enum.common.icon }
-                        onChange={fileblob=>{
+                        onChange={fileBlob=>{
                             let newData = props.enum;
-                            newData.common.icon = fileblob;
+                            newData.common.icon = fileBlob;
                             props.onChange(newData);
                         }}
                         previewClassName={props.classes.iconPreview}
@@ -174,7 +222,7 @@ EnumEditDialog.propTypes = {
     saveData: PropTypes.func,
     onClose: PropTypes.func,
     changed: PropTypes.bool,
-    classes: PropTypes.object,
+    classesParent: PropTypes.object,
     t: PropTypes.func,
     lang: PropTypes.string,
     socket: PropTypes.object,

@@ -198,6 +198,7 @@ function GroupEditDialog(props) {
                 label="Icon"
                 icons={GROUPS_ICONS}
                 t={props.t}
+                lang={props.lang}
                 value={ props.group.common.icon }
                 onChange={fileBlob => {
                     let newData = Utils.clone(props.group);
@@ -233,6 +234,8 @@ function GroupEditDialog(props) {
         open={props.open}
         onClose={props.onClose}
         fullWidth={props.innerWidth < 500}
+        disableEscapeKeyDown
+        disableBackdropClick
     >
         <DialogTitle className={props.classes.dialogTitle}>
             <Tabs

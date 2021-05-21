@@ -121,6 +121,7 @@ class Objects extends Component {
         } else {
             return <Dialog
                 key="delete"
+                maxWidth="md"
                 open={true}
                 onClose={() => this.setState({ deleteObjectShow: null })}
                 aria-labelledby="delete-object-dialog-title"

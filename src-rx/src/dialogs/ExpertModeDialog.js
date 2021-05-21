@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
         fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif'
     },
     paper: {
-        maxWidth: 1000
+        maxWidth: 800,
     },
     overflowHidden: {
         display: 'flex',
@@ -44,6 +44,9 @@ const useStyles = makeStyles((theme) => ({
     textBold: {
         fontSize: 16,
         fontWeight: 'bold'
+    },
+    width100: {
+        width: '100%'
     }
 }));
 
@@ -72,7 +75,7 @@ const ExpertModeDialog = ({ boolSettings, func, buttonIcon, themeType }) => {
             <DialogTitle><ExpertIcon style={{marginRight: 8}}/>{I18n.t('Expert mode')}</DialogTitle>
             <DialogContent className={classes.overflowHidden} dividers>
                 <Grid container>
-                    <Grid item>
+                    <Grid item className={classes.width100}>
                         <div className={classes.root}>
                             <div className={classes.pre} style={{color: themeType === 'dark' ? '#111': null}}>
                                 <Typography

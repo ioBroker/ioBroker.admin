@@ -1378,5 +1378,7 @@
   "Clone": "Kloon",
   "Expand": "Uitbreiden",
   "Category": "Categorie",
-  "0 %d days ago": "vandaag"
+  "0 %d days ago": "vandaag",
+  "Add group": "Nieuw categorie-item toevoegen",
+  "Add enum": "Voeg een nieuwe categorie toe"
 }

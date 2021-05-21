@@ -1378,5 +1378,7 @@
   "Clone": "Clone",
   "Expand": "Expand",
   "Category": "Category",
-  "0 %d days ago": "today"
+  "0 %d days ago": "today",
+  "Add group": "Add new category item",
+  "Add enum": "Add new category"
 }

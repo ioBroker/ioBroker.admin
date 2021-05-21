@@ -1,312 +1,994 @@
 [
   {
     "_id": "hoods",
-    "name": "Hoods",
+    "name": {
+      "en": "Hoods",
+      "ru": "Вытяжки",
+      "de": "Abzugshauben",
+      "fr": "Capots",
+      "it": "Cappe",
+      "nl": "Hoods",
+      "pl": "Okapy",
+      "pt": "Hoods",
+      "es": "Campanas",
+      "zh-cn": "抽油烟机"
+    },
     "icon": "Hoods.svg"
   },
   {
     "_id": "alarm_systems",
-    "name": "Alarm Systems",
+    "name": {
+      "en": "Alarm Systems",
+      "ru": "Системы Сигнализации",
+      "de": "Alarmanlagen",
+      "fr": "Systèmes D'Alarme",
+      "it": "Sistemi Di Allarme",
+      "nl": "Alarm Systems",
+      "pl": "Systemy Alarmowe",
+      "pt": "Sistemas De Alarme",
+      "es": "Sistemas De Alarma",
+      "zh-cn": "报警系统"
+    },
     "icon": "Alarm Systems.svg"
   },
   {
     "_id": "battery_status",
-    "name": "Battery Status",
+    "name": {
+      "en": "Battery Status",
+      "ru": "Заряд Батареи",
+      "de": "Batteriestatus",
+      "fr": "État De La Batterie",
+      "it": "Stato Della Batteria",
+      "nl": "Batterij Status",
+      "pl": "Stan Baterii",
+      "pt": "Estado Da Bateria",
+      "es": "Estado De La Batería",
+      "zh-cn": "电池状态"
+    },
     "icon": "Battery Status.svg"
   },
   {
     "_id": "lightings",
-    "name": "Lightings",
+    "name": {
+      "en": "Lightings",
+      "ru": "Светильники",
+      "de": "Beleuchtungen",
+      "fr": "Éclairages",
+      "it": "Illuminazione",
+      "nl": "Verlichting",
+      "pl": "Oprawy Oświetleniowe",
+      "pt": "Iluminações",
+      "es": "Iluminaciones",
+      "zh-cn": "照明"
+    },
     "icon": "Lightings.svg"
   },
   {
     "_id": "shading",
-    "name": "Shading",
+    "name": {
+      "en": "Shading",
+      "ru": "Затенение",
+      "de": "Beschattungen",
+      "fr": "Ombres",
+      "it": "Ombreggiatura",
+      "nl": "Shading",
+      "pl": "Zacienienie",
+      "pt": "Shading",
+      "es": "Sombreado",
+      "zh-cn": "底纹"
+    },
     "icon": "Shading.svg"
   },
   {
     "_id": "irrigation",
-    "name": "Irrigation",
+    "name": {
+      "en": "Irrigation",
+      "ru": "Орошение",
+      "de": "Bewässerung",
+      "fr": "Irrigation",
+      "it": "Irrigazione",
+      "nl": "Irrigatie",
+      "pl": "Nawadnianie",
+      "pt": "Irrigação",
+      "es": "Irrigación",
+      "zh-cn": "灌溉"
+    },
     "icon": "Irrigation.svg"
   },
   {
     "_id": "iron",
-    "name": "Iron",
+    "name": {
+      "en": "Iron",
+      "ru": "Утюг",
+      "de": "Bügeleisen",
+      "fr": "Le Fer",
+      "it": "Ferro",
+      "nl": "Ijzer",
+      "pl": "Żelazo",
+      "pt": "Ferro",
+      "es": "Hierro",
+      "zh-cn": "铁"
+    },
     "icon": "Iron.svg"
   },
   {
     "_id": "computer",
-    "name": "Computer",
+    "name": {
+      "en": "Computer",
+      "ru": "Компьютер",
+      "de": "Rechner",
+      "fr": "L'Ordinateur",
+      "it": "Computer",
+      "nl": "Computer",
+      "pl": "Komputer",
+      "pt": "Computador",
+      "es": "Ordenador",
+      "zh-cn": "电脑"
+    },
     "icon": "Computer.svg"
   },
   {
     "_id": "ceiling_spotlights",
-    "name": "Ceiling Spotlights",
+    "name": {
+      "en": "Ceiling Spotlights",
+      "ru": "Потолочные Прожекторы",
+      "de": "Deckenspots",
+      "fr": "Plafond Spotlights",
+      "it": "Faretti A Soffitto",
+      "nl": "Plafond Spotlights",
+      "pl": "Reflektory Sufitowe",
+      "pt": "Tecto Focos",
+      "es": "Focos De Techo",
+      "zh-cn": "天花射灯"
+    },
     "icon": "Ceiling Spotlights.svg"
   },
   {
     "_id": "handle",
-    "name": "Handle",
+    "name": {
+      "en": "Handle",
+      "ru": "Ручка",
+      "de": "Drücker",
+      "fr": "Manipuler",
+      "it": "Maniglia",
+      "nl": "Handvat",
+      "pl": "Uchwyt",
+      "pt": "Lidar Com",
+      "es": "Resolver",
+      "zh-cn": "处理"
+    },
     "icon": "Handle.svg"
   },
   {
     "_id": "power_consumption",
-    "name": "Power Consumption",
+    "name": {
+      "en": "Power Consumption",
+      "ru": "Потребляемая Мощность",
+      "de": "Stromverbrauch",
+      "fr": "Consommation D'Énergie",
+      "it": "Consumo Di Energia",
+      "nl": "Energieverbruik",
+      "pl": "Pobór Energii",
+      "pt": "Consumo De Energia",
+      "es": "El Consumo De Energía",
+      "zh-cn": "能量消耗"
+    },
     "icon": "Power Consumption.svg"
   },
   {
     "_id": "window",
-    "name": "Window",
+    "name": {
+      "en": "Window",
+      "ru": "Окно",
+      "de": "Fenster",
+      "fr": "La Fenêtre",
+      "it": "Finestra",
+      "nl": "Venster",
+      "pl": "Okno",
+      "pt": "Janela",
+      "es": "Ventana",
+      "zh-cn": "窗户"
+    },
     "icon": "Window.svg"
   },
   {
     "_id": "garage_doors",
-    "name": "Garage Doors",
+    "name": {
+      "en": "Garage Doors",
+      "ru": "Гаражные Ворота",
+      "de": "Garagentore",
+      "fr": "Portes De Garage",
+      "it": "Garage Doors",
+      "nl": "Garage Doors",
+      "pl": "Bramy Garażowe",
+      "pt": "Portas De Garagem",
+      "es": "Las Puertas De Garaje",
+      "zh-cn": "车库门"
+    },
     "icon": "Garage Doors.svg"
   },
   {
     "_id": "hairdryer",
-    "name": "Hairdryer",
+    "name": {
+      "en": "Hairdryer",
+      "ru": "Фен",
+      "de": "Haartrockner",
+      "fr": "Sèche-Cheveux",
+      "it": "Asciugacapelli",
+      "nl": "Haardroger",
+      "pl": "Suszarka Do Włosów",
+      "pt": "Secador De Cabelo",
+      "es": "Secador De Pelo",
+      "zh-cn": "电吹风"
+    },
     "icon": "Hairdryer.svg"
   },
   {
     "_id": "hanging_lamps",
-    "name": "Hanging Lamps",
+    "name": {
+      "en": "Hanging Lamps",
+      "ru": "Подвесные Светильники",
+      "de": "Hängelampen",
+      "fr": "Lampes Suspendues",
+      "it": "Lampade A Sospensione",
+      "nl": "Opknoping Lampen",
+      "pl": "Lampy Wiszące",
+      "pt": "Lâmpadas De Suspensão",
+      "es": "Lámparas Colgantes",
+      "zh-cn": "挂灯"
+    },
     "icon": "Hanging Lamps.svg"
   },
   {
     "_id": "doorstep",
-    "name": "Doorstep",
+    "name": {
+      "en": "Doorstep",
+      "ru": "Порог",
+      "de": "Haustüre",
+      "fr": "Seuil De Porte",
+      "it": "Gradino Della Porta",
+      "nl": "Drempel",
+      "pl": "Próg",
+      "pt": "Porta",
+      "es": "Peldaño",
+      "zh-cn": "门阶"
+    },
     "icon": "Doorstep.svg"
   },
   {
     "_id": "hot_water",
-    "name": "Hot Water",
+    "name": {
+      "en": "Hot Water",
+      "ru": "Горячая Вода",
+      "de": "Heißwasser",
+      "fr": "Eau Chaude",
+      "it": "Acqua Calda",
+      "nl": "Heet Water",
+      "pl": "Gorąca Woda",
+      "pt": "Água Quente",
+      "es": "Agua Caliente",
+      "zh-cn": "热水"
+    },
     "icon": "Hot Water.svg"
   },
   {
     "_id": "heater",
-    "name": "Heater",
+    "name": {
+      "en": "Heater",
+      "ru": "Подогреватель",
+      "de": "Heizung",
+      "fr": "Chauffe-Eau",
+      "it": "Riscaldatore",
+      "nl": "Verwarmer",
+      "pl": "Podgrzewacz",
+      "pt": "Aquecedor",
+      "es": "Calentador",
+      "zh-cn": "加热器"
+    },
     "icon": "Heater.svg"
   },
   {
     "_id": "stove",
-    "name": "Stove",
+    "name": {
+      "en": "Stove",
+      "ru": "Печь",
+      "de": "Herd",
+      "fr": "Le Fourneau",
+      "it": "Stufa",
+      "nl": "Fornuis",
+      "pl": "Kuchenka",
+      "pt": "Forno",
+      "es": "Cocina",
+      "zh-cn": "火炉"
+    },
     "icon": "Stove.svg"
   },
   {
     "_id": "louvre",
-    "name": "Louvre",
+    "name": {
+      "en": "Louvre",
+      "ru": "Жалюзийное Отверстие",
+      "de": "Jalousie",
+      "fr": "Persienne",
+      "it": "Persiana Di Ventilazione",
+      "nl": "Louvre",
+      "pl": "Żaluzja",
+      "pt": "Trapeira",
+      "es": "Lumbrera",
+      "zh-cn": "卢浮宫"
+    },
     "icon": "Louvre.svg"
   },
   {
     "_id": "coffee_makers",
-    "name": "Coffee Makers",
+    "name": {
+      "en": "Coffee Makers",
+      "ru": "Кофеварки",
+      "de": "Kaffemaschinen",
+      "fr": "Cafetières",
+      "it": "Macchine Da Caffè",
+      "nl": "Koffie Makers",
+      "pl": "Ekspresy Do Kawy",
+      "pt": "Cafeteiras",
+      "es": "Cafeteras",
+      "zh-cn": "咖啡壶"
+    },
     "icon": "Coffee Makers.svg"
   },
   {
     "_id": "cold_water",
-    "name": "Cold Water",
+    "name": {
+      "en": "Cold Water",
+      "ru": "Холодная Вода",
+      "de": "Kaltwasser",
+      "fr": "Eau Froide",
+      "it": "Acqua Fredda",
+      "nl": "Koud Water",
+      "pl": "Zimna Woda",
+      "pt": "Água Fria",
+      "es": "Agua Fría",
+      "zh-cn": "冷水"
+    },
     "icon": "Cold Water.svg"
   },
   {
     "_id": "climate",
-    "name": "Climate",
+    "name": {
+      "en": "Climate",
+      "ru": "Климат",
+      "de": "Klima",
+      "fr": "Climat",
+      "it": "Clima",
+      "nl": "Klimaat",
+      "pl": "Klimat",
+      "pt": "Clima",
+      "es": "Clima",
+      "zh-cn": "气候"
+    },
     "icon": "Climate.svg"
   },
   {
     "_id": "speaker",
-    "name": "Speaker",
+    "name": {
+      "en": "Speaker",
+      "ru": "Оратор",
+      "de": "Lautsprecher",
+      "fr": "Orateur",
+      "it": "Altoparlante",
+      "nl": "Spreker",
+      "pl": "Głośnik",
+      "pt": "Palestrante",
+      "es": "Altavoz",
+      "zh-cn": "扬声器"
+    },
     "icon": "Speaker.svg"
   },
   {
     "_id": "led_strip",
-    "name": "Led Strip",
+    "name": {
+      "en": "Led Strip",
+      "ru": "Светодиодная Полоса",
+      "de": "LED Leiste",
+      "fr": "Led Strip",
+      "it": "Led Strip",
+      "nl": "Loden Strip",
+      "pl": "Pasek Ledowy",
+      "pt": "Led Faixa",
+      "es": "Tira Llevada",
+      "zh-cn": "灯带"
+    },
     "icon": "Led Strip.svg"
   },
   {
     "_id": "light",
-    "name": "Light",
+    "name": {
+      "en": "Light",
+      "ru": "Свет",
+      "de": "Licht",
+      "fr": "Lumière",
+      "it": "Leggero",
+      "nl": "Licht",
+      "pl": "Lekki",
+      "pt": "Luz",
+      "es": "Luz",
+      "zh-cn": "光"
+    },
     "icon": "Light.svg"
   },
   {
     "_id": "fan",
-    "name": "Fan",
+    "name": {
+      "en": "Fan",
+      "ru": "Поклонник",
+      "de": "Lüfter",
+      "fr": "Ventilateur",
+      "it": "Fan",
+      "nl": "Ventilator",
+      "pl": "Wentylator",
+      "pt": "Ventilador",
+      "es": "Ventilador",
+      "zh-cn": "扇子"
+    },
     "icon": "Fan.svg"
   },
   {
     "_id": "humidity",
-    "name": "Humidity",
+    "name": {
+      "en": "Humidity",
+      "ru": "Влажность",
+      "de": "Luftfeuchtigkeit",
+      "fr": "Humidité",
+      "it": "Umidità",
+      "nl": "Vochtigheid",
+      "pl": "Wilgotność",
+      "pt": "Umidade",
+      "es": "Humedad",
+      "zh-cn": "湿度"
+    },
     "icon": "Humidity.svg"
   },
   {
     "_id": "ventilation",
-    "name": "Ventilation",
+    "name": {
+      "en": "Ventilation",
+      "ru": "Вентиляция",
+      "de": "Lüftung",
+      "fr": "Ventilation",
+      "it": "Ventilazione",
+      "nl": "Ventilatie",
+      "pl": "Wentylacja",
+      "pt": "Ventilação",
+      "es": "Ventilación",
+      "zh-cn": "通风"
+    },
     "icon": "Ventilation.svg"
   },
   {
     "_id": "chandelier",
-    "name": "Chandelier",
+    "name": {
+      "en": "Chandelier",
+      "ru": "Люстра",
+      "de": "Luster",
+      "fr": "Lustre",
+      "it": "Lampadario",
+      "nl": "Kroonluchter",
+      "pl": "Żyrandol",
+      "pt": "Lustre",
+      "es": "Candelabro",
+      "zh-cn": "枝形吊灯"
+    },
     "icon": "Chandelier.svg"
   },
   {
     "_id": "awnings",
-    "name": "Awnings",
+    "name": {
+      "en": "Awnings",
+      "ru": "Тенты",
+      "de": "Markisen",
+      "fr": "Auvents",
+      "it": "Tende",
+      "nl": "Luifels",
+      "pl": "Okrycia",
+      "pt": "Toldos",
+      "es": "Toldos",
+      "zh-cn": "遮阳篷"
+    },
     "icon": "Awnings.svg"
   },
   {
     "_id": "music",
-    "name": "Music",
+    "name": {
+      "en": "Music",
+      "ru": "Музыка",
+      "de": "Musik",
+      "fr": "Musique",
+      "it": "Musica",
+      "nl": "Muziek",
+      "pl": "Muzyka",
+      "pt": "Música",
+      "es": "Música",
+      "zh-cn": "音乐"
+    },
     "icon": "Music.svg"
   },
   {
     "_id": "people",
-    "name": "People",
+    "name": {
+      "en": "People",
+      "ru": "Люди",
+      "de": "Personen",
+      "fr": "Gens",
+      "it": "Persone",
+      "nl": "Mensen",
+      "pl": "Ludzie",
+      "pt": "Pessoas",
+      "es": "Personas",
+      "zh-cn": "人们"
+    },
     "icon": "People.svg"
   },
   {
     "_id": "pool",
-    "name": "Pool",
+    "name": {
+      "en": "Pool",
+      "ru": "Бассейн",
+      "de": "Pool",
+      "fr": "Piscine",
+      "it": "Piscina",
+      "nl": "Zwembad",
+      "pl": "Basen",
+      "pt": "Piscina",
+      "es": "Piscina",
+      "zh-cn": "水池"
+    },
     "icon": "Pool.svg"
   },
   {
     "_id": "pump",
-    "name": "Pump",
+    "name": {
+      "en": "Pump",
+      "ru": "Насос",
+      "de": "Pumpen",
+      "fr": "Pompe",
+      "it": "Pompa",
+      "nl": "Pomp",
+      "pl": "Pompa",
+      "pt": "Bombear",
+      "es": "Bomba",
+      "zh-cn": "泵"
+    },
     "icon": "Pump.svg"
   },
   {
     "_id": "outdoor_blinds",
-    "name": "Outdoor Blinds",
+    "name": {
+      "en": "Outdoor Blinds",
+      "ru": "Открытый Жалюзи",
+      "de": "Raffstoren",
+      "fr": "Volets",
+      "it": "Tende Da Esterni",
+      "nl": "Outdoor Blinds",
+      "pl": "Rolety Zewnętrzne",
+      "pt": "Estores Exteriores",
+      "es": "Persianas Exteriores",
+      "zh-cn": "室外百叶窗"
+    },
     "icon": "Outdoor Blinds.svg"
   },
   {
     "_id": "mowing_machine",
-    "name": "Mowing Machine",
+    "name": {
+      "en": "Mowing Machine",
+      "ru": "Стрижка Машина",
+      "de": "Rasenmäher",
+      "fr": "Machine De Fauchage",
+      "it": "Macchina Di Falciatura",
+      "nl": "Maaimachine",
+      "pl": "Kosiarka",
+      "pt": "Roçada Máquina",
+      "es": "Segadora",
+      "zh-cn": "割草机"
+    },
     "icon": "Mowing Machine.svg"
   },
   {
     "_id": "receiver",
-    "name": "Receiver",
+    "name": {
+      "en": "Receiver",
+      "ru": "Приемник",
+      "de": "Receiver",
+      "fr": "Destinataire",
+      "it": "Ricevitore",
+      "nl": "Ontvanger",
+      "pl": "Odbiorca",
+      "pt": "Recebedor",
+      "es": "Receptor",
+      "zh-cn": "接收者"
+    },
     "icon": "Receiver.svg"
   },
   {
     "_id": "computer",
-    "name": "Computer",
+    "name": {
+      "en": "Computer",
+      "ru": "Компьютер",
+      "de": "Rechner",
+      "fr": "L'Ordinateur",
+      "it": "Computer",
+      "nl": "Computer",
+      "pl": "Komputer",
+      "pt": "Computador",
+      "es": "Ordenador",
+      "zh-cn": "电脑"
+    },
     "icon": "Computer.svg"
   },
   {
     "_id": "shutters",
-    "name": "Shutters",
+    "name": {
+      "en": "Shutters",
+      "ru": "Ставни",
+      "de": "Rollladen",
+      "fr": "Volets",
+      "it": "Persiane",
+      "nl": "Shutters",
+      "pl": "Żaluzje",
+      "pt": "Persianas",
+      "es": "Persianas",
+      "zh-cn": "百叶窗"
+    },
     "icon": "Shutters.svg"
   },
   {
     "_id": "lock",
-    "name": "Lock",
+    "name": {
+      "en": "Lock",
+      "ru": "Замок",
+      "de": "Schloß",
+      "fr": "Fermer À Clé",
+      "it": "Serratura",
+      "nl": "Slot",
+      "pl": "Zamek",
+      "pt": "Trancar",
+      "es": "Cerrar Con Llave",
+      "zh-cn": "锁"
+    },
     "icon": "Lock.svg"
   },
   {
     "_id": "security",
-    "name": "Security",
+    "name": {
+      "en": "Security",
+      "ru": "Безопасность",
+      "de": "Sicherheit",
+      "fr": "Sécurité",
+      "it": "Sicurezza",
+      "nl": "Veiligheid",
+      "pl": "Bezpieczeństwo",
+      "pt": "Segurança",
+      "es": "Seguridad",
+      "zh-cn": "安全"
+    },
     "icon": "Security.svg"
   },
   {
     "_id": "dishwashers",
-    "name": "Dishwashers",
+    "name": {
+      "en": "Dishwashers",
+      "ru": "Посудомоечные",
+      "de": "Spülmaschinen",
+      "fr": "Lave-Vaisselles",
+      "it": "Lavastoviglie",
+      "nl": "Vaatwassers",
+      "pl": "Zmywarki",
+      "pt": "Máquinas De Lavar Louça",
+      "es": "Lavaplatos",
+      "zh-cn": "洗碗机"
+    },
     "icon": "Dishwashers.svg"
   },
   {
     "_id": "vacuum_cleaner",
-    "name": "Vacuum Cleaner",
+    "name": {
+      "en": "Vacuum Cleaner",
+      "ru": "Пылесос",
+      "de": "Staubsauger",
+      "fr": "Aspirateur",
+      "it": "Aspirapolvere",
+      "nl": "Stofzuiger",
+      "pl": "Odkurzacz",
+      "pt": "Aspirador De Pó",
+      "es": "Aspiradora",
+      "zh-cn": "吸尘器"
+    },
     "icon": "Vacuum Cleaner.svg"
   },
   {
     "_id": "sockets",
-    "name": "Sockets",
+    "name": {
+      "en": "Sockets",
+      "ru": "Розетки",
+      "de": "Steckdosen",
+      "fr": "Prises",
+      "it": "Sockets",
+      "nl": "Sockets",
+      "pl": "Gniazdka",
+      "pt": "Tomadas",
+      "es": "Zócalos",
+      "zh-cn": "套接字"
+    },
     "icon": "Sockets.svg"
   },
   {
     "_id": "floor_lamps",
-    "name": "Floor Lamps",
+    "name": {
+      "en": "Floor Lamps",
+      "ru": "Торшеры",
+      "de": "Stehlampen",
+      "fr": "Lampes Pour Plancher",
+      "it": "Lampade A Stelo",
+      "nl": "Vloerlampen",
+      "pl": "Lampy Podłogowe",
+      "pt": "Lâmpadas Chão",
+      "es": "Lámparas De Pie",
+      "zh-cn": "落地灯"
+    },
     "icon": "Floor Lamps.svg"
   },
   {
     "_id": "power_consumption",
-    "name": "Power Consumption",
+    "name": {
+      "en": "Power Consumption",
+      "ru": "Потребляемая Мощность",
+      "de": "Stromverbrauch",
+      "fr": "Consommation D'Énergie",
+      "it": "Consumo Di Energia",
+      "nl": "Energieverbruik",
+      "pl": "Pobór Energii",
+      "pt": "Consumo De Energia",
+      "es": "El Consumo De Energía",
+      "zh-cn": "能量消耗"
+    },
     "icon": "Power Consumption.svg"
   },
   {
     "_id": "temperature_sensors",
-    "name": "Temperature Sensors",
+    "name": {
+      "en": "Temperature Sensors",
+      "ru": "Температурные Датчики",
+      "de": "Temperatur-Sensoren",
+      "fr": "Capteurs De Température",
+      "it": "Sensori Di Temperatura",
+      "nl": "Temperatuursensoren",
+      "pl": "Czujniki Temperatury",
+      "pt": "Sensores De Temperatura",
+      "es": "Sensores De Temperatura",
+      "zh-cn": "温度传感器"
+    },
     "icon": "Temperature Sensors.svg"
   },
   {
     "_id": "table_lamps",
-    "name": "Table Lamps",
+    "name": {
+      "en": "Table Lamps",
+      "ru": "Настольные Лампы",
+      "de": "Tischlampen",
+      "fr": "Lampe De Chevet",
+      "it": "Lampade Da Tavolo",
+      "nl": "Tafellampen",
+      "pl": "Lampy Stołowe",
+      "pt": "Lâmpadas De Mesa",
+      "es": "Lámparas De Mesa",
+      "zh-cn": "台灯"
+    },
     "icon": "Table Lamps.svg"
   },
   {
     "_id": "gates",
-    "name": "Gates",
+    "name": {
+      "en": "Gates",
+      "ru": "Ворота",
+      "de": "Tore",
+      "fr": "Portes",
+      "it": "Gates",
+      "nl": "Gates",
+      "pl": "Bramy",
+      "pt": "Portões",
+      "es": "Puertas",
+      "zh-cn": "盖茨"
+    },
     "icon": "Gates.svg"
   },
   {
     "_id": "dryer",
-    "name": "Dryer",
+    "name": {
+      "en": "Dryer",
+      "ru": "Сушилка",
+      "de": "Trockner",
+      "fr": "Séchoir",
+      "it": "Asciugatrice",
+      "nl": "Droger",
+      "pl": "Suszarka",
+      "pt": "Secador",
+      "es": "Secadora",
+      "zh-cn": "烘干机"
+    },
     "icon": "Dryer.svg"
   },
   {
     "_id": "doors",
-    "name": "Doors",
+    "name": {
+      "en": "Doors",
+      "ru": "Двери",
+      "de": "Türen",
+      "fr": "Des Portes",
+      "it": "Porte",
+      "nl": "Deuren",
+      "pl": "Drzwi",
+      "pt": "Portas",
+      "es": "Puertas",
+      "zh-cn": "门"
+    },
     "icon": "Doors.svg"
   },
   {
     "_id": "tv",
-    "name": "Tv",
+    "name": {
+      "en": "Tv",
+      "ru": "Телевизор",
+      "de": "TV",
+      "fr": "La Télé",
+      "it": "Tv",
+      "nl": "Tv",
+      "pl": "Telewizja",
+      "pt": "Televisão",
+      "es": "Televisor",
+      "zh-cn": "电视"
+    },
     "icon": "Tv.svg"
   },
   {
     "_id": "consumption",
-    "name": "Consumption",
+    "name": {
+      "en": "Consumption",
+      "ru": "Потребление",
+      "de": "Verbrauch",
+      "fr": "Consommation",
+      "it": "Consumo",
+      "nl": "Consumptie",
+      "pl": "Konsumpcja",
+      "pt": "Consumo",
+      "es": "Consumo",
+      "zh-cn": "消费"
+    },
     "icon": "Consumption.svg"
   },
   {
     "_id": "amplifier",
-    "name": "Amplifier",
+    "name": {
+      "en": "Amplifier",
+      "ru": "Усилитель Звука",
+      "de": "Verstärker",
+      "fr": "Amplificateur",
+      "it": "Amplificatore",
+      "nl": "Versterker",
+      "pl": "Wzmacniacz",
+      "pt": "Amplificador",
+      "es": "Amplificador",
+      "zh-cn": "放大器"
+    },
     "icon": "Amplifier.svg"
   },
   {
     "_id": "curtains",
-    "name": "Curtains",
+    "name": {
+      "en": "Curtains",
+      "ru": "Шторы",
+      "de": "Vorhänge",
+      "fr": "Des Rideaux",
+      "it": "Le Tende",
+      "nl": "Gordijnen",
+      "pl": "Zasłony",
+      "pt": "Cortinas",
+      "es": "Cortinas",
+      "zh-cn": "窗帘"
+    },
     "icon": "Curtains.svg"
   },
   {
     "_id": "sconces",
-    "name": "Sconces",
+    "name": {
+      "en": "Sconces",
+      "ru": "Sconces",
+      "de": "Wandlampen",
+      "fr": "Sconces",
+      "it": "Sconces",
+      "nl": "Sconces",
+      "pl": "Kinkiety",
+      "pt": "Arandelas",
+      "es": "Los Apliques",
+      "zh-cn": "壁灯"
+    },
     "icon": "Sconces.svg"
   },
   {
     "_id": "washing_machines",
-    "name": "Washing Machines",
+    "name": {
+      "en": "Washing Machines",
+      "ru": "Стиральные Машины",
+      "de": "Waschmaschinen",
+      "fr": "Machines À Laver",
+      "it": "Lavatrici",
+      "nl": "Wasmachines",
+      "pl": "Pralki",
+      "pt": "Máquinas De Lavar Roupas",
+      "es": "Lavadoras",
+      "zh-cn": "洗衣机"
+    },
     "icon": "Washing Machines.svg"
   },
   {
     "_id": "water",
-    "name": "Water",
+    "name": {
+      "en": "Water",
+      "ru": "Воды",
+      "de": "Wasser",
+      "fr": "L'Eau",
+      "it": "Acqua",
+      "nl": "Water",
+      "pl": "Woda",
+      "pt": "Água",
+      "es": "Agua",
+      "zh-cn": "水"
+    },
     "icon": "Water.svg"
   },
   {
     "_id": "water_heater",
-    "name": "Water Heater",
+    "name": {
+      "en": "Water Heater",
+      "ru": "Нагреватель Воды",
+      "de": "Wasserkocher",
+      "fr": "Chauffe-Eau",
+      "it": "Scaldabagno",
+      "nl": "Waterkoker",
+      "pl": "Podgrzewacz Wody",
+      "pt": "Aquecedor De Água",
+      "es": "Calentador De Agua",
+      "zh-cn": "热水器"
+    },
     "icon": "Water Heater.svg"
   },
   {
     "_id": "water_consumption",
-    "name": "Water Consumption",
+    "name": {
+      "en": "Water Consumption",
+      "ru": "Потребление Воды",
+      "de": "Wasserverbrauch",
+      "fr": "Consommation D'Eau",
+      "it": "Consumo D'Acqua",
+      "nl": "Waterverbruik",
+      "pl": "Konsumpcja Wody",
+      "pt": "Consumo De Água",
+      "es": "Consumo De Agua",
+      "zh-cn": "耗水量"
+    },
     "icon": "Water Consumption.svg"
   },
   {
     "_id": "weather",
-    "name": "Weather",
+    "name": {
+      "en": "Weather",
+      "ru": "Погода",
+      "de": "Wetter",
+      "fr": "La Météo",
+      "it": "Tempo Metereologico",
+      "nl": "Weer",
+      "pl": "Pogoda",
+      "pt": "Clima",
+      "es": "Tiempo",
+      "zh-cn": "天气"
+    },
     "icon": "Weather.svg"
   }
 ]

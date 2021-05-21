@@ -26,10 +26,11 @@ import MenuList from '@material-ui/core/MenuList';
 import IconButton from '@material-ui/core/IconButton';
 
 import AddIcon from '@material-ui/icons/Add';
+import { FaRegFolder as IconCollapsed } from 'react-icons/fa';
+import { FaRegFolderOpen as IconExpanded } from 'react-icons/fa';
 
 import {withStyles} from '@material-ui/core/styles';
 
-const boxShadowHover = '0 1px 1px 0 rgba(0, 0, 0, .4),0 6px 6px 0 rgba(0, 0, 0, .2)';
 
 const styles = theme => ({
     mainGridCont: {
@@ -49,162 +50,15 @@ const styles = theme => ({
         overflowX: 'hidden'
     },
     canDrop:{
-        backgroundColor:theme.palette.background.default
-    } ,
-    enumGroupCard2: {
-        border: '1px solid #FFF',
-        borderColor: theme.palette.divider,
-        margin:    10,
-        minHeight: 140,
-        backgroundColor: theme.palette.background.default,
-        color: theme.palette.text.primary,
-        transition: 'all 200ms ease-out',
-        opacity:1,
-        overflow: 'hidden',
-        cursor: 'grab',
-        position: 'relative',
-        '&:hover': {
-            overflowY: 'auto',
-            boxShadow: boxShadowHover
-        }
-    },
-    enumGroupCardSecondary:{
-        color: theme.palette.text.primary,
-        backgroundColor: theme.palette.success.light
-    },
-    enumCardContent:
-    {
-        height:'100%',
-        opacity:1
-    },
-    enumGroupTitle: {
-        display: 'inline-flex',
-        alignItems: 'center',
-    },
-    enumGroupEnumName: {
-        fontWeight: 900,
-        padding: 5
-    },
-    enumGroupEnumID : {
-        opacity:0.7,
-        padding: 5
-    },
-    enumName: {
-        fontSize: 12,
-        fontWeight: 700,
-        marginLeft: 30,
-        opacity: 0.7
-    },
-    enumGroupMember: {
-        display: 'inline-flex',
-        margin: 4,
-        padding: 4,
-        backgroundColor: '#00000010',
-        border: '1px solid #FFF',
-        borderColor: theme.palette.text.hint,
-        color: theme.palette.text.primary,
-        alignItems: 'center',
-        position: 'relative',
+        backgroundColor: theme.palette.background.default
     },
     icon: {
         height: 32,
         width: 32,
-        marginRight:5,
+        marginRight: 5,
         backgroundSize: 'cover',
-        backgroundPosition:'center',
+        backgroundPosition: 'center',
         display: 'inline-block'
-    },
-    secondLine: {
-        fontSize: 9,
-        fontStyle: 'italic',
-        position: 'absolute',
-        bottom: 2,
-        left: 42,
-        whiteSpace: 'nowrap',
-        opacity: 0.5,
-    },
-    right: {
-        float: 'right',
-    },
-    left: {
-        float: 'left',
-        marginRight:10
-    },
-    dialog: {
-        // maxWidth: '100vw',
-        // maxHeight: '100vh',
-        // overflowY: 'auto',
-        // overflowX: 'hidden',
-        // padding: 0
-    },
-    flex : {
-        display: 'flex'
-    },
-    formControl : {
-        display: 'flex',
-        padding: 24,
-        flexGrow: 1000
-    },
-    formContainer : {
-        display: 'flex',
-        justifyContent:'center',
-        alignItems:'center'
-    },
-    formIcon : {
-        margin: 10,
-        opacity: 0.6
-    },
-    descriptionPanel: {
-        width: '100%',
-        backgroundColor: 'transparent',
-        marginBottom: 20,
-        marginTop: 20,
-        marginLeft: 20,
-        opacity: .75,
-        border: 'none',
-        display: 'flex',
-        alignItems: 'center',
-        '& a': {
-            paddingLeft: 3,
-            color: theme.palette.type === 'dark' ? '#EEE' : '#111',
-
-        }
-    },
-    dialogTitle: {
-        borderBottom: '1px solid #00000020',
-        padding : 0,
-        width:'100%'
-    },
-    dialogActions: {
-        borderTop: '1px solid #00000020',
-        width:'100%'
-    },
-    dialogPaper: {
-        overflowY: 'initial',
-        display:'flex',
-        flexDirection:'column',
-        justifyContent:'center',
-        alignItems:'center',
-        width: 'calc(100% - 100px)',
-        height: 'calc(100% - 100px)',
-        maxWidth: 800,
-        maxHeight:  '100%'
-    },
-    dialogPaperMini : {
-        maxHeight: 300
-    },
-    colorPicker: {
-        // position:'absolute'
-    },
-    iconPreview: {
-        height: 32,
-        width: 32,
-    },
-    mainDescription: {
-        fontSize: '200%'
-    },
-    deleteDialog: {
-        padding: 20
     },
     categoryTitle: {
         flexDirection: 'row',
@@ -220,14 +74,9 @@ const styles = theme => ({
         padding: 10,
         width: 200
     },
-    addButton: {
-        boxShadow: '0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)',
+    toolbarButton: {
+        //marginRight: theme.spacing(1),
         display: 'inline',
-        backgroundColor: theme.palette.primary.main,
-        color: theme.palette.text.primary,
-        '&:hover': {
-            backgroundColor: theme.palette.primary.light,
-        }
     },
     filter: {
         width: '100%',
@@ -315,7 +164,7 @@ class EnumsList extends Component {
         };
     }
 
-    getEnumTemplate = (prefix) => {
+    getEnumTemplate = prefix => {
         let enumTemplate = JSON.parse(JSON.stringify(ENUM_TEMPLATE));
         const {_id, name} = EnumsList.findNewUniqueName(prefix, Object.values(this.state.enums), this.props.t('Enum'));
         enumTemplate._id = _id;
@@ -445,8 +294,8 @@ class EnumsList extends Component {
         }
     }
 
-    renderTree(container, key) {
-        return <div style={{paddingLeft: '10px'}} key={container.data ? container.data._id : key }>
+    renderTree(container, key, level) {
+        return <div style={{paddingLeft: level ? 32 : 0}} key={container.data ? container.data._id : key }>
             {container.data && (!this.state.search || container.data._id.toLowerCase().includes(this.state.search.toLowerCase())) ?
                 <EnumBlock
                     enum={container.data}
@@ -464,13 +313,17 @@ class EnumsList extends Component {
                     hasChildren={!!Object.values(container.children).length}
                     closed={this.state.enumsClosed[container.data._id]}
                     toggleEnum={this.toggleEnum}
-                    {...this.props}
+
+                    t={this.props.t}
+                    socket={this.props.socket}
+                    lang={this.props.lang}
+                    classesParent={this.props.classes}
                 />
                 : null
             }
             {container.data && !this.state.enumsClosed[container.data._id] ?
                 Object.values(container.children)
-                    .map((item, index) => <React.Fragment key={index}>{this.renderTree(item, index)}</React.Fragment>)
+                    .map((item, index) => <React.Fragment key={index}>{this.renderTree(item, index, level + 1)}</React.Fragment>)
             : null}
         </div>;
     }
@@ -581,8 +434,7 @@ class EnumsList extends Component {
                     <div className={this.props.classes.topPanel}>
                         <IconButton
                             size="small"
-                            id="categoryPopoverButton"
-                            className={this.props.classes.addButton}
+                            className={this.props.classes.toolbarButton}
                             onClick={() =>
                                 this.state.enumsTree.children.enum.children['favorites'] ?
                                     this.showEnumEditDialog(this.getEnumTemplate('enum'), true)
@@ -648,26 +500,51 @@ class EnumsList extends Component {
                                 className={this.props.classes.filter}
                                 onChange={e => this.setState({search: e.target.value})}
                             />
-                            <IconButton
-                                size="small"
-                                className={this.props.classes.addButton}
-                                onClick={() => {
-                                    if (['functions', 'rooms'].includes(this.state.currentCategory)) {
-                                        this.setState({enumTemplateDialog: 'enum.' + this.state.currentCategory});
-                                    } else {
-                                        this.showEnumEditDialog(this.getEnumTemplate('enum.' + this.state.currentCategory), true);
-                                    }
-                                }}
-                                id="enumPopoverButton"
-                            >
-                                <Tooltip title={this.props.t('Add group')} placement="top">
+                            <Tooltip title={this.props.t('Collapse all')} placement="top">
+                                <IconButton
+                                    //size="small"
+                                    className={this.props.classes.toolbarButton}
+                                    onClick={() => {
+                                        let enumsClosed = {};
+                                        Object.keys(this.state.enums).forEach(id => enumsClosed[id] = true);
+                                        this.setState({enumsClosed});
+                                        window.localStorage.setItem('enumsClosed', JSON.stringify(enumsClosed));
+                                    }}
+                                >
+                                        <IconCollapsed/>
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title={this.props.t('Expand all')} placement="top">
+                                <IconButton
+                                    //size="small"
+                                    className={this.props.classes.toolbarButton}
+                                    onClick={() => {
+                                        let enumsClosed = {};
+                                        this.setState({enumsClosed});
+                                        window.localStorage.setItem('enumsClosed', JSON.stringify(enumsClosed));
+                                    }}
+                                >
+                                    <IconExpanded/>
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title={this.props.t('Add group')} placement="top">
+                                <IconButton
+                                    //size="small"
+                                    onClick={() => {
+                                        if (['functions', 'rooms'].includes(this.state.currentCategory)) {
+                                            this.setState({enumTemplateDialog: 'enum.' + this.state.currentCategory});
+                                        } else {
+                                            this.showEnumEditDialog(this.getEnumTemplate('enum.' + this.state.currentCategory), true);
+                                        }
+                                    }}
+                                >
                                     <AddIcon/>
-                                </Tooltip>
-                            </IconButton>
+                                </IconButton>
+                            </Tooltip>
                         </div>
                         <div className={this.props.classes.blocksContainer}>
                             {Object.values(this.state.enumsTree.children.enum.children[this.state.currentCategory].children)
-                                .map((enumItem, index) => this.renderTree(enumItem, index))}
+                                .map((enumItem, index) => this.renderTree(enumItem, index, 0))}
                         </div>
                     </Grid>
                     <Grid item xs={12} md={6} className={clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
@@ -675,7 +552,7 @@ class EnumsList extends Component {
                             <DragObjectBrowser
                                 addItemToEnum={this.addItemToEnum}
                                 getName={this.getName}
-                                classes={this.props.classes}
+                                classesParent={this.props.classes}
                                 t={this.props.t}
                                 socket={this.props.socket}
                                 lang={this.props.lang}
@@ -691,7 +568,8 @@ class EnumsList extends Component {
                 getName={this.getName}
                 isNew={this.state.enumEditDialogNew}
                 t={this.props.t}
-                classes={this.props.classes}
+                lang={this.props.lang}
+                classesParent={this.props.classes}
                 changed={this.state.enumChanged}
                 onChange={this.changeEnumFormData}
                 saveData={this.saveEnum}
@@ -709,6 +587,7 @@ class EnumsList extends Component {
                 prefix={this.state.enumTemplateDialog}
                 onClose={() => this.setState({enumTemplateDialog: null})}
                 t={this.props.t}
+                lang={this.props.lang}
                 classesParent={this.props.classes}
                 createEnumTemplate={this.createEnumTemplate}
                 showEnumEditDialog={this.showEnumEditDialog}

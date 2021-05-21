@@ -38,7 +38,7 @@ export function IOTextField(props) {
     </div>;
 }
 
-let IOColorPicker = function (props) {
+let IOColorPicker = props => {
     let IconCustom = props.icon;
     return <div className="">
         {IconCustom ? <IconCustom className={ props.classes.formIcon } /> : null}
@@ -50,8 +50,7 @@ let IOColorPicker = function (props) {
                 style: {backgroundColor: props.value}
             }}
             InputProps={{
-                endAdornment: !props.disabled && props.value
-                    ?
+                endAdornment: !props.disabled && props.value ?
                     <IconButton
                         size="small"
                         onClick={() => props.onChange('')}>
@@ -109,7 +108,7 @@ let IOFileInput = function (props) {
                         </IconButton>
                     </div>
                     :
-                    <IconSelector icons={props.icons} onSelect={base64 => props.onChange(base64)} t={props.t}/>
+                    <IconSelector icons={props.icons} onSelect={base64 => props.onChange(base64)} t={props.t} lang={props.lang}/>
                 }
 
                 <div {...getRootProps()} style={Object.assign({textAlign: 'center', display: 'inline-block', height: 90, width: 240, border: '2px dashed #777', borderRadius: 10, marginTop: 12, padding: 4}, isDragActive ? {backgroundColor: 'rgba(0, 255, 0, 0.1)'} : {cursor: 'pointer'})}>
@@ -123,6 +122,19 @@ let IOFileInput = function (props) {
             </div>
         </FormControl>
     </div>;
+};
+
+IOFileInput.propTypes = {
+    t: PropTypes.func.isRequired,
+    lang: PropTypes.string.isRequired,
+    previewClassName: PropTypes.string,
+    icon: PropTypes.object,
+    classes: PropTypes.object,
+    label: PropTypes.string,
+    name: PropTypes.string,
+    value: PropTypes.any,
+    onChange: PropTypes.func,
+    icons: PropTypes.array,
 };
 
 export {IOFileInput};

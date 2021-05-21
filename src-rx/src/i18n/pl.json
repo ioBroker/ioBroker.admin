@@ -1378,5 +1378,7 @@
   "Clone": "Klonuj",
   "Expand": "Rozszerzać",
   "Category": "Kategoria",
-  "0 %d days ago": "dzisiaj"
+  "0 %d days ago": "dzisiaj",
+  "Add group": "Dodaj nową pozycję kategorii",
+  "Add enum": "Dodaj nową kategorię"
 }

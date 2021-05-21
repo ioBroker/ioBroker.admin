@@ -15,10 +15,8 @@ Marked with "!" must be in release candidate
 
 ## Enums
 - Find icon of object (state => channel => device)
-- Show in second row ID in state
 - Create enums, that not exists automatically. E.g. `enum.rooms.A.kitchen` exists, but `enum.rooms.A` not, So `enum.rooms.A` must be created.
 - Update structure of enums by changes from outside
-- Expand/Collapse all in tree
 - Expand/Collapse of one enumeration to make it narrow with showing the number of objects inside
 - expand/collapse all to narrow view and back  
 - Scroll to new created/copied enumeration

@@ -14,20 +14,38 @@ import CloseIcon from '@material-ui/icons/Close';
 import Icon from '@iobroker/adapter-react/Components/Icon';
 
 import Utils from '../Utils';
+import {TextField} from "@material-ui/core";
+import ClearIcon from "@material-ui/icons/Clear";
 
 class IconSelector extends Component {
     constructor(props) {
         super(props);
         this.state = {
             opened: false,
+            names: [],
+            filter: ''
         };
     }
 
     componentDidMount() {
         this.setState({loading: true}, () => {
             const icons = [];
+            const names = [];
 
-            const promises = this.props.icons.map((href, i) => {
+            const promises = this.props.icons ? this.props.icons.map((item, i) => {
+                let href;
+                if (typeof item === 'object') {
+                    href = item.icon || item.src || item.href;
+                    names[i] = typeof item.name === 'object' ? item.name[this.props.lang] || item.name.en || item._id : item.name;
+                    if (!names[i]) {
+                        const parts = href.split('.');
+                        parts.pop();
+                        names[i] = parts[parts.length - 1];
+                    }
+                } else {
+                    href = item;
+                }
+
                 if (href.startsWith('data:')) {
                     icons[i] = href;
                     return Promise.resolve();
@@ -36,11 +54,11 @@ class IconSelector extends Component {
                         .then(icon =>
                             icons[i] = icon);
                 }
-            });
+            }) : [];
 
             Promise.all(promises)
                 .then(() =>
-                    this.setState({icons, loading: false}));
+                    this.setState({icons, loading: false, names, isAnyName: names.find(i => i)}));
         });
     }
 
@@ -61,17 +79,38 @@ class IconSelector extends Component {
             {this.state.opened ? <Dialog onClose={() => this.setState({opened: false})} open={true}>
                 <DialogTitle>{this.props.t('Select predefined icon')}</DialogTitle>
                 <DialogContent>
+                    {this.state.isAnyName ? <TextField
+                            value={this.state.filter}
+                            onChange={e => this.setState({filter: e.target.value.toLowerCase()})}
+                            label={this.props.t('Filter')}
+                            InputProps={{
+                                endAdornment: this.state.filter
+                                    ?
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => this.setState({filter: ''})}>
+                                        <ClearIcon />
+                                    </IconButton>
+                                    :
+                                    undefined,
+                            }}
+                        /> : null}
                     <div style={{width: 340}}>
-                        {this.state.icons.map((icon, i) => (
-                            <IconButton
-                                key={i}
-                                onClick={e =>
-                                    this.setState({opened: false}, () =>
-                                       this.props.onSelect(icon))}
-                            >
-                                <Icon src={icon} alt={i} style={{width: 32, height: 32, borderRadius: 5}}/>
-                            </IconButton>
-                        ))}
+                        {this.state.icons.map((icon, i) => {
+                            if (!this.state.filter || (this.state.names[i] && this.state.names[i].toLowerCase().includes(this.state.filter))) {
+                                return <IconButton
+                                    title={this.state.names[i] || ''}
+                                    key={i}
+                                    onClick={e =>
+                                        this.setState({opened: false}, () =>
+                                            this.props.onSelect(icon))}
+                                >
+                                    <Icon src={icon} alt={i} style={{width: 32, height: 32, borderRadius: 5}}/>
+                                </IconButton>
+                            } else {
+                                return null;
+                            }
+                        })}
                     </div>
                 </DialogContent>
                 <DialogActions>
@@ -88,6 +127,7 @@ IconSelector.propTypes = {
     icons: PropTypes.array,
     onSelect: PropTypes.func.isRequired,
     t: PropTypes.func.isRequired,
+    lang: PropTypes.func.isRequired,
 };
 
 export default IconSelector;

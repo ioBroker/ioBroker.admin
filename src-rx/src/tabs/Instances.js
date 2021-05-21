@@ -223,7 +223,7 @@ class Instances extends Component {
             memFree: null,
             filterText: window.localStorage.getItem('instances.filter') || '',
             compact: false,
-            compactGroupCount: 0,
+            maxCompactGroupNumber: 1,
             filterCompactGroup: 'All',
             sentry: false,
             deleting: null,
@@ -361,7 +361,7 @@ class Instances extends Component {
             }
         });
 
-        let compactGroupCount = 0;
+        let maxCompactGroupNumber = 1;
         const newState = {};
 
         instances.forEach(obj => {
@@ -369,8 +369,8 @@ class Instances extends Component {
             const objId = obj._id.split('.');
             const instanceId = objId[objId.length - 1];
 
-            if (common.compactGroup && typeof common.compactGroup === 'number' && compactGroupCount < common.compactGroup) {
-                compactGroupCount = common.compactGroup;
+            if (common.compactGroup && typeof common.compactGroup === 'number' && maxCompactGroupNumber < common.compactGroup) {
+                maxCompactGroupNumber = common.compactGroup;
             }
 
             const instance = {};
@@ -442,7 +442,7 @@ class Instances extends Component {
             newState.deleting = null;
         }
 
-        newState.compactGroupCount = compactGroupCount;
+        newState.maxCompactGroupNumber = maxCompactGroupNumber;
         newState.processes = processes;
         newState.mem = Math.round(mem);
         newState.instances = formatted;
@@ -774,9 +774,9 @@ class Instances extends Component {
             }
         });
 
-        if (this.state.compactGroupCount < value) {
+        if (this.state.maxCompactGroupNumber < value) {
             this._cacheList = null;
-            this.setState({ compactGroupCount: value });
+            this.setState({ maxCompactGroupNumber: value });
         }
     }
 
@@ -882,7 +882,7 @@ class Instances extends Component {
                         checkSentry={item.checkSentry}
                         compact={item.compact}
                         compactGroup={item.compactGroup}
-                        compactGroupCount={this.state.compactGroupCount}
+                        maxCompactGroupNumber={this.state.maxCompactGroupNumber}
                         connected={item.connected}
                         connectedToHost={item.connectedToHost}
                         currentSentry={item.currentSentry}
@@ -936,7 +936,7 @@ class Instances extends Component {
                         checkSentry={item.checkSentry}
                         compact={item.compact}
                         compactGroup={item.compactGroup}
-                        compactGroupCount={this.state.compactGroupCount}
+                        maxCompactGroupNumber={this.state.maxCompactGroupNumber}
                         connected={item.connected}
                         connectedToHost={item.connectedToHost}
                         currentSentry={item.currentSentry}
@@ -1252,7 +1252,7 @@ class Instances extends Component {
                             { name: 'All' },
                             { name: 'controller' },
                             { name: 'default' },
-                            ...Array(this.state.compactGroupCount - 1).fill().map((_, idx) => ({ name: idx + 2 }))
+                            ...Array(this.state.maxCompactGroupNumber - 1).fill().map((_, idx) => ({ name: idx + 2 }))
                         ]}
                         buttonIcon={<ViewCompactIcon style={{ marginRight: 4 }} color="primary" />}
                         onClick={value => this.changeCompactGroup(value)}

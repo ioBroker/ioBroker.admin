@@ -93,6 +93,9 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Admin5: Fixed update of objects
+
 ### 5.0.29 (2021-05-19)
 * (bluefox) Admin5: Fixed reorder of the items in menu
 

@@ -329,7 +329,7 @@ const InstanceCard = memo(({
     classes,
     compact,
     compactGroup,
-    compactGroupCount,
+    maxCompactGroupNumber,
     connected,
     connectedToHost,
     currentSentry,
@@ -391,7 +391,7 @@ const InstanceCard = memo(({
     const [logLevelValue, setLogLevelValue] = useState(logLevel);
     const [logOnTheFlyValue, setLogOnTheFlyValue] = useState(false);
     const [compactValue, setCompactValue] = useState(compactGroup || 0);
-    const [compactGroupCountValue, setCompactGroupCountValue] = useState(compactGroupCount);
+    const [maxCompactGroupNumberValue, setCompactGroupCountValue] = useState(maxCompactGroupNumber);
     const [tierValue, setTierValue] = useState(tier);
     const [hostValue, setHostValue] = useState(host);
 
@@ -469,7 +469,7 @@ const InstanceCard = memo(({
                 setOpenDialogMemoryLimit(false);
             } else if (openDialogCompact) {
                 setCompactValue(compactGroup);
-                setCompactGroupCountValue(compactGroupCount);
+                setCompactGroupCountValue(maxCompactGroupNumber);
                 setOpenDialogCompact(false);
             } else if (openDialogTier) {
                 setTierValue(tier);
@@ -518,8 +518,8 @@ const InstanceCard = memo(({
                     className={classes.selectStyle}>
                     <Button onClick={e => {
                         setOpenSelectCompactGroup(false);
-                        setCompactValue(compactGroupCountValue + 1);
-                        setCompactGroupCountValue(compactGroupCountValue + 1);
+                        setCompactValue(maxCompactGroupNumberValue + 1);
+                        setCompactGroupCountValue(maxCompactGroupNumberValue + 1);
                     }} variant="outlined" stylevariable='outlined'>{t('Add compact group')}</Button>
                 </div>
                 <MenuItem value="controller">
@@ -528,7 +528,7 @@ const InstanceCard = memo(({
                 <MenuItem value="default">
                     {t('default group')}
                 </MenuItem>
-                {Array(compactGroupCountValue - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
+                {Array(maxCompactGroupNumberValue - 1).fill().map((_, idx) => <MenuItem key={idx} value={idx + 2}>
                     {idx + 2}
                 </MenuItem>)}
             </Select>
