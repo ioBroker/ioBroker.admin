@@ -88,7 +88,7 @@ The icons may not be reused in other projects without proper flaticon subscripti
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 5.0.32 (2021-05-23)
 * (bluefox) Admin5: Support of ANSI codes in log
 
 ### 5.0.31 (2021-05-21)
@@ -101,9 +101,6 @@ The icons may not be reused in other projects without proper flaticon subscripti
 * (bluefox) Admin5: Fixed reorder of the items in menu
 
 ### 5.0.28 (2021-05-18)
-* (bluefox) Admin5: GUI fixes
-
-### 5.0.27 (2021-05-17)
 * (bluefox) Admin5: GUI fixes
 
 ## License
