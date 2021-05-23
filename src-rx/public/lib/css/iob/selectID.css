@@ -1,0 +1,466 @@
+.dialog-select-object-ids {
+  /** inline edit **/
+  /**/
+  /*select ~ .select-id-quick-edit-ok,        // only if type = combobx
+    select ~ .select-id-quick-edit-cancel {   // only if type = combobx
+        top:1px;
+    }*/
+}
+.dialog-select-object-ids .true {
+  color: #06960E;
+  font-weight: bold;
+}
+.dialog-select-object-ids .false {
+  color: #D92626;
+  font-weight: normal;
+}
+.dialog-select-object-ids .error {
+  color: #D92626;
+  font-weight: normal;
+}
+.dialog-select-object-ids .highlight {
+  animation: highlight 2s;
+}
+.dialog-select-object-ids .grid-main-div {
+  height: calc(100% - 50px);
+}
+.dialog-select-object-ids .grid-main-wh-div {
+  height: calc(100% -  48px);
+}
+.dialog-select-object-ids .grid-main-wob-div {
+  height: calc(100% -  38px - 26px);
+}
+.dialog-select-object-ids .grid-main-wh-div,
+.dialog-select-object-ids .grid-main-wob-div {
+  overflow-x: hidden;
+  width: 100%;
+  padding: 0;
+  overflow-y: scroll;
+}
+.dialog-select-object-ids .grid-main-wh-div > table,
+.dialog-select-object-ids .grid-main-wob-div > table {
+  width: calc(100% - 5px);
+}
+@-moz-keyframes spin {
+  100% {
+    -moz-transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+.dialog-select-object-ids .objects-folder {
+  height: 0.8em;
+  width: 0.8em;
+  margin: 0.3em;
+}
+.dialog-select-object-ids .objects-name-coll-table-td {
+  border-spacing: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+.dialog-select-object-ids .objects-name-coll-icon {
+  /*position: relative;*/
+  /*top: 3px;*/
+  vertical-align: sub;
+}
+.dialog-select-object-ids .objects-name-coll-title {
+  border-spacing: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  display: inline-block;
+  padding-left: 5px;
+  vertical-align: middle;
+}
+.dialog-select-object-ids .objects-inline-edit {
+  width: 100%;
+  height: 24px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  padding-left: 4px;
+}
+.dialog-select-object-ids table.objects-list-table td {
+  border: 1px solid #e0e0e0;
+}
+.dialog-select-object-ids .objects-list-table {
+  background: #efefef;
+  white-space: nowrap;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-spacing: 0;
+  padding: 0;
+  overflow: auto;
+  font-family: "Segoe UI", Tahoma, Arial, "Courier New" !important;
+  font-weight: normal;
+  font-size: 0.82rem !important;
+  border-top: 0;
+  width: calc(100% - 10px);
+  margin: 0 5px 0 1px;
+  /* for mouse over rahmen */
+  outline: 5px;
+  outline-offset: -1px;
+}
+.dialog-select-object-ids .objects-list-table > tbody > tr > td {
+  padding-left: 5px;
+}
+.dialog-select-object-ids .objects-list-table .fancytree-title {
+  font-weight: normal !important;
+}
+.dialog-select-object-ids .select-id-quick-edit {
+  height: 17px;
+}
+.dialog-select-object-ids .select-id-quick-edit-buttons {
+  position: absolute;
+  z-index: 3;
+  top: 2px;
+  right: 5px;
+}
+.dialog-select-object-ids .select-id-quick-edit-buttons.text {
+  top: 23px;
+}
+.dialog-select-object-ids .select-id-quick-edit-buttons.text .select-id-quick-edit-ok,
+.dialog-select-object-ids .select-id-quick-edit-buttons.text .select-id-quick-edit-cancel {
+  border: 1px solid gray;
+  background-color: white;
+}
+.dialog-select-object-ids .select-id-quick-edit-buttons .select-id-quick-edit-ok,
+.dialog-select-object-ids .select-id-quick-edit-buttons .select-id-quick-edit-cancel {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  border-radius: 0;
+  display: inline-block;
+}
+.dialog-select-object-ids .objects-inline-edit {
+  position: relative;
+  left: -4px;
+  padding-left: 4px;
+  padding-right: 4px;
+  width: calc(100% - 0px);
+  z-index: 2;
+  font-family: "Segoe UI", Tahoma, Arial, "Courier New" !important;
+  font-size: 0.82rem;
+  vertical-align: middle;
+  text-overflow-mode: clip;
+}
+.dialog-select-object-ids .objects-name-coll-title .objects-inline-edit {
+  width: calc(100% +  4px - 1);
+}
+.dialog-select-object-ids input.objects-inline-edit {
+  width: calc(100% - 2px);
+  z-index: 2;
+}
+.dialog-select-object-ids .objects-list-table > colgroup > col:nth-child(8) {
+  width: 80px !important;
+  min-width: 80px !important;
+}
+.dialog-select-object-ids .filter-btn {
+  width: 18px;
+  height: 18px;
+  border: 0;
+  background: #fff;
+}
+.dialog-select-object-ids .main-header-table tr {
+  background: #ffffff;
+}
+.dialog-select-object-ids .main-header-table td.input {
+  width: 100%;
+}
+.dialog-select-object-ids .main-header-table select.filter option {
+  line-height: 0.5em;
+  background: #fff;
+}
+.dialog-select-object-ids .objects-list-running {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5rem;
+  padding: 12px;
+  background: rgba(185, 185, 185, 0.5);
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  font-size: 10px;
+}
+.dialog-select-object-ids .ui-state-active.fancytree-active {
+  color: black !important;
+}
+.dialog-select-object-ids .ui-state-active.fancytree-active .ui-icon {
+  background-image: url(../lib/css/themes/jquery-ui/redmond/images/ui-icons_777777_256x240.png) !important;
+}
+.dialog-select-object-ids *::-webkit-scrollbar-track {
+  background-color: #ccc;
+}
+.dialog-select-object-ids *::-webkit-scrollbar {
+  width: 10px;
+  background-color: #ccc;
+}
+.dialog-select-object-ids *::-webkit-scrollbar-thumb {
+  background-color: #575757;
+}
+.dialog-select-object-ids .select-button-push,
+.dialog-select-object-ids .select-button-edit,
+.dialog-select-object-ids .select-button-ok,
+.dialog-select-object-ids .select-button-cancel {
+  width: 26px;
+  height: 20px;
+}
+.dialog-select-object-ids .main-toolbar-table {
+  position: relative;
+}
+.dialog-select-object-ids .main-toolbar-table .select-id-custom-buttons {
+  display: inline-block;
+}
+.dialog-select-object-ids .main-toolbar-table .iob-toolbar-sep {
+  display: inline-block;
+  margin-left: 0.5rem;
+}
+.dialog-select-object-ids .main-toolbar-table .panel-button {
+  display: inline-block;
+  line-height: 24px;
+  height: 24px;
+  width: 24px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  padding: 0;
+  border-radius: 50%;
+  transition: background-color 0.3s;
+  cursor: pointer;
+  vertical-align: middle;
+}
+.dialog-select-object-ids .main-toolbar-table .panel-button:hover {
+  border: 0;
+}
+.dialog-select-object-ids .main-toolbar-table .panel-button i {
+  margin-left: -0.5px;
+  font-size: 1.1rem;
+  line-height: 28px;
+  margin-top: -1px;
+}
+.dialog-select-object-ids .main-toolbar-table .btn-expert {
+  margin-right: 3px;
+}
+.dialog-select-object-ids .main-toolbar-table .expert-mode-icon {
+  color: white;
+  width: 21px;
+  padding-left: 2px;
+}
+.dialog-select-object-ids .main-toolbar-table .btn-history {
+  float: right;
+  margin-right: 20px;
+}
+.dialog-select-object-ids .main-toolbar-table .objects-info {
+  display: inline-block;
+  float: right;
+  padding-right: 1rem;
+  margin-top: 5px;
+}
+.dialog-select-object-ids .old-style .main-header-table {
+  width: 100%;
+}
+.dialog-select-object-ids .old-style .main-header-table th span {
+  font-size: 11px;
+  font-weight: normal;
+}
+.dialog-select-object-ids .old-style .grid-main-wob-div {
+  height: calc(100% - 50px);
+}
+.dialog-select-object-ids .old-style .iob-list-icon {
+  height: 16px;
+}
+.dialog-select-object-ids .old-style .clippy-button {
+  height: 16px;
+}
+.dialog-select-object-ids .old-style .ui-state-active,
+.dialog-select-object-ids .old-style .ui-widget-content .ui-state-active {
+  background: inherit !important;
+}
+.dialog-select-object-ids .material .objects-list-running {
+  height: 5rem;
+}
+.dialog-select-object-ids .material .filter-btn i {
+  font-size: 12px;
+}
+.dialog-select-object-ids .material .td-button-placeholder {
+  width: 21px;
+}
+.dialog-select-object-ids .material .custom-obj-btn {
+  cursor: pointer;
+  color: #4c4c4c;
+  background: white;
+  border: 0;
+  padding-left: 4px;
+  margin-right: 1px;
+  margin-top: 3px;
+}
+.dialog-select-object-ids .material .custom-obj-btn:hover {
+  background: #64b5f6;
+}
+.dialog-select-object-ids .material .custom-obj-btn i {
+  font-size: 12px;
+}
+.dialog-select-object-ids .material .iob-list-icon,
+.dialog-select-object-ids .material .instance-image {
+  font-size: 14px;
+  width: 18px;
+  height: 18px;
+}
+.dialog-select-object-ids .material .main-toolbar-table .panel-button {
+  background-color: #2196f3;
+}
+.dialog-select-object-ids .main-header-table th {
+  border-right: 1px solid #b9b9b9;
+  color: gray;
+}
+.dialog-select-object-ids .main-header-table .filter {
+  display: inline-block;
+  border: 0;
+  height: 24px;
+  width: calc(100% - 5px);
+  padding: 0 0 0 5px;
+  background: transparent;
+  color: gray;
+  font-family: "Segoe UI", Tahoma, Arial, "Courier New" !important;
+  font-size: 0.82rem !important;
+  margin-bottom: 0;
+}
+.dialog-select-object-ids .main-header-table .filter-btn {
+  display: none;
+}
+.dialog-select-object-ids .main-header-table .filter-active .filter {
+  color: black;
+  width: calc(100% - 24px);
+}
+.dialog-select-object-ids .main-header-table .filter-active .filter-btn {
+  padding: 0;
+  display: inline-block;
+  width: 19px;
+  height: 16px;
+  background: transparent;
+  border: 0;
+  margin-top: 3px;
+}
+.dialog-select-object-ids .main-header-table .filter-active .filter-btn i {
+  font-size: 12px;
+}
+.dialog-select-object-ids .clippy-button,
+.dialog-select-object-ids .edit-dialog-button {
+  position: absolute;
+  top: 1px;
+  z-index: 1;
+  margin-top: 1px;
+}
+.dialog-select-object-ids .clippy-button .tiny,
+.dialog-select-object-ids .edit-dialog-button .tiny {
+  font-size: 10px;
+}
+.dialog-select-object-ids .clippy-button {
+  right: 0;
+}
+.dialog-select-object-ids .edit-dialog-button {
+  right: 22px;
+}
+.dialog-select-object-ids .edit-enum .edit-dialog-button {
+  right: 0;
+}
+.dialog-select-object-ids .select-value {
+  display: inline-block;
+  width: 100%;
+  padding-left: 5px;
+  position: relative;
+}
+@keyframes highlight {
+  0% {
+    color: #00f900;
+  }
+  80% {
+    color: green;
+  }
+  100% {
+    color: black;
+  }
+}
+.dialog-select-object-ids .highlight {
+  animation: highlight 2s;
+}
+.dialog-select-object-ids .select-button-push {
+  background: white;
+  border: none;
+}
+.dialog-select-object-ids .select-button-push i {
+  font-size: 16px;
+  margin-left: -1px;
+}
+#select-id-dialog > span {
+  float: left;
+  margin: 0 7px 50px 0;
+}
+.m #dialog-select-member {
+  width: calc(100% - 2rem);
+  height: calc(90% - 2rem) !important;
+  left: 0.7rem;
+  border: 3px solid #2196f3;
+  box-sizing: border-box;
+}
+.m #dialog-select-member td,
+.m #dialog-select-member th {
+  padding: 1px 4px;
+}
+.m #dialog-select-member .modal-content {
+  padding: 0.5rem 0.2rem !important;
+  width: 100% !important;
+  overflow: hidden;
+}
+.m #dialog-select-member .modal-content .title {
+  padding: 3px 10px;
+}
+.m #dialog-select-member .modal-content .grid-main-wob-div {
+  height: calc(100% - 103px);
+}
+.m #dialog-select-member .modal-footer {
+  margin-left: 1rem;
+}
+.m #dialog-enum-edit {
+  top: 1rem !important;
+  height: calc(100% - 2rem);
+  max-height: calc(100% - 2rem);
+}
+.m #dialog-enum-edit .dialog-enum-list-col {
+  height: calc(100% - 81px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.m #dialog-enum-edit .dialog-enum-list-col .dialog-enum-list-id {
+  margin-left: 10px;
+  font-size: 10px;
+}
+.m #dialog-enum-edit .dialog-enum-list-col .iob-list-icon {
+  height: 24px;
+  width: 24px;
+}
+.m #dialog-enum-edit .dialog-enum-list-col .title {
+  padding-left: 10px;
+  font-size: 18px;
+}
+.m #dialog-enum-edit .btn-close {
+  background-color: #b5b5b5;
+}
+.m #dialog-enum-edit .name {
+  margin-left: 10px;
+}
+
+/*# sourceMappingURL=selectID.css.map */
