@@ -52,6 +52,8 @@ class Command extends Component {
         this.logRef = React.createRef();
 
         this.t = props.t;
+        const pattern = ['error', 'warn', 'info'];
+        this.regExp = new RegExp(pattern.join('|'), 'i');
     }
 
     componentDidMount() {
@@ -87,70 +89,6 @@ class Command extends Component {
         this.props.socket.cmdExec(this.props.currentHost, this.props.cmd, activeCmdId)
             .catch(error =>
                 console.log(error));
-
-
-        /*this.props.socket._socket.on('cmdStderr', (_id, text) => {
-
-            if (this.state.activeCmdId && this.state.activeCmdId === _id) {
-                console.log('cmdStderr');
-            console.log(_id);
-            console.log(text);
-                /*if (!$dialogCommand.data('error')) {
-                    $dialogCommand.data('error', text);
-                }
-                stdout += '\nERROR: ' + text;
-                $stdout.val(stdout);
-                $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());*
-            }
-        });
-        this.props.socket._socket.on('cmdExit', (_id, exitCode) => {
-
-            if (this.state.activeCmdId && this.state.activeCmdId === _id) {
-                console.log('cmdExit');
-                console.log(_id);
-                console.log(exitCode);
-                /*exitCode = parseInt(exitCode, 10);
-                stdout += '\n' + (exitCode !== 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
-                $stdout.val(stdout);
-                $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
-
-                $dialogCommand.find('.progress-dont-close').addClass('disabled');
-                $dialogCommandProgress.removeClass('indeterminate').css({'width': '100%'});
-                $dialogCommand.find('.btn').html(_('Close'));
-                $dialogCommand.data('finished', true);
-                $dialogCommand.data('max', true);
-                const $backButton = $adminSideMain.find('.button-command');
-                $backButton.removeClass('in-progress');
-
-                if (!exitCode) {
-                    $dialogCommand.find('.progress-text').html(_('Success!'));
-                    $backButton.hide();
-                    if ($dialogCommand.find('.progress-dont-close input').prop('checked')) {
-                        setTimeout(function () {
-                            $dialogCommand.modal('close');
-                        }, 1500);
-                    }
-                } else {
-                    let error = $dialogCommand.data('error');
-                    if (error) {
-                        const m = error.match(/error: (.*)$/);
-                        if (m) {
-                            error = m[1];
-                        }
-
-                        $dialogCommand.find('.progress-text').html(_('Done with error: %s', _(error))).addClass('error');
-                    } else {
-                        $dialogCommand.find('.progress-text').html(_('Done with error')).addClass('error');
-                    }
-                    $backButton.addClass('error');
-                    $backButton.show();
-                }
-                if (cmdCallback) {
-                    cmdCallback(exitCode);
-                    cmdCallback = null;
-                }*
-            }
-        });*/
     }
 
     cmdStdoutHandler(id, text) {
@@ -240,36 +178,36 @@ class Command extends Component {
     }
 
     colorize(text, maxLength) {
-        const pattern = ['error', 'warn', 'info'];
-        const regExp = new RegExp(pattern.join('|'), 'i');
-
         if (maxLength !== undefined) {
             text = text.substring(0, maxLength);
         }
 
-        if (text.search(regExp)) {
+        if (text.search(this.regExp)) {
             const result = [];
             const { classes } = this.props;
 
-            while (text.search(regExp) >= 0) {
-                const [match] = text.match(regExp);
-                const pos = text.search(regExp);
+            while (text.search(this.regExp) >= 0) {
+                const [match] = text.match(this.regExp);
+                const pos = text.search(this.regExp);
 
                 if (pos > 0) {
                     const part = text.substring(0, pos);
-
-                    result.push(<span key={result.length}>{part}</span>);
+                    const message = Utils.parseColorMessage(part);
+                    result.push(<span key={result.length}>{typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>): message}</span>);
                     text = text.replace(part, '');
                 }
 
                 const part = text.substr(0, match.length);
-
-                result.push(<span key={result.length} className={classes[match.toLowerCase()]}>{part}</span>);
-                text = text.replace(part, '');
+                if (part) {
+                    const message = Utils.parseColorMessage(part);
+                    result.push(<span key={result.length} className={classes[match.toLowerCase()]}>{typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>): message}</span>);
+                    text = text.replace(part, '');
+                }
             }
 
-            if (text.length > 0) {
-                result.push(<span key={result.length}>{text}</span>);
+            if (text) {
+                const message = Utils.parseColorMessage(text);
+                result.push(<span key={result.length}>{typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>): message}</span>);
             }
 
             return result;

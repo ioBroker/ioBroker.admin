@@ -2,6 +2,7 @@ import { createRef, Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import withWidth from '@material-ui/core/withWidth';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
 
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -10,6 +11,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
+import Tooltip from '@material-ui/core/Tooltip';
 import FormControl from '@material-ui/core/FormControl';
 import Paper from  '@material-ui/core/Paper';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -31,6 +33,20 @@ const styles = theme => ({
         marginRight: theme.spacing(1),
         marginLeft: theme.spacing(1),
     },
+    dangerZone: {
+        backgroundColor: 'rgba(255, 165, 0, 0.05)',
+        border: '2px solid rgba(255, 165, 0)',
+        marginBottom: theme.spacing(1),
+    },
+    dangerZoneHeader: {
+        background: 'rgba(255, 165, 0)',
+        color: '#FFF',
+        paddingLeft: theme.spacing(2),
+        paddingTop: 4,
+        paddingBottom: 4,
+        marginTop: -1,
+        marginLeft: -1,
+    }
 });
 
 class BaseSettingsObjects extends Component {
@@ -137,36 +153,39 @@ class BaseSettingsObjects extends Component {
     render() {
         return <Paper className={ this.props.classes.paper }>
             {this.renderWarning()}
-            <Grid item className={ this.props.classes.gridSettings }>
+            <Grid item className={ clsx(this.props.classes.gridSettings, this.props.classes.dangerZone) }>
+                <h3 className={this.props.classes.dangerZoneHeader} title={this.props.t('Invalid settings in these fields could lead to dead host')}>{this.props.t('Danger zone')}</h3>
                 <Grid container direction="column">
                     <Grid item>
-                        <FormControl className={this.props.classes.controlItem}>
-                            <InputLabel>{ this.props.t('Type') }</InputLabel>
-                            <Select
-                                value={ this.state.type }
-                                onChange={ e => {
-                                    if (e.target.value !== this.state.originalDBType) {
-                                        this.setState({ toConfirmType: e.target.value, showWarningDialog: true });
-                                    } else {
-                                        let port;
-
-                                        if (e.target.value === 'redis') {
-                                            port = 6379;
+                        <Tooltip title={this.props.t('switch_db_note')}>
+                            <FormControl className={this.props.classes.controlItem}>
+                                <InputLabel>{ this.props.t('Type') }</InputLabel>
+                                <Select
+                                    value={ this.state.type }
+                                    onChange={ e => {
+                                        if (e.target.value !== this.state.originalDBType) {
+                                            this.setState({ toConfirmType: e.target.value, showWarningDialog: true });
                                         } else {
-                                            port = 9000;
+                                            let port;
+
+                                            if (e.target.value === 'redis') {
+                                                port = 6379;
+                                            } else {
+                                                port = 9000;
+                                            }
+                                            this.setState({type: e.target.value, port},
+                                                () => this.onChange());
                                         }
-                                        this.setState({type: e.target.value, port},
-                                            () => this.onChange());
-                                    }
-                                }}
-                            >
-                                <MenuItem value="file">{ this.props.t('File') }</MenuItem>
-                                <MenuItem value="redis">Redis</MenuItem>
-                            </Select>
-                        </FormControl>
+                                    }}
+                                >
+                                    <MenuItem value="file">{ this.props.t('File') }</MenuItem>
+                                    <MenuItem value="redis">Redis</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Tooltip>
                     </Grid>
 
-                    <Grid item>
+                    <Grid item style={{paddingLeft: 8}}>
                         <FormControlLabel
                             control={
                                 <Switch
@@ -177,6 +196,7 @@ class BaseSettingsObjects extends Component {
                             label={this.props.t('IP is domain or more than one address')}
                         />
                     </Grid>
+
                     <Grid item>
                         {this.state.textIP ?
                             <TextField
@@ -223,6 +243,27 @@ class BaseSettingsObjects extends Component {
                         />
                     </Grid> : null }
 
+                    <Grid item>
+                        <TextField
+                            className={ this.props.classes.controlItem }
+                            value={ this.state.options_auth_pass }
+                            type="password"
+                            helperText={ this.props.t('Optional') }
+                            inputProps={{
+                                autoComplete: 'new-password',
+                                form: {
+                                    autoComplete: 'off',
+                                },
+                            }}
+                            autoComplete="off"
+                            onChange={ e => this.setState({ options_auth_pass: e.target.value })}
+                            label={ this.state.type === 'redis' ? this.props.t('Redis password') : this.props.t('Connection password') }
+                        />
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid item className={ this.props.classes.gridSettings }>
+                <Grid container direction="column">
                     { this.state.type === 'file' ? <Grid item>
                         <TextField
                             className={ this.props.classes.controlItem }
@@ -246,24 +287,6 @@ class BaseSettingsObjects extends Component {
                             label={ this.props.t('Store file interval') }
                         />
                     </Grid> : null }
-
-                    <Grid item>
-                        <TextField
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.options_auth_pass }
-                            type="password"
-                            helperText={ this.props.t('Optional') }
-                            inputProps={{
-                                autoComplete: 'new-password',
-                                form: {
-                                    autoComplete: 'off',
-                                },
-                            }}
-                            autoComplete="off"
-                            onChange={ e => this.setState({ options_auth_pass: e.target.value })}
-                            label={ this.state.type === 'redis' ? this.props.t('Redis password') : this.props.t('Connection password') }
-                        />
-                    </Grid>
 
                     { this.state.type === 'redis' ? <Grid item>
                         <TextField

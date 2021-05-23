@@ -73,15 +73,17 @@ class AdaptersUpdaterDialog extends Component {
         this.updateAvailable = [];
     }
 
-    updateAdapter(adapter, cb) {
+    updateAdapter(adapter, version, cb) {
         this.onAdapterFinished = cb;
-        this.setState({ current: adapter });
+        this.setState({ current: adapter, currentVersion: version });
     }
 
     onStartUpdate() {
         this.setState({ inProcess: true }, () => {
             this.props.onSetCommandRunning(true);
             this.processList = [...this.state.selected];
+            this.processList = this.processList.map(adapter => ({adapter, version: this.props.repository[adapter]?.version}));
+
             this.updateAdapters(() => {
                 this.setState({ inProcess: false, finished: true }, () => {
                     this.props.onSetCommandRunning(false);
@@ -99,8 +101,9 @@ class AdaptersUpdaterDialog extends Component {
         if (!this.processList || !this.processList.length) {
             cb && cb();
         } else {
-            const adapter = this.processList.shift();
-            this.updateAdapter(adapter, () => {
+            const {adapter, version} = this.processList.shift();
+
+            this.updateAdapter(adapter, version, () => {
                 const updated = [...this.state.updated];
                 updated.push(adapter);
                 this.setState({ updated }, () =>
@@ -171,7 +174,7 @@ class AdaptersUpdaterDialog extends Component {
                             currentHost={this.props.currentHost}
                             socket={this.props.socket}
                             t={this.props.t}
-                            cmd={'upgrade ' + this.state.current + (this.state.debug ? ' --debug' : '')}
+                            cmd={'upgrade ' + this.state.current + '@' + this.state.currentVersion + (this.state.debug ? ' --debug' : '')}
                             onFinished={() => this.onAdapterFinished()}
                             errorFunc={() => {
                                 if (this.state.stopOnError) {

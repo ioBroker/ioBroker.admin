@@ -545,28 +545,38 @@ class Logs extends Component {
     getRows() {
         const rows = [];
         const { classes } = this.props;
+        const filterMessage = this.state.message.toLowerCase();
 
         let previousKey = 0;
         for (let i = this.state.pause > 0 ? this.state.pause - 1 : this.state.logs.length - 1; i >= 0; i--) {
             const row = this.state.logs[i];
             const severity = row.severity;
 
-            let message = row.message;
+            let message = row.message || '';
             let id = '';
 
-            const regExp = new RegExp(row.from.replace('.', '\\.').replace(')', '\\)').replace('(', '\\(') + ' \\(\\d+\\) ', 'g');
-            const matches = message.match(regExp);
+            if (typeof message !== 'object') {
+                const regExp = new RegExp(row.from.replace('.', '\\.').replace(')', '\\)').replace('(', '\\(') + ' \\(\\d+\\) ', 'g');
+                const matches = message.match(regExp);
 
-            if (matches) {
-                message = message.replace(matches[0], '');
-                id = matches[0].split(' ')[1].match(/\d+/g)[0];
-            } else {
-                message = message.replace(row.from + ' ', '');
+                if (matches) {
+                    message = message.replace(matches[0], '');
+                    id = matches[0].split(' ')[1].match(/\d+/g)[0];
+                } else {
+                    message = message.replace(row.from + ' ', '');
+                }
             }
 
             const isFrom = this.state.source !== '1' && this.state.source !== row.from;
-            const isHidden = isFrom || this.severities[severity] < this.severities[this.state.severity] ||
-                !message.toLowerCase().includes(this.state.message.toLowerCase());
+
+            let isHidden = isFrom || this.severities[severity] < this.severities[this.state.severity];
+            if (!isHidden && filterMessage) {
+                if (typeof message === 'object') {
+                    isHidden = !message.original.toLowerCase().includes(filterMessage);
+                } else {
+                    isHidden = !message.toLowerCase().includes(filterMessage);
+                }
+            }
 
             const key = previousKey === row.key ? i : row.key;
             previousKey = row.key;
@@ -593,9 +603,9 @@ class Logs extends Component {
                     </TableCell>
                     <TableCell
                         className={clsx(classes.cell, classes[severity])}
-                        title={message}
+                        title={typeof message === 'object' ? message.original : message}
                     >
-                        {message}
+                        {typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>): message}
                     </TableCell>
                 </TableRow>
             );

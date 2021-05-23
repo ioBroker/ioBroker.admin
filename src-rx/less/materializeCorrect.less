@@ -1,0 +1,81 @@
+@import "commons";
+@import "materializeConsts";
+
+.m {
+  /*.nav-wrapper.footer{
+    padding-top: 1rem;
+    padding-left: 2rem;
+  }*/
+
+  .admin-dialog-body {
+    height: calc(~"100% - "@admin-m-footer-height);
+    background: @tiles-tile-background;
+    margin-bottom: 0;
+    >div {
+      height: 100%;
+      margin-bottom: 0;
+    }
+  }
+
+  .side-nav {
+    transition: transform @admin-sidemenu-transition; // 0.5 second transition effect to slide in the sidenav */
+    transform: translateX(0px);
+    width: @admin-sidemenu-width;
+    padding-bottom: 0;
+    position: relative;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+
+    // scrollbar
+    &::-webkit-scrollbar-track {
+      background-color: @admin-sidemenu-background;
+    }
+    &::-webkit-scrollbar {
+      width: 6px;
+      background-color: @admin-sidemenu-background;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: @admin-sidemenu-scrollbar-thumb-color;
+    }
+
+    .user-view {
+      background: @admin-sidemenu-user-view-background;
+      color: @tiles-tile-background;
+      padding: 0 32px 0;
+      background-image: url(../img/background_small.png);
+      background-position: 0;
+      margin: 0;
+      a {
+        pointer-events: none;
+        padding-bottom: 0.2em;
+        padding-top: 0.2em;
+      }
+    }
+  }
+
+
+  .modal-content {
+    width: calc(~"100% - 48px") !important; // 24px padding * 2
+      height: calc(~"100% - 100px") !important;
+  }
+  .modal-footer {
+    width: calc(~"100% - 12px") !important; // 6px padding-left + 6px padding-right
+  }
+  // fix padding of menu elements
+  .side-nav li > a {
+    //padding: 0 16px;
+  }
+
+  .tabs {
+    .active {
+      border-bottom: 2px solid #acd8fa;
+    }
+    .indicator {
+      display: none;
+    }
+  }
+  .dropdown-content {
+    max-height: 300px;
+  }
+}

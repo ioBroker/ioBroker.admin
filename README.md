@@ -78,14 +78,9 @@ If this option is disabled, the simple configuration page could be accessed unde
 Please be sure that you forward not only the http/https requests, but the web-socket traffic too. It is essential for communication.
 
 ## Used icons
-This project uses some icons from [Flaticon](https://www.flaticon.com/):
-- <img src="src/img/rooms/006-double-bed.svg" height="48" /> - designed by [smalllikeart](https://www.flaticon.com/authors/smalllikeart) from [Flaticon](https://www.flaticon.com/)
-- <img src="src/img/rooms/016-armchair-1.svg" height="48" /> - designed by [smalllikeart](https://www.flaticon.com/authors/smalllikeart) from [Flaticon](https://www.flaticon.com/)
-- <img src="src/img/rooms/022-sofa-1.svg" height="48" /> - designed by [smalllikeart](https://www.flaticon.com/authors/smalllikeart) from [Flaticon](https://www.flaticon.com/)
-- <img src="src/img/devices/light-bulb.svg" height="48" /> - Icons made by [Vectors Market](https://www.flaticon.com/authors/vectors-market) from [Flaticon](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
-- <img src="src/img/rooms/garage.svg" height="48" /> - designed by [Pause08](https://www.flaticon.com/authors/Pause08) from [Flaticon](https://www.flaticon.com/)
-- <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
-<!-- remove this chapter after admin5 release -->
+This project uses icons from [Flaticon](https://www.flaticon.com/).
+ioBroker GmbH has a valid license for all of used icons.
+The icons may not be reused in other projects without proper flaticon subscription.
 
 <!--
 	Placeholder for the next version (at the beginning of the line):
@@ -93,6 +88,9 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Admin5: Support of ANSI codes in log
+
 ### 5.0.31 (2021-05-21)
 * (bluefox) Admin5: Improved the enumerations
 

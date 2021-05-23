@@ -8,6 +8,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Select from '@material-ui/core/Select';
+import Tooltip from '@material-ui/core/Tooltip';
 import TextField from '@material-ui/core/TextField';
 import FormGroup from '@material-ui/core/FormGroup';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -17,6 +18,7 @@ import Paper from  '@material-ui/core/Paper';
 import Switch from  '@material-ui/core/Switch';
 
 import DialogConfirm from '@iobroker/adapter-react/Dialogs/Confirm';
+import clsx from "clsx";
 
 const styles = theme => ({
     paper: {
@@ -32,6 +34,20 @@ const styles = theme => ({
         marginRight: theme.spacing(1),
         marginLeft: theme.spacing(1),
     },
+    dangerZone: {
+        backgroundColor: 'rgba(255, 165, 0, 0.05)',
+        border: '2px solid rgba(255, 165, 0)',
+        marginBottom: theme.spacing(1),
+    },
+    dangerZoneHeader: {
+        background: 'rgba(255, 165, 0)',
+        color: '#FFF',
+        paddingLeft: theme.spacing(2),
+        paddingTop: 4,
+        paddingBottom: 4,
+        marginTop: -1,
+        marginLeft: -1,
+    }
 });
 
 class BaseSettingsObjects extends Component {
@@ -139,36 +155,39 @@ class BaseSettingsObjects extends Component {
     render() {
         return <Paper className={ this.props.classes.paper }>
             {this.renderWarning()}
-            <Grid item className={ this.props.classes.gridSettings }>
+            <Grid item className={ clsx(this.props.classes.gridSettings, this.props.classes.dangerZone) }>
+                <h3 className={this.props.classes.dangerZoneHeader} title={this.props.t('Invalid settings in these fields could lead to dead host')}>{this.props.t('Danger zone')}</h3>
                 <Grid container direction="column">
                     <Grid item>
-                        <FormControl className={this.props.classes.controlItem}>
-                            <InputLabel>{ this.props.t('Type') }</InputLabel>
-                            <Select
-                                value={ this.state.type }
-                                onChange={ e => {
-                                    if (e.target.value !== this.state.originalDBType) {
-                                        this.setState({ toConfirmType: e.target.value, showWarningDialog: true });
-                                    } else {
-                                        let port;
-
-                                        if (e.target.value === 'redis') {
-                                            port = 6379;
+                        <Tooltip title={this.props.t('switch_db_note')}>
+                            <FormControl className={this.props.classes.controlItem}>
+                                <InputLabel>{ this.props.t('Type') }</InputLabel>
+                                <Select
+                                    value={ this.state.type }
+                                    onChange={ e => {
+                                        if (e.target.value !== this.state.originalDBType) {
+                                            this.setState({ toConfirmType: e.target.value, showWarningDialog: true });
                                         } else {
-                                            port = 9001;
+                                            let port;
+
+                                            if (e.target.value === 'redis') {
+                                                port = 6379;
+                                            } else {
+                                                port = 9001;
+                                            }
+                                            this.setState({type: e.target.value, port},
+                                        () => this.onChange());
                                         }
-                                        this.setState({type: e.target.value, port},
-                                    () => this.onChange());
-                                    }
-                                }}
-                            >
-                                <MenuItem value="file">{ this.props.t('File') }</MenuItem>
-                                <MenuItem value="redis">Redis</MenuItem>
-                            </Select>
-                        </FormControl>
+                                    }}
+                                >
+                                    <MenuItem value="file">{ this.props.t('File') }</MenuItem>
+                                    <MenuItem value="redis">Redis</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Tooltip>
                     </Grid>
 
-                    <Grid item>
+                    <Grid item style={{paddingLeft: 8}}>
                         <FormControlLabel
                             control={
                                 <Switch
@@ -216,53 +235,12 @@ class BaseSettingsObjects extends Component {
                     </Grid>
 
                     { this.state.type === 'file' ? <Grid item>
-                        <FormControl component="fieldset" className={ this.props.classes.controlItem }>
-                            <FormGroup>
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={ this.state.noFileCache }
-                                            onChange={ e => this.setState( { noFileCache: e.target.checked }, () => this.onChange()) }
-                                        />
-                                    }
-                                    label={ this.props.t(`No file cache`) }
-                                />
-                            </FormGroup>
-                            <FormHelperText>{ this.props.t('Always read files from disk and do not cache them in RAM. Used for debugging.') }</FormHelperText>
-                        </FormControl>
-                    </Grid> : null }
-
-                    { this.state.type === 'file' ? <Grid item>
                         <TextField
                             className={ this.props.classes.controlItem }
                             value={ this.state.dataDir }
                             helperText={ this.props.t('Optional. Always relative to iobroker.js-controller/') }
                             onChange={ e => this.setState({ dataDir: e.target.value }, () => this.onChange())}
                             label={ this.props.t('Directory path') }
-                        />
-                    </Grid> : null }
-
-                    { this.state.type === 'file' ? <Grid item>
-                        <TextField
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.connectTimeout }
-                            helperText={ this.props.t('ms') }
-                            type="number"
-                            min={ 200 }
-                            onChange={ e => this.setState({ connectTimeout: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('Connect timeout') }
-                        />
-                    </Grid> : null }
-
-                    { this.state.type === 'file' ? <Grid item>
-                        <TextField
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.writeFileInterval }
-                            helperText={ this.props.t('How often the data from RAM will be saved on disk in ms') }
-                            type="number"
-                            min={ 200 }
-                            onChange={ e => this.setState({ writeFileInterval: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('Store file interval') }
                         />
                     </Grid> : null }
 
@@ -283,6 +261,51 @@ class BaseSettingsObjects extends Component {
                             label={ this.state.type === 'redis' ? this.props.t('Redis password') : this.props.t('Connection password') }
                         />
                     </Grid>
+                </Grid>
+            </Grid>
+            <Grid item className={ this.props.classes.gridSettings }>
+                <Grid container direction="column">
+                    { this.state.type === 'file' ? <Grid item>
+                        <TextField
+                            className={ this.props.classes.controlItem }
+                            value={ this.state.connectTimeout }
+                            helperText={ this.props.t('ms') }
+                            type="number"
+                            min={ 200 }
+                            onChange={ e => this.setState({ connectTimeout: e.target.value }, () => this.onChange())}
+                            label={ this.props.t('Connect timeout') }
+                        />
+                    </Grid> : null }
+
+                    { this.state.type === 'file' ? <Grid item>
+                        <FormControl component="fieldset" className={ this.props.classes.controlItem }>
+                            <FormGroup>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={ this.state.noFileCache }
+                                            onChange={ e => this.setState( { noFileCache: e.target.checked }, () => this.onChange()) }
+                                        />
+                                    }
+                                    label={ this.props.t(`No file cache`) }
+                                />
+                            </FormGroup>
+                            <FormHelperText>{ this.props.t('Always read files from disk and do not cache them in RAM. Used for debugging.') }</FormHelperText>
+                        </FormControl>
+                    </Grid> : null }
+
+                    { this.state.type === 'file' ? <Grid item>
+                        <TextField
+                            className={ this.props.classes.controlItem }
+                            value={ this.state.writeFileInterval }
+                            helperText={ this.props.t('How often the data from RAM will be saved on disk in ms') }
+                            type="number"
+                            min={ 200 }
+                            onChange={ e => this.setState({ writeFileInterval: e.target.value }, () => this.onChange())}
+                            label={ this.props.t('Store file interval') }
+                        />
+                    </Grid> : null }
+
 
                     { this.state.type === 'redis' ? <Grid item>
                         <TextField
@@ -380,14 +403,14 @@ class BaseSettingsObjects extends Component {
                     </Grid> : null }
 
                     { this.state.type === 'file' && !this.state.backup_disabled ? <Grid item>
-                    <TextField
-                        className={ this.props.classes.controlItem }
-                        value={ this.state.backup_path }
-                        helperText={ this.props.t('Absolute path to backup directory or empty to backup in data directory. Leave it empty for default storage place.') }
-                        onChange={ e => this.setState({ backup_path: e.target.value }, () => this.onChange())}
-                        label={ this.props.t('Path') }
-                    />
-                </Grid> : null }
+                        <TextField
+                            className={ this.props.classes.controlItem }
+                            value={ this.state.backup_path }
+                            helperText={ this.props.t('Absolute path to backup directory or empty to backup in data directory. Leave it empty for default storage place.') }
+                            onChange={ e => this.setState({ backup_path: e.target.value }, () => this.onChange())}
+                            label={ this.props.t('Path') }
+                        />
+                    </Grid> : null }
                 </Grid>
             </Grid>
         </Paper>;

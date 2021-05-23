@@ -122,10 +122,10 @@
           "md": 4,
           "lg": 2
         },
-        "react": {
+        "material": {
           "newLine": true,
           "type": "checkbox",
-          "label": "Use react UI(experts)",
+          "label": "0",
           "sm": 12,
           "md": 6,
           "lg": 3

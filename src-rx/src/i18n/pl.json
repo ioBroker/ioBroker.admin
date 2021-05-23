@@ -1383,5 +1383,14 @@
   "Add enum": "Dodaj nową kategorię",
   "Save & Close": "Zapisz i zamknij",
   "API key": "Klucz API",
-  "Restart works only if controller started as system service.": "Restart działa tylko wtedy, gdy kontroler został uruchomiony jako usługa systemowa."
+  "Restart works only if controller started as system service.": "Restart działa tylko wtedy, gdy kontroler został uruchomiony jako usługa systemowa.",
+  "Edit config for %s states": "Edytuj konfigurację dla %s stanów",
+  "IP is domain or more than one address": "IP to domena lub więcej niż jeden adres",
+  "Folder": "Teczka",
+  "Enum parameters": "Parametry wyliczenia",
+  "Expand all": "Rozwiń wszystkie",
+  "Collapse all": "Zwinąć wszystkie",
+  "From npm": "Od npm",
+  "Invalid settings in these fields could lead to dead host": "Nieprawidłowe ustawienia w tych polach mogą prowadzić do martwego hosta",
+  "Danger zone": "Strefa niebezpieczeństwa"
 }

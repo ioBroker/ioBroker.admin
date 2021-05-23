@@ -1,7 +1,11 @@
-const fs      = require('fs');
-const del     = require('del');
-const replace = require('gulp-replace');
-const cp      = require('child_process');
+const fs         = require('fs');
+const del        = require('del');
+const replace    = require('gulp-replace');
+const cp         = require('child_process');
+const sourcemaps = require('gulp-sourcemaps');
+const less       = require('gulp-less');
+const concat     = require('gulp-concat');
+const cleanCSS   = require('gulp-clean-css');
 
 const srcRx = 'src-rx/';
 const src = __dirname + '/' + srcRx;
@@ -196,6 +200,42 @@ function flat2i18n() {
 }
 
 function init(gulp) {
+    gulp.task('react-0-configCSS', () => {
+        return gulp.src([
+            './src-rx/less/selectID.less',
+            './src-rx/less/adapter.less',
+            './src-rx/less/materializeCorrect.less'
+        ])
+            .pipe(sourcemaps.init())
+            .pipe(less({
+                paths: [ ]
+            }))
+            .pipe(concat('adapter.css'))
+            .pipe(cleanCSS({compatibility: 'ie8'}))
+            .pipe(sourcemaps.write('.'))
+            .pipe(gulp.dest('./src-rx/public/css'));
+    });
+
+    gulp.task('react-0-iobCSS', () => {
+        return gulp.src(['./src-rx/less/selectID.less'])
+            .pipe(sourcemaps.init())
+            .pipe(less({
+                paths: [ ]
+            }))
+            .pipe(sourcemaps.write('.'))
+            .pipe(gulp.dest('./src-rx/public/lib/css/iob'));
+    });
+
+    gulp.task('react-0-treeTableCSS', () => {
+        return gulp.src(['./src-rx/less/jquery.treetable.theme.less'])
+            .pipe(sourcemaps.init())
+            .pipe(less({
+                paths: [ ]
+            }))
+            .pipe(sourcemaps.write('.'))
+            .pipe(gulp.dest('./src-rx/public/lib/css'));
+    });
+
     gulp.task('react-i18n=>react-flat', done => {
         i18n2flat();
         done();
@@ -206,7 +246,7 @@ function init(gulp) {
         done();
     });
 
-    gulp.task('react-clean', () => {
+    gulp.task('react-1-clean', () => {
         return del([
             // 'src/node_modules/**/*',
             dest + '/**/*',
@@ -227,7 +267,7 @@ function init(gulp) {
         }
     });
 
-    gulp.task('react-2-npm-dep', gulp.series('react-clean', 'react-2-npm'));
+    gulp.task('react-2-npm-dep', gulp.series('react-1-clean', 'react-2-npm', 'react-0-configCSS', 'react-0-iobCSS', 'react-0-treeTableCSS'));
 
     gulp.task('react-3-build', () => build(gulp));
 

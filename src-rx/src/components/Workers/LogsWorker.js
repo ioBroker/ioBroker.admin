@@ -1,3 +1,5 @@
+import Utils from '../../Utils';
+
 class LogsWorker {
     constructor(socket, maxLogs) {
         this.socket               = socket;
@@ -214,6 +216,10 @@ class LogsWorker {
             }
         }
 
+        if (typeof obj.message !== 'object') {
+            obj.message = Utils.parseColorMessage(line.message);
+        }
+
         if (isNew) {
             // if new message time is less than last message in log
             if (length && this.logs[length - 1].key > obj.key) {
@@ -299,7 +305,9 @@ class LogsWorker {
 
                 this.resolve({logs: this.logs, logSize});
             })
-            .catch(e => window.alert('Cannot get logs: ' + e));
+            .catch(e => {
+                window.alert('Cannot get logs: ' + e);
+            });
 
         return this.promise;
     }

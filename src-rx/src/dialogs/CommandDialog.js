@@ -106,9 +106,9 @@ class CommandDialog extends Component {
                         disabled={this.props.inBackground}
                         style={{ marginRight: 8 }}
                         onClick={this.props.onInBackground}
+                        startIcon={<OpenInBrowserIcon />}
                         color="primary">
                         {this.props.confirmText || this.props.t('In background')}
-                        startIcon={<OpenInBrowserIcon />}
                     </Button>
                     <Button
                         variant="contained"
@@ -138,7 +138,7 @@ CommandDialog.propTypes = {
     cmd: PropTypes.string,
     errorFunc: PropTypes.func,
     performed: PropTypes.func,
-    inBackground: PropTypes.func,
+    inBackground: PropTypes.bool,
     commandError: PropTypes.bool,
     socket: PropTypes.object.isRequired,
     currentHost: PropTypes.string.isRequired,

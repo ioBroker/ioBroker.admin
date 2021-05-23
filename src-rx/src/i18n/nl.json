@@ -1383,5 +1383,14 @@
   "Add enum": "Voeg een nieuwe categorie toe",
   "Save & Close": "Opslaan en sluiten",
   "API key": "API sleutel",
-  "Restart works only if controller started as system service.": "Opnieuw opstarten werkt alleen als de controller is gestart als systeemservice."
+  "Restart works only if controller started as system service.": "Opnieuw opstarten werkt alleen als de controller is gestart als systeemservice.",
+  "Edit config for %s states": "Bewerk de configuratie voor %s staten",
+  "IP is domain or more than one address": "IP is domein of meer dan één adres",
+  "Folder": "Map",
+  "Enum parameters": "Opsommingsparameters",
+  "Expand all": "Alles uitvouwen",
+  "Collapse all": "Alles inklappen",
+  "From npm": "Vanaf npm",
+  "Invalid settings in these fields could lead to dead host": "Ongeldige instellingen in deze velden kunnen leiden tot een dode host",
+  "Danger zone": "Gevarenzone"
 }

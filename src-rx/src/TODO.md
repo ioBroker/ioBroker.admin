@@ -23,14 +23,12 @@ Marked with "!" must be in release candidate
 ## Wizard
 
 ## Discovery
+
 ## Logs
-- !ON multihost no source at all - https://github.com/ioBroker/ioBroker.admin/issues/777 //not track
-- !On safari new coming entries have invalid time https://github.com/ioBroker/ioBroker.admin/issues/783 //not track
 
 ## Instances
 
 ## Objects
-- layout in select ID 
 - Add mode view owners (by switching "1") / owner / ownerGroup / objectACL / state ACL
 - Add small icons for enums in the list
 

@@ -6,6 +6,7 @@ import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
 
 import AceEditor from 'react-ace';
+import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-noconflict/theme-chrome';

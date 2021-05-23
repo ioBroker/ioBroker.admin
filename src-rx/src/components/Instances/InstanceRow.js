@@ -194,8 +194,8 @@ const styles = theme => ({
         transition: 'opacity 0.2s',
         height: 34
     },
-    visibility: {
-        opacity: 0
+    hiddenOpacity: {
+        opacity: 0,
     },
     enabled: {
         color: green[400],
@@ -947,13 +947,16 @@ const InstanceRow = ({
                 </Tooltip>
                 <Hidden xsDown>
                     <Tooltip title={t('Settings')}>
-                        <IconButton
-                            size="small"
-                            className={clsx(classes.button, !instance.config && classes.visibility)}
-                            onClick={() => openConfig(id)}
-                        >
-                            <BuildIcon />
-                        </IconButton>
+                        <div>
+                            <IconButton
+                                disabled={instance.config}
+                                size="small"
+                                className={clsx(classes.button, !instance.config && classes.hiddenOpacity)}
+                                onClick={() => openConfig(id)}
+                            >
+                                <BuildIcon />
+                            </IconButton>
+                        </div>
                     </Tooltip>
                 </Hidden>
                 <Tooltip title={t('Restart')}>
@@ -1003,7 +1006,7 @@ const InstanceRow = ({
                         <Tooltip title={t('Edit')}>
                             <IconButton
                                 size="small"
-                                className={clsx(classes.button, !visibleEdit && classes.visibility)}
+                                className={clsx(classes.button, !visibleEdit && classes.hiddenOpacity)}
                                 onClick={event => {
                                     setOpenDialogText(true);
                                     event.stopPropagation();

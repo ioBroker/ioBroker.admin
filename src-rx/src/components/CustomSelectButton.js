@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const CustomSelectButton = ({ arrayItem, title, onClick, value, contained, buttonIcon, icons, t, translateSuffix }) => {
+const CustomSelectButton = ({ arrayItem, title, onClick, value, contained, buttonIcon, icons, t, translateSuffix, noTranslation }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     translateSuffix = translateSuffix || '';
     const classes = useStyles();
@@ -26,7 +26,7 @@ const CustomSelectButton = ({ arrayItem, title, onClick, value, contained, butto
                 color="primary"
                 onClick={e => setAnchorEl(e.currentTarget)}
             >
-                {buttonIcon || null}{value}
+                {buttonIcon || (icons && <MaterialDynamicIcon objIconBool iconName={value} className={classes.icon} />)}{typeof value === 'number' ? value : (noTranslation ? value : t(value + translateSuffix))}
             </Button>
         </Tooltip>
         <Menu
@@ -47,7 +47,7 @@ const CustomSelectButton = ({ arrayItem, title, onClick, value, contained, butto
                         onClick(name);
                         setAnchorEl(null);
                     }}>
-                    {icons && <MaterialDynamicIcon objIconBool iconName={name} className={classes.icon} />}{typeof name === 'number' ? name : t(name + translateSuffix)}
+                    {icons && <MaterialDynamicIcon objIconBool iconName={name} className={classes.icon} />}{typeof name === 'number' ? name : (noTranslation ? name : t(name + translateSuffix))}
                 </MenuItem>
             })}
         </Menu>

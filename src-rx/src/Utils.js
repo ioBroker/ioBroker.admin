@@ -1,3 +1,47 @@
+const ANSI_RESET  = 0;
+const ANSI_RESET_COLOR  = 39;
+const ANSI_RESET_BG_COLOR  = 49;
+const ANSI_BOLD  = 1;
+const ANSI_RESET_BOLD  = 22;
+
+const STYLES = {
+    30: {color: 'black'}, // ANSI_BLACK
+    31: {color: 'red'}, // ANSI_RED
+    32: {color: 'green'}, // ANSI_GREEN
+    33: {color: 'yellow'}, // ANSI_YELLOW
+    34: {color: 'blue'}, // ANSI_BLUE
+    35: {color: 'purple'}, // ANSI_PURPLE
+    36: {color: 'cyan'}, // ANSI_CYAN
+    37: {color: 'white'}, // ANSI_WHITE
+
+    90: {color: 'grey'}, // ANSI_BRIGHT_BLACK
+    91: {color: 'lightred'}, // ANSI_BRIGHT_RED
+    92: {color: 'lightgreen'}, // ANSI_BRIGHT_GREEN
+    93: {color: 'lightyellow'}, // ANSI_BRIGHT_YELLOW
+    94: {color: 'lightblue'}, // ANSI_BRIGHT_BLUE
+    95: {color: 'lightpurple'}, // ANSI_BRIGHT_PURPLE
+    96: {color: 'lightcyan'}, // ANSI_BRIGHT_CYAN
+    97: {color: 'white'}, // ANSI_BRIGHT_WHITE
+
+    40: {backgroundColor: 'black'}, // ANSI_BG_BLACK
+    41: {backgroundColor: 'red'}, // ANSI_BG_RED
+    42: {backgroundColor: 'green'}, // ANSI_BG_GREEN
+    43: {backgroundColor: 'yellow'}, // ANSI_BG_YELLOW
+    44: {backgroundColor: 'blue'}, // ANSI_BG_BLUE
+    45: {backgroundColor: 'purple'}, // ANSI_BG_PURPLE
+    46: {backgroundColor: 'cyan'}, // ANSI_BG_CYAN
+    47: {backgroundColor: 'white'}, // ANSI_BG_WHITE
+
+    100: {backgroundColor: 'grey'}, // ANSI_BRIGHT_BG_BLACK
+    101: {backgroundColor: 'lightred'}, // ANSI_BRIGHT_BG_RED
+    102: {backgroundColor: 'lightgreen'}, // ANSI_BRIGHT_BG_GREEN
+    103: {backgroundColor: 'lightyellow'}, // ANSI_BRIGHT_BG_YELLOW
+    104: {backgroundColor: 'lightblue'}, // ANSI_BRIGHT_BG_BLUE
+    105: {backgroundColor: 'lightpurple'}, // ANSI_BRIGHT_BG_PURPLE
+    106: {backgroundColor: 'lightcyan'}, // ANSI_BRIGHT_BG_CYAN
+    107: {backgroundColor: 'white'}, // ANSI_BRIGHT_BG_WHITE
+}
+
 class Utils {
 
     /**
@@ -410,6 +454,47 @@ class Utils {
             }
 
             obj.common.adminUI && console.warn(`Please add to "${obj._id.replace(/\.\d+$/, '')}" common.adminUI=${JSON.stringify(obj.common.adminUI)}`);
+        }
+    }
+
+    static parseColorMessage(text) {
+        if (text && (text.includes('\u001b[') || text.includes('\u001B['))) {
+            // eslint-disable-next-line
+            let m = text.match(/\u001b\[\d+m/gi);
+            if (m) {
+                const result = [];
+                let style = {};
+                for (let i = 0; i < m.length; i++) {
+                    const pos = text.indexOf(m[i]);
+                    if (pos) {
+                        result.push({text: text.substring(0, pos), style: JSON.parse(JSON.stringify(style))});
+                    }
+                    const code = parseInt(m[i].substring(2), 10);
+                    if (STYLES[code]) {
+                        Object.assign(style, STYLES[code]);
+                    } else if (ANSI_RESET_COLOR === code) {
+                        delete style.color;
+                    } else if (ANSI_RESET_BG_COLOR === code) {
+                        delete style.backgroundColor;
+                    } else if (ANSI_RESET_BOLD === code) {
+                        delete style.fontWeight;
+                    } else if (ANSI_BOLD === code) {
+                        style.fontWeight = 'bold';
+                    } else if (ANSI_RESET === code) {
+                        style = {};
+                    }
+                    text = text.substring(m[i].length + pos);
+                }
+                if (text) {
+                    result.push({text, style: JSON.parse(JSON.stringify(style))});
+                }
+
+                return {original: text, parts: result};
+            } else {
+                return text;
+            }
+        } else {
+            return text;
         }
     }
 }

@@ -51,11 +51,11 @@ import { expertModeDialogFunc } from './dialogs/ExpertModeDialog';
 import { checkMessages, newsAdminDialogFunc } from './dialogs/NewsAdminDialog';
 import { hostWarningDialogFunc } from './dialogs/HostWarningDialog';
 import ToggleThemeMenu from './components/ToggleThemeMenu';
-import LogsWorker from './components/Wrokers/LogsWorker';
-import InstancesWorker from './components/Wrokers/InstancesWorker';
-import HostsWorker from './components/Wrokers/HostsWorker';
-import AdaptersWorker from './components/Wrokers/AdaptersWorker';
-import ObjectsWorker from './components/Wrokers/ObjectsWorker';
+import LogsWorker from './components/Workers/LogsWorker';
+import InstancesWorker from './components/Workers/InstancesWorker';
+import HostsWorker from './components/Workers/HostsWorker';
+import AdaptersWorker from './components/Workers/AdaptersWorker';
+import ObjectsWorker from './components/Workers/ObjectsWorker';
 import DiscoveryDialog from './dialogs/DiscoveryDialog';
 import SlowConnectionWarningDialog from './dialogs/SlowConnectionWarningDialog';
 

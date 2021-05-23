@@ -255,7 +255,7 @@ class ObjectCustomEditor extends Component {
                 data[attr] = result;
             } catch (e) {
                 console.error(`Cannot execute ${func}: ${e}`);
-                data[attr] = items[attr].default === undefined ? null: items[attr].default;
+                data[attr] = !items[attr] || items[attr].default === undefined ? null: items[attr].default;
             }
         }
     }

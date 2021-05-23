@@ -1383,5 +1383,14 @@
   "Add enum": "新增类别",
   "Save & Close": "保存并关闭",
   "API key": "API密钥",
-  "Restart works only if controller started as system service.": "仅当控制器作为系统服务启动时，重新启动才有效。"
+  "Restart works only if controller started as system service.": "仅当控制器作为系统服务启动时，重新启动才有效。",
+  "Edit config for %s states": "编辑%s种状态的配置",
+  "IP is domain or more than one address": "IP是域或多个地址",
+  "Folder": "文件夹",
+  "Enum parameters": "枚举参数",
+  "Expand all": "展开全部",
+  "Collapse all": "全部收缩",
+  "From npm": "从npm",
+  "Invalid settings in these fields could lead to dead host": "这些字段中的无效设置可能导致主机丢失",
+  "Danger zone": "危险区"
 }

@@ -5,11 +5,11 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import Paper from  '@material-ui/core/Paper';
 import AceEditor from 'react-ace';
+import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-noconflict/theme-chrome';
 import 'ace-builds/src-noconflict/ext-language_tools';
-
 
 const styles = theme => ({
     paper: {
@@ -39,7 +39,7 @@ class BaseSettingsPlugins extends Component {
         super(props);
 
         this.state = {
-            settings:  JSON.stringify(this.props.settings || {}, null, 2),
+            settings: JSON.stringify(this.props.settings || {}, null, 2),
             error: false,
         };
     }
@@ -77,7 +77,7 @@ class BaseSettingsPlugins extends Component {
                     width="100%"
                     height="100%"
                     theme={ this.props.themeName === 'dark' ? 'clouds_midnight' : 'chrome' }
-                    value={ this.state.text }
+                    value={ this.state.settings }
                     onChange={ newValue => this.onChange(newValue) }
                     name="UNIQUE_ID_OF_DIV1"
                     fontSize={14}

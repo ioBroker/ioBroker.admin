@@ -382,13 +382,13 @@ class Adapters extends Component {
                     if (this.tempInstalled[name]) {
                         // Update attributes
                         Object.keys(this.tempInstalled[name]).forEach(attr => {
-                            if (event.obj.common[attr] !== undefined) {
+                            if (event.obj.common[attr] !== undefined && attr !== 'installedFrom') {
                                 this.tempInstalled[name][attr] = event.obj.common[attr];
                             }
                         });
                     } else {
                         // new
-                        this.tempInstalled[event.id] = JSON.parse(JSON.stringify(event.obj.common));
+                        this.tempInstalled[event.id.split('.').pop()] = JSON.parse(JSON.stringify(event.obj.common));
                     }
                     this.tempAdapters[event.id] = event.obj;
                 }
@@ -739,15 +739,11 @@ class Adapters extends Component {
     }
 
     handleHostsChange(event) {
-        this.setState({
-            addInstanceHost: event.target.value
-        });
+        this.setState({addInstanceHost: event.target.value});
     }
 
     handleInstanceChange(event) {
-        this.setState({
-            addInstanceId: event.target.value
-        });
+        this.setState({addInstanceId: event.target.value});
     }
 
     static updateAvailable(oldVersion, newVersion) {

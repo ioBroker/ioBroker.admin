@@ -888,7 +888,7 @@ function buildTree(objects, options) {
                 info.enums.push(id);
             } else if (obj.type === 'enum') {
                 info.enums.push(id);
-            } else if (obj.type === 'instance' && common && common.supportCustoms) {
+            } else if (obj.type === 'instance' && common && (common.supportCustoms || common.adminUI?.custom)) {
                 info.hasSomeCustoms = true;
                 info.customs.push(id.substring('system.adapter.'.length));
             }
@@ -1514,7 +1514,6 @@ class ObjectBrowser extends Component {
             toast: '',
             lang: props.lang,
             scrollBarWidth: 16,
-            hasSomeCustoms: false,
             customDialog,
             editObjectDialog: '',
             enumDialog: null,
@@ -3958,7 +3957,7 @@ class ObjectBrowser extends Component {
                 <>
                     {this.columnsVisibility.changedFrom ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.changedFrom }} title={newValueTitle.join('\n')}>{checkVisibleObjectType && this.states[id]?.from ? newValue : null}</div> : null}
                     {this.columnsVisibility.qualityCode ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.qualityCode }} title={q || ''}>{q}</div> : null}
-                    {this.columnsVisibility.timestamp   ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.timestamp }}>{checkVisibleObjectType && this.states[id]?.ts ? Utils.formatDate(new Date(this.states[id].ts), this.props.dateFormat) : null}</div> : null}
+                    {this.columnsVisibility.timestamp   ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.timestamp  }}>{checkVisibleObjectType && this.states[id]?.ts ? Utils.formatDate(new Date(this.states[id].ts), this.props.dateFormat) : null}</div> : null}
                     {this.columnsVisibility.lastChange  ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.lastChange }}>{checkVisibleObjectType && this.states[id]?.lc ? Utils.formatDate(new Date(this.states[id].lc), this.props.dateFormat) : null}</div> : null}
                 </>
             }
