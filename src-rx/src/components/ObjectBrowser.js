@@ -2054,7 +2054,7 @@ class ObjectBrowser extends Component {
         // Remove unused subscribed
         for (let i = this.subscribes.length - 1; i >= 0; i--) {
             !this.recordStates.includes(this.subscribes[i]) &&
-            this.unsubscribe(this.subscribes[i]);
+                this.unsubscribe(this.subscribes[i]);
         }
         this.recordStates = [];
     }
@@ -3830,45 +3830,45 @@ class ObjectBrowser extends Component {
 
         const alias = id.startsWith('alias.') && item.data.obj?.common?.alias?.id ?
             (readWriteAlias ?
-                    <div className={classes.cellIdAliasReadWriteDiv}>
-                        {item.data.obj.common.alias.id.read ? <div
-                            onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                this.onSelect(item.data.obj.common.alias.id.read);
-                                setTimeout(() => {
-                                    this.expandAllSelected(() =>
-                                        this.scrollToItem(item.data.obj.common.alias.id.read));
-                                }, 100);
-                            }}
-                            className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
-                        >←{item.data.obj.common.alias.id.read}</div> : null}
-                        {item.data.obj.common.alias.id.write ? <div
-                            onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                this.onSelect(item.data.obj.common.alias.id.write);
-                                setTimeout(() => {
-                                    this.expandAllSelected(() =>
-                                        this.scrollToItem(item.data.obj.common.alias.id.write));
-                                }, 100);
-                            }}
-                            className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
-                        >→{item.data.obj.common.alias.id.write}</div> : null}
-                    </div>
-                    :
-                    <div
+                <div className={classes.cellIdAliasReadWriteDiv}>
+                    {item.data.obj.common.alias.id.read ? <div
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
-                            this.onSelect(item.data.obj.common.alias.id);
+                            this.onSelect(item.data.obj.common.alias.id.read);
                             setTimeout(() => {
                                 this.expandAllSelected(() =>
-                                    this.scrollToItem(item.data.obj.common.alias.id));
+                                    this.scrollToItem(item.data.obj.common.alias.id.read));
                             }, 100);
                         }}
-                        className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasAlone)}
-                    >→{item.data.obj.common.alias.id}</div>
+                        className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
+                    >←{item.data.obj.common.alias.id.read}</div> : null}
+                    {item.data.obj.common.alias.id.write ? <div
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            this.onSelect(item.data.obj.common.alias.id.write);
+                            setTimeout(() => {
+                                this.expandAllSelected(() =>
+                                    this.scrollToItem(item.data.obj.common.alias.id.write));
+                            }, 100);
+                        }}
+                        className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
+                    >→{item.data.obj.common.alias.id.write}</div> : null}
+                </div>
+                :
+                <div
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        this.onSelect(item.data.obj.common.alias.id);
+                        setTimeout(() => {
+                            this.expandAllSelected(() =>
+                                this.scrollToItem(item.data.obj.common.alias.id));
+                        }, 100);
+                    }}
+                    className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasAlone)}
+                >→{item.data.obj.common.alias.id}</div>
             ) : null;
 
         let checkColor = item.data?.obj?.common?.color;
@@ -4200,12 +4200,12 @@ class ObjectBrowser extends Component {
                 this.columnsVisibility.nameHeader = `calc(100% - ${widthSum + 5 + this.state.scrollBarWidth}px)`;
             } else {
                 const newWidth = Object.keys(this.columnsVisibility).reduce((accumulator, name) => {
-                        if (name === 'id' || typeof this.columnsVisibility[name] === 'string' || !this.columnsVisibility[name]) {
-                            return accumulator;
-                        } else {
-                            return  accumulator + this.columnsVisibility[name];
-                        }},
-                    0);
+                    if (name === 'id' || typeof this.columnsVisibility[name] === 'string' || !this.columnsVisibility[name]) {
+                        return accumulator;
+                    } else {
+                        return  accumulator + this.columnsVisibility[name];
+                    }},
+                0);
                 this.columnsVisibility.id = `calc(100% - ${newWidth}px)`;
             }
         }

@@ -264,47 +264,6 @@
           "component": "configCustomEasyAccess"
         }
       }
-    },
-    "demoTab": {
-      "type": "panel",
-      "label": {
-        "en": "Demo"
-      },
-      "items": {
-        "automcomplete": {
-          "sm": 6,
-          "label": "Autocomplete ${data.automcomplete}",
-          "type": "autocompleteSendTo",
-          "command": "autocomplete",
-          "jsonData": "{\"text\": ${data.prefixId || null}}",
-          "help": "Autocomplete ${data._check}"
-        },
-        "_check": {
-          "type": "checkbox",
-          "label": "Checkbox"
-        },
-        "selectId": {
-          "type": "objectId",
-          "label": "Object ID"
-        },
-        "_accordion": {
-          "newLine": true,
-          "sm": 12,
-          "type": "panel",
-          "collapsable1": true,
-          "hidden": "data.automcomplete == 1",
-          "label": "Table",
-          "items": {
-            "myInstance": {
-              "newLine": true,
-              "sm": 6,
-              "type": "instance",
-              "adapter": "history",
-              "label": "History"
-            }
-          }
-        }
-      }
     }
   }
 }

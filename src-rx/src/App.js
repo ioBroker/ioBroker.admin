@@ -469,8 +469,10 @@ class App extends Router {
                             newState.commandRunning = false;
                             newState.forceUpdateAdapters = this.state.forceUpdateAdapters + 1;
 
-                            this.closeCmdDialog(() =>
-                                this.setState(newState));
+                            this.closeCmdDialog(() => {
+                                this.setState(newState);
+                                window.location.reload(false);
+                            });
                         } else {
                             this.setState(newState);
                         }
