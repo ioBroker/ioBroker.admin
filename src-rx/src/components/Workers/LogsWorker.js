@@ -217,7 +217,7 @@ class LogsWorker {
         }
 
         if (typeof obj.message !== 'object') {
-            obj.message = Utils.parseColorMessage(line.message);
+            obj.message = Utils.parseColorMessage(obj.message);
         }
 
         if (isNew) {

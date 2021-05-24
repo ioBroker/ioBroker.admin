@@ -125,7 +125,7 @@
         "material": {
           "newLine": true,
           "type": "checkbox",
-          "label": "0",
+          "label": "Use old UI",
           "sm": 12,
           "md": 6,
           "lg": 3

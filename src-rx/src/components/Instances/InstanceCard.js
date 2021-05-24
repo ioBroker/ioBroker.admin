@@ -199,8 +199,9 @@ const styles = theme => ({
         transition: 'opacity 0.2s',
         height: 34,
     },
-    visibility: {
-        opacity: 0
+    hiddenOpacity: {
+        opacity: 0,
+        cursor: 'default',
     },
     enabled: {
         color: green[400],
@@ -734,8 +735,9 @@ const InstanceCard = memo(({
 
                     <Hidden smUp>
                         <IconButton
+                            disabled={!instance.config}
                             size="small"
-                            className={classes.button}
+                            className={clsx(classes.button, !instance.config && classes.hiddenOpacity)}
                             onClick={() => openConfig(id)}
                         >
                             <BuildIcon />
@@ -863,7 +865,7 @@ const InstanceCard = memo(({
                     <Tooltip title={t('Edit')}>
                         <IconButton
                             size="small"
-                            className={clsx(classes.button, !visibleEdit && classes.visibility)}
+                            className={clsx(classes.button, !visibleEdit && classes.hiddenOpacity)}
                             onClick={() => setOpenDialogText(true)}
                         >
                             <EditIcon />
@@ -893,14 +895,17 @@ const InstanceCard = memo(({
                         </div>
                     </Tooltip>
                     <Hidden xsDown>
-                        <Tooltip title={t('Settings')}>
-                            <IconButton
-                                size="small"
-                                className={clsx(classes.button, !instance.config && classes.visibility)}
-                                onClick={() => openConfig(id)}
-                            >
-                                <BuildIcon />
-                            </IconButton>
+                        <Tooltip title={instance.config ? t('Settings') : ''}>
+                            <div>
+                                <IconButton
+                                    disabled={!instance.config}
+                                    size="small"
+                                    className={clsx(classes.button, !instance.config && classes.hiddenOpacity)}
+                                    onClick={() => openConfig(id)}
+                                >
+                                    <BuildIcon />
+                                </IconButton>
+                            </div>
                         </Tooltip>
                     </Hidden>
                     <Tooltip title={t('Restart')}>

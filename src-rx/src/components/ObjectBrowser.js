@@ -1585,7 +1585,9 @@ class ObjectBrowser extends Component {
         const props = this.props;
 
         return new Promise(resolve => this.setState({updating: true}, () => resolve()))
-            .then(() => this.props.objectsWorker ? this.props.objectsWorker.getObjects(update) : props.socket.getObjects(update, true))
+            .then(() => this.props.objectsWorker ?
+                this.props.objectsWorker.getObjects(update) :
+                props.socket.getObjects(update, true))
             .then(objects => {
                 this.systemConfig = objects['system.config'] || {};
                 this.systemConfig.common = this.systemConfig.common || {};
@@ -2173,7 +2175,6 @@ class ObjectBrowser extends Component {
      * @param {import('./types').OldObject} oldObj
      */
     onObjectChange = (id, obj, oldObj) => {
-
         let newState;
 
         if (Array.isArray(id)) {
@@ -2188,6 +2189,15 @@ class ObjectBrowser extends Component {
                     if (JSON.stringify(this.state.columnsForAdmin) !== JSON.stringify(columnsForAdmin)) {
                         newState= { columnsForAdmin };
                     }
+                }
+                if (this.objects[id]) {
+                    if (obj) {
+                        this.objects[id] = obj;
+                    } else {
+                        delete this.objects[id];
+                    }
+                } else if (this.objects[id]) {
+                    delete this.objects[id];
                 }
             });
         } else {

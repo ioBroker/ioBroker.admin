@@ -550,6 +550,9 @@ class Logs extends Component {
         let previousKey = 0;
         for (let i = this.state.pause > 0 ? this.state.pause - 1 : this.state.logs.length - 1; i >= 0; i--) {
             const row = this.state.logs[i];
+            if (!row) {
+                continue;
+            }
             const severity = row.severity;
 
             let message = row.message || '';

@@ -196,6 +196,7 @@ const styles = theme => ({
     },
     hiddenOpacity: {
         opacity: 0,
+        cursor: 'default',
     },
     enabled: {
         color: green[400],
@@ -946,18 +947,20 @@ const InstanceRow = ({
                     </div>
                 </Tooltip>
                 <Hidden xsDown>
-                    <Tooltip title={t('Settings')}>
-                        <div>
-                            <IconButton
-                                disabled={instance.config}
-                                size="small"
-                                className={clsx(classes.button, !instance.config && classes.hiddenOpacity)}
-                                onClick={() => openConfig(id)}
-                            >
-                                <BuildIcon />
-                            </IconButton>
-                        </div>
-                    </Tooltip>
+                    <div>
+                        <Tooltip title={instance.config ? t('Settings') : ''}>
+                            <div>
+                                <IconButton
+                                    disabled={!instance.config}
+                                    size="small"
+                                    className={clsx(classes.button, !instance.config && classes.hiddenOpacity)}
+                                    onClick={() => openConfig(id)}
+                                >
+                                    <BuildIcon />
+                                </IconButton>
+                            </div>
+                        </Tooltip>
+                    </div>
                 </Hidden>
                 <Tooltip title={t('Restart')}>
                     <div>

@@ -31,7 +31,7 @@ class ObjectsWorker {
                     this.objects[id] = obj;
                 } else {
                     // no changes
-                    return;
+                    type = 'changed';
                 }
             } else {
                 type = 'new';
@@ -44,7 +44,7 @@ class ObjectsWorker {
                 delete this.objects[id];
             } else {
                 // deleted unknown instance
-                return;
+                type = 'deleted';
             }
         }
 
