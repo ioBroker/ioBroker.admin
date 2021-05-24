@@ -241,7 +241,6 @@ const styles = theme => ({
     },
     styleVersion: {
         fontSize: 10,
-        color: theme.palette.type === 'dark' ? '#ffffff5e' : '#0000005e',
     },
     wrapperName: {
         display: 'flex',
@@ -1632,7 +1631,7 @@ class App extends Router {
                                     <Hidden xsDown>
                                         <div className={classes.wrapperName}>
                                             <Typography>admin</Typography>
-                                            {this.state.versionAdmin && <Typography className={classes.styleVersion}>v{this.state.versionAdmin}</Typography>}
+                                            {this.state.versionAdmin && <Typography className={classes.styleVersion} style={{color: this.state.themeType === 'dark' ? '#ffffff80' : '#00000080'}}>v{this.state.versionAdmin}</Typography>}
                                         </div>
                                     </Hidden>}
                                 <Grid item>
