@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.0.32",
+        "version": "5.1.0",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.0": {
+                "en": "Admin5: Fixed update of objects\nAdmin5: React UI is by default enabled",
+                "de": "Admin5: Aktualisierung von Objekten behoben\nAdmin5: React UI ist standardmäßig aktiviert",
+                "ru": "Admin5: Исправлено обновление объектов\nAdmin5: React UI по умолчанию включен",
+                "pt": "Admin5: atualização corrigida de objetos\nAdmin5: React UI está habilitado por padrão",
+                "nl": "Admin5: Vaste update van objecten\nAdmin5: React UI is standaard ingeschakeld",
+                "fr": "Admin5: Correction de la mise à jour des objets\nAdmin5: React UI est activé par défaut",
+                "it": "Admin5: corretto aggiornamento degli oggetti\nAdmin5: React UI è abilitato per impostazione predefinita",
+                "es": "Admin5: actualización fija de objetos\nAdmin5: React UI está habilitado de forma predeterminada",
+                "pl": "Admin5: Naprawiono aktualizację obiektów\nAdmin5: React UI jest domyślnie włączony",
+                "zh-cn": "Admin5：修复了对象的更新\nAdmin5：默认情况下，React UI已启用"
+            },
             "5.0.32": {
                 "en": "Admin5: Support of ANSI codes in log",
                 "de": "Admin5: Unterstützung von ANSI-Codes im Protokoll",
@@ -235,18 +247,6 @@
                 "zh-cn": "优化了加载过程"
             },
             "5.0.14": {
-                "en": "Admin5: Fixed many bugs",
-                "de": "Admin5: Viele Fehler behoben",
-                "ru": "Admin5: Исправлено множество ошибок",
-                "pt": "Admin5: muitos bugs corrigidos",
-                "nl": "Admin5: Veel bugs opgelost",
-                "fr": "Admin5: Correction de nombreux bugs",
-                "it": "Admin5: risolti molti bug",
-                "es": "Admin5: se corrigieron muchos errores",
-                "pl": "Admin5: Naprawiono wiele błędów",
-                "zh-cn": "Admin5：修复了许多错误"
-            },
-            "5.0.13": {
                 "en": "Admin5: Fixed many bugs",
                 "de": "Admin5: Viele Fehler behoben",
                 "ru": "Admin5: Исправлено множество ошибок",
