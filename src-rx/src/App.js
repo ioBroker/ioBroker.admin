@@ -1109,6 +1109,7 @@ class App extends Router {
                         t={I18n.t}
                         lang={this.state.lang}
                         socket={this.socket}
+                        themeType={this.state.themeType}
                         ready={this.state.ready}
                         logsWorker={this.logsWorker}
                         expertMode={this.state.expertMode}

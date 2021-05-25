@@ -76,7 +76,7 @@ class AdaptersUpdater extends Component {
         Object.keys(this.props.repository).forEach(adapter => {
             const _installed = this.props.installed[adapter];
             // ignore js-controller in this dialog
-            if (adapter === 'js-controller') {
+            if (adapter === 'js-controller' || adapter === 'admin') {
                 return;
             }
             if (_installed &&

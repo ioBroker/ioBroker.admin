@@ -75,9 +75,21 @@ class HostSelectors extends Component {
     componentDidMount() {
         this.props.socket.getCompactHosts()
             .then(hosts => {
-                this.setState({hosts}, () => {
-                    this.props.hostsWorker.registerHandler(this.onHostsObjectChange);
-                    this.props.hostsWorker.registerAliveHandler(this.onAliveChanged);
+                this.setState({hosts}, async () => {
+                    // request for all host the alive status
+                    const alive = {}
+                    for (let h = 0; h < hosts.length; h++) {
+                        alive[hosts[h]._id] = await this.props.socket.getState(hosts[h]._id + '.alive');
+                        if (alive[hosts[h]._id]) {
+                            alive[hosts[h]._id] = !!alive[hosts[h]._id].val;
+                        } else {
+                            alive[hosts[h]._id] = false;
+                        }
+                    }
+                    this.setState({alive}, () => {
+                        this.props.hostsWorker.registerHandler(this.onHostsObjectChange);
+                        this.props.hostsWorker.registerAliveHandler(this.onAliveChanged);
+                    });
                 });
             })
             .catch(e => {

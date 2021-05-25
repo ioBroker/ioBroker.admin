@@ -19,6 +19,8 @@ Marked with "!" must be in release candidate
 - expand/collapse all to narrow view and back  
 
 ## Adapters
+- do not allow update admin in bulk updater
+
    
 ## Wizard
 

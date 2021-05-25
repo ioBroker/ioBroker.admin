@@ -40,7 +40,7 @@ import IconCheck from "@material-ui/icons/Check";
 
 const GROUPS_ICONS = [Group1, Group2, Group3, Group4, Group5, Group6, Group7, Group8, Group9, Group10];
 
-function PermsTab(props) {
+function PermissionsTab(props) {
     let mapObject = function (object, mapFunction) {
         return Object.values(object).map((value, index) => {
             let key = Object.keys(object)[index];
@@ -48,8 +48,52 @@ function PermsTab(props) {
         });
     }
 
-    return <Grid container spacing={props.innerWidth < 500 ? 1 : 4} className={props.classes.dialog} key="PermsTab">{
-            mapObject(props.group.common.acl, (block, blockKey) =>
+    let acl = props.group.common.acl;
+
+    // Initialize ACL if not exists or is invalid
+    acl = acl || {};
+
+    acl.object = acl.object || {
+        read: true,
+        list: true,
+        write: true,
+        'delete': false,
+    };
+    acl.object = Object.assign({}, {read: true, list: true, write: true, 'delete': false,}, acl.object);
+
+    acl.state = acl.state || {
+        read: true,
+        list: true,
+        write: true,
+        'delete': false,
+    };
+    acl.state = Object.assign({}, {read: true, list: true, write: true, 'delete': false,}, acl.state);
+
+    acl.users = acl.users || {
+        write: false,
+        'delete': false,
+        create: false
+    };
+    acl.users = Object.assign({}, {write: false, 'delete': false, create: false}, acl.users);
+
+    acl.other = acl.other || {
+        http: false,
+        execute: false,
+        sendto: true
+    };
+    acl.other = Object.assign({}, {http: false, execute: false, sendto: true}, acl.other);
+
+    acl.file = acl.file || {
+        read: true,
+        list: true,
+        write: false,
+        'delete': false,
+        create: false
+    };
+    acl.file = Object.assign({}, {read: true, list: true, write: false, 'delete': false, create: false}, acl.file);
+
+    return <Grid container spacing={props.innerWidth < 500 ? 1 : 4} className={props.classes.dialog} key="PermissionsTab">{
+            mapObject(props.group.common.acl || {}, (block, blockKey) =>
                 <Grid item xs={12} md={12} key={blockKey}>
                     <h2 className={props.classes.permHeaders}>{props.t('group_acl_' + blockKey)}</h2>
                     {mapObject(block, (perm, permKey) =>
@@ -230,7 +274,7 @@ function GroupEditDialog(props) {
         </Grid>
     </Grid>;
 
-    let selectedTab = [mainTab, PermsTab(props)][tab];
+    let selectedTab = [mainTab, PermissionsTab(props)][tab];
 
     return <Dialog
         open={props.open}

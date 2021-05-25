@@ -210,7 +210,7 @@ class Drawer extends Component {
 
             Object.keys(installed).sort().forEach(element => {
                 const _installed = installed[element];
-                const adapter = repository[element];
+                const adapter = repository && repository[element];
                 if (element !== 'js-controller' &&
                     element !== 'hosts' &&
                     _installed?.version &&

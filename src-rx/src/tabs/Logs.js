@@ -87,14 +87,29 @@ const styles = theme => ({
     formControl: {
         width: '100%'
     },
-    error: {
-        color: red[500]
+    light_error: {
+        color: red[800]
     },
-    warn: {
-        color: amber[500]
+    light_warn: {
+        color: amber[800]
     },
-    debug: {
-        color: grey[500]
+    light_debug: {
+        color: grey[800]
+    },
+    light_silly: {
+        color: grey[700]
+    },
+    dark_error: {
+        color: red[200]
+    },
+    dark_warn: {
+        color: amber[200]
+    },
+    dark_debug: {
+        color: grey[300]
+    },
+    dark_silly: {
+        color: grey[200]
     },
     source: {
         width: 200
@@ -214,6 +229,11 @@ const styles = theme => ({
         width: 16,
         height: 16,
     },
+    iconSelect: {
+        width: 24,
+        height: 25,
+        marginRight: 4,
+    },
     name: {
         verticalAlign: 'top',
         display: 'inline-block',
@@ -229,6 +249,31 @@ const styles = theme => ({
         display: 'flex'
     }
 });
+
+const COLORS_LIGHT = [
+    '#ffadad30',
+    '#ffd6a530',
+    '#fdffb630',
+    '#caffbf30',
+    '#9bf6ff30',
+    '#a0c4ff30',
+    '#bdb2ff30',
+    '#ffc6ff30',
+    '#fffffc30',
+];
+
+const COLORS_DARK = [
+    'rgba(255,109,109,0.2)',
+    'rgba(253,173,84,0.2)',
+    'rgba(241,255,88,0.2)',
+    'rgba(115,253,81,0.2)',
+    'rgba(71,235,255,0.2)',
+    'rgba(74,145,255,0.2)',
+    'rgba(108,85,255,0.2)',
+    'rgba(250,77,250,0.2)',
+    'rgba(255,255,105,0.2)',
+];
+
 
 // Number prototype is read only, properties should not be added
 function padding2(num) {
@@ -268,7 +313,8 @@ class Logs extends Component {
             pause: 0,
             pauseCount: 0,
             pid: JSON.parse(window.localStorage.getItem('Logs.pid')) || false,
-            adapters: {}
+            adapters: {},
+            sources: {}
         };
 
         this.severities = {
@@ -294,6 +340,8 @@ class Logs extends Component {
                     let logWarnings = 0;
                     let logErrors = 0;
                     let lastOdd = true;
+                    let sources = JSON.parse(JSON.stringify(this.state.sources));
+                    Object.values(sources).forEach(source => source.active = false);
 
                     logs.forEach(item => {
                         lastOdd = !lastOdd;
@@ -311,21 +359,34 @@ class Logs extends Component {
                         }
 
                         let adapterName = item.from.replace(/\.\d+$/, '');
-                        let icon = this.state.adapters['system.adapter.' + adapterName]?.common?.icon;
+                        let icon = this.state.adapters[adapterName]?.icon;
                         if (icon) {
                             if (!icon.startsWith('data:image')) {
-                                icon = './files/' + adapterName + '.admin/' + icon;
+                                icon = `./files/${adapterName}.admin/${icon}`;
                             }
                         } else {
                             icon = this.state.hosts['system.' + item.from]?.common?.icon;
                         }
                         item.icon = icon || null;
+
+                        if (!sources[item.from]) {
+                            sources[item.from] = {active: true, icon: item.icon};
+                        } else {
+                            sources[item.from].active = true;
+                        }
+                    });
+
+                    let color = 0;
+                    let COLORS = this.props.themeType === 'dark' ? COLORS_DARK : COLORS_LIGHT;
+                    Object.keys(sources).sort().forEach((id, i) => {
+                        sources[id].color = COLORS[color % COLORS.length];
+                        color++;
                     });
 
                     if (logFiles) {
-                        this.setState({ logFiles, logs, logSize, estimatedSize: false, logErrors, logWarnings }, () => cb && cb());
+                        this.setState({ logFiles, logs, logSize, estimatedSize: false, logErrors, logWarnings, sources }, () => cb && cb());
                     } else {
-                        this.setState({ logs, logSize, estimatedSize: false, logErrors, logWarnings }, () => cb && cb());
+                        this.setState({ logs, logSize, estimatedSize: false, logErrors, logWarnings, sources }, () => cb && cb());
                     }
                 });
         } else if (logFiles) {
@@ -341,11 +402,14 @@ class Logs extends Component {
         this.props.socket.getCompactAdapters()
             .then(adapters =>
                 this.props.socket.getCompactHosts()
-                    .then(hosts => new Promise(resolve =>
+                    .then(_hosts => new Promise(resolve => {
+                        const hosts = {};
+                        _hosts.forEach(item => hosts[item._id] = item);
+
                         this.setState({ adapters, hosts }, () =>
                             this.props.socket.getLogsFiles()
-                                .then(list => resolve(list))))
-                    )
+                                .then(list => resolve(list)));
+                    }))
                     .then(list => {
                         if (list && list.length) {
                             const logFiles = [];
@@ -397,9 +461,14 @@ class Logs extends Component {
         if (logs.length > MAX_LOGS) {
             logs.splice(0, logs.length - MAX_LOGS);
         }
+
         let logWarnings = 0;
         let logErrors = 0;
         let lastOdd = false;
+        let sources;
+        let color = Object.keys(this.state.sources);
+        let COLORS = this.props.themeType === 'dark' ? COLORS_DARK : COLORS_LIGHT;
+
         logs.forEach(item => {
             if (item.odd !== undefined) {
                 lastOdd = item.odd;
@@ -419,19 +488,37 @@ class Logs extends Component {
             }
             if (item.icon === undefined) {
                 let adapterName = item.from.replace(/\.\d+$/, '');
-                let icon = this.state.adapters['system.adapter.' + adapterName]?.icon;
+                let icon = this.state.adapters[adapterName]?.icon;
                 if (icon) {
                     if (!icon.startsWith('data:image')) {
-                        icon = './files/' + adapterName + '.admin/' + icon;
+                        icon = `./files/${adapterName}.admin/${icon}`;
                     }
                 } else {
                     icon = this.state.hosts['system.' + item.from]?.common?.icon;
                 }
                 item.icon = icon || null;
             }
+
+            if (!this.state.sources[item.from]) {
+                sources = sources || JSON.parse(JSON.stringify(this.state.sources));
+                sources[item.from] = {
+                    active: true,
+                    color: COLORS[color % COLORS.length],
+                    icon: item.icon
+                };
+                color++;
+            } else {
+                sources = sources || JSON.parse(JSON.stringify(this.state.sources));
+                sources[item.from].active = true;
+            }
         });
 
-        this.setState({ logs, logSize: this.state.logSize + size, estimatedSize: true, logWarnings, logErrors });
+        const newState = { logs, logSize: this.state.logSize + size, estimatedSize: true, logWarnings, logErrors };
+        if (sources) {
+            newState.sources = sources;
+        }
+
+        this.setState(newState);
     }
 
     clearLog() {
@@ -521,25 +608,24 @@ class Logs extends Component {
     }
 
     getSources() {
-        const sources = ['1'];
-        const ids = {};
+        const sources = Object.keys(this.state.sources).sort();
+        sources.unshift('1');
 
-        for (let i = 0; i < this.state.logs.length; i++) {
-            const log = this.state.logs[i];
-
-            if (!ids[log.from]) {
-                ids[log.from] = true;
-            }
-        }
-
-        for (const i in ids) {
-            sources.push(i);
-        }
-
-        sources.sort();
-
-        return sources.map(source =>
-            <MenuItem value={source} key={source}>{source === '1' ? this.t('Source') : source}</MenuItem>);
+        return sources.map(id =>
+            <MenuItem
+                value={id}
+                key={id}
+                style={{backgroundColor: id === '1' ? undefined : this.state.sources[id].color}}
+            >
+                {id === '1' ?
+                    null :
+                    <Icon src={this.state.sources[id].icon} className={this.props.classes.iconSelect}/>
+                }
+                {id === '1' ?
+                    this.t('Source') :
+                    id
+                }
+            </MenuItem>);
     }
 
     getRows() {
@@ -584,9 +670,9 @@ class Logs extends Component {
             const key = previousKey === row.key ? i : row.key;
             previousKey = row.key;
 
-            rows.push(
-                <TableRow
+            rows.push(<TableRow
                     className={clsx(classes.row, row.odd && classes.rowOdd, isHidden && classes.hidden, this.lastRowRender && row.ts > this.lastRowRender && classes.updatedRow)}
+                    style={{backgroundColor: this.state.sources[row.from]?.color || undefined}}
                     key={key}
                     hover
                 >
@@ -595,17 +681,17 @@ class Logs extends Component {
                             {<Icon src={row.icon} className={classes.icon} />}<div className={classes.name}>{row.from}</div>
                         </div>
                     </TableCell>
-                    {this.state.pid && <TableCell className={clsx(classes.cell, classes[severity])}>
+                    {this.state.pid && <TableCell className={clsx(classes.cell, classes[this.props.themeType + '_' + severity])}>
                         {id}
                     </TableCell>}
-                    <TableCell className={clsx(classes.cell, classes[severity])}>
+                    <TableCell className={clsx(classes.cell, classes[this.props.themeType + '_' + severity])}>
                         {row.time}
                     </TableCell>
-                    <TableCell className={clsx(classes.cell, classes[severity])}>
+                    <TableCell className={clsx(classes.cell, classes[this.props.themeType + '_' + severity])}>
                         {row.severity}
                     </TableCell>
                     <TableCell
-                        className={clsx(classes.cell, classes[severity])}
+                        className={clsx(classes.cell, classes[this.props.themeType + '_' + severity])}
                         title={typeof message === 'object' ? message.original : message}
                     >
                         {typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>): message}
@@ -846,6 +932,7 @@ Logs.propTypes = {
     logsWorker: PropTypes.object,
     hostsWorker: PropTypes.object,
     lang: PropTypes.string,
+    themeType: PropTypes.string,
     t: PropTypes.func,
 };
 

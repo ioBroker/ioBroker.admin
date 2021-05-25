@@ -381,6 +381,11 @@ class Instances extends Component {
             instance.name = common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en || common.title || '' : common.title;
             instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
             instance.enabled = common.enabled;
+
+            if (instance.name && typeof instance.name === 'object') {
+                instance.name = instance.name[this.props.lang] || instance.name.en || '';
+            }
+
             let links = common.localLinks || common.localLink || '';
             if (links && typeof links === 'string') {
                 links = { _default: links };
@@ -618,10 +623,14 @@ class Instances extends Component {
             if (typeof obj.common.titleLang === 'string') {
                 return obj.common.titleLang;
             } else {
-                return obj.common.titleLang[this.props.lang] || obj.common.titleLang.en;
+                return obj.common.titleLang[this.props.lang] || obj.common.titleLang.en || '';
             }
         } else {
-            return obj.common.title || '';
+            if (obj.common.title && typeof obj.common.title === 'object') {
+                return obj.common.title[this.props.lang] || obj.common.title.en || '';
+            } else {
+                return obj.common.title || '';
+            }
         }
     }
 
@@ -672,12 +681,12 @@ class Instances extends Component {
 
     getHeaders() {
         const headers = [];
-        for (const index in this.columns) {
-            const column = this.columns[index];
+        Object.keys(this.columns).forEach((column, index) => {
             if (!column.onlyExpert || column.onlyExpert === this.state.expertMode) {
                 headers.push(<TableCell key={index}>{index}</TableCell>);
             }
-        }
+        });
+
         return headers;
     }
 

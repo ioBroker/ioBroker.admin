@@ -88,6 +88,10 @@ The icons may not be reused in other projects without proper flaticon subscripti
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Admin5: Fixed teh host selector
+* (bluefox) Admin5: Implemented the colored logs
+
 ### 5.1.0 (2021-05-24)
 * (bluefox) Admin5: Fixed update of objects
 * (bluefox) Admin5: React UI is by default enabled

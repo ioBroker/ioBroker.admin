@@ -1417,6 +1417,13 @@ class Adapters extends Component {
         const { classes } = this.props;
         const descHidden = this.state.descWidth < 50;
 
+        let updateAllButtonAvailable = !this.props.commandRunning && !!this.props.ready && !!this.state.updateList && this.state.updateAvailable.length > 1;
+
+        // it is not possible to update admin in bulk
+        if (updateAllButtonAvailable && this.state.updateAvailable.length === 2 && this.state.updateAvailable.includes('admin')) {
+            updateAllButtonAvailable = false;
+        }
+
         return <TabContainer>
             {this.state.update &&
                 <Grid item>
@@ -1478,7 +1485,7 @@ class Adapters extends Component {
                         <UpdateIcon color={this.state.updateList ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip>
-                {!this.props.commandRunning && !!this.props.ready && !!this.state.updateList && this.state.updateAvailable.length > 1 && <Tooltip title={this.t('Update all adapters')}>
+                {updateAllButtonAvailable && <Tooltip title={this.t('Update all adapters')}>
                     <IconButton onClick={() => this.setState({ showUpdater: true })} classes={{ label: this.props.classes.updateAllButton }}>
                         <UpdateIcon />
                         <UpdateIcon className={this.props.classes.updateAllIcon} />
