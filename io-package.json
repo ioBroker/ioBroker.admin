@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.1.0",
+        "version": "5.1.1",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.1": {
+                "en": "Admin5: Fixed teh host selector\nAdmin5: Implemented the colored logs",
+                "de": "Admin5: Der Host-Selektor wurde korrigiert\nAdmin5: Die farbigen Protokolle wurden implementiert",
+                "ru": "Admin5: Исправлен селектор хоста\nAdmin5: Реализованы цветные логи",
+                "pt": "Admin5: Seletor de host corrigido\nAdmin5: Implementado os logs coloridos",
+                "nl": "Admin5: De host-selector is opgelost\nAdmin5: Implementeerde de gekleurde logboeken",
+                "fr": "Admin5: Correction du sélecteur d'hôte\nAdmin5: implémentation des journaux colorés",
+                "it": "Admin5: corretto il selettore host\nAdmin5: implementati i log colorati",
+                "es": "Admin5: Se corrigió el selector de host\nAdmin5: Implementó los registros de colores.",
+                "pl": "Admin5: Poprawiono selektor hosta\nAdmin5: Zaimplementowano kolorowe dzienniki",
+                "zh-cn": "Admin5：修复了主机选择器\nAdmin5：实施彩色日志"
+            },
             "5.1.0": {
                 "en": "Admin5: Fixed update of objects\nAdmin5: React UI is by default enabled",
                 "de": "Admin5: Aktualisierung von Objekten behoben\nAdmin5: React UI ist standardmäßig aktiviert",
@@ -245,18 +257,6 @@
                 "es": "optimizado el proceso de carga",
                 "pl": "zoptymalizował proces ładowania",
                 "zh-cn": "优化了加载过程"
-            },
-            "5.0.14": {
-                "en": "Admin5: Fixed many bugs",
-                "de": "Admin5: Viele Fehler behoben",
-                "ru": "Admin5: Исправлено множество ошибок",
-                "pt": "Admin5: muitos bugs corrigidos",
-                "nl": "Admin5: Veel bugs opgelost",
-                "fr": "Admin5: Correction de nombreux bugs",
-                "it": "Admin5: risolti molti bug",
-                "es": "Admin5: se corrigieron muchos errores",
-                "pl": "Admin5: Naprawiono wiele błędów",
-                "zh-cn": "Admin5：修复了许多错误"
             }
         },
         "desc": {
