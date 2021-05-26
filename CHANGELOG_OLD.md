@@ -1,3 +1,6 @@
+## 5.0.30 (2021-05-21)
+* (bluefox) Admin5: Fixed update of objects
+
 ## 5.0.29 (2021-05-19)
 * (bluefox) Admin5: Fixed reorder of the items in menu
 

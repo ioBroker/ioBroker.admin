@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.1.1",
+        "version": "5.1.2",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.2": {
+                "en": "Admin5: Fixed logs by the changing of host",
+                "de": "Admin5: Protokolle durch Hostwechsel behoben",
+                "ru": "Admin5: Исправлены логи при смене хоста",
+                "pt": "Admin5: logs corrigidos pela mudança de host",
+                "nl": "Admin5: Logboeken gerepareerd door het wisselen van host",
+                "fr": "Admin5: Correction des journaux par le changement d'hôte",
+                "it": "Admin5: corretti i registri cambiando host",
+                "es": "Admin5: Registros fijos por el cambio de host",
+                "pl": "Admin5: Naprawiono dzienniki przez zmianę hosta",
+                "zh-cn": "Admin5：通过更改主机来修复日志"
+            },
             "5.1.1": {
                 "en": "Admin5: Fixed teh host selector\nAdmin5: Implemented the colored logs",
                 "de": "Admin5: Der Host-Selektor wurde korrigiert\nAdmin5: Die farbigen Protokolle wurden implementiert",
@@ -245,18 +257,6 @@
                 "es": "Admin5: se corrigieron muchos errores",
                 "pl": "Admin5: Naprawiono wiele błędów",
                 "zh-cn": "Admin5：修复了许多错误"
-            },
-            "5.0.15": {
-                "en": "optimized the loading process",
-                "de": "optimierte den Ladevorgang",
-                "ru": "оптимизировали процесс загрузки",
-                "pt": "otimizou o processo de carregamento",
-                "nl": "geoptimaliseerd het laadproces",
-                "fr": "optimisé le processus de chargement",
-                "it": "ottimizzato il processo di caricamento",
-                "es": "optimizado el proceso de carga",
-                "pl": "zoptymalizował proces ładowania",
-                "zh-cn": "优化了加载过程"
             }
         },
         "desc": {

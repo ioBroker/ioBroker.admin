@@ -88,7 +88,7 @@ The icons may not be reused in other projects without proper flaticon subscripti
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 5.1.2 (2021-05-26)
 * (bluefox) Admin5: Fixed logs by the changing of host
 
 ### 5.1.1 (2021-05-25)
@@ -104,9 +104,6 @@ The icons may not be reused in other projects without proper flaticon subscripti
 
 ### 5.0.31 (2021-05-21)
 * (bluefox) Admin5: Improved the enumerations
-
-### 5.0.30 (2021-05-21)
-* (bluefox) Admin5: Fixed update of objects
 
 ## License
 
