@@ -1,3 +1,6 @@
+## 5.0.31 (2021-05-21)
+* (bluefox) Admin5: Improved the enumerations
+
 ## 5.0.30 (2021-05-21)
 * (bluefox) Admin5: Fixed update of objects
 

@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.1.2",
+        "version": "5.1.3",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.3": {
+                "en": "Improved the GUI for enumerations",
+                "de": "Die GUI für Aufzählungen wurde verbessert",
+                "ru": "Улучшен графический интерфейс для перечислений.",
+                "pt": "Melhorou a GUI para enumerações",
+                "nl": "Verbeterde GUI voor opsommingen",
+                "fr": "Amélioration de l'interface graphique pour les énumérations",
+                "it": "Migliorata la GUI per le enumerazioni",
+                "es": "Se mejoró la GUI para enumeraciones.",
+                "pl": "Poprawiono GUI dla wyliczeń",
+                "zh-cn": "改进了枚举的GUI"
+            },
             "5.1.2": {
                 "en": "Admin5: Fixed logs by the changing of host",
                 "de": "Admin5: Protokolle durch Hostwechsel behoben",
@@ -235,18 +247,6 @@
                 "zh-cn": "Admin5：修复了许多错误"
             },
             "5.0.17": {
-                "en": "Admin5: Fixed many bugs",
-                "de": "Admin5: Viele Fehler behoben",
-                "ru": "Admin5: Исправлено множество ошибок",
-                "pt": "Admin5: muitos bugs corrigidos",
-                "nl": "Admin5: Veel bugs opgelost",
-                "fr": "Admin5: Correction de nombreux bugs",
-                "it": "Admin5: risolti molti bug",
-                "es": "Admin5: se corrigieron muchos errores",
-                "pl": "Admin5: Naprawiono wiele błędów",
-                "zh-cn": "Admin5：修复了许多错误"
-            },
-            "5.0.16": {
                 "en": "Admin5: Fixed many bugs",
                 "de": "Admin5: Viele Fehler behoben",
                 "ru": "Admin5: Исправлено множество ошибок",
