@@ -48,6 +48,10 @@ const styles = theme => ({
     width: {
         width: '100%'
     },
+    selector: {
+        width: 15,
+        display: 'inline-block'
+    },
     '@media screen and (max-width: 710px)': {
         name: {
             display: 'none'
@@ -224,6 +228,7 @@ class HostSelectors extends Component {
                             color: (color && Utils.invertColor(color, true)) || 'inherit',
                             alignItems: 'center',
                         }}>
+                            <div className={this.props.classes.selector}>{_id === this.props.currentHost ? 'ᐅ' : ''}</div>
                             <Icon
                                 className={this.props.classes.img}
                                 src={icon || 'img/no-image.png'}

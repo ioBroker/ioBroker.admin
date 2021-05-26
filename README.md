@@ -88,8 +88,11 @@ The icons may not be reused in other projects without proper flaticon subscripti
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Admin5: Fixed logs by the changing of host
+
 ### 5.1.1 (2021-05-25)
-* (bluefox) Admin5: Fixed teh host selector
+* (bluefox) Admin5: Fixed the host selector
 * (bluefox) Admin5: Implemented the colored logs
 
 ### 5.1.0 (2021-05-24)

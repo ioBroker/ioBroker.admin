@@ -1396,5 +1396,10 @@
   "Collapse all": "Свернуть все",
   "From npm": "С npm",
   "Invalid settings in these fields could lead to dead host": "Неверные настройки в этих полях могут привести к неработающему хосту.",
-  "Danger zone": "Опасная зона"
+  "Danger zone": "Опасная зона",
+  "Set timeout to 1 minute": "Установить тайм-аут на 1 минуту",
+  "Detected slow connection!": "Обнаружено медленное соединение!",
+  "Seems that you have slow connection. Do you want to increase timeout interval?": "Похоже, у вас медленное соединение. Вы хотите увеличить интервал тайм-аута?",
+  "Read timeout": "Таймаут чтения",
+  "in seconds": "в секундах"
 }

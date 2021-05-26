@@ -828,7 +828,7 @@ class App extends Router {
             .catch(e => {
                 window.alert('Cannot getRepositoryCompact: ' + e);
                 e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
-                return null;
+                return {};
             })
             .then(_repository => {
                 repository = _repository;
@@ -836,7 +836,7 @@ class App extends Router {
                     .catch(e => {
                         window.alert('Cannot getInstalled: ' + e);
                         e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
-                        return null;
+                        return {};
                     });
             })
             .then(_installed => {

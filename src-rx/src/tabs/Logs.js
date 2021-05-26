@@ -314,7 +314,8 @@ class Logs extends Component {
             pauseCount: 0,
             pid: JSON.parse(window.localStorage.getItem('Logs.pid')) || false,
             adapters: {},
-            sources: {}
+            sources: {},
+            currentHost: this.props.currentHost,
         };
 
         this.severities = {
@@ -328,6 +329,15 @@ class Logs extends Component {
         this.t = props.t;
 
         this.words = {};
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        if (props.currentHost !== state.currentHost) {
+            //this.ignoreNextLogs = true;
+            return{currentHost: props.currentHost, logs: []};
+        } else {
+            return null;
+        }
     }
 
     readLogs(force, logFiles, cb) {
@@ -455,6 +465,11 @@ class Logs extends Component {
     }
 
     logHandler = (newLogs, size) => {
+        if (this.ignoreNextLogs) {
+            this.ignoreNextLogs = false;
+            return;
+        }
+
         const oldLogs = this.state.logs || [];
         const logs = oldLogs.concat(newLogs);
 
@@ -556,7 +571,7 @@ class Logs extends Component {
     }
 
     handleLogDelete() {
-        this.props.socket.delLogs(this.props.currentHost)
+        this.props.socket.delLogs(this.state.currentHost)
             .then(() => this.clearLog())
             .then(() => this.readLogs(true, null, () => this.closeLogDelete()))
             .catch(error => {

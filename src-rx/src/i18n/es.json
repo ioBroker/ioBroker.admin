@@ -1392,5 +1392,10 @@
   "Collapse all": "Desplegar todo",
   "From npm": "Desde npm",
   "Invalid settings in these fields could lead to dead host": "Una configuración no válida en estos campos podría provocar la muerte del host",
-  "Danger zone": "Zona peligrosa"
+  "Danger zone": "Zona peligrosa",
+  "Set timeout to 1 minute": "Establecer el tiempo de espera en 1 minuto",
+  "Detected slow connection!": "¡Conexión lenta detectada!",
+  "Seems that you have slow connection. Do you want to increase timeout interval?": "Parece que tienes una conexión lenta. ¿Quiere aumentar el intervalo de tiempo de espera?",
+  "Read timeout": "Leer tiempo de espera",
+  "in seconds": "en segundos"
 }

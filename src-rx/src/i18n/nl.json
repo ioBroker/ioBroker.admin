@@ -1392,5 +1392,10 @@
   "Collapse all": "Alles inklappen",
   "From npm": "Vanaf npm",
   "Invalid settings in these fields could lead to dead host": "Ongeldige instellingen in deze velden kunnen leiden tot een dode host",
-  "Danger zone": "Gevarenzone"
+  "Danger zone": "Gevarenzone",
+  "Set timeout to 1 minute": "Stel de time-out in op 1 minuut",
+  "Detected slow connection!": "Langzame verbinding gedetecteerd!",
+  "Seems that you have slow connection. Do you want to increase timeout interval?": "Het lijkt erop dat u een trage verbinding heeft. Wilt u het time-outinterval verlengen?",
+  "Read timeout": "Time-out lezen",
+  "in seconds": "in seconden"
 }

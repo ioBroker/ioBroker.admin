@@ -4,7 +4,7 @@ class LogsWorker {
     constructor(socket, maxLogs) {
         this.socket               = socket;
         this.handlers             = [];
-        this.promise              = new Promise(resolve => this.resolve = resolve);
+        this.promise              = null;
 
         this.errorCountHandlers   = [];
         this.warningCountHandlers = [];
@@ -257,27 +257,18 @@ class LogsWorker {
 
     getLogs(update) {
         if (!this.currentHost) {
-            this.promise = this.promise ||
-                new Promise(resolve => this.resolve = resolve);
+            return Promise.resolve({logs: [], logSize: 0});
+        }
 
+        if (!update && this.promise) {
             return this.promise;
         }
 
-        if (!update && this.logs) {
-            return Promise.resolve({logs: this.logs, logSize: this.logSize});
-        }
-
-        if (update && this.logs) {
-            this.promise = null;
-        }
-
-        this.promise = this.promise ||
-            new Promise(resolve => this.resolve = resolve);
 
         this.errors = 0;
         this.warnings = 0;
 
-        this.socket.getLogs(this.currentHost, 200)
+        this.promise = this.socket.getLogs(this.currentHost, 200)
             .then(lines => {
                 const logSize = lines ? lines.pop() : null;
 
@@ -303,7 +294,7 @@ class LogsWorker {
                 this.errors && this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
                 this.warnings && this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
 
-                this.resolve({logs: this.logs, logSize});
+                return {logs: this.logs, logSize};
             })
             .catch(e => {
                 window.alert('Cannot get logs: ' + e);

@@ -1392,5 +1392,10 @@
   "Collapse all": "全部收缩",
   "From npm": "从npm",
   "Invalid settings in these fields could lead to dead host": "这些字段中的无效设置可能导致主机丢失",
-  "Danger zone": "危险区"
+  "Danger zone": "危险区",
+  "Set timeout to 1 minute": "将超时设置为1分钟",
+  "Detected slow connection!": "检测到连接速度慢！",
+  "Seems that you have slow connection. Do you want to increase timeout interval?": "似乎您的连接速度很慢。您是否要增加超时间隔？",
+  "Read timeout": "读取超时",
+  "in seconds": "马上"
 }

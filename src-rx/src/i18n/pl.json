@@ -1392,5 +1392,10 @@
   "Collapse all": "Zwinąć wszystkie",
   "From npm": "Od npm",
   "Invalid settings in these fields could lead to dead host": "Nieprawidłowe ustawienia w tych polach mogą prowadzić do martwego hosta",
-  "Danger zone": "Strefa niebezpieczeństwa"
+  "Danger zone": "Strefa niebezpieczeństwa",
+  "Set timeout to 1 minute": "Ustaw limit czasu na 1 minutę",
+  "Detected slow connection!": "Wykryto wolne połączenie!",
+  "Seems that you have slow connection. Do you want to increase timeout interval?": "Wygląda na to, że masz wolne połączenie. Czy chcesz wydłużyć limit czasu?",
+  "Read timeout": "Przeczytaj limit czasu",
+  "in seconds": "w sekundy"
 }

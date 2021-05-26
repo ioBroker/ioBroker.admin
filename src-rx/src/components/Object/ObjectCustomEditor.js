@@ -457,6 +457,8 @@ class ObjectCustomEditor extends Component {
                             customObj={customObj}
                             custom={true}
                             className={ '' }
+                            adapterName={adapter}
+                            instance={parseInt(instance.split('.').pop(), 10) || 0}
                             socket={this.props.socket}
                             theme={this.props.theme}
                             themeName={this.props.themeName}

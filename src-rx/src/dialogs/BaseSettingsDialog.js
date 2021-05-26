@@ -131,7 +131,7 @@ class BaseSettingsDialog extends Component {
                 .then(() => {
                     this.originalSettings = JSON.parse(JSON.stringify(settings));
                     // ask about restart
-                    this.setState({hasChanges: [], showRestart: true, saving: false}, () => this.props.onClose());
+                    this.setState({hasChanges: [], showRestart: true, saving: false});
                 });
         });
     }

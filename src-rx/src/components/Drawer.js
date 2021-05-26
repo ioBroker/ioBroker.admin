@@ -191,7 +191,7 @@ class Drawer extends Component {
 
     static calculateHostUpdates(hosts, repository) {
         if (hosts && repository) {
-            const jsControllerVersion = repository['js-controller'].version;
+            const jsControllerVersion = repository['js-controller']?.version || '';
             let count = 0;
             hosts.forEach(element => {
                 if (Adapters.updateAvailable(element.common.installedVersion, jsControllerVersion)) {
