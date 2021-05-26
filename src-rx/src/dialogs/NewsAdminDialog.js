@@ -251,6 +251,9 @@ export const checkMessages = function (messages, lastMessageId, context) {
         const today = Date.now();
         for (let m = 0; m < messages.length; m++) {
             const message = messages[m];
+            if (!message) {
+                continue;
+            }
             if (message.id === lastMessageId) {
                 break;
             }

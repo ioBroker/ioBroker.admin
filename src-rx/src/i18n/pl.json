@@ -1397,5 +1397,16 @@
   "Detected slow connection!": "Wykryto wolne połączenie!",
   "Seems that you have slow connection. Do you want to increase timeout interval?": "Wygląda na to, że masz wolne połączenie. Czy chcesz wydłużyć limit czasu?",
   "Read timeout": "Przeczytaj limit czasu",
-  "in seconds": "w sekundy"
+  "in seconds": "w sekundy",
+  "Do you want to delete enum \"%s\"?": "Czy chcesz usunąć wyliczenie „%s”?",
+  "Custom room": "Pokój niestandardowy",
+  "Create new room": "Utwórz nowy pokój",
+  "Custom function": "Funkcja niestandardowa",
+  "Create new function": "Utwórz nową funkcję",
+  "Custom enumeration": "Wyliczenie niestandardowe",
+  "This adapter cannot be installed from git as must be built before installation.": "Ta karta nie może być zainstalowana z git, ponieważ musi zostać zbudowana przed instalacją.",
+  "Show members": "Pokaż członków",
+  "Hide members": "Ukryj członków",
+  "Narrow all": "Zawęź wszystko",
+  "Wide all": "Szerokie wszystko"
 }

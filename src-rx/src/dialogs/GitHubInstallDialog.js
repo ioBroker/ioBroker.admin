@@ -219,7 +219,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                             getOptionDisabled={option => option.nogit}
                             renderOption={option => <div>
                                 {option.name}
-                                {option.nogit && <div className={classes.errorTextNoGit}>{I18n.t("This adapter cannot be installed from git as must be built before installation.")}</div>}
+                                {option.nogit && <div className={classes.errorTextNoGit}>{I18n.t('This adapter cannot be installed from git as must be built before installation.')}</div>}
                             </div>}
                             onChange={(_, e) => setAutocompleteValue(e)}
                             options={array()}

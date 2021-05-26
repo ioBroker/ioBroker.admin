@@ -14,14 +14,9 @@ Marked with "!" must be in release candidate
 ## Info
 
 ## Enums
-- Create enums, that not exists automatically. E.g. `enum.rooms.A.kitchen` exists, but `enum.rooms.A` not, So `enum.rooms.A` must be created.
-- Expand/Collapse of one enumeration to make it narrow with showing the number of objects inside
-- expand/collapse all to narrow view and back  
 
 ## Adapters
-- do not allow update admin in bulk updater
 
-   
 ## Wizard
 
 ## Discovery

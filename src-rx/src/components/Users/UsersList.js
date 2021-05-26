@@ -320,14 +320,16 @@ class UsersList extends Component {
     }
 
     updateData = () => {
-        this.props.socket.getForeignObjects('system.user.*', 'user').then(users => {
-            users = Object.values(users).sort((o1, o2) => o1._id > o2._id ? 1 : -1);
-
-            this.props.socket.getForeignObjects('system.group.*', 'group').then(groups => {
+        let users;
+        return this.props.socket.getForeignObjects('system.user.*', 'user')
+            .then(_users => {
+                users = Object.values(users).sort((o1, o2) => o1._id > o2._id ? 1 : -1);
+                return this.props.socket.getForeignObjects('system.group.*', 'group');
+            })
+            .then(groups => {
                 groups = Object.values(groups).sort((o1, o2) => o1._id > o2._id ? 1 : -1);
                 this.setState({groups, users});
             });
-        });
     }
 
     changeUserFormData = user =>
@@ -352,8 +354,8 @@ class UsersList extends Component {
         this.props.socket.setObject(user._id, user)
             .then(() => {
                 if (originalId && originalId !== this.state.userEditDialog._id) {
-                    return this.props.socket.delObject(originalId).then(() => {
-                        return Promise.all(this.state.groups.map(group => {
+                    return this.props.socket.delObject(originalId)
+                        .then(() => Promise.all(this.state.groups.map(group => {
                             if (group.common.members.includes(originalId)) {
                                 let groupChanged = JSON.parse(JSON.stringify(group));
                                 groupChanged.common.members[groupChanged.common.members.indexOf(originalId)] = user._id;
@@ -361,24 +363,27 @@ class UsersList extends Component {
                             } else {
                                 return Promise.resolve(null);
                             }
-                        }));
-                    })
+                        })))
+                        .catch(e => window.alert('Cannot delete user: ' + e));
                 }
             })
             .then(() => {
                 if (newPassword) {
-                    return this.props.socket.changePassword(user._id, newPassword);
+                    return this.props.socket.changePassword(user._id, newPassword)
+                        .catch(e => window.alert('Cannot change password: ' + e));
                 }
             })
             .then(() =>
-                this.setState({userEditDialog: false}, () => this.updateData()));
+                this.setState({userEditDialog: false}, () =>
+                    this.updateData()));
     }
 
     saveGroup = originalId => {
         this.props.socket.setObject(this.state.groupEditDialog._id, this.state.groupEditDialog)
             .then(() => {
                 if (originalId && originalId !== this.state.groupEditDialog._id) {
-                    return this.props.socket.delObject(originalId);
+                    return this.props.socket.delObject(originalId)
+                        .catch(e => window.alert('Cannot delete user: ' + e));
                 }
             })
             .then(() =>
@@ -392,8 +397,8 @@ class UsersList extends Component {
         this.setState({groupDeleteDialog: group});
 
     deleteUser = userId => {
-        this.props.socket.delObject(userId).then(() => {
-            return Promise.all(this.state.groups.map(group => {
+        this.props.socket.delObject(userId)
+            .then(() => Promise.all(this.state.groups.map(group => {
                 if (group.common.members.includes(userId)) {
                     let groupChanged = JSON.parse(JSON.stringify(group));
                     groupChanged.common.members.splice(groupChanged.common.members.indexOf(userId), 1);
@@ -401,26 +406,29 @@ class UsersList extends Component {
                 } else {
                     return Promise.resolve(null);
                 }
-            }));
-        }).then(() => {
-            this.setState({userDeleteDialog: false}, () =>
-                this.updateData());
-        });
+            })))
+            .catch(e => window.alert('Cannot delete user: ' + e))
+            .then(() => {
+                this.setState({userDeleteDialog: false}, () =>
+                    this.updateData());
+            });
     };
 
     deleteGroup = groupId =>
-        this.props.socket.delObject(groupId).then(() => {
-            this.setState({groupDeleteDialog: false}, () =>
-                this.updateData());
-        });
+        this.props.socket.delObject(groupId)
+            .then(() => this.setState({groupDeleteDialog: false}, () =>
+                this.updateData()))
+            .catch(e => window.alert('Cannot delete user: ' + e));
 
     addUserToGroup = (userId, groupId) => {
         let group = this.state.groups.find(group => group._id === groupId);
         let members = group.common.members;
         if (!members.includes(userId)) {
             members.push(userId);
-            this.props.socket.setObject(group._id, group).then(() =>
-                this.updateData());
+            this.props.socket.setObject(group._id, group)
+                .then(() =>
+                    this.updateData())
+                .catch(e => window.alert('Cannot delete user: ' + e));
         }
     };
 

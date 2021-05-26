@@ -46,13 +46,17 @@ class IconSelector extends Component {
                     href = item;
                 }
 
-                if (href.startsWith('data:')) {
-                    icons[i] = href;
-                    return Promise.resolve();
+                if (href) {
+                    if (href.startsWith('data:')) {
+                        icons[i] = href;
+                        return Promise.resolve();
+                    } else {
+                        return Utils.getSvg(href)
+                            .then(icon =>
+                                icons[i] = icon);
+                    }
                 } else {
-                    return Utils.getSvg(href)
-                        .then(icon =>
-                            icons[i] = icon);
+                    return Promise.resolve();
                 }
             }) : [];
 
@@ -129,7 +133,7 @@ IconSelector.propTypes = {
     icons: PropTypes.array,
     onSelect: PropTypes.func.isRequired,
     t: PropTypes.func.isRequired,
-    lang: PropTypes.func.isRequired,
+    lang: PropTypes.string.isRequired,
 };
 
 export default IconSelector;

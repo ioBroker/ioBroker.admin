@@ -80,7 +80,7 @@ function EnumEditDialog(props) {
     };
 
     const name2Id = name =>
-        name.replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_').toLowerCase();
+        name.replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_');
 
     const changeShortId = (_id, short) => {
         let idArray = _id.split('.');
@@ -90,17 +90,27 @@ function EnumEditDialog(props) {
 
     let ICONS;
     if (props.enum._id.startsWith('enum.functions.')) {
-        ICONS = devices;
+        ICONS = JSON.parse(JSON.stringify(devices));
         ICONS.forEach(item => {
             if (!item.icon.startsWith('/')) {
-                item.icon = require(`../../assets/devices/${item.icon}`).default
+                try {
+                    item.icon = require(`../../assets/devices/${item.icon}`).default;
+                } catch (e) {
+                    console.warn('Cannot load ' + item.icon);
+                    item.icon = null;
+                }
             }
         });
     } else if (props.enum._id.startsWith('enum.rooms.')) {
-        ICONS = rooms;
+        ICONS = JSON.parse(JSON.stringify(rooms));
         ICONS.forEach(item => {
             if (!item.icon.startsWith('/')) {
-                item.icon = require(`../../assets/rooms/${item.icon}`).default
+                try {
+                    item.icon = require(`../../assets/rooms/${item.icon}`).default;
+                } catch (e) {
+                    console.warn('Cannot load ' + item.icon);
+                    item.icon = null;
+                }
             }
         });
     }

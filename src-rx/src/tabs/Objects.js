@@ -86,11 +86,13 @@ class Objects extends Component {
         const id = this.state.deleteObjectShow.id;
         if (withChildren) {
             this.props.socket.delObjects(id, true)
-                .then(() => this.setState({ toast: this.t('All deleted') }));
+                .then(() => this.setState({ toast: this.t('All deleted') }))
+                .catch(e => window.alert('Cannot delete object: ' + e));
 
             this.setState({ deleteObjectShow: null });
         } else {
-            this.props.socket.delObject(id, false);
+            this.props.socket.delObject(id, false)
+                .catch(e => window.alert('Cannot delete object: ' + e));
             this.setState({ deleteObjectShow: null })
         }
     }

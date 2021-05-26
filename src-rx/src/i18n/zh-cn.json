@@ -1397,5 +1397,16 @@
   "Detected slow connection!": "检测到连接速度慢！",
   "Seems that you have slow connection. Do you want to increase timeout interval?": "似乎您的连接速度很慢。您是否要增加超时间隔？",
   "Read timeout": "读取超时",
-  "in seconds": "马上"
+  "in seconds": "马上",
+  "Do you want to delete enum \"%s\"?": "您要删除枚举“ %s”吗？",
+  "Custom room": "定制房间",
+  "Create new room": "建立新房间",
+  "Custom function": "自定义功能",
+  "Create new function": "建立新功能",
+  "Custom enumeration": "自定义枚举",
+  "This adapter cannot be installed from git as must be built before installation.": "无法从git安装此适配器，因为必须在安装前先进行构建。",
+  "Show members": "显示成员",
+  "Hide members": "隐藏会员",
+  "Narrow all": "全部缩小",
+  "Wide all": "全部宽"
 }

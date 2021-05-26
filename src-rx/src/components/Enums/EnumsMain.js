@@ -24,13 +24,13 @@ import Popover from '@material-ui/core/Popover';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import IconButton from '@material-ui/core/IconButton';
-
 import AddIcon from '@material-ui/icons/Add';
 import { FaRegFolder as IconCollapsed } from 'react-icons/fa';
 import { FaRegFolderOpen as IconExpanded } from 'react-icons/fa';
+import DownIcon from '@material-ui/icons/KeyboardArrowDown';
+import UpIcon from '@material-ui/icons/KeyboardArrowUp';
 
 import {withStyles} from '@material-ui/core/styles';
-
 
 const styles = theme => ({
     mainGridCont: {
@@ -146,6 +146,12 @@ class EnumsList extends Component {
         } catch (e) {
 
         }
+        let enumsCollapsed = [];
+        try {
+            enumsCollapsed = window.localStorage.getItem('enumsCollapsed') ? JSON.parse(window.localStorage.getItem('enumsCollapsed')) : [];
+        } catch (e) {
+
+        }
 
         this.state = {
             enums: null,
@@ -161,7 +167,8 @@ class EnumsList extends Component {
             categoryPopoverOpen: false,
             enumPopoverOpen: false,
             enumsClosed,
-            updating: []
+            updating: [],
+            enumsCollapsed,
         };
 
         this.fastUpdate = false;
@@ -428,6 +435,7 @@ class EnumsList extends Component {
                 <EnumBlock
                     updating={this.state.updating.includes(container.id)}
                     id={container.id}
+                    children={container.children ? Object.keys(container.children).length : 0}
                     enum={container.data}
                     members={this.state.members}
                     moveEnum={this.moveEnum}
@@ -439,9 +447,20 @@ class EnumsList extends Component {
                     getEnumTemplate={this.getEnumTemplate}
                     copyEnum={this.copyEnum}
                     getName={this.getName}
-                    hasChildren={!!Object.keys(container.children).length}
                     closed={this.state.enumsClosed[container.id]}
+                    collapsed={this.state.enumsCollapsed.includes(container.id)}
                     toggleEnum={this.toggleEnum}
+                    onCollapse={() => {
+                        const enumsCollapsed = [...this.state.enumsCollapsed];
+                        const pos = enumsCollapsed.indexOf(container.id);
+                        if (pos === -1) {
+                            enumsCollapsed.push(container.id);
+                        } else {
+                            enumsCollapsed.splice(pos, 1);
+                        }
+                        this.setState({enumsCollapsed});
+                        window.localStorage.setItem('enumsCollapsed', JSON.stringify(enumsCollapsed));
+                    }}
 
                     t={this.props.t}
                     socket={this.props.socket}
@@ -482,19 +501,23 @@ class EnumsList extends Component {
         await this.props.socket.setObject(enumItem._id, enumItem);
 
         if (originalId && originalId !== this.state.enumEditDialog._id) {
-            await this.props.socket.delObject(originalId);
+            try {
+                await this.props.socket.delObject(originalId);
 
-            const ids = Object.keys(this.state.enums);
-            for (let i = 0; i < ids.length; i++) {
-                const id = ids[i];
-                if (id.startsWith(originalId + '.')) {
-                    let newEnumChild = JSON.parse(JSON.stringify(this.state.enums[id]));
-                    newEnumChild._id = newEnumChild._id.replace(originalId + '.', enumItem._id + '.');
+                const ids = Object.keys(this.state.enums);
+                for (let i = 0; i < ids.length; i++) {
+                    const id = ids[i];
+                    if (id.startsWith(originalId + '.')) {
+                        let newEnumChild = JSON.parse(JSON.stringify(this.state.enums[id]));
+                        newEnumChild._id = newEnumChild._id.replace(originalId + '.', enumItem._id + '.');
 
-                    !updating.includes(id) && updating.push(id);
-                    await this.props.socket.setObject(newEnumChild._id, newEnumChild);
-                    await this.props.socket.delObject(id);
+                        !updating.includes(id) && updating.push(id);
+                        await this.props.socket.setObject(newEnumChild._id, newEnumChild);
+                        await this.props.socket.delObject(id);
+                    }
                 }
+            } catch (e) {
+                window.alert('Cannot save enum: ' + e);
             }
         }
 
@@ -556,6 +579,7 @@ class EnumsList extends Component {
         return !list.find(item =>
             item._id === (`${prefix}.${word.toLowerCase()}_${i}`));
     }
+
     static findNewUniqueName(prefix, list, word) {
         let i = 1;
         while (!EnumsList._isUniqueName(prefix, list,  word, i)) {
@@ -642,6 +666,32 @@ class EnumsList extends Component {
                                 className={this.props.classes.filter}
                                 onChange={e => this.setState({search: e.target.value})}
                             />
+                            <Tooltip title={this.props.t('Narrow all')} placement="top">
+                                <IconButton
+                                    //size="small"
+                                    className={this.props.classes.toolbarButton}
+                                    onClick={() => {
+                                        let enumsCollapsed = Object.keys(this.state.enums);
+                                        this.setState({enumsCollapsed});
+                                        window.localStorage.setItem('enumsCollapsed', JSON.stringify(enumsCollapsed));
+                                    }}
+                                >
+                                    <UpIcon/>
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title={this.props.t('Wide all')} placement="top">
+                                <IconButton
+                                    //size="small"
+                                    className={this.props.classes.toolbarButton}
+                                    onClick={() => {
+                                        let enumsCollapsed = [];
+                                        this.setState({enumsCollapsed});
+                                        window.localStorage.setItem('enumsCollapsed', JSON.stringify(enumsCollapsed));
+                                    }}
+                                >
+                                    <DownIcon/>
+                                </IconButton>
+                            </Tooltip>
                             <Tooltip title={this.props.t('Collapse all')} placement="top">
                                 <IconButton
                                     //size="small"

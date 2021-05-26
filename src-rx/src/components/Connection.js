@@ -1201,7 +1201,7 @@ class Connection {
      * Get the log files (only for admin connection).
      * @returns {Promise<string[]>}
      */
-    getLogsFiles() {
+    getLogsFiles(host) {
         if (Connection.isWeb()) {
             return Promise.reject('Allowed only in admin');
         }
@@ -1209,7 +1209,7 @@ class Connection {
             return Promise.reject(NOT_CONNECTED);
         }
         return new Promise((resolve, reject) =>
-            this._socket.emit('readLogs', (err, files) =>
+            this._socket.emit('readLogs', host, (err, files) =>
                 err ? reject(err) : resolve(files)));
     }
 

@@ -1401,5 +1401,16 @@
   "Detected slow connection!": "Обнаружено медленное соединение!",
   "Seems that you have slow connection. Do you want to increase timeout interval?": "Похоже, у вас медленное соединение. Вы хотите увеличить интервал тайм-аута?",
   "Read timeout": "Таймаут чтения",
-  "in seconds": "в секундах"
+  "in seconds": "в секундах",
+  "Do you want to delete enum \"%s\"?": "Вы хотите удалить перечисление \"%s\"?",
+  "Custom room": "Пользовательская комната",
+  "Create new room": "Создать новую комнату",
+  "Custom function": "Пользовательская функция",
+  "Create new function": "Создать новую функцию",
+  "Custom enumeration": "Пользовательское перечисление",
+  "This adapter cannot be installed from git as must be built before installation.": "Этот адаптер нельзя установить из git, так как он должен быть собран перед установкой.",
+  "Show members": "Показать участников",
+  "Hide members": "Скрыть участников",
+  "Narrow all": "Сузить все",
+  "Wide all": "Расширить все"
 }

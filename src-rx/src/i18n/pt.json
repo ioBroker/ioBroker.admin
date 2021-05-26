@@ -1397,5 +1397,16 @@
   "Detected slow connection!": "Detectada conexão lenta!",
   "Seems that you have slow connection. Do you want to increase timeout interval?": "Parece que sua conexão está lenta. Você deseja aumentar o intervalo de tempo limite?",
   "Read timeout": "Tempo de ler esgotado",
-  "in seconds": "em segundos"
+  "in seconds": "em segundos",
+  "Do you want to delete enum \"%s\"?": "Quer excluir o enum \"%s\"?",
+  "Custom room": "Sala personalizada",
+  "Create new room": "Criar uma nova sala",
+  "Custom function": "Função personalizada",
+  "Create new function": "Criar nova função",
+  "Custom enumeration": "Enumeração personalizada",
+  "This adapter cannot be installed from git as must be built before installation.": "Este adaptador não pode ser instalado a partir do git, pois deve ser construído antes da instalação.",
+  "Show members": "Mostrar membros",
+  "Hide members": "Ocultar membros",
+  "Narrow all": "Limitar tudo",
+  "Wide all": "Tudo amplo"
 }

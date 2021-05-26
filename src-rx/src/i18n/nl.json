@@ -1397,5 +1397,16 @@
   "Detected slow connection!": "Langzame verbinding gedetecteerd!",
   "Seems that you have slow connection. Do you want to increase timeout interval?": "Het lijkt erop dat u een trage verbinding heeft. Wilt u het time-outinterval verlengen?",
   "Read timeout": "Time-out lezen",
-  "in seconds": "in seconden"
+  "in seconds": "in seconden",
+  "Do you want to delete enum \"%s\"?": "Wilt u de opsomming \"%s\" verwijderen?",
+  "Custom room": "Aangepaste kamer",
+  "Create new room": "Maak een nieuwe kamer",
+  "Custom function": "Aangepaste functie",
+  "Create new function": "Maak een nieuwe functie",
+  "Custom enumeration": "Aangepaste opsomming",
+  "This adapter cannot be installed from git as must be built before installation.": "Deze adapter kan niet vanuit git worden geïnstalleerd, aangezien deze vóór de installatie moet worden gebouwd.",
+  "Show members": "Toon leden",
+  "Hide members": "Verberg leden",
+  "Narrow all": "Alles smal",
+  "Wide all": "Breed allemaal"
 }

@@ -334,7 +334,7 @@ class Logs extends Component {
     static getDerivedStateFromProps(props, state) {
         if (props.currentHost !== state.currentHost) {
             //this.ignoreNextLogs = true;
-            return{currentHost: props.currentHost, logs: []};
+            return{currentHost: props.currentHost, logs: [], logFiles: null};
         } else {
             return null;
         }
@@ -404,6 +404,47 @@ class Logs extends Component {
         }
     }
 
+    readLogFiles() {
+        return this.props.socket.getLogsFiles(this.state.currentHost)
+            .then(list => {
+                if (list && list.length) {
+                    const logFiles = [];
+
+                    list.reverse();
+                    // first 2018-01-01
+                    list.forEach(file => {
+                        const parts = file.fileName.split('/');
+                        const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '');
+
+                        if (name[0] <= '9') {
+                            logFiles.push({
+                                path: file,
+                                name: name
+                            });
+                        }
+                    });
+
+                    // then restart.log ans so on
+                    list.sort();
+                    list.forEach(file => {
+                        const parts = file.fileName.split('/');
+                        const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '');
+
+                        if (name[0] > '9') {
+                            logFiles.push({
+                                path: file,
+                                name
+                            });
+                        }
+                    });
+
+                    return logFiles;
+                } else {
+                    return [];
+                }
+            });
+    }
+
     componentDidMount() {
         this.props.logsWorker && this.props.logsWorker.enableCountErrors(false);
         this.props.logsWorker.registerHandler(this.logHandler);
@@ -417,45 +458,10 @@ class Logs extends Component {
                         _hosts.forEach(item => hosts[item._id] = item);
 
                         this.setState({ adapters, hosts }, () =>
-                            this.props.socket.getLogsFiles()
-                                .then(list => resolve(list)));
+                            resolve());
                     }))
-                    .then(list => {
-                        if (list && list.length) {
-                            const logFiles = [];
-
-                            list.reverse();
-                            // first 2018-01-01
-                            list.forEach(file => {
-                                const parts = file.fileName.split('/');
-                                const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '');
-
-                                if (name[0] <= '9') {
-                                    logFiles.push({
-                                        path: file,
-                                        name: name
-                                    });
-                                }
-                            });
-
-                            // then restart.log ans so on
-                            list.sort();
-                            list.forEach(file => {
-                                const parts = file.fileName.split('/');
-                                const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '');
-
-                                if (name[0] > '9') {
-                                    logFiles.push({
-                                        path: file,
-                                        name
-                                    });
-                                }
-                            });
-
-                            this.readLogs(true, logFiles);
-                        }
-                    }));
-
+                    .then(() => this.readLogFiles())
+                    .then(logFiles => this.readLogs(true, logFiles)));
     }
 
     componentWillUnmount() {
@@ -766,6 +772,16 @@ class Logs extends Component {
         }
         const { classes } = this.props;
 
+        if (this.state.logFiles === null && !this.readLogsInProcess) {
+            this.readLogsInProcess = true;
+            setTimeout(() =>
+                this.readLogFiles()
+                    .then(logFiles => {
+                        this.readLogsInProcess = false;
+                        this.setState({logFiles});
+                    }), 100);
+        }
+
         const pauseChild = !this.state.pause ? <PauseIcon /> :
             <Typography className={classes.pauseCount}>{this.state.logs.length - this.state.pause}</Typography>;
 
@@ -842,7 +858,7 @@ class Logs extends Component {
                     </Badge>
                 </Tooltip>
                 <div className={classes.grow} />
-                {this.state.logFiles.length > 0 &&
+                {this.state.logFiles?.length > 0 &&
                     <div>
                         <Button
                             variant="contained"

@@ -173,7 +173,7 @@ class EnumTemplateDialog extends Component {
                     }}
                     startIcon={<CustomGroup />}
                 >
-                    {this.props.t('Custom group')}
+                    {this.props.prefix === 'enum.rooms' ? this.props.t('Custom room') : (this.props.prefix === 'enum.functions' ? this.props.t('Custom function') : this.props.t('Custom enumeration'))}
                 </Button>
                 <Button variant="contained" onClick={this.props.onClose} startIcon={<CloseIcon />}>{this.props.t('Cancel')}</Button>
             </DialogActions>
