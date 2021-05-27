@@ -323,7 +323,7 @@ class UsersList extends Component {
         let users;
         return this.props.socket.getForeignObjects('system.user.*', 'user')
             .then(_users => {
-                users = Object.values(users).sort((o1, o2) => o1._id > o2._id ? 1 : -1);
+                users = Object.values(_users).sort((o1, o2) => o1._id > o2._id ? 1 : -1);
                 return this.props.socket.getForeignObjects('system.group.*', 'group');
             })
             .then(groups => {

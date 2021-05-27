@@ -462,6 +462,7 @@ class Utils {
             // eslint-disable-next-line
             let m = text.match(/\u001b\[\d+m/gi);
             if (m) {
+                const original = text;
                 const result = [];
                 let style = {};
                 for (let i = 0; i < m.length; i++) {
@@ -489,7 +490,7 @@ class Utils {
                     result.push({text, style: JSON.parse(JSON.stringify(style))});
                 }
 
-                return {original: text, parts: result};
+                return {original, parts: result};
             } else {
                 return text;
             }

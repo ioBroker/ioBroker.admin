@@ -602,9 +602,8 @@ class Instances extends Component {
         return obj?.common?.compact || false;
     }
 
-    getSentrySettings = id => {
-        const obj = this.adapters.find(({ _id }) => _id === `system.adapter.${id}`);
-        return obj?.common?.plugins?.sentry || null;
+    getSentrySettings = obj => {
+        return !!obj?.common?.plugins?.sentry || false;
     }
 
     isSentry = obj => {
@@ -797,7 +796,6 @@ class Instances extends Component {
             const running         = this.isRunning(instance.obj);
             const compactGroup    = this.isCompactGroup(instance.obj);
             const checkCompact    = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
-            const currentSentry   = this.isSentry(instance.obj);
             const alive           = this.isAlive(id);
             const compact         = this.isCompact(instance.obj);
             const supportCompact  = instance.compact || false;
@@ -810,8 +808,10 @@ class Instances extends Component {
             const loglevelIcon    = this.getLogLevelIcon(logLevel);
             const inputOutput     = this.getInputOutput(id);
             const modeSchedule    = this.isModeSchedule(instance.obj);
-            const checkSentry     = this.getSentrySettings(instance.adapter);
             const memoryLimitMB   = this.getMemoryLimitMB(instance.obj);
+
+            const checkSentry     = this.getSentrySettings(instance.obj); // is it possible to enable/disable sentry for this adapter
+            const currentSentry   = this.isSentry(instance.obj);
 
             return {
                 id,
@@ -894,7 +894,7 @@ class Instances extends Component {
                         maxCompactGroupNumber={this.state.maxCompactGroupNumber}
                         connected={item.connected}
                         connectedToHost={item.connectedToHost}
-                        currentSentry={item.currentSentry}
+                        currentSentry={item.sentry}
                         deletedInstances={this.deletedInstances}
                         expertMode={this.props.expertMode}
                         extendObject={this.extendObject}
@@ -948,7 +948,7 @@ class Instances extends Component {
                         maxCompactGroupNumber={this.state.maxCompactGroupNumber}
                         connected={item.connected}
                         connectedToHost={item.connectedToHost}
-                        currentSentry={item.currentSentry}
+                        currentSentry={item.sentry}
                         deletedInstances={this.deletedInstances}
                         expanded={this.state.expanded}
                         expertMode={this.props.expertMode}

@@ -29,7 +29,7 @@ class ConfigGeneric extends Component {
         };
 
         if (this.props.custom) {
-            this.defaultValue = this.props.schema.defaultFunc ? this.executeCustom(this.props.schema.defaultFunc, this.props.schema.default, this.props.data) : this.props.schema.default;
+            this.defaultValue = this.props.schema.defaultFunc ? this.executeCustom(this.props.schema.defaultFunc, this.props.schema.default, this.props.data, this.props.instanceObj) : this.props.schema.default;
         } else {
             this.defaultValue = this.props.schema.defaultFunc ? this.execute(this.props.schema.defaultFunc, this.props.schema.default, this.props.data) : this.props.schema.default;
         }

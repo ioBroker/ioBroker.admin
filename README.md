@@ -88,6 +88,9 @@ The icons may not be reused in other projects without proper flaticon subscripti
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Corrected error in log
+
 ### 5.1.3 (2021-05-26)
 * (bluefox) Improved the GUI for enumerations
 

@@ -60,7 +60,7 @@ class ConfigNumber extends ConfigGeneric {
             return <TextField
                 type="number"
                 fullWidth
-                inputProps={{min: this.props.schema.min, max: this.props.schema.max}}
+                inputProps={{min: this.props.schema.min, max: this.props.schema.max, step: this.props.schema.step}}
                 value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
                 error={!!error}
                 disabled={!!disabled}

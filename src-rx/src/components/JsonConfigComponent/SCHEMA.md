@@ -25,6 +25,7 @@ Possible types:
 - `number`
   - `min` - minimal value
   - `max` - maximal value
+  - `step` - step
 
 - `color`
 

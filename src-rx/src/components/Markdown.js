@@ -963,13 +963,13 @@ class Markdown extends Component {
         }
         const mm = line.match(/!?\[.*]\([^)]+\)/g);
         if (mm) {
-            console.log('Replace: ' + line);
             // https://raw.githubusercontent.com/ioBroker/ioBroker.iot/master/README.md
             //                https://github.com/ioBroker/ioBroker.iot/blob/master/README.md
             const prefixHttp = this.props.link
                 .substring(0, this.props.link.lastIndexOf('/'))
                 .replace('https://raw.githubusercontent.com/', 'https://github.com/')
                 .replace(/\/master$/, '/blob/master');
+
             const prefixImage = this.props.link.substring(0, this.props.link.lastIndexOf('/'));
             mm.forEach(link => {
                 const isImage = link.startsWith('!');
@@ -1118,9 +1118,7 @@ class Markdown extends Component {
                 if (part.type === 'code') {
                     line = line.trim().replace(/^```javascript/, '```');
                 }
-                if (line.indexOf('*Number value') !== -1) {
-                    console.log('AAA');
-                }
+
                 const trimmed = line.trim();
                 if (trimmed.match(/^\*[^\s]/) && trimmed.match(/[^\s]\*$/)) {
                     line = trimmed;
@@ -1134,6 +1132,7 @@ class Markdown extends Component {
 
                 // replace <- with &lt;
                 line = line.replace(/<-/g, '&lt;-');
+                line = line.replace(/<\/ br>/g, '<br/>');
 
                 const rct = <MarkdownView markdown={line} options={CONVERTER_OPTIONS} components={{CustomLink, CustomH}}/>;
 

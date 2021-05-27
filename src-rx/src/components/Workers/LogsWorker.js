@@ -69,12 +69,12 @@ class LogsWorker {
     }
 
     logHandler = line => {
-        const errors = this.errors;
-        const warnings = this.warnings;
-
         const obj = this._processLine(line);
 
         if (obj) {
+            const errors = this.errors;
+            const warnings = this.warnings;
+
             this.newLogs = this.newLogs || [];
             this.newLogs.push(obj);
 
@@ -88,14 +88,14 @@ class LogsWorker {
                         handler && handler(newLogs, JSON.stringify(line).length - 65));
                 }, 200);
             }
-        }
 
-        if (errors !== this.errors) {
-            this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
-        }
+            if (errors !== this.errors) {
+                this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
+            }
 
-        if (warnings !== this.warnings) {
-            this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
+            if (warnings !== this.warnings) {
+                this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
+            }
         }
     }
 
@@ -155,6 +155,9 @@ class LogsWorker {
         if (!this.logs) {
             return;
         }
+        if (!line) {
+            return;
+        }
         /* const line = {
             "severity": "error",
             "ts": 1588162801514,
@@ -211,7 +214,11 @@ class LogsWorker {
                 // if no time found
                 if (length) {
                     obj = this.logs[length - 1];
-                    obj.message += line;
+                    if (typeof obj.message === 'object') {
+                        obj.message = Utils.parseColorMessage(obj.message.original + line);
+                    } else {
+                        obj.message += line;
+                    }
                 }
             }
         }

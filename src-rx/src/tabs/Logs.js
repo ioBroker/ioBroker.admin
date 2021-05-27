@@ -38,6 +38,7 @@ import ClearIcon from '@material-ui/icons/Close';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import ErrorIcon from '@material-ui/icons/ErrorOutline';
 import WarningIcon from '@material-ui/icons/Warning';
+import CheckIcon from '@material-ui/icons/Check';
 
 import amber from '@material-ui/core/colors/amber';
 import grey from '@material-ui/core/colors/grey';
@@ -46,11 +47,9 @@ import red from '@material-ui/core/colors/red';
 import Icon from '@iobroker/adapter-react/Components/Icon';
 
 import Utils from '../Utils';
-
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
-import CheckIcon from "@material-ui/icons/Check";
 
 const MAX_LOGS = 3000;
 
@@ -344,6 +343,9 @@ class Logs extends Component {
         if (this.props.logsWorker) {
             this.props.logsWorker.getLogs(force)
                 .then(results => {
+                    if (!results) {
+                        return;
+                    }
                     const logs = [...results.logs];
                     const logSize = results.logSize;
 
