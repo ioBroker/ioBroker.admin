@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.1.3",
+        "version": "5.1.4",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.4": {
+                "en": "Corrected error in log",
+                "de": "Fehler im Protokoll behoben",
+                "ru": "Исправленная ошибка в журнале",
+                "pt": "Erro corrigido no registro",
+                "nl": "Fout in logboek gecorrigeerd",
+                "fr": "Erreur corrigée dans le journal",
+                "it": "Errore corretto nel registro",
+                "es": "Error corregido en el registro",
+                "pl": "Poprawiony błąd w logu",
+                "zh-cn": "更正了日志中的错误"
+            },
             "5.1.3": {
                 "en": "Improved the GUI for enumerations",
                 "de": "Die GUI für Aufzählungen wurde verbessert",
@@ -235,18 +247,6 @@
                 "zh-cn": "Admin5：修复了许多错误"
             },
             "5.0.18": {
-                "en": "Admin5: Fixed many bugs",
-                "de": "Admin5: Viele Fehler behoben",
-                "ru": "Admin5: Исправлено множество ошибок",
-                "pt": "Admin5: muitos bugs corrigidos",
-                "nl": "Admin5: Veel bugs opgelost",
-                "fr": "Admin5: Correction de nombreux bugs",
-                "it": "Admin5: risolti molti bug",
-                "es": "Admin5: se corrigieron muchos errores",
-                "pl": "Admin5: Naprawiono wiele błędów",
-                "zh-cn": "Admin5：修复了许多错误"
-            },
-            "5.0.17": {
                 "en": "Admin5: Fixed many bugs",
                 "de": "Admin5: Viele Fehler behoben",
                 "ru": "Admin5: Исправлено множество ошибок",

@@ -1,3 +1,6 @@
+## 5.0.32 (2021-05-23)
+* (bluefox) Admin5: Support of ANSI codes in log
+
 ## 5.0.31 (2021-05-21)
 * (bluefox) Admin5: Improved the enumerations
 

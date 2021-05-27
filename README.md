@@ -88,7 +88,7 @@ The icons may not be reused in other projects without proper flaticon subscripti
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 5.1.4 (2021-05-27)
 * (bluefox) Corrected error in log
 
 ### 5.1.3 (2021-05-26)
@@ -104,9 +104,6 @@ The icons may not be reused in other projects without proper flaticon subscripti
 ### 5.1.0 (2021-05-24)
 * (bluefox) Admin5: Fixed update of objects
 * (bluefox) Admin5: React UI is by default enabled
-
-### 5.0.32 (2021-05-23)
-* (bluefox) Admin5: Support of ANSI codes in log
 
 ## License
 
