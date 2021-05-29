@@ -1411,5 +1411,6 @@
   "Wide all": "Ancho todo",
   "Go to original": "Ir al original",
   "Badges": "Insignias",
-  "See on github": "Ver en github"
+  "See on github": "Ver en github",
+  "base_settings_hint": "Cambiar estos valores puede llevar a que el sistema ioBroker no funcione. A menos que sepa exactamente lo que hace, es mejor que utilice \"iob setup custom\" para cambiar el tipo de base de datos o la configuración básica de la base de datos."
 }

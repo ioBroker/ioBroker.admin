@@ -459,7 +459,7 @@ class Connection {
     subscribeObject(id, cb) {
         if (!this.objectsSubscribes[id]) {
             let reg = id.replace(/\./g, '\\.').replace(/\*/g, '.*');
-            if (reg.indexOf('*') === -1) {
+            if (!reg.includes('*')) {
                 reg += '$';
             }
             this.objectsSubscribes[id] = {reg: new RegExp(reg), cbs: []};

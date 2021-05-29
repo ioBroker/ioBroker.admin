@@ -46,6 +46,11 @@ const styles = theme => ({
         paddingBottom: 4,
         marginTop: -1,
         marginLeft: -1,
+    },
+    warning: {
+        padding: 8,
+        fontSize: 14,
+        color: theme.palette.type === 'dark' ? '#ffa500' : '#b17200'
     }
 });
 
@@ -155,6 +160,7 @@ class BaseSettingsObjects extends Component {
             {this.renderWarning()}
             <Grid item className={ clsx(this.props.classes.gridSettings, this.props.classes.dangerZone) }>
                 <h3 className={this.props.classes.dangerZoneHeader} title={this.props.t('Invalid settings in these fields could lead to dead host')}>{this.props.t('Danger zone')}</h3>
+                <p className={this.props.classes.warning}>{this.props.t('base_settings_hint')}</p>
                 <Grid container direction="column">
                     <Grid item>
                         <Tooltip title={this.props.t('switch_db_note')}>

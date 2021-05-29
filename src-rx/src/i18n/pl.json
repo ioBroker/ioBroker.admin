@@ -1411,5 +1411,6 @@
   "Wide all": "Szerokie wszystko",
   "Go to original": "Przejdź do oryginału",
   "Badges": "Odznaki",
-  "See on github": "Zobacz na github"
+  "See on github": "Zobacz na github",
+  "base_settings_hint": "Zmiana tych wartości może spowodować, że system ioBroker przestanie działać. O ile nie wiesz dokładnie, co robisz, lepiej użyj „niestandardowej konfiguracji iob”, aby zmienić typ bazy danych lub podstawowe ustawienia bazy danych."
 }

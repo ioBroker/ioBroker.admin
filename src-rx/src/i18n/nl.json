@@ -1411,5 +1411,6 @@
   "Wide all": "Breed allemaal",
   "Go to original": "Ga naar origineel",
   "Badges": "Badges",
-  "See on github": "Zie op github"
+  "See on github": "Zie op github",
+  "base_settings_hint": "Het wijzigen van deze waarden kan leiden tot een niet-operationeel ioBroker-systeem. Tenzij u precies weet wat u doet, kunt u beter \"iob setup custom\" gebruiken om het databasetype of de basisdatabase-instellingen te wijzigen."
 }
