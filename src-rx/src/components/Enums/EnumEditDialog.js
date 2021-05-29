@@ -75,9 +75,7 @@ function EnumEditDialog(props) {
         canSave = false;
     }
 
-    const getShortId = _id => {
-        return _id.split('.').pop();
-    };
+    const getShortId = _id => _id.split('.').pop();
 
     const name2Id = name =>
         name.replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_');
@@ -152,7 +150,7 @@ function EnumEditDialog(props) {
                         disabled={props.enum.common.dontDelete}
                         value={ props.enum._id.split('.')[props.enum._id.split('.').length-1] }
                         onChange={e=>{
-                            let newData = props.enum;
+                            let newData = JSON.parse(JSON.stringify(props.enum));
                             newData._id = changeShortId(newData._id, name2Id(e.target.value));
                             props.onChange(newData);
                         }}

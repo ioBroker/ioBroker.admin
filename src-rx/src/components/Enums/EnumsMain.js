@@ -124,6 +124,22 @@ const enumTemplates = {
     }
 };
 
+function sort(enums, getName) {
+    return function (a, b) {
+        let aName = getName(enums[a]?.common?.name || '') || a.split('.').pop();
+        let bName = getName(enums[b]?.common?.name || '') || b.split('.').pop();
+        aName = aName.toLowerCase();
+        bName = bName.toLowerCase();
+        if (aName > bName) {
+            return 1;
+        } else if (aName < bName) {
+            return -1;
+        } else {
+            return 0
+        }
+    };
+}
+
 const ENUM_TEMPLATE = {
     type: 'enum',
     common: {
@@ -161,7 +177,6 @@ class EnumsList extends Component {
             search: '',
             enumEditDialog: null,
             enumTemplateDialog: null,
-            enumEditDialogNew: false,
             enumDeleteDialog: null,
             members: {},
             categoryPopoverOpen: false,
@@ -323,7 +338,7 @@ class EnumsList extends Component {
             id: ''
         };
 
-        const ids = Object.keys(enums);
+        const ids = Object.keys(enums).sort(sort(enums, this.getName));
 
         for (let i = 0; i < ids.length; i++) {
             let id = ids[i];
@@ -430,6 +445,12 @@ class EnumsList extends Component {
     }
 
     renderTree(container, key, level) {
+        let ids = null;
+        if (!this.state.enumsClosed[container.id]) {
+            ids = Object.keys(container.children);
+            ids.sort(sort(container.children, this.getName));
+        }
+
         return <div style={{paddingLeft: level ? 32 : 0}} key={container.id || key }>
             {!this.state.search || container.id.toLowerCase().includes(this.state.search.toLowerCase()) ?
                 <EnumBlock
@@ -469,16 +490,18 @@ class EnumsList extends Component {
                 />
                 : null
             }
-            {!this.state.enumsClosed[container.id] ?
-                Object.values(container.children)
-                    .map((item, index) => <React.Fragment key={index}>{this.renderTree(item, index, level + 1)}</React.Fragment>)
+            {ids ?
+                ids.map((id, index) => <React.Fragment key={index}>{this.renderTree(container.children[id], index, level + 1)}</React.Fragment>)
             : null}
         </div>;
     }
 
     showEnumEditDialog = (enumItem, isNew) => {
-        enumItem = JSON.parse(JSON.stringify(enumItem));
-        this.setState({enumEditDialog: enumItem, enumEditDialogNew: isNew});
+        const enumEditDialog = {changed: false};
+        enumEditDialog.newItem = JSON.parse(JSON.stringify(enumItem));
+        enumEditDialog.originalItem = JSON.parse(JSON.stringify(enumItem));
+        enumEditDialog.isNew = isNew;
+        this.setState({enumEditDialog});
     }
 
     showEnumTemplateDialog = prefix =>
@@ -487,20 +510,21 @@ class EnumsList extends Component {
     showEnumDeleteDialog = enumItem =>
         this.setState({enumDeleteDialog: enumItem});
 
-    saveEnum = async originalId => {
-        let enumItem = JSON.parse(JSON.stringify(this.state.enumEditDialog));
+    saveEnum = async () => {
+        let newItem = this.state.enumEditDialog.newItem;
+        const originalId = this.state.enumEditDialog.originalItem._id;
 
-        if (this.state.enumEditDialogNew) {
-            this.scrollToItem = this.state.enumEditDialog._id;
+        if (this.state.enumEditDialog.isNew) {
+            this.scrollToItem = newItem._id;
         }
 
         const updating = [...this.state.updating];
 
-        !updating.includes(enumItem._id) && updating.push(enumItem._id);
+        !updating.includes(originalId) && updating.push(originalId);
 
-        await this.props.socket.setObject(enumItem._id, enumItem);
+        await this.props.socket.setObject(newItem._id, newItem);
 
-        if (originalId && originalId !== this.state.enumEditDialog._id) {
+        if (originalId !== newItem._id) {
             try {
                 await this.props.socket.delObject(originalId);
 
@@ -509,7 +533,7 @@ class EnumsList extends Component {
                     const id = ids[i];
                     if (id.startsWith(originalId + '.')) {
                         let newEnumChild = JSON.parse(JSON.stringify(this.state.enums[id]));
-                        newEnumChild._id = newEnumChild._id.replace(originalId + '.', enumItem._id + '.');
+                        newEnumChild._id = newEnumChild._id.replace(originalId + '.', newItem._id + '.');
 
                         !updating.includes(id) && updating.push(id);
                         await this.props.socket.setObject(newEnumChild._id, newEnumChild);
@@ -521,7 +545,7 @@ class EnumsList extends Component {
             }
         }
 
-        this.setState({enumEditDialog: null, enumEditDialogNew: false, updating});
+        this.setState({enumEditDialog: null, updating});
     }
 
     deleteEnum = async enumId => {
@@ -567,9 +591,12 @@ class EnumsList extends Component {
         window.localStorage.setItem('enumsClosed', JSON.stringify(enumsClosed));
     }
 
-    changeEnumFormData = enumItem => {
-        const enumChanged = JSON.stringify(enumItem) !== JSON.stringify(this.state.enums[enumItem._id] || {});
-        this.setState({enumEditDialog: enumItem, enumChanged});
+    changeEnumFormData = newItem => {
+        const enumEditDialog = JSON.parse(JSON.stringify(this.state.enumEditDialog));
+        enumEditDialog.newItem = JSON.parse(JSON.stringify(newItem));
+        enumEditDialog.changed =
+            JSON.stringify(enumEditDialog.newItem) !== JSON.stringify(this.state.enums[enumEditDialog.originalItem] || {});
+        this.setState({enumEditDialog});
     }
 
     getName = name =>
@@ -756,13 +783,13 @@ class EnumsList extends Component {
             {this.state.enumEditDialog ? <EnumEditDialog
                 onClose={() => this.setState({enumEditDialog: null})}
                 enums={Object.values(this.state.enums)}
-                enum={this.state.enumEditDialog}
+                enum={this.state.enumEditDialog.newItem}
                 getName={this.getName}
-                isNew={this.state.enumEditDialogNew}
+                isNew={this.state.enumEditDialog.isNew}
                 t={this.props.t}
                 lang={this.props.lang}
                 classesParent={this.props.classes}
-                changed={this.state.enumChanged}
+                changed={this.state.enumEditDialog.changed}
                 onChange={this.changeEnumFormData}
                 saveData={this.saveEnum}
             /> : null}

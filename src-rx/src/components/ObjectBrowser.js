@@ -1189,10 +1189,6 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
         valFull.push({ t: texts.quality, v: Utils.quality2text(state.q || 0).join(', '), nbr: true });
     }
 
-    if (typeof v === 'string' && v) {
-        v = v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
-
     valText.v = v;
 
     return {

@@ -268,12 +268,10 @@ class EnumBlock extends Component {
 
         const icon = props.enum?.common?.icon ?
             <Icon
-                key={2}
                 className={clsx(classes.icon, props.children && classes.folderIcon, props.children && !props.closed && classes.folderIconExpanded) }
                 src={props.enum.common.icon}
             /> :
             <ListIcon
-                key={2}
                 className={clsx(classes.icon, props.children && classes.folderIcon, props.children && !props.closed && classes.folderIconExpanded)}
             />;
 
@@ -317,7 +315,7 @@ class EnumBlock extends Component {
                         className={classes.enumGroupTitle}
                     >
                         {props.children ? <div className={classes.folderDiv} onClick={() => props.toggleEnum(props.id)}>
-                            {props.closed ? [<IconCollapsed className={classes.folder} key={1}/>, icon] : [<IconExpanded className={classes.folder}  key={1}/>, icon]}
+                            {props.closed ? [<IconCollapsed className={classes.folder} key={1}/>, <div key={2}>{icon}</div>] : [<IconExpanded className={classes.folder}  key={1}/>, <div key={2}>{icon}</div>]}
                             </div> : icon}
                         <div className={classes.enumGroupName}>
                             <span className={classes.enumGroupEnumName}>

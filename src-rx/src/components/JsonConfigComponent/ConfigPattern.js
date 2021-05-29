@@ -14,9 +14,10 @@ const styles = theme => ({
 });
 
 class ConfigPattern extends ConfigGeneric {
-    renderItem() {
+    renderItem(error, disabled) {
         return <TextField
             fullWidth
+            disabled={!!disabled}
             InputProps={{
                 endAdornment: this.props.schema.copyToClipboard ?
                     <IconButton
