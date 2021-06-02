@@ -36,8 +36,19 @@ class ConfigSelect extends ConfigGeneric {
         if (!this.state.selectOptions) {
             return null;
         }
+
+        const selectOptions = (this.state.selectOptions || []).filter(item => {
+            if (!item.hidden) {
+                return true;
+            } else if (this.props.custom) {
+                return !this.executeCustom(item.hidden, this.props.data, this.props.customObj, this.props.instanceObj);
+            } else {
+                return !this.execute(item.hidden, this.props.schema.default, this.props.data);
+            }
+        });
+
         // eslint-disable-next-line
-        const item = this.state.selectOptions.find(item => item.value == this.state.value); // let "==" be and not ===
+        const item = selectOptions.find(item => item.value == this.state.value); // let "==" be and not ===
 
         return <FormControl className={this.props.classes.fullWidth}>
             <InputLabel>{this.getText(this.props.schema.label)}</InputLabel>
@@ -56,7 +67,7 @@ class ConfigSelect extends ConfigGeneric {
                     });
                 }}
             >
-                {this.state.selectOptions?.map(item =>
+                {selectOptions.map(item =>
                     <MenuItem key={item.value} value={item.value} style={item.value === ConfigGeneric.DIFFERENT_VALUE ? {opacity: 0.5} : {}}>{this.getText(item.label, this.props.schema.noTranslation)}</MenuItem>)}
             </Select>
             {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}

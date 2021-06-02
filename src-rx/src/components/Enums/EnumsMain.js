@@ -1,17 +1,10 @@
 import React, { Component } from 'react';
-
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { usePreview } from 'react-dnd-preview';
 import clsx from 'clsx';
-
-import EnumBlock from './EnumBlock';
-import CategoryLabel from './CategoryLabel';
-import EnumEditDialog from './EnumEditDialog';
-import EnumTemplateDialog from './EnumTemplateDialog';
-import EnumDeleteDialog from './EnumDeleteDialog';
-import DragObjectBrowser from './DragObjectBrowser'
+import {withStyles} from '@material-ui/core/styles';
 
 import Tooltip from '@material-ui/core/Tooltip';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -24,13 +17,19 @@ import Popover from '@material-ui/core/Popover';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import IconButton from '@material-ui/core/IconButton';
+
 import AddIcon from '@material-ui/icons/Add';
 import { FaRegFolder as IconCollapsed } from 'react-icons/fa';
 import { FaRegFolderOpen as IconExpanded } from 'react-icons/fa';
 import DownIcon from '@material-ui/icons/KeyboardArrowDown';
 import UpIcon from '@material-ui/icons/KeyboardArrowUp';
 
-import {withStyles} from '@material-ui/core/styles';
+import EnumBlock from './EnumBlock';
+import CategoryLabel from './CategoryLabel';
+import EnumEditDialog from './EnumEditDialog';
+import EnumTemplateDialog from './EnumTemplateDialog';
+import EnumDeleteDialog from './EnumDeleteDialog';
+import DragObjectBrowser from './DragObjectBrowser'
 
 const styles = theme => ({
     mainGridCont: {
@@ -487,6 +486,7 @@ class EnumsList extends Component {
                     socket={this.props.socket}
                     lang={this.props.lang}
                     classesParent={this.props.classes}
+                    themeType={this.props.themeType}
                 />
                 : null
             }
@@ -675,6 +675,7 @@ class EnumsList extends Component {
                                     component={'span'}
                                     style={{backgroundColor: categoryData.common?.color || undefined, borderRadius: 4}}
                                     label={<CategoryLabel
+                                        themeType={this.props.themeType}
                                         categoryData={categoryData}
                                         showEnumEditDialog={this.showEnumEditDialog}
                                         showEnumDeleteDialog={this.showEnumDeleteDialog}
@@ -823,6 +824,7 @@ EnumsList.propTypes = {
     socket: PropTypes.object,
     ready: PropTypes.bool,
     expertMode: PropTypes.bool,
+    themeType: PropTypes.string,
 };
 
 export default withStyles(styles)(EnumsList);

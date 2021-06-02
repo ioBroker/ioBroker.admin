@@ -104,7 +104,18 @@ class ConfigSelectSendTo extends ConfigGeneric {
             return <CircularProgress size="small"/>;
         } else {
             const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-            const item = this.state.list.find(item => item.value === value);
+
+            const selectOptions = (this.state.list || []).filter(item => {
+                if (!item.hidden) {
+                    return true;
+                } else if (this.props.custom) {
+                    return !this.executeCustom(item.hidden, this.props.schema.default, this.props.data, this.props.instanceObj);
+                } else {
+                    return !this.execute(item.hidden, this.props.schema.default, this.props.data);
+                }
+            });
+
+            const item = selectOptions.find(item => item.value === value);
 
             return <FormControl className={this.props.classes.fullWidth}>
                 <InputLabel>{this.getText(this.props.schema.label)}</InputLabel>
@@ -115,7 +126,7 @@ class ConfigSelectSendTo extends ConfigGeneric {
                     renderValue={val => item?.label || val}
                     onChange={e => this.onChange(this.props.attr, e.target.value)}
                 >
-                    {this.state.list.map((item, i) =>
+                    {selectOptions.map((item, i) =>
                         <MenuItem key={i} value={item.value}>{item.label}</MenuItem>)}
                 </Select>
                 {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}

@@ -361,10 +361,21 @@ class ConfigGeneric extends Component {
         if (!pattern) {
             return '';
         } else {
+            if (typeof pattern === 'object') {
+                pattern = pattern.func;
+            }
+
             try {
-                // eslint-disable-next-line no-new-func
-                const f = new Function('data', '_system', '_alive', '_common', '_socket', 'return `' + pattern.replace(/`/g, '\\`') + '`');
-                return f(this.props.data, this.props.systemConfig, this.props.alive, this.props.common, this.props.socket);
+                if (this.props.custom) {
+                    // eslint-disable-next-line no-new-func
+                    const f = new Function('data', '_system', 'instanceObj', 'customObj', '_socket', 'return `' + pattern.replace(/`/g, '\\`') + '`');
+                    const result = f(this.props.data, this.props.systemConfig, this.props.instanceObj,  this.props.customObj, this.props.socket);
+                    return result;
+                } else {
+                    // eslint-disable-next-line no-new-func
+                    const f = new Function('data', '_system', '_alive', '_common', '_socket', 'return `' + pattern.replace(/`/g, '\\`') + '`');
+                    return f(this.props.data, this.props.systemConfig, this.props.alive, this.props.common, this.props.socket);
+                }
             } catch (e) {
                 console.error(`Cannot execute ${pattern}: ${e}`);
                 return pattern;

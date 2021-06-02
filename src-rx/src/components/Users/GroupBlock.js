@@ -1,11 +1,12 @@
 import { useDrop } from 'react-dnd';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import Color from 'color';
+
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
+
 import GroupIcon from '@material-ui/icons/Group';
 import PersonIcon from '@material-ui/icons/Person';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -13,6 +14,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import Icon from '@iobroker/adapter-react/Components/Icon';
+import Utils from '@iobroker/adapter-react/Components/Utils';
 
 function GroupBlock(props) {
     const [{ CanDrop, isOver, isCanDrop }, drop] = useDrop(() => ({
@@ -36,16 +38,9 @@ function GroupBlock(props) {
         opacity = isCanDrop ? .75 : .25;
     }
 
-    let textColor = props.group.common.color && Color(props.group.common.color).hsl().object().l < 50
-        ?
-        '#FFFFFF'
-        :
-        '#000000';
+    const textColor = Utils.getInvertedColor(props.group.common.color, props.themeType, true);
 
-    if (!props.group.common.color) {
-        textColor = null;
-    }
-    let style = { opacity, overflow: 'hidden', color: textColor  };
+    let style = { opacity, overflow: 'hidden', color: textColor };
 
     if (props.group.common.color) {
         style.backgroundColor = props.group.common.color;
@@ -152,6 +147,7 @@ GroupBlock.propTypes = {
     showGroupDeleteDialog: PropTypes.func,
     removeUserFromGroup: PropTypes.func,
     getName: PropTypes.func,
+    themeType: PropTypes.string,
 };
 
 export default GroupBlock;

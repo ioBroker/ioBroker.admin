@@ -987,11 +987,12 @@ class Utils {
             const invertedColor = Utils.invertColor(color, true);
             if (invertedColor === '#FFFFFF' && (themeType === 'dark' || (invert && themeType === 'light'))) {
                 return '#DDD';
-            }
+            } else
             if (invertedColor === '#000000' && (themeType === 'light' || (invert && themeType === 'dark'))) {
                 return '#222';
+            } else {
+                return undefined;
             }
-            return undefined;
         }
     }
 

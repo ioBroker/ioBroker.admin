@@ -1412,5 +1412,8 @@
   "Go to original": "Zum Original gehen",
   "Badges": "Abzeichen",
   "See on github": "Siehe auf Github",
-  "base_settings_hint": "Das Ändern dieser Werte kann zu einem nicht betriebsbereiten ioBroker-System führen. Wenn Sie nicht genau wissen, was Sie tun, verwenden Sie besser \"iob setup custom\", um den Datenbanktyp oder die grundlegenden Datenbankeinstellungen zu ändern."
+  "base_settings_hint": "Das Ändern dieser Werte kann zu einem nicht betriebsbereiten ioBroker-System führen. Wenn Sie nicht genau wissen, was Sie tun, verwenden Sie besser \"iob setup custom\", um den Datenbanktyp oder die grundlegenden Datenbankeinstellungen zu ändern.",
+  "You have unsaved changes": "Du hast nicht gespeicherte Änderungen",
+  "Discard?": "Verwerfen?",
+  "Check adapter for updates": "Adapter auf Updates überprüfen"
 }

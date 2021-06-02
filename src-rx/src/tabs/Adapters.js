@@ -1436,7 +1436,7 @@ class Adapters extends Component {
                         {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
                     </IconButton>
                 </Tooltip>
-                <Tooltip title={this.t('Update view')}>
+                <Tooltip title={this.t('Check adapter for updates')}>
                     <IconButton onClick={() => this.updateAll(true, true)}>
                         <RefreshIcon />
                     </IconButton>

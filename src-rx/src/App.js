@@ -1140,6 +1140,7 @@ class App extends Router {
                         expertMode={this.state.expertMode}
                         lang={I18n.getLanguage()}
                         socket={this.socket}
+                        themeType={this.state.themeType}
                     />
                 </Suspense>;
             } else if (this.state.currentTab.tab === 'tab-enums') {
@@ -1151,6 +1152,7 @@ class App extends Router {
                         expertMode={this.state.expertMode}
                         lang={I18n.getLanguage()}
                         socket={this.socket}
+                        themeType={this.state.themeType}
                     />
                 </Suspense>;
             } else if (this.state.currentTab.tab === 'tab-objects') {

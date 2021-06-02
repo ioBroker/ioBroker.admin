@@ -1,5 +1,4 @@
 import { useDrop } from 'react-dnd';
-import Color from 'color';
 import PropTypes from 'prop-types';
 
 import Tooltip from '@material-ui/core/Tooltip';
@@ -7,6 +6,7 @@ import IconButton from '@material-ui/core/IconButton';
 
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Utils from "@iobroker/adapter-react/Components/Utils";
 
 const CategoryLabel = (props) => {
     const [, drop] = useDrop(() => ({
@@ -18,10 +18,7 @@ const CategoryLabel = (props) => {
         }),
     }));
 
-    let textColor = null;
-    if (props.categoryData.common.color) {
-        textColor = Color(props.categoryData.common.color).hsl().object().l > 50 ? '#000000' : '#FFFFFF';
-    }
+    const textColor = Utils.getInvertedColor(props.categoryData.common.color, props.themeType, true);
 
     return <span ref={drop} className={props.classes.categoryTitle} style={{color: textColor}}>
         {props.categoryData.common.icon ? <span
@@ -31,7 +28,7 @@ const CategoryLabel = (props) => {
         {typeof props.categoryData.common.name === 'string' ? props.categoryData.common.name : props.categoryData.common.name.en}
         <IconButton
             size="small"
-            style={{color: props.categoryData.common.color ? textColor : null}}
+            style={{color: textColor}}
             onClick={() => {props.showEnumEditDialog(props.categoryData, false)}}
         >
             <Tooltip title={props.t('Edit')} placement="top">
@@ -40,7 +37,7 @@ const CategoryLabel = (props) => {
         </IconButton>
         {props.categoryData.common.dontDelete ? null : <IconButton
             size="small"
-            style={{color: props.categoryData.common.color ? textColor : null}}
+            style={{color: textColor}}
             onClick={() => {props.showEnumDeleteDialog(props.categoryData)}}
         >
             <Tooltip title={props.t('Delete')} placement="top">
@@ -58,6 +55,7 @@ CategoryLabel.propTypes = {
     t: PropTypes.func,
     lang: PropTypes.string,
     socket: PropTypes.object,
+    themeType: PropTypes.string,
 };
 
 export default CategoryLabel;

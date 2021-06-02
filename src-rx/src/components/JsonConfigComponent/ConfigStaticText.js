@@ -29,7 +29,9 @@ class ConfigStaticText extends ConfigGeneric {
                 {this.getText(this.props.schema.text || this.props.schema.label, this.props.schema.noTranslation)}
             </Button>
         } else {
-            return <span onClick={this.props.schema.href ? () => this.props.schema.href && window.open(this.props.schema.href, '_blank') : null}
+            const href = this.props.schema.href ? this.getText(this.props.schema.href, true) : null;
+
+            return <span onClick={href ? () => window.open(href, '_blank') : null}
             >{this.getText(this.props.schema.text || this.props.schema.label)}</span>;
         }
     }

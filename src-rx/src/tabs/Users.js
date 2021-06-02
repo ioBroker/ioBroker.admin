@@ -1,7 +1,5 @@
 import { Component } from 'react';
-
 import PropTypes from 'prop-types';
-// import LinearProgress from '@material-ui/core/LinearProgress';
 
 import UsersList from '../components/Users/UsersList';
 
@@ -9,23 +7,7 @@ import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 
 class Users extends Component {
-
-    constructor(props) {
-        super(props);
-
-        this.state = {
-
-        };
-    }
-
     render() {
-
-        if (!this.props.ready) {
-            // return (
-            //     <LinearProgress />
-            // );
-        }
-
         return <TabContainer>
             <TabContent style={{display: 'flex', flexDirection: 'column', overflow:"auto" }}>
                 <UsersList {...this.props} />
@@ -40,6 +22,7 @@ Users.propTypes = {
     socket: PropTypes.object,
     ready: PropTypes.bool,
     expertMode: PropTypes.bool,
+    themeType: PropTypes.string,
 };
 
 export default Users;

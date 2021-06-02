@@ -1412,5 +1412,8 @@
   "Go to original": "转到原图",
   "Badges": "徽章",
   "See on github": "见github",
-  "base_settings_hint": "更改这些值可能会导致ioBroker系统无法运行。除非您确切知道要做什么，否则最好使用“ iob setup custom”来更改数据库类型或基本数据库设置。"
+  "base_settings_hint": "更改这些值可能会导致ioBroker系统无法运行。除非您确切知道要做什么，否则最好使用“ iob setup custom”来更改数据库类型或基本数据库设置。",
+  "You have unsaved changes": "您有未保存的更改",
+  "Discard?": "丢弃？",
+  "Check adapter for updates": "检查适配器是否有更新"
 }

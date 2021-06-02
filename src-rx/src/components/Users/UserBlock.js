@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import {useRef, useEffect} from 'react';
 import { /*DragPreviewImage, */useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import Color from 'color';
 
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
@@ -17,15 +16,13 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import Icon from '@iobroker/adapter-react/Components/Icon';
+import Utils from "@iobroker/adapter-react/Components/Utils";
 
 function UserBlock(props) {
     const opacity = props.isDragging ? 0 : 1;
 
-    let textColor = !props.user || !props.user.common || !props.user.common.color || Color(props.user.common.color).hsl().object().l > 50 ? '#000000' : '#FFFFFF';
+    const textColor = Utils.getInvertedColor(props.user.common.color, props.themeType, true);
 
-    if (!props.user.common.color) {
-        textColor = null;
-    }
     let style = { cursor: 'grab', opacity, overflow: 'hidden', color: textColor }
     if (props.user.common.color) {
         style.backgroundColor = props.user.common.color;

@@ -602,12 +602,12 @@ class Markdown extends Component {
 
         const {header, parts, content, license, changeLog, title} = this.format(text);
         let _title = header.title || title || Utils.getTitle(text);
-        if (_title) {
+        /*if (_title) {
             window.document.title = _title;
         } else if (title) {
             _title = title;
             window.document.title = title;
-        }
+        }*/
         let affiliate = null;
         if (header.affiliate) {
             try {
@@ -623,9 +623,15 @@ class Markdown extends Component {
             // split news
             _changeLog = this.parseChangeLog(changeLog);
             if (_changeLog && typeof _changeLog === 'object' && this.state.adapterNews) {
+                const lang = I18n.getLanguage();
                 Object.keys(this.state.adapterNews).forEach(version => {
                     if (!_changeLog[version]) {
-                        _changeLog[version] = {version, lines: this.state.adapterNews[version].split('\\n')};
+                        let news = this.state.adapterNews[version];
+                        if (typeof news === 'object') {
+                            news = news[lang] || news.en || '';
+                        }
+
+                        _changeLog[version] = {version, lines: news.split('\\n')};
                     }
                 });
             }

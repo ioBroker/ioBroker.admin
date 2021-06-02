@@ -260,12 +260,25 @@ class ObjectCustomEditor extends Component {
         }
     }
 
+    static flattenItems(items, _result) {
+        _result = _result || {};
+        items && Object.keys(items).forEach(attr => {
+            if (items[attr].items) {
+                ObjectCustomEditor.flattenItems(items[attr].items, _result);
+            } else {
+                _result[attr] = items[attr];
+            }
+        });
+
+        return _result;
+    }
+
     getDefaultValues(instance, obj) {
         const defaultValues = {enabled: false};
         const adapter = instance.split('.')[0];
 
         if (this.jsonConfigs[adapter] && !this.jsonConfigs[adapter].disabled) {
-            const items = this.jsonConfigs[adapter].json.items;
+            const items = ObjectCustomEditor.flattenItems(this.jsonConfigs[adapter].json.items);
 
             if (items) {
                 const processed = [];

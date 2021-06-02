@@ -1131,24 +1131,27 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
     const valText = {};
     let v = !state || state.val === null ? '(null)' : (state.val === undefined ? '[undef]' : state.val);
     const type = typeof v;
-    if (type === 'number') {
-        v = (Math.round(v * 100000000) / 100000000); // remove 4.00000000000000001
-        if (isFloatComma) {
-            v = v.toString().replace('.', ',');
-        }
-    } else if (type === 'object') {
-        v = JSON.stringify(v);
-    } else if (type !== 'string') {
-        v = v.toString();
-    }
 
     if (isCommon && isCommon.role && typeof isCommon.role === 'string' && isCommon.role.match(/^value\.time|^date/)) {
         if (typeof v === 'string' && v.length === 13) { // warning, this solution only works till Nov 20 2286 18:46:39CET
             v = parseInt(v, 10);
         }
         v = v ? new Date(v).toString() : v;
-    } else if (typeof v !== 'string') {
-        v = v.toString();
+    } else {
+        if (type === 'number') {
+            v = Math.round(v * 100000000) / 100000000; // remove 4.00000000000000001
+            if (isFloatComma) {
+                v = v.toString().replace('.', ',');
+            }
+        } else if (type === 'object') {
+            v = JSON.stringify(v);
+        } else if (type !== 'string') {
+            v = v.toString();
+        }
+
+        if (typeof v !== 'string') {
+            v = v.toString();
+        }
     }
 
     if (states && states[v] !== undefined) {

@@ -2,7 +2,6 @@ import {useEffect, useRef, Component} from 'react'
 import PropTypes from 'prop-types';
 import {useDrag, useDrop} from 'react-dnd';
 import {getEmptyImage} from 'react-dnd-html5-backend';
-import Color from 'color';
 import clsx from 'clsx';
 import {withStyles} from '@material-ui/core/styles';
 
@@ -254,11 +253,7 @@ class EnumBlock extends Component {
     render() {
         const classes = this.props.classes;
         const props = this.props;
-        let textColor = !props.enum || !props.enum.common || !props.enum.common.color || Color(props.enum.common.color).hsl().object().l > 50 ? '#000000' : '#FFFFFF';
-
-        if (!props.enum?.common?.color) {
-            textColor = null;
-        }
+        let textColor = Utils.getInvertedColor(props.enum?.common?.color, props.themeType, true);
 
         let style = {opacity: this.props.isDragging ? 0 : 1, color: textColor};
 
@@ -475,6 +470,7 @@ EnumBlockDrag.propTypes = {
     updating: PropTypes.bool,
     id: PropTypes.string,
     children: PropTypes.number,
+    themeType: PropTypes.string,
 };
 
 export default EnumBlockDrag;

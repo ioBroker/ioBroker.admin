@@ -486,6 +486,7 @@ class UsersList extends Component {
                         </div>
                         <div className={this.props.classes.blocksContainer}>{
                             this.state.groups.map(group => <GroupBlock
+                                themeType={this.props.themeType}
                                 group={group}
                                 key={group._id}
                                 users={this.state.users}
@@ -522,6 +523,7 @@ class UsersList extends Component {
                         </div>
                         <div className={this.props.classes.blocksContainer}>{
                             this.state.users.map(user => <UserBlock
+                                themeType={this.props.themeType}
                                 user={user}
                                 key={user._id}
                                 groups={this.state.groups}
@@ -589,6 +591,7 @@ UsersList.propTypes = {
     socket: PropTypes.object,
     ready: PropTypes.bool,
     expertMode: PropTypes.bool,
+    themeType: PropTypes.string,
 };
 
 export default withStyles(styles)(UsersList);
