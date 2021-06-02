@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.1.5",
+        "version": "5.1.6",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.6": {
+                "en": "Improved the custom settings",
+                "de": "Die benutzerdefinierten Einstellungen wurden verbessert",
+                "ru": "Улучшены пользовательские настройки",
+                "pt": "Melhorou as configurações personalizadas",
+                "nl": "De aangepaste instellingen verbeterd",
+                "fr": "Amélioration des paramètres personnalisés",
+                "it": "Migliorate le impostazioni personalizzate",
+                "es": "Mejorada la configuración personalizada.",
+                "pl": "Poprawiono ustawienia niestandardowe",
+                "zh-cn": "改进了自定义设置"
+            },
             "5.1.5": {
                 "en": "Fix edit of enumeration",
                 "de": "Korrektur der Bearbeitung der Aufzählung",
@@ -235,18 +247,6 @@
                 "zh-cn": "Admin5：修复了许多错误"
             },
             "5.0.20": {
-                "en": "Admin5: Fixed many bugs",
-                "de": "Admin5: Viele Fehler behoben",
-                "ru": "Admin5: Исправлено множество ошибок",
-                "pt": "Admin5: muitos bugs corrigidos",
-                "nl": "Admin5: Veel bugs opgelost",
-                "fr": "Admin5: Correction de nombreux bugs",
-                "it": "Admin5: risolti molti bug",
-                "es": "Admin5: se corrigieron muchos errores",
-                "pl": "Admin5: Naprawiono wiele błędów",
-                "zh-cn": "Admin5：修复了许多错误"
-            },
-            "5.0.19": {
                 "en": "Admin5: Fixed many bugs",
                 "de": "Admin5: Viele Fehler behoben",
                 "ru": "Admin5: Исправлено множество ошибок",

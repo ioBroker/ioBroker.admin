@@ -1,3 +1,7 @@
+## 5.1.1 (2021-05-25)
+* (bluefox) Admin5: Fixed the host selector
+* (bluefox) Admin5: Implemented the colored logs
+
 ## 5.1.0 (2021-05-24)
 * (bluefox) Admin5: Fixed update of objects
 * (bluefox) Admin5: React UI is by default enabled
