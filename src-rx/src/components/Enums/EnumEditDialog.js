@@ -14,14 +14,11 @@ import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 import PageviewIcon from '@material-ui/icons/Pageview';
 import ColorLensIcon from '@material-ui/icons/ColorLens';
 import ImageIcon from '@material-ui/icons/Image';
+import CloseIcon from '@material-ui/icons/Close';
+import CheckIcon from '@material-ui/icons/Check';
 
 import {IOTextField, IOColorPicker, IOFileInput} from '../IOFields/Fields';
 import Utils from '../Utils';
-
-import devices from '../../assets/devices/list.json';
-import rooms from '../../assets/rooms/list.json';
-import CloseIcon from "@material-ui/icons/Close";
-import CheckIcon from "@material-ui/icons/Check";
 
 const styles = theme => ({
     contentRoot:{
@@ -37,18 +34,12 @@ const styles = theme => ({
         width:'100%'
     },
     dialog: {
-        // maxWidth: '100vw',
-        // maxHeight: '100vh',
-        // overflowY: 'auto',
-        // overflowX: 'hidden',
-        // padding: 0
     },
     iconPreview: {
         height: 32,
         width: 32,
     },
     colorPicker: {
-        // position:'absolute'
     },
     formIcon : {
         margin: 10,
@@ -86,7 +77,7 @@ function EnumEditDialog(props) {
         return idArray.join('.');
     }
 
-    let ICONS;
+    /*let ICONS;
     if (props.enum._id.startsWith('enum.functions.')) {
         ICONS = JSON.parse(JSON.stringify(devices));
         ICONS.forEach(item => {
@@ -111,7 +102,7 @@ function EnumEditDialog(props) {
                 }
             }
         });
-    }
+    }*/
 
     return <Dialog
         fullWidth={props.innerWidth < 500}
@@ -185,7 +176,9 @@ function EnumEditDialog(props) {
                  <Grid item xs={12} md={6}>
                     <IOFileInput
                         label="Icon"
-                        icons={ICONS}
+                        //icons={ICONS}
+                        onlyDevices={props.enum._id.startsWith('enum.functions.')}
+                        onlyRooms={props.enum._id.startsWith('enum.rooms.')}
                         t={props.t}
                         lang={props.lang}
                         value={ props.enum.common.icon }

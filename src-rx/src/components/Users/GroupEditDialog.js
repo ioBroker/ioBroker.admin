@@ -20,6 +20,8 @@ import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 import PageviewIcon from '@material-ui/icons/Pageview';
 import ColorLensIcon from '@material-ui/icons/ColorLens';
 import ImageIcon from '@material-ui/icons/Image';
+import IconCancel from '@material-ui/icons/Close';
+import IconCheck from '@material-ui/icons/Check';
 
 import {IOTextField, IOFileInput, IOColorPicker} from '../IOFields/Fields';
 
@@ -35,8 +37,6 @@ import Group7 from '../../assets/groups/group7.svg';
 import Group8 from '../../assets/groups/group8.svg';
 import Group9 from '../../assets/groups/group9.svg';
 import Group10 from '../../assets/groups/group10.svg';
-import IconCancel from "@material-ui/icons/Close";
-import IconCheck from "@material-ui/icons/Check";
 
 const GROUPS_ICONS = [Group1, Group2, Group3, Group4, Group5, Group6, Group7, Group8, Group9, Group10];
 

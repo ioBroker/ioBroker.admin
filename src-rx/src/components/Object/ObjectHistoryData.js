@@ -54,8 +54,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { FaPlusSquare as InsertIcon} from 'react-icons/fa';
 import { FaDownload as ExportIcon} from 'react-icons/fa';
-import IconDelete from "@material-ui/icons/Delete";
-import IconClose from "@material-ui/icons/Close";
+import IconDelete from '@material-ui/icons/Delete';
+import IconClose from '@material-ui/icons/Close';
 
 const localeMap = {
     en: enLocale,

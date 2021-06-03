@@ -89,9 +89,7 @@
           "hidden": "!data.auth",
           "type": "number",
           "label": "Login timeout",
-          "help": {
-            "en": "sec"
-          },
+          "help":  "sec",
           "sm": 12,
           "md": 6,
           "lg": 2
@@ -233,35 +231,47 @@
     },
     "instancesTab": {
       "type": "panel",
-      "label": {
-        "en": "Access to instances"
-      },
+      "label": "Access to instances",
       "items": {
         "_text1": {
           "type": "staticText",
-          "label": {
-            "en": "There is a option to allow access to the specific configuration pages of selected instances."
-          }
+          "label": "There is a option to allow access to the specific configuration pages of selected instances."
         },
         "accessLimit": {
           "newLine": true,
           "type": "checkbox",
-          "label": {
-            "en": "Allow access only to specific instances"
-          }
+          "label": "Allow access only to specific instances"
         },
         "applyRights": {
           "newLine": true,
           "type": "checkbox",
-          "label": {
-            "en": "Apply access rights for selected instances"
-          }
+          "label": "Apply access rights for selected instances"
         },
         "accessAllowedConfigs": {
           "hidden": "!data.accessLimit",
           "newLine": true,
           "type": "custom",
           "component": "configCustomEasyAccess"
+        }
+      }
+    },
+    "demoTab": {
+      "type": "panel",
+      "label": "Demo",
+      "items": {
+        "_staticText": {
+          "type": "staticText",
+          "text": "${'my super pattern here ' + 55}",
+          "style": {
+            "border": "1px solid #777",
+            "borderRadius": 4,
+            "color": "#111",
+            "minWidth": 300
+          },
+          "darkStyle": {
+            "border": "1px solid #333",
+            "color": "#EEE"
+          }
         }
       }
     }

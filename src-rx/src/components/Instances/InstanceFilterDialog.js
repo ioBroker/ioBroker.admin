@@ -5,19 +5,21 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import { Avatar, Card, Checkbox, DialogTitle, FormControlLabel, makeStyles, MenuItem, Select, ThemeProvider } from '@material-ui/core';
+
 import WarningIcon from '@material-ui/icons/Warning';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import SettingsIcon from '@material-ui/icons/Lens';
-import filterIcon from '../../assets/filter.svg';
+import IconCheck from '@material-ui/icons/Check';
+import IconClose from '@material-ui/icons/Close';
+
+import { green, grey, orange, red } from '@material-ui/core/colors';
 
 import I18n from '@iobroker/adapter-react/i18n';
-import { Avatar, Card, Checkbox, DialogTitle, FormControlLabel, makeStyles, MenuItem, Select, ThemeProvider } from '@material-ui/core';
-
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
-import { green, grey, orange, red } from "@material-ui/core/colors";
-import IconCheck from "@material-ui/icons/Check";
-import IconClose from "@material-ui/icons/Close";
+
+import filterIcon from '../../assets/filter.svg';
 
 let node = null;
 

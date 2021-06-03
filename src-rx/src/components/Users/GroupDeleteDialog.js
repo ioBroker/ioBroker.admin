@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types';
+
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-import IconDelete from "@material-ui/icons/Delete";
-import IconCancel from "@material-ui/icons/Close";
-import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContentText from '@material-ui/core/DialogContentText';
+
+import IconDelete from "@material-ui/icons/Delete";
+import IconCancel from '@material-ui/icons/Close';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 function GroupDeleteDialog(props) {
     if (!props.open) {

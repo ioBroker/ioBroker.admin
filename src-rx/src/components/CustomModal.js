@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import clsx from 'clsx';
+
 import Button from '@material-ui/core/Button';
 import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, withStyles } from '@material-ui/core';
-import PropTypes from 'prop-types';
+
+import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@material-ui/icons/Close';
+
 import i18n from '@iobroker/adapter-react/i18n';
-import clsx from 'clsx';
-import CheckIcon from "@material-ui/icons/Check";
-import CloseIcon from "@material-ui/icons/Close";
 
 const styles = theme => ({
     modalWrapper: {

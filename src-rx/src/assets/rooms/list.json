@@ -16,6 +16,22 @@
     "icon": "Storeroom.svg"
   },
   {
+    "_id": "second_floor",
+    "name": {
+      "en": "Second floor",
+      "ru": "Второй этаж",
+      "de": "Erster OG",
+      "pt": "Primeiro andar",
+      "nl": "Eerste verdieping",
+      "fr": "Premier étage",
+      "it": "Primo piano",
+      "es": "Primer piso",
+      "pl": "Pierwsze piętro",
+      "zh-cn": "第一层"
+    },
+    "icon": "Second Floor.svg"
+  },
+  {
     "_id": "dressing_room",
     "name": {
       "en": "Dressing Room",

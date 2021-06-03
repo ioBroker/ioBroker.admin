@@ -108,7 +108,7 @@ let IOFileInput = function (props) {
                         </IconButton>
                     </div>
                     :
-                    <IconSelector icons={props.icons} onSelect={base64 => props.onChange(base64)} t={props.t} lang={props.lang}/>
+                    <IconSelector icons={props.icons} onlyRooms={props.onlyRooms} onlyDevices={props.onlyDevices} onSelect={base64 => props.onChange(base64)} t={props.t} lang={props.lang}/>
                 }
 
                 <div {...getRootProps()} style={Object.assign({textAlign: 'center', display: 'inline-block', height: 90, width: 240, border: '2px dashed #777', borderRadius: 10, marginTop: 12, padding: 4}, isDragActive ? {backgroundColor: 'rgba(0, 255, 0, 0.1)'} : {cursor: 'pointer'})}>
@@ -134,7 +134,10 @@ IOFileInput.propTypes = {
     name: PropTypes.string,
     value: PropTypes.any,
     onChange: PropTypes.func,
+
     icons: PropTypes.array,
+    onlyRooms: PropTypes.bool,
+    onlyDevices: PropTypes.bool,
 };
 
 export {IOFileInput};

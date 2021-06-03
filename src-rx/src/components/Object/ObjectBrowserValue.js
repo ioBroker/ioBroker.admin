@@ -28,10 +28,10 @@ import Typography from '@material-ui/core/Typography';
 import Switch from '@material-ui/core/Switch';
 
 import ChartIcon from '@material-ui/icons/ShowChart';
+import IconCancel from '@material-ui/icons/Close';
+import IconCheck from '@material-ui/icons/Check';
 
 import ObjectChart from './ObjectChart';
-import IconCancel from "@material-ui/icons/Close";
-import IconCheck from "@material-ui/icons/Check";
 
 const styles = theme => ({
     input: {

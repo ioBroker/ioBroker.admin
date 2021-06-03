@@ -1,7 +1,5 @@
 import React, { useCallback, useState } from 'react';
 
-import SmsIcon from '@material-ui/icons/Sms';
-import CloseIcon from "@material-ui/icons/Close";
 import PropTypes from 'prop-types';
 
 import Button from '@material-ui/core/Button';
@@ -16,9 +14,11 @@ import { AppBar, Box, Checkbox, FormControlLabel, IconButton, InputAdornment, ma
 import npmIcon from '../assets/npm.png';
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 import UrlIcon from '@material-ui/icons/Language';
+import SmsIcon from '@material-ui/icons/Sms';
+import CloseIcon from '@material-ui/icons/Close';
+import CheckIcon from '@material-ui/icons/Check';
 
 import I18n from '@iobroker/adapter-react/i18n';
-import CheckIcon from "@material-ui/icons/Check";
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;

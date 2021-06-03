@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-no-target-blank */
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
+import clsx from 'clsx';
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -10,12 +11,12 @@ import IconCopy from '@iobroker/adapter-react/icons/IconCopy';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Accordion, AccordionDetails, AccordionSummary, Card, DialogTitle, IconButton, makeStyles, ThemeProvider } from '@material-ui/core';
 
+import CloseIcon from '@material-ui/icons/Close';
+import DescriptionIcon from '@material-ui/icons/Description';
+
 import I18n from '@iobroker/adapter-react/i18n';
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
-import clsx from 'clsx';
-import CloseIcon from "@material-ui/icons/Close";
-import DescriptionIcon from "@material-ui/icons/Description";
 
 let node = null;
 

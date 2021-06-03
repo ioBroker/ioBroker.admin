@@ -13,6 +13,7 @@ import IconButton from '@material-ui/core/IconButton';
 
 import ClearIcon from '@material-ui/icons/Clear';
 import CustomGroup from '@material-ui/icons/Brush';
+import CloseIcon from '@material-ui/icons/Close';
 
 import Icon from '@iobroker/adapter-react/Components/Icon';
 
@@ -20,13 +21,11 @@ import devices from '../../assets/devices/list.json';
 import rooms from '../../assets/rooms/list.json';
 
 import Utils from '../Utils';
-import CloseIcon from "@material-ui/icons/Close";
 
 const styles = theme => ({
     icon: {
         width: 32,
         height: 32,
-        //marginRight: theme.spacing(1),
     },
     customGroupButton: {
 
@@ -48,12 +47,19 @@ const styles = theme => ({
         maxHeight: 900
     },
     filter: {
-        marginBottom: theme.spacing(2)
+        marginLeft: theme.spacing(2),
+        marginTop: 0,
+        marginBottom: 0,
     },
     content: {
         display: 'grid',
         width: '100%',
         gridTemplateColumns: 'repeat(4,1fr)',
+    },
+    title: {
+        lineHeight: '45px',
+        verticalAlign: 'middle',
+        display: 'inline-block',
     }
 });
 
@@ -110,14 +116,14 @@ class EnumTemplateDialog extends Component {
             open={true}
             onClose={this.props.onClose}
         >
-            <DialogTitle>{this.props.t(this.props.prefix.startsWith('enum.functions') ? 'Create new function' : 'Create new room')}</DialogTitle>
-            <DialogContent style={{textAlign: 'center'}}>
-                {this.state.loading && <LinearProgress/>}
+            <DialogTitle>
+                    {this.props.t(this.props.prefix.startsWith('enum.functions') ? 'Create new function' : 'Create new room')}
                 <TextField
                     className={this.props.classes.filter}
                     value={this.state.filter}
                     onChange={e => this.setState({filter: e.target.value.toLowerCase()})}
-                    label={this.props.t('Filter')}
+                    placeholder={this.props.t('Filter')}
+                    margin="dense"
                     InputProps={{
                         endAdornment: this.state.filter
                             ?
@@ -130,6 +136,9 @@ class EnumTemplateDialog extends Component {
                             undefined,
                     }}
                 />
+            </DialogTitle>
+            <DialogContent style={{textAlign: 'center'}}>
+                {this.state.loading && <LinearProgress/>}
                 <div className={this.props.classes.content}>
                     {templates.map((template, i) => {
                     const name = this.getName(template);
