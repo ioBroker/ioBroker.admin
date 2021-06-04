@@ -5,7 +5,7 @@ import I18n from '@iobroker/adapter-react/i18n';
 
 import Utils from '../Utils';
 import CustomModal from '../components/CustomModal';
-import SelectWithIcon from '../components/SelectWithIcon';
+import SelectWithIcon from '@iobroker/adapter-react/Components/SelectWithIcon';
 
 const readWriteArray = [
     {

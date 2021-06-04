@@ -17,8 +17,10 @@ import ImageIcon from '@material-ui/icons/Image';
 import CloseIcon from '@material-ui/icons/Close';
 import CheckIcon from '@material-ui/icons/Check';
 
-import {IOTextField, IOColorPicker, IOFileInput} from '../IOFields/Fields';
-import Utils from '../Utils';
+import {IOTextField, IOColorPicker} from '../IOFields/Fields';
+
+import Utils from '@iobroker/adapter-react/Components/Utils';
+import IconPicker from '@iobroker/adapter-react/Components/IconPicker';
 
 const styles = theme => ({
     contentRoot:{
@@ -174,9 +176,8 @@ function EnumEditDialog(props) {
                     />
                 </Grid>
                  <Grid item xs={12} md={6}>
-                    <IOFileInput
+                    <IconPicker
                         label="Icon"
-                        //icons={ICONS}
                         onlyDevices={props.enum._id.startsWith('enum.functions.')}
                         onlyRooms={props.enum._id.startsWith('enum.rooms.')}
                         t={props.t}

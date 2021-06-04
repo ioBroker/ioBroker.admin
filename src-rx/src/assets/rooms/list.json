@@ -883,8 +883,8 @@
     "_id": "workshop",
     "name": {
       "en": "Workshop",
-      "ru": "Цех",
-      "de": "Werkstätte",
+      "ru": "Мастерская",
+      "de": "Werkstatt",
       "fr": "Atelier",
       "it": "Laboratorio",
       "nl": "Werkplaats",

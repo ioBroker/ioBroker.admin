@@ -754,8 +754,19 @@ class Instances extends Component {
         }
     };
 
-    setSchedule = (instance, value) =>
-        this.extendObject('system.adapter.' + instance.id, { common: { schedule: value } });
+    setSchedule = (instance, value) => {
+        if (value) {
+            this.extendObject('system.adapter.' + instance.id, { common: { schedule: value } });
+        } else {
+            this.props.socket.getObject('system.adapter.' + instance.id)
+                .then(obj => {
+                    if (obj.common.schedule) {
+                        delete obj.common.schedule;
+                        return this.props.socket.setObject(obj._id, obj);
+                    }
+                });
+        }
+    };
 
     setMemoryLimitMB = (instance, value) =>
         this.extendObject('system.adapter.' + instance.id, { common: { memoryLimitMB: value } });
@@ -768,8 +779,19 @@ class Instances extends Component {
     setCompact = instance =>
         this.extendObject('system.adapter.' + instance.id, { common: { runAsCompactMode: !this.isCompact(instance.obj) } });
 
-    setRestartSchedule = (instance, value) =>
-        this.extendObject('system.adapter.' + instance.id, { common: { restartSchedule: value } });
+    setRestartSchedule = (instance, value) => {
+        if (value) {
+            this.extendObject('system.adapter.' + instance.id, { common: { restartSchedule: value } });
+        } else {
+            this.props.socket.getObject('system.adapter.' + instance.id)
+                .then(obj => {
+                    if (obj.common.restartSchedule) {
+                        delete obj.common.restartSchedule;
+                        return this.props.socket.setObject(obj._id, obj);
+                    }
+                });
+        }
+    };
 
     setHost = (instance, value) =>
         this.extendObject('system.adapter.' + instance.id, { common: { host: value } });

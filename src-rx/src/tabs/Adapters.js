@@ -446,7 +446,14 @@ class Adapters extends Component {
         let adapters
         let installed
         const currentHost = this.props.currentHost;
-        return this.props.adaptersWorker.getAdapters(update)
+        return new Promise(resolve => {
+            if (!this.state.update && update) {
+                this.setState({ update: true }, () => resolve());
+            } else {
+                resolve();
+            }
+        })
+            .then(() => this.props.adaptersWorker.getAdapters(update))
             .catch(e => window.alert('Cannot getAdapters: ' + e))
             .then(_adapters => {
                 adapters = _adapters;

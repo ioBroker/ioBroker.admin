@@ -1,6 +1,7 @@
 import {useCallback} from 'react'
 import {useDropzone} from 'react-dropzone';
 import PropTypes from 'prop-types';
+import { makeStyles } from '@material-ui/core/styles';
 
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -8,10 +9,10 @@ import FormControl from '@material-ui/core/FormControl';
 import IconButton from '@material-ui/core/IconButton';
 import ClearIcon from '@material-ui/icons/Clear';
 
-import ColorPicker from './ColorPicker';
-import IconSelector from './IconSelector';
-
+import IconSelector from '@iobroker/adapter-react/Components/IconSelector';
 import Icon from '@iobroker/adapter-react/Components/Icon';
+
+import ColorPicker from './ColorPicker';
 
 export function IOTextField(props) {
     let IconCustom = props.icon;
@@ -76,6 +77,42 @@ export {IOColorPicker};
 let IOFileInput = function (props) {
     let IconCustom = props.icon;
 
+    const useStyles = makeStyles(theme => ({
+        formContainer : {
+            display: 'flex',
+            justifyContent:'center',
+            alignItems:'center'
+        },
+        formControl : {
+            display: 'flex',
+            padding: 24,
+            flexGrow: 1000
+        },
+        divContainer: {
+            width: 32 + 24,
+            height: 32,
+            whiteSpace: 'nowrap',
+            lineHeight: '32px',
+            marginRight: 8
+        },
+        dragField: {
+            textAlign: 'center',
+            display: 'inline-block',
+            height: 90,
+            width: 240,
+            border: '2px dashed #777',
+            borderRadius: 10,
+            marginTop: 12,
+            padding: 4
+        },
+        formIcon : {
+            margin: 10,
+            opacity: 0.6
+        },
+    }));
+
+    const classes = useStyles();
+
     const onDrop = useCallback(acceptedFiles => {
         const reader = new FileReader();
 
@@ -85,19 +122,19 @@ let IOFileInput = function (props) {
         if (acceptedFiles[0]) {
             reader.readAsDataURL(acceptedFiles[0]);
         }
-      }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-      const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop});
+    const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop});
 
-      return <div className={props.classes.formContainer}>
-        {IconCustom ? <IconCustom className={ props.classes.formIcon }/> : null}
-        <FormControl className={props.classes.formControl} style={{padding: 3}}>
+    return <div className={classes.formContainer}>
+        {IconCustom ? <IconCustom className={ classes.formIcon }/> : null}
+        <FormControl className={classes.formControl} style={{padding: 3}}>
             <InputLabel shrink>
                 { props.t(props.label)}
             </InputLabel>
-            <div className={ props.classes.formContainer }>
+            <div className={ classes.formContainer }>
                 {props.value ?
-                    <div style={{width: 32 + 24, height: 32, whiteSpace: 'nowrap', lineHeight: '32px', marginRight: 8}}>
+                    <div className={ classes.divContainer }>
                         <Icon alt="" className={props.previewClassName} src={props.value}/>
                         <IconButton
                             style={{verticalAlign: 'top'}}
@@ -108,15 +145,24 @@ let IOFileInput = function (props) {
                         </IconButton>
                     </div>
                     :
-                    <IconSelector icons={props.icons} onlyRooms={props.onlyRooms} onlyDevices={props.onlyDevices} onSelect={base64 => props.onChange(base64)} t={props.t} lang={props.lang}/>
+                    <IconSelector
+                        icons={props.icons}
+                        onlyRooms={props.onlyRooms}
+                        onlyDevices={props.onlyDevices}
+                        onSelect={base64 => props.onChange(base64)}
+                        t={props.t}
+                        lang={props.lang}
+                    />
                 }
 
-                <div {...getRootProps()} style={Object.assign({textAlign: 'center', display: 'inline-block', height: 90, width: 240, border: '2px dashed #777', borderRadius: 10, marginTop: 12, padding: 4}, isDragActive ? {backgroundColor: 'rgba(0, 255, 0, 0.1)'} : {cursor: 'pointer'})}>
+                <div {...getRootProps()}
+                     className={classes.dragField}
+                     style={isDragActive ? {backgroundColor: 'rgba(0, 255, 0, 0.1)'} : {cursor: 'pointer'}}>
                     <input {...getInputProps()} />
                     {
                         isDragActive ?
-                        <p>{props.t('Drop the files here ...')}</p> :
-                        <p>{props.t(`Drag 'n' drop some files here, or click to select files`)}</p>
+                            <p>{props.t('ra_Drop the files here ...')}</p> :
+                            <p>{props.t(`ra_Drag 'n' drop some files here, or click to select files`)}</p>
                     }
                 </div>
             </div>

@@ -30,13 +30,13 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import I18n from '@iobroker/adapter-react/i18n';
 import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
 import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
+import TextWithIcon from '@iobroker/adapter-react/Components/TextWithIcon';
+import SelectWithIcon from '@iobroker/adapter-react/Components/SelectWithIcon';
 
 import InstanceInfo from './InstanceInfo';
 import State from '../State';
 import CustomModal from '../CustomModal';
 import LinksDialog from './LinksDialog';
-import TextWithIcon from '../TextWithIcon';
-import SelectWithIcon from '../SelectWithIcon';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -887,6 +887,7 @@ const InstanceRow = ({
                     (openDialogCron && t('Edit restart rule for %s', instance.id)) ||
                     (openDialogSchedule && t('Edit schedule rule for %s', instance.id))
                 }
+                clearButton={true}
                 cron={openDialogCron ? getRestartSchedule(id) : getSchedule(id)}
                 language={I18n.getLanguage()}
                 onOk={cron => {

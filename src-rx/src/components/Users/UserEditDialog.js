@@ -20,8 +20,10 @@ import ImageIcon from '@material-ui/icons/Image';
 import IconCancel from '@material-ui/icons/Close';
 import IconCheck from '@material-ui/icons/Check';
 
-import {IOTextField, IOColorPicker, IOFileInput} from '../IOFields/Fields';
-import Utils from '../Utils';
+import Utils from '@iobroker/adapter-react/Components/Utils';
+import IconPicker from '@iobroker/adapter-react/Components/IconPicker';
+
+import {IOTextField, IOColorPicker} from '../IOFields/Fields';
 
 import User1 from '../../assets/users/user1.svg';
 import User2 from '../../assets/users/user2.svg';
@@ -201,7 +203,7 @@ function UserEditDialog(props) {
                     />
                 </Grid>
                  <Grid item xs={12} md={6}>
-                    <IOFileInput
+                    <IconPicker
                         icons={USER_ICONS}
                         label="Icon"
                         t={props.t}

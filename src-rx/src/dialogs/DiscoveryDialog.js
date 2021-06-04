@@ -21,7 +21,7 @@ import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 
 import Command from '../components/Command';
-import SelectWithIcon from '../components/SelectWithIcon';
+import SelectWithIcon from '@iobroker/adapter-react/Components/SelectWithIcon';
 import { licenseDialogFunc } from './LicenseDialog';
 import { GenereteInputsFunc } from './GenereteInputsModal';
 import { useStateLocal } from '../helpers/hooks/useStateLocal';

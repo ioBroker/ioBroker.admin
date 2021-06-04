@@ -23,9 +23,10 @@ import ImageIcon from '@material-ui/icons/Image';
 import IconCancel from '@material-ui/icons/Close';
 import IconCheck from '@material-ui/icons/Check';
 
-import {IOTextField, IOFileInput, IOColorPicker} from '../IOFields/Fields';
+import {IOTextField, IOColorPicker} from '../IOFields/Fields';
 
-import Utils from '../Utils';
+import Utils from '@iobroker/adapter-react/Components/Utils';
+import IconPicker from '@iobroker/adapter-react/Components/IconPicker';
 
 import Group1 from '../../assets/groups/group1.svg';
 import Group2 from '../../assets/groups/group2.svg';
@@ -240,7 +241,7 @@ function GroupEditDialog(props) {
             />
         </Grid>
         <Grid item xs={12} md={6}>
-            <IOFileInput
+            <IconPicker
                 label="Icon"
                 icons={GROUPS_ICONS}
                 t={props.t}

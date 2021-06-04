@@ -1261,8 +1261,6 @@
   "Permissions": "Разрешения",
   "ID edit": "Изменить идентификатор",
   "ID preview": "Просмотр ID ",
-  "Drag 'n' drop some files here, or click to select files": "Перетащите файл сюда или щелкните, чтобы выбрать файл",
-  "Drop the files here ...": "Перетащите файл сюда ...",
   "User parameters": "Параметры пользователя",
   "Select predefined icon": "Выберите предопределенный значок",
   "group_acl_object": "Права доступа к объекту",
