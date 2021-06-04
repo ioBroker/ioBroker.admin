@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 5.1.7 (2021-06-04)
 * (bluefox) Added the possibility to clear the schedule
 
 ### 5.1.6 (2021-06-02)
@@ -103,9 +103,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 5.1.3 (2021-05-26)
 * (bluefox) Improved the GUI for enumerations
-
-### 5.1.2 (2021-05-26)
-* (bluefox) Admin5: Fixed logs by the changing of host
 
 ## License
 

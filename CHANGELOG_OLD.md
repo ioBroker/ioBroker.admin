@@ -1,3 +1,6 @@
+## 5.1.2 (2021-05-26)
+* (bluefox) Admin5: Fixed logs by the changing of host
+
 ## 5.1.1 (2021-05-25)
 * (bluefox) Admin5: Fixed the host selector
 * (bluefox) Admin5: Implemented the colored logs

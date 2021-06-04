@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.1.6",
+        "version": "5.1.7",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.7": {
+                "en": "Added the possibility to clear the schedule",
+                "de": "Möglichkeit hinzugefügt, den Zeitplan zu löschen",
+                "ru": "Добавлена возможность очистить расписание",
+                "pt": "Adicionada a possibilidade de limpar a programação",
+                "nl": "De mogelijkheid toegevoegd om het schema te wissen",
+                "fr": "Ajout de la possibilité d'effacer le planning",
+                "it": "Aggiunta la possibilità di cancellare il programma",
+                "es": "Añadida la posibilidad de borrar el horario",
+                "pl": "Dodano możliwość wyczyszczenia harmonogramu",
+                "zh-cn": "添加了清除时间表的可能性"
+            },
             "5.1.6": {
                 "en": "Improved the custom settings",
                 "de": "Die benutzerdefinierten Einstellungen wurden verbessert",
@@ -235,18 +247,6 @@
                 "zh-cn": "Admin5：修复了一些错误"
             },
             "5.0.21": {
-                "en": "Admin5: Fixed many bugs",
-                "de": "Admin5: Viele Fehler behoben",
-                "ru": "Admin5: Исправлено множество ошибок",
-                "pt": "Admin5: muitos bugs corrigidos",
-                "nl": "Admin5: Veel bugs opgelost",
-                "fr": "Admin5: Correction de nombreux bugs",
-                "it": "Admin5: risolti molti bug",
-                "es": "Admin5: se corrigieron muchos errores",
-                "pl": "Admin5: Naprawiono wiele błędów",
-                "zh-cn": "Admin5：修复了许多错误"
-            },
-            "5.0.20": {
                 "en": "Admin5: Fixed many bugs",
                 "de": "Admin5: Viele Fehler behoben",
                 "ru": "Admin5: Исправлено множество ошибок",
