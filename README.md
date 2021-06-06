@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Improved the list of predefined icons
+
 ### 5.1.7 (2021-06-04)
 * (bluefox) Added the possibility to clear the schedule
 

@@ -90,7 +90,7 @@ function EnumEditDialog(props) {
            { props.t( 'Enum parameters' ) }
         </DialogTitle>
         <DialogContent classes={{root: props.classes.contentRoot}}>
-            <Grid  container spacing={4} className={props.classes.dialog}>
+            <Grid container spacing={2} className={props.classes.dialog}>
                 <Grid item xs={12} md={6}>
                     <IOTextField
                         label="Name"

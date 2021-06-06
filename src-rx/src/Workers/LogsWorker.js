@@ -1,4 +1,4 @@
-import Utils from '../../Utils';
+import Utils from '../Utils';
 
 class LogsWorker {
     constructor(socket, maxLogs) {
