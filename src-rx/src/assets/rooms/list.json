@@ -752,26 +752,10 @@
     "icon": "Toilet.svg"
   },
   {
-    "_id": "stairway",
-    "name": {
-      "en": "Stairway",
-      "ru": "Лестница",
-      "de": "Treppe",
-      "fr": "Escalier",
-      "it": "Scala",
-      "nl": "Trap",
-      "pl": "Klatka Schodowa",
-      "pt": "Escada",
-      "es": "Escalera",
-      "zh-cn": "楼梯"
-    },
-    "icon": "Stairway.svg"
-  },
-  {
     "_id": "stairwell",
     "name": {
       "en": "Stairwell",
-      "ru": "Лестничная Клетка",
+      "ru": "Лестничная клетка",
       "de": "Treppenhaus",
       "fr": "Cage D'Escalier",
       "it": "Tromba Delle Scale",

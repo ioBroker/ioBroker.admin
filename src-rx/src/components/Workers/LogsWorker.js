@@ -214,13 +214,19 @@ class LogsWorker {
                 // if no time found
                 if (length) {
                     obj = this.logs[length - 1];
-                    if (typeof obj.message === 'object') {
-                        obj.message = Utils.parseColorMessage(obj.message.original + line);
-                    } else {
-                        obj.message += line;
+                    if (obj) {
+                        if (typeof obj.message === 'object') {
+                            obj.message = Utils.parseColorMessage(obj.message.original + line);
+                        } else {
+                            obj.message += line;
+                        }
                     }
                 }
             }
+        }
+
+        if (!obj) {
+            return;
         }
 
         if (typeof obj.message !== 'object') {

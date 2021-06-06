@@ -122,6 +122,14 @@ const styles = theme => ({
         alignSelf: 'center',
         marginLeft: 5
     },
+    editButton: {
+        position: 'sticky',
+        bottom: 0,
+        width: 'fit-content',
+        marginLeft: 'auto',
+        marginTop: 'auto',
+        transition: 'opacity 0.5s',
+    }
 });
 
 export const STATES = {
@@ -175,6 +183,8 @@ class Drawer extends Component {
         };
 
         this.instances = null;
+
+        this.refEditButton = React.createRef();
 
         this.getTabs();
     }
@@ -603,13 +613,7 @@ class Drawer extends Component {
                         />
                     }
                 </List>
-                {this.props.state === STATES.opened && <div style={{
-                    position: 'sticky',
-                    bottom: 0,
-                    width: 'fit-content',
-                    marginLeft: 'auto',
-                    marginTop: 'auto'
-                }}>
+                {this.props.state === STATES.opened && <div className={this.props.classes.editButton}>
                     <CustomPopper
                         editList={this.state.editList}
                         onClick={() => this.setState({ editList: !this.state.editList })}
@@ -623,6 +627,8 @@ class Drawer extends Component {
                 anchor="left"
                 open={this.props.state !== STATES.closed}
                 classes={{ paper: classes.paper }}
+                onMouseEnter={() => this.refEditButton.current.style.opacity = 1}
+                onMouseLeave={() => this.refEditButton.current.style.opacity = 0}
             >
                 <CustomDragLayer />
 
@@ -637,13 +643,11 @@ class Drawer extends Component {
                         />
                     }
                 </List>
-                {this.props.state === STATES.opened && <div style={{
-                    position: 'sticky',
-                    bottom: 0,
-                    width: 'fit-content',
-                    marginLeft: 'auto',
-                    marginTop: 'auto'
-                }}>
+                {this.props.state === STATES.opened && <div
+                    className={this.props.classes.editButton}
+                    style={{opacity: 0}}
+                    ref={this.refEditButton}
+                >
                     <CustomPopper
                         editList={this.state.editList}
                         onClick={() => this.setState({ editList: !this.state.editList })}

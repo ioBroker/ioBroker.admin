@@ -54,7 +54,7 @@ const styles = theme => ({
     },
     formControl : {
         display: 'flex',
-        padding: 24,
+        padding: '0 0 24px 0',
         flexGrow: 1000
     },
 });
@@ -78,33 +78,6 @@ function EnumEditDialog(props) {
         idArray[idArray.length-1] = short;
         return idArray.join('.');
     }
-
-    /*let ICONS;
-    if (props.enum._id.startsWith('enum.functions.')) {
-        ICONS = JSON.parse(JSON.stringify(devices));
-        ICONS.forEach(item => {
-            if (!item.icon.startsWith('/')) {
-                try {
-                    item.icon = require(`../../assets/devices/${item.icon}`).default;
-                } catch (e) {
-                    console.warn('Cannot load ' + item.icon);
-                    item.icon = null;
-                }
-            }
-        });
-    } else if (props.enum._id.startsWith('enum.rooms.')) {
-        ICONS = JSON.parse(JSON.stringify(rooms));
-        ICONS.forEach(item => {
-            if (!item.icon.startsWith('/')) {
-                try {
-                    item.icon = require(`../../assets/rooms/${item.icon}`).default;
-                } catch (e) {
-                    console.warn('Cannot load ' + item.icon);
-                    item.icon = null;
-                }
-            }
-        });
-    }*/
 
     return <Dialog
         fullWidth={props.innerWidth < 500}

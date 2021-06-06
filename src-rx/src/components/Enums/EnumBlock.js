@@ -422,7 +422,13 @@ const EnumBlockDrag = props => {
             },
             end: (item, monitor) => {
                 const dropResult = monitor.getDropResult();
-                props.moveEnum(item.enumId, dropResult.enumId);
+                if (!dropResult) {
+                    // root
+                    const parts = item.enumId.split('.');
+                    props.moveEnum(item.enumId, parts[0] + '.' + parts[1]);
+                } else {
+                    props.moveEnum(item.enumId, dropResult.enumId);
+                }
             },
             collect: (monitor) => ({
                 isDragging: monitor.isDragging(),

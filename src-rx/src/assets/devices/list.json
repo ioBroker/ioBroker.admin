@@ -1,26 +1,26 @@
 [
   {
-    "_id": "hoods",
+    "_id": "hood",
     "name": {
-      "en": "Hoods",
-      "ru": "Вытяжки",
-      "de": "Abzugshauben",
-      "fr": "Capots",
+      "en": "Hood",
+      "ru": "Вытяжка",
+      "de": "Abzugshaube",
+      "fr": "Capot",
       "it": "Cappe",
-      "nl": "Hoods",
+      "nl": "Hood",
       "pl": "Okapy",
-      "pt": "Hoods",
-      "es": "Campanas",
+      "pt": "Hood",
+      "es": "Campana",
       "zh-cn": "抽油烟机"
     },
     "icon": "Hoods.svg"
   },
   {
-    "_id": "alarm_systems",
+    "_id": "alarm_system",
     "name": {
-      "en": "Alarm Systems",
-      "ru": "Системы Сигнализации",
-      "de": "Alarmanlagen",
+      "en": "Alarm System",
+      "ru": "Сигнализация",
+      "de": "Alarmanlage",
       "fr": "Systèmes D'Alarme",
       "it": "Sistemi Di Allarme",
       "nl": "Alarm Systems",
@@ -35,7 +35,7 @@
     "_id": "battery_status",
     "name": {
       "en": "Battery Status",
-      "ru": "Заряд Батареи",
+      "ru": "Заряд батареи",
       "de": "Batteriestatus",
       "fr": "État De La Batterie",
       "it": "Stato Della Batteria",
@@ -48,10 +48,10 @@
     "icon": "Battery Status.svg"
   },
   {
-    "_id": "lightings",
+    "_id": "lighting",
     "name": {
-      "en": "Lightings",
-      "ru": "Светильники",
+      "en": "Lighting",
+      "ru": "Светильник",
       "de": "Beleuchtung",
       "fr": "Éclairages",
       "it": "Illuminazione",
@@ -128,42 +128,42 @@
     "icon": "Computer.svg"
   },
   {
-    "_id": "ceiling_spotlights",
+    "_id": "ceiling_spotlight",
     "name": {
-      "en": "Ceiling Spotlights",
-      "ru": "Потолочные Прожекторы",
-      "de": "Deckenspots",
-      "fr": "Plafond Spotlights",
+      "en": "Ceiling Spotlight",
+      "ru": "Потолочный прожектор",
+      "de": "Deckenspot",
+      "fr": "Plafond Spotlight",
       "it": "Faretti A Soffitto",
-      "nl": "Plafond Spotlights",
+      "nl": "Plafond Spotlight",
       "pl": "Reflektory Sufitowe",
-      "pt": "Tecto Focos",
+      "pt": "Tecto Foco",
       "es": "Focos De Techo",
       "zh-cn": "天花射灯"
     },
     "icon": "Ceiling Spotlights.svg"
   },
   {
-    "_id": "handle",
+    "_id": "printer",
     "name": {
-      "en": "Handle",
-      "ru": "Ручка",
-      "de": "Drücker",
-      "fr": "Manipuler",
-      "it": "Maniglia",
-      "nl": "Handvat",
-      "pl": "Uchwyt",
-      "pt": "Lidar Com",
-      "es": "Resolver",
-      "zh-cn": "处理"
+      "en": "Printer",
+      "de": "Drucker",
+      "ru": "Принтер",
+      "pt": "Impressora",
+      "nl": "Printer",
+      "fr": "Imprimante",
+      "it": "Stampante",
+      "es": "Impresora",
+      "pl": "Drukarka",
+      "zh-cn": "打印机"
     },
-    "icon": "Handle.svg"
+    "icon": "Printer.svg"
   },
   {
     "_id": "power_consumption",
     "name": {
       "en": "Power Consumption",
-      "ru": "Потребляемая Мощность",
+      "ru": "Потребляемая мощность",
       "de": "Stromverbrauch",
       "fr": "Consommation D'Énergie",
       "it": "Consumo Di Energia",
@@ -192,14 +192,14 @@
     "icon": "Window.svg"
   },
   {
-    "_id": "garage_doors",
+    "_id": "garage_door",
     "name": {
-      "en": "Garage Doors",
+      "en": "Garage Door",
       "ru": "Гаражные Ворота",
-      "de": "Garagentore",
+      "de": "Garagentor",
       "fr": "Portes De Garage",
-      "it": "Garage Doors",
-      "nl": "Garage Doors",
+      "it": "Garage Door",
+      "nl": "Garage Door",
       "pl": "Bramy Garażowe",
       "pt": "Portas De Garagem",
       "es": "Las Puertas De Garaje",
@@ -224,11 +224,11 @@
     "icon": "Hairdryer.svg"
   },
   {
-    "_id": "hanging_lamps",
+    "_id": "hanging_lamp",
     "name": {
-      "en": "Hanging Lamps",
-      "ru": "Подвесные Светильники",
-      "de": "Hängelampen",
+      "en": "Hanging Lamp",
+      "ru": "Подвесной светильник",
+      "de": "Hängelampe",
       "fr": "Lampes Suspendues",
       "it": "Lampade A Sospensione",
       "nl": "Opknoping Lampen",
@@ -242,9 +242,9 @@
   {
     "_id": "doorstep",
     "name": {
-      "en": "Doorstep",
-      "ru": "Порог",
-      "de": "Haustüre",
+      "en": "Enterance",
+      "ru": "Входная дверь",
+      "de": "Haustür",
       "fr": "Seuil De Porte",
       "it": "Gradino Della Porta",
       "nl": "Drempel",
@@ -259,7 +259,7 @@
     "_id": "hot_water",
     "name": {
       "en": "Hot Water",
-      "ru": "Горячая Вода",
+      "ru": "Горячая вода",
       "de": "Heißwasser",
       "fr": "Eau Chaude",
       "it": "Acqua Calda",
@@ -272,10 +272,10 @@
     "icon": "Hot Water.svg"
   },
   {
-    "_id": "heater",
+    "_id": "heating",
     "name": {
-      "en": "Heater",
-      "ru": "Подогреватель",
+      "en": "Heating",
+      "ru": "Отопление",
       "de": "Heizung",
       "fr": "Chauffe-Eau",
       "it": "Riscaldatore",
@@ -307,7 +307,7 @@
     "_id": "louvre",
     "name": {
       "en": "Louvre",
-      "ru": "Жалюзийное Отверстие",
+      "ru": "Жалюзи",
       "de": "Jalousie",
       "fr": "Persienne",
       "it": "Persiana Di Ventilazione",
@@ -320,17 +320,17 @@
     "icon": "Louvre.svg"
   },
   {
-    "_id": "coffee_makers",
+    "_id": "coffee_maker",
     "name": {
-      "en": "Coffee Makers",
-      "ru": "Кофеварки",
-      "de": "Kaffemaschinen",
-      "fr": "Cafetières",
+      "en": "Coffee Maker",
+      "ru": "Кофеварка",
+      "de": "Kaffemaschine",
+      "fr": "Cafetière",
       "it": "Macchine Da Caffè",
-      "nl": "Koffie Makers",
+      "nl": "Koffie Maker",
       "pl": "Ekspresy Do Kawy",
-      "pt": "Cafeteiras",
-      "es": "Cafeteras",
+      "pt": "Cafeteira",
+      "es": "Cafetera",
       "zh-cn": "咖啡壶"
     },
     "icon": "Coffee Makers.svg"
@@ -339,7 +339,7 @@
     "_id": "cold_water",
     "name": {
       "en": "Cold Water",
-      "ru": "Холодная Вода",
+      "ru": "Холодная вода",
       "de": "Kaltwasser",
       "fr": "Eau Froide",
       "it": "Acqua Fredda",
@@ -371,7 +371,7 @@
     "_id": "speaker",
     "name": {
       "en": "Speaker",
-      "ru": "Оратор",
+      "ru": "Звуковая система",
       "de": "Lautsprecher",
       "fr": "Orateur",
       "it": "Altoparlante",
@@ -387,7 +387,7 @@
     "_id": "led_strip",
     "name": {
       "en": "Led Strip",
-      "ru": "Светодиодная Полоса",
+      "ru": "Светодиодная лента",
       "de": "LED Leiste",
       "fr": "Led Strip",
       "it": "Led Strip",
@@ -419,7 +419,7 @@
     "_id": "fan",
     "name": {
       "en": "Fan",
-      "ru": "Поклонник",
+      "ru": "Вентилятор",
       "de": "Lüfter",
       "fr": "Ventilateur",
       "it": "Fan",
@@ -480,11 +480,11 @@
     "icon": "Chandelier.svg"
   },
   {
-    "_id": "awnings",
+    "_id": "awning",
     "name": {
-      "en": "Awnings",
-      "ru": "Тенты",
-      "de": "Markisen",
+      "en": "Awning",
+      "ru": "Маркиза",
+      "de": "Markise",
       "fr": "Auvents",
       "it": "Tende",
       "nl": "Luifels",
@@ -548,7 +548,7 @@
     "name": {
       "en": "Pump",
       "ru": "Насос",
-      "de": "Pumpen",
+      "de": "Pumpe",
       "fr": "Pompe",
       "it": "Pompa",
       "nl": "Pomp",
@@ -563,8 +563,8 @@
     "_id": "outdoor_blinds",
     "name": {
       "en": "Outdoor Blinds",
-      "ru": "Открытый Жалюзи",
-      "de": "Raffstoren",
+      "ru": "Внещгте жалюзи",
+      "de": "Raffstore",
       "fr": "Volets",
       "it": "Tende Da Esterni",
       "nl": "Outdoor Blinds",
@@ -579,7 +579,7 @@
     "_id": "mowing_machine",
     "name": {
       "en": "Mowing Machine",
-      "ru": "Стрижка Машина",
+      "ru": "Газонокосилка",
       "de": "Rasenmäher",
       "fr": "Machine De Fauchage",
       "it": "Macchina Di Falciatura",
@@ -595,7 +595,7 @@
     "_id": "receiver",
     "name": {
       "en": "Receiver",
-      "ru": "Приемник",
+      "ru": "Приставка",
       "de": "Receiver",
       "fr": "Destinataire",
       "it": "Ricevitore",
@@ -606,22 +606,6 @@
       "zh-cn": "接收者"
     },
     "icon": "Receiver.svg"
-  },
-  {
-    "_id": "computer",
-    "name": {
-      "en": "Computer",
-      "ru": "Компьютер",
-      "de": "Rechner",
-      "fr": "L'Ordinateur",
-      "it": "Computer",
-      "nl": "Computer",
-      "pl": "Komputer",
-      "pt": "Computador",
-      "es": "Ordenador",
-      "zh-cn": "电脑"
-    },
-    "icon": "Computer.svg"
   },
   {
     "_id": "shutters",
@@ -638,6 +622,22 @@
       "zh-cn": "百叶窗"
     },
     "icon": "Shutters.svg"
+  },
+  {
+    "_id": "smoke_detector",
+    "name": {
+      "en": "Smoke detector",
+      "de": "Rauchmelder",
+      "ru": "Детектор дыма",
+      "pt": "Detector de fumaça",
+      "nl": "Rookdetector",
+      "fr": "Détecteur de fumée",
+      "it": "Rilevatore di fumo",
+      "es": "Detector de humo",
+      "pl": "Wykrywacz dymu",
+      "zh-cn": "烟雾探测器"
+    },
+    "icon": "SmokeDetector.svg"
   },
   {
     "_id": "lock",
@@ -672,11 +672,11 @@
     "icon": "Security.svg"
   },
   {
-    "_id": "dishwashers",
+    "_id": "dishwasher",
     "name": {
-      "en": "Dishwashers",
-      "ru": "Посудомоечные",
-      "de": "Spülmaschinen",
+      "en": "Dishwasher",
+      "ru": "Посудомоечная машина",
+      "de": "Spülmaschine",
       "fr": "Lave-Vaisselles",
       "it": "Lavastoviglie",
       "nl": "Vaatwassers",
@@ -704,27 +704,27 @@
     "icon": "Vacuum Cleaner.svg"
   },
   {
-    "_id": "sockets",
+    "_id": "socket",
     "name": {
-      "en": "Sockets",
-      "ru": "Розетки",
-      "de": "Steckdosen",
-      "fr": "Prises",
-      "it": "Sockets",
-      "nl": "Sockets",
+      "en": "Socket",
+      "ru": "Розетка",
+      "de": "Steckdose",
+      "fr": "Prise",
+      "it": "Socket",
+      "nl": "Socket",
       "pl": "Gniazdka",
-      "pt": "Tomadas",
-      "es": "Zócalos",
+      "pt": "Tomada",
+      "es": "Zócalo",
       "zh-cn": "套接字"
     },
     "icon": "Sockets.svg"
   },
   {
-    "_id": "floor_lamps",
+    "_id": "floor_lamp",
     "name": {
-      "en": "Floor Lamps",
-      "ru": "Торшеры",
-      "de": "Stehlampen",
+      "en": "Floor Lamp",
+      "ru": "Торшер",
+      "de": "Stehlampe",
       "fr": "Lampes Pour Plancher",
       "it": "Lampade A Stelo",
       "nl": "Vloerlampen",
@@ -739,7 +739,7 @@
     "_id": "power_consumption",
     "name": {
       "en": "Power Consumption",
-      "ru": "Потребляемая Мощность",
+      "ru": "Потребляемая мощность",
       "de": "Stromverbrauch",
       "fr": "Consommation D'Énergie",
       "it": "Consumo Di Energia",
@@ -752,14 +752,14 @@
     "icon": "Power Consumption.svg"
   },
   {
-    "_id": "temperature_sensors",
+    "_id": "temperature_sensor",
     "name": {
-      "en": "Temperature Sensors",
-      "ru": "Температурные Датчики",
-      "de": "Temperatur-Sensoren",
-      "fr": "Capteurs De Température",
+      "en": "Temperature Sensor",
+      "ru": "Температурный датчик",
+      "de": "Temperatur-Sensor",
+      "fr": "Capteur De Température",
       "it": "Sensori Di Temperatura",
-      "nl": "Temperatuursensoren",
+      "nl": "Temperatuursensor",
       "pl": "Czujniki Temperatury",
       "pt": "Sensores De Temperatura",
       "es": "Sensores De Temperatura",
@@ -768,11 +768,11 @@
     "icon": "Temperature Sensors.svg"
   },
   {
-    "_id": "table_lamps",
+    "_id": "table_lamp",
     "name": {
-      "en": "Table Lamps",
-      "ru": "Настольные Лампы",
-      "de": "Tischlampen",
+      "en": "Table Lamp",
+      "ru": "Настольная лампа",
+      "de": "Tischlampe",
       "fr": "Lampe De Chevet",
       "it": "Lampade Da Tavolo",
       "nl": "Tafellampen",
@@ -784,14 +784,14 @@
     "icon": "Table Lamps.svg"
   },
   {
-    "_id": "gates",
+    "_id": "gate",
     "name": {
-      "en": "Gates",
+      "en": "Gate",
       "ru": "Ворота",
-      "de": "Tore",
-      "fr": "Portes",
-      "it": "Gates",
-      "nl": "Gates",
+      "de": "Tor",
+      "fr": "Porte",
+      "it": "Gate",
+      "nl": "Gate",
       "pl": "Bramy",
       "pt": "Portões",
       "es": "Puertas",
@@ -816,11 +816,11 @@
     "icon": "Dryer.svg"
   },
   {
-    "_id": "doors",
+    "_id": "door",
     "name": {
-      "en": "Doors",
-      "ru": "Двери",
-      "de": "Türen",
+      "en": "Door",
+      "ru": "Дверь",
+      "de": "Tür",
       "fr": "Des Portes",
       "it": "Porte",
       "nl": "Deuren",
@@ -867,7 +867,7 @@
     "_id": "amplifier",
     "name": {
       "en": "Amplifier",
-      "ru": "Усилитель Звука",
+      "ru": "Усилитель звука",
       "de": "Verstärker",
       "fr": "Amplificateur",
       "it": "Amplificatore",
@@ -896,14 +896,14 @@
     "icon": "Curtains.svg"
   },
   {
-    "_id": "sconces",
+    "_id": "sconce",
     "name": {
-      "en": "Sconces",
-      "ru": "Sconces",
-      "de": "Wandlampen",
-      "fr": "Sconces",
-      "it": "Sconces",
-      "nl": "Sconces",
+      "en": "Sconce",
+      "ru": "Настенный светильник",
+      "de": "Wandlampe",
+      "fr": "Sconce",
+      "it": "Sconce",
+      "nl": "Sconce",
       "pl": "Kinkiety",
       "pt": "Arandelas",
       "es": "Los Apliques",
@@ -912,11 +912,11 @@
     "icon": "Sconces.svg"
   },
   {
-    "_id": "washing_machines",
+    "_id": "washing_machine",
     "name": {
-      "en": "Washing Machines",
-      "ru": "Стиральные Машины",
-      "de": "Waschmaschinen",
+      "en": "Washing Machine",
+      "ru": "Стиральная машина",
+      "de": "Waschmaschine",
       "fr": "Machines À Laver",
       "it": "Lavatrici",
       "nl": "Wasmachines",
@@ -931,7 +931,7 @@
     "_id": "water",
     "name": {
       "en": "Water",
-      "ru": "Воды",
+      "ru": "Вода",
       "de": "Wasser",
       "fr": "L'Eau",
       "it": "Acqua",
@@ -947,7 +947,7 @@
     "_id": "water_heater",
     "name": {
       "en": "Water Heater",
-      "ru": "Нагреватель Воды",
+      "ru": "Нагреватель воды",
       "de": "Wasserkocher",
       "fr": "Chauffe-Eau",
       "it": "Scaldabagno",
@@ -963,7 +963,7 @@
     "_id": "water_consumption",
     "name": {
       "en": "Water Consumption",
-      "ru": "Потребление Воды",
+      "ru": "Потребление воды",
       "de": "Wasserverbrauch",
       "fr": "Consommation D'Eau",
       "it": "Consumo D'Acqua",

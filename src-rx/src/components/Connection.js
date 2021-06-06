@@ -42,7 +42,7 @@ class Connection {
         this.autoSubscribeLog = this.props.autoSubscribeLog;
 
         this.props.protocol   = this.props.protocol || window.location.protocol;
-        this.props.host       = this.props.host     || window.location.hostname;
+        this.props.host       = this.props.host     || (window.location.port === '3000' ? 'iob-server' : window.location.hostname);
         this.props.port       = this.props.port     || (window.location.port === '3000' ? 8081 : window.location.port);
         this.props.ioTimeout  = Math.max(this.props.ioTimeout  || 20000, 20000);
         this.props.cmdTimeout = Math.max(this.props.cmdTimeout || 5000, 5000);
