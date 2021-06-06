@@ -1,3 +1,6 @@
+## 5.1.3 (2021-05-26)
+* (bluefox) Improved the GUI for enumerations
+
 ## 5.1.2 (2021-05-26)
 * (bluefox) Admin5: Fixed logs by the changing of host
 

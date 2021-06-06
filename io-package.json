@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.1.7",
+        "version": "5.1.8",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.8": {
+                "en": "Improved the list of predefined icons",
+                "de": "Liste der vordefinierten Symbole verbessert",
+                "ru": "Улучшен список предустановленных значков.",
+                "pt": "Melhorou a lista de ícones predefinidos",
+                "nl": "De lijst met vooraf gedefinieerde pictogrammen verbeterd",
+                "fr": "Amélioration de la liste des icônes prédéfinies",
+                "it": "Migliorato l'elenco delle icone predefinite",
+                "es": "Se mejoró la lista de iconos predefinidos.",
+                "pl": "Poprawiono listę predefiniowanych ikon",
+                "zh-cn": "改进了预定义图标列表"
+            },
             "5.1.7": {
                 "en": "Added the possibility to clear the schedule",
                 "de": "Möglichkeit hinzugefügt, den Zeitplan zu löschen",
@@ -245,18 +257,6 @@
                 "es": "Admin5: se corrigieron algunos errores",
                 "pl": "Admin5: Naprawiono kilka błędów",
                 "zh-cn": "Admin5：修复了一些错误"
-            },
-            "5.0.21": {
-                "en": "Admin5: Fixed many bugs",
-                "de": "Admin5: Viele Fehler behoben",
-                "ru": "Admin5: Исправлено множество ошибок",
-                "pt": "Admin5: muitos bugs corrigidos",
-                "nl": "Admin5: Veel bugs opgelost",
-                "fr": "Admin5: Correction de nombreux bugs",
-                "it": "Admin5: risolti molti bug",
-                "es": "Admin5: se corrigieron muchos errores",
-                "pl": "Admin5: Naprawiono wiele błędów",
-                "zh-cn": "Admin5：修复了许多错误"
             }
         },
         "desc": {

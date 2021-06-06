@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 5.1.8 (2021-06-06)
 * (bluefox) Improved the list of predefined icons
 
 ### 5.1.7 (2021-06-04)
@@ -103,9 +103,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 5.1.4 (2021-05-27)
 * (bluefox) Corrected error in log
-
-### 5.1.3 (2021-05-26)
-* (bluefox) Improved the GUI for enumerations
 
 ## License
 
