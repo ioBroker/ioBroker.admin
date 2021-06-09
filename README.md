@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Corrected some GUI errors
+
 ### 5.1.8 (2021-06-06)
 * (bluefox) Improved the list of predefined icons
 

@@ -95,15 +95,12 @@ function GroupBlock(props) {
                 </div>
             </Typography>
             {
-                props.group.common.members.length
-                    ?
-                    <div>{props.t('Group members')}:</div>
-                    :
-                    null
+                props.group.common.members?.length ?
+                    <div>{props.t('Group members')}:</div> : null
             }
             <div>
             {
-                props.group.common.members.map( (member, i) => {
+                (props.group.common.members || []).map( (member, i) => {
                     let user = props.users.find(user => user._id === member);
                     return user
                         ?
@@ -153,9 +150,5 @@ GroupBlock.propTypes = {
 export default GroupBlock;
 
 function canMeDrop(monitor, props ) {
-    return props.group.common.members
-        ?
-        !props.group.common.members.includes(monitor.getItem().userId)
-        :
-        true;
+    return props.group.common.members ? !props.group.common.members.includes(monitor.getItem().userId) : true;
 }

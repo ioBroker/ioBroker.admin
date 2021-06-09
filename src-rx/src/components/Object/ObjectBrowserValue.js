@@ -55,8 +55,23 @@ const styles = theme => ({
     },
     jsonNoError: {
         border: '1px solid #00000000'
-    }
-
+    },
+    wrapperButton: {
+    },
+    '@media screen and (max-width: 465px)': {
+        wrapperButton: {
+            '& *': {
+                fontSize: 12
+            }
+        },
+    },
+    '@media screen and (max-width: 380px)': {
+        wrapperButton: {
+            '& *': {
+                fontSize: 11
+            }
+        },
+    },
 });
 
 const AntSwitch = withStyles((theme) => ({
@@ -405,7 +420,7 @@ class ObjectBrowserValue extends Component {
                     </Grid>
                 </form>
             </DialogContent>
-            <DialogActions>
+            <DialogActions className={this.props.classes.wrapperButton}>
                 <Button variant="contained" onClick={ () => this.onUpdate() } color="primary" startIcon={<IconCheck />}>{ this.props.t('Set value') }</Button>
                 <Button variant="contained" onClick={ () => this.props.onClose() } startIcon={<IconCancel />}>{ this.props.t('Cancel') }</Button>
             </DialogActions>

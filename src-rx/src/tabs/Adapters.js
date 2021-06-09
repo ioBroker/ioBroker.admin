@@ -518,6 +518,9 @@ class Adapters extends Component {
         });
 
         const now = Date.now();
+        this.recentUpdatedAdapters = 0;
+        this.installedAdapters = 0;
+
         Object.keys(repository).forEach(value => {
             const adapter = repository[value];
             if (adapter.keywords) {
@@ -545,7 +548,7 @@ class Adapters extends Component {
                 const daysAgo = Math.round((now - new Date(adapter.versionDate).getTime()) / 86400000);
 
                 if (daysAgo <= 31) {
-                    this.recentUpdatedAdapters++
+                    this.recentUpdatedAdapters++;
                 }
                 if (installed[value]) {
                     this.installedAdapters++;
@@ -733,7 +736,6 @@ class Adapters extends Component {
     }
 
     toggleCategory(category) {
-
         this.setState(oldState => {
 
             const categoriesExpanded = oldState.categoriesExpanded;
