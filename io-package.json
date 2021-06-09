@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.1.8",
+        "version": "5.1.9",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.9": {
+                "en": "Corrected some GUI errors",
+                "de": "Einige GUI-Fehler korrigiert",
+                "ru": "Исправлены некоторые ошибки графического интерфейса.",
+                "pt": "Corrigidos alguns erros de GUI",
+                "nl": "Enkele GUI-fouten gecorrigeerd",
+                "fr": "Correction de quelques erreurs d'interface graphique",
+                "it": "Corretti alcuni errori della GUI",
+                "es": "Se corrigieron algunos errores de GUI",
+                "pl": "Poprawiono niektóre błędy GUI",
+                "zh-cn": "更正了一些 GUI 错误"
+            },
             "5.1.8": {
                 "en": "Improved the list of predefined icons",
                 "de": "Liste der vordefinierten Symbole verbessert",
@@ -245,18 +257,6 @@
                 "es": "Admin5: correcciones de GUI",
                 "pl": "Admin5: poprawki GUI",
                 "zh-cn": "Admin5：GUI修复"
-            },
-            "5.0.22": {
-                "en": "Admin5: Fixed some bugs",
-                "de": "Admin5: Einige Fehler wurden behoben",
-                "ru": "Admin5: Исправлены некоторые ошибки",
-                "pt": "Admin5: Corrigido alguns bugs",
-                "nl": "Admin5: enkele bugs opgelost",
-                "fr": "Admin5: Correction de quelques bugs",
-                "it": "Admin5: risolti alcuni bug",
-                "es": "Admin5: se corrigieron algunos errores",
-                "pl": "Admin5: Naprawiono kilka błędów",
-                "zh-cn": "Admin5：修复了一些错误"
             }
         },
         "desc": {
