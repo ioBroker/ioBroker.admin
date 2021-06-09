@@ -58,6 +58,8 @@ const styles = theme => ({
     },
     row: {
         paddingLeft: 8,
+        paddingRight: 16,
+        padding: 0
     },
     imageBlock: {
         background: 'silver',
@@ -382,7 +384,7 @@ const styles = theme => ({
     visible570: {
         display: 'none'
     },
-    '@media screen and (max-width: 1250px)': {
+    '@media screen and (max-width: 1500px)': {
         hidden1250: {
             display: 'none !important'
         },
@@ -390,12 +392,12 @@ const styles = theme => ({
             display: 'flex !important'
         },
     },
-    '@media screen and (max-width: 1230px)': {
+    '@media screen and (max-width: 1300px)': {
         hidden1230: {
             display: 'none !important'
         }
     },
-    '@media screen and (max-width: 1050px)': {
+    '@media screen and (max-width: 1120px)': {
         hidden1050: {
             display: 'none !important'
         },
