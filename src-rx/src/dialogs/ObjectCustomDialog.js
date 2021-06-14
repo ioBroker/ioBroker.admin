@@ -97,6 +97,8 @@ class ObjectCustomDialog extends MobileDialog {
     renderCharts() {
         return <ObjectChart
             id={'chart-tabpanel'}
+            isFloatComma={this.props.isFloatComma}
+            showJumpToEchart={true}
             t={this.props.t}
             lang={this.props.lang}
             expertMode={this.props.expertMode}
@@ -112,6 +114,7 @@ class ObjectCustomDialog extends MobileDialog {
         return <ObjectHistoryData
             id={'table-tabpanel'}
             t={this.props.t}
+            isFloatComma={this.props.isFloatComma}
             lang={this.props.lang}
             expertMode={this.props.expertMode}
             socket={this.props.socket}
@@ -255,6 +258,7 @@ ObjectCustomDialog.propTypes = {
     objectIDs: PropTypes.array,
     onClose: PropTypes.func,
     reportChangedIds: PropTypes.func,
+    isFloatComma: PropTypes.bool,
 };
 
 export default withStyles(styles)(ObjectCustomDialog);

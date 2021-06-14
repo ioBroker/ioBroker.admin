@@ -1,8 +1,7 @@
 import { createRef, Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import copy from 'copy-to-clipboard';
-
+import copy from '@iobroker/adapter-react/Components/copy-to-clipboard';
 
 import { Button } from '@material-ui/core';
 import { Card } from '@material-ui/core';

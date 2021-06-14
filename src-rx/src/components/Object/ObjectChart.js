@@ -15,15 +15,16 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Fab from '@material-ui/core/Fab';
 
 import ReactEchartsCore from 'echarts-for-react/lib/core';
-import echarts from 'echarts/lib/echarts';
-import 'echarts/lib/chart/line';
-import 'echarts/lib/component/tooltip';
-import 'echarts/lib/component/grid';
-import 'echarts/lib/component/toolbox';
-import 'echarts/lib/component/title';
-import 'echarts/lib/component/dataZoom';
-import 'echarts/lib/component/timeline';
-import 'zrender/lib/svg/svg';
+import * as echarts from 'echarts/core';
+import { LineChart } from 'echarts/charts';
+import {
+    GridComponent,
+    ToolboxComponent,
+    TooltipComponent,
+    TitleComponent,
+    TimelineComponent,
+} from 'echarts/components';
+import {SVGRenderer} from 'echarts/renderers';
 
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from 'date-fns/locale/fr';
@@ -43,6 +44,8 @@ import Utils from '@iobroker/adapter-react/Components/Utils';
 // icons
 import {FaChartLine as SplitLineIcon} from 'react-icons/fa';
 import EchartsIcon from '../../assets/echarts.png';
+
+echarts.use([TimelineComponent, ToolboxComponent, TitleComponent, TooltipComponent, GridComponent, LineChart, SVGRenderer]);
 
 const localeMap = {
     en: enLocale,
@@ -186,6 +189,7 @@ class ObjectChart extends Component {
             dateFormat: 'dd.MM.yyyy',
             min,
             max,
+            maxYLen: 0,
         };
 
         this.echartsReact = createRef();
@@ -219,6 +223,9 @@ class ObjectChart extends Component {
 
         this.timeTimer && clearTimeout(this.timeTimer);
         this.timeTimer = null;
+
+        this.maxYLenTimeout && clearTimeout(this.maxYLenTimeout);
+        this.maxYLenTimeout = null;
 
         this.props.socket.unsubscribeState(this.props.obj._id, this.onChange);
         window.removeEventListener('resize', this.onResize);
@@ -266,7 +273,7 @@ class ObjectChart extends Component {
                     return this.props.socket.getCompactSystemConfig();
                 })
                 .then(config => {
-                    return this.props.socket.getAdapterInstances('echarts')
+                    return !this.props.showJumpToEchart ? Promise.resolve([]) : this.props.socket.getAdapterInstances('echarts')
                         .then(instances => {
                             // collect all echarts instances
                             const echartsJump = !!instances.find(item => item._id.startsWith('system.adapter.echarts.'));
@@ -402,14 +409,14 @@ class ObjectChart extends Component {
                     if (range) {
                         while (r < range.length && range[r].ts < values[t].ts) {
                             chart.push(range[r]);
-                            console.log(`add ${new Date(range[r].ts).toISOString()}: ${range[r].val}`);
+                            //console.log(`add ${new Date(range[r].ts).toISOString()}: ${range[r].val}`);
                             r++;
                         }
                     }
                     // if range and details are not equal
                     if (!chart.length || chart[chart.length - 1].ts < values[t].ts) {
                         chart.push(values[t]);
-                        console.log(`add value ${new Date(values[t].ts).toISOString()}: ${values[t].val}`)
+                        //console.log(`add value ${new Date(values[t].ts).toISOString()}: ${values[t].val}`)
                     } else if (chart[chart.length - 1].ts === values[t].ts && chart[chart.length - 1].val !== values[t].ts) {
                         console.error('Strange data!');
                     }
@@ -468,7 +475,7 @@ class ObjectChart extends Component {
     }
 
     getOption() {
-        let widthAxis
+        let widthAxis;
         if (this.minY !== null && this.minY !== undefined) {
             widthAxis = (this.minY.toString() + this.unit).length * 9 + 12;
         }
@@ -477,6 +484,65 @@ class ObjectChart extends Component {
             if (w > widthAxis) {
                 widthAxis = w;
             }
+        }
+
+        if (this.state.maxYLen) {
+            const w = this.state.maxYLen * 9 + 12;
+            if (w > widthAxis) {
+                widthAxis = w;
+            }
+        }
+
+        const serie = {
+            xAxisIndex: 0,
+            type: 'line',
+            showSymbol: false,
+            hoverAnimation: true,
+            animation: false,
+            data: this.convertData(),
+            lineStyle: {
+                color: '#4dabf5',
+            },
+            areaStyle: {}
+        };
+
+        const yAxis = {
+            type: 'value',
+            boundaryGap: [0, '100%'],
+            splitLine: {
+                show: this.props.noToolbar || !!this.state.splitLine
+            },
+            splitNumber: Math.round(this.state.chartHeight / 50),
+            axisLabel: {
+                formatter: (value, index) => {
+                    let text;
+                    if (this.props.isFloatComma) {
+                        text = value.toString().replace(',', '.') + this.unit;
+                    } else {
+                        text = value + this.unit;
+                    }
+
+                    if (this.state.maxYLen < text.length) {
+                        this.maxYLenTimeout && clearTimeout(this.maxYLenTimeout);
+                        this.maxYLenTimeout = setTimeout(maxYLen => this.setState({maxYLen}), 200, text.length);
+                    }
+                    return text;
+                },
+                showMaxLabel: true,
+                showMinLabel: true,
+            },
+            axisTick: {
+                alignWithLabel: true,
+            }
+        };
+
+        if (this.props.obj.common.type === 'boolean') {
+            serie.step = 'end';
+            yAxis.axisLabel.showMaxLabel = false;
+            yAxis.axisLabel.formatter = value => value === 1 ? 'TRUE' : 'FALSE';
+            yAxis.max = 1.5;
+            yAxis.interval = 1;
+            widthAxis = 50;
         }
 
         return {
@@ -501,7 +567,11 @@ class ObjectChart extends Component {
                 formatter: params => {
                     params = params[0];
                     const date = new Date(params.value[0]);
-                    return `${date.toLocaleString()}.${padding3(date.getMilliseconds())}: ${params.value[1]}${this.unit}`;
+                    let value = params.value[1];
+                    if (value !== null && this.props.isFloatComma) {
+                        value = value.toString().replace('.', ',');
+                    }
+                    return `${date.toLocaleString()}.${padding3(date.getMilliseconds())}: ${value}${this.unit}`;
                 },
                 axisPointer: {
                     animation: true
@@ -529,73 +599,17 @@ class ObjectChart extends Component {
                     }
                 }
             },
-            yAxis: {
-                type: 'value',
-                boundaryGap: [0, '100%'],
-                splitLine: {
-                    show: this.props.noToolbar || !!this.state.splitLine
-                },
-                splitNumber: Math.round(this.state.chartHeight / 50),
-                axisLabel: {
-                    formatter: '{value}' + this.unit,
-                    showMaxLabel: true,
-                    showMinLabel: true,
-                },
-                axisTick: {
-                    alignWithLabel: true,
-                }
-            },
+            yAxis,
             toolbox: {
                 left: 'right',
                 feature: this.props.noToolbar ? undefined : {
-                    /*dataZoom: {
-                        yAxisIndex: 'none',
-                        title: this.props.t('Zoom'),
-                    },
-                    restore: {
-                        title: this.props.t('Restore')
-                    },*/
                     saveAsImage: {
                         title: this.props.t('Save as image'),
                         show: true,
                     }
                 }
             },
-            /*dataZoom: [
-                {
-                    show: true,
-                    realtime: true,
-                    startValue: this.start,
-                    endValue: this.end,
-                    y: this.state.chartHeight - 50,
-                    dataBackground: {
-                        lineStyle: {
-                            color: '#FFFFFF'
-                        },
-                        areaStyle: {
-                            color: '#FFFFFFE0'
-                        }
-                    },
-                },
-                {
-                    show: true,
-                    type: 'inside',
-                    realtime: true,
-                },
-            ],*/
-            series: [
-                {
-                    xAxisIndex: 0,
-                    type: 'line',
-                    showSymbol: false,
-                    hoverAnimation: true,
-                    animation: false,
-                    data: this.convertData(),
-                    lineStyle:{
-                        color: '#4dabf5',
-                    }
-                }
-            ]
+            series: [serie]
         };
     }
 
@@ -958,10 +972,6 @@ class ObjectChart extends Component {
                 style={{ height: this.state.chartHeight + 'px', width: '100%' }}
                 opts={{ renderer: 'svg' }}
                 onEvents={ {
-                    /*datazoom: e => {
-                        const {startValue, endValue} = e.batch[0];
-                        this.updateChart(startValue, endValue, true);
-                    },*/
                     rendered: e => {
                         this.installEventHandlers();
                     }
@@ -1036,7 +1046,7 @@ class ObjectChart extends Component {
         const classes = this.props.classes;
 
         return <Toolbar>
-            <FormControl className={ classes.selectHistoryControl }>
+            {!this.props.historyInstance && <FormControl className={ classes.selectHistoryControl }>
                 <InputLabel>{ this.props.t('History instance') }</InputLabel>
                 <Select
                     value={ this.state.historyInstance }
@@ -1047,7 +1057,7 @@ class ObjectChart extends Component {
                 >
                     { this.state.historyInstances.map(it => <MenuItem key={ it.id } value={ it.id } className={ clsx(!it.alive && classes.notAliveInstance )}>{ it.id }</MenuItem>) }
                 </Select>
-            </FormControl>
+            </FormControl>}
             <FormControl className={ classes.selectRelativeTime }>
                 <InputLabel>{ this.props.t('Relative') }</InputLabel>
                 <Select
@@ -1122,13 +1132,18 @@ class ObjectChart extends Component {
                 </div>
             </MuiPickersUtilsProvider>
             <div className={classes.grow} />
-            {this.state.echartsJump && <Fab className={classes.echartsButton} size="small" onClick={() => this.openEcharts()} title={this.props.t('Open charts in new window')}>
+            {this.props.showJumpToEchart && this.state.echartsJump && <Fab
+                className={classes.echartsButton}
+                size="small"
+                onClick={() => this.openEcharts()}
+                title={this.props.t('Open charts in new window')}
+            >
                 <img src={EchartsIcon} alt="echarts" className={classes.buttonIcon}/>
             </Fab>}
             <Fab
                 variant="extended"
                 size="small"
-                color={ this.state.splitLine ? 'primary' : '' }
+                color={ this.state.splitLine ? 'primary' : 'inherit' }
                 aria-label="show lines"
                 onClick={() => {
                     window.localStorage.setItem('App.splitLine', this.state.splitLine ? 'false' : 'true');
@@ -1168,7 +1183,10 @@ ObjectChart.propTypes = {
     from: PropTypes.number,
     end: PropTypes.number,
     noToolbar: PropTypes.bool,
-    defaultHistory: PropTypes.string
+    defaultHistory: PropTypes.string,
+    historyInstance: PropTypes.string,
+    showJumpToEchart: PropTypes.bool,
+    isFloatComma: PropTypes.bool,
 };
 
 export default withWidth()(withStyles(styles)(ObjectChart));

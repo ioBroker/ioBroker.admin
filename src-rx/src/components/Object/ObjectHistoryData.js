@@ -627,6 +627,11 @@ class ObjectHistoryData extends Component {
             } else {
                 const interpolated = state.i;
                 const selected = this.state.lastSelected === ts;
+                let val = state.val;
+                if (this.props.isFloatComma && this.props.obj.common.type === 'number') {
+                    val = val.toString().replace('.', ',');
+                }
+
                 rows.push(<TableRow
                     className={ clsx(
                         classes.row, classes.updatedRow,
@@ -639,7 +644,7 @@ class ObjectHistoryData extends Component {
                         { selected && this.state.lastSelectedColumn === 'ts' ? <div className={ classes.rowFocused } /> : ''}
                     </TableCell>
                     <TableCell onClick={ e => !interpolated && this.onToggleSelect(e, ts, 'val') }>
-                        { state.val + this.unit }
+                        { val + this.unit }
                         { selected && this.state.lastSelectedColumn === 'val' ? <div className={ classes.rowFocused } /> : ''}
                     </TableCell>
                     { this.state.ackVisible ? <TableCell onClick={ e => !interpolated && this.onToggleSelect(e, ts, 'ack') } className={ state.ack ? classes.cellAckTrue : classes.cellAckFalse}>
@@ -651,7 +656,7 @@ class ObjectHistoryData extends Component {
                         { selected && this.state.lastSelectedColumn === 'from' ? <div className={ classes.rowFocused } /> : ''}
                     </TableCell> : null }
                     { this.state.lcVisible ? <TableCell onClick={ e => !interpolated && this.onToggleSelect(e, ts, 'lc') }>
-                        { state.lc ? new Date(state.lc).toLocaleDateString() + ' ' + new Date(state.lc).toLocaleTimeString() + '.' + padding3(state.ts % 1000) : '' }
+                        { state.lc ? `${new Date(state.lc).toLocaleDateString()} ${new Date(state.lc).toLocaleTimeString()}.${padding3(state.ts % 1000)}` : '' }
                         { selected && this.state.lastSelectedColumn === 'lc' ? <div className={ classes.rowFocused } /> : ''}
                     </TableCell> : null }
                 </TableRow>);
@@ -1300,6 +1305,7 @@ ObjectHistoryData.propTypes = {
     customsInstances: PropTypes.array,
     themeName: PropTypes.string,
     objects: PropTypes.object,
+    isFloatComma: PropTypes.bool,
 };
 
 export default withWidth()(withStyles(styles)(ObjectHistoryData));

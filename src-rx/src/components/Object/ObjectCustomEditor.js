@@ -153,7 +153,7 @@ class ObjectCustomEditor extends Component {
     loadAllCustoms() {
         const promises = [];
         this.props.customsInstances.forEach(id => {
-            const adapter = id.replace(/\.\d+$/, '').replace('system.adapter.');
+            const adapter = id.replace(/\.\d+$/, '').replace('system.adapter.', '');
             if (this.jsonConfigs[adapter] === undefined) {
                 this.jsonConfigs[adapter] = false;
                 promises.push(this.getCustomTemplate(adapter));
@@ -163,7 +163,7 @@ class ObjectCustomEditor extends Component {
         return Promise.all(promises)
             .then(() => {
                 this.props.customsInstances.forEach(id => {
-                    const adapter = id.replace(/\.\d+$/, '').replace('system.adapter.');
+                    const adapter = id.replace(/\.\d+$/, '').replace('system.adapter.', '');
                     if (this.jsonConfigs[adapter]) {
                         this.jsonConfigs[adapter].instanceObjs = this.jsonConfigs[adapter].instanceObjs || {};
                         this.jsonConfigs[adapter].instanceObjs[id] = {

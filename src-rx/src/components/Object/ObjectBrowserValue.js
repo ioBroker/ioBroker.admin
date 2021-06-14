@@ -190,6 +190,8 @@ class ObjectBrowserValue extends Component {
     renderChart() {
         return <ObjectChart
             t={this.props.t}
+            isFloatComma={this.props.isFloatComma}
+            showJumpToEchart={false}
             lang={this.props.lang}
             socket={this.props.socket}
             obj={this.props.object}
@@ -440,6 +442,7 @@ ObjectBrowserValue.propTypes = {
     defaultHistory: PropTypes.string,
     dateFormat: PropTypes.string,
     object: PropTypes.object,
+    isFloatComma: PropTypes.bool,
 
     t: PropTypes.func,
     lang: PropTypes.string,

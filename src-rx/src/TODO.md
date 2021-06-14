@@ -28,6 +28,8 @@ Marked with "!" must be in release candidate
 ## Objects
 - Add mode view owners (by switching "1") / owner / ownerGroup / objectACL / state ACL
 - Add small icons for enums in the list
+- Show charts for binaries
+- List of adapters with icon (filter by custom)
 
 ## Files
 

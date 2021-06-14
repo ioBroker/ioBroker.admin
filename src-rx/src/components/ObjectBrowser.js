@@ -42,12 +42,6 @@ import Switch from '@material-ui/core/Switch';
 import Slider from '@material-ui/core/Slider';
 import Typography from '@material-ui/core/Typography';
 
-// own
-import Utils from './Utils'; // @iobroker/adapter-react/Components/Utils
-import TabContainer from './TabContainer';
-import TabContent from './TabContent';
-import TabHeader from './TabHeader';
-
 // Icons
 import IconEdit from '@material-ui/icons/Edit';
 import IconDelete from '@material-ui/icons/Delete';
@@ -86,6 +80,13 @@ import IconState from '@iobroker/adapter-react/icons/IconState';
 import IconClosed from '@iobroker/adapter-react/icons/IconClosed';
 import IconOpen from '@iobroker/adapter-react/icons/IconOpen';
 import IconClearFilter from '@iobroker/adapter-react/icons/IconClearFilter';
+
+// own
+import Icon from '@iobroker/adapter-react/Components/Icon';
+import Utils from './Utils'; // @iobroker/adapter-react/Components/Utils
+import TabContainer from './TabContainer';
+import TabContent from './TabContent';
+import TabHeader from './TabHeader';
 
 const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
@@ -497,9 +498,9 @@ const styles = theme => ({
         marginBottom: 0
     },
     selectIcon: {
-        width: 16,
-        height: 16,
-        paddingRight: 5
+        width: 24,
+        height: 24,
+        paddingRight: 4
     },
     selectNone: {
         opacity: 0.5,
@@ -573,9 +574,6 @@ const styles = theme => ({
     enumCheckbox: {
         minWidth: 0,
     },
-    backgroundDef: {
-        backgroundColor: theme.palette.background.default
-    },
     buttonDiv: {
         display: 'flex',
         height: '100%',
@@ -621,6 +619,13 @@ const styles = theme => ({
     },
     nonDraggable: {
         cursor: 'no-drop',
+    },
+    selectClearButton: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        borderRadius: 20,
+        backgroundColor: theme.palette.background.default
     }
 });
 
@@ -983,8 +988,28 @@ function buildTree(objects, options) {
         } while (repeat);
     }
 
-    info.roomEnums.sort();
-    info.funcEnums.sort();
+    info.roomEnums.sort((a, b) => {
+        const aName = getName(objects[a]?.common?.name || a.split('.').pop());
+        const bName = getName(objects[b]?.common?.name || b.split('.').pop());
+        if (aName > bName) {
+            return 1;
+        } else if (aName < bName) {
+            return -1;
+        } else {
+            return 0;
+        }
+    });
+    info.funcEnums.sort((a, b) => {
+        const aName = getName(objects[a]?.common?.name || a.split('.').pop());
+        const bName = getName(objects[b]?.common?.name || b.split('.').pop());
+        if (aName > bName) {
+            return 1;
+        } else if (aName < bName) {
+            return -1;
+        } else {
+            return 0;
+        }
+    });
     info.roles.sort();
     info.types.sort();
 
@@ -1552,7 +1577,7 @@ class ObjectBrowser extends Component {
             filter_role:              props.t('ra_filter_role'),
             filter_room:              props.t('ra_filter_room'),
             filter_func:              props.t('ra_filter_func'),
-            filter_customs:           props.t('ra_filter_customs'), //
+            filter_custom:            props.t('ra_filter_customs'), //
             objectChangedByUser:      props.t('ra_object_changed_by_user'), // Object last changed at
             objectChangedBy:          props.t('ra_object_changed_by'), // Object changed by
             objectChangedFrom:        props.t('ra_state_changed_from'), // Object changed from
@@ -2414,7 +2439,9 @@ class ObjectBrowser extends Component {
                 inputProps={{ name, id: name }}
                 displayEmpty={true}
             >
-                <MenuItem key="empty" value=""><span className={this.props.classes.selectNone}>{this.texts['filter_' + name]}</span></MenuItem>
+                <MenuItem key="empty" value="">
+                    <span className={this.props.classes.selectNone}>{this.texts['filter_' + name]}</span>
+                </MenuItem>
                 {values.map(item => {
                     let id;
                     let name;
@@ -2434,18 +2461,13 @@ class ObjectBrowser extends Component {
                 })}
             </Select>
             {this.filterRefs[name]?.current?.childNodes[1]?.value ?
-                <div className={this.props.classes.backgroundDef} style={{
-                    position: 'absolute',
-                    top: 0,
-                    right: 0,
-                    borderRadius: 20
-                }}>
+                <div className={Utils.clsx(this.props.classes.selectClearButton)}>
                     <IconButton
                         size="small"
                         onClick={() => {
                             const newFilter = { ...this.state.filter };
                             newFilter[name] = '';
-                            this.filterRefs[name].current.childNodes[1].value = "";
+                            this.filterRefs[name].current.childNodes[1].value = '';
                             window.localStorage.setItem((this.props.dialogName || 'App') + '.objectFilter', JSON.stringify(newFilter));
                             this.setState({ filter: newFilter, filterKey: this.state.filterKey + 1 }, () =>
                                 this.props.onFilterChanged && this.props.onFilterChanged(newFilter));
@@ -2469,8 +2491,9 @@ class ObjectBrowser extends Component {
      */
     getFilterSelectRoom() {
         const rooms = this.info.roomEnums.map(id => ({
-            name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop()),
+            name: getName(this.objects[id]?.common?.name || id.split('.').pop()),
             value: id,
+            icon: <Icon src={this.objects[id]?.common?.icon} className={this.props.classes.selectIcon}/>
         }));
 
         return this.getFilterSelect('room', rooms);
@@ -2482,10 +2505,11 @@ class ObjectBrowser extends Component {
     getFilterSelectFunction() {
         const func = this.info.funcEnums.map(id => ({
             name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop()),
-            value: id
+            value: id,
+            icon: <Icon src={this.objects[id]?.common?.icon} className={this.props.classes.selectIcon}/>
         }));
-        return this.getFilterSelect('func', func);
 
+        return this.getFilterSelect('func', func);
     }
 
     /**
@@ -2506,7 +2530,12 @@ class ObjectBrowser extends Component {
      */
     getFilterSelectCustoms() {
         if (this.info.customs.length) {
-            return this.getFilterSelect('custom', this.info.customs);
+            const customs = this.info.customs.map(id => ({
+                name: id,
+                value: id,
+                icon: <Icon src={getSelectIdIcon(this.objects, id, this.imagePrefix)} className={this.props.classes.selectIcon}/>
+            }));
+            return this.getFilterSelect('custom', customs);
         } else {
             return null;
         }
@@ -4305,6 +4334,8 @@ class ObjectBrowser extends Component {
                 reportChangedIds={changedIds => this.changedIds = [...changedIds]}
                 objectIDs={this.state.customDialog}
                 expertMode={this.state.filter.expertMode}
+                isFloatComma={this.props.isFloatComma}
+                isFlo
                 t={this.props.t}
                 lang={this.props.lang}
                 socket={this.props.socket}
