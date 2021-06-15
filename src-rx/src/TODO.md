@@ -5,7 +5,6 @@ Marked with "!" must be in release candidate
 - (BF) AdminSettings: Access to the instances: add infotexts for "Apply access rights" and "Allow access only"
 
 ## Intro
-- Images have different width
 
 ## Easy Mode
 
@@ -24,12 +23,11 @@ Marked with "!" must be in release candidate
 ## Logs
 
 ## Instances
+- Indication of more than one deleted adapter
+- Disable delete button as long as command is running
 
 ## Objects
 - Add mode view owners (by switching "1") / owner / ownerGroup / objectACL / state ACL
-- Add small icons for enums in the list
-- Show charts for binaries
-- List of adapters with icon (filter by custom)
 
 ## Files
 
