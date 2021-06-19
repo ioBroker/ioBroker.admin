@@ -166,6 +166,12 @@ const styles = theme => ({
     }
 });
 
+function isTouchDevice() {
+    return (('ontouchstart' in window) ||
+        (navigator.maxTouchPoints > 0) ||
+        (navigator.msMaxTouchPoints > 0));
+}
+
 class EnumBlock extends Component {
     constructor(props) {
         super(props);
@@ -261,7 +267,7 @@ class EnumBlock extends Component {
             style.backgroundColor = props.enum.common.color;
         }
 
-        const icon = props.enum?.common?.icon ?
+        let icon = props.enum?.common?.icon ?
             <Icon
                 className={clsx(classes.icon, props.children && classes.folderIcon, props.children && !props.closed && classes.folderIconExpanded) }
                 src={props.enum.common.icon}
@@ -269,6 +275,14 @@ class EnumBlock extends Component {
             <ListIcon
                 className={clsx(classes.icon, props.children && classes.folderIcon, props.children && !props.closed && classes.folderIconExpanded)}
             />;
+
+        icon = props.children ? <div className={classes.folderDiv} onClick={() => props.toggleEnum(props.id)}>
+        {props.closed ? [<IconCollapsed className={classes.folder} key={1}/>, <div key={2}>{icon}</div>] : [<IconExpanded className={classes.folder}  key={1}/>, <div key={2}>{icon}</div>]}
+        </div> : icon;
+
+        if (this.props.iconDragRef) {
+            icon = <span ref={this.props.iconDragRef}>{icon}</span>;
+        }
 
         return <Card
             style={style}
@@ -309,9 +323,7 @@ class EnumBlock extends Component {
                         component="div"
                         className={classes.enumGroupTitle}
                     >
-                        {props.children ? <div className={classes.folderDiv} onClick={() => props.toggleEnum(props.id)}>
-                            {props.closed ? [<IconCollapsed className={classes.folder} key={1}/>, <div key={2}>{icon}</div>] : [<IconExpanded className={classes.folder}  key={1}/>, <div key={2}>{icon}</div>]}
-                            </div> : icon}
+                        {icon}
                         <div className={classes.enumGroupName}>
                             <span className={classes.enumGroupEnumName}>
                                 {props.getName(props.enum?.common?.name) || props.id.split('.').pop()}
@@ -445,7 +457,13 @@ const EnumBlockDrag = props => {
     if (!props.enum) {
         return <StyledEnumBlock isDragging={isDragging} widthRef={widthRef} {...props}/>;
     } else {
-        return <div ref={drop} style={{opacity: canDrop && isOver ? 0.5 : 1}}>
+        return isTouchDevice() 
+        ? <div ref={drop} style={{opacity: canDrop && isOver ? 0.5 : 1}}>
+            <div ref={widthRef}>
+                <StyledEnumBlock isDragging={isDragging} widthRef={widthRef} iconDragRef={dragRef} {...props}/>
+            </div>
+        </div>
+        : <div ref={drop} style={{opacity: canDrop && isOver ? 0.5 : 1}}>
             <div ref={dragRef}>
                 <div ref={widthRef}>
                     <StyledEnumBlock isDragging={isDragging} widthRef={widthRef} {...props}/>
