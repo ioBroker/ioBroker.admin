@@ -59,5 +59,16 @@
   "Use old UI": "Use old UI",
   "Auto update": "Check for updates",
   "Cache": "Cache files",
-  "Enabled": "Enabled"
+  "Enabled": "Enabled",
+  "Let's Encrypt SSL": "Let's Encrypt SSL",
+  "Login background": "Login background",
+  "There is a option to allow access to the specific configuration pages of selected instances.": "There is a option to allow access to the specific configuration pages of selected instances.",
+  "Config": "Configuration page",
+  "Tab": "Tab page",
+  "Read about Let's Encrypt certificates": "Read about Let's Encrypt certificates",
+  "Login timeout": "Login session duration",
+  "sec": "sec",
+  "Use background image": "Use background image",
+  "Upload image": "Upload image",
+  "Undo": "Undo"
 }

@@ -126,7 +126,7 @@ class ObjectBrowserValue extends Component {
             type = 'states';
         } else
         if (type === 'string' || type === 'json') {
-            if (this.value &&
+            if (this.value && typeof this.value === 'string' &&
                 ((this.value.startsWith('[') && this.value.endsWith(']')) ||
                  (this.value.startsWith('{') && this.value.endsWith('}')))
             ) {
@@ -140,7 +140,6 @@ class ObjectBrowserValue extends Component {
                 }
             }
         }
-
 
         this.state = {
             type,

@@ -254,26 +254,6 @@
           "component": "configCustomEasyAccess"
         }
       }
-    },
-    "demoTab": {
-      "type": "panel",
-      "label": "Demo",
-      "items": {
-        "_staticText": {
-          "type": "staticText",
-          "text": "${'my super pattern here ' + 55}",
-          "style": {
-            "border": "1px solid #777",
-            "borderRadius": 4,
-            "color": "#111",
-            "minWidth": 300
-          },
-          "darkStyle": {
-            "border": "1px solid #333",
-            "color": "#EEE"
-          }
-        }
-      }
     }
   }
 }

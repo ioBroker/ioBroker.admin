@@ -710,7 +710,7 @@ class Adapters extends Component {
     }
 
     update(adapter, version) {
-        this.props.executeCommand('upgrade ' + adapter + '@' + version);
+        this.props.executeCommand(`upgrade ${adapter}@${version}`);
     }
 
     closeAddInstanceDialog() {
@@ -1685,7 +1685,7 @@ class Adapters extends Component {
                     <div className={classes.containerVersion}>
                         {this.getNews(this.state.adapterInstallVersion, true).map(({ version, news }) => {
                             return <div className={classes.currentVersion} onClick={() => {
-                                this.update(`${this.state.adapterInstallVersion}@${version}`);
+                                this.update(this.state.adapterInstallVersion, version);
                                 this.setState({adapterInstallVersion: ''});
                             }}>
                                 <ListItemText

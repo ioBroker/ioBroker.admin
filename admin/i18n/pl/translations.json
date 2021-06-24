@@ -59,5 +59,16 @@
   "Auto update": "Sprawdź aktualizacje",
   "Cache": "Pliki pamięci podręcznej",
   "Chained certificate": "Certyfikat na łańcuszku",
-  "Enabled": "Włączone"
+  "Enabled": "Włączone",
+  "Let's Encrypt SSL": "Let's Encrypt SSL",
+  "Login background": "Tło logowania",
+  "There is a option to allow access to the specific configuration pages of selected instances.": "Istnieje możliwość zezwolenia na dostęp do określonych stron konfiguracyjnych wybranych instancji.",
+  "Config": "Strona konfiguracji",
+  "Tab": "Strona karty",
+  "Read about Let's Encrypt certificates": "Przeczytaj o certyfikatach Let's Encrypt",
+  "Login timeout": "Czas trwania sesji logowania",
+  "sec": "sek",
+  "Use background image": "Użyj obrazu tła",
+  "Upload image": "Załaduj obrazek",
+  "Undo": "Cofnij"
 }

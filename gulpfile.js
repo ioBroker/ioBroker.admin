@@ -14,6 +14,7 @@ const pkg         = require('./package.json');
 const iopackage   = require('./io-package.json');
 const babel       = require('gulp-babel');
 const fs          = require('fs');
+const del         = require('del');
 
 const fileName = 'words.js';
 const noSort   = false;
@@ -654,7 +655,7 @@ gulp.task('colorpick.min', () => {
         .pipe(gulp.dest('./www/lib/js'));
 });
 
-gulp.task('appCopy', gulp.series('colorpick.min', () => 
+gulp.task('appCopy', gulp.series('colorpick.min', () =>
     gulp.src([
         './src/**/*.*',
         '!./src/i18n/**/*',
@@ -693,6 +694,16 @@ gulp.task('watch', () => {
     gulp.watch(['./src/js/*.js'], ['compressApp']);
 });
 
+gulp.task('0_clean', () => {
+    return del([
+        // 'src/node_modules/**/*',
+        'www/**/*',
+        'www/*',
+    ]).then(del([
+        'www'
+    ]));
+});
+
 gulp.task('1_words',  gulp.parallel('www (json => words.js)', 'admin (json => words.js)'));
 gulp.task('2_css',    gulp.parallel('iobCSS', 'adminCSS', 'appCSS', 'treeTableCSS', 'configCSS', 'materializeCSS'));
 gulp.task('3_js',     gulp.parallel('vendorJS', 'materializeJS', 'appJS', 'fancyTreeJS')); //compressApp is last, to give the time for 1_words to be finshed. Because words.js is used in app.js
@@ -701,7 +712,7 @@ gulp.task('4_static', gulp.parallel('appHTML', 'aceCopy', 'colorpickerCopy', 'ap
 // add react tasks
 require('./gulpReact')(gulp);
 
-gulp.task('betaCopy', () => 
+gulp.task('betaCopy', () =>
 	new Promise(resolve => {
 		const ioPack = require('./io-package.json');
         const pack = require('./package.json');
@@ -718,6 +729,7 @@ gulp.task('betaCopy', () =>
 gulp.task('beta', gulp.series('react-build', 'betaCopy'));
 
 gulp.task('default', gulp.series(
+    '0_clean',
     '1_words',
     '2_css',
     '3_js',

@@ -59,5 +59,16 @@
   "Auto update": "Controlla gli aggiornamenti",
   "Cache": "File di cache",
   "Chained certificate": "Certificato concatenato",
-  "Enabled": "Abilitato"
+  "Enabled": "Abilitato",
+  "Let's Encrypt SSL": "Let's Encrypt SSL",
+  "Login background": "Sfondo di accesso",
+  "There is a option to allow access to the specific configuration pages of selected instances.": "È disponibile un'opzione per consentire l'accesso alle pagine di configurazione specifiche delle istanze selezionate.",
+  "Config": "Pagina di configurazione",
+  "Tab": "Scheda pagina",
+  "Read about Let's Encrypt certificates": "Leggi i certificati Let's Encrypt",
+  "Login timeout": "Durata della sessione di accesso",
+  "sec": "secondo",
+  "Use background image": "Usa immagine di sfondo",
+  "Upload image": "Carica immagine",
+  "Undo": "Disfare"
 }

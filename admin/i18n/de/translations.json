@@ -59,5 +59,16 @@
   "tooltip_ttl": "Nach diese Zeit wird ein inaktiver Benutzer ausgeloggt.",
   "users permissions": "Benutzerberechtigungen",
   "Use react UI(experts)": "Neue React UI ausprobieren (Alpha)",
-  "Use old UI": "Alte Benutzeroberfläche"
+  "Use old UI": "Alte Benutzeroberfläche",
+  "Let's Encrypt SSL": "Let's Encrypt SSL",
+  "Login background": "Login-Hintergrund",
+  "There is a option to allow access to the specific configuration pages of selected instances.": "Es gibt eine Option, um den Zugriff auf die spezifischen Konfigurationsseiten ausgewählter Instanzen zuzulassen.",
+  "Config": "Konfigurationsseite",
+  "Tab": "Registerkarte",
+  "Read about Let's Encrypt certificates": "Mehr über Let's Encrypt-Zertifikate lesen",
+  "Login timeout": "Dauer der Anmeldesitzung",
+  "sec": "Sek",
+  "Use background image": "Hintergrundbild verwenden",
+  "Upload image": "Bild hochladen",
+  "Undo": "Rückgängig machen"
 }

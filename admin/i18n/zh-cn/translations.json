@@ -59,5 +59,16 @@
   "Auto update": "检查更新",
   "Cache": "缓存文件",
   "Chained certificate": "链式证书",
-  "Enabled": "已启用"
+  "Enabled": "已启用",
+  "Let's Encrypt SSL": "Let's Encrypt SSL",
+  "Login background": "登录背景",
+  "There is a option to allow access to the specific configuration pages of selected instances.": "有一个选项允许访问所选实例的特定配置页面。",
+  "Config": "配置页面",
+  "Tab": "标签页",
+  "Read about Let's Encrypt certificates": "阅读让我们加密证书",
+  "Login timeout": "登录会话持续时间",
+  "sec": "秒",
+  "Use background image": "使用背景图片",
+  "Upload image": "上传图片",
+  "Undo": "撤消"
 }

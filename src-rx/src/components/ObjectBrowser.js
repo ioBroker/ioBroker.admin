@@ -329,6 +329,9 @@ const styles = theme => ({
             height: ICON_SIZE,
             display: 'inline-block',
         },
+        '& .itemIconFolder': {
+            marginLeft: 3,
+        },
     },
     cellRole: {
         display: 'inline-block',
@@ -1360,6 +1363,7 @@ const ITEM_IMAGES = {
     host:     <IconHost     className="itemIcon" />,
     schedule: <IconSchedule className="itemIcon" />,
     script:   <IconScript   className="itemIcon" />,
+    folder:   <IconClosed   className="itemIcon itemIconFolder" />,
 };
 
 const StyledBadge = withStyles(theme => ({
@@ -2810,7 +2814,7 @@ class ObjectBrowser extends Component {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="contained" onClick={() => this.setState({showExportDialog: false}, () => this._exportObjects(true))}>{this.props.t('All objects')}</Button>
+                    <Button variant="outlined" onClick={() => this.setState({showExportDialog: false}, () => this._exportObjects(true))}>{this.props.t('All objects')}</Button>
                     <Button variant="contained" autoFocus color="primary" onClick={() => this.setState({showExportDialog: false}, () => this._exportObjects(false))}>{this.props.t('Only selected')}</Button>
                     <Button variant="contained" onClick={() => this.setState({showExportDialog: false})} startIcon={<IconClose/>}>{this.props.t('Cancel')}</Button>
                 </DialogActions>
@@ -3982,6 +3986,7 @@ class ObjectBrowser extends Component {
                     <IconCopy className={Utils.clsx(classes.cellCopyButton, 'copyButton')} onClick={e => this.onCopy(e, id)} />
                 </div>
             </Grid>
+
             {this.columnsVisibility.name ? <div className={classes.cellName} style={{ width: this.columnsVisibility.name }}>{(item.data?.title) || ''}</div> : null}
 
             {!this.state.statesView ?

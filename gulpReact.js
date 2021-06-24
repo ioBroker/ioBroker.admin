@@ -82,8 +82,8 @@ function build() {
 function copyFiles(gulp) {
     return del([
         dest + '**/*'
-    ]).then(() => {
-        return Promise.all([
+    ])
+        .then(() => Promise.all([
             gulp.src([
                 srcRx + 'build/**/*',
                 `!${srcRx}build/index.html`,
@@ -104,8 +104,7 @@ function copyFiles(gulp) {
             ])
                 .pipe(replace('s.p+"static/media/copy-content', '"./static/media/copy-content'))
                 .pipe(gulp.dest(dest + 'static/js/')),
-        ])
-    });
+        ]));
 }
 
 function patchIndex() {
@@ -249,9 +248,9 @@ function init(gulp) {
     gulp.task('react-1-clean', () => {
         return del([
             // 'src/node_modules/**/*',
-            dest + '/**/*',
+            dest + '**/*',
             dest + '*',
-            'src/build/**/*'
+            srcRx + 'build/**/*'
         ]).then(del([
             // 'src/node_modules',
             'src/build',

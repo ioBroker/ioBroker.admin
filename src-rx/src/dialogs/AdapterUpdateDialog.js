@@ -91,7 +91,7 @@ class AdapterUpdateDialog extends Component {
                     .replace(/<! -[^>]*->/, '')
                     .trim()
                 )
-                .filter(line => !!line)
+                .filter(line => !!line);
 
             result.push(
                 <Grid item key={entry.version}>
@@ -99,11 +99,9 @@ class AdapterUpdateDialog extends Component {
                         {entry.version}
                     </Typography>
                     {news.map((value, index) => {
-                        return (
-                            <Typography key={`${entry.version}-${index}`} component="div" variant="body2">
-                                { '• ' + value}
-                            </Typography>
-                        );
+                        return <Typography key={`${entry.version}-${index}`} component="div" variant="body2">
+                            { '• ' + value}
+                        </Typography>;
                     })}
                 </Grid>
             );

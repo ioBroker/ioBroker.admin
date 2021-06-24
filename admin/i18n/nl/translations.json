@@ -59,5 +59,16 @@
   "Auto update": "Controleer op updates",
   "Cache": "Cachebestanden",
   "Chained certificate": "Geketend certificaat",
-  "Enabled": "Ingeschakeld"
+  "Enabled": "Ingeschakeld",
+  "Let's Encrypt SSL": "Let's Encrypt SSL",
+  "Login background": "Inlog achtergrond",
+  "There is a option to allow access to the specific configuration pages of selected instances.": "Er is een optie om toegang te verlenen tot de specifieke configuratiepagina's van geselecteerde instanties.",
+  "Config": "Configuratiepagina",
+  "Tab": "Tabblad",
+  "Read about Let's Encrypt certificates": "Lees over Let's Encrypt-certificaten",
+  "Login timeout": "Duur van inlogsessie",
+  "sec": "sec",
+  "Use background image": "Achtergrondafbeelding gebruiken",
+  "Upload image": "Afbeelding uploaden",
+  "Undo": "ongedaan maken"
 }

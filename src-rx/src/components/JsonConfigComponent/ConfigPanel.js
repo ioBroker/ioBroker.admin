@@ -101,6 +101,7 @@ const styles = theme => ({
     },
     primary: {
         backgroundColor: theme.palette.primary.main,
+        color: theme.palette.type === 'dark' ? 'inherit' : '#FFF'
     },
     secondary: {
         backgroundColor: theme.palette.secondary.main,

@@ -15,6 +15,7 @@ Marked with "!" must be in release candidate
 ## Enums
 
 ## Adapters
+- Install command: during installation the close button in upper right corner is not disabled
 
 ## Wizard
 

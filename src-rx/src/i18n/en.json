@@ -1286,7 +1286,7 @@
   "for new instances": "for new instances",
   "Set value": "Set value",
   "Object does not exist!": "Object does not exist!",
-  "github_warning": "Don't install adapters from %s unless asked to by a developer or if you are 100 %sure what you are doing! Adapters on %s may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!",
+  "github_warning": "Don't install adapters from %s unless asked to by a developer or if you are 100% sure what you are doing! Adapters on %s may not work like they should (they are still under development). Only install them if you are participating in a test! Please wait for an official release!",
   "Install adapter from %s": "Install or update the adapter from %s",
   "Hosts notifications": "Hosts notifications",
   "Remove": "Remove",
