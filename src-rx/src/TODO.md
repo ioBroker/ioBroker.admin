@@ -16,12 +16,14 @@ Marked with "!" must be in release candidate
 
 ## Adapters
 - Install command: during installation the close button in upper right corner is not disabled
+- Show icons for autocomplete in github dialog
 
 ## Wizard
 
 ## Discovery
 
 ## Logs
+- Save selected filter
 
 ## Instances
 - Indication of more than one deleted adapter
@@ -31,6 +33,7 @@ Marked with "!" must be in release candidate
 - Add mode view owners (by switching "1") / owner / ownerGroup / objectACL / state ACL
 
 ## Files
+- Play mp3 files in viewer
 
 ## Hosts
 - Scroll only hosts in row view, not the header

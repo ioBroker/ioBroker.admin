@@ -403,15 +403,17 @@
             "native": {}
         },
         {
-            "_id": "connected",
+            "_id": "info.connection",
             "type": "state",
             "common": {
+                "role": "indicator.connected",
                 "name": "Info about connected socket clients",
                 "type": "string",
                 "read": true,
                 "write": false,
-                "role": "text"
-            }
+                "def": ""
+            },
+            "native": {}
         },
         {
             "_id": "info.newsFeed",
