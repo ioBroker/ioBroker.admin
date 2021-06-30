@@ -45,7 +45,7 @@ const styles = theme => ({
         paddingBottom: 40,
         display: 'flex'
     },
-    descrPanel: {
+    descriptionPanel: {
         width: '100%',
         backgroundColor: 'transparent',
         marginLeft: 40,
@@ -184,7 +184,7 @@ class CertificatesDialog extends Component {
                 >
                     <AddIcon/>
                 </Fab>
-                <Paper variant="outlined" className={classes.descrPanel}>
+                <Paper variant="outlined" className={classes.descriptionPanel}>
                     {this.props.t('certs_hint')}
                 </Paper>
             </div>

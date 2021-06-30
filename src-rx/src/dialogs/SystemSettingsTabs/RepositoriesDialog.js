@@ -37,7 +37,7 @@ const styles = theme => ({
         paddingBottom: 40,
         display: 'flex'
     },
-    descrPanel: {
+    descriptionPanel: {
         width: '100%',
         backgroundColor: 'transparent',
         marginLeft: 40,
@@ -132,7 +132,7 @@ class RepositoriesDialog extends Component {
                 >
                     <AddIcon/>
                 </Fab>
-                <Paper variant="outlined" className={classes.descrPanel}/>
+                <Paper variant="outlined" className={classes.descriptionPanel}/>
             </div>
             <TableContainer>
                 <Table className={classes.table} aria-label="customized table">

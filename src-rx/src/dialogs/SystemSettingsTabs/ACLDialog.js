@@ -31,14 +31,6 @@ const styles = theme => ({
         paddingBottom: 40,
         display: 'flex'
     },
-    descrPanel: {
-        width: '100%',
-        backgroundColor: 'transparent',
-        marginLeft: 40,
-        border: 'none',
-        display: 'flex',
-        alignItems: 'center'
-    },
     formControl: {
         margin: theme.spacing(1),
         minWidth: '100%',

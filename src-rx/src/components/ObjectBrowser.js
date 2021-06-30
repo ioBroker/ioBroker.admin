@@ -2756,6 +2756,7 @@ class ObjectBrowser extends Component {
         if (this.state.selected.length || this.state.selectedNonObject) {
             const result = [];
             const keys = Object.keys(this.objects);
+            keys.sort();
             const id = this.state.selected[0] || this.state.selectedNonObject;
             const idDot = id + '.';
             const idLen = idDot.length;
@@ -3466,7 +3467,7 @@ class ObjectBrowser extends Component {
             }));
 
             enums.forEach(item => {
-                if (item.icon) {
+                if (item.icon && typeof item.icon == 'string') {
                     item.icon = <div className={this.props.classes.enumIconDiv}>
                         <img src={item.icon} className={this.props.classes.enumIcon} alt={item.name} />
                     </div>;
@@ -4042,7 +4043,7 @@ class ObjectBrowser extends Component {
         let leaf = this.renderLeaf(root, isExpanded, classes, counter);
         let DragWrapper = this.props.DragWrapper;
         if (this.props.dragEnabled) {
-            if (root.data.visible) {
+            if (root.data.visible || root.data.hasVisibleChildren) {
                 leaf = <DragWrapper key={root.data.id} item={root} className={classes.draggable}>{leaf}</DragWrapper>;
             } else {
                 // change cursor
@@ -4340,7 +4341,6 @@ class ObjectBrowser extends Component {
                 objectIDs={this.state.customDialog}
                 expertMode={this.state.filter.expertMode}
                 isFloatComma={this.props.isFloatComma}
-                isFlo
                 t={this.props.t}
                 lang={this.props.lang}
                 socket={this.props.socket}

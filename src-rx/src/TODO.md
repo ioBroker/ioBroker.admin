@@ -19,6 +19,7 @@ Marked with "!" must be in release candidate
 - Show icons for autocomplete in github dialog
 
 ## Wizard
+- Replace map with leaflet
 
 ## Discovery
 

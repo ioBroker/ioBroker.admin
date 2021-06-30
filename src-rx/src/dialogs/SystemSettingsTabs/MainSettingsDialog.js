@@ -12,12 +12,12 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
+import {FormHelperText} from '@material-ui/core';
 
 import Utils from '../../Utils';
 import countries from '../../assets/json/countries';
 
 import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
-import {FormHelperText} from "@material-ui/core";
 
 const styles = theme => ({
     tabPanel: {
@@ -35,14 +35,9 @@ const styles = theme => ({
     selectEmpty: {
         marginTop: theme.spacing(2),
     },
-    descrPanel: {
-        width: '100%',
-        // backgroundColor:'transparent',
-        padding: 16,
-        // border:'none',
-        display: 'flex',
-        alignItems: 'center'
-    },
+    map: {
+        borderRadius: 5
+    }
 });
 
 class MainSettingsDialog extends Component {
@@ -238,8 +233,6 @@ class MainSettingsDialog extends Component {
             .on({
                 dragend: evt => this.onMarkerDragend(evt)
             });
-
-        //map.on({click: evt => console.log(evt.latlng.lat)});
     }
 
     getSelect(e, i) {
@@ -409,6 +402,7 @@ class MainSettingsDialog extends Component {
                 </Grid>
                 <Grid item lg={6} md={12} style={{ width: '100%' }}>
                     <LeafletMap
+                        className={classes.map}
                         center={center}
                         zoom={zoom}
                         maxZoom={18}

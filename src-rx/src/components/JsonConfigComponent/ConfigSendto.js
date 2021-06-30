@@ -89,7 +89,11 @@ class ConfigSendto extends ConfigGeneric {
                         }
                         window.alert(text);
                     } else {
-                        window.alert(response?.result || I18n.t('Ok'));
+                        if (response?.result) {
+                            window.alert(typeof response.result === 'object' ? JSON.stringify(response.result) : response.result);
+                        } else {
+                            window.alert(I18n.t('Ok'));
+                        }
                     }
                 }
             })

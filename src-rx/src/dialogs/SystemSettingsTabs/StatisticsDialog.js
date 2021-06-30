@@ -37,7 +37,7 @@ const styles = theme => ({
         margin: theme.spacing(1),
         minWidth: '100%',
     },
-    descrPanel: {
+    descriptionPanel: {
         width: '100%',
         backgroundColor: 'transparent',
         border: 'none',
@@ -126,7 +126,7 @@ class StatisticsDialog extends Component {
                     {this.getTypesSelector()}
                     {this.props.dataAux ? <Paper
                         variant="outlined"
-                        className={classes.descrPanel}>
+                        className={classes.descriptionPanel}>
                         <ul>
                             {Object.keys(this.props.dataAux).map(key => <li key={key}>{key}</li>)}
                         </ul>

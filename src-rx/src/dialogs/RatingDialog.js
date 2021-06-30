@@ -202,7 +202,7 @@ class RatingDialog extends Component {
                         if (this.state.filterLang && this.state.filterLang !== '_' && comment.lang !== this.state.filterLang) {
                             return null;
                         } else {
-                            return <ListItem
+                            return comment ? <ListItem
                                 key={i}
                                 title={comment.uuid ? this.props.t('Your comment') : ''}
                                 classes={{ root: comment.uuid ? this.props.classes.listOwn : undefined }} dense>
@@ -214,7 +214,7 @@ class RatingDialog extends Component {
                                     secondary={new Date(comment.ts).toLocaleString() + ' / v' + comment.version}
                                     classes={{ secondary: this.props.classes.listTime }}
                                 />
-                            </ListItem>
+                            </ListItem> : null;
                         }
                     })}
                     {!found && <div className={this.props.classes.noComments}>{this.props.t('No comments in selected language')}</div>}

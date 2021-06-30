@@ -696,7 +696,6 @@ class ObjectHistoryData extends Component {
                 now.setDate(now.getDate() - 6);
             }
 
-            this.chart.min = now.getTime();
         } else if (mins === '2weeks') {
             now.setHours(0);
             now.setMinutes(0);
@@ -707,7 +706,6 @@ class ObjectHistoryData extends Component {
             } else {
                 now.setDate(now.getDate() - 13);
             }
-            this.chart.min = now.getTime();
         } else if (mins === 'month') {
             now.setHours(0);
             now.setMinutes(0);
@@ -786,7 +784,6 @@ class ObjectHistoryData extends Component {
                 now.setDate(now.getDate() - 6);
             }
 
-            this.chart.min = now.getTime();
         } else if (mins === '2weeks') {
             now.setHours(0);
             now.setMinutes(0);
@@ -797,7 +794,6 @@ class ObjectHistoryData extends Component {
             } else {
                 now.setDate(now.getDate() - 13);
             }
-            this.chart.min = now.getTime();
         } else if (mins === 'month') {
             now.setHours(0);
             now.setMinutes(0);

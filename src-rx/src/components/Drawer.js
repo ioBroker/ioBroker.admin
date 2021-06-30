@@ -627,8 +627,8 @@ class Drawer extends Component {
                 anchor="left"
                 open={this.props.state !== STATES.closed}
                 classes={{ paper: classes.paper }}
-                onMouseEnter={() => this.refEditButton.current.style.opacity = 1}
-                onMouseLeave={() => this.refEditButton.current.style.opacity = 0}
+                onMouseEnter={() => this.refEditButton.current && (this.refEditButton.current.style.opacity = 1)}
+                onMouseLeave={() => this.refEditButton.current && (this.refEditButton.current.style.opacity = 0)}
             >
                 <CustomDragLayer />
 

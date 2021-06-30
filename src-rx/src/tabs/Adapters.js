@@ -669,7 +669,7 @@ class Adapters extends Component {
                     // simulation
                     // setTimeout(() => this.setState({showSlowConnectionWarning: true}), 5000);
 
-                    this.uuid = ratings.uuid;
+                    this.uuid = ratings?.uuid || null;
                     this.rebuildSupported = rebuild || false;
                     this.calculateInfo(instances, ratings, hostData);
                 });

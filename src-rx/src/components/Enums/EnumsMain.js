@@ -185,6 +185,8 @@ class EnumsList extends Component {
             enumsCollapsed,
         };
 
+        this.cachedIcons = {};
+
         this.fastUpdate = false;
     }
 
@@ -487,6 +489,7 @@ class EnumsList extends Component {
                     lang={this.props.lang}
                     classesParent={this.props.classes}
                     themeType={this.props.themeType}
+                    cachedIcons={this.cachedIcons}
                 />
                 : null
             }

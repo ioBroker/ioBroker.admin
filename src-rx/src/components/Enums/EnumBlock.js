@@ -175,8 +175,10 @@ function isTouchDevice() {
 class EnumBlock extends Component {
     constructor(props) {
         super(props);
+
         this.state = {
-            icons: props.enum?.common?.members ? props.enum.common.members.map(memberId => props.members[memberId]?.common?.icon || '') :[]
+            icons: props.enum?.common?.members ?
+                props.enum.common.members.map(memberId => props.members[memberId]?.common?.icon || '') : []
         };
     }
 
@@ -185,32 +187,48 @@ class EnumBlock extends Component {
         const icons = [...this.state.icons];
         let changed = false;
         const memberIds = this.props.enum?.common?.members;
+
+        const cachedIcons = this.props.cachedIcons;
+
         try {
             if (memberIds) {
                 for (let i = 0; i < icons.length; i++) {
                     if (!icons[i]) {
                         // check the parent
                         const channelId = Utils.getParentId(memberIds[i]);
+
+                        if (cachedIcons[channelId] !== undefined) {
+                            if (cachedIcons[channelId]) {
+                                icons[i] = cachedIcons[channelId];
+                                changed = true;
+                            }
+                            continue;
+                        }
+
                         if (channelId && channelId.split('.').length > 2) {
                             const channelObj = await this.props.socket.getObject(channelId);
                             if (channelObj && (channelObj.type === 'channel' || channelObj.type === 'device')) {
                                 if (channelObj.common?.icon) {
-                                    icons[i] = channelObj.common?.icon;
+                                    cachedIcons[channelId] = channelObj.common.icon;
+                                    icons[i] = channelObj.common.icon;
                                     changed = true;
                                 } else {
                                     // check the parent
                                     const deviceId = Utils.getParentId(channelId);
                                     if (deviceId && deviceId.split('.').length > 2) {
-                                        console.log('Get deviceId' + deviceId);
                                         const deviceObj = await this.props.socket.getObject(deviceId);
                                         if (deviceObj && (deviceObj.type === 'channel' || deviceObj.type === 'device')) {
                                             if (deviceObj.common?.icon) {
-                                                icons[i] = deviceObj.common?.icon;
+                                                cachedIcons[deviceId] = deviceObj.common.icon;
+                                                cachedIcons[channelId] = deviceObj.common.icon;
+                                                icons[i] = deviceObj.common.icon;
                                                 changed = true;
                                             }
                                         }
+                                        cachedIcons[deviceId] = cachedIcons[deviceId] || null;
                                     }
                                 }
+                                cachedIcons[channelId] = cachedIcons[channelId] || null;
                             }
                         }
                     }
@@ -457,7 +475,7 @@ const EnumBlockDrag = props => {
     if (!props.enum) {
         return <StyledEnumBlock isDragging={isDragging} widthRef={widthRef} {...props}/>;
     } else {
-        return isTouchDevice() 
+        return isTouchDevice()
         ? <div ref={drop} style={{opacity: canDrop && isOver ? 0.5 : 1}}>
             <div ref={widthRef}>
                 <StyledEnumBlock isDragging={isDragging} widthRef={widthRef} iconDragRef={dragRef} {...props}/>
@@ -495,6 +513,7 @@ EnumBlockDrag.propTypes = {
     id: PropTypes.string,
     children: PropTypes.number,
     themeType: PropTypes.string,
+    cachedIcons: PropTypes.object.isRequired,
 };
 
 export default EnumBlockDrag;
