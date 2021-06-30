@@ -30,6 +30,7 @@ import EnumEditDialog from './EnumEditDialog';
 import EnumTemplateDialog from './EnumTemplateDialog';
 import EnumDeleteDialog from './EnumDeleteDialog';
 import DragObjectBrowser from './DragObjectBrowser'
+import ClearIcon from "@material-ui/icons/Clear";
 
 const styles = theme => ({
     mainGridCont: {
@@ -93,6 +94,9 @@ const styles = theme => ({
         alignItems: 'center',
         padding: '4px 20px',
         justifyContent: 'space-between'
+    },
+    searchText: {
+        color: 'orange'
     }
 });
 
@@ -188,6 +192,9 @@ class EnumsList extends Component {
         this.cachedIcons = {};
 
         this.fastUpdate = false;
+
+        this.refFilter = React.createRef();
+        this.refClearButton = React.createRef()
     }
 
     getEnumTemplate = prefix => {
@@ -452,47 +459,71 @@ class EnumsList extends Component {
             ids.sort(sort(container.children, this.getName));
         }
 
-        return <div style={{paddingLeft: level ? 32 : 0}} key={container.id || key }>
-            {!this.state.search || container.id.toLowerCase().includes(this.state.search.toLowerCase()) ?
-                <EnumBlock
-                    updating={this.state.updating.includes(container.id)}
-                    id={container.id}
-                    children={container.children ? Object.keys(container.children).length : 0}
-                    enum={container.data}
-                    members={this.state.members}
-                    moveEnum={this.moveEnum}
-                    removeMemberFromEnum={this.removeMemberFromEnum}
-                    showEnumEditDialog={this.showEnumEditDialog}
-                    showEnumDeleteDialog={this.showEnumDeleteDialog}
-                    showEnumTemplateDialog={this.showEnumTemplateDialog}
-                    currentCategory={this.state.currentCategory}
-                    getEnumTemplate={this.getEnumTemplate}
-                    copyEnum={this.copyEnum}
-                    getName={this.getName}
-                    closed={this.state.enumsClosed[container.id]}
-                    collapsed={this.state.enumsCollapsed.includes(container.id)}
-                    toggleEnum={this.toggleEnum}
-                    onCollapse={() => {
-                        const enumsCollapsed = [...this.state.enumsCollapsed];
-                        const pos = enumsCollapsed.indexOf(container.id);
-                        if (pos === -1) {
-                            enumsCollapsed.push(container.id);
-                        } else {
-                            enumsCollapsed.splice(pos, 1);
-                        }
-                        this.setState({enumsCollapsed});
-                        window.localStorage.setItem('enumsCollapsed', JSON.stringify(enumsCollapsed));
-                    }}
-
-                    t={this.props.t}
-                    socket={this.props.socket}
-                    lang={this.props.lang}
-                    classesParent={this.props.classes}
-                    themeType={this.props.themeType}
-                    cachedIcons={this.cachedIcons}
-                />
-                : null
+        let name = this.getName(container.data.common?.name);
+        let idText = container.id;
+        if (this.state.search) {
+            const search = this.state.search;
+            const pos = name.toLowerCase().indexOf(search);
+            const posId = idText.toLowerCase().indexOf(search);
+            if (pos === -1 && posId === -1) {
+                return null;
             }
+            if (pos !== -1) {
+                name = name ? [
+                    <span key="0">{name.substring(0, pos)}</span>,
+                    <span key="1" className={this.props.classes.searchText}>{name.substring(pos, pos + this.state.search.length)}</span>,
+                    <span key="2">{name.substring(pos + this.state.search.length)}</span>,
+                ] : '';
+            }
+            if (posId !== -1) {
+                idText = name ? [
+                    <span key="0">{idText.substring(0, posId)}</span>,
+                    <span key="1" className={this.props.classes.searchText}>{idText.substring(posId, posId + this.state.search.length)}</span>,
+                    <span key="2">{idText.substring(posId + this.state.search.length)}</span>,
+                ] : '';
+            }
+        }
+
+        return <div style={{paddingLeft: level ? 32 : 0}} key={container.id || key }>
+            <EnumBlock
+                updating={this.state.updating.includes(container.id)}
+                id={container.id}
+                name={name}
+                idText={idText}
+                children={container.children ? Object.keys(container.children).length : 0}
+                enum={container.data}
+                members={this.state.members}
+                moveEnum={this.moveEnum}
+                removeMemberFromEnum={this.removeMemberFromEnum}
+                showEnumEditDialog={this.showEnumEditDialog}
+                showEnumDeleteDialog={this.showEnumDeleteDialog}
+                showEnumTemplateDialog={this.showEnumTemplateDialog}
+                currentCategory={this.state.currentCategory}
+                getEnumTemplate={this.getEnumTemplate}
+                copyEnum={this.copyEnum}
+                getName={this.getName}
+                closed={this.state.enumsClosed[container.id]}
+                collapsed={this.state.enumsCollapsed.includes(container.id)}
+                toggleEnum={this.toggleEnum}
+                onCollapse={() => {
+                    const enumsCollapsed = [...this.state.enumsCollapsed];
+                    const pos = enumsCollapsed.indexOf(container.id);
+                    if (pos === -1) {
+                        enumsCollapsed.push(container.id);
+                    } else {
+                        enumsCollapsed.splice(pos, 1);
+                    }
+                    this.setState({enumsCollapsed});
+                    window.localStorage.setItem('enumsCollapsed', JSON.stringify(enumsCollapsed));
+                }}
+
+                t={this.props.t}
+                socket={this.props.socket}
+                lang={this.props.lang}
+                classesParent={this.props.classes}
+                themeType={this.props.themeType}
+                cachedIcons={this.cachedIcons}
+            />
             {ids ?
                 ids.map((id, index) => <React.Fragment key={index}>{this.renderTree(container.children[id], index, level + 1)}</React.Fragment>)
             : null}
@@ -603,7 +634,7 @@ class EnumsList extends Component {
     }
 
     getName = name =>
-        name && typeof name === 'object' ? name[this.props.lang] || name.en || '': name || '';
+        (name && typeof name === 'object') ? (name[this.props.lang] || name.en || '') : (name || '');
 
     static _isUniqueName(prefix, list, word, i) {
         return !list.find(item =>
@@ -618,10 +649,33 @@ class EnumsList extends Component {
         return {_id: `${prefix}.${word.toLowerCase()}_${i}`, name: word + ' ' + i};
     }
 
+    onFilterChanged(filter, isClear) {
+        if (this.refClearButton.current) {
+            if (filter) {
+                this.refClearButton.current.style.display = 'block';
+            } else {
+                this.refClearButton.current.style.display = 'none';
+            }
+        }
+        if (isClear && this.refFilter.current) {
+            this.refFilter.current.value = '';
+        }
+
+        this.searchTimer && clearTimeout(this.searchTimer);
+        this.searchTimer = setTimeout(_text => {
+            this.searchTimer = null;
+            this.setState({search: _text.toLowerCase()})
+        }, isClear ? 0 : 300, filter);
+    }
+
     render() {
         if (!this.state.enumsTree) {
             return <LinearProgress />;
         }
+
+        const enumItems = Object.values(this.state.enumsTree.children.enum.children[this.state.currentCategory].children);
+        const showFolderIcons = !!enumItems.find(item => item.children && Object.keys(item.children).length);
+
         return <>
             <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
                 <DndPreview />
@@ -691,11 +745,21 @@ class EnumsList extends Component {
                     </div>
                         <div className={this.props.classes.topPanel2}>
                             <TextField
-                                value={this.state.search}
+                                inputRef={this.refFilter}
                                 placeholder={this.props.t('Filter')}
                                 InputLabelProps={{shrink: true}}
                                 className={this.props.classes.filter}
-                                onChange={e => this.setState({search: e.target.value})}
+                                InputProps={{
+                                    endAdornment: <IconButton
+                                            ref={this.refClearButton}
+                                            style={{display: 'none'}}
+                                            size="small"
+                                            onClick={() => this.onFilterChanged('', true)}>
+                                            <ClearIcon />
+                                        </IconButton>,
+                                }}
+                                onChange={e => this.onFilterChanged(e.target.value)}
+
                             />
                             <Tooltip title={this.props.t('Narrow all')} placement="top">
                                 <IconButton
@@ -723,7 +787,7 @@ class EnumsList extends Component {
                                     <DownIcon/>
                                 </IconButton>
                             </Tooltip>
-                            <Tooltip title={this.props.t('Collapse all')} placement="top">
+                            {showFolderIcons && <Tooltip title={this.props.t('Collapse all')} placement="top">
                                 <IconButton
                                     //size="small"
                                     className={this.props.classes.toolbarButton}
@@ -736,8 +800,8 @@ class EnumsList extends Component {
                                 >
                                         <IconCollapsed/>
                                 </IconButton>
-                            </Tooltip>
-                            <Tooltip title={this.props.t('Expand all')} placement="top">
+                            </Tooltip>}
+                            {showFolderIcons && <Tooltip title={this.props.t('Expand all')} placement="top">
                                 <IconButton
                                     //size="small"
                                     className={this.props.classes.toolbarButton}
@@ -749,7 +813,7 @@ class EnumsList extends Component {
                                 >
                                     <IconExpanded/>
                                 </IconButton>
-                            </Tooltip>
+                            </Tooltip>}
                             <Tooltip title={this.props.t('Add group')} placement="top">
                                 <IconButton
                                     //size="small"
@@ -766,8 +830,7 @@ class EnumsList extends Component {
                             </Tooltip>
                         </div>
                         <div className={this.props.classes.blocksContainer}>
-                            {Object.values(this.state.enumsTree.children.enum.children[this.state.currentCategory].children)
-                                .map((enumItem, index) => this.renderTree(enumItem, index, 0))}
+                            {enumItems.map((enumItem, index) => this.renderTree(enumItem, index, 0))}
                         </div>
                     </Grid>
                     <Grid item xs={12} md={6} className={clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>

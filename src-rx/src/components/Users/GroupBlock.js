@@ -102,13 +102,14 @@ function GroupBlock(props) {
             {
                 (props.group.common.members || []).map( (member, i) => {
                     let user = props.users.find(user => user._id === member);
+                    const _textColor = user && user.common?.color ? Utils.getInvertedColor(user.common.color, props.themeType, true) : textColor;
                     return user
                         ?
                         <Card
                         key={i}
                         variant="outlined"
                         className={props.classes.userGroupMember}
-                        style={{ color: textColor, borderColor: textColor + '40' }}
+                        style={{ color: _textColor, borderColor: _textColor + '80', background: user.common?.color || 'inherit' }}
                     >
                         {user.common.icon ?
                             <Icon
@@ -123,7 +124,7 @@ function GroupBlock(props) {
                             size="small"
                             onClick={() => props.removeUserFromGroup(member, props.group._id)}
                         >
-                            <ClearIcon style={{ color: textColor }} />
+                            <ClearIcon style={{ color: _textColor }} />
                         </IconButton>
                     </Card>
                     :

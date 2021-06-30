@@ -85,7 +85,7 @@ function UserBlock(props) {
                         </div>
                         <span>
                         {
-                            props.user.common.desc !== ''
+                            props.user.common.desc
                                 ?
                                 <div className={props.classes.userName}>
                                     {props.user.common.desc}
@@ -99,33 +99,36 @@ function UserBlock(props) {
                 {props.groups.find(group => group.common.members && group.common.members.includes(props.user._id)) ?
                     <div>{props.t('In groups')}:</div> : null}
                 <div >
-                    {props.groups.map(group =>
-                        group.common.members && group.common.members.includes(props.user._id) ?
-                        <Card
-                            key={group._id}
-                            variant="outlined"
-                            className={props.classes.userGroupMember}
-                            style={{ color: textColor, borderColor: textColor + '40' }}
-                        >
-                            {
-                                group.common.icon ?
-                                    <Icon
-                                        className={ props.classes.icon }
-                                        src={group.common.icon}
-                                    />
-                                    :
-                                    <GroupIcon className={props.classes.icon} />
-                                }
-                            {props.getName(group.common.name)}
-                            <IconButton
-                                size="small"
-                                onClick={() => props.removeUserFromGroup(props.user._id, group._id)}
+                    {props.groups.map(group => {
+                        if (!group.common.members || !group.common.members.includes(props.user._id)) {
+                            return null;
+                        }
+                        const _textColor = group && group.common?.color ? Utils.getInvertedColor(group.common.color, props.themeType, true) : textColor;
+
+                        return <Card
+                                key={group._id}
+                                variant="outlined"
+                                className={props.classes.userGroupMember}
+                                style={{color: _textColor, borderColor: _textColor + '80', background: group.common?.color || 'inherit'}}
                             >
-                                <ClearIcon  style={{ color: textColor }} />
-                            </IconButton>
-                        </Card> :
-                        null
-                    )}
+                                {
+                                    group.common.icon ?
+                                        <Icon
+                                            className={props.classes.icon}
+                                            src={group.common.icon}
+                                        />
+                                        :
+                                        <GroupIcon className={props.classes.icon}/>
+                                }
+                                {props.getName(group.common.name)}
+                                <IconButton
+                                    size="small"
+                                    onClick={() => props.removeUserFromGroup(props.user._id, group._id)}
+                                >
+                                    <ClearIcon style={{color: _textColor}}/>
+                                </IconButton>
+                            </Card>;
+                    })}
                 </div>
             </CardContent>
         </div>

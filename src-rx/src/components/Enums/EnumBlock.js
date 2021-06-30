@@ -41,7 +41,6 @@ const styles = theme => ({
         transition: 'all 200ms ease-out',
         opacity: 1,
         overflow: 'hidden',
-        cursor: 'grab',
         position: 'relative',
         '&:hover': {
             overflowY: 'auto',
@@ -82,6 +81,7 @@ const styles = theme => ({
         height: 32,
         width: 32,
         marginRight: 5,
+        cursor: 'grab',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         display: 'inline-block'
@@ -267,6 +267,7 @@ class EnumBlock extends Component {
                         }
                         icons[i] = `${imagePrefix}/adapter/${instance[0]}`;
                     }
+                    changed = true;
                 }
             }
         }
@@ -344,10 +345,10 @@ class EnumBlock extends Component {
                         {icon}
                         <div className={classes.enumGroupName}>
                             <span className={classes.enumGroupEnumName}>
-                                {props.getName(props.enum?.common?.name) || props.id.split('.').pop()}
+                                {props.name || props.getName(props.enum?.common?.name) || props.id.split('.').pop()}
                             </span>
                             <span className={classes.enumGroupEnumID}>
-                                {props.id}
+                                {props.idText || props.id}
                             </span>
                             {props.enum?.common?.desc ?
                                 <div className={classes.enumName}>
@@ -369,7 +370,7 @@ class EnumBlock extends Component {
                                 title={name ? props.t('Name: %s', name) + '\nID: ' + member._id : member._id}
                                 variant="outlined"
                                 className={classes.enumGroupMember}
-                                style={{color: textColor, borderColor: textColor + '40'}}
+                                style={{color: textColor, borderColor: textColor + '80'}}
                             >
                                 {
                                     this.state.icons[i] ?
