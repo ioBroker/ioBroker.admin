@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 5.1.10 (2021-07-09)
 * (bluefox) Corrected some GUI errors
 
 ### 5.1.9 (2021-06-09)
@@ -103,9 +103,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 5.1.6 (2021-06-02)
 * (bluefox) Improved the custom settings
-
-### 5.1.5 (2021-05-30)
-* (bluefox) Fix edit of enumeration
 
 ## License
 

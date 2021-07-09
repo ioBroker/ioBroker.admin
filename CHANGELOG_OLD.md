@@ -1,3 +1,6 @@
+## 5.1.5 (2021-05-30)
+* (bluefox) Fix edit of enumeration
+
 ## 5.1.4 (2021-05-27)
 * (bluefox) Corrected error in log
 

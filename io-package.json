@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.1.9",
+        "version": "5.1.10",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.10": {
+                "en": "Corrected some GUI errors",
+                "de": "Einige GUI-Fehler korrigiert",
+                "ru": "Исправлены некоторые ошибки графического интерфейса.",
+                "pt": "Corrigidos alguns erros de GUI",
+                "nl": "Enkele GUI-fouten gecorrigeerd",
+                "fr": "Correction de quelques erreurs d'interface graphique",
+                "it": "Corretti alcuni errori della GUI",
+                "es": "Se corrigieron algunos errores de GUI",
+                "pl": "Poprawiono niektóre błędy GUI",
+                "zh-cn": "更正了一些 GUI 错误"
+            },
             "5.1.9": {
                 "en": "Corrected some GUI errors",
                 "de": "Einige GUI-Fehler korrigiert",
@@ -235,18 +247,6 @@
                 "zh-cn": "Admin5：GUI修复"
             },
             "5.0.24": {
-                "en": "Admin5: GUI fixes",
-                "de": "Admin5: GUI-Korrekturen",
-                "ru": "Admin5: исправления графического интерфейса",
-                "pt": "Admin5: Correções de GUI",
-                "nl": "Admin5: GUI-fixes",
-                "fr": "Admin5: correctifs de l'interface graphique",
-                "it": "Admin5: correzioni della GUI",
-                "es": "Admin5: correcciones de GUI",
-                "pl": "Admin5: poprawki GUI",
-                "zh-cn": "Admin5：GUI修复"
-            },
-            "5.0.23": {
                 "en": "Admin5: GUI fixes",
                 "de": "Admin5: GUI-Korrekturen",
                 "ru": "Admin5: исправления графического интерфейса",
