@@ -70,5 +70,10 @@
   "sec": "secondo",
   "Use background image": "Usa immagine di sfondo",
   "Upload image": "Carica immagine",
-  "Undo": "Disfare"
+  "Undo": "Disfare",
+  "End date": "Data di fine",
+  "End time": "Tempo scaduto",
+  "Insert entry": "Inserisci voce",
+  "No data in history for selected period": "Nessun dato nella cronologia per il periodo selezionato",
+  "1 minute": "1 minuto"
 }

@@ -15,6 +15,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Fab from '@material-ui/core/Fab';
 
 import ReactEchartsCore from 'echarts-for-react/lib/core';
+
 import * as echarts from 'echarts/core';
 import { LineChart } from 'echarts/charts';
 import {
@@ -85,6 +86,7 @@ const styles = theme => ({
         maxHeight: '100%',
         maxWidth: '100%',
         overflow: 'hidden',
+        width: '100%'
     },
     chart: {
         width: '100%',
@@ -179,7 +181,7 @@ class ObjectChart extends Component {
 
         this.state = {
             loaded: false,
-            historyInstance: '',
+            historyInstance: this.props.historyInstance || '',
             historyInstances: null,
             defaultHistory: '',
             chartHeight: 300,
@@ -315,6 +317,11 @@ class ObjectChart extends Component {
     getHistoryInstances() {
         const list = [];
         const ids  = [];
+
+        if (this.props.historyInstance) {
+            return Promise.resolve(list);
+        }
+
         this.props.customsInstances.forEach(instance => {
             const instObj = this.props.objects['system.adapter.' + instance];
             if (instObj && instObj.common && instObj.common.getHistory) {

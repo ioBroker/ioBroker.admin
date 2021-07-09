@@ -70,5 +70,10 @@
   "sec": "s",
   "Use background image": "Use imagem de fundo",
   "Upload image": "Enviar Imagem",
-  "Undo": "Desfazer"
+  "Undo": "Desfazer",
+  "End date": "Data final",
+  "End time": "Fim do tempo",
+  "Insert entry": "Inserir entrada",
+  "No data in history for selected period": "Nenhum dado no histórico para o período selecionado",
+  "1 minute": "1 minuto"
 }

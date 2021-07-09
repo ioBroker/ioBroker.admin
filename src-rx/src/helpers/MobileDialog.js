@@ -1,6 +1,6 @@
 import {Component} from 'react';
 
-const MOBILE_WIDTH = 800;
+export const MOBILE_WIDTH = 800;
 
 class MobileDialog extends Component {
     static isMobile() {

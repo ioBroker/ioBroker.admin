@@ -10,8 +10,10 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import { Button, TextField } from '@material-ui/core';
 
 import CloseIcon from '@material-ui/icons/Close';
-import {TimeIcon} from "@material-ui/pickers/_shared/icons/TimeIcon";
-import CheckIcon from "@material-ui/icons/Check";
+import {TimeIcon} from '@material-ui/pickers/_shared/icons/TimeIcon';
+import CheckIcon from '@material-ui/icons/Check';
+
+import {MOBILE_WIDTH} from '../helpers/MobileDialog';
 
 const styles = theme => ({
     buttonLabel: {
@@ -29,6 +31,8 @@ class SlowConnectionWarningDialog extends Component {
         this.state = {
             readTimeoutSec: Math.round((this.props.readTimeoutMs || SlowConnectionWarningDialog.getReadTimeoutMs()) / 1000),
         };
+
+        this.mobile = window.innerWidth < MOBILE_WIDTH;
     }
 
     static getReadTimeoutMs() {
@@ -74,7 +78,7 @@ class SlowConnectionWarningDialog extends Component {
                     }}
                     startIcon={<TimeIcon/>}
                 >
-                    {this.props.t('Set timeout to 1 minute')}
+                    {this.mobile ? this.props.t('1 minute') : this.props.t('Set timeout to 1 minute')}
                 </Button>
                 <Button
                     variant="contained"
@@ -88,7 +92,7 @@ class SlowConnectionWarningDialog extends Component {
                     }}
                     startIcon={<CheckIcon/>}
                 >
-                    {this.props.t('Apply')}
+                    {this.mobile ? null : this.props.t('Apply')}
                 </Button>
                 <Button
                     variant="contained"
@@ -96,7 +100,7 @@ class SlowConnectionWarningDialog extends Component {
                     color="default"
                     startIcon={<CloseIcon />}
                 >
-                    {this.props.t('Cancel')}
+                    {this.mobile ? null : this.props.t('Cancel')}
                 </Button>
             </DialogActions>
         </Dialog>;

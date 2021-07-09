@@ -33,7 +33,8 @@ const useStyles = makeStyles((theme) => ({
     pre: {
         overflow: 'auto',
         whiteSpace: 'pre-wrap',
-        margin: 0
+        margin: 0,
+        padding: 10,
     }
 }));
 const LicenseDialog = ({ url, cb }) => {

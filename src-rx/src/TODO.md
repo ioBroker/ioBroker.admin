@@ -17,6 +17,7 @@ Marked with "!" must be in release candidate
 ## Adapters
 - Install command: during installation the close button in upper right corner is not disabled
 - Show icons for autocomplete in github dialog
+- Make close button black and not red
 
 ## Wizard
 - Replace map with leaflet

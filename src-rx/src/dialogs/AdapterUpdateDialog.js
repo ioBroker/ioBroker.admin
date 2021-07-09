@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import semver from 'semver';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -14,9 +15,10 @@ import { IconButton } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
 
 import CloseIcon from '@material-ui/icons/Close';
+import CheckIcon from '@material-ui/icons/Check';
 
 import State from '../components/State';
-import CheckIcon from "@material-ui/icons/Check";
+import {MOBILE_WIDTH} from '../helpers/MobileDialog';
 
 const styles = theme => {
     return ({
@@ -60,6 +62,7 @@ class AdapterUpdateDialog extends Component {
         super(props);
 
         this.t = props.t;
+        this.mobile = window.innerWidth < MOBILE_WIDTH;
     }
 
     getDependencies() {
@@ -92,6 +95,11 @@ class AdapterUpdateDialog extends Component {
                     .trim()
                 )
                 .filter(line => !!line);
+
+            if (this.props.adapterObject?.version && entry.version &&
+                semver.gt(entry.version, this.props.adapterObject?.version)) {
+                return;
+            }
 
             result.push(
                 <Grid item key={entry.version}>
@@ -172,7 +180,7 @@ class AdapterUpdateDialog extends Component {
                     color="primary"
                     startIcon={<CheckIcon/>}
                 >
-                    {this.props.textUpdate ? this.props.textUpdate : this.t('Update')}
+                    {this.mobile ? null : (this.props.textUpdate ? this.props.textUpdate : this.t('Update'))}
                 </Button>
                 <Button
                     variant="contained"
@@ -180,7 +188,7 @@ class AdapterUpdateDialog extends Component {
                     color="default"
                     startIcon={<CloseIcon />}
                 >
-                    {this.t('Close')}
+                    {this.mobile ? null : this.t('Close')}
                 </Button>
             </DialogActions>
         </Dialog>;

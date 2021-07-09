@@ -70,5 +70,10 @@
   "sec": "sek",
   "Use background image": "Użyj obrazu tła",
   "Upload image": "Załaduj obrazek",
-  "Undo": "Cofnij"
+  "Undo": "Cofnij",
+  "End date": "Data końcowa",
+  "End time": "Koniec czasu",
+  "Insert entry": "Wstaw wpis",
+  "No data in history for selected period": "Brak danych w historii dla wybranego okresu",
+  "1 minute": "1 minuta"
 }

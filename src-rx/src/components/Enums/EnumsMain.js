@@ -459,7 +459,7 @@ class EnumsList extends Component {
             ids.sort(sort(container.children, this.getName));
         }
 
-        let name = this.getName(container.data.common?.name);
+        let name = this.getName(container.data?.common?.name);
         let idText = container.id;
         if (this.state.search) {
             const search = this.state.search;

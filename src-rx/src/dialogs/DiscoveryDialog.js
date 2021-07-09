@@ -732,7 +732,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                                     <Avatar
                                                         variant="square"
                                                         alt={obj._id.replace('system.adapter.', '')}
-                                                        src={repository[obj.common.name].icon}
+                                                        src={repository[obj.common.name]?.icon}
                                                         className={classes.instanceIcon}
                                                     />
                                                     <div className={classes.instanceId}>

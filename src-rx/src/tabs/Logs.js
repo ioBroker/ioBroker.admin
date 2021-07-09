@@ -39,6 +39,7 @@ import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import ErrorIcon from '@material-ui/icons/ErrorOutline';
 import WarningIcon from '@material-ui/icons/Warning';
 import CheckIcon from '@material-ui/icons/Check';
+import {FaPalette as ColorsIcon} from 'react-icons/fa';
 
 import amber from '@material-ui/core/colors/amber';
 import grey from '@material-ui/core/colors/grey';
@@ -298,9 +299,9 @@ class Logs extends Component {
         super(props);
 
         this.state = {
-            source: '1',
-            severity: 'debug',
-            message: '',
+            source: window.localStorage.getItem('Log.source') || '1',
+            severity: window.localStorage.getItem('Log.severity') || 'debug',
+            message: window.localStorage.getItem('Log.message') || '',
             logDeleteDialog: false,
             logDownloadDialog: null,
             logFiles: [],
@@ -312,6 +313,7 @@ class Logs extends Component {
             pause: 0,
             pauseCount: 0,
             pid: JSON.parse(window.localStorage.getItem('Logs.pid')) || false,
+            colors: window.localStorage.getItem('Logs.colors') === 'true',
             adapters: {},
             sources: {},
             currentHost: this.props.currentHost,
@@ -551,14 +553,17 @@ class Logs extends Component {
     }
 
     handleMessageChange(event) {
+        window.localStorage.setItem('Log.message', event.target.value);
         this.setState({ message: event.target.value });
     }
 
     handleSourceChange(event) {
+        window.localStorage.setItem('Log.source', event.target.value);
         this.setState({ source: event.target.value });
     }
 
     handleSeverityChange(event) {
+        window.localStorage.setItem('Log.severity', event.target.value);
         this.setState({ severity: event.target.value });
     }
 
@@ -695,7 +700,7 @@ class Logs extends Component {
 
             rows.push(<TableRow
                     className={clsx(classes.row, row.odd && classes.rowOdd, isHidden && classes.hidden, this.lastRowRender && row.ts > this.lastRowRender && classes.updatedRow)}
-                    style={{backgroundColor: this.state.sources[row.from]?.color || undefined}}
+                    style={this.state.colors ? {backgroundColor: this.state.sources[row.from]?.color || undefined} : {}}
                     key={key}
                     hover
                 >
@@ -818,6 +823,17 @@ class Logs extends Component {
                         color={!this.state.pid ? 'default' : 'primary'}
                     >
                         <div className={classes.pidSize}>{this.props.t('PID')}</div>
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title={this.props.t('Show/hide colors')}>
+                    <IconButton
+                        onClick={() => {
+                            window.localStorage.setItem('Logs.colors', this.state.colors ? 'false' : 'true');
+                            this.setState({colors: !this.state.colors});
+                        }}
+                        color={!this.state.colors ? 'default' : 'primary'}
+                    >
+                        <ColorsIcon />
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.props.t('Show errors')}>

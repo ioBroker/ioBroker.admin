@@ -70,5 +70,10 @@
   "sec": "sec",
   "Use background image": "Use background image",
   "Upload image": "Upload image",
-  "Undo": "Undo"
+  "Undo": "Undo",
+  "End date": "End date",
+  "End time": "End time",
+  "Insert entry": "Insert entry",
+  "No data in history for selected period": "No data in history for selected period",
+  "1 minute": "1 minute"
 }

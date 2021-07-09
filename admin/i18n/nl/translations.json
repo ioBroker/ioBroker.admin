@@ -70,5 +70,10 @@
   "sec": "sec",
   "Use background image": "Achtergrondafbeelding gebruiken",
   "Upload image": "Afbeelding uploaden",
-  "Undo": "ongedaan maken"
+  "Undo": "ongedaan maken",
+  "End date": "Einddatum",
+  "End time": "Eindtijd",
+  "Insert entry": "Invoer invoegen",
+  "No data in history for selected period": "Geen gegevens in geschiedenis voor geselecteerde periode",
+  "1 minute": "1 minuut"
 }

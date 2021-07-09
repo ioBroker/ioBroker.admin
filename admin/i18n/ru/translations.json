@@ -70,5 +70,10 @@
   "sec": "сек",
   "Use background image": "Использовать фоновое изображение",
   "Upload image": "Загрузить изображение",
-  "Undo": "Отменить"
+  "Undo": "Отменить",
+  "End date": "До",
+  "End time": "Время до",
+  "Insert entry": "Вставить запись",
+  "No data in history for selected period": "Нет данных в истории за выбранный период",
+  "1 minute": "1 минута"
 }

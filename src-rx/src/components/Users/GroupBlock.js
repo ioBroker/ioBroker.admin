@@ -109,7 +109,7 @@ function GroupBlock(props) {
                         key={i}
                         variant="outlined"
                         className={props.classes.userGroupMember}
-                        style={{ color: _textColor, borderColor: _textColor + '80', background: user.common?.color || 'inherit' }}
+                        style={{ color: _textColor, borderColor: _textColor + '40', background: user.common?.color || 'inherit' }}
                     >
                         {user.common.icon ?
                             <Icon

@@ -28,6 +28,8 @@ class ConfigGeneric extends Component {
             confirmData: null,
         };
 
+        this.isError = {};
+
         if (this.props.custom) {
             this.defaultValue = this.props.schema.defaultFunc ? this.executeCustom(this.props.schema.defaultFunc, this.props.schema.default, this.props.data, this.props.instanceObj) : this.props.schema.default;
         } else {
@@ -332,6 +334,12 @@ class ConfigGeneric extends Component {
     }
 
     onError(attr, error) {
+        if (!error) {
+            delete this.isError[attr];
+        } else {
+            this.isError[attr] = error;
+        }
+
         this.props.onError && this.props.onError(attr, error);
     }
 
@@ -389,6 +397,14 @@ class ConfigGeneric extends Component {
         const schema = this.props.schema;
 
         if (hidden) {
+            // Remove all errors if element is hidden
+            if (Object.keys(this.isError)) {
+                setTimeout(isError =>
+                    Object.keys(isError).forEach(attr => this.props.onError(attr)),
+                    100, JSON.parse(JSON.stringify(this.isError)));
+                this.isError = {};
+            }
+
             if (schema.hideOnlyControl) {
                 const item = <Grid
                     item

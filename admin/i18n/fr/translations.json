@@ -70,5 +70,10 @@
   "sec": "seconde",
   "Use background image": "Utiliser l'image d'arrière-plan",
   "Upload image": "Télécharger une image",
-  "Undo": "annuler"
+  "Undo": "annuler",
+  "End date": "Date de fin",
+  "End time": "Heure de fin",
+  "Insert entry": "Insérer une entrée",
+  "No data in history for selected period": "Aucune donnée dans l'historique pour la période sélectionnée",
+  "1 minute": "1 minute"
 }

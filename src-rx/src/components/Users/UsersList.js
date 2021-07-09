@@ -485,17 +485,28 @@ class UsersList extends Component {
                             <Typography gutterBottom variant="h4" component="h4">{this.props.t('Groups')}</Typography>
                         </div>
                         <div className={this.props.classes.blocksContainer}>{
-                            this.state.groups.map(group => <GroupBlock
-                                themeType={this.props.themeType}
-                                group={group}
-                                key={group._id}
-                                users={this.state.users}
-                                showGroupEditDialog={this.showGroupEditDialog}
-                                showGroupDeleteDialog={this.showGroupDeleteDialog}
-                                removeUserFromGroup={this.removeUserFromGroup}
-                                getName={this.getName}
-                                {...this.props}
-                            />)
+                            this.state.groups
+                                .sort((a, b) => {
+                                    const _a = (this.getName(a?.common?.name) || a._id).toLowerCase();
+                                    const _b = (this.getName(b?.common?.name) || b._id).toLowerCase();
+                                    if (_a > _b) {
+                                        return 1;
+                                    } else if (_a < _b) {
+                                        return -1;
+                                    } else {
+                                        return 0;
+                                    }
+                                }).map(group => <GroupBlock
+                                    themeType={this.props.themeType}
+                                    group={group}
+                                    key={group._id}
+                                    users={this.state.users}
+                                    showGroupEditDialog={this.showGroupEditDialog}
+                                    showGroupDeleteDialog={this.showGroupDeleteDialog}
+                                    removeUserFromGroup={this.removeUserFromGroup}
+                                    getName={this.getName}
+                                    {...this.props}
+                                />)
                         }</div>
                     </Grid>
                     <Grid item xs={12} md={6} className={clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
@@ -522,19 +533,31 @@ class UsersList extends Component {
                             </Typography>
                         </div>
                         <div className={this.props.classes.blocksContainer}>{
-                            this.state.users.map(user => <UserBlock
-                                themeType={this.props.themeType}
-                                user={user}
-                                key={user._id}
-                                groups={this.state.groups}
-                                showUserEditDialog={this.showUserEditDialog}
-                                showUserDeleteDialog={this.showUserDeleteDialog}
-                                updateData={this.updateData}
-                                addUserToGroup={this.addUserToGroup}
-                                removeUserFromGroup={this.removeUserFromGroup}
-                                getName={this.getName}
-                                {...this.props}
-                            />)
+                            this.state.users
+                                .sort((a, b) => {
+                                    const _a = (this.getName(a?.common?.name) || a._id).toLowerCase();
+                                    const _b = (this.getName(b?.common?.name) || b._id).toLowerCase();
+                                    if (_a > _b) {
+                                        return 1;
+                                    } else if (_a < _b) {
+                                        return -1;
+                                    } else {
+                                        return 0;
+                                    }
+                                })
+                                .map(user => <UserBlock
+                                    themeType={this.props.themeType}
+                                    user={user}
+                                    key={user._id}
+                                    groups={this.state.groups}
+                                    showUserEditDialog={this.showUserEditDialog}
+                                    showUserDeleteDialog={this.showUserDeleteDialog}
+                                    updateData={this.updateData}
+                                    addUserToGroup={this.addUserToGroup}
+                                    removeUserFromGroup={this.removeUserFromGroup}
+                                    getName={this.getName}
+                                    {...this.props}
+                                />)
                         }</div>
                     </Grid>
                 </Grid>

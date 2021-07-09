@@ -584,6 +584,24 @@ const styles = theme => ({
             opacity: '.3 !important',
             background: 'repeating-linear-gradient(135deg, #333, #333 10px, #888 10px, #888 20px)',
         }
+    },
+    desktopRow: {
+        minHeight: 0
+    },
+    desktopIcon: {
+        height: 32,
+        width: 32,
+        marginTop: 4
+    },
+    desktopRowContent: {
+        marginTop: 2,
+        marginBottom: 2,
+    },
+    desktopButton: {
+        paddingRight: 12,
+        paddingTop: 4,
+        paddingBottom: 4,
+        paddingLeft: 4,
     }
 });
 
@@ -665,6 +683,7 @@ const InstanceRow = ({
     const [hostValue, setHostValue] = useState(host);
 
     const [visibleEdit, handlerEdit] = useState(false);
+    const desktop = window.innerWidth > 1000;
 
     let showModal = false;
     let title;
@@ -874,14 +893,19 @@ const InstanceRow = ({
         }}>
         {linksDialog}
         <AccordionSummary
-            classes={{ root: classes.row }}
+            classes={{
+                root: classes.row,
+                content:  desktop ? classes.desktopRowContent : undefined,
+                expandIcon: desktop ? classes.desktopButton : undefined,
+            }}
             className={clsx(
                 (!running || instance.mode !== 'daemon') && (idx % 2 === 0 ? classes.instanceStateNotEnabled1 : classes.instanceStateNotEnabled2),
                 running && instance.mode === 'daemon' && (!connectedToHost || !alive) && (idx % 2 === 0 ? classes.instanceStateNotAlive1 : classes.instanceStateNotAlive2),
                 running && connectedToHost && alive && connected === false && (idx % 2 === 0 ? classes.instanceStateAliveNotConnected1 : classes.instanceStateAliveNotConnected2),
-                running && connectedToHost && alive && connected !== false && (idx % 2 === 0 ? classes.instanceStateAliveAndConnected1 : classes.instanceStateAliveAndConnected1)
+                running && connectedToHost && alive && connected !== false && (idx % 2 === 0 ? classes.instanceStateAliveAndConnected1 : classes.instanceStateAliveAndConnected1),
+                desktop && classes.desktopRow
             )}
-            expandIcon={<ExpandMoreIcon />}>
+            expandIcon={<ExpandMoreIcon/>}>
             {customModal}
             {stopAdminDialog}
             {(openDialogCron || openDialogSchedule) && <ComplexCron
@@ -924,7 +948,7 @@ const InstanceRow = ({
                         variant="square"
                         alt={instance.id}
                         src={instance.image}
-                        className={classes.instanceIcon}
+                        className={clsx(classes.instanceIcon, desktop && classes.desktopIcon)}
                     />
                     <div className={classes.instanceId}>{instance.id}</div>
                 </div>

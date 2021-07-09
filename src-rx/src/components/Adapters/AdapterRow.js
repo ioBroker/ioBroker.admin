@@ -137,7 +137,12 @@ const styles = theme => ({
         filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)'
     },
     rating: {
-        cursor: 'pointer'
+        cursor: 'pointer',
+        height: 18
+    },
+    nameCell: {
+        paddingTop: '0 !important',
+        paddingBottom: '0 !important',
     }
 });
 
@@ -253,7 +258,8 @@ class AdapterRow extends Component {
                             />
                         </Grid>
                         {/* <Grid item>{name}</Grid> */}
-                        <Grid item><div>{name}</div>
+                        <Grid item className={classes.nameCell}>
+                            <div>{name}</div>
                             {!versionDate ? <div
                                 onClick={onSetRating ? () => onSetRating() : undefined}
                                 className={clsx(classes.rating, onSetRating && classes.ratingSet)}
@@ -270,7 +276,7 @@ class AdapterRow extends Component {
                         </Grid>
                     </Grid>
                 </TableCell>
-                {!descHidden && <TableCell>{this.props.description}</TableCell>}
+                {!descHidden && <TableCell title={this.props.description}>{this.props.description}</TableCell>}
                 <TableCell>
                     <div className={classes.flex}>
                         {connectionType === 'cloud' ?

@@ -70,5 +70,10 @@
   "sec": "segundo",
   "Use background image": "Usar imagen de fondo",
   "Upload image": "Cargar imagen",
-  "Undo": "Deshacer"
+  "Undo": "Deshacer",
+  "End date": "Fecha final",
+  "End time": "Hora de finalización",
+  "Insert entry": "Insertar entrada",
+  "No data in history for selected period": "No hay datos en el historial para el período seleccionado",
+  "1 minute": "1 minuto"
 }

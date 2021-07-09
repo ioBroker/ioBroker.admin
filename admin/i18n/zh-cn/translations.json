@@ -70,5 +70,10 @@
   "sec": "秒",
   "Use background image": "使用背景图片",
   "Upload image": "上传图片",
-  "Undo": "撤消"
+  "Undo": "撤消",
+  "End date": "结束日期",
+  "End time": "时间结束",
+  "Insert entry": "插入条目",
+  "No data in history for selected period": "所选期间的历史记录中没有数据",
+  "1 minute": "1分钟"
 }

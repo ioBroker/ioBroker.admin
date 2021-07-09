@@ -194,7 +194,7 @@ const styles = theme => ({
         animation: '0.2s linear infinite alternate $myEffect2',
     },
     performed: {
-        color: '#388e3c',
+        color: theme.palette.type === 'light' ? '#3bfd44' : '#388e3c',
         animation: '0.2s linear infinite alternate $myEffect2',
     },
     wrapperButtons: {
@@ -1280,7 +1280,6 @@ class App extends Router {
     }
 
     showAlert(message, type) {
-
         if (type !== 'error' && type !== 'warning' && type !== 'info' && type !== 'success') {
             type = 'info';
         }
