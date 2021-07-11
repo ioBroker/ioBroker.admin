@@ -206,7 +206,7 @@ function checkConditions(condition, installedVersion) {
     if (condition.startsWith('equals')) {
         const vers = condition.substring(7, condition.length - 1).trim();
         return installedVersion === vers;
-    } else if (condition.startsWith('bigger')) {
+    } else if (condition.startsWith('bigger') || condition.startsWith('greater')) {
         const vers = condition.substring(7, condition.length - 1).trim();
         try {
             return semver.gt(vers, installedVersion);
