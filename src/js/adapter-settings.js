@@ -1245,7 +1245,7 @@ function getExtendableInstances(_adapter, callback) {
         if (err) {
             callback && callback ([]);
         } else {
-            if (doc.rows.length === 0) {
+            if (!doc.rows.length) {
                 callback && callback ([]);
             } else {
                 var res = [];

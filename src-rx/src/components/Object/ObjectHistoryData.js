@@ -628,8 +628,14 @@ class ObjectHistoryData extends Component {
                 const interpolated = state.i;
                 const selected = this.state.lastSelected === ts;
                 let val = state.val;
-                if (this.props.isFloatComma && this.props.obj.common.type === 'number') {
+                if (this.props.isFloatComma && this.props.obj.common.type === 'number' && val) {
                     val = val.toString().replace('.', ',');
+                }
+                if (val === null) {
+                    val = 'null'
+                }
+                if (val === undefined) {
+                    val = '_'
                 }
 
                 rows.push(<TableRow
@@ -640,7 +646,7 @@ class ObjectHistoryData extends Component {
                     key={ ts + (state.val || '') }
                 >
                     <TableCell onClick={ e => !interpolated && this.onToggleSelect(e, ts, 'ts') }>
-                        { new Date(state.ts).toLocaleDateString() + ' ' + new Date(state.ts).toLocaleTimeString() + '.' + padding3(state.ts % 1000) }
+                        { `${new Date(state.ts).toLocaleDateString()} ${new Date(state.ts).toLocaleTimeString()}.${padding3(state.ts % 1000)}` }
                         { selected && this.state.lastSelectedColumn === 'ts' ? <div className={ classes.rowFocused } /> : ''}
                     </TableCell>
                     <TableCell onClick={ e => !interpolated && this.onToggleSelect(e, ts, 'val') }>

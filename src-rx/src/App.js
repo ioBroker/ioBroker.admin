@@ -30,19 +30,23 @@ import ExpertIcon from '@iobroker/adapter-react/icons/IconExpert';
 
 import Connection from './components/Connection';
 import { PROGRESS } from './components/Connection';
+//import {AdminConnection as Connection} from '@iobroker/socket-client/dist/AdminConnection';
+// import {PROGRESS} from '@iobroker/socket-client/dist/Connection';
 import Loader from '@iobroker/adapter-react/Components/Loader';
 import I18n from '@iobroker/adapter-react/i18n';
 import Router from '@iobroker/adapter-react/Components/Router';
 import Utils from './components/Utils';//adapter-react/Components/Utils';
 import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 import Icon from '@iobroker/adapter-react/Components/Icon';
-import theme from './Theme'; // @iobroker/adapter-react/Theme
+import theme from '@iobroker/adapter-react/Theme';
+
 
 import CommandDialog from './dialogs/CommandDialog';
 import Drawer from './components/Drawer';
 import { STATES as DrawerStates } from './components/Drawer';
 import { DRAWER_FULL_WIDTH, DRAWER_COMPACT_WIDTH } from './components/Drawer';
 import Connecting from './components/Connecting';
+
 import WizardDialog from './dialogs/WizardDialog';
 import SystemSettingsDialog from './dialogs/SystemSettingsDialog';
 import Login from './login/Login';

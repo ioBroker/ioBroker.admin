@@ -5,7 +5,7 @@ import * as Sentry from '@sentry/browser';
 import * as SentryIntegrations from '@sentry/integrations';
 import DateFnsUtils from '@date-io/date-fns';
 
-import theme from './Theme'; // @iobroker/adapter-react/Theme
+import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import App from './App';
 

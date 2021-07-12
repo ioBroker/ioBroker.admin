@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Changed the filter of objects
+
 ### 5.1.10 (2021-07-09)
 * (bluefox) Corrected some GUI errors
 
