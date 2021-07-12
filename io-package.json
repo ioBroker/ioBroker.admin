@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.1.10",
+        "version": "5.1.11",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.11": {
+                "en": "Changed the filter of objects",
+                "de": "Filter von Objekten geändert",
+                "ru": "Изменен фильтр объектов",
+                "pt": "Mudou o filtro de objetos",
+                "nl": "Het filter van objecten gewijzigd",
+                "fr": "Modification du filtre des objets",
+                "it": "Modificato il filtro degli oggetti",
+                "es": "Cambiado el filtro de objetos.",
+                "pl": "Zmieniono filtr obiektów",
+                "zh-cn": "更改了对象的过滤器"
+            },
             "5.1.10": {
                 "en": "Corrected some GUI errors",
                 "de": "Einige GUI-Fehler korrigiert",
@@ -235,18 +247,6 @@
                 "zh-cn": "Admin5：GUI修复"
             },
             "5.0.25": {
-                "en": "Admin5: GUI fixes",
-                "de": "Admin5: GUI-Korrekturen",
-                "ru": "Admin5: исправления графического интерфейса",
-                "pt": "Admin5: Correções de GUI",
-                "nl": "Admin5: GUI-fixes",
-                "fr": "Admin5: correctifs de l'interface graphique",
-                "it": "Admin5: correzioni della GUI",
-                "es": "Admin5: correcciones de GUI",
-                "pl": "Admin5: poprawki GUI",
-                "zh-cn": "Admin5：GUI修复"
-            },
-            "5.0.24": {
                 "en": "Admin5: GUI fixes",
                 "de": "Admin5: GUI-Korrekturen",
                 "ru": "Admin5: исправления графического интерфейса",
