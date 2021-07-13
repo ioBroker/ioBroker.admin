@@ -1,7 +1,7 @@
 'use strict';
 
 const less        = require('gulp-less');
-const sass        = require('gulp-sass');
+const sass        = require('gulp-sass')(require('sass'));
 const gulp        = require('gulp');
 const colors      = require('ansi-colors');
 const log         = require('fancy-log');

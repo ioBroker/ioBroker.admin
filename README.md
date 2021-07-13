@@ -14,8 +14,8 @@ User interface for configuration and administration of ioBroker.
 
 ## Using common.localLink
 - %ip% - ioBroker ip address (address of the admin)
-- %secure% or %protocol% - read from native.secure the value and use http or https
-- %web_protocol% - looking for the first instance of web (e.g. web.0) and get "native.secure" from "system.adapter.web.0"
+- %secure% or %protocol% - read from `native.secure` the value and use http or https
+- %web_protocol% - looking for the first instance of web (e.g. web.0) and get `native.secure` from `system.adapter.web.0`
 - %instance% - instance of the adapter
 - %someField% - get someField from "native" of this adapter instance
 - %web.0_bind% - get native.bind from "system.adapter.web.0"
@@ -44,7 +44,7 @@ If the automatic update is activated the instance will try to request certificat
 
 The certificates will be first requested when the given domain address will be accessed. E.g you have "sub.domain.com" as address, when you try to access https://sub.domain.com the certificates will be first requested and it can last a little before first answer will come.
 
-The issuing of certificates is rather complex procedure, but if you will follow the explanation you will easy get free certificates.
+The issuing of certificates is rather complex procedure, but if you will follow the explanation you will easily get free certificates.
 
 Description:
 
@@ -95,11 +95,12 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 4.2.2 (2021-07-13)
 * (Apollon77) Make sure subscribe patterns are strings (Sentry IOBROKER-ADMIN-34)
+* (bluefox) Fix intro page
 
 ### 4.2.1 (2021-01-12)
-* (Apollon77) Also allow pre-prelease versions for dependency checks
+* (Apollon77) Also allow pre-release versions for dependency checks
 
 ### 4.2.0 (2021-01-08)
 * (bluefox) Support of new Let's Encrypt (only with js-controller 3.2.x)
@@ -111,11 +112,8 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 * (theimo1221) Prevent Duplicate Event Handling on Dropdown Checkboxes
 * (paul53) fix Objects dialog
 
-### 4.1.10 (2020-10-08)
-* (bluefox) Corrected the icons of the custom tabs. 
-
 ## License
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2020 bluefox <dogafox@gmail.com>
+Copyright (c) 2014-2021 bluefox <dogafox@gmail.com>

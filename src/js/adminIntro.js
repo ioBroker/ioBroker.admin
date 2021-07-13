@@ -224,6 +224,10 @@ function Intro(main) {
     }
 
     function buildOneCard(adapter, instance, welcomeScreen, common, url, web, enabled) {
+        if (typeof url === 'object') {
+            url = url[Object.keys(url)[0]]; // take first
+        }
+
         var $card = that.$template.clone();
         $card.removeAttr('id');
         var urlText = url.replace(/^https?:\/\//, '');

@@ -2,8 +2,20 @@
     "common": {
         "name": "admin",
         "title": "Admin",
-        "version": "4.2.1",
+        "version": "4.2.2",
         "news": {
+            "4.2.2": {
+                "en": "Make sure subscribe patterns are strings (Sentry IOBROKER-ADMIN-34)\nFix intro page",
+                "de": "Stellen Sie sicher, dass Abonnementmuster Zeichenfolgen sind (Sentry IOBROKER-ADMIN-34)\nEinführungsseite korrigieren",
+                "ru": "Убедитесь, что шаблоны подписки являются строками (Sentry IOBROKER-ADMIN-34)\nИсправить вступительную страницу",
+                "pt": "Certifique-se de que os padrões de assinatura sejam strings (Sentry IOBROKER-ADMIN-34)\nCorrigir página de introdução",
+                "nl": "Zorg ervoor dat abonnementspatronen strings zijn (Sentry IOBROKER-ADMIN-34)\nIntropagina repareren",
+                "fr": "Assurez-vous que les modèles d'abonnement sont des chaînes (Sentry IOBROKER-ADMIN-34)\nCorrection de la page d'introduction",
+                "it": "Assicurati che i pattern di sottoscrizione siano stringhe (Sentry IOBROKER-ADMIN-34)\nCorreggi la pagina introduttiva",
+                "es": "Asegúrese de que los patrones de suscripción sean cadenas (Sentry IOBROKER-ADMIN-34)\nCorregir la página de introducción",
+                "pl": "Upewnij się, że wzorce subskrypcji są ciągami (Sentry IOBROKER-ADMIN-34)\nNapraw stronę wprowadzającą",
+                "zh-cn": "确保订阅模式是字符串 (Sentry IOBROKER-ADMIN-34)\n修复介绍页面"
+            },
             "4.2.1": {
                 "en": "Also allow pre-prelease versions for dependency checks",
                 "de": "Erlauben Sie auch Pre-Prelease-Versionen für Abhängigkeitsprüfungen",

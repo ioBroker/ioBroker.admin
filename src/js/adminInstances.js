@@ -61,6 +61,9 @@ function Instances(main) {
     }
 
     function resolveLink(link, adapter, instance) {
+        if (typeof link === 'object') {
+            link = link.link;
+        }
         var vars = link.match(/%(\w+)%/g);
         var _var;
         var v;
