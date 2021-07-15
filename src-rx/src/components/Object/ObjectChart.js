@@ -398,7 +398,8 @@ class ObjectChart extends Component {
             aggregate: 'none'
         };
 
-        if (end - start > 60000 * 24) {
+        if (end - start > 60000 * 24 &&
+            !(this.props.obj.common.type === 'boolean' || (this.props.obj.common.type === 'number' && this.props.obj.common.states))) {
             options.aggregate = 'minmax';
             //options.step = 60000;
         }
@@ -550,6 +551,17 @@ class ObjectChart extends Component {
             yAxis.max = 1.5;
             yAxis.interval = 1;
             widthAxis = 50;
+        } else
+        if (this.props.obj.common.type === 'number' &&
+            this.props.obj.common.states) {
+            serie.step = 'end';
+            yAxis.axisLabel.showMaxLabel = false;
+            yAxis.axisLabel.formatter = value => this.props.obj.common.states[value] !== undefined ? this.props.obj.common.states[value] : value;
+            const keys = Object.keys(this.props.obj.common.states);
+            keys.sort();
+            yAxis.max = parseFloat(keys[keys.length - 1]) + 0.5;
+            yAxis.interval = 1;
+            widthAxis = 60; // may be take the longest word
         }
 
         return {
@@ -589,7 +601,10 @@ class ObjectChart extends Component {
                 splitLine: {
                     show: false
                 },
-                splitNumber: Math.round((this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT) / 50),
+                splitNumber: this.chart.withSeconds ?
+                    Math.round((this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT) / 70)
+                    :
+                    Math.round((this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT) / 50),
                 min: this.chart.min,
                 max: this.chart.max,
                 axisTick: {alignWithLabel: true,},
