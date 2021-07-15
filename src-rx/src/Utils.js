@@ -379,9 +379,15 @@ class Utils {
                             // if instance number not found
                             if (!adapterInstance.match(/\.[0-9]+$/)) {
                                 // list all possible instances
-                                const ids = Object.keys(context.objects)
-                                    .filter(id => id.startsWith('system.adapter.' + adapterInstance + '.') && context.objects[id].common.enabled)
-                                    .map(id => id.substring(15));
+                                let ids;
+                                if (adapter === adapterInstance) {
+                                    // take only this one instance and that's all
+                                    ids = [adapter + '.' + instance];
+                                } else {
+                                    ids = Object.keys(context.objects)
+                                        .filter(id => id.startsWith('system.adapter.' + adapterInstance + '.') && context.objects[id].common.enabled)
+                                        .map(id => id.substring(15));
+                                }
 
                                 // eslint-disable-next-line
                                 ids.forEach(id => {
@@ -389,6 +395,11 @@ class Utils {
                                         const item = _urls.find(t => t.instance === id);
                                         if (item) {
                                             item.url = Utils._replaceLink(item.url, context.objects, id, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
+                                        } else {
+                                            // add new
+                                            const _link = Utils._replaceLink(link, context.objects, id, attr, placeholder, context.hosts, context.hostname, context.adminInstance);
+                                            const _port = context.objects['system.adapter.' + id]?.native?.port;
+                                            _urls.push({url: _link, port: _port, instance: id});
                                         }
                                     } else {
                                         const _link = Utils._replaceLink(link, context.objects, id, attr, placeholder, context.hosts, context.hostname, context.adminInstance);

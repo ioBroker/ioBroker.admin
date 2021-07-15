@@ -1012,7 +1012,7 @@ const InstanceRow = ({
                             className={clsx(classes.button, (!instance.links || !instance.links[0]) && classes.hide)}
                             disabled={!running}
                             onClick={event => {
-                                event.stopPropagation()
+                                event.stopPropagation();
                                 if (instance.links.length === 1) {
                                     window.open(instance.links[0].link, instance.id);
                                 } else {
