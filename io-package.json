@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.1.11",
+        "version": "5.1.12",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.12": {
+                "en": "The charts were improved\nCorrected the error with the jump links if more than one web instance",
+                "de": "Die Charts wurden verbessert\nFehler mit den Sprunglinks bei mehr als einer Webinstanz behoben web",
+                "ru": "Графики были улучшены\nИсправлена ошибка с переходом по ссылкам при наличии нескольких веб-экземпляров.",
+                "pt": "Os gráficos foram melhorados\nCorrigido o erro com os links de salto se mais de uma instância da web",
+                "nl": "De grafieken zijn verbeterd\nDe fout met de springlinks gecorrigeerd als er meer dan één webinstantie is",
+                "fr": "Les graphiques ont été améliorés\nCorrection de l'erreur avec les liens de saut si plus d'une instance Web",
+                "it": "Le classifiche sono state migliorate\nCorretto l'errore con i collegamenti di salto se più di un'istanza web",
+                "es": "Se mejoraron los gráficos\nSe corrigió el error con los enlaces de salto si había más de una instancia web",
+                "pl": "Wykresy zostały ulepszone\nPoprawiono błąd z linkami do skoku, jeśli więcej niż jedna instancja sieciowa",
+                "zh-cn": "图表已改进\n如果有多个 Web 实例，则更正了跳转链接的错误"
+            },
             "5.1.11": {
                 "en": "Changed the filter of objects",
                 "de": "Filter von Objekten geändert",
@@ -235,18 +247,6 @@
                 "zh-cn": "Admin5：GUI修复"
             },
             "5.0.26": {
-                "en": "Admin5: GUI fixes",
-                "de": "Admin5: GUI-Korrekturen",
-                "ru": "Admin5: исправления графического интерфейса",
-                "pt": "Admin5: Correções de GUI",
-                "nl": "Admin5: GUI-fixes",
-                "fr": "Admin5: correctifs de l'interface graphique",
-                "it": "Admin5: correzioni della GUI",
-                "es": "Admin5: correcciones de GUI",
-                "pl": "Admin5: poprawki GUI",
-                "zh-cn": "Admin5：GUI修复"
-            },
-            "5.0.25": {
                 "en": "Admin5: GUI fixes",
                 "de": "Admin5: GUI-Korrekturen",
                 "ru": "Admin5: исправления графического интерфейса",

@@ -1,3 +1,6 @@
+## 5.1.7 (2021-06-04)
+* (bluefox) Added the possibility to clear the schedule
+
 ## 5.1.6 (2021-06-02)
 * (bluefox) Improved the custom settings
 
