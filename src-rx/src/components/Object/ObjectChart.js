@@ -561,7 +561,13 @@ class ObjectChart extends Component {
             keys.sort();
             yAxis.max = parseFloat(keys[keys.length - 1]) + 0.5;
             yAxis.interval = 1;
-            widthAxis = 60; // may be take the longest word
+            let max = '';
+            for (let i = 0; i < keys.length; i++) {
+                if (typeof this.props.obj.common.states[keys[i]] === 'string' && this.props.obj.common.states[keys[i]].length > max.length) {
+                    max = this.props.obj.common.states[keys[i]];
+                }
+            }
+            widthAxis = ((max.length * 9) || 50) + 12;
         }
 
         return {
