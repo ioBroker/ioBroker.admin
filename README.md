@@ -90,7 +90,8 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ## Changelog
 ### __WORK IN PROGRESS__
-* (bluefox) Show 
+* (bluefox) The charts were improved
+* (bluefox) Corrected the error with the jump links if more than one web instance
 
 ### 5.1.11 (2021-07-12)
 * (bluefox) Changed the filter of objects
