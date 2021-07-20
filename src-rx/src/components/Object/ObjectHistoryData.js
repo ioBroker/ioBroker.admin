@@ -1203,7 +1203,7 @@ class ObjectHistoryData extends Component {
             </MuiPickersUtilsProvider>
             <div className={classes.grow} />
 
-            { this.state.values && this.state.values.length ? <IconButton onClick={ () => this.exportData() }>
+            { this.state.values && this.state.values.length ? <IconButton onClick={ () => this.exportData() } title={this.props.t('Save data as csv')}>
                 <ExportIcon />
             </IconButton> : null }
 
