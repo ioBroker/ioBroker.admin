@@ -235,7 +235,12 @@ class JsonConfig extends Router {
                 window.alert(`[JsonConfig] Cannot set object: ${e}`);
             }
 
-            this.setState({changed: false, data: obj.native, updateData: this.state.updateData + 1}, () =>
+            this.setState({
+                changed: false,
+                data: obj.native,
+                updateData: this.state.updateData + 1,
+                originalData: JSON.parse(JSON.stringify(obj.native))
+            }, () =>
                 close && Router.doNavigate(null));
         } else {
             if (this.state.changed) {

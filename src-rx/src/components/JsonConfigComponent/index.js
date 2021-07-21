@@ -306,6 +306,7 @@ class JsonConfigComponent extends Component {
                 themeType={this.props.themeType}
                 themeName={this.props.themeName}
                 data={this.props.data}
+                originalData={JSON.parse(this.state.originalData)}
                 schema={item}
                 systemConfig={this.state.systemConfig}
                 customs={this.props.customs}
@@ -336,6 +337,7 @@ class JsonConfigComponent extends Component {
                 themeType={this.props.themeType}
                 themeName={this.props.themeName}
                 data={this.props.data}
+                originalData={JSON.parse(this.state.originalData)}
                 schema={item}
                 systemConfig={this.state.systemConfig}
                 customs={this.props.customs}

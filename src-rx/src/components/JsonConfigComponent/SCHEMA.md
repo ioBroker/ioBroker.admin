@@ -136,6 +136,7 @@ Possible types:
 
 - `staticText` - static text like description
    - `label` - multi-language text
+   - `text` - same as label
 
 - `staticLink` - static link
    - `label` - multi-language text
@@ -463,14 +464,14 @@ JS functions is:
 ```
 const myValidator = "customObj.common.type === 'boolean' && data.options.myType == 2";
 
-const func = new Function('data', '_system', 'instanceObj', 'customObj', '_socket', myValidator.includes('return') ? myValidator : 'return ' + myValidator); // e.g. "_alive === true"
+const func = new Function('data', 'originalData', '_system', 'instanceObj', 'customObj', '_socket', myValidator.includes('return') ? myValidator : 'return ' + myValidator); // e.g. "_alive === true"
 
-const isValid = func(data || this.props.data, this.props.systemConfig, instanceObj, customObj, this.props.socket);
-
+const isValid = func(data || this.props.data, this.props.originalData, this.props.systemConfig, instanceObj, customObj, this.props.socket);
 ```
 
 Following variables are available in JS function in custom settings:
 - data - current custom settings
+- originalData - Unchanged data
 - _system - system configuration
 - instanceObj - adapter instance object
 - customObj - current object itself

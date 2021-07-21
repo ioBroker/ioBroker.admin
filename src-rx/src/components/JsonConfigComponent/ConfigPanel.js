@@ -152,6 +152,7 @@ class ConfigPanel extends ConfigGeneric {
                 themeType={this.props.themeType}
                 themeName={this.props.themeName}
                 data={this.props.data}
+                originalData={this.props.originalData}
                 systemConfig={this.props.systemConfig}
                 onError={this.props.onError}
                 onChange={this.props.onChange}
@@ -290,6 +291,7 @@ ConfigPanel.propTypes = {
     style: PropTypes.object,
     className: PropTypes.string,
     data: PropTypes.object.isRequired,
+    originalData: PropTypes.object,
     schema: PropTypes.object,
     customs: PropTypes.object,
     alive: PropTypes.bool,

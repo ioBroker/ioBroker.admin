@@ -250,8 +250,8 @@ class ObjectCustomEditor extends Component {
         } else {
             try {
                 // eslint-disable-next-line no-new-func
-                const f = new Function('data', '_system', 'instanceObj', 'customObj', '_socket', func.includes('return') ? func : 'return ' + func);
-                const result = f(data || this.props.data, this.props.systemConfig, instanceObj, customObj, this.props.socket);
+                const f = new Function('data', 'originalData', '_system', 'instanceObj', 'customObj', '_socket', func.includes('return') ? func : 'return ' + func);
+                const result = f(data || this.props.data, this.props.originalData, this.props.systemConfig, instanceObj, customObj, this.props.socket);
                 data[attr] = result;
             } catch (e) {
                 console.error(`Cannot execute ${func}: ${e}`);

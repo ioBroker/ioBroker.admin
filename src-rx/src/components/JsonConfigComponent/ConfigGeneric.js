@@ -280,8 +280,8 @@ class ConfigGeneric extends Component {
         } else {
             try {
                 // eslint-disable-next-line no-new-func
-                const f = new Function('data', '_system', '_alive', '_common', '_socket', func.includes('return') ? func : 'return ' + func);
-                const result = f(data || this.props.data, this.props.systemConfig, this.props.alive, this.props.common, this.props.socket);
+                const f = new Function('data', 'originalData', '_system', '_alive', '_common', '_socket', func.includes('return') ? func : 'return ' + func);
+                const result = f(data || this.props.data, this.props.originalData, this.props.systemConfig, this.props.alive, this.props.common, this.props.socket);
                 // console.log(result);
                 return result;
             } catch (e) {
@@ -301,8 +301,8 @@ class ConfigGeneric extends Component {
         } else {
             try {
                 // eslint-disable-next-line no-new-func
-                const f = new Function('data', '_system', 'instanceObj', 'customObj', '_socket', func.includes('return') ? func : 'return ' + func);
-                const result = f(data || this.props.data, this.props.systemConfig, instanceObj, customObj, this.props.socket);
+                const f = new Function('data', 'originalData', '_system', 'instanceObj', 'customObj', '_socket', func.includes('return') ? func : 'return ' + func);
+                const result = f(data || this.props.data, this.props.originalData, this.props.systemConfig, instanceObj, customObj, this.props.socket);
                 console.log(result);
                 return result;
             } catch (e) {
@@ -376,13 +376,13 @@ class ConfigGeneric extends Component {
             try {
                 if (this.props.custom) {
                     // eslint-disable-next-line no-new-func
-                    const f = new Function('data', '_system', 'instanceObj', 'customObj', '_socket', 'return `' + pattern.replace(/`/g, '\\`') + '`');
-                    const result = f(this.props.data, this.props.systemConfig, this.props.instanceObj,  this.props.customObj, this.props.socket);
+                    const f = new Function('data', 'originalData', '_system', 'instanceObj', 'customObj', '_socket', 'return `' + pattern.replace(/`/g, '\\`') + '`');
+                    const result = f(this.props.data, this.props.originalData, this.props.systemConfig, this.props.instanceObj,  this.props.customObj, this.props.socket);
                     return result;
                 } else {
                     // eslint-disable-next-line no-new-func
-                    const f = new Function('data', '_system', '_alive', '_common', '_socket', 'return `' + pattern.replace(/`/g, '\\`') + '`');
-                    return f(this.props.data, this.props.systemConfig, this.props.alive, this.props.common, this.props.socket);
+                    const f = new Function('data', 'originalData', '_system', '_alive', '_common', '_socket', 'return `' + pattern.replace(/`/g, '\\`') + '`');
+                    return f(this.props.data, this.props.originalData, this.props.systemConfig, this.props.alive, this.props.common, this.props.socket);
                 }
             } catch (e) {
                 console.error(`Cannot execute ${pattern}: ${e}`);
@@ -466,6 +466,7 @@ class ConfigGeneric extends Component {
 ConfigGeneric.propTypes = {
     socket: PropTypes.object.isRequired,
     data: PropTypes.object,
+    originalData: PropTypes.object,
     schema: PropTypes.object,
     attr: PropTypes.string,
     value: PropTypes.any,

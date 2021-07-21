@@ -235,7 +235,7 @@
       "items": {
         "_text1": {
           "type": "staticText",
-          "label": "There is a option to allow access to the specific configuration pages of selected instances."
+          "text": "There is a option to allow access to the specific configuration pages of selected instances."
         },
         "accessLimit": {
           "newLine": true,

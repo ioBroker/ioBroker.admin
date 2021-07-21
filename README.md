@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Improved json config
+
 ### 5.1.12 (2021-07-16)
 * (bluefox) The charts were improved
 * (bluefox) Corrected the error with the jump links if more than one web instance

@@ -528,7 +528,7 @@ class Adapters extends Component {
             }
             const _installed = installed[value];
 
-            adapter.rating = ratings[value];
+            adapter.rating = ratings && ratings[value];
 
             if (adapter.rating && adapter.rating.rating) {
                 adapter.rating.title = [
