@@ -1,3 +1,6 @@
+## 5.1.8 (2021-06-06)
+* (bluefox) Improved the list of predefined icons
+
 ## 5.1.7 (2021-06-04)
 * (bluefox) Added the possibility to clear the schedule
 
