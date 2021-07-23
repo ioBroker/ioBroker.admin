@@ -1,6 +1,6 @@
 {
     "name": "src-rx",
-    "version": "5.1.12",
+    "version": "5.1.13",
     "private": true,
     "commentDependencies": {
         "@date-io/core": "DO not update to version 2",
@@ -22,7 +22,7 @@
         "@testing-library/jest-dom": "^5.14.1",
         "@testing-library/react": "^12.0.0",
         "@testing-library/user-event": "^13.2.0",
-        "@react-leaflet/core": "1.1.0",
+        "@react-leaflet/core": "1.0.2",
         "clsx": "^1.1.1",
         "date-fns": "^2.22.1",
         "echarts": "^5.1.2",
@@ -47,7 +47,7 @@
         "react-dropzone": "^11.3.4",
         "react-icons": "^4.2.0",
         "react-inlinesvg": "^2.3.0",
-        "react-leaflet": "3.2.0",
+        "react-leaflet": "3.1.0",
         "react-markdown": "^6.0.2",
         "react-scripts": "^4.0.3",
         "react-showdown": "^2.3.0",

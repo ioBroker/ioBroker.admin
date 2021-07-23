@@ -81,6 +81,7 @@ class Intro extends Component {
 
         this.state = {
             instances: null,
+            deactivated: {},
             edit: false,
 
             introLinks: [],
@@ -93,7 +94,7 @@ class Intro extends Component {
         this.promises = {};
 
         this.introLinksOriginal = null;
-        this.instancesOriginal = null;
+        this.deactivatedOriginal = null;
 
         this.t = props.t;
 
@@ -107,14 +108,15 @@ class Intro extends Component {
                 systemConfig = _systemConfig;
                 return this.getInstances(true, null, systemConfig);
             })
-            .then(instances => {
+            .then(data => {
                 const introLinks = systemConfig && systemConfig.native && systemConfig.native.introLinks ? systemConfig.native.introLinks : [];
 
                 this.introLinksOriginal = JSON.parse(JSON.stringify(introLinks));
-                this.instancesOriginal  = JSON.parse(JSON.stringify(instances));
+                this.deactivatedOriginal  = JSON.parse(JSON.stringify(data.deactivated));
 
                 this.setState({
-                    instances,
+                    instances: data.instances,
+                    deactivated: data.deactivated,
                     edit: true,
                     introLinks,
                     hasUnsavedChanges: false,
@@ -129,38 +131,42 @@ class Intro extends Component {
 
         // restore old state
         this.setState({
-            instances: this.instancesOriginal,
+            deactivated: this.deactivatedOriginal,
             introLinks: this.introLinksOriginal,
             hasUnsavedChanges: false,
             edit: false
         }, () => {
-            this.instancesOriginal = null;
+            this.deactivatedOriginal = null;
             this.introLinksOriginal = null;
         });
     }
 
-    toggleCard(id) {
+    toggleCard(id, linkName) {
         if (!this.state.instances || !this.state.instances.length) {
             return;
         }
 
-        const instances = JSON.parse(JSON.stringify(this.state.instances));
+        const deactivated = JSON.parse(JSON.stringify(this.state.deactivated));
 
-        const instance = instances.find(instance => instance.id === id);
+        const pos = deactivated.indexOf(id + '_' + linkName);
 
-        if (instance) {
-            instance.enabled = !instance.enabled;
-
-            const hasUnsavedChanges = JSON.stringify(instances) !== JSON.stringify(this.instancesOriginal) ||
-                JSON.stringify(this.state.introLinks) !== JSON.stringify(this.introLinksOriginal);
-
-            this.setState({ instances, hasUnsavedChanges });
+        if (pos !== -1) {
+            deactivated.splice(pos, 1);
+        } else {
+            deactivated.push(id + '_' + linkName);
+            deactivated.sort();
         }
+
+        const hasUnsavedChanges = JSON.stringify(deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
+            JSON.stringify(this.state.introLinks) !== JSON.stringify(this.introLinksOriginal);
+
+        this.setState({ deactivated, hasUnsavedChanges });
     }
 
     getInstancesCards() {
         return this.state.instances.map(instance => {
-            if (instance.enabled || this.state.edit) {
+            const enabled = !this.state.deactivated.includes(instance.id + '_' + instance.linkName);
+            if (enabled || this.state.edit) {
                 let linkText = instance.link ? instance.link.replace(/^https?:\/\//, '') : '';
                 const pos = linkText.indexOf('/');
                 if (pos !== -1) {
@@ -168,8 +174,9 @@ class Intro extends Component {
                 }
 
                 const hostData = this.state.hostsData ? this.state.hostsData[instance.id] : null;
+
                 return <IntroCard
-                    key={instance.id}
+                    key={instance.id + '_' + instance.link}
                     socket={this.props.socket}
                     image={instance.image}
                     title={instance.name}
@@ -179,10 +186,10 @@ class Intro extends Component {
                     reveal={instance.info}
                     edit={this.state.edit}
                     offline={hostData && hostData.alive === false}
-                    enabled={instance.enabled}
-                    disabled={!(hostData && typeof hostData === 'object')}
+                    enabled={enabled}
+                    disabled={!hostData || typeof hostData !== 'object'}
                     getHostDescriptionAll={() => this.getHostDescriptionAll(instance.id)}
-                    toggleActivation={() => this.toggleCard(instance.id)}
+                    toggleActivation={() => this.toggleCard(instance.id, instance.linkName)}
                     openSnackBarFunc={() => this.setState({ openSnackBar: true })}
                 >
                     { instance.description || this.getHostDescription(instance.id)}
@@ -198,7 +205,7 @@ class Intro extends Component {
 
         introLinks[i].enabled = !introLinks[i].enabled;
 
-        const hasUnsavedChanges = JSON.stringify(this.state.instances) !== JSON.stringify(this.instancesOriginal) ||
+        const hasUnsavedChanges = JSON.stringify(this.state.deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
             JSON.stringify(introLinks) !== JSON.stringify(this.introLinksOriginal);
 
         this.setState({ introLinks, hasUnsavedChanges });
@@ -231,7 +238,7 @@ class Intro extends Component {
                     onRemove={() => {
                         const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
                         introLinks.splice(i, 1);
-                        const hasUnsavedChanges = JSON.stringify(this.state.instances) !== JSON.stringify(this.instancesOriginal) ||
+                        const hasUnsavedChanges = JSON.stringify(this.state.deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
                             JSON.stringify(introLinks) !== JSON.stringify(this.introLinksOriginal);
                         this.setState({ introLinks, hasUnsavedChanges });
                     }}
@@ -264,7 +271,7 @@ class Intro extends Component {
                             link.enabled = introLinks[this.state.editLinkIndex].enabled;
                             introLinks[this.state.editLinkIndex] = link;
                         }
-                        const hasUnsavedChanges = JSON.stringify(this.state.instances) !== JSON.stringify(this.instancesOriginal) ||
+                        const hasUnsavedChanges = JSON.stringify(this.state.deactivated) !== JSON.stringify(this.deactivatedOriginal) ||
                             JSON.stringify(introLinks) !== JSON.stringify(this.introLinksOriginal);
 
                         this.setState({ introLinks, editLink: false, hasUnsavedChanges, link: null });
@@ -332,21 +339,10 @@ class Intro extends Component {
             .then(systemConfig => {
                 let changed = false;
 
-                systemConfig.common.intro = systemConfig.common.intro || {};
-
-                this.state.instances.forEach(instance => {
-                    if (systemConfig.common.intro.hasOwnProperty(instance.id) || !instance.enabled) {
-                        if (systemConfig.common.intro[instance.id] !== instance.enabled) {
-                            if (instance.enabled) {
-                                delete systemConfig.common.intro[instance.id];
-                            } else {
-                                systemConfig.common.intro[instance.id] = false;
-                            }
-
-                            changed = true;
-                        }
-                    }
-                });
+                if (JSON.stringify(systemConfig.common.intro) !== JSON.stringify(this.state.deactivated)) {
+                    systemConfig.common.intro = this.state.deactivated;
+                    changed = true;
+                }
 
                 if (!changed && JSON.stringify(systemConfig.native.introLinks) !== JSON.stringify(this.state.introLinks)) {
                     changed = true;
@@ -398,7 +394,11 @@ class Intro extends Component {
 
         return this.props.socket.getAdapterInstances('', update)
             .then(instances => {
-                const deactivated = systemConfig.common.intro || {};
+                let deactivated = systemConfig.common.intro || [];
+                if (!Array.isArray(deactivated)) {
+                    deactivated = Object.keys(deactivated);
+                    deactivated.sort();
+                }
                 const introInstances = [];
                 const objects = {};
                 instances.forEach(obj => objects[obj._id] = obj);
@@ -460,8 +460,6 @@ class Intro extends Component {
                             instance.color       = link.color || '';
                             instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
                             instance.image       = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
-                            instance.enabled     = deactivated.hasOwnProperty(instance.id) ? !!deactivated[instance.id] : true;
-
 
                             /*let protocol = this.props.protocol;
                             let port     = this.props.port;
@@ -505,6 +503,12 @@ class Intro extends Component {
                     }
                 });
 
+                introInstances.forEach(instance => {
+                    if (instance.link) {
+                        instance.linkName = instance.link.replace('https://', '').replace('http://', '').replace(/^[^_]+:/, '');
+                    }
+                });
+
                 Object.keys(hosts).forEach(key => {
                     const obj = hosts[key];
                     const common = obj && obj.common;
@@ -512,18 +516,26 @@ class Intro extends Component {
                     if (common) {
                         const instance   = {};
 
-                        instance.id      = obj._id;
-                        instance.name    = common.name;
-                        instance.color   = '';
-                        instance.image   = common.icon || 'img/no-image.png';
-                        instance.enabled = deactivated.hasOwnProperty(instance.id) ? !!deactivated[instance.id] : true;
-                        instance.info    = this.t('Info');
+                        instance.id       = obj._id;
+                        instance.name     = common.name;
+                        instance.color    = '';
+                        instance.image    = common.icon || 'img/no-image.png';
+                        instance.info     = this.t('Info');
+                        instance.linkName = '';
 
                         introInstances.push(instance);
                     }
                 });
 
-                return introInstances;
+                const _deactivated = [];
+                deactivated.forEach(id => {
+                    if (introInstances.find(instance => id === instance.id + '_' + instance.linkName)) {
+                        _deactivated.push(id);
+                    }
+                });
+                deactivated = _deactivated;
+
+                return {instances: introInstances, deactivated};
             })
             .catch(error =>
                 console.log(error));
@@ -593,10 +605,11 @@ class Intro extends Component {
                 hosts = _hosts;
                 return this.getInstances(update, hosts, systemConfig);
             })
-            .then(instances => {
+            .then(data => {
                 this.setState({
-                    instances,
+                    instances: data.instances,
                     hosts,
+                    deactivated: data.deactivated,
                     introLinks: systemConfig && systemConfig.native && systemConfig.native.introLinks ? systemConfig.native.introLinks : []
                 });
                 // hosts data could last a long time, so show some results to user now and then get the info about hosts

@@ -886,7 +886,6 @@ function confirmMessageJQ(message, title, icon, buttons, callback) {
                     cb && cb(false);
                 }
             }
-
         ]);
     } else if (typeof buttons === 'object') {
         for (var b = 0; b < buttons.length; b++) {
@@ -1495,7 +1494,9 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             $('.' + tabId + '-ok-submit[data-' + tabId + '-id="' + id + '"]').show();
             $('.' + tabId + '-cancel-submit[data-' + tabId + '-id="' + id + '"]').show();
             $grid.jqGrid('editRow', rowid, {url: 'clientArray'});
-            if ($grid[0]._edited.indexOf(id) === -1) $grid[0]._edited.push(id);
+            if ($grid[0]._edited.indexOf(id) === -1) {
+                $grid[0]._edited.push(id);
+            }
             parent.postMessage('change', '*');
             changed = true;
             var $navButtons = $('.dialog-config-buttons');
