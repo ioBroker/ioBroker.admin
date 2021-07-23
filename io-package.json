@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.1.13",
+        "version": "5.1.14",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.14": {
+                "en": "Corrected error with \"Intro\" page. Warning: All cards must be deactivated anew.",
+                "de": "Fehler mit \"Intro\"-Seite behoben. Achtung: Alle Karten müssen neu deaktiviert werden.",
+                "ru": "Исправлена ошибка со страницей \"Введение\". Предупреждение: все карты необходимо деактивировать заново.",
+                "pt": "Erro corrigido com a página \"Introdução\". Aviso: Todos os cartões devem ser desativados novamente.",
+                "nl": "Fout gecorrigeerd met \"Intro\"-pagina. Waarschuwing: Alle kaarten moeten opnieuw worden gedeactiveerd.",
+                "fr": "Erreur corrigée avec la page \"Intro\". Attention : toutes les cartes doivent être à nouveau désactivées.",
+                "it": "Corretto errore con la pagina \"Intro\". Attenzione: tutte le carte devono essere nuovamente disattivate.",
+                "es": "Error corregido con la página \"Introducción\". Advertencia: Todas las tarjetas deben desactivarse nuevamente.",
+                "pl": "Poprawiony błąd ze stroną „Intro”. Ostrzeżenie: Wszystkie karty muszą zostać ponownie dezaktywowane.",
+                "zh-cn": "更正了“介绍”页面的错误。警告：必须重新停用所有卡。"
+            },
             "5.1.13": {
                 "en": "Improved json config",
                 "de": "Verbesserte Json-Konfiguration",
@@ -235,18 +247,6 @@
                 "zh-cn": "Admin5：修复了菜单中项目的重新排序"
             },
             "5.0.28": {
-                "en": "Admin5: GUI fixes",
-                "de": "Admin5: GUI-Korrekturen",
-                "ru": "Admin5: исправления графического интерфейса",
-                "pt": "Admin5: Correções de GUI",
-                "nl": "Admin5: GUI-fixes",
-                "fr": "Admin5: correctifs de l'interface graphique",
-                "it": "Admin5: correzioni della GUI",
-                "es": "Admin5: correcciones de GUI",
-                "pl": "Admin5: poprawki GUI",
-                "zh-cn": "Admin5：GUI修复"
-            },
-            "5.0.27": {
                 "en": "Admin5: GUI fixes",
                 "de": "Admin5: GUI-Korrekturen",
                 "ru": "Admin5: исправления графического интерфейса",
