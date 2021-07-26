@@ -1,3 +1,6 @@
+## 5.1.10 (2021-07-09)
+* (bluefox) Corrected some GUI errors
+
 ## 5.1.9 (2021-06-09)
 * (bluefox) Corrected some GUI errors
 

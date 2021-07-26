@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 5.1.15 (2021-07-26)
 * (bluefox) Replaced the formula icon in the edit aliases dialog
 * (bluefox) Added the logic for checkbox in JsonConfig 
 
@@ -105,9 +105,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 5.1.11 (2021-07-12)
 * (bluefox) Changed the filter of objects
-
-### 5.1.10 (2021-07-09)
-* (bluefox) Corrected some GUI errors
 
 ## License
 

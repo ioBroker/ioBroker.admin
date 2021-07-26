@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.1.14",
+        "version": "5.1.15",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.15": {
+                "en": "Replaced the formula icon in the edit aliases dialog\nAdded the logic for checkbox in JsonConfig",
+                "de": "Formelsymbol im Dialog zum Bearbeiten von Aliasen ersetzt\nLogik für Kontrollkästchen in JsonConfig hinzugefügt",
+                "ru": "Заменен значок формулы в диалоговом окне редактирования псевдонимов.\nДобавлена логика для флажка в JsonConfig",
+                "pt": "Substituído o ícone da fórmula na janela de edição de aliases\nAdicionada a lógica para a caixa de seleção em JsonConfig",
+                "nl": "Het formulepictogram in het dialoogvenster aliassen bewerken vervangen\nDe logica toegevoegd voor het selectievakje in JsonConfig",
+                "fr": "Remplacement de l'icône de formule dans la boîte de dialogue de modification des alias\nAjout de la logique pour la case à cocher dans JsonConfig",
+                "it": "Sostituita l'icona della formula nella finestra di dialogo Modifica alias\nAggiunta la logica per la casella di controllo in JsonConfig",
+                "es": "Reemplazó el ícono de fórmula en el cuadro de diálogo de edición de alias\nSe agregó la lógica para la casilla de verificación en JsonConfig",
+                "pl": "Zamieniono ikonę formuły w oknie edycji aliasów\nDodano logikę pola wyboru w JsonConfig",
+                "zh-cn": "替换了编辑别名对话框中的公式图标\n在 JsonConfig 中添加了复选框的逻辑"
+            },
             "5.1.14": {
                 "en": "Corrected error with \"Intro\" page. Warning: All cards must be deactivated anew.",
                 "de": "Fehler mit \"Intro\"-Seite behoben. Achtung: Alle Karten müssen neu deaktiviert werden.",
@@ -245,18 +257,6 @@
                 "es": "Admin5: reordenamiento fijo de los elementos en el menú",
                 "pl": "Admin5: Naprawiono zmianę kolejności elementów w menu",
                 "zh-cn": "Admin5：修复了菜单中项目的重新排序"
-            },
-            "5.0.28": {
-                "en": "Admin5: GUI fixes",
-                "de": "Admin5: GUI-Korrekturen",
-                "ru": "Admin5: исправления графического интерфейса",
-                "pt": "Admin5: Correções de GUI",
-                "nl": "Admin5: GUI-fixes",
-                "fr": "Admin5: correctifs de l'interface graphique",
-                "it": "Admin5: correzioni della GUI",
-                "es": "Admin5: correcciones de GUI",
-                "pl": "Admin5: poprawki GUI",
-                "zh-cn": "Admin5：GUI修复"
             }
         },
         "desc": {
