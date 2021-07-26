@@ -30,6 +30,7 @@ import IconCheck from '@material-ui/icons/Check';
 import AddIcon from '@material-ui/icons/Add';
 import {FaClipboard as IconCopyClipboard} from 'react-icons/fa';
 import IconCopy from '@material-ui/icons/FileCopy';
+import IconFx from '@iobroker/adapter-react/icons/IconFx';
 
 import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
 import Utils from '@iobroker/adapter-react/Components/Utils';
@@ -74,6 +75,10 @@ const styles = theme => ({
     },
     funcEdit: {
         width: 400,
+    },
+    funcIcon: {
+        width: 16,
+        height: 16,
     },
     marginTop: {
         marginTop: 20,
@@ -217,7 +222,7 @@ class ObjectBrowserEditObject extends Component {
                             return result !== null && typeof result !== finalType ?
                                 this.props.t('Type of result is not as expected: %s', finalType) : '';
                         } catch (e) {
-                            return this.props.t('Cannot execute function') + ':' + e.toString();
+                            return this.props.t('Cannot execute function') + ': ' + e.toString();
                         }
                     }
                 }
@@ -328,7 +333,7 @@ class ObjectBrowserEditObject extends Component {
             isFloatComma={this.props.isFloatComma}
             socket={this.props.socket}
             dialogName="aliasesEdit"
-            title={this.props.t('Select for') + ' ' + this.props.obj._id}
+            title={`${this.props.t('Select for')} ${this.props.obj._id}`}
             selected={id}
             statesOnly={true}
             onOk={id => {
@@ -352,6 +357,7 @@ class ObjectBrowserEditObject extends Component {
     setAliasItem(json, name, value, cb) {
         json.common = json.common || {};
         json.common.alias = json.common.alias || {};
+
         if (name === 'id.read') {
             if (json.common.alias.id && typeof json.common.alias.id === 'object') {
                 json.common.alias.id.read = value;
@@ -396,7 +402,7 @@ class ObjectBrowserEditObject extends Component {
 
     buttonRemoveKey(nameKey, cb) {
         const { t, classes } = this.props;
-        return <Tooltip title={t('Remove %s', nameKey)}><div className={classes.close} onClick={cb} /></Tooltip>
+        return <Tooltip title={t('Remove %s', nameKey)}><div className={classes.close} onClick={cb} /></Tooltip>;
     }
 
     renderCommonEdit() {
@@ -601,7 +607,7 @@ class ObjectBrowserEditObject extends Component {
                             error={!!this.state.readError}
                             InputProps={{
                                 endAdornment: json.common?.alias?.read ? <InputAdornment position="end"><IconButton onClick={() => this.setAliasItem(json, 'read', '')}><IconClose /></IconButton></InputAdornment> : null,
-                                startAdornment: <InputAdornment position="start">Σ</InputAdornment>,
+                                startAdornment: <InputAdornment position="start"><IconFx className={this.props.classes.funcIcon}/></InputAdornment>,
                             }}
                             onChange={e => this.setAliasItem(json, 'read', e.target.value)}
                             helperText={this.state.readError || (this.props.t('JS function like') + ' "val / 5 + 21"')}
@@ -618,7 +624,7 @@ class ObjectBrowserEditObject extends Component {
                             className={this.props.classes.funcEdit}
                             InputProps={{
                                 endAdornment: json.common?.alias?.write ? <InputAdornment position="end"><IconButton onClick={() => this.setAliasItem(json, 'write', '')}><IconClose /></IconButton></InputAdornment> : null,
-                                startAdornment: <InputAdornment position="start">Σ</InputAdornment>,
+                                startAdornment: <InputAdornment position="start"><IconFx className={this.props.classes.funcIcon}/></InputAdornment>,
                             }}
                             onChange={e => this.setAliasItem(json, 'write', e.target.value)}
                             margin="normal"

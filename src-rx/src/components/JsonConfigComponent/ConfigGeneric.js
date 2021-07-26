@@ -398,7 +398,7 @@ class ConfigGeneric extends Component {
 
         if (hidden) {
             // Remove all errors if element is hidden
-            if (Object.keys(this.isError)) {
+            if (Object.keys(this.isError).length) {
                 setTimeout(isError =>
                     Object.keys(isError).forEach(attr => this.props.onError(attr)),
                     100, JSON.parse(JSON.stringify(this.isError)));
@@ -432,6 +432,21 @@ class ConfigGeneric extends Component {
                 return null;
             }
         } else {
+            // Add error
+            if (schema.validatorNoSaveOnError) {
+                if (error && !Object.keys(this.isError).length) {
+                    this.isError = {[this.props.attr]: schema.validatorErrorText ? I18n.t(schema.validatorErrorText) : true};
+                    setTimeout(isError =>
+                            Object.keys(isError).forEach(attr => this.props.onError(attr)),
+                        100, JSON.parse(JSON.stringify(this.isError)));
+                } else if (!error && Object.keys(this.isError).length) {
+                    setTimeout(isError =>
+                            Object.keys(isError).forEach(attr => this.props.onError(attr)),
+                        100, JSON.parse(JSON.stringify(this.isError)));
+                    this.isError = {};
+                }
+            }
+
             const item = <Grid
                 item
                 title={this.getText(schema.tooltip)}
@@ -448,7 +463,7 @@ class ConfigGeneric extends Component {
                     <div style={{flexBasis: '100%', height: 0}} />
                     {this.renderConfirmDialog()}
                     {item}
-                </>
+                </>;
             } else {
                 if (this.state.confirmDialog) {
                     return <>

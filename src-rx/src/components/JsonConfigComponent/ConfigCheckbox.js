@@ -7,8 +7,12 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 
 import ConfigGeneric from './ConfigGeneric';
+import I18n from '@iobroker/adapter-react/i18n';
 
 const styles = theme => ({
+    error: {
+        color: 'red'
+    }
 });
 
 class ConfigCheckbox extends ConfigGeneric {
@@ -33,11 +37,13 @@ class ConfigCheckbox extends ConfigGeneric {
                         this.onChange(this.props.attr, e.target.checked);
                     }
                 }}
-                //error={!!error}
                 disabled={!!disabled}
             />}
             label={this.getText(this.props.schema.label)}
         />
+        <FormHelperText className={this.props.classes.error}>{
+            error ? (this.props.schema.validatorErrorText ? I18n.t(this.props.schema.validatorErrorText) : I18n.t('Error')) :
+                null}</FormHelperText>
         {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </FormControl>
     }

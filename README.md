@@ -89,6 +89,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Replaced the formula icon in the edit aliases dialog
+* (bluefox) Added the logic for checkbox in JsonConfig 
+
 ### 5.1.14 (2021-07-23)
 * (bluefox) Corrected error with "Intro" page. Warning: All cards must be deactivated anew.
 

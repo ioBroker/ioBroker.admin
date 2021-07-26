@@ -266,6 +266,8 @@ All types could have:
 - `style` - css style in react notation: `radiusBorder` and not `radius-border`.
 - `darkStyle` - css style for dark mode
 - `validator` - JS function: true no error, false - error
+- `validatorErrorText` - Text to show if validator fails
+- `validatorNoSaveOnError` - disable save button if error   
 - `tooltip` - optional tooltip
 - `default` - default value
 - `defaultFunc` - JS function to calculate default value  

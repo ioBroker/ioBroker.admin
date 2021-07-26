@@ -29,7 +29,6 @@ Marked with "!" must be in release candidate
 
 ## Instances
 - Indication of more than one deleted adapter
-- Disable delete button as long as command is running
 
 ## Objects
 - Add mode view owners (by switching "1") / owner / ownerGroup / objectACL / state ACL

@@ -1413,5 +1413,6 @@
   "base_settings_hint": "Alterar esses valores pode levar a um sistema ioBroker não operacional. A menos que você saiba exatamente o que faz, é melhor usar \"iob setup custom\" para alterar o tipo de banco de dados ou as configurações básicas do banco de dados.",
   "You have unsaved changes": "Você tem alterações não salvas",
   "Discard?": "Descartar?",
-  "Check adapter for updates": "Verifique os adaptadores para atualizações"
+  "Check adapter for updates": "Verifique os adaptadores para atualizações",
+  "Discard": "Descartar"
 }
