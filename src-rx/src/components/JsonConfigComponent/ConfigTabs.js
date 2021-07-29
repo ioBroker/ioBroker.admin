@@ -24,8 +24,12 @@ class ConfigTabs extends ConfigGeneric {
     constructor(props) {
         super(props);
 
+        let tab = window.localStorage.getItem((this.props.dialogName || 'App') + '.' + this.props.adapterName) || Object.keys(this.props.schema.items)[0];
+        if (!Object.keys(this.props.schema.items).includes(tab)) {
+            tab = Object.keys(this.props.schema.items)[0];
+        }
         this.state = {
-            tab: window.localStorage.getItem((this.props.dialogName || 'App') + '.' + this.props.adapterName) || Object.keys(this.props.schema.items)[0],
+            tab,
         };
     }
 

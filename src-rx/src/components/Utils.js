@@ -1101,6 +1101,10 @@ class Utils {
      * @returns {string}
      */
     static getThemeName(themeName = '') {
+        if (window.vendorPrefix) {
+            return window.vendorPrefix;
+        }
+
         return themeName ? themeName : window.localStorage && window.localStorage.getItem('App.themeName') ?
             window.localStorage.getItem('App.themeName') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'colored';
     }
@@ -1111,6 +1115,10 @@ class Utils {
      * @returns {'dark' | 'light'}
      */
     static getThemeType(themeName = '') {
+        if (window.vendorPrefix === 'PT') {
+            return 'light';
+        }
+
         themeName = themeName || (window.localStorage && window.localStorage.getItem('App.themeName'));
         return themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light';
     }
@@ -1120,6 +1128,9 @@ class Utils {
      * @param {string} themeName
      */
     static setThemeName(themeName) {
+        if (window.vendorPrefix) {
+            return; // ignore
+        }
         window.localStorage.setItem('App.themeName', themeName);
         window.localStorage.setItem('App.theme', themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light');
     }
@@ -1130,6 +1141,9 @@ class Utils {
      * @returns {string} the new theme name.
      */
     static toggleTheme(themeName) {
+        if (window.vendorPrefix) {
+            return window.vendorPrefix;
+        }
         themeName = themeName || (window.localStorage && window.localStorage.getItem('App.themeName'));
 
         // dark => blue => colored => light => dark
@@ -1443,7 +1457,7 @@ class Utils {
                     };
                     reader.readAsDataURL(blob);
                 });
-            }) ;
+            });
     }
 }
 

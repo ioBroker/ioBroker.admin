@@ -30,10 +30,12 @@ class ConfigGeneric extends Component {
 
         this.isError = {};
 
-        if (this.props.custom) {
-            this.defaultValue = this.props.schema.defaultFunc ? this.executeCustom(this.props.schema.defaultFunc, this.props.schema.default, this.props.data, this.props.instanceObj) : this.props.schema.default;
-        } else {
-            this.defaultValue = this.props.schema.defaultFunc ? this.execute(this.props.schema.defaultFunc, this.props.schema.default, this.props.data) : this.props.schema.default;
+        if (this.props.schema) {
+            if (this.props.custom) {
+                this.defaultValue = this.props.schema.defaultFunc ? this.executeCustom(this.props.schema.defaultFunc, this.props.schema.default, this.props.data, this.props.instanceObj) : this.props.schema.default;
+            } else {
+                this.defaultValue = this.props.schema.defaultFunc ? this.execute(this.props.schema.defaultFunc, this.props.schema.default, this.props.data) : this.props.schema.default;
+            }
         }
 
         this.lang = I18n.getLanguage();
@@ -392,9 +394,13 @@ class ConfigGeneric extends Component {
     }
 
     render() {
-        const {error, disabled, hidden, defaultValue} = this.calculate(this.props.schema);
-
         const schema = this.props.schema;
+
+        if (!schema) {
+            return null;
+        }
+
+        const {error, disabled, hidden, defaultValue} = this.calculate(schema);
 
         if (hidden) {
             // Remove all errors if element is hidden
@@ -424,7 +430,7 @@ class ConfigGeneric extends Component {
                     return <>
                         <div style={{flexBasis: '100%', height: 0}} />
                         {item}
-                    </>
+                    </>;
                 } else {
                     return item;
                 }
@@ -437,7 +443,7 @@ class ConfigGeneric extends Component {
                 if (error && !Object.keys(this.isError).length) {
                     this.isError = {[this.props.attr]: schema.validatorErrorText ? I18n.t(schema.validatorErrorText) : true};
                     setTimeout(isError =>
-                            Object.keys(isError).forEach(attr => this.props.onError(attr)),
+                            Object.keys(isError).forEach(attr => this.props.onError(attr, isError[attr])),
                         100, JSON.parse(JSON.stringify(this.isError)));
                 } else if (!error && Object.keys(this.isError).length) {
                     setTimeout(isError =>

@@ -277,7 +277,7 @@ function EnhancedTableHead(props) {
                 <TableCell
                     key={headCell.id}
                     align={headCell.numeric ? 'right' : 'left'}
-                    padding={headCell.disablePadding ? 'none' : 'default'}
+                    padding={headCell.disablePadding ? 'none' : 'normal'}
                 >
                     <TableSortLabel
                         onClick={createSortHandler(headCell.id)}
@@ -635,8 +635,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                         title={I18n.t('Discover all possible devices')}
                     >
                         {!disableScanner ? <> <div className={classes.headerText}>
-                            {I18n.t(`Press "Discover" to find devices in your network (Turn off network firewalls/traffic analyze systems before!)
-                            or "Next" to use devices from previous discovery process`)}
+                            {I18n.t(`press_discover`)}
                         </div>
                             {discoveryData?.native?.lastScan && <div className={classes.descriptionHeaderText}>
                                 {I18n.t('Last scan on %s', Utils.formatDate(new Date(discoveryData.native.lastScan), dateFormat))}
@@ -748,9 +747,8 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                                     t={I18n.t}
                                                     value={hostInstances[obj._id] || currentHost}
                                                     themeType={themeType}
-                                                    onChange={val => {
-                                                        setHostInstances(Object.assign({ ...hostInstances }, { [obj._id]: val }));
-                                                    }}
+                                                    onChange={val =>
+                                                        setHostInstances(Object.assign({ ...hostInstances }, { [obj._id]: val }))}
                                                 />
                                                 :
                                                 '_'}</TableCell>
@@ -760,7 +758,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                                     checked={!!obj?.comment?.ack}
                                                     onClick={e => {
                                                         const newInstances = JSON.parse(JSON.stringify(discoveryData?.native.newInstances));
-                                                        newInstances[idx].comment = { ...newInstances[idx].comment, 'ack': !newInstances[idx].comment.ack };
+                                                        newInstances[idx].comment = { ...newInstances[idx].comment, ack: !newInstances[idx].comment.ack };
                                                         extendObject('system.discovery', { native: { newInstances } });
                                                     }}
                                                 />

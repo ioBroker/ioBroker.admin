@@ -468,9 +468,20 @@ class Drawer extends Component {
         )}>
             <div className={clsx(classes.avatarBlock, state === 0 && classes.avatarVisible, classes.avatarNotVisible)}>
                 <a href="/#easy" onClick={event => event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
-                    <Avatar onClick={() => handleNavigation('easy')} className={clsx((this.props.themeName === 'colored' || this.props.themeName === 'blue') && classes.logoWhite, classes.logoSize)} alt="ioBroker" src="img/no-image.png" />
+                    {this.props.adminGuiConfig.icon ?
+                        <div style={{height: 50, withWidth: 102, lineHeight: '50px'}}>
+                            <img src={this.props.adminGuiConfig.icon} alt="logo" style={{maxWidth: '100%', maxHeight: '100%', verticalAlign: 'middle'}}/>
+                        </div>
+                        :
+                        <Avatar
+                            onClick={() => handleNavigation('easy')}
+                            className={clsx((this.props.themeName === 'colored' || this.props.themeName === 'blue') && classes.logoWhite, classes.logoSize)}
+                            alt="ioBroker"
+                            src="img/no-image.png"
+                        />
+                    }
                 </a>
-                {this.props.versionAdmin && <Typography className={classes.styleVersion}>v{this.props.versionAdmin}</Typography>}
+                {!this.props.adminGuiConfig.icon && this.props.versionAdmin && <Typography className={classes.styleVersion}>v{this.props.versionAdmin}</Typography>}
             </div>
             <IconButton onClick={() => {
                 if (this.isSwipeable() || this.props.state === STATES.compact) {
@@ -514,12 +525,17 @@ class Drawer extends Component {
         const { tabs, editList, logErrors, logWarnings } = this.state;
         const { systemConfig, currentTab, state, classes, handleNavigation } = this.props;
         if (!systemConfig) {
-            return
+            return;
         }
         return tabs.map((tab, idx) => {
             if (!editList && !tab.visible) {
                 return null
             }
+
+            if (this.props.adminGuiConfig.admin.menu && this.props.adminGuiConfig.admin.menu[tab.name] === false) {
+                return null;
+            }
+
             return <DragWrapper
                 key={tab.name}
                 canDrag={editList}
@@ -613,13 +629,13 @@ class Drawer extends Component {
                         />
                     }
                 </List>
-                {this.props.state === STATES.opened && <div className={this.props.classes.editButton}>
+                {this.props.adminGuiConfig.admin.menu.editable !== false && this.props.state === STATES.opened && <div className={this.props.classes.editButton}>
                     <CustomPopper
                         editList={this.state.editList}
                         onClick={() => this.setState({ editList: !this.state.editList })}
                     />
                 </div>}
-            </SwipeableDrawer>
+            </SwipeableDrawer>;
         } else {
             return <MaterialDrawer
                 className={clsx(classes.root, this.props.state !== STATES.opened ? classes.rootCompactWidth : classes.rootFullWidth)}
@@ -643,7 +659,7 @@ class Drawer extends Component {
                         />
                     }
                 </List>
-                {this.props.state === STATES.opened && <div
+                {this.props.adminGuiConfig.admin.menu.editable !== false && this.props.state === STATES.opened && <div
                     className={this.props.classes.editButton}
                     style={{opacity: 0}}
                     ref={this.refEditButton}
@@ -653,7 +669,7 @@ class Drawer extends Component {
                         onClick={() => this.setState({ editList: !this.state.editList })}
                     />
                 </div>}
-            </MaterialDrawer>
+            </MaterialDrawer>;
         }
     }
 }
@@ -662,6 +678,7 @@ Drawer.propTypes = {
     t: PropTypes.func,
     lang: PropTypes.string,
     state: PropTypes.number,
+    adminGuiConfig: PropTypes.object,
     onStateChange: PropTypes.func,
     onLogout: PropTypes.func,
     systemConfig: PropTypes.object,

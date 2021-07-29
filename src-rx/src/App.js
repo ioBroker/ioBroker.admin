@@ -33,13 +33,13 @@ import { PROGRESS } from './components/Connection';
 //import {AdminConnection as Connection} from '@iobroker/socket-client/dist/AdminConnection';
 // import {PROGRESS} from '@iobroker/socket-client/dist/Connection';
 import Loader from '@iobroker/adapter-react/Components/Loader';
+import LoaderPT from '@iobroker/adapter-react/Components/Loaders/PT';
 import I18n from '@iobroker/adapter-react/i18n';
 import Router from '@iobroker/adapter-react/Components/Router';
 import Utils from './components/Utils';//adapter-react/Components/Utils';
 import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 import Icon from '@iobroker/adapter-react/Components/Icon';
 import theme from '@iobroker/adapter-react/Theme';
-
 
 import CommandDialog from './dialogs/CommandDialog';
 import Drawer from './components/Drawer';
@@ -62,6 +62,7 @@ import AdaptersWorker from './Workers/AdaptersWorker';
 import ObjectsWorker from './Workers/ObjectsWorker';
 import DiscoveryDialog from './dialogs/DiscoveryDialog';
 import SlowConnectionWarningDialog from './dialogs/SlowConnectionWarningDialog';
+import IsVisible from './components/IsVisible';
 
 // Tabs
 const Adapters  = React.lazy(() => import('./tabs/Adapters'));
@@ -310,6 +311,7 @@ class App extends Router {
         this.expireInSec = null;
         this.expireInSecInterval = null;
         this.expireText = I18n.t('Session expire in %s', '%s');
+        this.adminGuiConfig = {admin: {menu: {}}};
 
         if (!query.login) {
             let drawerState = window.localStorage.getItem('App.drawerState');
@@ -489,6 +491,10 @@ class App extends Router {
                 },
                 onReady: async objects => {
                     I18n.setLanguage(this.socket.systemLang);
+                    this.adminGuiConfig = this.socket.systemConfig.native?.vendor || {admin: {menu: {}}};
+                    // Combine adminGuiConfig with user settings
+
+
                     this.socket.getCurrentInstance()
                         .then(adminInstance => {
                             this.adminInstance = adminInstance;
@@ -540,23 +546,29 @@ class App extends Router {
                                 newState.expertMode = window.sessionStorage.getItem('App.expertMode') ? window.sessionStorage.getItem('App.expertMode') === 'true' : !!newState.systemConfig.common.expertMode;
 
                                 // Read user and show him
-                                if (this.socket.isSecure) {
+                                if (this.socket.isSecure || this.socket.systemConfig.native?.vendor) {
                                     this.socket.getCurrentUser()
                                         .then(user => {
                                             this.socket.getObject('system.user.' + user)
                                                 .then(userObj => {
-                                                    this.setState({
-                                                        user: {
-                                                            id: userObj._id,
-                                                            name: Utils.getObjectNameFromObj(userObj, this.socket.systemLang),
-                                                            color: userObj.common.color,
-                                                            icon: userObj.common.icon,
-                                                            invertBackground: this.mustInvertBackground(userObj.common.color)
-                                                        }
-                                                    });
+                                                    if (userObj.native?.vendor) {
+                                                        Object.assign(this.adminGuiConfig, userObj.native.vendor);
+                                                    }
 
-                                                    // start ping interval
-                                                    this.makePingAuth();
+                                                    if (this.socket.isSecure) {
+                                                        this.setState({
+                                                            user: {
+                                                                id: userObj._id,
+                                                                name: Utils.getObjectNameFromObj(userObj, this.socket.systemLang),
+                                                                color: userObj.common.color,
+                                                                icon: userObj.common.icon,
+                                                                invertBackground: this.mustInvertBackground(userObj.common.color)
+                                                            }
+                                                        });
+
+                                                        // start ping interval
+                                                        this.makePingAuth();
+                                                    }
                                                 })
                                         });
                                 }
@@ -651,7 +663,7 @@ class App extends Router {
             alive = await this.socket.getState(newState.currentHost + '.alive');
         } catch (e) {
             alive = null;
-            console.warn('Cannot get state ' + newState.currentHost + '.alive: ' + e);
+            console.warn(`Cannot get state ${newState.currentHost}.alive: ${e}`);
         }
 
         if (!alive || !alive.val) {
@@ -1488,7 +1500,8 @@ class App extends Router {
         } else
         if (!this.state.ready) {
             return <ThemeProvider theme={this.state.theme}>
-                <Loader theme={this.state.themeType} />
+                {window.vendorPrefix === 'PT' ? <LoaderPT theme={this.state.themeType}/> :null}
+                {!window.vendorPrefix ? <Loader theme={this.state.themeType} /> : null}
             </ThemeProvider>;
         } else if (this.state.strictEasyMode || this.state.currentTab.tab === 'easy') {
             return <ThemeProvider theme={this.state.theme}>
@@ -1544,87 +1557,97 @@ class App extends Router {
                             <MenuIcon />
                         </IconButton>
                         <div className={classes.wrapperButtons}>
-                            {this.state.discoveryAlive && <Tooltip title={I18n.t('Discovery devices')}>
-                                <IconButton onClick={() => Router.doNavigate(null, 'discovery')}>
-                                    <VisibilityIcon />
-                                </IconButton>
-                            </Tooltip>}
-                            <Tooltip title={I18n.t('System settings')}>
-                                <IconButton onClick={() => Router.doNavigate(null, 'system')}>
-                                    <BuildIcon />
-                                </IconButton>
-                            </Tooltip>
-                            <ToggleThemeMenu
-                                toggleTheme={this.toggleTheme}
-                                themeName={this.state.themeName}
-                                t={I18n.t} />
-                            <Tooltip
-                                title={`${I18n.t('Toggle expert mode')} ${expertModePermanent ? '' : ' (' + I18n.t('only in this browser session') + ')'}`}
-                            >
-                                <Badge
-                                    color="secondary"
-                                    variant="dot"
-                                    classes={{badge: this.props.classes.expertBadge}}
-                                    invisible={expertModePermanent}
+                            <IsVisible name="admin.appBar.discovery" config={this.adminGuiConfig}>
+                                {this.state.discoveryAlive && <Tooltip title={I18n.t('Discovery devices')}>
+                                    <IconButton onClick={() => Router.doNavigate(null, 'discovery')}>
+                                        <VisibilityIcon />
+                                    </IconButton>
+                                </Tooltip>}
+                            </IsVisible>
+                            <IsVisible name="admin.appBar.systemSettings" config={this.adminGuiConfig}>
+                                <Tooltip title={I18n.t('System settings')}>
+                                    <IconButton onClick={() => Router.doNavigate(null, 'system')}>
+                                        <BuildIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </IsVisible>
+                            <IsVisible name="admin.appBar.toggleTheme" config={this.adminGuiConfig}>
+                                <ToggleThemeMenu
+                                    toggleTheme={this.toggleTheme}
+                                    themeName={this.state.themeName}
+                                    t={I18n.t} />
+                            </IsVisible>
+                            <IsVisible name="admin.appBar.expertMode" config={this.adminGuiConfig}>
+                                <Tooltip
+                                    title={`${I18n.t('Toggle expert mode')} ${expertModePermanent ? '' : ' (' + I18n.t('only in this browser session') + ')'}`}
                                 >
-                                    <IconButton
-                                        onClick={() => {
-                                            if (!!this.state.systemConfig.common.expertMode === !this.state.expertMode) {
-                                                window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
-                                                this.setState({ expertMode: !this.state.expertMode });
-                                                this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
-                                            } else {
-                                                if (window.sessionStorage.getItem('App.doNotShowExpertDialog') === 'true') {
+                                    <Badge
+                                        color="secondary"
+                                        variant="dot"
+                                        classes={{badge: this.props.classes.expertBadge}}
+                                        invisible={expertModePermanent}
+                                    >
+                                        <IconButton
+                                            onClick={() => {
+                                                if (!!this.state.systemConfig.common.expertMode === !this.state.expertMode) {
                                                     window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
                                                     this.setState({ expertMode: !this.state.expertMode });
                                                     this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
                                                 } else {
-                                                    expertModeDialogFunc(this.state.expertMode, this.state.themeType, () => {
+                                                    if (window.sessionStorage.getItem('App.doNotShowExpertDialog') === 'true') {
                                                         window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
                                                         this.setState({ expertMode: !this.state.expertMode });
                                                         this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
-                                                    }, () => Router.doNavigate(null, 'system'));
+                                                    } else {
+                                                        expertModeDialogFunc(this.state.expertMode, this.state.themeType, () => {
+                                                            window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
+                                                            this.setState({ expertMode: !this.state.expertMode });
+                                                            this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
+                                                        }, () => Router.doNavigate(null, 'system'));
+                                                    }
                                                 }
-                                            }
-                                        }}
-                                        style={{ color: this.state.expertMode ? this.state.theme.palette.expert : undefined }}
-                                        color="default"
-                                    >
-                                        <ExpertIcon
-                                            title={I18n.t('Toggle expert mode')}
-                                            glowColor={this.state.theme.palette.secondary.main}
-                                            active={this.state.expertMode}
-                                            className={clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
-                                        />
-                                    </IconButton>
-                                </Badge>
-                            </Tooltip>
-                            <HostSelectors
-                                expertMode={this.state.expertMode}
-                                socket={this.socket}
-                                hostsWorker={this.hostsWorker}
-                                currentHost={this.state.currentHost}
-                                setCurrentHost={(hostName, host) => {
-                                    this.setState({
-                                        currentHostName: hostName,
-                                        currentHost: host
-                                    }, () => {
-                                        this.logsWorkerChanged(host);
-                                        window.localStorage.setItem('App.currentHost', host);
+                                            }}
+                                            style={{ color: this.state.expertMode ? this.state.theme.palette.expert : undefined }}
+                                            color="default"
+                                        >
+                                            <ExpertIcon
+                                                title={I18n.t('Toggle expert mode')}
+                                                glowColor={this.state.theme.palette.secondary.main}
+                                                active={this.state.expertMode}
+                                                className={clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
+                                            />
+                                        </IconButton>
+                                    </Badge>
+                                </Tooltip>
+                            </IsVisible>
+                            <IsVisible name="admin.appBar.hostSelector" config={this.adminGuiConfig}>
+                                <HostSelectors
+                                    expertMode={this.state.expertMode}
+                                    socket={this.socket}
+                                    hostsWorker={this.hostsWorker}
+                                    currentHost={this.state.currentHost}
+                                    setCurrentHost={(hostName, host) => {
+                                        this.setState({
+                                            currentHostName: hostName,
+                                            currentHost: host
+                                        }, () => {
+                                            this.logsWorkerChanged(host);
+                                            window.localStorage.setItem('App.currentHost', host);
 
-                                        this.readRepoAndInstalledInfo(host, this.state.hosts)
-                                            .then(() =>
-                                                // read notifications from host
-                                                this.hostsWorker.getNotifications(host)
-                                                    .then(notifications => this.showAdaptersWarning(notifications, this.socket, host)));
-                                    });
-                                }}
-                                disabled={
-                                    this.state.currentTab.tab !== 'tab-instances' &&
-                                    this.state.currentTab.tab !== 'tab-adapters' &&
-                                    this.state.currentTab.tab !== 'tab-logs'
-                                }
-                            />
+                                            this.readRepoAndInstalledInfo(host, this.state.hosts)
+                                                .then(() =>
+                                                    // read notifications from host
+                                                    this.hostsWorker.getNotifications(host)
+                                                        .then(notifications => this.showAdaptersWarning(notifications, this.socket, host)));
+                                        });
+                                    }}
+                                    disabled={
+                                        this.state.currentTab.tab !== 'tab-instances' &&
+                                        this.state.currentTab.tab !== 'tab-adapters' &&
+                                        this.state.currentTab.tab !== 'tab-logs'
+                                    }
+                                />
+                            </IsVisible>
                             <div className={classes.flexGrow} />
                             {this.state.cmd && !this.state.cmdDialog && <IconButton onClick={() => this.setState({ cmdDialog: true })}>
                                 <PictureInPictureAltIcon className={this.state.commandError ? classes.errorCmd : this.state.performed ? classes.performed : classes.cmd} />
@@ -1639,12 +1662,29 @@ class App extends Router {
                                     <Hidden xsDown>
                                         <div className={classes.wrapperName}>
                                             <Typography>admin</Typography>
-                                            {this.state.versionAdmin && <Typography className={classes.styleVersion} style={{color: this.state.themeType === 'dark' ? '#ffffff80' : '#00000080'}}>v{this.state.versionAdmin}</Typography>}
+                                            {!this.adminGuiConfig.icon && this.state.versionAdmin && <Typography className={classes.styleVersion} style={{color: this.state.themeType === 'dark' ? '#ffffff80' : '#00000080'}}>v{this.state.versionAdmin}</Typography>}
                                         </div>
                                     </Hidden>}
                                 <Grid item>
                                     <a href="/#easy" onClick={event => event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
-                                        <Avatar onClick={() => this.handleNavigation('easy')} className={clsx((this.state.themeName === 'colored' || this.state.themeName === 'blue') && classes.logoWhite)} alt="ioBroker" src="img/no-image.png" />
+                                        {this.adminGuiConfig.icon ?
+                                            <div style={{
+                                                height: 50,
+                                                withWidth: 102,
+                                                lineHeight: '50px',
+                                                background: 'white',
+                                                borderRadius: 5,
+                                                padding: 5}}
+                                            ><img src={this.adminGuiConfig.icon} alt="logo"
+                                                      style={{maxWidth: '100%', maxHeight: '100%'}}/></div>
+                                            :
+                                            <Avatar
+                                                onClick={() => this.handleNavigation('easy')}
+                                                className={clsx((this.state.themeName === 'colored' || this.state.themeName === 'blue') && classes.logoWhite)}
+                                                alt="ioBroker"
+                                                src="img/no-image.png"
+                                            />
+                                        }
                                     </a>
                                 </Grid>
                             </Grid>
@@ -1653,6 +1693,7 @@ class App extends Router {
                 </AppBar>
                 <DndProvider backend={!small ? HTML5Backend : TouchBackend}>
                     <Drawer
+                        adminGuiConfig={this.adminGuiConfig}
                         state={this.state.drawerState}
                         systemConfig={this.state.systemConfig}
                         handleNavigation={name => this.handleNavigation(name)}

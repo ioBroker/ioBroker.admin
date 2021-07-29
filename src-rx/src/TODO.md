@@ -18,6 +18,7 @@ Marked with "!" must be in release candidate
 - Install command: during installation the close button in upper right corner is not disabled
 - Show icons for autocomplete in github dialog
 - Make close button black and not red
+- Review: 1 vote, X votes
 
 ## Wizard
 - Replace map with leaflet

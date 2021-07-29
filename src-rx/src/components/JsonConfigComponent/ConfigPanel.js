@@ -111,7 +111,7 @@ const styles = theme => ({
 class ConfigPanel extends ConfigGeneric {
     componentDidMount() {
         super.componentDidMount();
-        if (this.props.schema.collapsable) {
+        if (this.props.schema && this.props.schema.collapsable) {
             this.setState({expanded: window.localStorage.getItem(this.props.adapterName + '.' + this.props.attr) === 'true'});
         }
     }
@@ -175,11 +175,16 @@ class ConfigPanel extends ConfigGeneric {
     }
 
     render() {
-        const {disabled, hidden} = this.calculate(this.props.schema);
+        const schema = this.props.schema;
+
+        if (!schema) {
+            return null;
+        }
+
+        const {disabled, hidden} = this.calculate(schema);
 
         const items   = this.props.schema.items;
         const classes = this.props.classes || {};
-        const schema  = this.props.schema;
 
         if (hidden) {
             if (schema.hideOnlyControl) {
