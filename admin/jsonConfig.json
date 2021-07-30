@@ -70,7 +70,9 @@
             "ok": "Ignore warning",
             "cancel": "Disable authentication",
             "type": "warning",
-            "alsoDependsOn": ["secure"]
+            "alsoDependsOn": [
+              "secure"
+            ]
           },
           "label": "Authentication",
           "sm": 12,
@@ -89,7 +91,7 @@
           "hidden": "!data.auth",
           "type": "number",
           "label": "Login timeout",
-          "help":  "sec",
+          "help": "sec",
           "sm": 12,
           "md": 6,
           "lg": 2
@@ -99,14 +101,38 @@
           "type": "select",
           "label": "Auto update",
           "options": [
-            {"label": "manually",       "value": 0},
-            {"label": "every 12 hours", "value": 12},
-            {"label": "every day",      "value": 24},
-            {"label": "every 2 days",   "value": 48},
-            {"label": "every 3 days",   "value": 72},
-            {"label": "every week",     "value": 168},
-            {"label": "every 2 weeks",  "value": 336},
-            {"label": "monthly",        "value": 720}
+            {
+              "label": "manually",
+              "value": 0
+            },
+            {
+              "label": "every 12 hours",
+              "value": 12
+            },
+            {
+              "label": "every day",
+              "value": 24
+            },
+            {
+              "label": "every 2 days",
+              "value": 48
+            },
+            {
+              "label": "every 3 days",
+              "value": 72
+            },
+            {
+              "label": "every week",
+              "value": 168
+            },
+            {
+              "label": "every 2 weeks",
+              "value": 336
+            },
+            {
+              "label": "monthly",
+              "value": 720
+            }
           ],
           "sm": 12,
           "md": 6,

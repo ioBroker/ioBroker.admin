@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Make the appearance of buttons configurable
+ 
 ### 5.1.15 (2021-07-26)
 * (bluefox) Replaced the formula icon in the edit aliases dialog
 * (bluefox) Added the logic for checkbox in JsonConfig 
@@ -107,7 +110,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (bluefox) Changed the filter of objects
 
 ## License
-
 The MIT License (MIT)
 
 Copyright (c) 2014-2021 bluefox <dogafox@gmail.com>
