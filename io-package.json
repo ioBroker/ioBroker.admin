@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.1.16",
+        "version": "5.1.17",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.17": {
+                "en": "Corrected the error on the adapter's tab",
+                "de": "Fehler auf der Registerkarte des Adapters behoben",
+                "ru": "Исправили ошибку на вкладке адаптера",
+                "pt": "Corrigido o erro na guia do adaptador",
+                "nl": "De fout op het tabblad van de adapter gecorrigeerd",
+                "fr": "Correction de l'erreur sur l'onglet de l'adaptateur",
+                "it": "Corretto l'errore nella scheda dell'adattatore",
+                "es": "Corregido el error en la pestaña del adaptador.",
+                "pl": "Poprawiono błąd na karcie adaptera",
+                "zh-cn": "更正了适配器选项卡上的错误"
+            },
             "5.1.16": {
                 "en": "Make the appearance of buttons configurable",
                 "de": "Gestalten Sie das Aussehen von Schaltflächen konfigurierbar",
@@ -245,18 +257,6 @@
                 "es": "Admin5: se mejoraron las enumeraciones",
                 "pl": "Admin5: Poprawiono wyliczenia",
                 "zh-cn": "Admin5：改进了枚举"
-            },
-            "5.0.30": {
-                "en": "Admin5: Fixed update of objects",
-                "de": "Admin5: Aktualisierung von Objekten behoben",
-                "ru": "Admin5: Исправлено обновление объектов",
-                "pt": "Admin5: atualização corrigida de objetos",
-                "nl": "Admin5: Vaste update van objecten",
-                "fr": "Admin5: Correction de la mise à jour des objets",
-                "it": "Admin5: corretto aggiornamento degli oggetti",
-                "es": "Admin5: actualización fija de objetos",
-                "pl": "Admin5: Naprawiono aktualizację obiektów",
-                "zh-cn": "Admin5：修复了对象的更新"
             }
         },
         "desc": {
