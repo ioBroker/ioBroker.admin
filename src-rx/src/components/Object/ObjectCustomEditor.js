@@ -183,7 +183,7 @@ class ObjectCustomEditor extends Component {
         const ad = this.props.objects['system.adapter.' + adapter] ? JSON.parse(JSON.stringify(this.props.objects['system.adapter.' + adapter])) : null;
 
         if (!ad) {
-            console.error('Cannot find adapter ' + ad);
+            console.error(`Cannot find adapter "${ad}"`);
             return Promise.resolve(null);
         } else {
 

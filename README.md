@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Corrected the error on the adapter's tab
+
 ### 5.1.16 (2021-07-30)
 * (bluefox) Make the appearance of buttons configurable
  

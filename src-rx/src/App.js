@@ -1062,6 +1062,7 @@ class App extends Router {
                         menuOpened={opened}
                         menuClosed={closed}
                         menuCompact={compact}
+                        repository={this.state.repository}
                     />
                 </Suspense>;
             } else if (this.state.currentTab.tab === 'tab-instances') {
