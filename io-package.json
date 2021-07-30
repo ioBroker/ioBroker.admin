@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.1.15",
+        "version": "5.1.16",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.16": {
+                "en": "Make the appearance of buttons configurable",
+                "de": "Gestalten Sie das Aussehen von Schaltflächen konfigurierbar",
+                "ru": "Сделайте внешний вид кнопок настраиваемым",
+                "pt": "Faça a aparência de botões configuráveis",
+                "nl": "Maak het uiterlijk van knoppen configureerbaar",
+                "fr": "Rendre l'apparence des boutons paramétrable",
+                "it": "Rendi configurabile l'aspetto dei pulsanti",
+                "es": "Hacer que la apariencia de los botones sea configurable",
+                "pl": "Spraw, aby wygląd przycisków był konfigurowalny",
+                "zh-cn": "使按钮的外观可配置"
+            },
             "5.1.15": {
                 "en": "Replaced the formula icon in the edit aliases dialog\nAdded the logic for checkbox in JsonConfig",
                 "de": "Formelsymbol im Dialog zum Bearbeiten von Aliasen ersetzt\nLogik für Kontrollkästchen in JsonConfig hinzugefügt",
@@ -245,18 +257,6 @@
                 "es": "Admin5: actualización fija de objetos",
                 "pl": "Admin5: Naprawiono aktualizację obiektów",
                 "zh-cn": "Admin5：修复了对象的更新"
-            },
-            "5.0.29": {
-                "en": "Admin5: Fixed reorder of the items in menu",
-                "de": "Admin5: Neuordnung der Elemente im Menü behoben",
-                "ru": "Admin5: Исправлен переупорядочение пунктов в меню.",
-                "pt": "Admin5: Reordenação corrigida dos itens no menu",
-                "nl": "Admin5: Vaste herschikking van de items in het menu",
-                "fr": "Admin5: Correction de la réorganisation des éléments dans le menu",
-                "it": "Admin5: corretto riordino degli elementi nel menu",
-                "es": "Admin5: reordenamiento fijo de los elementos en el menú",
-                "pl": "Admin5: Naprawiono zmianę kolejności elementów w menu",
-                "zh-cn": "Admin5：修复了菜单中项目的重新排序"
             }
         },
         "desc": {
