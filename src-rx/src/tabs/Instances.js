@@ -860,6 +860,9 @@ class Instances extends Component {
                 modeSchedule,
                 checkSentry,
                 memoryLimitMB,
+                allowInstanceSettings: this.props.repository[instance.adapter] ? this.props.repository[instance.adapter].allowInstanceSettings : true,
+                allowInstanceDelete: this.props.repository[instance.adapter] ? this.props.repository[instance.adapter].allowInstanceDelete : true,
+                allowInstanceLink: this.props.repository[instance.adapter] ? this.props.repository[instance.adapter].allowInstanceLink : true,
             }
         });
 
@@ -908,38 +911,19 @@ class Instances extends Component {
                     render: <InstanceCard
                         deleting={this.state.deleting === instance.id}
                         adminInstance={this.props.adminInstance}
-                        alive={item.alive}
-                        checkCompact={item.checkCompact}
-                        checkSentry={item.checkSentry}
-                        compact={item.compact}
-                        compactGroup={item.compactGroup}
                         maxCompactGroupNumber={this.state.maxCompactGroupNumber}
-                        connected={item.connected}
-                        connectedToHost={item.connectedToHost}
-                        currentSentry={item.sentry}
                         deletedInstances={this.deletedInstances}
                         expertMode={this.props.expertMode}
                         extendObject={this.extendObject}
                         getMemory={this.getMemory}
                         getRestartSchedule={() => this.getRestartSchedule(instance.obj)}
                         getSchedule={() => this.getSchedule(instance.obj)}
-                        host={instance.host}
                         hosts={this.props.hosts}
                         id={id}
-                        image={instance.image}
-
-                        inputOutput={item.inputOutput}
 
                         instance={instance}
                         key={instance.id}
-                        logLevel={item.logLevel}
-                        logLevelObject={item.logLevelObject}
-                        loglevelIcon={item.loglevelIcon}
-                        memoryLimitMB={item.memoryLimitMB}
-                        modeSchedule={item.modeSchedule}
-                        name={item.name}
                         openConfig={this.openConfig}
-                        running={item.running}
                         setCompact={this.setCompact}
                         setCompactGroup={this.setCompactGroup}
                         setHost={this.setHost}
@@ -950,10 +934,9 @@ class Instances extends Component {
                         setSchedule={this.setSchedule}
                         setSentry={this.setSentry}
                         setTier={this.setTier}
-                        supportCompact={item.supportCompact}
                         t={this.t}
                         themeType={this.props.themeType}
-                        tier={item.tier}
+                        item={item}
                     />
                 };
             } else {
@@ -962,15 +945,7 @@ class Instances extends Component {
                     render: <InstanceRow
                         deleting={this.state.deleting === instance.id}
                         adminInstance={this.props.adminInstance}
-                        alive={item.alive}
-                        checkCompact={item.checkCompact}
-                        checkSentry={item.checkSentry}
-                        compact={item.compact}
-                        compactGroup={item.compactGroup}
                         maxCompactGroupNumber={this.state.maxCompactGroupNumber}
-                        connected={item.connected}
-                        connectedToHost={item.connectedToHost}
-                        currentSentry={item.sentry}
                         deletedInstances={this.deletedInstances}
                         expanded={this.state.expanded}
                         expertMode={this.props.expertMode}
@@ -981,24 +956,13 @@ class Instances extends Component {
                         getRestartSchedule={() => this.getRestartSchedule(instance.obj)}
                         getSchedule={() => this.getSchedule(instance.obj)}
                         onExpandRow={this.onExpandRow}
-                        host={instance.host}
                         hosts={this.props.hosts}
                         id={id}
                         idx={idx}
-                        image={instance.image}
-
-                        inputOutput={item.inputOutput}
 
                         instance={instance}
                         key={instance.id}
-                        logLevel={item.logLevel}
-                        logLevelObject={item.logLevelObject}
-                        loglevelIcon={item.loglevelIcon}
-                        memoryLimitMB={item.memoryLimitMB}
-                        modeSchedule={item.modeSchedule}
-                        name={item.name}
                         openConfig={this.openConfig}
-                        running={item.running}
                         setCompact={this.setCompact}
                         setCompactGroup={this.setCompactGroup}
                         setHost={this.setHost}
@@ -1009,10 +973,9 @@ class Instances extends Component {
                         setSchedule={this.setSchedule}
                         setSentry={this.setSentry}
                         setTier={this.setTier}
-                        supportCompact={item.supportCompact}
                         t={this.t}
                         themeType={this.props.themeType}
-                        tier={item.tier}
+                        item={item}
                     />
                 };
             }
@@ -1080,7 +1043,9 @@ class Instances extends Component {
     async getHostsData() {
         this.props.socket.getHostInfo(this.props.currentHost, false, 10000)
             .catch(error => {
-                window.alert('Cannot read host information: ' + error);
+                if (!error.toString().includes('May not read')) {
+                    window.alert('Cannot read host information: ' + error);
+                }
                 return {};
             })
             .then(hostData => {
@@ -1340,6 +1305,7 @@ Instances.propTypes = {
     hosts: PropTypes.array,
     protocol: PropTypes.string,
     adminInstance: PropTypes.string,
+    repository: PropTypes.object,
 
     socket: PropTypes.object,
     themeName: PropTypes.string,

@@ -1113,6 +1113,10 @@ class Adapters extends Component {
                 openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
                 onUpload={() => licenseDialogFunc(adapter.license === 'MIT', result =>
                     result && this.upload(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
+                allowAdapterDelete={this.props.repository[value] ? this.props.repository[value].allowAdapterDelete : true}
+                allowAdapterInstall={this.props.repository[value] ? this.props.repository[value].allowAdapterInstall : true}
+                allowAdapterUpdate={this.props.repository[value] ? this.props.repository[value].allowAdapterUpdate : true}
+                allowAdapterReadme={this.props.repository[value] ? this.props.repository[value].allowAdapterReadme : true}
             />;
         } else {
             return null;
@@ -1343,6 +1347,10 @@ class Adapters extends Component {
                     openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
                     onUpload={() => licenseDialogFunc(adapter.license === 'MIT', result =>
                         result && this.upload(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
+                    allowAdapterDelete={this.props.repository[value] ? this.props.repository[value].allowAdapterDelete : true}
+                    allowAdapterInstall={this.props.repository[value] ? this.props.repository[value].allowAdapterInstall : true}
+                    allowAdapterUpdate={this.props.repository[value] ? this.props.repository[value].allowAdapterUpdate : true}
+                    allowAdapterReadme={this.props.repository[value] ? this.props.repository[value].allowAdapterReadme : true}
                 />;
             });
         }

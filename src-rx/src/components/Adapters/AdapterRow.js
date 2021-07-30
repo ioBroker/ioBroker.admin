@@ -42,6 +42,7 @@ import {
 } from '@material-ui/core/colors';
 
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
+import IsVisible from "../IsVisible";
 
 
 const styles = theme => ({
@@ -338,23 +339,27 @@ class AdapterRow extends Component {
                 </TableCell>
                 <TableCell>{this.props.license}</TableCell>
                 <TableCell>
-                    <Tooltip title={this.props.t('Add instance')}>
-                        <IconButton
-                            size="small"
-                            className={!rightOs ? classes.hidden : ''}
-                            onClick={rightOs ? this.props.onAddInstance : null}
-                        >
-                            <AddIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title={this.props.t('Readme')}>
-                        <IconButton
-                            size="small"
-                            onClick={this.props.onInfo}
-                        >
-                            <HelpIcon />
-                        </IconButton>
-                    </Tooltip>
+                    <IsVisible value={this.props.allowAdapterInstall}>
+                        <Tooltip title={this.props.t('Add instance')}>
+                            <IconButton
+                                size="small"
+                                className={!rightOs ? classes.hidden : ''}
+                                onClick={rightOs ? this.props.onAddInstance : null}
+                            >
+                                <AddIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </IsVisible>
+                    <IsVisible value={this.props.allowAdapterReadme}>
+                        <Tooltip title={this.props.t('Readme')}>
+                            <IconButton
+                                size="small"
+                                onClick={this.props.onInfo}
+                            >
+                                <HelpIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </IsVisible>
                     {this.props.expertMode &&
                         <Tooltip title={this.props.t('Upload')}>
                             <IconButton
@@ -367,17 +372,19 @@ class AdapterRow extends Component {
                             </IconButton>
                         </Tooltip>
                     }
-                    <Tooltip title={this.props.t('Delete adapter')}>
-                        <IconButton
-                            size="small"
-                            disabled={commandRunning}
-                            className={!installedVersion ? classes.hidden : ''}
-                            onClick={this.props.onDeletion}
-                        >
-                            <DeleteForeverIcon />
-                        </IconButton>
-                    </Tooltip>
-                    {this.props.expertMode &&
+                    <IsVisible value={this.props.allowAdapterDelete}>
+                        <Tooltip title={this.props.t('Delete adapter')}>
+                            <IconButton
+                                size="small"
+                                disabled={commandRunning}
+                                className={!installedVersion ? classes.hidden : ''}
+                                onClick={this.props.onDeletion}
+                            >
+                                <DeleteForeverIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </IsVisible>
+                    {this.props.expertMode && this.props.allowAdapterUpdate &&
                         <Tooltip title={this.props.t('Install a specific version')}>
                             <IconButton
                                 size="small"

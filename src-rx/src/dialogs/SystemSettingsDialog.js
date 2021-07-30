@@ -24,6 +24,7 @@ import CertificatesDialog from './SystemSettingsTabs/CertificatesDialog';
 import SSLDialog from './SystemSettingsTabs/SSLDialog';
 import ACLDialog from './SystemSettingsTabs/ACLDialog';
 import StatisticsDialog from './SystemSettingsTabs/StatisticsDialog';
+import IsVisible from '../components/IsVisible';
 
 // icons
 import CheckIcon from '@material-ui/icons/Check';
@@ -197,6 +198,7 @@ class SystemSettingsDialog extends Component {
                 title: 'System settings',
                 component: MainSettingsDialog,
                 data: 'systemConfig',
+                name: 'tabConfig',
                 dataAux: 'systemRepositories',
                 handle: null
             },
@@ -205,6 +207,7 @@ class SystemSettingsDialog extends Component {
                 title: 'Repositories',
                 component: RepositoriesDialog,
                 data: 'systemRepositories',
+                name: 'tabRepositories',
                 dataAux: 'systemConfig',
                 handle: null
             },
@@ -213,6 +216,7 @@ class SystemSettingsDialog extends Component {
                 title: 'Certificates',
                 component: CertificatesDialog,
                 data: 'systemCertificates',
+                name: 'tabCertificates',
                 dataAux: {},
                 handle: null
             },
@@ -221,6 +225,7 @@ class SystemSettingsDialog extends Component {
                 title: 'Let\'s encrypt SSL',
                 component: SSLDialog,
                 data: 'systemCertificates',
+                name: 'tabLetsEncrypt',
                 dataAux: {},
                 handle: null
             },
@@ -229,6 +234,7 @@ class SystemSettingsDialog extends Component {
                 title: 'Default ACL',
                 component: ACLDialog,
                 data: 'systemConfig',
+                name: 'tabDefaultACL',
                 dataAux: {},
                 handle: null
             },
@@ -238,6 +244,7 @@ class SystemSettingsDialog extends Component {
                 component: StatisticsDialog,
                 data: 'systemConfig',
                 dataAux: 'diagData',
+                name: 'tabStatistics',
                 handle: type => this.onChangeDiagType(type)
             }
         ];
@@ -263,12 +270,13 @@ class SystemSettingsDialog extends Component {
             return <LinearProgress />;
         }
 
-        const tab = this.getTabs().filter(e => e.id === parseInt(this.props.currentTab.id, 10))[0] || this.getTabs()[0];
+        const tab = this.getTabs().filter(tab => tab.id === parseInt(this.props.currentTab.id, 10))[0] || this.getTabs()[0];
 
         const MyComponent = tab.component;
         const { groups, users, histories } = this.state;
         return <div className={this.props.classes.tabPanel}>
             <MyComponent
+                adminGuiConfig={this.props.adminGuiConfig}
                 onChange={(data, dataAux) => this.onChangedTab(tab.data, data, tab.dataAux, dataAux)}
                 data={this.state[tab.data]}
                 dataAux={this.state[tab.dataAux]}
@@ -283,7 +291,7 @@ class SystemSettingsDialog extends Component {
         </div>;
     }
 
-    onTab = (event, newTab) => {
+    onTabChanged = (event, newTab) => {
         Router.doNavigate(null, 'system', newTab);
     }
 
@@ -303,14 +311,16 @@ class SystemSettingsDialog extends Component {
             JSON.stringify(this.state.systemConfig) === this.originalConfig &&
             JSON.stringify(this.state.systemCertificates) === this.originalCertificates);
 
-        const tabs = this.getTabs().map((e, i) => {
-            return <Tab
-                label={this.props.t(e.title)}
-                id={(e.id).toString()}
-                aria-controls={'simple-tabpanel-' + e.id}
-                key={i}
-            />;
-        })
+        const tabs = this.getTabs().map(e =>
+            <IsVisible name={'admin.settings.' + e.name} config={this.props.adminGuiConfig}>
+                <Tab
+                    label={this.props.t(e.title)}
+                    id={e.id.toString()}
+                    aria-controls={'simple-tabpanel-' + e.data}
+                    key={e.name}
+                />
+            </IsVisible>);
+
         const curTab = parseInt(this.props.currentTab.id, 10) || 0;
         return <Dialog
             className={this.props.classes.dialog}
@@ -335,7 +345,7 @@ class SystemSettingsDialog extends Component {
                             className={this.props.classes.tab}
                             indicatorColor="primary"
                             value={curTab}
-                            onChange={this.onTab}
+                            onChange={this.onTabChanged}
                             variant="scrollable"
                             scrollButtons="auto"
                         >
@@ -387,6 +397,7 @@ SystemSettingsDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     currentTab: PropTypes.object,
     width: PropTypes.string,
+    adminGuiConfig: PropTypes.object,
 };
 
 export default withWidth()(withStyles(styles)(SystemSettingsDialog));

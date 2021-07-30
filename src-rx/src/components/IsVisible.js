@@ -19,8 +19,11 @@ function getAttr(obj, attr) {
 }
 
 function IsVisible(props) {
-    const { config, children, name } = props;
+    const { config, children, name, value } = props;
 
+    if (value !== undefined) {
+        return value === false ? null : children;
+    } else
     if (!config) {
         return children;
     } else if (getAttr(config, name) !== false) {
@@ -33,6 +36,7 @@ function IsVisible(props) {
 IsVisible.propTypes = {
     name: PropTypes.string,
     config: PropTypes.object,
+    value: PropTypes.bool,
 };
 
 export default IsVisible;

@@ -243,6 +243,11 @@ class MainSettingsDialog extends Component {
             value = 'info';
         }
 
+        // if disabled by vendor settings
+        if (this.props.adminGuiConfig.admin.settings && this.props.adminGuiConfig.admin.settings[e.id] === false) {
+            return null;
+        }
+
         // If value is not in known values, show text input
         if (e.allowText && value && !e.values.find(elem => elem.id === value)) {
             return <Grid item sm={6} xs={12} key={i}>
@@ -485,6 +490,7 @@ MainSettingsDialog.propTypes = {
     t: PropTypes.func,
     data: PropTypes.object,
     dataAux: PropTypes.object,
+    adminGuiConfig: PropTypes.object,
 };
 
 export default withWidth()(withStyles(styles)(MainSettingsDialog));

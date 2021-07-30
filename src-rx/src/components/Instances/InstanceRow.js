@@ -37,6 +37,7 @@ import InstanceInfo from './InstanceInfo';
 import State from '../State';
 import CustomModal from '../CustomModal';
 import LinksDialog from './LinksDialog';
+import IsVisible from '../IsVisible';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -610,16 +611,8 @@ const arrayTier = [{ value: 1, desc: '1: Logic adapters' }, { value: 2, desc: '2
 
 const InstanceRow = ({
     adminInstance,
-    alive,
-    checkCompact,
-    checkSentry,
     classes,
-    compact,
-    compactGroup,
     maxCompactGroupNumber,
-    connected,
-    connectedToHost,
-    currentSentry,
     deletedInstances,
     expanded,
     expertMode,
@@ -630,21 +623,12 @@ const InstanceRow = ({
     getRestartSchedule,
     getSchedule,
     onExpandRow,
-    host,
     hosts,
     id,
     idx,
-    inputOutput,
     instance,
     key,
-    logLevel,
-    logLevelObject,
-    loglevelIcon,
-    memoryLimitMB,
-    modeSchedule,
-    name,
     openConfig,
-    running,
     setCompact,
     setCompactGroup,
     setHost,
@@ -655,11 +639,10 @@ const InstanceRow = ({
     setSchedule,
     setSentry,
     setTier,
-    supportCompact,
     t,
     themeType,
-    tier,
     deleting,
+    item,
 }) => {
     const [openSelectCompactGroup, setOpenSelectCompactGroup] = useState(false);
     const [openDialogCron, setOpenDialogCron] = useState(false);
@@ -675,12 +658,12 @@ const InstanceRow = ({
     const [showStopAdminDialog, setShowStopAdminDialog] = useState(false);
     const [showLinks, setShowLinks] = useState(false);
 
-    const [logLevelValue, setLogLevelValue] = useState(logLevel);
+    const [logLevelValue, setLogLevelValue] = useState(item.logLevel);
     const [logOnTheFlyValue, setLogOnTheFlyValue] = useState(false);
-    const [compactValue, setCompactValue] = useState(compactGroup || 0);
+    const [compactValue, setCompactValue] = useState(item.compactGroup || 0);
     const [maxCompactGroupNumberValue, setCompactGroupCountValue] = useState(maxCompactGroupNumber);
-    const [tierValue, setTierValue] = useState(tier);
-    const [hostValue, setHostValue] = useState(host);
+    const [tierValue, setTierValue] = useState(item.tier);
+    const [hostValue, setHostValue] = useState(instance.host);
 
     const [visibleEdit, handlerEdit] = useState(false);
     const desktop = window.innerWidth > 1000;
@@ -719,7 +702,7 @@ const InstanceRow = ({
         open={true}
         applyDisabled={openDialogText || openDialogMemoryLimit}
         textInput={openDialogText || openDialogMemoryLimit}
-        defaultValue={openDialogText ? name : openDialogMemoryLimit ? memoryLimitMB : ''}
+        defaultValue={openDialogText ? item.name : openDialogMemoryLimit ? item.memoryLimitMB : ''}
         onApply={value => {
             if (openDialogLogLevel) {
                 setLogLevel(instance, logLevelValue, logOnTheFlyValue);
@@ -746,7 +729,7 @@ const InstanceRow = ({
         }}
         onClose={() => {
             if (openDialogLogLevel) {
-                setLogLevelValue(logLevel);
+                setLogLevelValue(item.logLevel);
                 setLogOnTheFlyValue(false);
                 setOpenDialogLogLevel(false);
             } else if (openDialogText) {
@@ -756,14 +739,14 @@ const InstanceRow = ({
             } else if (openDialogMemoryLimit) {
                 setOpenDialogMemoryLimit(false);
             } else if (openDialogCompact) {
-                setCompactValue(compactGroup);
+                setCompactValue(item.compactGroup);
                 setCompactGroupCountValue(maxCompactGroupNumber);
                 setOpenDialogCompact(false);
             } else if (openDialogTier) {
-                setTierValue(tier);
+                setTierValue(item.tier);
                 setOpenDialogTier(false);
             } else if (openDialogHost) {
-                setHostValue(host);
+                setHostValue(instance.host);
                 setOpenDialogHost(false);
             }
         }}>
@@ -865,10 +848,10 @@ const InstanceRow = ({
     /> : null;
 
     const stateTooltip = [
-        instance.mode === 'daemon' ? <State key={1} state={connectedToHost} >{t('Connected to host')}</State> : '',
-        instance.mode === 'daemon' ? <State key={2} state={alive} >{t('Heartbeat')}</State> : '',
-        connected !== null ? <State key={3} state={!!connected}>
-            {typeof connected === 'string' ? t('Connected:') + ' ' + (connected || '-') : t('Connected to device or service')}
+        instance.mode === 'daemon' ? <State key={1} state={item.connectedToHost} >{t('Connected to host')}</State> : '',
+        instance.mode === 'daemon' ? <State key={2} state={item.alive} >{t('Heartbeat')}</State> : '',
+        item.connected !== null ? <State key={3} state={!!item.connected}>
+            {typeof item.connected === 'string' ? t('Connected:') + ' ' + (item.connected || '-') : t('Connected to device or service')}
         </State> : ''
     ];
 
@@ -899,10 +882,10 @@ const InstanceRow = ({
                 expandIcon: desktop ? classes.desktopButton : undefined,
             }}
             className={clsx(
-                (!running || instance.mode !== 'daemon') && (idx % 2 === 0 ? classes.instanceStateNotEnabled1 : classes.instanceStateNotEnabled2),
-                running && instance.mode === 'daemon' && (!connectedToHost || !alive) && (idx % 2 === 0 ? classes.instanceStateNotAlive1 : classes.instanceStateNotAlive2),
-                running && connectedToHost && alive && connected === false && (idx % 2 === 0 ? classes.instanceStateAliveNotConnected1 : classes.instanceStateAliveNotConnected2),
-                running && connectedToHost && alive && connected !== false && (idx % 2 === 0 ? classes.instanceStateAliveAndConnected1 : classes.instanceStateAliveAndConnected1),
+                (!item.running || instance.mode !== 'daemon') && (idx % 2 === 0 ? classes.instanceStateNotEnabled1 : classes.instanceStateNotEnabled2),
+                item.running && instance.mode === 'daemon' && (!item.connectedToHost || !item.alive) && (idx % 2 === 0 ? classes.instanceStateNotAlive1 : classes.instanceStateNotAlive2),
+                item.running && item.connectedToHost && item.alive && item.connected === false && (idx % 2 === 0 ? classes.instanceStateAliveNotConnected1 : classes.instanceStateAliveNotConnected2),
+                item.running && item.connectedToHost && item.alive && item.connected !== false && (idx % 2 === 0 ? classes.instanceStateAliveAndConnected1 : classes.instanceStateAliveAndConnected1),
                 desktop && classes.desktopRow
             )}
             expandIcon={<ExpandMoreIcon/>}>
@@ -939,7 +922,7 @@ const InstanceRow = ({
                                 classes.smallAvatar,
                                 classes.statusIndicator,
                                 instance.mode === 'daemon' || instance.mode === 'schedule' ? classes[status] : classes.transparent,
-                                connectedToHost && alive && connected === false && classes.orangeDevice
+                                item.connectedToHost && item.alive && item.connected === false && classes.orangeDevice
                             )}>
                             {getModeIcon(instance.mode, status, classes['statusIcon_' + status])}
                         </div>
@@ -959,36 +942,38 @@ const InstanceRow = ({
                             onClick={event => {
                                 event.stopPropagation();
                                 event.preventDefault();
-                                if (running && instance.id === adminInstance) {
+                                if (item.running && instance.id === adminInstance) {
                                     setShowStopAdminDialog('system.adapter.' + instance.id);
                                 } else {
-                                    extendObject('system.adapter.' + instance.id, { common: { enabled: !running } });
+                                    extendObject('system.adapter.' + instance.id, { common: { enabled: !item.running } });
                                 }
                             }}
                             onFocus={event => event.stopPropagation()}
                             className={clsx(classes.button, instance.canStart ?
-                                (running ? classes.enabled : classes.disabled) : classes.hide)}
+                                (item.running ? classes.enabled : classes.disabled) : classes.hide)}
                         >
-                            {running ? <PauseIcon /> : <PlayArrowIcon />}
+                            {item.running ? <PauseIcon /> : <PlayArrowIcon />}
                         </IconButton>
                     </div>
                 </Tooltip>
-                <Hidden xsDown>
-                    <div>
-                        <Tooltip title={instance.config ? t('Settings') : ''}>
-                            <div>
-                                <IconButton
-                                    disabled={!instance.config}
-                                    size="small"
-                                    className={clsx(classes.button, !instance.config && classes.hiddenOpacity)}
-                                    onClick={() => openConfig(id)}
-                                >
-                                    <BuildIcon />
-                                </IconButton>
-                            </div>
-                        </Tooltip>
-                    </div>
-                </Hidden>
+                <IsVisible config={item} name="allowInstanceSettings">
+                    <Hidden xsDown>
+                        <div>
+                            <Tooltip title={instance.config ? t('Settings') : ''}>
+                                <div>
+                                    <IconButton
+                                        disabled={!instance.config}
+                                        size="small"
+                                        className={clsx(classes.button, !instance.config && classes.hiddenOpacity)}
+                                        onClick={() => openConfig(id)}
+                                    >
+                                        <BuildIcon />
+                                    </IconButton>
+                                </div>
+                            </Tooltip>
+                        </div>
+                    </Hidden>
+                </IsVisible>
                 <Tooltip title={t('Restart')}>
                     <div>
                         <IconButton
@@ -999,32 +984,34 @@ const InstanceRow = ({
                             }}
                             onFocus={event => event.stopPropagation()}
                             className={clsx(classes.button, !instance.canStart && classes.hide)}
-                            disabled={!running}
+                            disabled={!item.running}
                         >
                             <RefreshIcon />
                         </IconButton>
                     </div>
                 </Tooltip>
-                <Tooltip title={t('Instance link %s', instance.id)}>
-                    <div>
-                        <IconButton
-                            size="small"
-                            className={clsx(classes.button, (!instance.links || !instance.links[0]) && classes.hide)}
-                            disabled={!running}
-                            onClick={event => {
-                                event.stopPropagation();
-                                if (instance.links.length === 1) {
-                                    window.open(instance.links[0].link, instance.id);
-                                } else {
-                                    setShowLinks(true);
-                                }
-                            }}
-                            onFocus={event => event.stopPropagation()}
-                        >
-                            <InputIcon />
-                        </IconButton>
-                    </div>
-                </Tooltip>
+                <IsVisible config={item} name="allowInstanceLink">
+                    <Tooltip title={t('Instance link %s', instance.id)}>
+                        <div>
+                            <IconButton
+                                size="small"
+                                className={clsx(classes.button, (!instance.links || !instance.links[0]) && classes.hide)}
+                                disabled={!item.running}
+                                onClick={event => {
+                                    event.stopPropagation();
+                                    if (instance.links.length === 1) {
+                                        window.open(instance.links[0].link, instance.id);
+                                    } else {
+                                        setShowLinks(true);
+                                    }
+                                }}
+                                onFocus={event => event.stopPropagation()}
+                            >
+                                <InputIcon />
+                            </IconButton>
+                        </div>
+                    </Tooltip>
+                </IsVisible>
 
                 <Typography className={clsx(classes.secondaryHeading, classes.hidden800)} component="div">
                     <div
@@ -1032,7 +1019,7 @@ const InstanceRow = ({
                         onMouseEnter={() => handlerEdit(true)}
                         onMouseLeave={() => handlerEdit(false)}
                         className={classes.secondaryHeadingDiv}>
-                        <div className={classes.secondaryHeadingDivDiv}>{name}</div>
+                        <div className={classes.secondaryHeadingDivDiv}>{item.name}</div>
                         <Tooltip title={t('Edit')}>
                             <IconButton
                                 size="small"
@@ -1048,72 +1035,72 @@ const InstanceRow = ({
                     </div>
                 </Typography>
                 {expertMode &&
-                    <div className={clsx(classes.hidden1250, (instance.mode !== 'daemon' || !running) && classes.invisible)} >
+                    <div className={clsx(classes.hidden1250, (instance.mode !== 'daemon' || !item.running) && classes.invisible)} >
                         <InstanceInfo
                             icon={<ImportExportIcon />}
                             tooltip={t('events')}
                         >
                             <div className={classes.displayFlex}>
                                 <Tooltip title={t('input events')}>
-                                    <div className={classes.marginRight}>⇥{inputOutput.stateInput}</div>
+                                    <div className={classes.marginRight}>⇥{item.inputOutput.stateInput}</div>
                                 </Tooltip>
                                     /
                                 <Tooltip title={t('output events')}>
-                                    <div className={classes.marginLeft}>↦{inputOutput.stateOutput}</div>
+                                    <div className={classes.marginLeft}>↦{item.inputOutput.stateOutput}</div>
                                 </Tooltip>
                             </div>
                         </InstanceInfo>
                     </div>
                 }
                 {expertMode &&
-                    <Tooltip title={logLevelObject === logLevel ? `${t('loglevel')} ${logLevel}` : `${t('saved:')} ${logLevelObject} / ${t('actual:')} ${logLevel}`}>
-                        <Avatar className={clsx(classes.smallAvatar, classes.hidden380, classes[logLevel])}>
-                            {loglevelIcon}
+                    <Tooltip title={item.logLevelObject === item.logLevel ? `${t('loglevel')} ${item.logLevel}` : `${t('saved:')} ${item.logLevelObject} / ${t('actual:')} ${item.logLevel}`}>
+                        <Avatar className={clsx(classes.smallAvatar, classes.hidden380, classes[item.logLevel])}>
+                            {item.loglevelIcon}
                         </Avatar>
                     </Tooltip>
                 }
-                <Grid item className={clsx(classes.hidden1050, classes.width150, (instance.mode !== 'daemon' || !running) && classes.invisible)}>
+                <Grid item className={clsx(classes.hidden1050, classes.width150, (instance.mode !== 'daemon' || !item.running) && classes.invisible)}>
                     <InstanceInfo
                         icon={<MemoryIcon />}
                         tooltip={t('RAM usage')}
                     >
-                        {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
+                        {(instance.mode === 'daemon' && item.running ? getMemory(id) : '-.--') + ' MB'}
                     </InstanceInfo>
                 </Grid>
-                <Grid item className={clsx(classes.hidden1230)}>
-                    {<TextWithIcon value={host} list={hosts} removePrefix="system.host." themeType={themeType} />}
-                </Grid>
+                {hosts.length > 1 || (hosts.length && hosts[0].common?.name !== instance.host) ? <Grid item className={clsx(classes.hidden1230)}>
+                    {<TextWithIcon value={instance.host} list={hosts} removePrefix="system.host." themeType={themeType} />}
+                </Grid> : null}
             </Grid>
             <div className={classes.hidden570}>
                 <Tooltip title="sentry">
                     <IconButton
                         size="small"
-                        className={clsx(classes.button, expertMode && checkSentry ? null : classes.hide)}
+                        className={clsx(classes.button, expertMode && item.checkSentry ? null : classes.hide)}
                         onClick={e => {
                             e.stopPropagation();
                             setSentry(instance);
                         }}
                     >
                         <CardMedia
-                            className={clsx(classes.sentry, !currentSentry && classes.contrast0)}
+                            className={clsx(classes.sentry, !item.sentry && classes.contrast0)}
                             component="img"
                             image={sentry}
                         />
                     </IconButton>
                 </Tooltip>
             </div>
-            {supportCompact ?
+            {item.supportCompact ?
                 <div className={classes.hidden570}>
                     <Tooltip title={t('compact groups')}>
                         <IconButton
                             size="small"
-                            className={clsx(classes.button, expertMode && checkCompact ? null : classes.hide)}
+                            className={clsx(classes.button, expertMode && item.checkCompact ? null : classes.hide)}
                             onClick={e => {
                                 e.stopPropagation();
                                 setCompact(instance);
                             }}
                         >
-                            <ViewCompactIcon color={!!compact ? 'primary' : 'inherit'} />
+                            <ViewCompactIcon color={!!item.compact ? 'primary' : 'inherit'} />
                         </IconButton>
                     </Tooltip>
                 </div> : null}
@@ -1123,23 +1110,23 @@ const InstanceRow = ({
                 <Grid item container direction="row" xs={10}>
                     <Grid item container direction="column" xs={12} sm={6} md={4}>
                         <span className={classes.instanceName}>{instance.id}</span>
-                        {running && instance.mode === 'daemon' && <State state={connectedToHost} >{t('Connected to host')}</State>}
-                        {running && instance.mode === 'daemon' && <State state={alive} >{t('Heartbeat')}</State>}
-                        {running && connected !== null &&
-                            <State state={!!connected}>
-                                {typeof connected === 'string' ? t('Connected:') + ' ' + (connected || '-') : t('Connected to device or service')}
+                        {item.running && instance.mode === 'daemon' && <State state={item.connectedToHost} >{t('Connected to host')}</State>}
+                        {item.running && instance.mode === 'daemon' && <State state={item.alive} >{t('Heartbeat')}</State>}
+                        {item.running && item.connected !== null &&
+                            <State state={!!item.connected}>
+                                {typeof item.connected === 'string' ? t('Connected:') + ' ' + (item.connected || '-') : t('Connected to device or service')}
                             </State>
                         }
                     </Grid>
                     <Grid container item direction="column" xs={12} sm={6} md={4}>
                         <InstanceInfo tooltip={t('Installed')}>
-                            v {instance.version}
+                            v{instance.version}
                         </InstanceInfo>
                     </Grid>
                     <Grid container item direction="column" xs={12} sm={6} md={4} className={classes.paddingRight200}>
                         {expertMode && <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
-                            <InstanceInfo icon={loglevelIcon} tooltip={logLevelObject === logLevel ? `${t('loglevel')} ${logLevel}` : `${t('saved:')} ${logLevelObject} / ${t('actual:')} ${logLevel}`}>
-                                {logLevelObject === logLevel ? logLevel : `${logLevelObject} / ${logLevel}`}
+                            <InstanceInfo icon={item.loglevelIcon} tooltip={item.logLevelObject === item.logLevel ? `${t('loglevel')} ${item.logLevel}` : `${t('saved:')} ${item.logLevelObject} / ${t('actual:')} ${item.logLevel}`}>
+                                {item.logLevelObject === item.logLevel ? item.logLevel : `${item.logLevelObject} / ${item.logLevel}`}
                             </InstanceInfo>
                             <Tooltip title={t('Edit')}>
                                 <IconButton
@@ -1154,16 +1141,16 @@ const InstanceRow = ({
                                 </IconButton>
                             </Tooltip>
                         </div>}
-                        {running && expertMode &&
+                        {item.running && expertMode &&
                             <div className={classes.visible1250}>
                                 <InstanceInfo icon={<ImportExportIcon />} tooltip={t('events')}>
                                     <div className={classes.displayFlex}>
                                         <Tooltip title={t('input events')}>
-                                            <div className={classes.marginRight}>⇥{inputOutput.stateInput}</div>
+                                            <div className={classes.marginRight}>⇥{item.inputOutput.stateInput}</div>
                                         </Tooltip>
                                     /
                                         <Tooltip title={t('output events')}>
-                                            <div className={classes.marginLeft}>↦{inputOutput.stateOutput}</div>
+                                            <div className={classes.marginLeft}>↦{item.inputOutput.stateOutput}</div>
                                         </Tooltip>
                                     </div>
                                 </InstanceInfo>
@@ -1171,10 +1158,10 @@ const InstanceRow = ({
                         }
                         <Grid item className={classes.visible1050}>
                             <InstanceInfo icon={<MemoryIcon />} tooltip={t('RAM usage')}>
-                                {(instance.mode === 'daemon' && running ? getMemory(id) : '-.--') + ' MB'}
+                                {(instance.mode === 'daemon' && item.running ? getMemory(id) : '-.--') + ' MB'}
                             </InstanceInfo>
                         </Grid>
-                        {modeSchedule && <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
+                        {item.modeSchedule && <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={<ScheduleIcon />} tooltip={t('schedule_group')}>
                                 {getSchedule(id) || '-'}
                             </InstanceInfo>
@@ -1219,7 +1206,7 @@ const InstanceRow = ({
                                     icon={<MemoryIcon className={classes.ram} />}
                                     tooltip={t('RAM limit')}
                                 >
-                                    {(memoryLimitMB ? memoryLimitMB : '-.--') + ' MB'}
+                                    {(item.memoryLimitMB ? item.memoryLimitMB : '-.--') + ' MB'}
                                 </InstanceInfo>
                                 <Tooltip title={t('Edit')}>
                                     <IconButton
@@ -1235,10 +1222,10 @@ const InstanceRow = ({
                                 </Tooltip>
                             </div>
                         }
-                        {expertMode && checkCompact && compact && supportCompact &&
+                        {expertMode && item.checkCompact && item.compact && item.supportCompact &&
                             <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                                 <InstanceInfo icon={<ViewCompactIcon className={classes.marginRight} color="inherit" />} tooltip={t('compact groups')}>
-                                    {compactGroup === 1 ? 'default' : compactGroup === '0' ? "controller" : !compactGroup ? 'default' : compactGroup || 'default'}
+                                    {item.compactGroup === 1 ? 'default' : item.compactGroup === '0' ? "controller" : !item.compactGroup ? 'default' : item.compactGroup || 'default'}
                                 </InstanceInfo>
                                 <Tooltip title={t('Edit')}>
                                     <IconButton
@@ -1256,7 +1243,7 @@ const InstanceRow = ({
                         }
                         {expertMode && <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={<LowPriorityIcon className={classes.marginRight} color="inherit" />} tooltip={t('Start order (tier)')}>
-                                {instance.adapter === 'admin' ? t('Always first') : (arrayTier.find(el => el.value === tier)?.desc || arrayTier[2])}
+                                {instance.adapter === 'admin' ? t('Always first') : (arrayTier.find(el => el.value === item.tier)?.desc || arrayTier[2])}
                             </InstanceInfo>
                             {instance.adapter !== 'admin' ? <Tooltip title={t('Edit start order (tier)')}>
                                 <IconButton
@@ -1273,7 +1260,7 @@ const InstanceRow = ({
                         </div>}
                         <div className={clsx(classes.maxWidth300, classes.visible800)}>
                             <InstanceInfo >
-                                {name}
+                                {item.name}
                             </InstanceInfo>
                             <Tooltip title={t('Edit')}>
                                 <IconButton
@@ -1288,9 +1275,9 @@ const InstanceRow = ({
                                 </IconButton>
                             </Tooltip>
                         </div>
-                        {hosts.length > 1 || (hosts.length && hosts[0].common?.hostname !== host) ? <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
+                        {hosts.length > 1 || (hosts.length && hosts[0].common?.name !== instance.host) ? <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={<HostIcon className={classes.marginRight} />} tooltip={t('Host for this instance')}>
-                                {<TextWithIcon value={host} list={hosts} removePrefix="system.host." themeType={themeType} />}
+                                {<TextWithIcon value={instance.host} list={hosts} removePrefix="system.host." themeType={themeType} />}
                             </InstanceInfo>
                             <Tooltip title={t('Edit')}>
                                 <IconButton
@@ -1308,59 +1295,63 @@ const InstanceRow = ({
                     </Grid>
                 </Grid>
                 <div className={classes.displayFlex}>
-                    <Hidden smUp>
-                        <Tooltip title={t('Settings')}>
+                    <IsVisible config={item} name="allowInstanceDelete">
+                        <Hidden smUp>
+                            <Tooltip title={t('Settings')}>
+                                <IconButton
+                                    size="small"
+                                    className={classes.button}
+                                    onClick={() => openConfig(id)}
+                                >
+                                    <BuildIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </Hidden>
+                    </IsVisible>
+                    <IsVisible config={item} name="allowInstanceDelete">
+                        <Tooltip title={t('Delete')}>
                             <IconButton
                                 size="small"
                                 className={classes.button}
-                                onClick={() => openConfig(id)}
+                                onClick={(event) => {
+                                    setOpenDialogDelete(true);
+                                    event.stopPropagation();
+                                }}
                             >
-                                <BuildIcon />
+                                <DeleteIcon />
                             </IconButton>
                         </Tooltip>
-                    </Hidden>
-                    <Tooltip title={t('Delete')}>
-                        <IconButton
-                            size="small"
-                            className={classes.button}
-                            onClick={(event) => {
-                                setOpenDialogDelete(true);
-                                event.stopPropagation();
-                            }}
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </Tooltip>
+                    </IsVisible>
                     <div className={classes.visible570}>
                         <Tooltip title="sentry">
                             <IconButton
                                 size="small"
-                                className={clsx(classes.button, expertMode && checkSentry ? null : classes.hide)}
+                                className={clsx(classes.button, expertMode && item.checkSentry ? null : classes.hide)}
                                 onClick={e => {
                                     e.stopPropagation();
                                     setSentry(instance);
                                 }}
                             >
                                 <CardMedia
-                                    className={clsx(classes.sentry, !currentSentry && classes.contrast0)}
+                                    className={clsx(classes.sentry, !item.sentry && classes.contrast0)}
                                     component="img"
                                     image={sentry}
                                 />
                             </IconButton>
                         </Tooltip>
                     </div>
-                    {supportCompact ?
+                    {item.supportCompact ?
                         <div className={classes.visible570}>
                             <Tooltip title={t('compact groups')}>
                                 <IconButton
                                     size="small"
-                                    className={clsx(classes.button, expertMode && checkCompact ? null : classes.hide)}
+                                    className={clsx(classes.button, expertMode && item.checkCompact ? null : classes.hide)}
                                     onClick={e => {
                                         e.stopPropagation();
                                         setCompact(instance);
                                     }}
                                 >
-                                    <ViewCompactIcon color={!!compact ? 'primary' : 'inherit'} />
+                                    <ViewCompactIcon color={!!item.compact ? 'primary' : 'inherit'} />
                                 </IconButton>
                             </Tooltip>
                         </div> : null}
@@ -1376,10 +1367,10 @@ InstanceRow.propTypes = {
     adminInstance: PropTypes.string,
     hosts: PropTypes.array,
     setHost: PropTypes.func,
-    host: PropTypes.string,
     instanceId: PropTypes.string,
     deleting: PropTypes.bool,
     onExpandRow: PropTypes.func,
+    item: PropTypes.object,
 };
 
 

@@ -22,6 +22,7 @@ import RemoveIcon from '@material-ui/icons/Remove';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import { amber } from '@material-ui/core/colors';
 import sentryIcon from '../../assets/sentry.svg';
+import IsVisible from "../IsVisible";
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -288,25 +289,29 @@ const AdapterTile = ({
                 </Typography>
             </CardContent>
             <div className={classes.footerBlock}>
-                <Tooltip title={t('Add instance')}>
-                    <IconButton
-                        size="small"
-                        disabled={commandRunning}
-                        className={!rightOs ? classes.hidden : ''}
-                        onClick={rightOs ? onAddInstance : null}
-                    >
-                        <AddIcon />
-                    </IconButton>
-                </Tooltip>
-                <div className={classes.cardContentFlex}>
-                    <Tooltip title={t('Readme')}>
+                <IsVisible value={this.props.allowAdapterInstall}>
+                    <Tooltip title={t('Add instance')}>
                         <IconButton
                             size="small"
-                            onClick={onInfo}
+                            disabled={commandRunning}
+                            className={!rightOs ? classes.hidden : ''}
+                            onClick={rightOs ? onAddInstance : null}
                         >
-                            <HelpIcon />
+                            <AddIcon />
                         </IconButton>
                     </Tooltip>
+                </IsVisible>
+                <div className={classes.cardContentFlex}>
+                    <IsVisible value={this.props.allowAdapterReadme}>
+                        <Tooltip title={t('Readme')}>
+                            <IconButton
+                                size="small"
+                                onClick={onInfo}
+                            >
+                                <HelpIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </IsVisible>
                     {expertMode &&
                         <Tooltip title={t('Upload')}>
                             <IconButton
@@ -319,17 +324,19 @@ const AdapterTile = ({
                             </IconButton>
                         </Tooltip>
                     }
-                    <Tooltip title={t('Delete adapter')}>
-                        <IconButton
-                            size="small"
-                            disabled={commandRunning}
-                            className={!installedVersion ? classes.hidden : ''}
-                            onClick={onDeletion}
-                        >
-                            <DeleteForeverIcon />
-                        </IconButton>
-                    </Tooltip>
-                    {expertMode &&
+                    <IsVisible value={this.props.allowAdapterDelete}>
+                        <Tooltip title={t('Delete adapter')}>
+                            <IconButton
+                                size="small"
+                                disabled={commandRunning}
+                                className={!installedVersion ? classes.hidden : ''}
+                                onClick={onDeletion}
+                            >
+                                <DeleteForeverIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </IsVisible>
+                    {expertMode && this.props.allowAdapterUpdate &&
                         <Tooltip title={t('Install a specific version')}>
                             <IconButton
                                 disabled={commandRunning}

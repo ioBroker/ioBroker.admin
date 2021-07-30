@@ -283,6 +283,13 @@ class LogsWorker {
 
         this.promise = this.socket.getLogs(this.currentHost, 200)
             .then(lines => {
+                if (lines === 'permissionError') {
+                    this.logs = [];
+
+                    window.alert('Cannot get logs: no permission');
+
+                    return {logs: this.logs, logSize: 0};
+                }
                 const logSize = lines ? lines.pop() : null;
 
                 this.logs = [];
