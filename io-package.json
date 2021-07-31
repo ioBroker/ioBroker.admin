@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.1.18",
+        "version": "5.1.19",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.19": {
+                "en": "Corrected some GUI errors",
+                "de": "Einige GUI-Fehler korrigiert",
+                "ru": "Исправлены некоторые ошибки графического интерфейса.",
+                "pt": "Corrigidos alguns erros de GUI",
+                "nl": "Enkele GUI-fouten gecorrigeerd",
+                "fr": "Correction de quelques erreurs d'interface graphique",
+                "it": "Corretti alcuni errori della GUI",
+                "es": "Se corrigieron algunos errores de GUI",
+                "pl": "Poprawiono niektóre błędy GUI",
+                "zh-cn": "更正了一些 GUI 错误"
+            },
             "5.1.18": {
                 "en": "Corrected some GUI errors: theme switching, system settings",
                 "de": "Einige GUI-Fehler korrigiert: Themenwechsel, Systemeinstellungen",
@@ -245,18 +257,6 @@
                 "es": "Admin5: actualización fija de objetos\nAdmin5: React UI está habilitado de forma predeterminada",
                 "pl": "Admin5: Naprawiono aktualizację obiektów\nAdmin5: React UI jest domyślnie włączony",
                 "zh-cn": "Admin5：修复了对象的更新\nAdmin5：默认情况下，React UI已启用"
-            },
-            "5.0.32": {
-                "en": "Admin5: Support of ANSI codes in log",
-                "de": "Admin5: Unterstützung von ANSI-Codes im Protokoll",
-                "ru": "Admin5: Поддержка кодов ANSI в журнале",
-                "pt": "Admin5: Suporte de códigos ANSI no log",
-                "nl": "Admin5: Ondersteuning van ANSI-codes in logboek",
-                "fr": "Admin5: Prise en charge des codes ANSI dans le journal",
-                "it": "Admin5: supporto dei codici ANSI nel registro",
-                "es": "Admin5: Soporte de códigos ANSI en el registro",
-                "pl": "Admin5: Obsługa kodów ANSI w dzienniku",
-                "zh-cn": "Admin5：支持日志中的ANSI代码"
             }
         },
         "desc": {
