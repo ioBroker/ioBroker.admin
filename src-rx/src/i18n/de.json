@@ -1434,5 +1434,8 @@
   "Back": "Zurück",
   "Last scan on %s": "Letzter Scan am %s",
   "Use following methods:": "Verwenden Sie folgende Methoden:",
-  "press_discover": "\"Entdecken\" drücken , um die Geräte in Ihrem Netzwerk zu finden (Vorher Netzwerk-Firewalls/Verkehrsanalyse-Systeme ausschalten !)\noder \"Weiter\", um Geräte aus dem vorherigen Erkennungsprozess zu verwenden"
+  "press_discover": "\"Entdecken\" drücken , um die Geräte in Ihrem Netzwerk zu finden (Vorher Netzwerk-Firewalls/Verkehrsanalyse-Systeme ausschalten !)\noder \"Weiter\", um Geräte aus dem vorherigen Erkennungsprozess zu verwenden",
+  "vote": "Stimme",
+  "votes2": "Stimmen",
+  "vote21": "Stimmen"
 }

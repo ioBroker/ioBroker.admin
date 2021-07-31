@@ -1434,5 +1434,8 @@
   "Back": "Atrás",
   "Last scan on %s": "Último escaneo el %s",
   "Use following methods:": "Utilice los siguientes métodos:",
-  "press_discover": "Presione \"Descubrir\" para encontrar dispositivos en su red (¡apague los firewalls de red / analice los sistemas de tráfico antes!)\no \"Siguiente\" para usar dispositivos del proceso de descubrimiento anterior"
+  "press_discover": "Presione \"Descubrir\" para encontrar dispositivos en su red (¡apague los firewalls de red / analice los sistemas de tráfico antes!)\no \"Siguiente\" para usar dispositivos del proceso de descubrimiento anterior",
+  "vote": "voto",
+  "votes2": "votos",
+  "vote21": "votos"
 }

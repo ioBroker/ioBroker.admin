@@ -1434,5 +1434,8 @@
   "Back": "Di ritorno",
   "Last scan on %s": "Ultima scansione il %s",
   "Use following methods:": "Utilizzare i seguenti metodi:",
-  "press_discover": "Premi \"Scopri\" per trovare i dispositivi nella tua rete (Disattiva prima i firewall di rete/i sistemi di analisi del traffico!)\no \"Avanti\" per utilizzare i dispositivi del precedente processo di rilevamento"
+  "press_discover": "Premi \"Scopri\" per trovare i dispositivi nella tua rete (Disattiva prima i firewall di rete/i sistemi di analisi del traffico!)\no \"Avanti\" per utilizzare i dispositivi del precedente processo di rilevamento",
+  "vote": "voto",
+  "votes2": "voti",
+  "vote21": "voti"
 }

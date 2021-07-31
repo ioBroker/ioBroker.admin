@@ -660,6 +660,12 @@ class Logs extends Component {
         const rows = [];
         const { classes } = this.props;
         const filterMessage = this.state.message.toLowerCase();
+        let sourceFilter = this.state.source;
+        const sources = Object.keys(this.state.sources).sort();
+        sources.unshift('1');
+        if (!sources.includes(sourceFilter)) {
+            sourceFilter = '1';
+        }
 
         let previousKey = 0;
         for (let i = this.state.pause > 0 ? this.state.pause - 1 : this.state.logs.length - 1; i >= 0; i--) {
@@ -684,7 +690,7 @@ class Logs extends Component {
                 }
             }
 
-            const isFrom = this.state.source !== '1' && this.state.source !== row.from;
+            const isFrom = sourceFilter !== '1' && sourceFilter !== row.from;
 
             let isHidden = isFrom || this.severities[severity] < this.severities[this.state.severity];
             if (!isHidden && filterMessage) {
@@ -788,6 +794,9 @@ class Logs extends Component {
                         this.setState({logFiles});
                     }), 100);
         }
+
+        const sources = Object.keys(this.state.sources).sort();
+        sources.unshift('1');
 
         const pauseChild = !this.state.pause ? <PauseIcon /> :
             <Typography className={classes.pauseCount}>{this.state.logs.length - this.state.pause}</Typography>;
@@ -916,7 +925,7 @@ class Logs extends Component {
                                         <InputLabel id="source-label" />
                                         <Select
                                             labelId="source-label"
-                                            value={this.state.source}
+                                            value={sources.includes(this.state.source) ? this.state.source : '1' }
                                             onChange={event => this.handleSourceChange(event)}
                                         >
                                             {this.getSources()}

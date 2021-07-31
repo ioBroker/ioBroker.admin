@@ -478,6 +478,25 @@ class Adapters extends Component {
                 this.analyseInstalled(adapters, installed, repository));
     }
 
+    getWordVotes(votes) {
+        if (votes === 1) {
+            return this.t('vote');
+        } else if (votes >= 2 && votes <= 4) {
+            return this.t('votes2');
+        } else if (votes >= 5 && votes <= 20) {
+            return this.t('votes');
+        } else {
+            const v = votes % 10;
+            if (v === 1) {
+                return this.t('vote21');
+            } else if (v >= 2 && v <= 4) {
+                return this.t('votes2');
+            } else {
+                return this.t('votes');
+            }
+        }
+    }
+
     calculateInfo(instances, ratings, hostData) {
         hostData  = hostData  || this.state.hostData;
         ratings   = ratings   || this.state.ratings;
@@ -533,9 +552,9 @@ class Adapters extends Component {
 
             if (adapter.rating && adapter.rating.rating) {
                 adapter.rating.title = [
-                    `${this.t('Total rating:')} ${adapter.rating.rating.r} (${adapter.rating.rating.c} ${this.t('votes')})`,
+                    `${this.t('Total rating:')} ${adapter.rating.rating.r} (${adapter.rating.rating.c} ${this.getWordVotes(adapter.rating.rating.c)})`,
                     (_installed && _installed.version && adapter.rating[_installed.version]) ?
-                        `${this.t('Rating for')} v${_installed.version}: ${adapter.rating[_installed.version].r} (${adapter.rating[_installed.version].c} ${this.t('votes')})`
+                        `${this.t('Rating for')} v${_installed.version}: ${adapter.rating[_installed.version].r} (${adapter.rating[_installed.version].c} ${this.getWordVotes(adapter.rating.rating.c)})`
                         : ''
                 ].filter(i => i).join('\n');
             } else {

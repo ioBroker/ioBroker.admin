@@ -1434,5 +1434,8 @@
   "Back": "Rug",
   "Last scan on %s": "Laatste scan op %s",
   "Use following methods:": "Gebruik de volgende methoden:",
-  "press_discover": "Druk op \"Ontdekken\" om apparaten in uw netwerk te vinden (schakel netwerkfirewalls/verkeersanalysesystemen eerder uit!)\nof \"Volgende\" om apparaten uit het vorige detectieproces te gebruiken"
+  "press_discover": "Druk op \"Ontdekken\" om apparaten in uw netwerk te vinden (schakel netwerkfirewalls/verkeersanalysesystemen eerder uit!)\nof \"Volgende\" om apparaten uit het vorige detectieproces te gebruiken",
+  "vote": "stem",
+  "votes2": "stemmen",
+  "vote21": "stemmen"
 }
