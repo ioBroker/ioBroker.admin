@@ -27,34 +27,32 @@ const CustomPopper = ({ editList, onClick }) => {
         setOpen((prev) => placement !== newPlacement || !prev);
         setPlacement(newPlacement);
     };
-    return (
-        <>
-            <IconButton
-                style={editList ? { color: 'red' } : null}
-                onClick={(el) => {
-                    onClick();
-                    if (!editList) {
-                        handleClick('right')(el);
-                        timer = setTimeout(() => setOpen(false), 3000);
-                    } else {
-                        setOpen(false);
-                        clearTimeout(timer);
-                    }
-                }}
-                title={I18n.t('show/hide item')}>
-                <EditIcon />
-            </IconButton>
-            <Popper style={{ zIndex: 2222 }} open={open} anchorEl={anchorEl} placement={placement} transition>
-                {({ TransitionProps }) => (
-                    <Fade {...TransitionProps} timeout={350}>
-                        <Paper>
-                            <Typography className={classes.typography}>{I18n.t('You can drag and drop list items for reorder')}</Typography>
-                        </Paper>
-                    </Fade>
-                )}
-            </Popper>
-        </>
-    );
+    return <>
+        <IconButton
+            style={editList ? { color: 'red' } : null}
+            onClick={(el) => {
+                onClick();
+                if (!editList) {
+                    handleClick('right')(el);
+                    timer = setTimeout(() => setOpen(false), 3000);
+                } else {
+                    setOpen(false);
+                    clearTimeout(timer);
+                }
+            }}
+            title={I18n.t('show/hide item')}>
+            <EditIcon />
+        </IconButton>
+        <Popper style={{ zIndex: 2222 }} open={open} anchorEl={anchorEl} placement={placement} transition>
+            {({ TransitionProps }) => (
+                <Fade {...TransitionProps} timeout={350}>
+                    <Paper>
+                        <Typography className={classes.typography}>{I18n.t('You can drag and drop list items for reorder')}</Typography>
+                    </Paper>
+                </Fade>
+            )}
+        </Popper>
+    </>;
 }
 
 export default CustomPopper;

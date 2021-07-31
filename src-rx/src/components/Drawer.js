@@ -51,7 +51,9 @@ const styles = theme => ({
         transition: theme.transitions.create('width', {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
-        })
+        }),
+        display: 'flex',
+        flexDirection: 'column',
     },
     rootFullWidth: {
         width: DRAWER_FULL_WIDTH,
@@ -82,6 +84,7 @@ const styles = theme => ({
     },
     list: {
         paddingTop: 0,
+        flex: '1 0 auto',
     },
     logout: {
         color: theme.palette.primary.main
@@ -125,6 +128,7 @@ const styles = theme => ({
     editButton: {
         position: 'sticky',
         bottom: 0,
+        right: 0,
         width: 'fit-content',
         marginLeft: 'auto',
         marginTop: 'auto',
@@ -620,15 +624,15 @@ class Drawer extends Component {
 
                 <List>
                     {this.getNavigationItems()}
-                    {this.props.isSecure &&
-                        <DrawerItem
-                            compact={!this.isSwipeable() && this.props.state !== STATES.opened}
-                            onClick={this.props.onLogout}
-                            text={this.props.t('Logout')}
-                            icon={<LogoutIcon />}
-                        />
-                    }
                 </List>
+                {this.props.isSecure &&
+                    <DrawerItem
+                        compact={!this.isSwipeable() && this.props.state !== STATES.opened}
+                        onClick={this.props.onLogout}
+                        text={this.props.t('Logout')}
+                        icon={<LogoutIcon />}
+                    />
+                }
                 {this.props.adminGuiConfig.admin.menu.editable !== false && this.props.state === STATES.opened && <div className={this.props.classes.editButton}>
                     <CustomPopper
                         editList={this.state.editList}
@@ -651,14 +655,15 @@ class Drawer extends Component {
                 {this.getHeader()}
                 <List className={classes.list}>
                     {this.getNavigationItems()}
-                    {this.props.isSecure &&
-                        <DrawerItem
-                            compact={!this.isSwipeable() && this.props.state !== STATES.opened}
-                            onClick={this.props.onLogout} text={this.props.t('Logout')}
-                            icon={<LogoutIcon />}
-                        />
-                    }
                 </List>
+                {(true || this.props.isSecure) &&
+                    <DrawerItem
+                        style={{flexShrink: 0}}
+                        compact={!this.isSwipeable() && this.props.state !== STATES.opened}
+                        onClick={this.props.onLogout} text={this.props.t('Logout')}
+                        icon={<LogoutIcon />}
+                    />
+                }
                 {this.props.adminGuiConfig.admin.menu.editable !== false && this.props.state === STATES.opened && <div
                     className={this.props.classes.editButton}
                     style={{opacity: 0}}

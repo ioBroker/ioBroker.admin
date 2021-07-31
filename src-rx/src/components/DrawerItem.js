@@ -49,7 +49,8 @@ const DrawerItem = props => {
         visible,
         editListFunc,
         badgeAdditionalContent,
-        badgeAdditionalColor
+        badgeAdditionalColor,
+        style
     } = props;
 
     let content = text ? text.replace('&gt;', '>') : '';
@@ -60,7 +61,7 @@ const DrawerItem = props => {
         content = 'Text→Cmd';
     }
 
-    return <div style={{ display: 'flex' }}>
+    return <div style={Object.assign({ display: 'flex' }, style || {})}>
         {!!editList && <Checkbox checked={visible} onChange={editListFunc} />}
         <ListItem
             button
@@ -107,6 +108,7 @@ const DrawerItem = props => {
 DrawerItem.propTypes = {
     icon: PropTypes.object,
     onClick: PropTypes.func,
+    style: PropTypes.object,
     selected: PropTypes.bool,
     compact: PropTypes.bool,
     text: PropTypes.string,
