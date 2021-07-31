@@ -983,22 +983,13 @@ class App extends Router {
     toggleTheme = currentThemeName => {
         const themeName = this.state.themeName;
 
-        // dark => blue => colored => light => dark
-        let newThemeName = themeName === 'dark' ? 'blue' :
-            (themeName === 'blue' ? 'colored' :
-                (themeName === 'colored' ? 'light' : 'dark'));
-
-        if (currentThemeName) {
-            newThemeName = currentThemeName;
-        }
-
-        Utils.setThemeName(newThemeName);
+        const newThemeName = currentThemeName || Utils.toggleTheme(themeName);
 
         const theme = this.createTheme(newThemeName);
 
         this.setState({
             theme: theme,
-            themeName: this.getThemeName(theme),
+            themeName: newThemeName,
             themeType: this.getThemeType(theme)
         }, () => {
             this.refConfigIframe?.contentWindow?.postMessage('updateTheme', '*');
@@ -1062,7 +1053,7 @@ class App extends Router {
                         menuOpened={opened}
                         menuClosed={closed}
                         menuCompact={compact}
-                        repository={this.state.repository}
+                        adminGuiConfig={this.adminGuiConfig}
                     />
                 </Suspense>;
             } else if (this.state.currentTab.tab === 'tab-instances') {
@@ -1503,7 +1494,7 @@ class App extends Router {
         if (!this.state.ready) {
             return <ThemeProvider theme={this.state.theme}>
                 {window.vendorPrefix === 'PT' ? <LoaderPT theme={this.state.themeType}/> :null}
-                {!window.vendorPrefix ? <Loader theme={this.state.themeType} /> : null}
+                {!window.vendorPrefix || window.vendorPrefix === '@@vendorPrefix@@' ? <Loader theme={this.state.themeType} /> : null}
             </ThemeProvider>;
         } else if (this.state.strictEasyMode || this.state.currentTab.tab === 'easy') {
             return <ThemeProvider theme={this.state.theme}>

@@ -24,7 +24,6 @@ import CertificatesDialog from './SystemSettingsTabs/CertificatesDialog';
 import SSLDialog from './SystemSettingsTabs/SSLDialog';
 import ACLDialog from './SystemSettingsTabs/ACLDialog';
 import StatisticsDialog from './SystemSettingsTabs/StatisticsDialog';
-import IsVisible from '../components/IsVisible';
 
 // icons
 import CheckIcon from '@material-ui/icons/Check';
@@ -265,12 +264,12 @@ class SystemSettingsDialog extends Component {
                 }));
     }
 
-    getDialogContent() {
+    getDialogContent(tabsList) {
         if (this.state.loading) {
             return <LinearProgress />;
         }
 
-        const tab = this.getTabs().filter(tab => tab.id === parseInt(this.props.currentTab.id, 10))[0] || this.getTabs()[0];
+        const tab = tabsList.find(tab => tab.name === this.props.currentTab.id) || tabsList[0];
 
         const MyComponent = tab.component;
         const { groups, users, histories } = this.state;
@@ -311,17 +310,15 @@ class SystemSettingsDialog extends Component {
             JSON.stringify(this.state.systemConfig) === this.originalConfig &&
             JSON.stringify(this.state.systemCertificates) === this.originalCertificates);
 
-        const tabs = this.getTabs().map(e =>
-            <IsVisible name={'admin.settings.' + e.name} config={this.props.adminGuiConfig}>
+        const tabsList = this.getTabs().filter(tab => this.props.adminGuiConfig.admin.settings[tab.name] !== false)
+        const tabs = tabsList
+            .map(tab =>
                 <Tab
-                    label={this.props.t(e.title)}
-                    id={e.id.toString()}
-                    aria-controls={'simple-tabpanel-' + e.data}
-                    key={e.name}
+                    label={this.props.t(tab.title)}
+                    value={tab.name}
                 />
-            </IsVisible>);
+            );
 
-        const curTab = parseInt(this.props.currentTab.id, 10) || 0;
         return <Dialog
             className={this.props.classes.dialog}
             classes={{
@@ -329,8 +326,15 @@ class SystemSettingsDialog extends Component {
                 paper: 'dialog-setting'
             }}
             open={true}
-            disableEscapeKeyDown={true}
-            disableBackdropClick={true}
+            onClose={(e, reason) => {
+                if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                    if (changed) {
+                        this.setState({confirmExit: true});
+                    } else {
+                        this.props.onClose();
+                    }
+                }
+            }}
             fullWidth={false}
             fullScreen={false}
             aria-labelledby="system-settings-dialog-title"
@@ -344,8 +348,10 @@ class SystemSettingsDialog extends Component {
                         <Tabs
                             className={this.props.classes.tab}
                             indicatorColor="primary"
-                            value={curTab}
-                            onChange={this.onTabChanged}
+                            value={this.props.currentTab.id || 'tabConfig'}
+                            onChange={(event, newTab) => {
+                                this.onTabChanged(event, newTab);
+                            }}
                             variant="scrollable"
                             scrollButtons="auto"
                         >
@@ -362,7 +368,7 @@ class SystemSettingsDialog extends Component {
                         </IconButton>
                     </div>
                 </AppBar>
-                {this.getDialogContent()}
+                {this.getDialogContent(tabsList)}
                 {this.renderConfirmDialog()}
             </DialogContent>
             <DialogActions>

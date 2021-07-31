@@ -19,10 +19,10 @@ export default function ToggleThemeMenu({ themeName, toggleTheme, t, className, 
     return <div className={className || undefined} style={style || undefined}>
         <Tooltip title={t('Change color theme')}>
             <IconButton onClick={() => toggleTheme()} size={size || 'medium'}>
-                {themeName === 'dark'    && <Brightness4Icon />}
-                {themeName === 'blue'    && <Brightness5Icon />}
-                {themeName === 'colored' && <Brightness6Icon />}
-                {themeName === 'light'   && <Brightness7Icon />}
+                {themeName === 'dark' ? <Brightness4Icon/> : (
+                    themeName === 'blue' ? <Brightness5Icon/> : (
+                        themeName === 'colored' ? <Brightness6Icon/> : <Brightness7Icon/>))
+                }
             </IconButton>
         </Tooltip>
         {/* <Menu

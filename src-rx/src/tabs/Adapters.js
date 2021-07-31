@@ -60,6 +60,7 @@ import CustomModal from '../components/CustomModal';
 import AdaptersUpdaterDialog from '../dialogs/AdaptersUpdaterDialog';
 import RatingDialog from '../dialogs/RatingDialog';
 import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
+import IsVisible from '../components/IsVisible';
 
 const WIDTHS = {
     emptyBlock: 50,
@@ -654,6 +655,10 @@ class Adapters extends Component {
                 })
                 .then(_rebuild => {
                     rebuild = _rebuild;
+                    if (this.props.adminGuiConfig.adapters?.allowAdapterRating === false) {
+                        return Promise.resolve({});
+                    }
+
                     return this.props.socket.getRatings(update)
                         .catch(e => window.alert('Cannot read ratings: ' + e));
                 })
@@ -1113,10 +1118,11 @@ class Adapters extends Component {
                 openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
                 onUpload={() => licenseDialogFunc(adapter.license === 'MIT', result =>
                     result && this.upload(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
-                allowAdapterDelete={this.props.repository[value] ? this.props.repository[value].allowAdapterDelete : true}
-                allowAdapterInstall={this.props.repository[value] ? this.props.repository[value].allowAdapterInstall : true}
-                allowAdapterUpdate={this.props.repository[value] ? this.props.repository[value].allowAdapterUpdate : true}
-                allowAdapterReadme={this.props.repository[value] ? this.props.repository[value].allowAdapterReadme : true}
+                allowAdapterDelete={this.state.repository[value] ? this.state.repository[value].allowAdapterDelete : true}
+                allowAdapterInstall={this.state.repository[value] ? this.state.repository[value].allowAdapterInstall : true}
+                allowAdapterUpdate={this.state.repository[value] ? this.state.repository[value].allowAdapterUpdate : true}
+                allowAdapterReadme={this.state.repository[value] ? this.state.repository[value].allowAdapterReadme : true}
+                allowAdapterRating={this.props.adminGuiConfig.admin.adapters ? this.props.adminGuiConfig.admin.adapters.allowAdapterRating : true}
             />;
         } else {
             return null;
@@ -1347,10 +1353,11 @@ class Adapters extends Component {
                     openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
                     onUpload={() => licenseDialogFunc(adapter.license === 'MIT', result =>
                         result && this.upload(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
-                    allowAdapterDelete={this.props.repository[value] ? this.props.repository[value].allowAdapterDelete : true}
-                    allowAdapterInstall={this.props.repository[value] ? this.props.repository[value].allowAdapterInstall : true}
-                    allowAdapterUpdate={this.props.repository[value] ? this.props.repository[value].allowAdapterUpdate : true}
-                    allowAdapterReadme={this.props.repository[value] ? this.props.repository[value].allowAdapterReadme : true}
+                    allowAdapterDelete={this.state.repository[value] ? this.state.repository[value].allowAdapterDelete : true}
+                    allowAdapterInstall={this.state.repository[value] ? this.state.repository[value].allowAdapterInstall : true}
+                    allowAdapterUpdate={this.state.repository[value] ? this.state.repository[value].allowAdapterUpdate : true}
+                    allowAdapterReadme={this.state.repository[value] ? this.state.repository[value].allowAdapterReadme : true}
+                    allowAdapterRating={this.props.adminGuiConfig.admin.adapters ? this.props.adminGuiConfig.admin.adapters.allowAdapterRating : true}
                 />;
             });
         }
@@ -1497,11 +1504,13 @@ class Adapters extends Component {
                         </IconButton>
                     </Tooltip>
                 }
-                <Tooltip title={this.t('Filter adapter with updates')}>
-                    <IconButton onClick={() => this.changeUpdateList()}>
-                        <UpdateIcon color={this.state.updateList ? 'primary' : 'inherit'} />
-                    </IconButton>
-                </Tooltip>
+                <IsVisible config={this.props.adminGuiConfig} name="admin.adapters.filterUpdates">
+                    <Tooltip title={this.t('Filter adapter with updates')}>
+                        <IconButton onClick={() => this.changeUpdateList()}>
+                            <UpdateIcon color={this.state.updateList ? 'primary' : 'inherit'} />
+                        </IconButton>
+                    </Tooltip>
+                </IsVisible>
                 {updateAllButtonAvailable && <Tooltip title={this.t('Update all adapters')}>
                     <IconButton onClick={() => this.setState({ showUpdater: true })} classes={{ label: this.props.classes.updateAllButton }}>
                         <UpdateIcon />
@@ -1509,7 +1518,7 @@ class Adapters extends Component {
                     </IconButton>
                 </Tooltip>}
 
-                {this.props.expertMode &&
+                {this.props.expertMode && this.props.adminGuiConfig.admin.adapters?.gitHubInstall !== false &&
                     <Tooltip title={this.t('Install from custom URL')}>
                         <IconButton onClick={() => this.setState({ gitHubInstallDialog: true })}>
                             <GithubIcon />
@@ -1558,14 +1567,16 @@ class Adapters extends Component {
                         value={this.state.filterTiles} />
                 }
                 <div className={classes.grow} />
-                <Hidden only={['xs', 'sm']} >
-                    <div className={classes.infoAdapters} onClick={() => this.setState({ showStatistics: true })}>
-                        <div className={clsx(classes.counters, classes.greenText)}>{this.t('Selected adapters')}<div ref={this.countRef} /></div>
-                        <div className={classes.counters}>{this.t('Total adapters')}:<div>{this.allAdapters}</div></div>
-                        <div className={classes.counters}>{this.t('Installed adapters')}:<div>{this.installedAdapters}</div></div>
-                        <div className={classes.counters}>{this.t('Last month updated adapters')}:<div>{this.recentUpdatedAdapters}</div></div>
-                    </div>
-                </Hidden>
+                <IsVisible config={this.props.adminGuiConfig} name="admin.adapters.statistics">
+                    <Hidden only={['xs', 'sm']} >
+                        <div className={classes.infoAdapters} onClick={() => this.setState({ showStatistics: true })}>
+                            <div className={clsx(classes.counters, classes.greenText)}>{this.t('Selected adapters')}<div ref={this.countRef} /></div>
+                            <div className={classes.counters}>{this.t('Total adapters')}:<div>{this.allAdapters}</div></div>
+                            <div className={classes.counters}>{this.t('Installed adapters')}:<div>{this.installedAdapters}</div></div>
+                            <div className={classes.counters}>{this.t('Last month updated adapters')}:<div>{this.recentUpdatedAdapters}</div></div>
+                        </div>
+                    </Hidden>
+                </IsVisible>
             </TabHeader>
             {this.state.viewMode && <TabContent>
                 {this.props.systemConfig.common.activeRepo !== 'stable' ? <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}</div> : null}
@@ -1729,5 +1740,6 @@ Adapters.propTypes = {
     lang: PropTypes.string,
     expertMode: PropTypes.bool,
     executeCommand: PropTypes.func,
+    adminGuiConfig: PropTypes.object,
 };
 export default withStyles(styles)(Adapters);

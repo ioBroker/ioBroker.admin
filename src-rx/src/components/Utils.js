@@ -612,7 +612,7 @@ class Utils {
                             now = new Date(year, a[1] - 1, a[0]);
                         }
                     } else
-                        // DD MM
+                    // DD MM
                     if (Utils.dateFormat[0][0] === 'D' && Utils.dateFormat[1][0] === 'M') {
                         now = new Date(year, a[1] - 1, a[0]);
                         if (Math.abs(now.getTime - Date.now()) > 3600000 * 24 * 10) {
@@ -1101,7 +1101,7 @@ class Utils {
      * @returns {string}
      */
     static getThemeName(themeName = '') {
-        if (window.vendorPrefix) {
+        if (window.vendorPrefix && window.vendorPrefix !== '@@vendorPrefix@@') {
             return window.vendorPrefix;
         }
 
@@ -1115,7 +1115,7 @@ class Utils {
      * @returns {'dark' | 'light'}
      */
     static getThemeType(themeName = '') {
-        if (window.vendorPrefix === 'PT') {
+        if (window.vendorPrefix && window.vendorPrefix !== '@@vendorPrefix@@') {
             return 'light';
         }
 
@@ -1128,7 +1128,7 @@ class Utils {
      * @param {string} themeName
      */
     static setThemeName(themeName) {
-        if (window.vendorPrefix) {
+        if (window.vendorPrefix && window.vendorPrefix !== '@@vendorPrefix@@') {
             return; // ignore
         }
         window.localStorage.setItem('App.themeName', themeName);
@@ -1141,19 +1141,35 @@ class Utils {
      * @returns {string} the new theme name.
      */
     static toggleTheme(themeName) {
-        if (window.vendorPrefix) {
+        if (window.vendorPrefix && window.vendorPrefix !== '@@vendorPrefix@@') {
             return window.vendorPrefix;
         }
         themeName = themeName || (window.localStorage && window.localStorage.getItem('App.themeName'));
 
         // dark => blue => colored => light => dark
-        const newThemeName = themeName === 'dark' ? 'blue' :
-            (themeName === 'blue' ? 'colored' :
-                (themeName === 'colored' ? 'light' : 'dark'));
+        const themes = Utils.getThemeNames();
+        const pos = themes.indexOf(themeName);
+        let newTheme;
+        if (pos !== -1) {
+            newTheme = themes[(pos + 1) % themes.length];
+        } else {
+            newTheme = themes[0];
+        }
+        Utils.setThemeName(newTheme);
 
-        Utils.setThemeName(newThemeName);
+        return newTheme;
+    }
 
-        return newThemeName;
+    /**
+     * Get the list of themes
+     * @returns {array<string>} list of possible themes
+     */
+    static getThemeNames() {
+        if (window.vendorPrefix && window.vendorPrefix !== '@@vendorPrefix@@') {
+            return [window.vendorPrefix];
+        }
+
+        return ['light', 'dark', 'blue', 'colored'];
     }
 
     /**
@@ -1424,7 +1440,7 @@ class Utils {
                     states = null;
                 }
             } else
-                // if old format val1:text1;val2:text2
+            // if old format val1:text1;val2:text2
             if (typeof states === 'string') {
                 const parts = states.split(';');
                 states = {};

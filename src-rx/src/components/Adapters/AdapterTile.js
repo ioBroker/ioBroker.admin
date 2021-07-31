@@ -119,7 +119,7 @@ const styles = theme => ({
             content: '""',
             height: '20px',
             width: '3px',
-            backgroundColor: '#ff4f4f',
+            backgroundColor: 'rgba(0, 0, 0, 0.54)',
             transform: 'rotate(45deg)'
         },
         '&:after': {
@@ -128,7 +128,7 @@ const styles = theme => ({
             content: '""',
             height: '20px',
             width: '3px',
-            backgroundColor: '#ff4f4f',
+            backgroundColor: 'rgba(0, 0, 0, 0.54)',
             transform: 'rotate(-45deg)'
         },
     },
@@ -273,7 +273,12 @@ const AdapterTile = ({
     rating,
     onSetRating,
     installedFrom,
-    sentry
+    sentry,
+    allowAdapterInstall,
+    allowAdapterReadme,
+    allowAdapterDelete,
+    allowAdapterUpdate,
+    allowAdapterRating
 }) => {
     const [openCollapse, setCollapse] = useState(false);
     const [focused, setFocused] = useState(false);
@@ -289,7 +294,7 @@ const AdapterTile = ({
                 </Typography>
             </CardContent>
             <div className={classes.footerBlock}>
-                <IsVisible value={this.props.allowAdapterInstall}>
+                <IsVisible value={allowAdapterInstall}>
                     <Tooltip title={t('Add instance')}>
                         <IconButton
                             size="small"
@@ -302,7 +307,7 @@ const AdapterTile = ({
                     </Tooltip>
                 </IsVisible>
                 <div className={classes.cardContentFlex}>
-                    <IsVisible value={this.props.allowAdapterReadme}>
+                    <IsVisible value={allowAdapterReadme}>
                         <Tooltip title={t('Readme')}>
                             <IconButton
                                 size="small"
@@ -324,7 +329,7 @@ const AdapterTile = ({
                             </IconButton>
                         </Tooltip>
                     }
-                    <IsVisible value={this.props.allowAdapterDelete}>
+                    <IsVisible value={allowAdapterDelete}>
                         <Tooltip title={t('Delete adapter')}>
                             <IconButton
                                 size="small"
@@ -336,7 +341,7 @@ const AdapterTile = ({
                             </IconButton>
                         </Tooltip>
                     </IsVisible>
-                    {expertMode && this.props.allowAdapterUpdate &&
+                    {expertMode && allowAdapterUpdate &&
                         <Tooltip title={t('Install a specific version')}>
                             <IconButton
                                 disabled={commandRunning}
@@ -374,7 +379,7 @@ const AdapterTile = ({
             />
             <div className={clsx(classes.adapter, (stat || versionDate) && classes.adapterWithAgo)}>{adapter}</div>
             <div className={classes.versionDate}>{stat || versionDate}</div>
-            {!stat && !versionDate ? <div
+            {!stat && !versionDate && allowAdapterRating !== false ? <div
                 onClick={onSetRating ? () => onSetRating() : undefined}
                 className={clsx(classes.rating, onSetRating && classes.ratingSet)}
                 title={rating?.title}
@@ -435,22 +440,24 @@ const AdapterTile = ({
                     <div>{t('Installed instances')}:</div>
                     <div>{installedCount}</div>
                 </Typography>}
-                <Typography component={'span'} className={classes.availableVersion}>
-                    <div>{t('Available version:')}</div>
-                    <div className={clsx(updateAvailable && classes.greenText, classes.curdContentFlexCenter)} >
-                        {!commandRunning && updateAvailable ?
+                <IsVisible value={allowAdapterUpdate}>
+                    <Typography component={'span'} className={classes.availableVersion}>
+                        <div>{t('Available version:')}</div>
+                        <div className={clsx(updateAvailable && classes.greenText, classes.curdContentFlexCenter)} >
+                            {!commandRunning && updateAvailable ?
 
-                            <Tooltip title={t('Update')}>
-                                <div onClick={onUpdate} className={classes.buttonUpdate}><IconButton
-                                    className={classes.buttonUpdateIcon}
-                                    size="small"
-                                >
-                                    <RefreshIcon />
-                                </IconButton>{version}</div>
-                            </Tooltip> :
-                            version
-                        }</div>
-                </Typography>
+                                <Tooltip title={t('Update')}>
+                                    <div onClick={onUpdate} className={classes.buttonUpdate}><IconButton
+                                        className={classes.buttonUpdateIcon}
+                                        size="small"
+                                    >
+                                        <RefreshIcon />
+                                    </IconButton>{version}</div>
+                                </Tooltip> :
+                                version
+                            }</div>
+                    </Typography>
+                </IsVisible>
                 {installedVersion && <Typography component={'span'} className={classes.cardContentFlexBetween}>
                     <div>{t('Installed version')}:</div>
                     <div className={classes.cardContentFlex}>{installedFrom &&

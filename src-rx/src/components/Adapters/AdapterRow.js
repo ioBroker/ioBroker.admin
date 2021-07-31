@@ -258,23 +258,26 @@ class AdapterRow extends Component {
                                 className={classes.smallAvatar}
                             />
                         </Grid>
-                        {/* <Grid item>{name}</Grid> */}
-                        <Grid item className={classes.nameCell}>
-                            <div>{name}</div>
-                            {!versionDate ? <div
-                                onClick={onSetRating ? () => onSetRating() : undefined}
-                                className={clsx(classes.rating, onSetRating && classes.ratingSet)}
-                                title={rating?.title}
-                            >
-                                <Rating
-                                    name={adapter}
-                                    precision={0.5}
-                                    size="small"
-                                    readOnly
-                                    value={rating?.rating ? rating.rating.r : 0}
-                                />
-                            </div> : null}
-                        </Grid>
+                        {this.props.allowAdapterRating ?
+                            <Grid item className={classes.nameCell}>
+                                <div>{name}</div>
+                                {!versionDate ? <div
+                                    onClick={onSetRating ? () => onSetRating() : undefined}
+                                    className={clsx(classes.rating, onSetRating && classes.ratingSet)}
+                                    title={rating?.title}
+                                >
+                                    <Rating
+                                        name={adapter}
+                                        precision={0.5}
+                                        size="small"
+                                        readOnly
+                                        value={rating?.rating ? rating.rating.r : 0}
+                                    />
+                                </div> : null}
+                            </Grid>
+                            :
+                            <Grid item>{name}</Grid>
+                        }
                     </Grid>
                 </TableCell>
                 {!descHidden && <TableCell title={this.props.description}>{this.props.description}</TableCell>}
@@ -315,27 +318,29 @@ class AdapterRow extends Component {
                     [classes.updateAvailable]: updateAvailable && rightDependencies,
                     [classes.wrongDependencies]: !rightDependencies
                 })}>
-                    <Grid
-                        container
-                        alignItems="center"
-                    >
-                        {!commandRunning && updateAvailable ?
-                            <Tooltip title={this.props.t('Update')}>
-                                <div
-                                    onClick={this.props.onUpdate}
-                                    className={classes.buttonUpdate}>
-                                    <IconButton
-                                        className={classes.buttonUpdateIcon}
-                                        size="small"
-                                    >
-                                        <RefreshIcon />
-                                    </IconButton>{this.props.version}
-                                </div>
-                            </Tooltip>
-                            :
-                            this.props.version
-                        }
-                    </Grid>
+                    <IsVisible value={this.props.allowAdapterUpdate}>
+                        <Grid
+                            container
+                            alignItems="center"
+                        >
+                            {!commandRunning && updateAvailable ?
+                                <Tooltip title={this.props.t('Update')}>
+                                    <div
+                                        onClick={this.props.onUpdate}
+                                        className={classes.buttonUpdate}>
+                                        <IconButton
+                                            className={classes.buttonUpdateIcon}
+                                            size="small"
+                                        >
+                                            <RefreshIcon />
+                                        </IconButton>{this.props.version}
+                                    </div>
+                                </Tooltip>
+                                :
+                                this.props.version
+                            }
+                        </Grid>
+                    </IsVisible>
                 </TableCell>
                 <TableCell>{this.props.license}</TableCell>
                 <TableCell>
