@@ -90,6 +90,9 @@ class Login extends Component {
         const classes = this.props.classes;
         const action = `${window.location.port === '3000' ? `${window.location.protocol}//${window.location.hostname}:8081` : ''}/login?${window.location.port === '3000' ? 'dev&' : ''}href=${window.location.hash}`;
 
+        const link  = window.loginLink  && window.loginLink  !== '@@loginLink@@'  ? window.loginLink  : 'https://www.iobroker.net/';
+        const motto = window.loginMotto && window.loginMotto !== '@@loginMotto@@' ? window.loginMotto : ('Discover awesome. ');
+
         if (window.login !== 'true') {
             debugger;
             window.location = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
@@ -102,10 +105,21 @@ class Login extends Component {
                     direction="column"
                     alignItems="center"
                 >
-                    {window.loginHideLogo && window.loginHideLogo === 'false' &&
+                    {window.loginLogo && window.loginLogo !== '@@loginLogo@@' ?
+                        <div style={{
+                            height: 50,
+                            withWidth: 102,
+                            lineHeight: '50px',
+                            background: 'white',
+                            borderRadius: 5,
+                            padding: 5}}
+                        ><img src={window.loginLogo} alt="logo"
+                              style={{maxWidth: '100%', maxHeight: '100%'}}/></div>
+                        :
+                        window.loginHideLogo === 'false' &&
                         <Avatar className={classes.avatar} src="img/logo.png" classes={{img: classes.avatarImg}} />}
                     <Typography component="h1" variant="h5">
-                        {this.props.t('loginTitle')}
+                        {window.loginTitle && window.loginTitle !== '@@loginTitle@@' ? window.loginTitle : this.props.t('loginTitle')}
                     </Typography>
                     {window.location.search.includes('error') &&
                         <div className={classes.alert}>
@@ -179,16 +193,27 @@ class Login extends Component {
                         color="textSecondary"
                         align="center"
                     >
-                        {(window.loginMotto || 'Discover awesome.') + ' '}
-                        <Link
+                        {window.loginLink || window.loginLink !== '@@loginLink@@' ?
+                            <Link
+                                className={classes.ioBrokerLink}
+                                color="inherit"
+                                href={link}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                            >
+                                {motto}
+                            </Link> : null
+                        }
+                        {!window.loginLink || window.loginLink === '@@loginLink@@' ? motto : null}
+                        {!window.loginLink || window.loginLink === '@@loginLink@@' ? <Link
                             className={classes.ioBrokerLink}
                             color="inherit"
-                            href="https://www.iobroker.net/"
+                            href={link}
                             rel="noopener noreferrer"
                             target="_blank"
                         >
                             ioBroker
-                        </Link>
+                        </Link> : null}
                     </Typography>
                 </Box>
             </Paper>

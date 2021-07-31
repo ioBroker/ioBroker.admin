@@ -311,7 +311,7 @@ class App extends Router {
         this.expireInSec = null;
         this.expireInSecInterval = null;
         this.expireText = I18n.t('Session expire in %s', '%s');
-        this.adminGuiConfig = {admin: {menu: {}, settings: {}}};
+        this.adminGuiConfig = {admin: {menu: {}, settings: {}, adapters: {}, login: {}}};
 
         if (!query.login) {
             let drawerState = window.localStorage.getItem('App.drawerState');
@@ -491,9 +491,13 @@ class App extends Router {
                 },
                 onReady: async objects => {
                     I18n.setLanguage(this.socket.systemLang);
-                    this.adminGuiConfig = this.socket.systemConfig.native?.vendor || {admin: {menu: {}, settings: {}}};
-                    // Combine adminGuiConfig with user settings
 
+                    // Combine adminGuiConfig with user settings
+                    this.adminGuiConfig = Object.assign({admin: {menu: {}, settings: {}, adapters: {}, login: {}}}, this.socket.systemConfig.native?.vendor);
+                    this.adminGuiConfig.admin.menu     = this.adminGuiConfig.admin.menu     || {};
+                    this.adminGuiConfig.admin.settings = this.adminGuiConfig.admin.settings || {};
+                    this.adminGuiConfig.admin.adapters = this.adminGuiConfig.admin.adapters || {};
+                    this.adminGuiConfig.admin.login    = this.adminGuiConfig.admin.login    || {};
 
                     this.socket.getCurrentInstance()
                         .then(adminInstance => {
