@@ -656,7 +656,7 @@ class Drawer extends Component {
                 <List className={classes.list}>
                     {this.getNavigationItems()}
                 </List>
-                {(true || this.props.isSecure) &&
+                {this.props.isSecure &&
                     <DrawerItem
                         style={{flexShrink: 0}}
                         compact={!this.isSwipeable() && this.props.state !== STATES.opened}
