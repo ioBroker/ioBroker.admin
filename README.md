@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 5.1.18 (2021-07-31)
 * (bluefox) Corrected some GUI errors: theme switching, system settings
 
 ### 5.1.17 (2021-07-30)
@@ -104,9 +104,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 5.1.14 (2021-07-23)
 * (bluefox) Corrected error with "Intro" page. Warning: All cards must be deactivated anew.
-
-### 5.1.13 (2021-07-21)
-* (bluefox) Improved json config
 
 ## License
 The MIT License (MIT)

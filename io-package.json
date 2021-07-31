@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.1.17",
+        "version": "5.1.18",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.18": {
+                "en": "Corrected some GUI errors: theme switching, system settings",
+                "de": "Einige GUI-Fehler korrigiert: Themenwechsel, Systemeinstellungen",
+                "ru": "Исправлены некоторые ошибки графического интерфейса: переключение тем, системные настройки.",
+                "pt": "Corrigidos alguns erros de GUI: mudança de tema, configurações do sistema",
+                "nl": "Enkele GUI-fouten gecorrigeerd: themawisseling, systeeminstellingen",
+                "fr": "Correction de quelques erreurs d'interface graphique : changement de thème, paramètres système",
+                "it": "Corretti alcuni errori della GUI: cambio tema, impostazioni di sistema",
+                "es": "Se corrigieron algunos errores de GUI: cambio de tema, configuración del sistema",
+                "pl": "Poprawiono niektóre błędy GUI: przełączanie motywów, ustawienia systemowe",
+                "zh-cn": "更正了一些 GUI 错误：主题切换、系统设置"
+            },
             "5.1.17": {
                 "en": "Corrected the error on the adapter's tab",
                 "de": "Fehler auf der Registerkarte des Adapters behoben",
@@ -245,18 +257,6 @@
                 "es": "Admin5: Soporte de códigos ANSI en el registro",
                 "pl": "Admin5: Obsługa kodów ANSI w dzienniku",
                 "zh-cn": "Admin5：支持日志中的ANSI代码"
-            },
-            "5.0.31": {
-                "en": "Admin5: Improved the enumerations",
-                "de": "Admin5: Die Aufzählungen wurden verbessert",
-                "ru": "Admin5: Улучшены перечисления",
-                "pt": "Admin5: Melhorou as enumerações",
-                "nl": "Admin5: Verbeterde opsommingen",
-                "fr": "Admin5: Amélioration des énumérations",
-                "it": "Admin5: migliorate le enumerazioni",
-                "es": "Admin5: se mejoraron las enumeraciones",
-                "pl": "Admin5: Poprawiono wyliczenia",
-                "zh-cn": "Admin5：改进了枚举"
             }
         },
         "desc": {

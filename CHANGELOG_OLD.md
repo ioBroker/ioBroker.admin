@@ -1,3 +1,6 @@
+## 5.1.13 (2021-07-21)
+* (bluefox) Improved json config
+
 ## 5.1.12 (2021-07-16)
 * (bluefox) The charts were improved
 * (bluefox) Corrected the error with the jump links if more than one web instance
