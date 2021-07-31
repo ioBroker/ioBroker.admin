@@ -193,7 +193,7 @@ class Login extends Component {
                         color="textSecondary"
                         align="center"
                     >
-                        {window.loginLink || window.loginLink !== '@@loginLink@@' ?
+                        {window.loginLink && window.loginLink !== '@@loginLink@@' ?
                             <Link
                                 className={classes.ioBrokerLink}
                                 color="inherit"
