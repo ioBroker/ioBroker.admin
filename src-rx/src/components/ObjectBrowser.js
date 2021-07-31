@@ -506,7 +506,7 @@ const styles = theme => ({
     selectIcon: {
         width: 24,
         height: 24,
-        paddingRight: 4
+        marginRight: 4
     },
     selectNone: {
         opacity: 0.5,

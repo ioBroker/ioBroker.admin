@@ -274,6 +274,7 @@ All types could have:
 - `placeholder` - placeholder (for text control)
 - `noTranslation` - do not translate selects or other options (not for help, label or placeholder)  
 - `onChange` - Structure in form `{"alsoDependsOn": ["attr1", "attr2], "calculateFunc": "attr1 + attr2", "ignoreOwnChanges": true}`
+- `doNotSave` - Do not save this attribute as used only for internal calculations
 - `noMultiEdit` - if this flag set to true, this field will not be shown if user selected more than one object for edit.
 - `confirm`
   - `condition` - JS function: true show confirm dialog

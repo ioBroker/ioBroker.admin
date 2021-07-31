@@ -258,7 +258,7 @@ class AdapterRow extends Component {
                                 className={classes.smallAvatar}
                             />
                         </Grid>
-                        {this.props.allowAdapterRating ?
+                        {this.props.allowAdapterRating !== false ?
                             <Grid item className={classes.nameCell}>
                                 <div>{name}</div>
                                 {!versionDate ? <div
@@ -389,7 +389,7 @@ class AdapterRow extends Component {
                             </IconButton>
                         </Tooltip>
                     </IsVisible>
-                    {this.props.expertMode && this.props.allowAdapterUpdate &&
+                    {this.props.expertMode && this.props.allowAdapterUpdate !== false &&
                         <Tooltip title={this.props.t('Install a specific version')}>
                             <IconButton
                                 size="small"

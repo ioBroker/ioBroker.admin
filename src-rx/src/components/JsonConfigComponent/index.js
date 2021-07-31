@@ -194,7 +194,7 @@ class JsonConfigComponent extends Component {
             Object.keys(schema.items).forEach(attr => {
                 _list[attr] = schema.items[attr];
                 this.flatten(schema.items[attr], _list);
-            })
+            });
         }
 
         return _list;

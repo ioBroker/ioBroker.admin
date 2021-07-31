@@ -341,7 +341,7 @@ const AdapterTile = ({
                             </IconButton>
                         </Tooltip>
                     </IsVisible>
-                    {expertMode && allowAdapterUpdate &&
+                    {expertMode && allowAdapterUpdate !== false &&
                         <Tooltip title={t('Install a specific version')}>
                             <IconButton
                                 disabled={commandRunning}

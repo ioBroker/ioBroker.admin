@@ -210,15 +210,35 @@ class JsonConfig extends Router {
         />;
     }
 
+    findAttr(attr, schema) {
+        schema = schema || this.state.schema;
+        if (schema.items) {
+            if (schema.items[attr]) {
+                return schema.items[attr];
+            } else {
+                const keys = Object.keys(schema.items);
+                for (let k = 0; k < keys.length; k++) {
+                    const item = this.findAttr(attr, schema.items[keys[k]]);
+                    if (item) {
+                        return item;
+                    }
+                }
+            }
+        }
+    }
+
     async onSave(doSave, close) {
         if (doSave) {
             const obj = await this.getInstanceObject();
 
-            for (const attr in this.state.data) {
-                if (this.state.data.hasOwnProperty(attr)) {
+            Object.keys(this.state.data).forEach(attr => {
+                const item = this.findAttr(attr);
+                if (!item || !item.doNotSave) {
                     ConfigGeneric.setValue(obj.native, attr, this.state.data[attr]);
+                } else {
+                    ConfigGeneric.setValue(obj.native, attr, null);
                 }
-            }
+            });
 
             try {
                 // encode all native attributes listed in obj.encryptedNative
@@ -252,7 +272,7 @@ class JsonConfig extends Router {
     }
 
     componentDidUpdate = (prevProps, prevState) => {
-        if(prevState.changed !== this.state.changed){
+        if (prevState.changed !== this.state.changed){
             this.props.configStored(!this.state.changed);
         }
     }
@@ -284,9 +304,7 @@ class JsonConfig extends Router {
                 onError={error => this.setState({ error })}
                 onChange={(data, changed) => this.setState({ data, changed })}
 
-                customs={{
-                    configCustomEasyAccess: ConfigCustomEasyAccess
-                }}
+                customs={{configCustomEasyAccess: ConfigCustomEasyAccess}}
             />
             <SaveCloseButtons
                 isIFrame={false}

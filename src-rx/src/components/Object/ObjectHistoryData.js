@@ -536,7 +536,7 @@ class ObjectHistoryData extends Component {
             .then(values => {
                 if (values.length) {
                     // remove interpolated first value
-                    if (values[0].val === null) {
+                    if (values[0].val === null || values[0].ts === oldest.getTime()) {
                         values.shift();
                     }
                     // mark interpolated

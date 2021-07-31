@@ -97,7 +97,11 @@ class ConfigGeneric extends Component {
             return ConfigGeneric.setValue(data, attr.split('.'), value);
         } else {
             if (attr.length === 1) {
-                data[attr[0]] = value;
+                if (value === null) {
+                    delete data[attr[0]];
+                } else {
+                    data[attr[0]] = value;
+                }
             } else {
                 const part = attr.shift();
                 if (!data[part] || typeof data[part] === 'object') {

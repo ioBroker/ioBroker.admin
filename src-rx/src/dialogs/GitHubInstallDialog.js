@@ -19,6 +19,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import CheckIcon from '@material-ui/icons/Check';
 
 import I18n from '@iobroker/adapter-react/i18n';
+import Icon from '@iobroker/adapter-react/Components/Icon';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -77,6 +78,15 @@ const useStyles = makeStyles(theme => ({
     errorTextNoGit: {
         fontSize: 13,
         color: '#ff1616'
+    },
+    listIcon: {
+        width: 24,
+        height: 24,
+    },
+    listIconWithMargin: {
+        width: 24,
+        height: 24,
+        marginRight: 8,
     }
 }));
 
@@ -112,7 +122,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
     const [currentTab, setCurrentTab] = useState(window.localStorage.getItem('App.gitTab') || 'npm');
 
     // eslint-disable-next-line array-callback-return
-    const array = useCallback(() =>
+    const list = useCallback(() =>
         categories
             .map(category => category.adapters)
             .sort()
@@ -183,11 +193,32 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                             value={autocompleteValue}
                             getOptionSelected={(option, value) => option.name === value.name}
                             onChange={(_, e) => setAutocompleteValue(e)}
-                            options={array()}
+                            options={list()}
                             getOptionLabel={option => option.name}
-                            renderInput={params =>
-                                <TextField {...params} label={I18n.t('Select adapter')} />}
-                        /></div>
+                            renderInput={params => {
+                                const _params = {...params};
+                                _params.InputProps = _params.InputProps || {};
+                                _params.InputProps.startAdornment = <InputAdornment position="start">
+                                    <Icon src={autocompleteValue && autocompleteValue.icon} className={classes.listIcon}/>
+                                </InputAdornment>;
+
+                                return <TextField
+                                    {...params}
+                                    label={I18n.t('Select adapter')}
+                                />;
+                            }}
+                            renderTags={options => options.map(option =>
+                                <>
+                                    <Icon src={options.icon} className={classes.listIconWithMargin}/>
+                                    {option.name}
+                                </>)
+                            }
+                            renderOption={option => <>
+                                <Icon src={option.icon}  className={classes.listIconWithMargin}/>
+                                {option.name}
+                            </>}
+                        />
+                    </div>
                     <div style={{
                         fontSize: 24,
                         fontWeight: 'bold',
@@ -218,15 +249,33 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                             getOptionSelected={(option, value) => option.name === value.name}
                             getOptionDisabled={option => option.nogit}
                             renderOption={option => <div>
+                                <Icon src={option.icon}  className={classes.listIcon}/>
                                 {option.name}
                                 {option.nogit && <div className={classes.errorTextNoGit}>{I18n.t('This adapter cannot be installed from git as must be built before installation.')}</div>}
                             </div>}
                             onChange={(_, e) => setAutocompleteValue(e)}
-                            options={array()}
+                            options={list()}
                             getOptionLabel={option => option.name}
-                            renderInput={(params) =>
-                                <TextField {...params} label={I18n.t('Select adapter')} />}
-                        /></div>
+                            renderInput={params => {
+                                const _params = {...params};
+                                _params.InputProps = _params.InputProps || {};
+                                _params.InputProps.startAdornment = <InputAdornment position="start">
+                                    <Icon src={autocompleteValue && autocompleteValue.icon} className={classes.listIconWithMargin}/>
+                                </InputAdornment>;
+
+                                return <TextField
+                                    {...params}
+                                    label={I18n.t('Select adapter')}
+                                />;
+                            }}
+                            renderTags={options => options.map(option =>
+                                <>
+                                    <Icon src={options.icon} className={classes.listIconWithMargin}/>
+                                    {option.name}
+                                </>)
+                            }
+                        />
+                    </div>
                     <div style={{
                         fontSize: 24,
                         fontWeight: 'bold',

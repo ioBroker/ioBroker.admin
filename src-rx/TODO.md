@@ -1,5 +1,4 @@
 # Todo
-Marked with "!" must be in release candidate
 
 ## Bugs
 - (BF) AdminSettings: Access to the instances: add infotexts for "Apply access rights" and "Allow access only"
@@ -15,7 +14,6 @@ Marked with "!" must be in release candidate
 ## Enums
 
 ## Adapters
-- Show icons for autocomplete in github dialog
 - Filter out adapters with disabled update in notification babble
 
 ## Wizard
@@ -26,7 +24,7 @@ Marked with "!" must be in release candidate
 ## Logs
 
 ## Instances
-- Indication of more than one deleted adapter
+- Indication of more than one deleting adapter
 
 ## Objects
 - Add mode view owners (by switching "1") / owner / ownerGroup / objectACL / state ACL
@@ -43,7 +41,6 @@ Marked with "!" must be in release candidate
 - ! (BF) Add encryption in frontend (Is it required? User can use encrypt / decrypt function of socket io) (BF)
 
 ## Login and authentication
-- (BF) show login dialog after TTL over
 
 ## JSON config - Admin settings dialog (index_m.html)
 - Write gulp script, that collects words from jsonConfig/jsonCustom and creates i18n files automatically (BF)
