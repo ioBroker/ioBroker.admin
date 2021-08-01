@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.1.19",
+        "version": "5.1.20",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.20": {
+                "en": "Corrected some errors reported via sentry",
+                "de": "Einige Fehler behoben, die über die Wache gemeldet wurden",
+                "ru": "Исправлены некоторые ошибки, о которых сообщал часовой.",
+                "pt": "Corrigidos alguns erros relatados via sentinela",
+                "nl": "Enkele fouten gecorrigeerd die zijn gemeld via schildwacht",
+                "fr": "Correction de quelques erreurs signalées via sentinelle",
+                "it": "Corretti alcuni errori segnalati tramite sentinella",
+                "es": "Se corrigieron algunos errores informados a través de centinela.",
+                "pl": "Poprawiono niektóre błędy zgłaszane przez wartownika",
+                "zh-cn": "更正了通过哨兵报告的一些错误"
+            },
             "5.1.19": {
                 "en": "Corrected some GUI errors",
                 "de": "Einige GUI-Fehler korrigiert",
@@ -245,18 +257,6 @@
                 "es": "Admin5: Se corrigió el selector de host\nAdmin5: Implementó los registros de colores.",
                 "pl": "Admin5: Poprawiono selektor hosta\nAdmin5: Zaimplementowano kolorowe dzienniki",
                 "zh-cn": "Admin5：修复了主机选择器\nAdmin5：实施彩色日志"
-            },
-            "5.1.0": {
-                "en": "Admin5: Fixed update of objects\nAdmin5: React UI is by default enabled",
-                "de": "Admin5: Aktualisierung von Objekten behoben\nAdmin5: React UI ist standardmäßig aktiviert",
-                "ru": "Admin5: Исправлено обновление объектов\nAdmin5: React UI по умолчанию включен",
-                "pt": "Admin5: atualização corrigida de objetos\nAdmin5: React UI está habilitado por padrão",
-                "nl": "Admin5: Vaste update van objecten\nAdmin5: React UI is standaard ingeschakeld",
-                "fr": "Admin5: Correction de la mise à jour des objets\nAdmin5: React UI est activé par défaut",
-                "it": "Admin5: corretto aggiornamento degli oggetti\nAdmin5: React UI è abilitato per impostazione predefinita",
-                "es": "Admin5: actualización fija de objetos\nAdmin5: React UI está habilitado de forma predeterminada",
-                "pl": "Admin5: Naprawiono aktualizację obiektów\nAdmin5: React UI jest domyślnie włączony",
-                "zh-cn": "Admin5：修复了对象的更新\nAdmin5：默认情况下，React UI已启用"
             }
         },
         "desc": {

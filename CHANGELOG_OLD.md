@@ -1,3 +1,6 @@
+## 5.1.14 (2021-07-23)
+* (bluefox) Corrected error with "Intro" page. Warning: All cards must be deactivated anew.
+
 ## 5.1.13 (2021-07-21)
 * (bluefox) Improved json config
 

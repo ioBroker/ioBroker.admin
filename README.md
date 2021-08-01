@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 5.1.20 (2021-08-01)
 * (bluefox) Corrected some errors reported via sentry
 
 ### 5.1.19 (2021-07-31)
@@ -104,9 +104,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 5.1.15 (2021-07-26)
 * (bluefox) Replaced the formula icon in the edit aliases dialog
 * (bluefox) Added the logic for checkbox in JsonConfig 
-
-### 5.1.14 (2021-07-23)
-* (bluefox) Corrected error with "Intro" page. Warning: All cards must be deactivated anew.
 
 ## License
 The MIT License (MIT)
