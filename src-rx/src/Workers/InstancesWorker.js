@@ -80,7 +80,7 @@ class InstancesWorker {
                     .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
 
                 this.getInstances(true)
-                    .then(instances => Object.keys(instances)
+                    .then(instances => instances && Object.keys(instances)
                         .forEach(id => this.objectChangeHandler(id, instances[id])));
             }
         } else if (!isConnected && this.connected) {

@@ -107,7 +107,7 @@ class HostsWorker {
 
                 // read all hosts anew and inform about it
                 this.getHosts(true)
-                    .then(hosts => Object.keys(hosts)
+                    .then(hosts => hosts && Object.keys(hosts)
                         .forEach(id => this.objectChangeHandler(id, hosts[id])));
             }
             if (this.aliveHandlers.length) {

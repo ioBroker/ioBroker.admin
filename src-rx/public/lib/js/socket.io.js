@@ -190,11 +190,15 @@ function SocketClient () {
                     handlers[name] && handlers[name].forEach(cb => cb.call(this));
                 }
             } else if (type === MESSAGE_TYPES.PING) {
-                socket.send(JSON.stringify([MESSAGE_TYPES.PONG]));
+                if (socket) {
+                    socket.send(JSON.stringify([MESSAGE_TYPES.PONG]));
+                } else {
+                    this.log.warn('Cannot do pong: connection closed');
+                }
             } else if (type === MESSAGE_TYPES.PONG) {
                 // lastPong saved
             } else {
-                this.log.warn('Received unknown message type: ' + type)
+                this.log.warn('Received unknown message type: ' + type);
             }
         };
 

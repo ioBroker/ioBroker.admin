@@ -227,7 +227,8 @@ class Adapters extends Component {
             lastUpdate: 0,
             repository: {},
             installed: {},
-            adapters: [],
+            adapters: {},
+            instances: {},
             categories: [],
             hostData: {},
             hostOs: '',
@@ -353,9 +354,9 @@ class Adapters extends Component {
     }
 
     onAdaptersChanged = events => {
-        this.tempAdapters  = this.tempAdapters  || JSON.parse(JSON.stringify(this.state.adapters));
-        this.tempInstalled = this.tempInstalled || JSON.parse(JSON.stringify(this.state.installed));
-        this.tempInstances = this.tempInstances || JSON.parse(JSON.stringify(this.state.instances));
+        this.tempAdapters  = this.tempAdapters  || JSON.parse(JSON.stringify(this.state.adapters  || {}));
+        this.tempInstalled = this.tempInstalled || JSON.parse(JSON.stringify(this.state.installed || {}));
+        this.tempInstances = this.tempInstances || JSON.parse(JSON.stringify(this.state.instances || {}));
 
         events.forEach(event => {
             // detect if adapter or instance
@@ -444,9 +445,10 @@ class Adapters extends Component {
 
     getAdapters = (update, bigUpdate) => {
         console.log('[ADAPTERS] getAdapters');
-        let adapters
-        let installed
+        let adapters;
+        let installed;
         const currentHost = this.props.currentHost;
+
         return new Promise(resolve => {
             if (!this.state.update && update) {
                 this.setState({ update: true }, () => resolve());
@@ -507,7 +509,7 @@ class Adapters extends Component {
         const installed = JSON.parse(JSON.stringify(this.state.installed));
         const repository = JSON.parse(JSON.stringify(this.state.repository));
 
-        const nodeJsVersion = hostData['Node.js'].replace('v', '');
+        const nodeJsVersion = (hostData['Node.js'] || '').replace('v', '');
         const hostOs = hostData.os;
 
         const categories = {};

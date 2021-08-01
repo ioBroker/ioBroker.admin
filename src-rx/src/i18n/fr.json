@@ -1437,5 +1437,6 @@
   "press_discover": "Appuyez sur « Découvrir » pour trouver des périphériques sur votre réseau (Désactivez les pare-feu réseau/systèmes d'analyse du trafic avant !)\nou \"Suivant\" pour utiliser les appareils du processus de découverte précédent",
   "vote": "vote",
   "votes2": "voix",
-  "vote21": "voix"
+  "vote21": "voix",
+  "Show/hide colors": "Afficher/masquer les couleurs"
 }

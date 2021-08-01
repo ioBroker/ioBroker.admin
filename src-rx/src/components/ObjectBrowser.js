@@ -2224,17 +2224,17 @@ class ObjectBrowser extends Component {
                     this.parseObjectForAdmins(columnsForAdmin, event.obj);
 
                     if (JSON.stringify(this.state.columnsForAdmin) !== JSON.stringify(columnsForAdmin)) {
-                        newState= { columnsForAdmin };
+                        newState = { columnsForAdmin };
                     }
                 }
-                if (this.objects[id]) {
-                    if (obj) {
-                        this.objects[id] = obj;
+                if (this.objects[event.id]) {
+                    if (event.obj) {
+                        this.objects[event.id] = event.obj;
                     } else {
-                        delete this.objects[id];
+                        delete this.objects[event.id];
                     }
-                } else if (this.objects[id]) {
-                    delete this.objects[id];
+                } else if (this.objects[event.id]) {
+                    delete this.objects[event.id];
                 }
             });
         } else {

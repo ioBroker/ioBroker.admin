@@ -1437,5 +1437,6 @@
   "press_discover": "Presione \"Descubrir\" para encontrar dispositivos en su red (¡apague los firewalls de red / analice los sistemas de tráfico antes!)\no \"Siguiente\" para usar dispositivos del proceso de descubrimiento anterior",
   "vote": "voto",
   "votes2": "votos",
-  "vote21": "votos"
+  "vote21": "votos",
+  "Show/hide colors": "Mostrar/ocultar colores"
 }

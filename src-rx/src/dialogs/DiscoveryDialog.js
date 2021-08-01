@@ -374,7 +374,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
 
         Object.keys(resultList).forEach(key => {
             if (lastSelection) {
-                listChecked[key] = lastSelection.includes(key);
+                listChecked[key] = lastSelection[key];
             } else {
                 listChecked[key] = key !== 'serial';
             }

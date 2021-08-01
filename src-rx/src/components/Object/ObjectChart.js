@@ -670,7 +670,7 @@ class ObjectChart extends Component {
             if (withReadData) {
                 this.readHistory(start, end)
                     .then(values => {
-                        typeof this.echartsReact.getEchartsInstance === 'function' && this.echartsReact.getEchartsInstance().setOption({
+                        this.echartsReact && typeof this.echartsReact.getEchartsInstance === 'function' && this.echartsReact.getEchartsInstance().setOption({
                             series: [{data: this.convertData(values)}],
                             xAxis: {
                                 min: this.chart.min,
@@ -680,7 +680,7 @@ class ObjectChart extends Component {
                         cb && cb();
                     });
             } else {
-                typeof this.echartsReact.getEchartsInstance === 'function' && this.echartsReact.getEchartsInstance().setOption({
+                this.echartsReact && typeof this.echartsReact.getEchartsInstance === 'function' && this.echartsReact.getEchartsInstance().setOption({
                     series: [{data: this.convertData()}],
                     xAxis: {
                         min: this.chart.min,
@@ -705,7 +705,7 @@ class ObjectChart extends Component {
 
         if (this.state.relativeRange !== 'absolute') {
             this.setState({ relativeRange: 'absolute' });
-        } else {
+        } else if (this.echartsReact && typeof this.echartsReact.getEchartsInstance === 'function') {
             this.echartsReact.getEchartsInstance().setOption({
                 xAxis: {
                     min: this.chart.min,
@@ -878,6 +878,10 @@ class ObjectChart extends Component {
     }
 
     installEventHandlers() {
+        if (!this.echartsReact || typeof this.echartsReact.getEchartsInstance !== 'function') {
+            return;
+        }
+
         const zr = this.echartsReact.getEchartsInstance().getZr();
         if (!zr._iobInstalled) {
             zr._iobInstalled = true;

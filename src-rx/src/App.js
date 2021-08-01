@@ -502,11 +502,11 @@ class App extends Router {
                     this.socket.getCurrentInstance()
                         .then(adminInstance => {
                             this.adminInstance = adminInstance;
-                            return this.socket.getIsEasyModeStrict()
+                            return this.socket.getIsEasyModeStrict();
                         })
                         .then(async isStrict => {
                             if (isStrict) {
-                                this.socket.getEasyMode()
+                                return this.socket.getEasyMode()
                                     .then(config => {
                                         this.setState({
                                             lang: this.socket.systemLang,
@@ -515,7 +515,7 @@ class App extends Router {
                                             easyModeConfigs: config.configs,
                                             objects,
                                         });
-                                    })
+                                    });
                             } else {
                                 // create Workers
                                 this.logsWorker      = this.logsWorker      || new LogsWorker(this.socket, 1000);
@@ -533,14 +533,12 @@ class App extends Router {
                                 try {
                                     newState.systemConfig = await this.socket.getCompactSystemConfig();
                                     newState.wizard = !newState.systemConfig.common.licenseConfirmed;
+                                    newState.versionAdmin = (await this.socket.getVersion()).version;
+                                    await this.findCurrentHost(newState);
+                                    await this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
                                 } catch (error) {
                                     console.log(error);
                                 }
-
-                                newState.versionAdmin = (await this.socket.getVersion()).version;
-                                await this.findCurrentHost(newState);
-
-                                await this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
 
                                 this.adaptersWorker.registerRepositoryHandler(this.repoChangeHandler);
                                 this.adaptersWorker.registerHandler(this.adaptersChangeHandler);
@@ -574,6 +572,10 @@ class App extends Router {
                                                         this.makePingAuth();
                                                     }
                                                 })
+                                        })
+                                        .catch(error => {
+                                            console.error(error);
+                                            this.showAlert(error, 'error');
                                         });
                                 }
 
@@ -596,6 +598,10 @@ class App extends Router {
                                         .then(notifications => this.showAdaptersWarning(notifications, this.socket, newState.currentHost)),
                                     3000);
                             }
+                        })
+                        .catch(error => {
+                            console.error(error);
+                            this.showAlert(error, 'error');
                         });
                 },
                 //onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
@@ -756,10 +762,15 @@ class App extends Router {
         const maxCount = 200;
         return new Promise(async resolve => {
             for (let instance = 0; instance < maxCount; instance++) {
-                let adminAlive = await this.socket.getState(`system.adapter.admin.${instance}.alive`);
-                if (adminAlive && adminAlive.val) {
-                    resolve(instance);
-                    break;
+                try {
+                    let adminAlive = await this.socket.getState(`system.adapter.admin.${instance}.alive`);
+                    if (adminAlive && adminAlive.val) {
+                        resolve(instance);
+                        break;
+                    }
+                } catch (error) {
+                    console.error(error);
+                    this.showAlert(error, 'error');
                 }
             }
             resolve(0);
@@ -791,32 +802,37 @@ class App extends Router {
     }
 
     getNews = instance => async (name, newsFeed) => {
-        const lastNewsId = await this.socket.getState(`admin.${instance}.info.newsLastId`);
-        const news = JSON.parse(newsFeed?.val);
+        try {
+            const lastNewsId = await this.socket.getState(`admin.${instance}.info.newsLastId`);
+            const news = JSON.parse(newsFeed?.val);
 
-        if (news && news.length && news[0].id !== lastNewsId?.val) {
-            this.socket.getUuid()
-                .then(uuid => this.socket.getHostInfo(this.state.currentHost)
-                    .catch(() => null)
-                    .then(info => this.socket.getCompactInstances()
+            if (news && news.length && news[0].id !== lastNewsId?.val) {
+                this.socket.getUuid()
+                    .then(uuid => this.socket.getHostInfo(this.state.currentHost)
                         .catch(() => null)
-                        .then(instances => {
-                            const checkNews = checkMessages(news, lastNewsId?.val, {
-                                lang: I18n.getLanguage(),
-                                adapters: this.state.adapters,
-                                instances: instances || [],
-                                nodeVersion: info ? info['Node.js'] || '?' : '?',
-                                npmVersion: info ? info.NPM || '?' : '?',
-                                os: info ? info.os || '?' : '?',
-                                activeRepo: this.state.systemConfig.common.activeRepo,
-                                uuid
-                            });
+                        .then(info => this.socket.getCompactInstances()
+                            .catch(() => null)
+                            .then(instances => {
+                                const checkNews = checkMessages(news, lastNewsId?.val, {
+                                    lang: I18n.getLanguage(),
+                                    adapters: this.state.adapters,
+                                    instances: instances || [],
+                                    nodeVersion: info ? info['Node.js'] || '?' : '?',
+                                    npmVersion: info ? info.NPM || '?' : '?',
+                                    os: info ? info.os || '?' : '?',
+                                    activeRepo: this.state.systemConfig.common.activeRepo,
+                                    uuid
+                                });
 
-                            if (checkNews && checkNews.length) {
-                                newsAdminDialogFunc(checkNews, lastNewsId?.val, this.state.themeName, this.state.themeType, id =>
-                                    this.socket.setState(`admin.${instance}.info.newsLastId`, { val: id, ack: true }));
-                            }
-                        })));
+                                if (checkNews && checkNews.length) {
+                                    newsAdminDialogFunc(checkNews, lastNewsId?.val, this.state.themeName, this.state.themeType, id =>
+                                        this.socket.setState(`admin.${instance}.info.newsLastId`, { val: id, ack: true }));
+                                }
+                            })));
+            }
+        } catch (error) {
+            console.error(error);
+            this.showAlert(error, 'error');
         }
     }
 

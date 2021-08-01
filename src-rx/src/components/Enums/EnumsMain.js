@@ -275,14 +275,14 @@ class EnumsList extends Component {
 
         if (id.startsWith('enum.')) {
             if (obj) {
-                const oldObj = (this.changeEnums && this.changeEnums[id]) || this.state.enums[id];
+                const oldObj = (this.changeEnums && this.changeEnums[id]) || (this.state.enums && this.state.enums[id]);
                 if (!oldObj || (oldObj && JSON.stringify(oldObj) !== JSON.stringify(obj))) {
                     this.changeEnums = this.changeEnums || JSON.parse(JSON.stringify(this.state.enums));
                     this.changeEnums[id] = obj;
                     changed = true;
                 }
             } else {
-                if ((this.changeEnums && this.changeEnums[id]) || (!this.changeEnums && this.state.enums[id])) {
+                if ((this.changeEnums && this.changeEnums[id]) || (!this.changeEnums && this.state.enums && this.state.enums[id])) {
                     this.changeEnums = this.changeEnums || JSON.parse(JSON.stringify(this.state.enums));
                     delete this.changeEnums[id];
                     changed = true;
@@ -296,7 +296,7 @@ class EnumsList extends Component {
             // collect events
             this.updateTimeout = setTimeout(() => {
                 this.updateTimeout = null;
-                const changeEnums = this.changeEnums
+                const changeEnums = this.changeEnums;
                 this.changeEnums = null;
                 this.updateData(changeEnums)
                     .then(() => {

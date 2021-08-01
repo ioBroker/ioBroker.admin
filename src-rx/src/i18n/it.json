@@ -1437,5 +1437,6 @@
   "press_discover": "Premi \"Scopri\" per trovare i dispositivi nella tua rete (Disattiva prima i firewall di rete/i sistemi di analisi del traffico!)\no \"Avanti\" per utilizzare i dispositivi del precedente processo di rilevamento",
   "vote": "voto",
   "votes2": "voti",
-  "vote21": "voti"
+  "vote21": "voti",
+  "Show/hide colors": "Mostra/nascondi colori"
 }

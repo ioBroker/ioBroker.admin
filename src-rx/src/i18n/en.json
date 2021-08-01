@@ -1437,5 +1437,6 @@
   "press_discover": "Press \"Discover\" to find devices in your network (Turn off network firewalls/traffic analyze systems before!)\nor \"Next\" to use devices from previous discovery process",
   "vote": "vote",
   "votes2": "votes",
-  "vote21": "votes"
+  "vote21": "votes",
+  "Show/hide colors": "Show/hide colors"
 }

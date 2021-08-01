@@ -80,7 +80,7 @@ class AdaptersWorker {
                     .catch(e => window.alert(`Cannot subscribe on object: ${e}`));
 
                 this.getAdapters(true)
-                    .then(adapters => Object.keys(adapters)
+                    .then(adapters => adapters && Object.keys(adapters)
                         .forEach(id => this.objectChangeHandler(id, adapters[id])));
             }
         } else if (!isConnected && this.connected) {
