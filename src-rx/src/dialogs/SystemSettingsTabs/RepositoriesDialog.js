@@ -3,6 +3,7 @@ import {Component} from 'react';
 import clsx from 'clsx';
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 
 import Fab from '@material-ui/core/Fab';
 import Table from '@material-ui/core/Table';
@@ -17,7 +18,7 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import Utils from '../../Utils';
-import PropTypes from "prop-types";
+
 
 const styles = theme => ({
     tabPanel: {

@@ -1095,8 +1095,8 @@ class Adapters extends Component {
             const adapter = this.state.repository[value];
             const installed = this.state.installed[value];
 
-            if (cached.title instanceof Object || !cached.desc) {
-                console.warn('[ADAPTERS] ' + adapter);
+            if ((cached.title instanceof Object) || !cached.desc) {
+                console.warn('[ADAPTERS] ' + value);
             }
 
             return <AdapterRow
@@ -1273,7 +1273,7 @@ class Adapters extends Component {
                                 daysAgo === 0 ? textDaysAgo0 :
                                     (_daysAgo10 === 1 ? textDaysAgo1.replace('%d', daysAgo) :
                                         (_daysAgo10 === 2 || _daysAgo10 === 3 || _daysAgo10 === 4 ? textDaysAgo2.replace('%d', daysAgo) : textDaysAgo.replace('%d', daysAgo))) : ''
-                        }
+                        };
                     }
                 }
             }));

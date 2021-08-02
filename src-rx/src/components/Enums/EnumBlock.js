@@ -248,7 +248,7 @@ class EnumBlock extends Component {
 
                 if (cIcon && !cIcon.startsWith('data:image/') && cIcon.includes('.')) {
                     let instance;
-                    if (objects[id] && objects[id].type === 'instance' || objects[id].type === 'adapter') {
+                    if (objects[id] && (objects[id].type === 'instance' || objects[id].type === 'adapter')) {
                         icons[i] = `${imagePrefix}/adapter/${objects[id].common.name}/${cIcon}`;
                     } else if (id && id.startsWith('system.adapter.')) {
                         instance = id.split('.', 3);
