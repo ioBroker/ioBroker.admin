@@ -1065,8 +1065,11 @@ class Adapters extends Component {
         search = (search || '').toLowerCase().trim();
         let filteredList = [];
         if (search) {
-            this.state.categories.forEach(category => category.adapters.map(name => {
+            this.state.categories.forEach(category => category.adapters.forEach(name => {
                 const adapter = this.state.repository[name];
+                if (!adapter) {
+                    return;
+                }
 
                 const title = ((adapter.title || '').toString() || '').replace('ioBroker Visualisation - ', '');
                 const desc = adapter.desc ? adapter.desc[this.props.lang] || adapter.desc.en || adapter.desc : '';
@@ -1172,12 +1175,10 @@ class Adapters extends Component {
                 }
                 const categoryName = category.name;
                 const expanded = this.state.categoriesExpanded[categoryName];
-                if (!this.state.list) {
-                    count++;
-                }
+                count++;
 
                 return <Fragment key={`category-${categoryName} ${category.adapters.length}`}>
-                    {!this.state.list && <AdapterRow
+                    <AdapterRow
                         descHidden={descHidden}
                         key={'category-' + categoryName + 1}
                         category
@@ -1189,7 +1190,7 @@ class Adapters extends Component {
                         onToggle={() => this.toggleCategory(categoryName)}
                         t={this.t}
                         hidden={false}
-                    />}
+                    />
 
                     {expanded && category.adapters.map(value => {
                         const item = this.getRow(value, descHidden);
@@ -1199,7 +1200,6 @@ class Adapters extends Component {
                 </Fragment>;
             });
         }
-        this.listOfVisibleAdapterLength = count !== undefined ? count : this.listOfVisibleAdapterLength;
 
         if (!count) {
             return !this.state.update && <tr><td colSpan={4} style={{ padding: 16, fontSize: 18 }}>{this.t('all items are filtered out')}</td></tr>;

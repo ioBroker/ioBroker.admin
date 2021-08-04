@@ -2227,6 +2227,7 @@ class ObjectBrowser extends Component {
                         newState = { columnsForAdmin };
                     }
                 }
+                this.objects = this.objects || [];
                 if (this.objects[event.id]) {
                     if (event.obj) {
                         this.objects[event.id] = event.obj;

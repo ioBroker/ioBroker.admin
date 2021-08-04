@@ -54,9 +54,9 @@ class CustomTab extends Component {
                 } else {
                     const name = `system.adapter.${adapter}.`;
 
-                    instance = Object.keys(instances).find(id => id.startsWith(name));
+                    instance = instances && Object.keys(instances).find(id => id.startsWith(name));
                 }
-                instance = instances[instance];
+                instance = instances && instances[instance];
 
                 if (!instance || !instance.common || !instance.common.adminTab) {
                     console.error(`Cannot find instance ${tab}`);

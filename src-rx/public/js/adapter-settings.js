@@ -159,7 +159,7 @@ function preInit () {
         "es": "Ajustes principales",
         "pl": "Ustawienia główne",
         "zh-cn": "主要设置"
-      };
+    };
 
     systemDictionary["Let's Encrypt SSL"] = {
         "en": "Let's Encrypt Certificates",
@@ -172,7 +172,7 @@ function preInit () {
         "es": "Let's Encrypt Certificados",
         "pl": "Let's Encrypt certyfikaty",
         "zh-cn": "Let's Encrypt证书"
-      };
+    };
     systemDictionary["Please activate secure communication"] = {
         "en": "Please activate secure communication",
         "de": "Bitte sichere Kommunikation aktivieren",
@@ -184,7 +184,7 @@ function preInit () {
         "es": "Por favor active la comunicación segura",
         "pl": "Aktywuj bezpieczną komunikację",
         "zh-cn": "请激活安全通信"
-      };
+    };
 
     if (socket.connected) {
         loadSystemConfig(function () {
@@ -1242,18 +1242,22 @@ function getExtendableInstances(_adapter, callback) {
 
     socket.emit('getObjectView', 'system', 'instance', null, function (err, doc) {
         if (err) {
-            callback && callback ([]);
+            callback && callback([]);
         } else {
             if (!doc.rows.length) {
-                callback && callback ([]);
+                callback && callback([]);
             } else {
                 var res = [];
                 for (var i = 0; i < doc.rows.length; i++) {
-                    if (doc.rows[i].value.common.webExtendable) {
-                        res.push(doc.rows[i].value);
+                    var obj = doc.rows[i].value;
+                    if (obj &&
+                        obj.common &&
+                        obj.common.webExtendable &&
+                        (!_adapter || obj.common.name === _adapter)) {
+                        res.push(obj);
                     }
                 }
-                callback && callback (res);
+                callback && callback(res);
             }
         }
     });
@@ -1813,13 +1817,13 @@ function showSelectIdDialog(val, callback) {
  */
 function values2table(divId, values, onChange, onReady, maxRaw) {
     if (typeof values === 'function') {
-		typeof onChange === 'number' ? maxRaw = onChange : maxRaw = null;
+        typeof onChange === 'number' ? maxRaw = onChange : maxRaw = null;
         onChange = values;
         values   = divId;
         divId    = '';
     }
 
-	if (typeof onReady === 'number') {
+    if (typeof onReady === 'number') {
         maxRaw = onReady;
         onReady = null;
     } else if (typeof maxRaw === 'undefined') {
@@ -1835,10 +1839,10 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
         $div = $('#' + divId);
     }
     var $add = $div.find('.table-button-add');
-	$add.data('raw', values.length);
+    $add.data('raw', values.length);
 
-	if (maxRaw) {
-	    $add.data('maxraw', maxRaw);
+    if (maxRaw) {
+        $add.data('maxraw', maxRaw);
     }
 
     if (!$add.data('inited')) {
@@ -1887,7 +1891,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             getEnums('rooms', function (err, list) {
                 var result = {};
                 var trRooms = _('nonerooms');
-				if (trRooms !== 'nonerooms') {
+                if (trRooms !== 'nonerooms') {
                     result[_('none')] = trRooms;
                 } else {
                     result[_('none')] = '';
@@ -1927,7 +1931,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             getEnums('functions', function (err, list) {
                 var result = {};
                 var trFuncs = _('nonefunctions');
-				if (trFuncs !== 'nonefunctions') {
+                if (trFuncs !== 'nonefunctions') {
                     result[_('none')] = trFuncs;
                 } else {
                     result[_('none')] = '';
@@ -1971,7 +1975,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     type:    $(this).data('type') || 'text',
                     def:     $(this).data('default'),
                     style:   $(this).data('style'),
-					tdstyle: $(this).data('tdstyle')
+                    tdstyle: $(this).data('tdstyle')
                 };
                 if (obj.type === 'checkbox') {
                     if (obj.def === 'false') {
@@ -2027,15 +2031,15 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                 text += '<td';
                 var line    = '';
                 var style   = '';
-				var tdstyle = '';
+                var tdstyle = '';
                 if (names[i]) {
-					if (names[i].name !== '_index') {
+                    if (names[i].name !== '_index') {
                         tdstyle = names[i].tdstyle || '';
                         if (tdstyle && tdstyle[0] !== ';') {
                             tdstyle = ';' + tdstyle;
                         }
                     }
-					if (names[i].name === '_index') {
+                    if (names[i].name === '_index') {
                         style = (names[i].style ? names[i].style : 'text-align: right;');
                         line += (v + 1);
                     } else if (names[i].type === 'checkbox') {

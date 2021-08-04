@@ -273,7 +273,7 @@ class EnumsList extends Component {
     onObjectChange = (id, obj) => {
         let changed;
 
-        if (id.startsWith('enum.')) {
+        if (this.state.enums && id.startsWith('enum.')) {
             if (obj) {
                 const oldObj = (this.changeEnums && this.changeEnums[id]) || (this.state.enums && this.state.enums[id]);
                 if (!oldObj || (oldObj && JSON.stringify(oldObj) !== JSON.stringify(obj))) {

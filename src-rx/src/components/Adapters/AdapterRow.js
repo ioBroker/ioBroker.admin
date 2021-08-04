@@ -66,6 +66,7 @@ const styles = theme => ({
     },
     categoryName: {
         fontWeight: 'bold',
+        cursor: 'pointer',
     },
     green: {
         color: green[500]
@@ -222,11 +223,10 @@ class AdapterRow extends Component {
                                 {this.props.expanded ? <ExpandMoreIcon /> : <ChevronRightIcon />}
                             </IconButton>
                         </Grid>
-                        {!isCategory && <Grid item>{name}</Grid>}
                     </Grid>
                 </TableCell>
-                <TableCell>
-                    <div className={clsx(classes.nameDiv, isCategory && classes.categoryName)}>
+                <TableCell onClick={this.props.onToggle}>
+                    <div className={clsx(classes.nameDiv, classes.categoryName)}>
                         <MaterialDynamicIcon objIconBool iconName={categoryName} className={classes.marginRight5} />
                         {name}
                     </div>

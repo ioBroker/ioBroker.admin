@@ -110,8 +110,13 @@ class JsonConfig extends Router {
                 .then(schema =>
                     // load language
                     JsonConfigComponent.loadI18n(this.props.socket, schema?.i18n, this.props.adapterName)
-                        .then(() =>
-                            this.setState({schema, data: obj.native, common: obj.common}))));
+                        .then(() => {
+                            if (obj) {
+                                this.setState({schema, data: obj.native, common: obj.common});
+                            } else {
+                                window.alert(`Instance system.adapter.${this.props.adapterName}.${this.props.instance} not found!`);
+                            }
+                        })));
     }
 
     /**
@@ -230,6 +235,12 @@ class JsonConfig extends Router {
     async onSave(doSave, close) {
         if (doSave) {
             const obj = await this.getInstanceObject();
+
+            if (!obj) {
+                console.error('Something went wrong: may be no connection?');
+                window.alert('Something went wrong: may be no connection?');
+                return;
+            }
 
             Object.keys(this.state.data).forEach(attr => {
                 const item = this.findAttr(attr);

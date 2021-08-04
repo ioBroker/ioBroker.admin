@@ -804,32 +804,35 @@ class App extends Router {
     getNews = instance => async (name, newsFeed) => {
         try {
             const lastNewsId = await this.socket.getState(`admin.${instance}.info.newsLastId`);
-            const news = JSON.parse(newsFeed?.val);
+            if (newsFeed && newsFeed.val) {
+                const news = JSON.parse(newsFeed?.val);
 
-            if (news && news.length && news[0].id !== lastNewsId?.val) {
-                this.socket.getUuid()
-                    .then(uuid => this.socket.getHostInfo(this.state.currentHost)
-                        .catch(() => null)
-                        .then(info => this.socket.getCompactInstances()
+                if (news && news.length && news[0].id !== lastNewsId?.val) {
+                    this.socket.getUuid()
+                        .then(uuid => this.socket.getHostInfo(this.state.currentHost)
                             .catch(() => null)
-                            .then(instances => {
-                                const checkNews = checkMessages(news, lastNewsId?.val, {
-                                    lang: I18n.getLanguage(),
-                                    adapters: this.state.adapters,
-                                    instances: instances || [],
-                                    nodeVersion: info ? info['Node.js'] || '?' : '?',
-                                    npmVersion: info ? info.NPM || '?' : '?',
-                                    os: info ? info.os || '?' : '?',
-                                    activeRepo: this.state.systemConfig.common.activeRepo,
-                                    uuid
-                                });
+                            .then(info => this.socket.getCompactInstances()
+                                .catch(() => null)
+                                .then(instances => {
+                                    const checkNews = checkMessages(news, lastNewsId?.val, {
+                                        lang: I18n.getLanguage(),
+                                        adapters: this.state.adapters,
+                                        instances: instances || [],
+                                        nodeVersion: info ? info['Node.js'] || '?' : '?',
+                                        npmVersion: info ? info.NPM || '?' : '?',
+                                        os: info ? info.os || '?' : '?',
+                                        activeRepo: this.state.systemConfig.common.activeRepo,
+                                        uuid
+                                    });
 
-                                if (checkNews && checkNews.length) {
-                                    newsAdminDialogFunc(checkNews, lastNewsId?.val, this.state.themeName, this.state.themeType, id =>
-                                        this.socket.setState(`admin.${instance}.info.newsLastId`, { val: id, ack: true }));
-                                }
-                            })));
+                                    if (checkNews && checkNews.length) {
+                                        newsAdminDialogFunc(checkNews, lastNewsId?.val, this.state.themeName, this.state.themeType, id =>
+                                            this.socket.setState(`admin.${instance}.info.newsLastId`, { val: id, ack: true }));
+                                    }
+                                })));
+                }
             }
+
         } catch (error) {
             console.error(error);
             this.showAlert(error, 'error');
