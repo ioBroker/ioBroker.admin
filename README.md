@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 5.1.22 (2021-08-04)
 * (bluefox) Corrected some errors reported via sentry
 
 ### 5.1.19 (2021-07-31)
