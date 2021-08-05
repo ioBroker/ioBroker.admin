@@ -2096,7 +2096,7 @@ class Connection {
             this._socket.emit('getHostByIp', ipOrHostName, (ip, host) => {
                 const IPs4 = [{name: '[IPv4] 0.0.0.0 - Listen on all IPs', address: '0.0.0.0', family: 'ipv4'}];
                 const IPs6 = [{name: '[IPv6] :: - Listen on all IPs',      address: '::',      family: 'ipv6'}];
-                if (host.native?.hardware?.networkInterfaces) {
+                if (host?.native?.hardware?.networkInterfaces) {
                     for (const eth in host.native.hardware.networkInterfaces) {
                         if (!host.native.hardware.networkInterfaces.hasOwnProperty(eth)) {
                             continue;

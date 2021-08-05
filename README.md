@@ -69,7 +69,7 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 ## Simple instance's settings page
 The user has the possibility to limit the access to the instance configuration dialog.
 For that the option "Allow access only to specific instances" must be activated.
-It could be found on the "Access to instances" tab.
+It could be found on the "Access to the instances" tab.
 Additionally, the allowed instances should be selected in the appeared configuration table.
 
 If this option is disabled, the simple configuration page could be accessed under http://IP:8081/configs.html
@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### 5.1.22 (2021-08-04)
+### __WORK IN PROGRESS__
 * (bluefox) Corrected some errors reported via sentry
 
 ### 5.1.19 (2021-07-31)

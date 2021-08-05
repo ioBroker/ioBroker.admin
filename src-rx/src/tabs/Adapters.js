@@ -1077,9 +1077,9 @@ class Adapters extends Component {
                 if (name.includes(search)) {
                     filteredList.push(name);
                 } else
-                    if (title && title.toLowerCase().includes(search)) {
+                    if (title && typeof title === 'string' && title.toLowerCase().includes(search)) {
                         filteredList.push(name);
-                    } else if (desc && desc.toLowerCase().includes(search)) {
+                    } else if (desc && typeof desc === 'string' && desc.toLowerCase().includes(search)) {
                         filteredList.push(name);
                     } else {
                         adapter.keywords && adapter.keywords.forEach(value =>
@@ -1699,8 +1699,12 @@ class Adapters extends Component {
                         this.closeAdapterUpdateDialog(() => {
                             this.props.socket.getObject('system.adapter.' + adapter)
                                 .then(obj => {
-                                    obj.common.ignoreVersion = ignoreVersion;
-                                    return this.props.socket.setObject(obj._id, obj);
+                                    if (obj) {
+                                        obj.common.ignoreVersion = ignoreVersion;
+                                        return this.props.socket.setObject(obj._id, obj);
+                                    } else {
+                                        window.alert(`Adapter "${adapter}" does not exist!`);
+                                    }
                                 })
                                 .then(() => {
                                     const updateAvailable = [...this.state.updateAvailable];

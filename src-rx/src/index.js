@@ -35,12 +35,37 @@ function build() {
 }
 
 if (window.location.host !== 'localhost:3000') {
+    const ignoreErrors = [
+        'removeChild',                         // ignore errors that happen by changing the version
+        'getWidth',                            // echarts error
+        'safari-extension',                    // ignore safari extension errors
+        'this.animation',                      // echarts error
+        'No connection',                       // Ignore no connection errors
+        'notConnectedError',                   // Ignore no connection errors
+        'has no target',                       // Alias has no target
+        'ResizeObserver',                      // echarts error
+        'WorkerGlobalScope',                   // worker error
+        'generateKey',                         // ignore safari extension errors
+        'The operation is insecure.',          // http => https access
+        'SyntaxError: An invalid or illegal string was specified',   // No stack and no possibility to detect
+        'Can\'t find variable: servConn',      // Error from info adapter
+        'LPContentScriptFeatures',             // ignore safari extension errors
+    ];
+
     Sentry.init({
         dsn: 'https://43643152dab3481db69950ba866ee9d6@sentry.iobroker.net/58',
         release: 'iobroker.' + window.adapterName + '@' + version,
         integrations: [
             new SentryIntegrations.Dedupe()
-        ]
+        ],
+        beforeSend(event) {
+            // Modify the event here
+            if (event && event.culprit &&
+                ignoreErrors.find(error => event.culprit.includes(error))) {
+                return null;
+            }
+            return event;
+        }
     });
 }
 
