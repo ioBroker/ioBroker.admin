@@ -220,7 +220,11 @@ const GenereteInputsModal = ({ themeType, themeName, socket, newInstances, onApp
     const onClose = () => {
         setOpen(false);
         if (node) {
-            document.body.removeChild(node);
+            try {
+                window.document.body.removeChild(node);
+            } catch (e) {
+                // ignore
+            }
             node = null;
         }
     }

@@ -134,7 +134,11 @@ const JsControllerDialog = ({ socket, hostId }) => {
     const onClose = () => {
         setOpen(false);
         if (node) {
-            document.body.removeChild(node);
+            try {
+                window.document.body.removeChild(node);
+            } catch (e) {
+                // ignore
+            }
             node = null;
         }
     };
@@ -154,7 +158,11 @@ const JsControllerDialog = ({ socket, hostId }) => {
             console.error('Fallback: Oops, unable to copy', err);
         }
 
-        document.body.removeChild(textArea);
+        try {
+            window.document.body.removeChild(textArea);
+        } catch (e) {
+            // ignore
+        }
     }
     const copyTextToClipboard = (text) => {
         if (!navigator.clipboard) {

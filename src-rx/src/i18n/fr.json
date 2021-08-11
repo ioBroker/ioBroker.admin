@@ -1438,5 +1438,7 @@
   "vote": "vote",
   "votes2": "voix",
   "vote21": "voix",
-  "Show/hide colors": "Afficher/masquer les couleurs"
+  "Show/hide colors": "Afficher/masquer les couleurs",
+  "Too small": "Trop petit",
+  "Too big": "Trop grand"
 }

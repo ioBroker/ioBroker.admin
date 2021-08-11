@@ -233,7 +233,7 @@ UploadImage.defaultProps = {
     maxSize: 10 * 1024,
     icon: null,
     removeIconFunc: null,
-    accept: "image/*",
+    accept: 'image/*',
     error: false,
     onChange: base64 => console.log(base64),
     t: el => el,

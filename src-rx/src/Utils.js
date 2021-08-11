@@ -170,7 +170,7 @@ class Utils {
 
             if (link && object) {
                 if (attr === 'secure') {
-                    link = link.replace('%' + placeholder + '%', object.native[attr] ? 'https' : 'http');
+                    link = link.replace(`%${placeholder}%`, object.native[attr] ? 'https' : 'http');
                 } else {
                     let value = object.native[attr];
                     // workaround for port
@@ -187,20 +187,20 @@ class Utils {
                         if (ip === '0.0.0.0') {
                             ip = Utils.getHostname(object, objects, hosts, hostname, adminInstance);
                         }
-                        if (!link.includes('%' + placeholder + '%')) {
-                            link = link.replace('%native_' + placeholder + '%', ip);
+                        if (!link.includes(`%${placeholder}%`)) {
+                            link = link.replace(`%native_${placeholder}%`, ip || '');
                         } else {
-                            link = link.replace('%' + placeholder + '%', ip);
+                            link = link.replace(`%${placeholder}%`, ip || '');
                         }
-                    } else if (!link.includes('%' + placeholder + '%')) {
-                        link = link.replace('%native_' + placeholder + '%', value);
+                    } else if (!link.includes(`%${placeholder}%`)) {
+                        link = link.replace(`%native_${placeholder}%`, value);
                     } else {
-                        link = link.replace('%' + placeholder + '%', value);
+                        link = link.replace(`%${placeholder}%`, value);
                     }
                 }
             } else {
                 console.log('Cannot get link ' + attr);
-                link = link.replace('%' + placeholder + '%', '');
+                link = link.replace(`%${placeholder}%`, '');
             }
         } catch (error) {
             console.log(error);
@@ -275,6 +275,10 @@ class Utils {
     }
 
     static getHostname(instanceObj, objects, hosts, currentHostname, adminInstance) {
+        if (!instanceObj || !instanceObj.common) {
+            return null;
+        }
+
         let hostname;
         // check if the adapter from the same host as admin
         const adminHost = objects['system.adapter.' + adminInstance]?.common?.host;
@@ -331,7 +335,7 @@ class Utils {
                         if (_urls.length) {
                             _urls.forEach(item => item.url = item.url.replace('%ip%', ip));
                         } else {
-                            link = link.replace('%ip%', ip);
+                            link = link.replace('%ip%', ip ||'');
                         }
                     } else if (placeholder === '%protocol%') {
                         let protocol = native.secure === undefined ? native.protocol : native.secure;

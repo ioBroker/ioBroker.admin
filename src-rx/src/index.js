@@ -50,23 +50,26 @@ if (window.location.host !== 'localhost:3000') {
         'SyntaxError: An invalid or illegal string was specified',   // No stack and no possibility to detect
         'Can\'t find variable: servConn',      // Error from info adapter
         'LPContentScriptFeatures',             // ignore safari extension errors
+        'window.webkit.messageHandlers',       // ignore safari extension errors
     ];
 
-    Sentry.init({
-        dsn: 'https://43643152dab3481db69950ba866ee9d6@sentry.iobroker.net/58',
-        release: 'iobroker.' + window.adapterName + '@' + version,
-        integrations: [
-            new SentryIntegrations.Dedupe()
-        ],
-        beforeSend(event) {
-            // Modify the event here
-            if (event && event.culprit &&
-                ignoreErrors.find(error => event.culprit.includes(error))) {
-                return null;
+    if (!window.disableDataReporting && window.location.port !== '3000') {
+        Sentry.init({
+            dsn: 'https://43643152dab3481db69950ba866ee9d6@sentry.iobroker.net/58',
+            release: 'iobroker.' + window.adapterName + '@' + version,
+            integrations: [
+                new SentryIntegrations.Dedupe()
+            ],
+            beforeSend(event) {
+                // Modify the event here
+                if (event && event.culprit &&
+                    ignoreErrors.find(error => event.culprit.includes(error))) {
+                    return null;
+                }
+                return event;
             }
-            return event;
-        }
-    });
+        });
+    }
 }
 
 build();

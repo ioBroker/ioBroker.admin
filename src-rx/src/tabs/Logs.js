@@ -317,6 +317,7 @@ class Logs extends Component {
             adapters: {},
             sources: {},
             currentHost: this.props.currentHost,
+            hosts: null,
         };
 
         this.severities = {
@@ -342,7 +343,7 @@ class Logs extends Component {
     }
 
     readLogs(force, logFiles, cb) {
-        if (this.props.logsWorker) {
+        if (this.props.logsWorker && this.state.hosts) {
             this.props.logsWorker.getLogs(force)
                 .then(results => {
                     if (!results) {
@@ -518,7 +519,7 @@ class Logs extends Component {
                     if (!icon.startsWith('data:image')) {
                         icon = `./files/${adapterName}.admin/${icon}`;
                     }
-                } else {
+                } else if (this.state.hosts) {
                     icon = this.state.hosts['system.' + item.from]?.common?.icon;
                 }
                 item.icon = icon || null;

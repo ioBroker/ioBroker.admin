@@ -1358,7 +1358,7 @@ const InstanceRow = ({
                 </div>
             </Grid>
         </AccordionDetails>
-    </Accordion >;
+    </Accordion>;
 }
 
 InstanceRow.propTypes = {

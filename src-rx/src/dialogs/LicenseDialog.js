@@ -53,7 +53,11 @@ const LicenseDialog = ({ url, cb }) => {
 
     const onClose = () => {
         setOpen(false);
-        document.body.removeChild(node);
+        try {
+            node && window.document.body.removeChild(node);
+        } catch (e) {
+            // ignore
+        }
         node = null;
     };
 

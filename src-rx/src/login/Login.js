@@ -25,7 +25,7 @@ const styles = theme => ({
         height: '100%',
         alignItems: 'center',
         borderRadius: 0,
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     paper: {
         background: theme.palette.background.paper + (theme.palette.background.paper.length < 7 ? 'd' : 'dd'),
@@ -97,8 +97,9 @@ class Login extends Component {
             debugger;
             window.location = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
         }
+        const style = window.loginBackgroundColor ? {background: '#00000000'} : {};
 
-        return <Paper component="main" className={classes.root}>
+        return <Paper component="main" className={classes.root} style={style}>
             <Paper className={classes.paper}>
                 <Grid
                     container

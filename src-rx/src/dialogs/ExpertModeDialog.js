@@ -63,7 +63,12 @@ const ExpertModeDialog = ({ boolSettings, func, buttonIcon, themeType }) => {
 
         setOpen(false);
         func();
-        document.body.removeChild(node);
+        try {
+            node && window.document.body.removeChild(node);
+        } catch (e) {
+            // ignore
+        }
+
         node = null;
     };
 
@@ -140,7 +145,7 @@ const ExpertModeDialog = ({ boolSettings, func, buttonIcon, themeType }) => {
     </ThemeProvider>;
 }
 
-export const expertModeDialogFunc = (boolSettings, themeType, func, buttonIcon, ) => {
+export const expertModeDialogFunc = (boolSettings, themeType, func, buttonIcon) => {
     if (!node) {
         node = document.createElement('div');
         node.id = 'renderModal';

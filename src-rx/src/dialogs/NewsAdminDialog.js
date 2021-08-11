@@ -124,7 +124,11 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, themeName }) =
                 }
             } else {
                 setOpen(false);
-                document.body.removeChild(node);
+                try {
+                    node && window.document.body.removeChild(node);
+                } catch (e) {
+                    // ignore
+                }
                 node = null;
             }
         } else {

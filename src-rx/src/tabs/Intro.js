@@ -537,8 +537,10 @@ class Intro extends Component {
 
                 return {instances: introInstances, deactivated};
             })
-            .catch(error =>
-                console.log(error));
+            .catch(error => {
+                console.log(error);
+                return {instances: [],  deactivated: []};
+            });
     }
 
     getHostDescription(id) {

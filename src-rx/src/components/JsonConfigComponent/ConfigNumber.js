@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 
 import ConfigGeneric from './ConfigGeneric';
-// import I18n from "@iobroker/adapter-react/i18n";
+import I18n from "@iobroker/adapter-react/i18n";
 import {Autocomplete} from "@material-ui/lab";
 import React from "react";
 
@@ -57,6 +57,15 @@ class ConfigNumber extends ConfigGeneric {
                 />}
             />;
         } else {
+            if (!error && this.state.value !== null && this.state.value !== undefined) {
+                if (this.props.schema.min !== undefined && this.state.value < this.props.schema.min) {
+                    error = I18n.t('Too small');
+                }
+                if (this.props.schema.max !== undefined && this.state.value > this.props.schema.max) {
+                    error = I18n.t('Too big');
+                }
+            }
+
             return <TextField
                 type="number"
                 fullWidth
@@ -66,12 +75,18 @@ class ConfigNumber extends ConfigGeneric {
                 disabled={!!disabled}
                 onChange={e => {
                     const value = e.target.value;
+                    if (this.props.schema.min !== undefined && value < this.props.schema.min) {
+                        this.onError(this.props.attr, I18n.t('Too small'));
+                    }
+                    if (this.props.schema.max !== undefined && value > this.props.schema.max) {
+                        this.onError(this.props.attr, I18n.t('Too big'));
+                    }
                     this.setState({value}, () =>
                         this.onChange(this.props.attr, parseFloat(value) || 0));
                 }}
                 placeholder={this.getText(this.props.schema.placeholder)}
                 label={this.getText(this.props.schema.label)}
-                helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
+                helperText={error && typeof error === 'string' ? error : this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
             />;
         }
     }

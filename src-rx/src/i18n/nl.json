@@ -1438,5 +1438,7 @@
   "vote": "stem",
   "votes2": "stemmen",
   "vote21": "stemmen",
-  "Show/hide colors": "Kleuren tonen/verbergen"
+  "Show/hide colors": "Kleuren tonen/verbergen",
+  "Too small": "Te klein",
+  "Too big": "Te groot"
 }

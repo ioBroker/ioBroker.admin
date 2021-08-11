@@ -151,6 +151,8 @@ class ObjectBrowserValue extends Component {
         this.q      = 0;
         this.expire = 0;
 
+        this.inputRef = React.createRef();
+
         this.chartFrom = Date.now() - 3600000 * 2;
     }
 
@@ -161,6 +163,14 @@ class ObjectBrowserValue extends Component {
             this.props.socket.getState('system.adapter.' + this.props.defaultHistory + '.alive')
                 .then(state => this.setState({chart: state && !!state.val}));
         }
+
+        setTimeout(() => {
+            if (this.inputRef && this.inputRef.current) {
+                const el = this.inputRef.current;
+                const value = el.value || '';
+                el.setSelectionRange(0, value.length);
+            }
+        }, 200);
     }
 
     onUpdate() {
@@ -337,6 +347,7 @@ class ObjectBrowserValue extends Component {
                                                 <TextField
                                                     classes={{ root: this.props.classes.textInput }}
                                                     autoFocus
+                                                    inputRef={this.inputRef}
                                                     helperText={ this.props.t('Press ENTER to write the value, when focused') }
                                                     label={ this.props.t('Value') }
                                                     defaultValue={ parseFloat(this.propsValue) || 0 }
@@ -351,6 +362,7 @@ class ObjectBrowserValue extends Component {
                                                                 :
                                                                 <TextField
                                                                     classes={{ root: this.props.classes.textInput }}
+                                                                    inputRef={this.inputRef}
                                                                     autoFocus
                                                                     helperText={ this.props.t('Press CTRL+ENTER to write the value, when focused')}
                                                                     label={ this.props.t('Value') }

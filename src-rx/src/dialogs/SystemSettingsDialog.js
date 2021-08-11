@@ -95,8 +95,18 @@ class SystemSettingsDialog extends Component {
                 return this.props.socket.getCompactSystemConfig(true);
             })
             .then(systemConfig => {
-                this.originalConfig = JSON.stringify(systemConfig);
-                newState.systemConfig = systemConfig;
+                this.originalConfig = JSON.stringify(systemConfig || {});
+                newState.systemConfig = systemConfig || {};
+                systemConfig.common = systemConfig.common || {};
+
+                systemConfig.common.defaultNewAcl = systemConfig.common.defaultNewAcl || {
+                    object: 1636,
+                    state: 1636,
+                    file: 1632,
+                    owner: 'system.user.admin',
+                    ownerGroup: 'system.group.administrator'
+                };
+
                 return this.props.socket.getDiagData(this.props.currentHost, systemConfig.common.diag);
             })
             /**/

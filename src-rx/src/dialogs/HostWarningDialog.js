@@ -245,7 +245,11 @@ const HostWarningDialog = ({ message, ackCallback, dateFormat, themeType, themeN
     const onClose = () => {
         setOpen(false);
         if (node) {
-            document.body.removeChild(node);
+            try {
+                window.document.body.removeChild(node);
+            } catch (e) {
+                // ignore
+            }
             node = null;
         }
     }
@@ -264,7 +268,7 @@ const HostWarningDialog = ({ message, ackCallback, dateFormat, themeType, themeN
             open={open}
             classes={{ paper: classes.paper }}
         >
-            <h2 className={classes.headingTop}><Status name="heading" />{I18n.t("Adapter warnings")}</h2>
+            <h2 className={classes.headingTop}><Status name="heading" />{I18n.t('Adapter warnings')}</h2>
             <DialogContent className={clsx(classes.flex, classes.overflowHidden)} dividers>
                 <div className={classes.root}>
                     <AppBar position="static" color="default">
@@ -300,12 +304,16 @@ const HostWarningDialog = ({ message, ackCallback, dateFormat, themeType, themeN
                         </div>
                         <div>
                             {message[name].instances ? Object.keys(message[name].instances).map(nameInst => {
-                                const currentInstance = instances[nameInst];
+                                const currentInstance = instances && instances[nameInst];
                                 let icon = 'img/no-image.png';
-                                if (currentInstance) {
-                                    icon = currentInstance.common.icon ? `adapter/${currentInstance.common.name}/${currentInstance.common.icon}` : 'img/no-image.png';
+                                if (currentInstance?.common?.icon && currentInstance?.common?.name) {
+                                    icon = `adapter/${currentInstance.common.name}/${currentInstance.common.icon}`;
                                 }
-                                return <Accordion style={black ? null : { background: '#c0c0c052' }} key={nameInst} expanded={expanded === `${name}-${nameInst}`} onChange={handleChangeAccordion(`${name}-${nameInst}`)}>
+                                return <Accordion
+                                    style={black ? null : { background: '#c0c0c052' }}
+                                    key={nameInst} expanded={expanded === `${name}-${nameInst}`}
+                                    onChange={handleChangeAccordion(`${name}-${nameInst}`)}
+                                >
                                     <AccordionSummary
                                         expandIcon={<ExpandMoreIcon />}
                                         classes={{ content: classes.content }}
@@ -320,10 +328,10 @@ const HostWarningDialog = ({ message, ackCallback, dateFormat, themeType, themeN
                                         </Typography>
                                     </AccordionSummary>
                                     <AccordionDetails className={classes.column}>
-                                        {message[name].instances[nameInst].messages.map(el =>
-                                            <Typography key={el.ts} component="div" className={classes.message}>
-                                                <div className={classes.terminal}>{el.message}</div>
-                                                <div className={classes.silver}>{Utils.formatDate(new Date(el.ts), dateFormat)}</div>
+                                        {message[name].instances[nameInst].messages.map(msg =>
+                                            <Typography key={msg.ts} component="div" className={classes.message}>
+                                                <div className={classes.terminal}>{msg.message}</div>
+                                                <div className={classes.silver}>{Utils.formatDate(new Date(msg.ts), dateFormat)}</div>
                                             </Typography>)}
                                     </AccordionDetails>
                                 </Accordion>

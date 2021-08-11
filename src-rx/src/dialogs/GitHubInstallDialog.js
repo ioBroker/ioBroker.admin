@@ -342,7 +342,8 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                 onClick={() => {
                     if (currentTab === 'GitHub') {
                         const parts = autocompleteValue.value.split('/');
-                        const _url = 'https://github.com/' + parts[1] + '/ioBroker.' + parts[0] + '/tarball/master';
+                        //const _url = 'https://github.com/' + parts[1] + '/ioBroker.' + parts[0] + '/tarball/master';
+                        const _url = `${parts[1]}/ioBroker.${parts[0]}`;
                         installFromUrl(_url, debug, true);
                     } else if (currentTab === 'URL') {
                         if (!url.includes('.')) {

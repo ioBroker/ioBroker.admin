@@ -65,11 +65,20 @@ Possible types:
   - `crop` - if true, allow user to crop the image (only for non svg)
   - `square` - width must be equal to height or crop must allow only square as shape 
 
-- `image` - saves image as file of adapter.0 object
+- `image` - saves image as file of adapter.X object or as base64 in attribute
   - `filename` - name of file is structure name 
 ```
   "login-bg.png": {
        "type": "image",
+       "accept": "image/png",
+       "label": {
+         "en": "Upload image"
+       },
+       "crop": true
+     },
+     "picture": {
+       "type": "image",
+       "base64": true,
        "accept": "image/*",
        "label": {
          "en": "Upload image"
@@ -79,7 +88,8 @@ Possible types:
 ```
   `login-bg.png` is file name for writeFile('myAdapter.INSTANCE', 'login-bg.png')   
   - `accept` - html accept attribute, like "image/*,.pdf"
-  - `maxSize`
+  - `maxSize` - 
+  - `base64` - if true the image will be saved as data-url in attribute, elsewise as binary in file storage
   - `!maxWidth`
   - `!maxHeight`
   - `!crop` - if true, allow user to crop the image

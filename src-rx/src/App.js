@@ -260,7 +260,6 @@ const styles = theme => ({
 
 class App extends Router {
     constructor(props) {
-
         super(props);
 
         window.alert = message => {

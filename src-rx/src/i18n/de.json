@@ -1438,5 +1438,7 @@
   "vote": "Stimme",
   "votes2": "Stimmen",
   "vote21": "Stimmen",
-  "Show/hide colors": "Farben ein-/ausblenden"
+  "Show/hide colors": "Farben ein-/ausblenden",
+  "Too small": "Zu klein",
+  "Too big": "Zu groß"
 }
