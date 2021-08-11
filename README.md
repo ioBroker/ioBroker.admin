@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 5.1.24 (2021-08-11)
 * (bluefox) Corrected some errors reported via sentry and the github issues
  
 ### 5.1.23 (2021-08-05)
@@ -104,10 +104,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 5.1.16 (2021-07-30)
 * (bluefox) Make the appearance of buttons configurable
  
-### 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig 
-
 ## License
 The MIT License (MIT)
 
