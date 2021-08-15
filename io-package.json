@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "admin",
-        "version": "5.1.24",
+        "version": "5.1.25",
         "titleLang": {
             "en": "Admin",
             "de": "Admin",
@@ -18,6 +18,18 @@
         "connectionType": "local",
         "dataSource": "push",
         "news": {
+            "5.1.25": {
+                "en": "Corrected some errors reported via sentry and the github issues",
+                "de": "Einige Fehler, die über Wache und die Github-Probleme gemeldet wurden, korrigiert",
+                "ru": "Исправлены некоторые ошибки, о которых сообщалось через часовую, и проблемы с github.",
+                "pt": "Corrigidos alguns erros relatados via sentry e os problemas do github",
+                "nl": "Enkele fouten gecorrigeerd die zijn gemeld via sentry en de github-problemen",
+                "fr": "Correction de certaines erreurs signalées via sentinelle et des problèmes de github",
+                "it": "Corretti alcuni errori segnalati tramite sentry e problemi con github",
+                "es": "Se corrigieron algunos errores informados a través de sentry y los problemas de github",
+                "pl": "Poprawiono niektóre błędy zgłaszane przez Sentry i problemy z githubem",
+                "zh-cn": "更正了通过哨兵和 github 问题报告的一些错误"
+            },
             "5.1.24": {
                 "en": "Corrected some errors reported via sentry and the github issues",
                 "de": "Einige Fehler, die über Wache und die Github-Probleme gemeldet wurden, korrigiert",
@@ -245,18 +257,6 @@
                 "es": "Mejorada la configuración personalizada.",
                 "pl": "Poprawiono ustawienia niestandardowe",
                 "zh-cn": "改进了自定义设置"
-            },
-            "5.1.5": {
-                "en": "Fix edit of enumeration",
-                "de": "Korrektur der Bearbeitung der Aufzählung",
-                "ru": "Исправить редактирование перечисления",
-                "pt": "Corrigir a edição da enumeração",
-                "nl": "Herstel bewerking van opsomming",
-                "fr": "Correction de la modification de l'énumération",
-                "it": "Correzione della modifica dell'enumerazione",
-                "es": "Corregir edición de enumeración",
-                "pl": "Napraw edycję wyliczenia",
-                "zh-cn": "修复枚举的编辑"
             }
         },
         "desc": {
