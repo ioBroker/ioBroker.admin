@@ -896,6 +896,31 @@ class Instances extends Component {
         return this._cacheList;
     }
 
+    clearAllFilters() {
+        const state = {
+            playArrow: false,
+            onlyCurrentHost: false,
+            filterCompactGroup: 'All',
+            filterMode: null,
+            filterStatus: null,
+            filterText: ''
+        };
+        window.localStorage.removeItem('instances.filter');
+        window.localStorage.removeItem(`Instances.playArrow`);
+        window.localStorage.removeItem('Instances.onlyCurrentHost');
+        window.localStorage.removeItem('Instances.playArrow');
+        window.localStorage.removeItem('Instances.filterCompactGroup');
+        window.localStorage.removeItem('Instances.filterMode');
+        window.localStorage.removeItem('Instances.filterStatus');
+        this._cacheList = null;
+        this.setState(state, () => {
+            if (this.inputRef.current) {
+                this.inputRef.current.value = '';
+            }
+            this.cacheInstances();
+        });
+    }
+
     getPanels() {
         if (!this._cacheList) {
             this.cacheInstances();
@@ -982,11 +1007,16 @@ class Instances extends Component {
         });
 
         if (!list.length) {
-            return <div style={{
-                margin: 20,
-                fontSize: 26,
-                textAlign: 'center'
-            }}>{this.t('all items are filtered out')}</div>
+            return <div
+                title={this.t('Click to clear all filters')}
+                onClick={() => this.clearAllFilters()}
+                style={{
+                    margin: 20,
+                    fontSize: 26,
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                }}
+            >{this.t('all items are filtered out')}</div>
         }
 
         if (!this.state.viewMode && this.state.viewCategory) {
@@ -1090,7 +1120,7 @@ class Instances extends Component {
         this.setState(state => {
             const newValue = !state.playArrow ? 1 : state.playArrow < 2 ? 2 : false;
             window.localStorage.setItem(`Instances.playArrow`, JSON.stringify(newValue));
-            return ({playArrow: newValue});
+            return {playArrow: newValue};
         });
     };
 
