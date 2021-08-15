@@ -464,7 +464,12 @@ class ConfigGeneric extends Component {
                 lg={schema.lg || undefined}
                 md={schema.md || undefined}
                 sm={schema.sm || undefined}
-                style={Object.assign({}, {marginBottom: 0, /*marginRight: 8, */textAlign: 'left'}, schema.style, this.props.themeType === 'dark' ? schema.darkStyle : {})}>
+                style={Object.assign({}, {
+                    marginBottom: 0,
+                    //marginRight: 8,
+                    textAlign: 'left',
+                    width: schema.type === 'divider' || schema.type === 'header' ? schema.width || '100%' : undefined
+                }, schema.style, this.props.themeType === 'dark' ? schema.darkStyle : {})}>
                 {this.renderItem(error, disabled || this.props.commandRunning || this.props.disabled, defaultValue)}
             </Grid>;
 
