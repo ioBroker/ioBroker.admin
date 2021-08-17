@@ -9,7 +9,6 @@ if (location.pathname.match(/^\/admin\//)) {
 var systemConfig;
 var socket   = io.connect('/', {path: parts.join('/') + '/socket.io'});
 var query = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, '');
-console.log('query: ' + query);
 var args = {};
 let theme = null;
 
