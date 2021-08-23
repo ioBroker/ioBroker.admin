@@ -10,6 +10,7 @@ var systemConfig;
 var socket   = io.connect('/', {path: parts.join('/') + '/socket.io'});
 var query = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, '');
 var args = {};
+let theme = null;
 
 // parse parameters
 query.trim().split('&').filter(function (t) {return t.trim();}).forEach(function (b, i) {
@@ -210,7 +211,7 @@ function preInit () {
         '</div>');
     */
     if (!noFooter) {
-        var footer = '<div class="m"><nav class="dialog-config-buttons nav-wrapper footer">';
+        var footer = `<div class="${theme ? 'm ' + theme : 'm'}"><nav class="dialog-config-buttons nav-wrapper footer">`;
         footer += '   <a class="btn btn-active btn-save"><i class="material-icons left">save</i><span class="translate">save</span></a> ';
         footer += '   <a class="btn btn-save-close"><i class="material-icons left">save</i><i class="material-icons left">close</i><span class="translate">saveclose</span></a> ';
         footer += '   <a class="btn btn-cancel"><i class="material-icons left">close</i><span class="translate">close</span></a>';
@@ -267,13 +268,16 @@ function preInit () {
     $navButtons.find('.btn-cancel').on('click', function () {
         close();
     });
+    
+    // detect, that we are now in react container (themeNames = ['dark', 'blue', 'colored', 'light'])
+	const _query = query.split('&');
 
-    // detect, that we are now in react container
-    for (var q = 0; q < query.length; q++) {
-        if (query[q].indexOf('react=') !== -1) {
-            $('.adapter-container').addClass('react-' + query[q].substring(6));
-        }
-    }
+	for (var q = 0; q < _query.length; q++) {
+		if (_query[q].indexOf('react=') !== -1) {
+			$('.adapter-container').addClass('react-' + _query[q].substring(6));
+			theme = 'react-' + _query[q].substring(6);
+		}
+	}
 
     function saveSettings(native, common, callback) {
         if (typeof common === 'function') {
@@ -823,7 +827,7 @@ function showMessage(message, title, icon) {
     $dialogMessage = $('#dialog-message');
     if (!$dialogMessage.length) {
         $('body').append(
-            '<div class="m"><div id="dialog-message" class="modal modal-fixed-footer">' +
+            `<div class="${theme ? 'm ' + theme : 'm'}"><div id="dialog-message" class="modal modal-fixed-footer">` +
             '    <div class="modal-content">' +
             '        <h6 class="dialog-title title"></h6>' +
             '        <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>' +
@@ -928,7 +932,7 @@ function confirmMessage(message, title, icon, buttons, callback) {
     $dialogConfirm = $('#dialog-confirm');
     if (!$dialogConfirm.length) {
         $('body').append(
-            '<div class="m"><div id="dialog-confirm" class="modal modal-fixed-footer">' +
+            `<div class="${theme ? 'm ' + theme : 'm'}"><div id="dialog-confirm" class="modal modal-fixed-footer">` +
             '    <div class="modal-content">' +
             '        <h6 class="dialog-title title"></h6>' +
             '        <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>' +
