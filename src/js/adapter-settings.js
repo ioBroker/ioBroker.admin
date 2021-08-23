@@ -7,10 +7,10 @@ if (location.pathname.match(/^\/admin\//)) {
 }
 
 var systemConfig;
-var socket   = io.connect('/', {path: parts.join('/') + '/socket.io'});
-var query = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, '');
-var args = {};
-let theme = null;
+var socket = io.connect('/', {path: parts.join('/') + '/socket.io'});
+var query  = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, '');
+var args   = {};
+var theme  = null;
 
 // parse parameters
 query.trim().split('&').filter(function (t) {return t.trim();}).forEach(function (b, i) {
@@ -211,7 +211,7 @@ function preInit () {
         '</div>');
     */
     if (!noFooter) {
-        var footer = `<div class="${theme ? 'm ' + theme : 'm'}"><nav class="dialog-config-buttons nav-wrapper footer">`;
+        var footer = '<div class="' + (theme ? 'm ' + theme : 'm') + '"><nav class="dialog-config-buttons nav-wrapper footer">';
         footer += '   <a class="btn btn-active btn-save"><i class="material-icons left">save</i><span class="translate">save</span></a> ';
         footer += '   <a class="btn btn-save-close"><i class="material-icons left">save</i><i class="material-icons left">close</i><span class="translate">saveclose</span></a> ';
         footer += '   <a class="btn btn-cancel"><i class="material-icons left">close</i><span class="translate">close</span></a>';
@@ -270,14 +270,14 @@ function preInit () {
     });
 
     // detect, that we are now in react container (themeNames = ['dark', 'blue', 'colored', 'light'])
-	const _query = query.split('&');
+    const _query = query.split('&');
 
-	for (var q = 0; q < _query.length; q++) {
-		if (_query[q].indexOf('react=') !== -1) {
-			$('.adapter-container').addClass('react-' + _query[q].substring(6));
-			theme = 'react-' + _query[q].substring(6);
-		}
-	}
+    for (var q = 0; q < _query.length; q++) {
+        if (_query[q].indexOf('react=') !== -1) {
+            $('.adapter-container').addClass('react-' + _query[q].substring(6));
+            theme = 'react-' + _query[q].substring(6);
+        }
+    }
 
     function saveSettings(native, common, callback) {
         if (typeof common === 'function') {
@@ -827,7 +827,7 @@ function showMessage(message, title, icon) {
     $dialogMessage = $('#dialog-message');
     if (!$dialogMessage.length) {
         $('body').append(
-            `<div class="${theme ? 'm ' + theme : 'm'}"><div id="dialog-message" class="modal modal-fixed-footer">` +
+            '<div class="' + (theme ? 'm ' + theme : 'm') + '"><div id="dialog-message" class="modal modal-fixed-footer">' +
             '    <div class="modal-content">' +
             '        <h6 class="dialog-title title"></h6>' +
             '        <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>' +
@@ -932,7 +932,7 @@ function confirmMessage(message, title, icon, buttons, callback) {
     $dialogConfirm = $('#dialog-confirm');
     if (!$dialogConfirm.length) {
         $('body').append(
-            `<div class="${theme ? 'm ' + theme : 'm'}"><div id="dialog-confirm" class="modal modal-fixed-footer">` +
+            '<div class="' + (theme ? 'm ' + theme : 'm') + '"><div id="dialog-confirm" class="modal modal-fixed-footer">' +
             '    <div class="modal-content">' +
             '        <h6 class="dialog-title title"></h6>' +
             '        <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>' +
@@ -1821,13 +1821,13 @@ function showSelectIdDialog(val, callback) {
  */
 function values2table(divId, values, onChange, onReady, maxRaw) {
     if (typeof values === 'function') {
-		typeof onChange === 'number' ? maxRaw = onChange : maxRaw = null;
+        typeof onChange === 'number' ? maxRaw = onChange : maxRaw = null;
         onChange = values;
         values   = divId;
         divId    = '';
     }
 
-	if (typeof onReady === 'number') {
+    if (typeof onReady === 'number') {
         maxRaw = onReady;
         onReady = null;
     } else if (typeof maxRaw === 'undefined') {
@@ -1843,10 +1843,10 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
         $div = $('#' + divId);
     }
     var $add = $div.find('.table-button-add');
-	$add.data('raw', values.length);
+    $add.data('raw', values.length);
 
-	if (maxRaw) {
-	    $add.data('maxraw', maxRaw);
+    if (maxRaw) {
+        $add.data('maxraw', maxRaw);
     }
 
     if (!$add.data('inited')) {
@@ -1895,7 +1895,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             getEnums('rooms', function (err, list) {
                 var result = {};
                 var trRooms = _('nonerooms');
-				if (trRooms !== 'nonerooms') {
+                if (trRooms !== 'nonerooms') {
                     result[_('none')] = trRooms;
                 } else {
                     result[_('none')] = '';
@@ -1935,7 +1935,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             getEnums('functions', function (err, list) {
                 var result = {};
                 var trFuncs = _('nonefunctions');
-				if (trFuncs !== 'nonefunctions') {
+                if (trFuncs !== 'nonefunctions') {
                     result[_('none')] = trFuncs;
                 } else {
                     result[_('none')] = '';
@@ -1979,7 +1979,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     type:    $(this).data('type') || 'text',
                     def:     $(this).data('default'),
                     style:   $(this).data('style'),
-					tdstyle: $(this).data('tdstyle')
+                    tdstyle: $(this).data('tdstyle')
                 };
                 if (obj.type === 'checkbox') {
                     if (obj.def === 'false') {
@@ -2035,15 +2035,15 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                 text += '<td';
                 var line    = '';
                 var style   = '';
-				var tdstyle = '';
+                var tdstyle = '';
                 if (names[i]) {
-					if (names[i].name !== '_index') {
+                    if (names[i].name !== '_index') {
                         tdstyle = names[i].tdstyle || '';
                         if (tdstyle && tdstyle[0] !== ';') {
                             tdstyle = ';' + tdstyle;
                         }
                     }
-					if (names[i].name === '_index') {
+                    if (names[i].name === '_index') {
                         style = (names[i].style ? names[i].style : 'text-align: right;');
                         line += (v + 1);
                     } else if (names[i].type === 'checkbox') {
@@ -2456,7 +2456,7 @@ function encrypt(key, value) {
         key = systemSecret;
     }
     var result = '';
-    for(var i = 0; i < value.length; i++) {
+    for (var i = 0; i < value.length; i++) {
         result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
     }
     return result;
