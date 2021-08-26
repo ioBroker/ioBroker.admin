@@ -17,6 +17,11 @@ const styles = theme => ({
 class ConfigAutocompleteSendTo extends ConfigGeneric {
     componentDidMount() {
         super.componentDidMount();
+
+        this.askInstance();
+    }
+
+    askInstance() {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         const selectOptions = this.props.schema.options ?
             this.props.schema.options.map(item => typeof item === 'string' ? {label: item, value: item} : JSON.parse(JSON.stringify(item)))
@@ -48,9 +53,9 @@ class ConfigAutocompleteSendTo extends ConfigGeneric {
                     // if __different
                     if (Array.isArray(value)) {
                         selectOptions.unshift({label: ConfigGeneric.DIFFERENT_LABEL, value: ConfigGeneric.DIFFERENT_VALUE});
-                        this.setState({value: ConfigGeneric.DIFFERENT_VALUE, selectOptions});
+                        this.setState({value: ConfigGeneric.DIFFERENT_VALUE, selectOptions, context: this.getContext()});
                     } else {
-                        this.setState({value, selectOptions});
+                        this.setState({value, selectOptions, context: this.getContext()});
                     }
                 });
         } else {
@@ -64,10 +69,29 @@ class ConfigAutocompleteSendTo extends ConfigGeneric {
         }
     }
 
+    getContext() {
+        const context = {};
+        if (Array.isArray(this.props.schema.alsoDependsOn)) {
+            this.props.schema.alsoDependsOn.forEach(attr =>
+                context[attr] = ConfigGeneric.getValue(this.props.data, attr));
+        }
+        return JSON.stringify(context);
+    }
+
     renderItem(error, disabled, defaultValue) {
         if (!this.state.selectOptions) {
             return null;
         }
+
+        if (this.props.alive) {
+            const context = this.getContext();
+            if (context !== this.state.context) {
+                setTimeout(() => {
+                    this.askInstance();
+                }, 300);
+            }
+        }
+
         let item;
         let options = JSON.parse(JSON.stringify(this.state.selectOptions));
         let isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_LABEL;

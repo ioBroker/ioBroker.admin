@@ -58,6 +58,11 @@ adapter.on('message', obj => {
 class ConfigSelectSendTo extends ConfigGeneric {
     componentDidMount() {
         super.componentDidMount();
+
+        this.askInstance();
+    }
+
+    askInstance(){
         if (this.props.alive) {
             let data = this.props.schema.data;
             if (data === undefined && this.props.schema.jsonData) {
@@ -75,7 +80,7 @@ class ConfigSelectSendTo extends ConfigGeneric {
 
             this.props.socket.sendTo(this.props.adapterName + '.' + this.props.instance, this.props.schema.command || 'send', data)
                 .then(list => {
-                    this.setState({list});
+                    this.setState({list, context: this.getContext()});
                 });
         } else {
             const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
@@ -83,7 +88,25 @@ class ConfigSelectSendTo extends ConfigGeneric {
         }
     }
 
+    getContext() {
+        const context = {};
+        if (Array.isArray(this.props.schema.alsoDependsOn)) {
+            this.props.schema.alsoDependsOn.forEach(attr =>
+                context[attr] = ConfigGeneric.getValue(this.props.data, attr));
+        }
+        return JSON.stringify(context);
+    }
+
     renderItem(error, disabled, defaultValue) {
+        if (this.props.alive) {
+            const context = this.getContext();
+            if (context !== this.state.context) {
+                setTimeout(() => {
+                    this.askInstance();
+                }, 300);
+            }
+        }
+
         if (!this.props.alive) {
             return <TextField
                 fullWidth
