@@ -28,10 +28,10 @@ import UserIcon from '@material-ui/icons/Person';
 
 import ExpertIcon from '@iobroker/adapter-react/icons/IconExpert';
 
-import Connection from './components/Connection';
-import { PROGRESS } from './components/Connection';
-//import {AdminConnection as Connection} from '@iobroker/socket-client/dist/AdminConnection';
-// import {PROGRESS} from '@iobroker/socket-client/dist/Connection';
+//import Connection from './components/Connection';
+//import { PROGRESS } from './components/Connection';
+import {AdminConnection as Connection} from '@iobroker/socket-client/dist/AdminConnection';
+import {PROGRESS} from '@iobroker/socket-client/dist/Connection';
 import Loader from '@iobroker/adapter-react/Components/Loader';
 import LoaderPT from '@iobroker/adapter-react/Components/Loaders/PT';
 import I18n from '@iobroker/adapter-react/i18n';

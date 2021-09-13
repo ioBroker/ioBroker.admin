@@ -107,6 +107,8 @@ class SystemSettingsDialog extends Component {
                     ownerGroup: 'system.group.administrator'
                 };
 
+                systemConfig.common.firstDayOfWeek = systemConfig.common.firstDayOfWeek || 'monday';
+
                 return this.props.socket.getDiagData(this.props.currentHost, systemConfig.common.diag);
             })
             /**/
