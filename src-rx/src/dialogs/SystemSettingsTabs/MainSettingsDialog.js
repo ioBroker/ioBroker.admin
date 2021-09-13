@@ -207,7 +207,13 @@ class MainSettingsDialog extends Component {
                 title: 'Default log level',
                 help: 'for new instances',
                 translate: false,
-                values: [{ id: 'debug', title: 'debug' }, { id: 'info', title: 'info' }, { id: 'warn', title: 'warn' }, { id: 'error', title: 'error' }]
+                values: [{ id: 'debug', title: 'debug' }, { id: 'info', title: 'info1' }, { id: 'warn', title: 'warn' }, { id: 'error', title: 'error' }]
+            },
+            {
+                id: 'firstDayOfWeek',
+                title: 'First day of week',
+                translate: false,
+                values: [{ id: 'monday', title: 'Monday' }, { id: 'sunday', title: 'Sunday' }]
             },
             {
                 id: 'firstDayOfWeek',

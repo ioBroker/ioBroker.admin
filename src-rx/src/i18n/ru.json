@@ -1445,5 +1445,8 @@
   "Show/hide colors": "Показать/скрыть цвета",
   "Too small": "Слишком маленький",
   "Too big": "Слишком большой",
-  "Click to clear all filters": "Нажмите, чтобы очистить все фильтры"
+  "Click to clear all filters": "Нажмите, чтобы очистить все фильтры",
+  "First day of week": "Первый день недели",
+  "Monday": "понедельник",
+  "Sunday": "Воскресенье"
 }

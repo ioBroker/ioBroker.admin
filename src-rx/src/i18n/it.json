@@ -1441,5 +1441,8 @@
   "Show/hide colors": "Mostra/nascondi colori",
   "Too small": "Troppo piccolo",
   "Too big": "Troppo grande",
-  "Click to clear all filters": "Clicca per cancellare tutti i filtri"
+  "Click to clear all filters": "Clicca per cancellare tutti i filtri",
+  "First day of week": "Primo giorno della settimana",
+  "Monday": "lunedì",
+  "Sunday": "Domenica"
 }

@@ -1644,6 +1644,14 @@ class ObjectBrowser extends Component {
                     this.systemConfig.common.defaultNewAcl.state = 0x664;
                 }
 
+                if (typeof props.filterFunc === 'function') {
+                    this.objects = {};
+                    Object.keys(objects).forEach(id => {
+                        if (props.filterFunc(objects[id])) {
+                            this.objects[id] = objects[id];
+                        }
+                    });
+                } else
                 if (props.types) {
                     this.objects = {};
                     Object.keys(objects).forEach(id => {
@@ -2230,6 +2238,10 @@ class ObjectBrowser extends Component {
             id.forEach(event => {
                 console.log('> objectChange ' + event.id);
 
+                if (event.obj && typeof this.props.filterFunc === 'function' && !this.props.filterFunc(event.obj)) {
+                    return;
+                };
+
                 if (event.id.startsWith('system.adapter.') && event.obj && event.obj.type === 'adapter') {
                     let columnsForAdmin = JSON.parse(JSON.stringify(this.state.columnsForAdmin));
 
@@ -2253,6 +2265,10 @@ class ObjectBrowser extends Component {
         } else {
             console.log('> objectChange ' + id);
             this.objects = this.objects || [];
+
+            if (obj && typeof this.props.filterFunc === 'function' && !this.props.filterFunc(obj)) {
+                return;
+            };
 
             if (id.startsWith('system.adapter.') && obj && obj.type === 'adapter') {
                 let columnsForAdmin = JSON.parse(JSON.stringify(this.state.columnsForAdmin));
@@ -4596,10 +4612,12 @@ ObjectBrowser.propTypes = {
         PropTypes.object,
         PropTypes.func
     ]),
-    types: PropTypes.array,   // optional ['state', 'instance', 'channel']
-    columns: PropTypes.array, // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
+    types: PropTypes.array,             // optional ['state', 'instance', 'channel']
+    columns: PropTypes.array,           // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
 
-    objectsWorker: PropTypes.object,  // optional cache of objects
+    objectsWorker: PropTypes.object,    // optional cache of objects
+    filterFunc: PropTypes.func,         // function to filter out all unneccessary objects. It cannot be used together with "types"
+                                        // Example for function: `obj => obj.common && obj.common.type === 'boolean'` to show only boolean states
 
     dragSettings: PropTypes.object,
     DragWrapper: PropTypes.func,

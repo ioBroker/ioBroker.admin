@@ -1441,5 +1441,8 @@
   "Show/hide colors": "Kleuren tonen/verbergen",
   "Too small": "Te klein",
   "Too big": "Te groot",
-  "Click to clear all filters": "Klik om alle filters te wissen"
+  "Click to clear all filters": "Klik om alle filters te wissen",
+  "First day of week": "Eerste dag van de week",
+  "Monday": "maandag",
+  "Sunday": "zondag"
 }
