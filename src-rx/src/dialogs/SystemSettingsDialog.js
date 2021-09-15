@@ -156,8 +156,8 @@ class SystemSettingsDialog extends Component {
     }
 
     onSave() {
-        this.setState({saving: true}, () => {
-            return this.props.socket.getSystemConfig(true)
+        this.setState({saving: true}, () =>
+            this.props.socket.getSystemConfig(true)
                 .then(systemConfig => {
                     systemConfig = systemConfig || {};
                     if (JSON.stringify(systemConfig.common) !== JSON.stringify(this.state.systemConfig.common)) {
@@ -185,7 +185,8 @@ class SystemSettingsDialog extends Component {
                     });
                     systemRepositories.native.repositories = newRepo;
                     return this.props.socket.setObject('system.repositories', systemRepositories);
-                }).then(() => {
+                })
+                .then(() => {
                     // this.getSettings();
                     alert(this.props.t('Settings saved'));
                     this.props.onClose();
@@ -198,8 +199,8 @@ class SystemSettingsDialog extends Component {
                 })
                 .then(() => this.setState({saving: false}))
                 .catch(e =>
-                    window.alert(`Cannot save system configuration: ${e}`));
-        });
+                    window.alert(`Cannot save system configuration: ${e}`))
+        );
     }
 
     getTabs() {
@@ -322,14 +323,14 @@ class SystemSettingsDialog extends Component {
             JSON.stringify(this.state.systemConfig) === this.originalConfig &&
             JSON.stringify(this.state.systemCertificates) === this.originalCertificates);
 
-        const tabsList = this.getTabs().filter(tab => this.props.adminGuiConfig.admin.settings[tab.name] !== false)
+        const tabsList = this.getTabs().filter(tab => this.props.adminGuiConfig.admin.settings[tab.name] !== false);
+
         const tabs = tabsList
-            .map(tab =>
-                <Tab
-                    label={this.props.t(tab.title)}
-                    value={tab.name}
-                />
-            );
+            .map(tab => <Tab
+                key={tab.title}
+                label={this.props.t(tab.title)}
+                value={tab.name}
+            />);
 
         return <Dialog
             className={this.props.classes.dialog}
@@ -402,7 +403,7 @@ class SystemSettingsDialog extends Component {
                     {changed ? this.props.t('Cancel') : this.props.t('Close')}
                 </Button>
             </DialogActions>
-        </Dialog>
+        </Dialog>;
     }
 }
 
@@ -430,11 +431,9 @@ function TabPanel(props) {
         aria-labelledby={`nav-tab-${index}`}
         {...other}
     >
-        {value === index && (
-            <Box p={3}>
-                <Typography>{children}</Typography>
-            </Box>
-        )}
+        {value === index && <Box p={3}>
+            <Typography>{children}</Typography>
+        </Box>}
     </div>;
 }
 
