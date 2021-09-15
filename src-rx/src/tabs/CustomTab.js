@@ -15,7 +15,7 @@ const styles = theme => ({
         top:        0,
         width:      '100%',
         height:     '100%',
-        background: 'white',
+        //background: 'white',
         color:      'black',
         borderRadius: 4,
         boxShadow: '0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)',
@@ -33,12 +33,12 @@ class CustomTab extends Component {
         this.refIframe = React.createRef();
         this.registered = false;
 
-        CustomTab.getHref(this.props.instancesWorker, this.props.tab, this.props.hostname, this.props.protocol, this.props.port, this.props.hosts,  this.props.adminInstance)
+        CustomTab.getHref(this.props.instancesWorker, this.props.tab, this.props.hostname, this.props.protocol, this.props.port, this.props.hosts,  this.props.adminInstance, this.props.themeName)
             .then(href =>
                 this.setState({href}));
     }
 
-    static getHref(instancesWorker, tab, hostname, protocol, port, hosts, adminInstance) {
+    static getHref(instancesWorker, tab, hostname, protocol, port, hosts, adminInstance, themeName) {
         return instancesWorker.getInstances()
             .then(instances => {
                 let adapter = tab.replace(/^tab-/, '');
@@ -99,7 +99,7 @@ class CustomTab extends Component {
                 }
 
                 // add at the end the instance, as some adapters make bullshit like: window.location.search.slice(-1) || 0;
-                href += `${href.includes('?') ? '&' : '?'}newReact=true${instNum !== null && instNum !== undefined ? '&' + instNum : ''}`;
+                href += `${href.includes('?') ? '&' : '?'}newReact=true${instNum !== null && instNum !== undefined ? '&' + instNum : ''}&react=${themeName}`;
 
                 return href;
             });
