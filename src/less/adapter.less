@@ -234,14 +234,14 @@ h4 {
     background-color: @admin-sidemenu-scrollbar-thumb-color;
 }
 
-// for new react interface
+// for new react-dark interface
 .m.react-dark {
     color:#fff;
     * {
-        color: #fff;
+        color: #fff !important;
     }
     .table-values tr:nth-child(2n) {
-        background: #121212;
+        background: rgba(192, 192, 192, 0.15);
     }
     .select-wrapper .caret {
         color: #fff;
@@ -270,35 +270,40 @@ h4 {
     .card-panel {
 	    background-color: #3b3b3b !important;
     }
+    /*
     .collapsible .collapsible-body {
         background-color: #121212 !important;
     }
+    */
     .collapsible {
         border-top: none;
         border-right: none;
         border-left: none;
     }
     .collection .collection-item {
-        background-color: #3b3b3b !important;
+        background-color: #272727 !important;
     }
     .collapsible .collapsible-header {
-        background-color: #3b3b3b !important;
+        background-color: #272727 !important;
     }
     .modal {
-        background-color: #121212 !important;
+        background-color: #3b3b3b !important;
     }
     .modal .modal-footer {
-        background-color: #121212 !important;
+        background-color: #3b3b3b !important;
     }
     .m .modal-footer {
-        background-color: #121212 !important;
+        background-color: #3b3b3b !important;
     }
     h6 {
-        background-color: #3b3b3b !important;
+        background-color: #272727 !important;
     }
     .chip {
         color: #000 !important;
         background-color: #fff !important;
+    }
+    .chip .close {
+        color: #000;
     }
     :after, :before {
         box-sizing: inherit;
@@ -308,14 +313,55 @@ h4 {
     textarea {
         background-color: #1f1f1f !important;
     }
+    #dialog-select-member tr:nth-child(2n){
+        background: #272727;
+    }
+    #dialog-select-member tr {
+        background: #3b3b3b;
+    }
+    #dialog-select-member table {
+        margin-top: 8px;
+    }
+    #dialog-select-member .grid-objects-head, .m.react-dark #dialog-select-member .grid-objects-head tr.ui-widget-header th {
+        background-color: #3b3b3b;
+    }
+    #dialog-select-member .main-header-table th.filter-active {
+        background: #3b3b3b;
+    }
+    #dialog-select-member td, .m.react-dark #dialog-select-member th {
+        border: 1px solid grey !important;
+    }
+    #dialog-select-member tr:hover {
+        background: #121212;
+    }
+    #dialog-select-member .modal-footer {
+        margin-left: 0.1rem;
+    }
+    .timepicker-plate {
+        background-color: #1f1f1f;
+    }
+    .timepicker-digital-display {
+        background-color: #121212;
+    }
+    .card {
+        background-color: #1f1f1f;
+    }
+    .dropdown-content li > a, .m.react-dark .dropdown-content li > span {
+        color: #fff;
+    }
+    .dropdown-content li.active, .m.react-dark .dropdown-content li:hover {
+        background-color: rgb(59, 59, 59) !important;
+    }
 }
+
+// for new react-blue interface
 .m.react-blue {
     color:#fff;
     * {
-        color: #fff;
+        color: #fff !important;
     }
     .table-values tr:nth-child(2n) {
-        background: #121212;
+        background: rgba(192, 192, 192, 0.2);
     }
     .select-wrapper .caret {
         color: #fff;
@@ -325,10 +371,10 @@ h4 {
         border-color: #fff;
     }
     .dropdown-content {
-        background-color: #272727;
+        background-color: #2a3135;
     }
     .tabs {
-        background-color: #272727;
+        background-color: #2a3135;
         .tab a {
             color: #fff;
             opacity: 0.7;
@@ -342,44 +388,88 @@ h4 {
         }
     }
     .card-panel {
-	    background-color: #3b3b3b !important;
+	    background-color: #3e464a !important;
     }
+    /*
     .collapsible .collapsible-body {
-        background-color: #121212 !important;
+        background-color: #151d21 !important;
     }
+    */
     .collapsible {
         border-top: none;
         border-right: none;
         border-left: none;
     }
     .collection .collection-item {
-        background-color: #3b3b3b !important;
+        background-color: #2a3135 !important;
     }
     .collapsible .collapsible-header {
-        background-color: #3b3b3b !important;
+        background-color: #2a3135 !important;
     }
     .modal {
-        background-color: #121212 !important;
+        background-color: #3e464a !important;
     }
     .modal .modal-footer {
-        background-color: #121212 !important;
+        background-color: #3e464a !important;
     }
     .m .modal-footer {
-        background-color: #121212 !important;
+        background-color: #3e464a !important;
     }
     h6 {
-        background-color: #3b3b3b !important;
+        background-color: #2a3135 !important;
     }
     .chip {
         color: #000 !important;
         background-color: #fff !important;
     }
+    .chip .close {
+        color: #000;
+    }
     :after, :before {
         box-sizing: inherit;
-        background-color: #3b3b3b !important;
+        background-color: #3e464a !important;
         color: #fff !important;
     }
     textarea {
-        background-color: #1f1f1f !important;
+        background-color: #222a2e !important;
+    }
+    #dialog-select-member tr:nth-child(2n) {
+        background: #2a3135;
+    }
+    #dialog-select-member tr {
+        background: #3e464a;
+    }
+    #dialog-select-member table {
+        margin-top: 8px;
+    }
+    #dialog-select-member .grid-objects-head, .m.react-dark #dialog-select-member .grid-objects-head tr.ui-widget-header th {
+        background-color: #3e464a;
+    }
+    #dialog-select-member .main-header-table th.filter-active {
+        background: #3e464a;
+    }
+    #dialog-select-member td, .m.react-dark #dialog-select-member th {
+        border: 1px solid grey !important;
+    }
+    #dialog-select-member tr:hover {
+        background: #151d21;
+    }
+    #dialog-select-member .modal-footer {
+        margin-left: 0.1rem;
+    }
+    .timepicker-plate {
+        background-color: #222a2e;
+    }
+    .timepicker-digital-display {
+        background-color: #151d21;
+    }
+    .card {
+        background-color: #222a2e;
+    }
+    .dropdown-content li > a, .m.react-dark .dropdown-content li > span {
+        color: #fff;
+    }
+    .dropdown-content li.active, .m.react-dark .dropdown-content li:hover {
+        background-color: rgb(59, 59, 59) !important;
     }
 }
