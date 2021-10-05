@@ -169,6 +169,9 @@ class JsonConfig extends Router {
     getConfigFile() {
         return this.props.socket.readFile(this.props.adapterName + '.admin', 'jsonConfig.json')
             .then(data => {
+                if (data.file !== undefined) {
+                    data = data.file;
+                }
                 try {
                     return JSON.parse(data);
                 } catch (e) {

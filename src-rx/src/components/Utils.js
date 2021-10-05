@@ -1007,6 +1007,21 @@ class Utils {
         if (hex === undefined || hex === null || hex === '' || typeof hex !== 'string') {
             return '';
         }
+        if (hex.startsWith('rgba')) {
+            const m = hex.match(/rgba?\((\d+),\s*(\d+),\s*(\d+),\s*([.\d]+)\)/);
+            if (m) {
+                hex = parseInt(m[1], 10).toString(16).padStart(2, '0') +
+                    parseInt(m[2], 10).toString(16).padStart(2, '0') +
+                    parseInt(m[2], 10).toString(16).padStart(2, '0');
+            }
+        } else if (hex.startsWith('rgba')) {
+            const m = hex.match(/rgb?\((\d+),\s*(\d+),\s*(\d+)\)/);
+            if (m) {
+                hex = parseInt(m[1], 10).toString(16).padStart(2, '0') +
+                    parseInt(m[2], 10).toString(16).padStart(2, '0') +
+                    parseInt(m[2], 10).toString(16).padStart(2, '0');
+            }
+        } else
         if (hex.startsWith('#')) {
             hex = hex.slice(1);
         }

@@ -1444,5 +1444,6 @@
   "Click to clear all filters": "单击以清除所有过滤器",
   "First day of week": "一周的第一天",
   "Monday": "周一",
-  "Sunday": "星期日"
+  "Sunday": "星期日",
+  "Create instances automatically": "自动创建实例"
 }

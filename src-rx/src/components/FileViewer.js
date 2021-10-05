@@ -77,11 +77,15 @@ class FileViewer extends Component {
             const adapter = parts[0];
             const name = parts.splice(1).join('/');
             this.props.socket.readFile(adapter, name)
-                .then(el => {
+                .then(data => {
+                    if (data.file !== undefined) {
+                        data = data.file;
+                    }
+
                     if (EXTENSIONS.txt.includes(this.ext)) {
-                        this.setState({ text: el, editingValue: el });
+                        this.setState({ text: data, editingValue: data });
                     } else if (EXTENSIONS.code.includes(this.ext)) {
-                        this.setState({ code: el, editingValue: el });
+                        this.setState({ code: data, editingValue: data });
                     }
                 })
                 .catch(e => window.alert('Cannot read file: ' + e));

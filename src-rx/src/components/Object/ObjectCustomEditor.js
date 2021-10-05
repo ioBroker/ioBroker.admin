@@ -192,6 +192,9 @@ class ObjectCustomEditor extends Component {
             if (ad.common?.adminUI.custom === 'json') {
                 return this.props.socket.readFile(adapter + '.admin', 'jsonCustom.json')
                     .then(json => {
+                        if (json.file !== undefined) {
+                            json = json.file;
+                        }
                         try {
                             json = JSON.parse(json);
                             this.jsonConfigs[adapter] = this.jsonConfigs[adapter] || {};

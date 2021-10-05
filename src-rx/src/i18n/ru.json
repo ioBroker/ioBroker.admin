@@ -1448,5 +1448,6 @@
   "Click to clear all filters": "Нажмите, чтобы очистить все фильтры",
   "First day of week": "Первый день недели",
   "Monday": "понедельник",
-  "Sunday": "Воскресенье"
+  "Sunday": "Воскресенье",
+  "Create instances automatically": "Создавать экземпляры автоматически"
 }

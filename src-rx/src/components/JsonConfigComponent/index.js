@@ -101,6 +101,9 @@ class JsonConfigComponent extends Component {
                     if (fileName) {
                         return socket.readFile(adapterName + '.admin', fileName)
                             .then(json => {
+                                if (json.file !== undefined) {
+                                    json = json.file;
+                                }
                                 try {
                                     json = JSON.parse(json);
                                     // apply file to I18n
