@@ -1449,5 +1449,8 @@
   "First day of week": "Первый день недели",
   "Monday": "понедельник",
   "Sunday": "Воскресенье",
-  "Create instances automatically": "Создавать экземпляры автоматически"
+  "Create instances automatically": "Создавать экземпляры автоматически",
+  "Cannot determine position: System settings are empty and GPS detection is disabled in browser": "Невозможно определить положение: системные настройки пусты, а обнаружение GPS отключено в браузере.",
+  "Used system settings": "Используемые системные настройки",
+  "Settings saved": "Настройки сохранены"
 }

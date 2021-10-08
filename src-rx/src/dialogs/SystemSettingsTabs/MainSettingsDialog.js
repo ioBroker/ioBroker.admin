@@ -212,7 +212,7 @@ class MainSettingsDialog extends Component {
             {
                 id: 'firstDayOfWeek',
                 title: 'First day of week',
-                translate: false,
+                translate: true,
                 values: [{ id: 'monday', title: 'Monday' }, { id: 'sunday', title: 'Sunday' }]
             }
         ];

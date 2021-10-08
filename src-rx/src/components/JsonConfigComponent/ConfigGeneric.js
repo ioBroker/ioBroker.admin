@@ -47,7 +47,7 @@ class ConfigGeneric extends Component {
         // init default value
         if (this.defaultValue !== undefined) {
             const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-            if (value === undefined) {
+            if (value === undefined || (this.props.schema.type === 'select' && (value === '' || value === null))) {
                 setTimeout(() => {
                     if (this.props.custom) {
                         this.props.onChange(this.props.attr, this.defaultValue);

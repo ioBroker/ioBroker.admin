@@ -1445,5 +1445,8 @@
   "First day of week": "一周的第一天",
   "Monday": "周一",
   "Sunday": "星期日",
-  "Create instances automatically": "自动创建实例"
+  "Create instances automatically": "自动创建实例",
+  "Cannot determine position: System settings are empty and GPS detection is disabled in browser": "无法确定位置：系统设置为空且浏览器中禁用 GPS 检测",
+  "Used system settings": "使用的系统设置",
+  "Settings saved": "设置已保存"
 }

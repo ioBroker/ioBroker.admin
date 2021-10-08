@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
 import {Autocomplete} from '@material-ui/lab';
-import TextField from "@material-ui/core/TextField";
-
+import TextField from '@material-ui/core/TextField';
 
 import ConfigGeneric from './ConfigGeneric';
 

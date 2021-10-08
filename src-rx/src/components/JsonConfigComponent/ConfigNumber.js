@@ -1,12 +1,13 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
 import TextField from '@material-ui/core/TextField';
+import {Autocomplete} from '@material-ui/lab';
+
+import I18n from '@iobroker/adapter-react/i18n';
 
 import ConfigGeneric from './ConfigGeneric';
-import I18n from "@iobroker/adapter-react/i18n";
-import {Autocomplete} from "@material-ui/lab";
-import React from "react";
 
 const styles = theme => ({
     indeterminate: {

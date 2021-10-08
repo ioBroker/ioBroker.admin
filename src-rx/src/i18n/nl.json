@@ -1445,5 +1445,8 @@
   "First day of week": "Eerste dag van de week",
   "Monday": "maandag",
   "Sunday": "zondag",
-  "Create instances automatically": "Automatisch instanties maken"
+  "Create instances automatically": "Automatisch instanties maken",
+  "Cannot determine position: System settings are empty and GPS detection is disabled in browser": "Kan positie niet bepalen: systeeminstellingen zijn leeg en GPS-detectie is uitgeschakeld in browser",
+  "Used system settings": "Gebruikte systeeminstellingen",
+  "Settings saved": "Instellingen opgeslagen"
 }

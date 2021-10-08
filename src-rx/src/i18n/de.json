@@ -32,7 +32,7 @@
   "Add new object:": "Neues Objekt hinzufügen:",
   "Add new object: %s": "Neues Objekt hinzufügen: %s",
   "Address:": "Adresse",
-    "Admin is not enabled in cloud settings!": "Admin ist in den Cloud-Einstellungen nicht aktiviert!",
+  "Admin is not enabled in cloud settings!": "Admin ist in den Cloud-Einstellungen nicht aktiviert!",
   "Administrator": "Administrator",
   "Afghanistan": "Afghanistan",
   "Albania": "Albanien",
@@ -1445,5 +1445,8 @@
   "First day of week": "Erster Tag der Woche",
   "Monday": "Montag",
   "Sunday": "Sonntag",
-  "Create instances automatically": "Instanzen automatisch erstellen"
+  "Create instances automatically": "Instanzen automatisch erstellen",
+  "Cannot determine position: System settings are empty and GPS detection is disabled in browser": "Position kann nicht bestimmt werden: Systemeinstellungen sind leer und GPS-Erkennung im Browser deaktiviert",
+  "Used system settings": "Verwendete Systemeinstellungen",
+  "Settings saved": "Einstellungen gespeichert"
 }

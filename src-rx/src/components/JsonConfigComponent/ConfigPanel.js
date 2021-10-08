@@ -43,6 +43,7 @@ import ConfigDatePicker from './ConfigDatePicker';
 import ConfigCRON from './ConfigCRON';
 import ConfigAlive from './ConfigAlive';
 import ConfigTextSendTo from './ConfigTextSendTo';
+import ConfigCoordinates from './ConfigCoordinates';
 
 const components = {
     alive: ConfigAlive,
@@ -52,6 +53,7 @@ const components = {
     checkbox: ConfigCheckbox,
     chip: ConfigChip,
     color: ConfigColor,
+    coordinates: ConfigCoordinates,
     cron: ConfigCRON,
     datePicker: ConfigDatePicker,
     divider: ConfigStaticDivider,

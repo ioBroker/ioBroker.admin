@@ -158,8 +158,6 @@ Possible types:
    - `href` - optional HTTP link
    - `src` - name of picture (from admin directory)
 
-- `!coordinates` - ?
-
 - `table` - table with items that could be deleted, added, movedUP, moved Down
   - `items` - [{"type": see above, "width": px or %, "title": {"en": "header"}, "attr": "name", "filter": false, "sort": true, "default": ""}]
   - `noDelete` - boolean if delete or add disabled, If noDelete is false, add, delete and move up/down should work
@@ -256,6 +254,11 @@ adapter.on('message', obj => {
   To use this option, your adapter must implement message handler:
     The result of command must be an array in form `"text"`
     See `selectSendTo` for handler example
+
+- `coordinates`
+  Determines current location and used system.config coordinates if not possible in form "latitude,longitude"
+  - `divider` - divider between latitude and longitude. Default ","
+  - `autoInit` - init field with current coordinates if empty
 
 ## Common attributes of controls
 All types could have:

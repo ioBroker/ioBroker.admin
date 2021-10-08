@@ -37,10 +37,11 @@ const styles = theme => ({
         padding: '4px 8px',
     },
     enumTemplateLabel: {
-        textAlign: 'left',
+        textAlign: 'right',
         opacity: 0.4,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+        flexGrow: 1,
     },
     fullHeight: {
         height: 'calc(100% - 32px)',

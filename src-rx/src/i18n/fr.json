@@ -1445,5 +1445,8 @@
   "First day of week": "Premier jour de la semaine",
   "Monday": "Lundi",
   "Sunday": "dimanche",
-  "Create instances automatically": "Créer des instances automatiquement"
+  "Create instances automatically": "Créer des instances automatiquement",
+  "Cannot determine position: System settings are empty and GPS detection is disabled in browser": "Impossible de déterminer la position : les paramètres système sont vides et la détection GPS est désactivée dans le navigateur",
+  "Used system settings": "Paramètres système utilisés",
+  "Settings saved": "Paramètres sauvegardés"
 }
