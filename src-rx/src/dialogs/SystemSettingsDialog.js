@@ -2,6 +2,7 @@ import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import semver from 'semver';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -67,8 +68,18 @@ class SystemSettingsDialog extends Component {
             systemConfig: null,
             systemCertificates: null,
             systemRepositories: null,
+            multipleRepos: false,
         };
         this.getSettings(this.state.currentHost);
+    }
+
+    componentDidMount() {
+        this.props.socket.getCurrentInstance()
+            .then(namespace =>
+                this.props.socket.getObject('system.adapter.' + namespace)
+                    .then(obj =>
+                        this.props.socket.getObject('system.host.' + obj.common.host)
+                            .then(data => this.setState({multipleRepos: semver.gte(data.common.installedVersion, '4.0.0')}))));
     }
 
     getSettings() {
@@ -222,7 +233,8 @@ class SystemSettingsDialog extends Component {
                 data: 'systemRepositories',
                 name: 'tabRepositories',
                 dataAux: 'systemConfig',
-                handle: null
+                handle: null,
+                socket: this.props.socket,
             },
             {
                 id: 2,
@@ -296,6 +308,8 @@ class SystemSettingsDialog extends Component {
                 handle={tab.handle}
                 users={users}
                 groups={groups}
+                multipleRepos={this.state.multipleRepos}
+                activeRepo={this.state.systemConfig.common.activeRepo}
                 histories={histories}
                 themeName={this.props.themeName}
                 themeType={this.props.themeType}
@@ -418,6 +432,7 @@ SystemSettingsDialog.propTypes = {
     currentTab: PropTypes.object,
     width: PropTypes.string,
     adminGuiConfig: PropTypes.object,
+    instance: PropTypes.string,
 };
 
 export default withWidth()(withStyles(styles)(SystemSettingsDialog));

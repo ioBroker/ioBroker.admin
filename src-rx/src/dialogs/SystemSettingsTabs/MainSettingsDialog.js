@@ -190,12 +190,11 @@ class MainSettingsDialog extends Component {
                 id: 'activeRepo',
                 title: 'Default Repository',
                 translate: false,
-                values: Utils.objectMap(this.props.dataAux.native.repositories, (repo, name) => {
-                    return {
+                values: Utils.objectMap(this.props.dataAux.native.repositories, (repo, name) =>
+                    ({
                         id: name,
                         title: name
-                    }
-                })
+                    }))
             },
             {
                 id: 'expertMode',
@@ -247,6 +246,10 @@ class MainSettingsDialog extends Component {
 
         if (e.id === 'defaultLogLevel' && !value) {
             value = 'info';
+        }
+
+        if (e.id === 'activeRepo' && this.props.multipleRepos) {
+            return null;
         }
 
         // if disabled by vendor settings
@@ -403,6 +406,7 @@ class MainSettingsDialog extends Component {
         ];
 
         const { zoom } = this.state;
+
         return <div className={classes.tabPanel}>
             {this.renderConfirmDialog()}
             <Grid container spacing={3}>

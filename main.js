@@ -138,7 +138,7 @@ function startAdapter(options) {
         adapter.updaterTimeout = null;
 
         try {
-            adapter.log.info('terminating http' + (adapter.config.secure ? 's' : '') + ' server on port ' + adapter.config.port);
+            adapter.log.info(`terminating http${adapter.config.secure ? 's' : ''} server on port ${adapter.config.port}`);
             webServer.close();
             callback();
         } catch (e) {

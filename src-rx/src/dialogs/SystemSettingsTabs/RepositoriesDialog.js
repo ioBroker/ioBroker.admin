@@ -5,6 +5,7 @@ import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 
+import Checkbox from '@material-ui/core/Checkbox';
 import Fab from '@material-ui/core/Fab';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -18,7 +19,7 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import Utils from '../../Utils';
-
+import I18n from '@iobroker/adapter-react/i18n';
 
 const styles = theme => ({
     tabPanel: {
@@ -54,15 +55,30 @@ const styles = theme => ({
     },
     input: {
         width: '100%'
+    },
+    checkboxError: {
+        '& span:first-child': {
+            border: '2px solid #FF0000',
+            borderRadius: 4
+        }
     }
 });
 
 class RepositoriesDialog extends Component {
+    constructor(props) {
+        super(props);
+        const repos = typeof this.props.dataAux.common.activeRepo === 'string' ? [this.props.dataAux.common.activeRepo] : this.props.dataAux.common.activeRepo;
+
+        this.state = {
+            error: !repos.length
+        };
+    }
+
     repoToArray(repos) {
         return Utils.objectMap(repos, (repo, name) => {
             return {
                 title: name,
-                link: repo.link
+                link: repo.link,
             }
         });
     }
@@ -70,9 +86,7 @@ class RepositoriesDialog extends Component {
     arrayToRepo(array) {
         let result = {};
         for (let k in array) {
-            result[array[k].title] = {
-                link: array[k].link
-            }
+            result[array[k].title] = {link: array[k].link};
         }
 
         return result;
@@ -86,6 +100,35 @@ class RepositoriesDialog extends Component {
             return <TableRow key={i} className="float_row">
                 <TableCell className={clsx(this.props.classes.littleRow, 'float_cell')}>
                     {i + 1}
+                    {this.props.multipleRepos ? <Checkbox
+                        disabled={this.props.adminGuiConfig.admin.settings.activeRepo === false}
+                        className={this.state.error ? this.props.classes.checkboxError : ''}
+                        title={this.state.error ? I18n.t('At least one repo must be selected') : ''}
+                        checked={typeof this.props.dataAux.common.activeRepo === 'string' ? this.props.dataAux.common.activeRepo === e.title : this.props.dataAux.common.activeRepo.includes(e.title)}
+                        onChange={() => {
+                            let newData = JSON.parse(JSON.stringify(this.props.dataAux));
+                            if (typeof newData.common.activeRepo === 'string') {
+                                newData.common.activeRepo = [newData.common.activeRepo];
+                            }
+                            let pos = newData.common.activeRepo.indexOf(e.title);
+                            if (pos === -1) {
+                                newData.common.activeRepo.push(e.title);
+                                newData.common.activeRepo.sort();
+                            } else {
+                                newData.common.activeRepo.splice(pos, 1);
+                            }
+                            if (e.title === 'beta' && newData.common.activeRepo.includes('stable')) {
+                                pos = newData.common.activeRepo.indexOf('stable');
+                                newData.common.activeRepo.splice(pos, 1);
+                            } else if (e.title === 'stable' && newData.common.activeRepo.includes('beta')) {
+                                pos = newData.common.activeRepo.indexOf('beta');
+                                newData.common.activeRepo.splice(pos, 1);
+                            }
+
+                            const error = !newData.common.activeRepo.length;
+                            this.setState({error}, () => this.props.onChange(null,  newData));
+                        }}
+                    /> : null}
                 </TableCell>
                 <TableCell className={clsx(this.props.classes.nameRow, 'float_cell')}>
                     <TextField
@@ -121,7 +164,8 @@ class RepositoriesDialog extends Component {
                     </Fab>
                 </TableCell>
             </TableRow>
-        })
+        });
+
         return <div className={classes.tabPanel}>
             <div className={classes.buttonPanel}>
                 <Fab
@@ -139,7 +183,7 @@ class RepositoriesDialog extends Component {
                 <Table className={classes.table} aria-label="customized table">
                     <TableHead>
                         <TableRow className="float_row">
-                            <TableCell className={clsx(this.props.classes.littleRow, 'float_cell')}> </TableCell>
+                            <TableCell className={clsx(this.props.classes.littleRow, 'float_cell')}>{this.props.multipleRepos ? I18n.t('Active') : ''}</TableCell>
                             <TableCell className={clsx(this.props.classes.nameRow, 'float_cell')}>
                                 {this.props.t('name')}
                             </TableCell>
@@ -210,6 +254,7 @@ RepositoriesDialog.propTypes = {
     t: PropTypes.func,
     data: PropTypes.object,
     dataAux: PropTypes.object,
+    multipleRepos: PropTypes.bool,
 };
 
 export default withWidth()(withStyles(styles)(RepositoriesDialog));
