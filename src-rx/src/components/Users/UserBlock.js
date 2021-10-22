@@ -16,7 +16,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import Icon from '@iobroker/adapter-react/Components/Icon';
-import Utils from "@iobroker/adapter-react/Components/Utils";
+import Utils from '@iobroker/adapter-react/Components/Utils';
 
 function UserBlock(props) {
     const opacity = props.isDragging ? 0 : 1;
@@ -136,7 +136,7 @@ function UserBlock(props) {
     //</>
 }
 
-const UserBlockDrag = (props) => {
+const UserBlockDrag = props => {
     const widthRef = useRef();
     const [{ isDragging }, dragRef, preview] = useDrag(
         {
@@ -154,6 +154,7 @@ const UserBlockDrag = (props) => {
             }),
         }
     );
+
     useEffect(() => {
         preview(getEmptyImage(), { captureDraggingState: true });
         // eslint-disable-next-line react-hooks/exhaustive-deps
