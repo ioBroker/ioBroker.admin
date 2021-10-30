@@ -34,6 +34,7 @@ import {AdminConnection as Connection} from '@iobroker/socket-client/dist/AdminC
 import {PROGRESS} from '@iobroker/socket-client/dist/Connection';
 import Loader from '@iobroker/adapter-react/Components/Loader';
 import LoaderPT from '@iobroker/adapter-react/Components/Loaders/PT';
+import LoaderVendor from '@iobroker/adapter-react/Components/Loaders/Vendor';
 import I18n from '@iobroker/adapter-react/i18n';
 import Router from '@iobroker/adapter-react/Components/Router';
 import Utils from './components/Utils';//adapter-react/Components/Utils';
@@ -804,7 +805,12 @@ class App extends Router {
         try {
             const lastNewsId = await this.socket.getState(`admin.${instance}.info.newsLastId`);
             if (newsFeed && newsFeed.val) {
-                const news = JSON.parse(newsFeed?.val);
+                let news = null;
+                try {
+                    news = JSON.parse(newsFeed?.val);
+                } catch (error) {
+                    console.error('Cannot parse news: ' + newsFeed?.val);
+                }
 
                 if (news && news.length && news[0].id !== lastNewsId?.val) {
                     this.socket.getUuid()
@@ -1517,6 +1523,7 @@ class App extends Router {
         if (!this.state.ready) {
             return <ThemeProvider theme={this.state.theme}>
                 {window.vendorPrefix === 'PT' ? <LoaderPT theme={this.state.themeType}/> :null}
+                {window.vendorPrefix && window.vendorPrefix !== 'PT' && window.vendorPrefix !== '@@vendorPrefix@@' ? <LoaderVendor theme={this.state.themeType}/> :null}
                 {!window.vendorPrefix || window.vendorPrefix === '@@vendorPrefix@@' ? <Loader theme={this.state.themeType} /> : null}
             </ThemeProvider>;
         } else if (this.state.strictEasyMode || this.state.currentTab.tab === 'easy') {

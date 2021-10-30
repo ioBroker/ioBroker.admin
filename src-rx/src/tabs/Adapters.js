@@ -205,7 +205,7 @@ const styles = theme => ({
         marginRight: theme.spacing(1),
     },
     notStableRepo: {
-        background: '#fdee20',
+        background: theme.palette.type === 'dark' ? '#8a7e00' : '#fdee20',
         color: '#111',
         fontSize: 14,
         padding: '2px 8px',
@@ -544,6 +544,9 @@ class Adapters extends Component {
         this.installedAdapters = 0;
 
         Object.keys(repository).forEach(value => {
+            if (value === 'hosts') {
+                return;
+            }
             const adapter = repository[value];
             if (adapter.keywords) {
                 adapter.keywords = adapter.keywords.map(word => word.toLowerCase());
@@ -1152,6 +1155,15 @@ class Adapters extends Component {
             return null;
         }
     }
+    clearAllFilters() {
+        window.localStorage.removeItem('Adapter.search');
+        window.localStorage.removeItem('Adapters.installedList');
+        window.localStorage.removeItem('Adapters.updateList');
+        if (this.inputRef.current) {
+            this.inputRef.current.value = '';
+        }
+        this.setState({filteredList: null, updateList: false, filterConnectionType: false, installedList: false, search: ''}, () => this.filterAdapters());
+    }
 
     getRows(descHidden) {
         if (!this.cache.listOfVisibleAdapter) {
@@ -1202,7 +1214,18 @@ class Adapters extends Component {
         }
 
         if (!count) {
-            return !this.state.update && <tr><td colSpan={4} style={{ padding: 16, fontSize: 18 }}>{this.t('all items are filtered out')}</td></tr>;
+            return !this.state.update && <tr><td
+                colSpan={4}
+                style={{
+                    padding: 16,
+                    fontSize: 18,
+                    cursor: 'pointer'
+                }}
+                title={this.t('Click to clear all filters')}
+                onClick={() => this.clearAllFilters()}
+            >
+                {this.t('all items are filtered out')}
+            </td></tr>;
         } else {
             return rows;
         }
@@ -1600,7 +1623,9 @@ class Adapters extends Component {
                 </IsVisible>
             </TabHeader>
             {this.state.viewMode && <TabContent>
-                {this.props.systemConfig.common.activeRepo !== 'stable' ? <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}</div> : null}
+                {(typeof this.props.systemConfig.common.activeRepo === 'string' && this.props.systemConfig.common.activeRepo !== 'stable') ||
+                (typeof this.props.systemConfig.common.activeRepo !== 'string' && !this.props.systemConfig.common.activeRepo.includes('stable')) ?
+                    <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}</div> : null}
                 <TableContainer className={clsx(classes.container, this.props.systemConfig.common.activeRepo !== 'stable' ? classes.containerNotFullHeight : classes.containerFullHeight)}>
                     <Table stickyHeader size="small" className={classes.table}>
                         <TableHead>
@@ -1641,7 +1666,8 @@ class Adapters extends Component {
             {this.renderSlowConnectionWarning()}
 
             {!this.state.viewMode && <>
-                {this.props.systemConfig.common.activeRepo !== 'stable' ? <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}</div> : null}
+                {(typeof this.props.systemConfig.common.activeRepo === 'string' && this.props.systemConfig.common.activeRepo !== 'stable') ||
+                 (typeof this.props.systemConfig.common.activeRepo !== 'string' && !this.props.systemConfig.common.activeRepo.includes('stable')) ? <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}</div> : null}
                 <div className={this.props.classes.viewModeDiv}>{this.getTiles()}</div>
             </>}
 

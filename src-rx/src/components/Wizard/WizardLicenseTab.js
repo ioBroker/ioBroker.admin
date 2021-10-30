@@ -173,7 +173,7 @@ class WizardLicenseTab extends Component {
             <Toolbar className={ this.props.classes.toolbar }>
                 <div className={ this.props.classes.grow }/>
                 <Button variant="contained" onClick={ () => this.setState({notAgree: true}) } startIcon={<IconCancel/>}>{ this.props.t('Not agree') }</Button>
-                <Button variant="contained" color="primary" className={ this.props.classes.greenButton } disabled={ !this.state.statisticsAccepted } onClick={ () => this.props.onDone() } startIcon={<IconCheck/>}>{ this.props.t('Agree') }</Button>
+                <Button variant="contained" color="primary" className={ this.props.classes.greenButton } disabled={ !this.state.statisticsAccepted } onClick={ () => this.props.onDone({lang: this.state.lang}) } startIcon={<IconCheck/>}>{ this.props.t('Agree') }</Button>
                 <div className={ this.props.classes.grow }/>
             </Toolbar>
             { this.renderNotAgree() }

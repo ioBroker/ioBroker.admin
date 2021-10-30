@@ -791,7 +791,7 @@ class Markdown extends Component {
                 <span key="lastChangedTitle" className={this.props.classes.infoTitle}>{I18n.t('Last changed:')} </span>,
                 <span key="lastChangedValue" className={this.props.classes.infoValue}>{this.state.header.lastChanged}</span>,
             ] : null}
-            {this.state.header.editLink ?
+            {this.props.editMode && this.state.header.editLink ?
                 <a className={this.props.classes.infoEdit}
                    href={this.state.header.editLink.replace(/\/edit\//, '/blob/')}
                    rel="noopener noreferrer"
@@ -935,7 +935,7 @@ class Markdown extends Component {
     }
 
     renderSnackbar() {
-        return (<Snackbar
+        return <Snackbar
             anchorOrigin={{vertical: 'top', horizontal: 'right'}}
             open={!!this.state.tooltip}
             autoHideDuration={6000}
@@ -951,7 +951,7 @@ class Markdown extends Component {
                     <IconClose/>
                 </IconButton>,
             ]}
-        />)
+        />;
     }
 
     replaceHref(line) {

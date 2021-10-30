@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import {DialogTitle, makeStyles, ThemeProvider} from '@material-ui/core';
+import {DialogTitle, LinearProgress, makeStyles, ThemeProvider} from '@material-ui/core';
 
 import IconClose from '@material-ui/icons/Close';
 import IconCheck from '@material-ui/icons/Check';
@@ -41,14 +41,17 @@ const LicenseDialog = ({ url, cb }) => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
     const [text, setText] = useState('');
-    const [loaded, setLoaded] = useState(true);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setLoaded(true);
-        fetch(url).then(el => el.text()).then(el => {
-            setLoaded(false);
-            setText(el);
-        }).catch(() => setLoaded(false))
+        setLoading(true);
+        fetch(url)
+            .then(el => el.text())
+            .then(el => {
+                setLoading(false);
+                setText(el);
+            })
+            .catch(() => setLoading(false));
     }, [url]);
 
     const onClose = () => {
@@ -70,19 +73,23 @@ const LicenseDialog = ({ url, cb }) => {
             <DialogTitle>{I18n.t('License agreement')}</DialogTitle>
             <DialogContent className={classes.overflowHidden} dividers>
                 <div className={classes.root}>
-                    <pre className={classes.pre} style={
-                        Utils.getThemeName() === 'dark' ||
+                    {loading ?
+                        <LinearProgress/>
+                        :
+                        <pre className={classes.pre} style={
+                            Utils.getThemeName() === 'dark' ||
                             Utils.getThemeName() === 'blue' ?
-                            { color: 'black' } :
-                            null}>
-                        {text}
-                    </pre>
+                                {color: 'black'} :
+                                null}>
+                            {text}
+                        </pre>
+                    }
                 </div>
             </DialogContent>
             <DialogActions>
                 <Button
                     variant="contained"
-                    disabled={loaded}
+                    disabled={loading}
                     autoFocus
                     onClick={() => {
                         onClose();

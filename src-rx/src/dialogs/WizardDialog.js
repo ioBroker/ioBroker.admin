@@ -157,10 +157,13 @@ class WizardDialog extends Component {
             t={ this.props.t }
             socket={ this.props.socket }
             themeName={ this.props.themeName }
-            onDone={ () => {
+            onDone={ settings => {
                 this.props.socket.getSystemConfig(true)
                     .then(obj => {
                         obj.common.licenseConfirmed = true;
+                        if (settings?.lang) {
+                            obj.common.language = settings.lang;
+                        }
                         return this.props.socket.setSystemConfig(obj);
                     })
                     .then(() => this.setState( {activeStep: this.state.activeStep + 1 }));
