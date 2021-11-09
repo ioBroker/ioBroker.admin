@@ -35,6 +35,13 @@ function build() {
 }
 
 if (window.location.host !== 'localhost:3000') {
+
+    const versionChanged = [
+        'ChunkLoadError', // version was changed
+        'removeChild',    // version was changed
+        'DOMException',   // version was changed
+    ];
+
     const ignoreErrors = [
         'removeChild',                         // ignore errors that happen by changing the version
         'getWidth',                            // echarts error
@@ -63,6 +70,9 @@ if (window.location.host !== 'localhost:3000') {
             beforeSend(event) {
                 // Modify the event here
                 if (event && event.culprit &&
+                    versionChanged.find(error => event.culprit.includes(error))) {
+                    window.reload();
+                } else if (event && event.culprit &&
                     ignoreErrors.find(error => event.culprit.includes(error))) {
                     return null;
                 }

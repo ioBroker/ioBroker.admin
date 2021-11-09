@@ -19,7 +19,7 @@ import CheckIcon from "@material-ui/icons/Check";
 
 let node = null;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
     root: {
         // backgroundColor: theme.palette.background.paper,
         width: '100%',
@@ -211,7 +211,7 @@ const generateObj = (obj, path, value) => {
     });
     return obj;
 }
-const GenereteInputsModal = ({ themeType, themeName, socket, newInstances, onApplyModal, onCloseModal }) => {
+const GenerateInputsModal = ({ themeType, themeName, socket, newInstances, onApplyModal, onCloseModal }) => {
     const classes = useStyles();
 
     const [open, setOpen] = useState(true);
@@ -243,15 +243,15 @@ const GenereteInputsModal = ({ themeType, themeName, socket, newInstances, onApp
         const obj = {};
         let objValue = {};
         if (newInstances) {
-            newInstances.comment.add.forEach((text, idx) => {
-                obj[idx] = { type: 'header', text }
-            })
+            newInstances.comment.add.forEach((text, idx) =>
+                obj[idx] = { type: 'header', text });
+
             newInstances.comment.inputs.forEach((el, idx) => {
                 obj[idx + 1] = {
                     ...el, type: types[el.type], label: el.title, text: el.def, href: el.def,
                     'sm': 6,
                     'newLine': true,
-                }
+                };
 
                 if (el.type === 'link') {
                     obj[idx + 1].button = true;
@@ -269,14 +269,14 @@ const GenereteInputsModal = ({ themeType, themeName, socket, newInstances, onApp
                     objValue[idx + 1] = '';
                 }
 
-                if (el.type === "checkbox") {
+                if (el.type === 'checkbox') {
                     objValue[idx + 1] = false;
                 }
             });
             setSchemaData(objValue);
             setSchema({ items: obj });
         }
-    }, [newInstances])
+    }, [newInstances]);
 
     return <ThemeProvider theme={theme(themeName)}>
         <Dialog
@@ -361,11 +361,11 @@ const GenereteInputsModal = ({ themeType, themeName, socket, newInstances, onApp
     </ThemeProvider >;
 }
 
-export const GenereteInputsFunc = (themeType, themeName, socket, newInstances, onCloseModal, onApplyModal) => {
+export const GenerateInputsFunc = (themeType, themeName, socket, newInstances, onCloseModal, onApplyModal) => {
     if (!node) {
         node = document.createElement('div');
         node.id = 'renderDiscoveryModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<GenereteInputsModal onCloseModal={onCloseModal} newInstances={newInstances} onApplyModal={onApplyModal} themeName={themeName} themeType={themeType} socket={socket} />, node);
+    return ReactDOM.render(<GenerateInputsModal onCloseModal={onCloseModal} newInstances={newInstances} onApplyModal={onApplyModal} themeName={themeName} themeType={themeType} socket={socket} />, node);
 }

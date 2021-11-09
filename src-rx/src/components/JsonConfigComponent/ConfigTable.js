@@ -277,8 +277,8 @@ class ConfigTable extends ConfigGeneric {
                                                 </IconButton>
                                             </InputAdornment>
                                         ),
-                                    }} fullWidth placeholder={headCell.title} />
-                                : headCell.title}
+                                    }} fullWidth placeholder={this.getText(headCell.title)} />
+                                : this.getText(headCell.title)}
                         </div>
                     </TableCell>
                 ))}

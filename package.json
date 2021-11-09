@@ -23,7 +23,7 @@
     "setup"
   ],
   "dependencies": {
-    "@iobroker/adapter-core": "^2.5.0",
+    "@iobroker/adapter-core": "^2.5.1",
     "body-parser": "^1.19.0",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.5",
@@ -39,7 +39,9 @@
   },
   "devDependencies": {
     "@babel/core": "^7.14.6",
-    "@alcalzone/release-script": "^2.2.0",
+    "@alcalzone/release-script": "^3.4.1",
+    "@alcalzone/release-script-plugin-iobroker": "^3.4.1",
+    "@alcalzone/release-script-plugin-license": "^3.4.1",
     "@babel/plugin-transform-arrow-functions": "^7.14.5",
     "@babel/plugin-transform-block-scoping": "^7.14.5",
     "@babel/plugin-transform-classes": "^7.14.5",
@@ -73,7 +75,9 @@
     "test:package": "mocha test/package --exit",
     "test:unit": "mocha test/unit --exit",
     "test:integration": "mocha test/integration --exit",
-    "release": "release-script",
+    "release": "release-script patch --yes",
+    "release-minor": "release-script minor --yes",
+    "release-major": "release-script major --yes",
     "prepublishOnly": "node node_modules/gulp/bin/gulp.js",
     "build": "node node_modules/gulp/bin/gulp.js"
   },

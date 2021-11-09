@@ -23,7 +23,7 @@ import Utils from '@iobroker/adapter-react/Components/Utils';
 import Command from '../components/Command';
 import SelectWithIcon from '@iobroker/adapter-react/Components/SelectWithIcon';
 import { licenseDialogFunc } from './LicenseDialog';
-import { GenereteInputsFunc } from './GenereteInputsModal';
+import { GenerateInputsFunc } from './GenereteInputsModal';
 import { useStateLocal } from '../helpers/hooks/useStateLocal';
 
 const useStyles = makeStyles((theme) => ({
@@ -515,13 +515,14 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
             if (typeof obj.common.licenseUrl === 'object') {
                 obj.common.licenseUrl = obj.common.licenseUrl[I18n.getLanguage()] || obj.common.licenseUrl.en;
             }
-            if (obj.common.licenseUrl.indexOf('github.com') !== -1) {
+            if (obj.common.licenseUrl.includes('github.com')) {
                 obj.common.licenseUrl = obj.common.licenseUrl.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
             }
         }
 
         licenseDialogFunc(license, result => {
             if (!result) {
+                // license not accepted, go to the next instance
                 const index = selected.indexOf(obj._id) + 1;
                 setInstallStatus(status => Object.assign({ ...status }, { [index]: 'error' }));
 
@@ -540,11 +541,11 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                 }
             } else
                 if (obj.comment?.inputs) {
-                    GenereteInputsFunc(themeType, themeName, socket, obj, () => {
+                    GenerateInputsFunc(themeType, themeName, socket, obj, () => {
                         const index = selected.indexOf(obj._id) + 1;
-                        setInstallStatus((status) => Object.assign({ ...status }, { [index]: 'error' }));
+                        setInstallStatus(status => Object.assign({ ...status }, { [index]: 'error' }));
 
-                        setLogs((logsEl) => Object.assign({ ...logsEl }, { [selected[index - 1]]: [I18n.t('Error: configuration dialog canceled')] }));
+                        setLogs(logsEl => Object.assign({ ...logsEl }, { [selected[index - 1]]: [I18n.t('Error: configuration dialog canceled')] }));
 
                         if (selected.length > index) {
                             setTimeout(() =>
@@ -557,7 +558,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                         } else {
                             setFinishInstall(true);
                         }
-                    }, (params) => {
+                    }, params => {
                         setInstancesInputsParams(params);
                         cb();
                     })
@@ -815,68 +816,73 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                     t={I18n.t}
                                     cmd={finishInstall ? '' : `${cmdName} ${selected[currentInstall - 1].replace('system.adapter.', '').split('.')[0]}`}
                                     onFinished={(_, logsSuccess) => {
-                                        const initObj = {
-                                            type: 'instance',
-                                            protectedNative: [],
-                                            encryptedNative: [],
-                                            notifications: [],
-                                            instanceObjects: [],
-                                            objects: [],
-                                        };
-
                                         let data = JSON.parse(JSON.stringify(discoveryData?.native.newInstances.find(obj =>
                                             obj._id === selected[currentInstall - 1])));
                                         delete data.comment;
-                                        data = Object.assign(initObj, data);
 
-                                        // set log level
-                                        if (defaultLogLevel) {
-                                            data.common.logLevel = defaultLogLevel;
-                                        }
-                                        data.common.logLevel = data.common.logLevel || 'info';
+                                        let adapterId = data._id.split('.');
+                                        adapterId.pop();
+                                        adapterId = adapterId.join('.');
+                                        socket.getObject(adapterId)
+                                            .then(obj => {
+                                                data = Object.assign({}, obj, data);
+                                                data.common = Object.assign(obj.common, data.common);
+                                                data.native = Object.assign(obj.native, data.native);
+                                                data.type = 'instance';
 
-                                        extendObject(selected[currentInstall - 1], data);
-                                        if (Object.keys(instancesInputsParams).length) {
-                                            extendObject(selected[currentInstall - 1], instancesInputsParams);
-                                            setInstancesInputsParams({});
-                                        }
-                                        if (checkSelectHosts && hostInstances[selected[currentInstall - 1]]) {
-                                            extendObject(selected[currentInstall - 1], { common: { host: hostInstances[selected[currentInstall - 1]] } });
-                                        }
-                                        if (selected.length > currentInstall) {
-                                            checkLicenseAndInputs(selected[currentInstall], () => {
-                                                setCurrentInstall(currentInstall + 1);
-                                                setCmdName('install');
+                                                // set log level
+                                                if (defaultLogLevel) {
+                                                    data.common.logLevel = defaultLogLevel;
+                                                }
+                                                data.common.logLevel = data.common.logLevel || 'info';
+
+                                                if (instancesInputsParams.native && Object.keys(instancesInputsParams.native).length) {
+                                                    Object.assign(data.native, instancesInputsParams.native);
+                                                    setInstancesInputsParams({});
+                                                }
+                                                if (checkSelectHosts && hostInstances[data._id]) {
+                                                    data.common.host = hostInstances[data._id];
+                                                }
+
+                                                // write created instance
+                                                extendObject(data._id, data)
+                                                    .then(() => {
+                                                        if (currentInstall < selected.length) {
+                                                            // install next
+                                                            checkLicenseAndInputs(selected[currentInstall], () => {
+                                                                setCurrentInstall(currentInstall + 1);
+                                                                setCmdName('install');
+                                                            });
+                                                            setLogs({ ...logs, [selected[currentInstall - 1]]: logsSuccess });
+                                                            setInstallStatus(Object.assign({ ...installStatus }, { [currentInstall]: 'success' }));
+                                                        } else {
+                                                            setLogs({ ...logs, [selected[currentInstall - 1]]: logsSuccess });
+                                                            setInstallStatus(Object.assign({ ...installStatus }, { [currentInstall]: 'success' }));
+                                                            setSelectLogsIndex(currentInstall - 1);
+                                                            let dataDiscovery = JSON.parse(JSON.stringify(discoveryData));
+                                                            if (dataDiscovery) {
+                                                                dataDiscovery.native.newInstances = dataDiscovery.native.newInstances.filter(({ _id }) => {
+                                                                    const find = selected.find(el => el === _id);
+                                                                    if (!find) {
+                                                                        return true;
+                                                                    }
+                                                                    return installStatus[selected.indexOf(find) + 1] !== 'success';
+                                                                });
+                                                                socket.setObject('system.discovery', dataDiscovery);
+                                                            }
+                                                            setFinishInstall(true);
+                                                            window.alert(I18n.t('Finished'));
+                                                        }
+                                                    });
                                             });
-                                            setLogs({ ...logs, [selected[currentInstall - 1]]: logsSuccess });
-                                            setInstallStatus(Object.assign({ ...installStatus }, { [currentInstall]: 'success' }));
-                                        } else {
-                                            setLogs({ ...logs, [selected[currentInstall - 1]]: logsSuccess });
-                                            setInstallStatus(Object.assign({ ...installStatus }, { [currentInstall]: 'success' }));
-                                            setSelectLogsIndex(currentInstall - 1);
-                                            let dataDiscovery = JSON.parse(JSON.stringify(discoveryData));
-                                            if (dataDiscovery) {
-                                                dataDiscovery.native.newInstances = dataDiscovery.native.newInstances.filter(({ _id }) => {
-                                                    const find = selected.find(el => el === _id);
-                                                    if (!find) {
-                                                        return true;
-                                                    }
-                                                    return installStatus[selected.indexOf(find) + 1] !== 'success';
-                                                });
-                                                socket.setObject('system.discovery', dataDiscovery);
-                                            }
-                                            setFinishInstall(true);
-                                            window.alert(I18n.t('Finished'));
-                                        }
                                     }}
                                     errorFunc={(el, logsError) => {
                                         if (el === 51 && cmdName === 'install') {
                                             return setCmdName('upload');
                                         }
                                         if (selected.length > currentInstall && cmdName === 'upload') {
-                                            checkLicenseAndInputs(selected[currentInstall], () => {
-                                                setCurrentInstall(currentInstall + 1);
-                                            });
+                                            checkLicenseAndInputs(selected[currentInstall], () =>
+                                                setCurrentInstall(currentInstall + 1));
                                             setInstallStatus(Object.assign({ ...installStatus }, { [currentInstall]: 'error' }));
                                         } else {
                                             if (selected.length > currentInstall) {
