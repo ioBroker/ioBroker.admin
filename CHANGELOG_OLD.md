@@ -1,6 +1,12 @@
 ## 5.1.15 (2021-07-26)
 * (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig 
+* (bluefox) Added the logic for checkbox in JsonConfig
+## 5.1.16 (2021-07-30)
+* (bluefox) Make the appearance of buttons configurable
+
+## 5.1.15 (2021-07-26)
+* (bluefox) Replaced the formula icon in the edit aliases dialog
+* (bluefox) Added the logic for checkbox in JsonConfig
 
 ## 5.1.14 (2021-07-23)
 * (bluefox) Corrected error with "Intro" page. Warning: All cards must be deactivated anew.
@@ -160,10 +166,10 @@
 * (paul53) fix Objects dialog
 
 ## 4.1.10 (2020-10-08)
-* (bluefox) Corrected the icons of the custom tabs. 
+* (bluefox) Corrected the icons of the custom tabs.
 
 ## 4.1.8 (2020-09-03)
-* (bluefox) Fixed editing of the objects with % sign in the ID. 
+* (bluefox) Fixed editing of the objects with % sign in the ID.
 
 ## 4.1.13 (2021-01-08)
 * (bluefox) Support of new Let's Encrypt (only with js-controller 3.2.x)
@@ -176,10 +182,10 @@
 * (paul53) fix Objects dialog
 
 ## 4.1.10 (2020-10-08)
-* (bluefox) Corrected the icons of the custom tabs. 
+* (bluefox) Corrected the icons of the custom tabs.
 
 ## 4.1.8 (2020-09-03)
-* (bluefox) Fixed editing of the objects with % sign in the ID. 
+* (bluefox) Fixed editing of the objects with % sign in the ID.
 
 ## 4.1.6 (2020-07-26)
 * (Apollon77) Increased the socket ping Interval and Timeout to maybe prevent the too fast reconnect attempts.
