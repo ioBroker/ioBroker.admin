@@ -1,462 +1,306 @@
 {
-    "common": {
-        "name": "admin",
-        "version": "5.1.27",
-        "titleLang": {
-            "en": "Admin",
-            "de": "Admin",
-            "ru": "Админ",
-            "pt": "Admin",
-            "pl": "Admin",
-            "fr": "Admin",
-            "nl": "Admin",
-            "it": "Admin",
-            "es": "Admin",
-            "zh-cn": "Admin"
-        },
-        "title": "Admin",
-        "connectionType": "local",
-        "dataSource": "push",
-        "news": {
-            "5.1.25": {
-                "en": "Corrected some errors reported via sentry and the github issues",
-                "de": "Einige Fehler, die über Wache und die Github-Probleme gemeldet wurden, korrigiert",
-                "ru": "Исправлены некоторые ошибки, о которых сообщалось через часовую, и проблемы с github.",
-                "pt": "Corrigidos alguns erros relatados via sentry e os problemas do github",
-                "nl": "Enkele fouten gecorrigeerd die zijn gemeld via sentry en de github-problemen",
-                "fr": "Correction de certaines erreurs signalées via sentinelle et des problèmes de github",
-                "it": "Corretti alcuni errori segnalati tramite sentry e problemi con github",
-                "es": "Se corrigieron algunos errores informados a través de sentry y los problemas de github",
-                "pl": "Poprawiono niektóre błędy zgłaszane przez Sentry i problemy z githubem",
-                "zh-cn": "更正了通过哨兵和 github 问题报告的一些错误"
-            },
-            "5.1.24": {
-                "en": "Corrected some errors reported via sentry and the github issues",
-                "de": "Einige Fehler, die über Wache und die Github-Probleme gemeldet wurden, korrigiert",
-                "ru": "Исправлены некоторые ошибки, о которых сообщалось через часовую, и проблемы с github.",
-                "pt": "Corrigidos alguns erros relatados via sentry e os problemas do github",
-                "nl": "Enkele fouten gecorrigeerd die zijn gemeld via sentry en de github-problemen",
-                "fr": "Correction de certaines erreurs signalées via sentinelle et des problèmes de github",
-                "it": "Corretti alcuni errori segnalati tramite sentry e problemi con github",
-                "es": "Se corrigieron algunos errores informados a través de sentry y los problemas de github",
-                "pl": "Poprawiono niektóre błędy zgłaszane przez Sentry i problemy z githubem",
-                "zh-cn": "更正了通过哨兵和 github 问题报告的一些错误"
-            },
-            "5.1.23": {
-                "en": "Corrected some errors reported via sentry",
-                "de": "Einige Fehler behoben, die über die Wache gemeldet wurden",
-                "ru": "Исправлены некоторые ошибки, о которых сообщал часовой.",
-                "pt": "Corrigidos alguns erros relatados via sentinela",
-                "nl": "Enkele fouten gecorrigeerd die zijn gemeld via schildwacht",
-                "fr": "Correction de quelques erreurs signalées via sentinelle",
-                "it": "Corretti alcuni errori segnalati tramite sentinella",
-                "es": "Se corrigieron algunos errores informados a través de centinela.",
-                "pl": "Poprawiono niektóre błędy zgłaszane przez wartownika",
-                "zh-cn": "更正了通过哨兵报告的一些错误"
-            },
-            "5.1.22": {
-                "en": "Corrected some errors reported via sentry",
-                "de": "Einige Fehler behoben, die über die Wache gemeldet wurden",
-                "ru": "Исправлены некоторые ошибки, о которых сообщал часовой.",
-                "pt": "Corrigidos alguns erros relatados via sentinela",
-                "nl": "Enkele fouten gecorrigeerd die zijn gemeld via schildwacht",
-                "fr": "Correction de quelques erreurs signalées via sentinelle",
-                "it": "Corretti alcuni errori segnalati tramite sentinella",
-                "es": "Se corrigieron algunos errores informados a través de centinela.",
-                "pl": "Poprawiono niektóre błędy zgłaszane przez wartownika",
-                "zh-cn": "更正了通过哨兵报告的一些错误"
-            },
-            "5.1.21": {
-                "en": "Corrected some errors reported via sentry",
-                "de": "Einige Fehler behoben, die über die Wache gemeldet wurden",
-                "ru": "Исправлены некоторые ошибки, о которых сообщал часовой.",
-                "pt": "Corrigidos alguns erros relatados via sentinela",
-                "nl": "Enkele fouten gecorrigeerd die zijn gemeld via schildwacht",
-                "fr": "Correction de quelques erreurs signalées via sentinelle",
-                "it": "Corretti alcuni errori segnalati tramite sentinella",
-                "es": "Se corrigieron algunos errores informados a través de centinela.",
-                "pl": "Poprawiono niektóre błędy zgłaszane przez wartownika",
-                "zh-cn": "更正了通过哨兵报告的一些错误"
-            },
-            "5.1.20": {
-                "en": "Corrected some errors reported via sentry",
-                "de": "Einige Fehler behoben, die über die Wache gemeldet wurden",
-                "ru": "Исправлены некоторые ошибки, о которых сообщал часовой.",
-                "pt": "Corrigidos alguns erros relatados via sentinela",
-                "nl": "Enkele fouten gecorrigeerd die zijn gemeld via schildwacht",
-                "fr": "Correction de quelques erreurs signalées via sentinelle",
-                "it": "Corretti alcuni errori segnalati tramite sentinella",
-                "es": "Se corrigieron algunos errores informados a través de centinela.",
-                "pl": "Poprawiono niektóre błędy zgłaszane przez wartownika",
-                "zh-cn": "更正了通过哨兵报告的一些错误"
-            },
-            "5.1.19": {
-                "en": "Corrected some GUI errors",
-                "de": "Einige GUI-Fehler korrigiert",
-                "ru": "Исправлены некоторые ошибки графического интерфейса.",
-                "pt": "Corrigidos alguns erros de GUI",
-                "nl": "Enkele GUI-fouten gecorrigeerd",
-                "fr": "Correction de quelques erreurs d'interface graphique",
-                "it": "Corretti alcuni errori della GUI",
-                "es": "Se corrigieron algunos errores de GUI",
-                "pl": "Poprawiono niektóre błędy GUI",
-                "zh-cn": "更正了一些 GUI 错误"
-            },
-            "5.1.18": {
-                "en": "Corrected some GUI errors: theme switching, system settings",
-                "de": "Einige GUI-Fehler korrigiert: Themenwechsel, Systemeinstellungen",
-                "ru": "Исправлены некоторые ошибки графического интерфейса: переключение тем, системные настройки.",
-                "pt": "Corrigidos alguns erros de GUI: mudança de tema, configurações do sistema",
-                "nl": "Enkele GUI-fouten gecorrigeerd: themawisseling, systeeminstellingen",
-                "fr": "Correction de quelques erreurs d'interface graphique : changement de thème, paramètres système",
-                "it": "Corretti alcuni errori della GUI: cambio tema, impostazioni di sistema",
-                "es": "Se corrigieron algunos errores de GUI: cambio de tema, configuración del sistema",
-                "pl": "Poprawiono niektóre błędy GUI: przełączanie motywów, ustawienia systemowe",
-                "zh-cn": "更正了一些 GUI 错误：主题切换、系统设置"
-            },
-            "5.1.17": {
-                "en": "Corrected the error on the adapter's tab",
-                "de": "Fehler auf der Registerkarte des Adapters behoben",
-                "ru": "Исправили ошибку на вкладке адаптера",
-                "pt": "Corrigido o erro na guia do adaptador",
-                "nl": "De fout op het tabblad van de adapter gecorrigeerd",
-                "fr": "Correction de l'erreur sur l'onglet de l'adaptateur",
-                "it": "Corretto l'errore nella scheda dell'adattatore",
-                "es": "Corregido el error en la pestaña del adaptador.",
-                "pl": "Poprawiono błąd na karcie adaptera",
-                "zh-cn": "更正了适配器选项卡上的错误"
-            },
-            "5.1.16": {
-                "en": "Make the appearance of buttons configurable",
-                "de": "Gestalten Sie das Aussehen von Schaltflächen konfigurierbar",
-                "ru": "Сделайте внешний вид кнопок настраиваемым",
-                "pt": "Faça a aparência de botões configuráveis",
-                "nl": "Maak het uiterlijk van knoppen configureerbaar",
-                "fr": "Rendre l'apparence des boutons paramétrable",
-                "it": "Rendi configurabile l'aspetto dei pulsanti",
-                "es": "Hacer que la apariencia de los botones sea configurable",
-                "pl": "Spraw, aby wygląd przycisków był konfigurowalny",
-                "zh-cn": "使按钮的外观可配置"
-            },
-            "5.1.15": {
-                "en": "Replaced the formula icon in the edit aliases dialog\nAdded the logic for checkbox in JsonConfig",
-                "de": "Formelsymbol im Dialog zum Bearbeiten von Aliasen ersetzt\nLogik für Kontrollkästchen in JsonConfig hinzugefügt",
-                "ru": "Заменен значок формулы в диалоговом окне редактирования псевдонимов.\nДобавлена логика для флажка в JsonConfig",
-                "pt": "Substituído o ícone da fórmula na janela de edição de aliases\nAdicionada a lógica para a caixa de seleção em JsonConfig",
-                "nl": "Het formulepictogram in het dialoogvenster aliassen bewerken vervangen\nDe logica toegevoegd voor het selectievakje in JsonConfig",
-                "fr": "Remplacement de l'icône de formule dans la boîte de dialogue de modification des alias\nAjout de la logique pour la case à cocher dans JsonConfig",
-                "it": "Sostituita l'icona della formula nella finestra di dialogo Modifica alias\nAggiunta la logica per la casella di controllo in JsonConfig",
-                "es": "Reemplazó el ícono de fórmula en el cuadro de diálogo de edición de alias\nSe agregó la lógica para la casilla de verificación en JsonConfig",
-                "pl": "Zamieniono ikonę formuły w oknie edycji aliasów\nDodano logikę pola wyboru w JsonConfig",
-                "zh-cn": "替换了编辑别名对话框中的公式图标\n在 JsonConfig 中添加了复选框的逻辑"
-            },
-            "5.1.14": {
-                "en": "Corrected error with \"Intro\" page. Warning: All cards must be deactivated anew.",
-                "de": "Fehler mit \"Intro\"-Seite behoben. Achtung: Alle Karten müssen neu deaktiviert werden.",
-                "ru": "Исправлена ошибка со страницей \"Введение\". Предупреждение: все карты необходимо деактивировать заново.",
-                "pt": "Erro corrigido com a página \"Introdução\". Aviso: Todos os cartões devem ser desativados novamente.",
-                "nl": "Fout gecorrigeerd met \"Intro\"-pagina. Waarschuwing: Alle kaarten moeten opnieuw worden gedeactiveerd.",
-                "fr": "Erreur corrigée avec la page \"Intro\". Attention : toutes les cartes doivent être à nouveau désactivées.",
-                "it": "Corretto errore con la pagina \"Intro\". Attenzione: tutte le carte devono essere nuovamente disattivate.",
-                "es": "Error corregido con la página \"Introducción\". Advertencia: Todas las tarjetas deben desactivarse nuevamente.",
-                "pl": "Poprawiony błąd ze stroną „Intro”. Ostrzeżenie: Wszystkie karty muszą zostać ponownie dezaktywowane.",
-                "zh-cn": "更正了“介绍”页面的错误。警告：必须重新停用所有卡。"
-            },
-            "5.1.13": {
-                "en": "Improved json config",
-                "de": "Verbesserte Json-Konfiguration",
-                "ru": "Улучшенная конфигурация json",
-                "pt": "Configuração json aprimorada",
-                "nl": "Verbeterde json-configuratie",
-                "fr": "Configuration json améliorée",
-                "it": "Configurazione json migliorata",
-                "es": "Configuración json mejorada",
-                "pl": "Ulepszona konfiguracja json",
-                "zh-cn": "改进的 json 配置"
-            },
-            "5.1.12": {
-                "en": "The charts were improved\nCorrected the error with the jump links if more than one web instance",
-                "de": "Die Charts wurden verbessert\nFehler mit den Sprunglinks bei mehr als einer Webinstanz behoben web",
-                "ru": "Графики были улучшены\nИсправлена ошибка с переходом по ссылкам при наличии нескольких веб-экземпляров.",
-                "pt": "Os gráficos foram melhorados\nCorrigido o erro com os links de salto se mais de uma instância da web",
-                "nl": "De grafieken zijn verbeterd\nDe fout met de springlinks gecorrigeerd als er meer dan één webinstantie is",
-                "fr": "Les graphiques ont été améliorés\nCorrection de l'erreur avec les liens de saut si plus d'une instance Web",
-                "it": "Le classifiche sono state migliorate\nCorretto l'errore con i collegamenti di salto se più di un'istanza web",
-                "es": "Se mejoraron los gráficos\nSe corrigió el error con los enlaces de salto si había más de una instancia web",
-                "pl": "Wykresy zostały ulepszone\nPoprawiono błąd z linkami do skoku, jeśli więcej niż jedna instancja sieciowa",
-                "zh-cn": "图表已改进\n如果有多个 Web 实例，则更正了跳转链接的错误"
-            },
-            "5.1.11": {
-                "en": "Changed the filter of objects",
-                "de": "Filter von Objekten geändert",
-                "ru": "Изменен фильтр объектов",
-                "pt": "Mudou o filtro de objetos",
-                "nl": "Het filter van objecten gewijzigd",
-                "fr": "Modification du filtre des objets",
-                "it": "Modificato il filtro degli oggetti",
-                "es": "Cambiado el filtro de objetos.",
-                "pl": "Zmieniono filtr obiektów",
-                "zh-cn": "更改了对象的过滤器"
-            },
-            "5.1.10": {
-                "en": "Corrected some GUI errors",
-                "de": "Einige GUI-Fehler korrigiert",
-                "ru": "Исправлены некоторые ошибки графического интерфейса.",
-                "pt": "Corrigidos alguns erros de GUI",
-                "nl": "Enkele GUI-fouten gecorrigeerd",
-                "fr": "Correction de quelques erreurs d'interface graphique",
-                "it": "Corretti alcuni errori della GUI",
-                "es": "Se corrigieron algunos errores de GUI",
-                "pl": "Poprawiono niektóre błędy GUI",
-                "zh-cn": "更正了一些 GUI 错误"
-            },
-            "5.1.9": {
-                "en": "Corrected some GUI errors",
-                "de": "Einige GUI-Fehler korrigiert",
-                "ru": "Исправлены некоторые ошибки графического интерфейса.",
-                "pt": "Corrigidos alguns erros de GUI",
-                "nl": "Enkele GUI-fouten gecorrigeerd",
-                "fr": "Correction de quelques erreurs d'interface graphique",
-                "it": "Corretti alcuni errori della GUI",
-                "es": "Se corrigieron algunos errores de GUI",
-                "pl": "Poprawiono niektóre błędy GUI",
-                "zh-cn": "更正了一些 GUI 错误"
-            },
-            "5.1.8": {
-                "en": "Improved the list of predefined icons",
-                "de": "Liste der vordefinierten Symbole verbessert",
-                "ru": "Улучшен список предустановленных значков.",
-                "pt": "Melhorou a lista de ícones predefinidos",
-                "nl": "De lijst met vooraf gedefinieerde pictogrammen verbeterd",
-                "fr": "Amélioration de la liste des icônes prédéfinies",
-                "it": "Migliorato l'elenco delle icone predefinite",
-                "es": "Se mejoró la lista de iconos predefinidos.",
-                "pl": "Poprawiono listę predefiniowanych ikon",
-                "zh-cn": "改进了预定义图标列表"
-            },
-            "5.1.7": {
-                "en": "Added the possibility to clear the schedule",
-                "de": "Möglichkeit hinzugefügt, den Zeitplan zu löschen",
-                "ru": "Добавлена возможность очистить расписание",
-                "pt": "Adicionada a possibilidade de limpar a programação",
-                "nl": "De mogelijkheid toegevoegd om het schema te wissen",
-                "fr": "Ajout de la possibilité d'effacer le planning",
-                "it": "Aggiunta la possibilità di cancellare il programma",
-                "es": "Añadida la posibilidad de borrar el horario",
-                "pl": "Dodano możliwość wyczyszczenia harmonogramu",
-                "zh-cn": "添加了清除时间表的可能性"
-            },
-            "5.1.6": {
-                "en": "Improved the custom settings",
-                "de": "Die benutzerdefinierten Einstellungen wurden verbessert",
-                "ru": "Улучшены пользовательские настройки",
-                "pt": "Melhorou as configurações personalizadas",
-                "nl": "De aangepaste instellingen verbeterd",
-                "fr": "Amélioration des paramètres personnalisés",
-                "it": "Migliorate le impostazioni personalizzate",
-                "es": "Mejorada la configuración personalizada.",
-                "pl": "Poprawiono ustawienia niestandardowe",
-                "zh-cn": "改进了自定义设置"
-            }
-        },
-        "desc": {
-            "en": "The configuration of ioBroker via Web-Interface",
-            "de": "Die Konfiguration von ioBroker über das Web-Interface",
-            "ru": "Конфигурация ioBroker через веб-интерфейс",
-            "pt": "A configuração do ioBroker via Web-Interface",
-            "fr": "La configuration de ioBroker via Web-Interface",
-            "nl": "De configuratie van ioBroker via de webinterface",
-            "it": "La configurazione di ioBroker tramite interfaccia Web",
-            "zh-cn": "配置ioBroker的Web界面"
-        },
-        "docs": {
-            "en": "docs/en/admin.md",
-            "ru": "docs/ru/admin.md",
-            "de": [
-                "docs/de/admin.md",
-                "docs/de/admin/tab-adapters.md",
-                "docs/de/admin/tab-instances.md",
-                "docs/de/admin/tab-objects.md",
-                "docs/de/admin/tab-states.md",
-                "docs/de/admin/tab-groups.md",
-                "docs/de/admin/tab-users.md",
-                "docs/de/admin/tab-events.md",
-                "docs/de/admin/tab-hosts.md",
-                "docs/de/admin/tab-enums.md",
-                "docs/de/admin/tab-log.md",
-                "docs/de/admin/tab-system.md"
-            ],
-            "pt": "docs/pt/admin.md",
-            "nl": "docs/nl/admin.md",
-            "es": "docs/es/admin.md",
-            "fr": "docs/fr/admin.md",
-            "it": "docs/it/admin.md",
-            "pl": "docs/pl/admin.md",
-            "zh-cn": "docs/zh-cn/admin.md"
-        },
-        "materialize": true,
-        "mode": "daemon",
-        "platform": "Javascript/Node.js",
-        "loglevel": "info",
-        "icon": "admin.png",
-        "messagebox": true,
-        "enabled": true,
-        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/admin/admin.png",
-        "keywords": [
-            "setup",
-            "config",
-            "update",
-            "upgrade",
-            "system",
-            "konfiguration",
-            "administration",
-            "einrichtung",
-            "wartung"
-        ],
-        "compact": true,
-        "readme": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md",
-        "authors": [
-            "bluefox <bluefox@ccu.io>",
-            "hobbyquaker <hq@ccu.io>"
-        ],
-        "dependencies": [
-            {
-                "js-controller": ">=3.2.16"
-            }
-        ],
-        "type": "general",
-        "license": "MIT",
-        "logTransporter": true,
-        "stopBeforeUpdate": true,
-        "wwwDontUpload": true,
-        "nogit": true,
-        "welcomeScreenPro": {
-            "link": "admin/index.html",
-            "name": "Admin",
-            "img": "admin/img/admin.png",
-            "color": "pink",
-            "order": 5,
-            "localLinks": "_default",
-            "localLink": true
-        },
-        "localLinks": {
-            "_default": {
-                "link": "%protocol%://%bind%:%port%",
-                "pro": true
-            }
-        },
-        "plugins": {
-            "sentry": {
-                "dsn": "https://9d2aaf29332a4999b133c693f43203b9@sentry.iobroker.net/18"
-            }
-        },
-        "jsonConfig": true,
-        "adminUI": {
-            "config": "json"
-        }
+  "common": {
+    "name": "admin",
+    "version": "5.1.28",
+    "titleLang": {
+      "en": "Admin",
+      "de": "Admin",
+      "ru": "Админ",
+      "pt": "Admin",
+      "pl": "Admin",
+      "fr": "Admin",
+      "nl": "Admin",
+      "it": "Admin",
+      "es": "Admin",
+      "zh-cn": "Admin"
     },
-    "native": {
-        "port": 8081,
-        "auth": false,
-        "secure": false,
-        "bind": "0.0.0.0",
-        "cache": false,
-        "material": false,
-        "autoUpdate": 24,
-        "accessLimit": false,
-        "accessApplyRights": false,
-        "accessAllowedConfigs": [],
-        "accessAllowedTabs": [],
-        "certPublic": "",
-        "certPrivate": "",
-        "certChained": "",
-        "ttl": 3600,
-        "defaultUser": "admin",
-        "tmpPath": "/tmp",
-        "tmpPathAllow": false,
-        "thresholdValue": 200,
-        "leEnabled": false,
-        "leUpdate": false,
-        "leCheckPort": 80,
-        "loginBackgroundColor": "",
-        "loginBackgroundImage": false,
-        "loginHideLogo": false,
-        "loginMotto": ""
+    "title": "Admin",
+    "connectionType": "local",
+    "dataSource": "push",
+    "news": {
+      "5.1.28": {
+        "en": "Fixed discovery function\nFixed some GUI bugs",
+        "de": "Feste Erkennungsfunktion\nEinige GUI-Fehler behoben",
+        "ru": "Фиксированная функция обнаружения\nИсправлены некоторые ошибки графического интерфейса.",
+        "pt": "Função de descoberta corrigida\nCorrigidos alguns bugs de GUI",
+        "nl": "Vaste ontdekkingsfunctie\nEnkele GUI-bugs opgelost",
+        "fr": "Fonction de découverte fixe\nCorrection de quelques bugs de l'interface graphique",
+        "it": "Funzione di scoperta fissa\nRisolti alcuni bug della GUI",
+        "es": "Función de descubrimiento fijo\nSe corrigieron algunos errores de GUI",
+        "pl": "Naprawiono funkcję wykrywania\nNaprawiono kilka błędów GUI",
+        "zh-cn": "固定发现功能\n修复了一些 GUI 错误"
+      },
+      "5.1.25": {
+        "en": "Corrected some errors reported via sentry and the github issues",
+        "de": "Einige Fehler, die über Wache und die Github-Probleme gemeldet wurden, korrigiert",
+        "ru": "Исправлены некоторые ошибки, о которых сообщалось через часовую, и проблемы с github.",
+        "pt": "Corrigidos alguns erros relatados via sentry e os problemas do github",
+        "nl": "Enkele fouten gecorrigeerd die zijn gemeld via sentry en de github-problemen",
+        "fr": "Correction de certaines erreurs signalées via sentinelle et des problèmes de github",
+        "it": "Corretti alcuni errori segnalati tramite sentry e problemi con github",
+        "es": "Se corrigieron algunos errores informados a través de sentry y los problemas de github",
+        "pl": "Poprawiono niektóre błędy zgłaszane przez Sentry i problemy z githubem",
+        "zh-cn": "更正了通过哨兵和 github 问题报告的一些错误"
+      },
+      "5.1.24": {
+        "en": "Corrected some errors reported via sentry and the github issues",
+        "de": "Einige Fehler, die über Wache und die Github-Probleme gemeldet wurden, korrigiert",
+        "ru": "Исправлены некоторые ошибки, о которых сообщалось через часовую, и проблемы с github.",
+        "pt": "Corrigidos alguns erros relatados via sentry e os problemas do github",
+        "nl": "Enkele fouten gecorrigeerd die zijn gemeld via sentry en de github-problemen",
+        "fr": "Correction de certaines erreurs signalées via sentinelle et des problèmes de github",
+        "it": "Corretti alcuni errori segnalati tramite sentry e problemi con github",
+        "es": "Se corrigieron algunos errores informados a través de sentry y los problemas de github",
+        "pl": "Poprawiono niektóre błędy zgłaszane przez Sentry i problemy z githubem",
+        "zh-cn": "更正了通过哨兵和 github 问题报告的一些错误"
+      },
+      "5.1.23": {
+        "en": "Corrected some errors reported via sentry",
+        "de": "Einige Fehler behoben, die über die Wache gemeldet wurden",
+        "ru": "Исправлены некоторые ошибки, о которых сообщал часовой.",
+        "pt": "Corrigidos alguns erros relatados via sentinela",
+        "nl": "Enkele fouten gecorrigeerd die zijn gemeld via schildwacht",
+        "fr": "Correction de quelques erreurs signalées via sentinelle",
+        "it": "Corretti alcuni errori segnalati tramite sentinella",
+        "es": "Se corrigieron algunos errores informados a través de centinela.",
+        "pl": "Poprawiono niektóre błędy zgłaszane przez wartownika",
+        "zh-cn": "更正了通过哨兵报告的一些错误"
+      },
+      "5.1.22": {
+        "en": "Corrected some errors reported via sentry",
+        "de": "Einige Fehler behoben, die über die Wache gemeldet wurden",
+        "ru": "Исправлены некоторые ошибки, о которых сообщал часовой.",
+        "pt": "Corrigidos alguns erros relatados via sentinela",
+        "nl": "Enkele fouten gecorrigeerd die zijn gemeld via schildwacht",
+        "fr": "Correction de quelques erreurs signalées via sentinelle",
+        "it": "Corretti alcuni errori segnalati tramite sentinella",
+        "es": "Se corrigieron algunos errores informados a través de centinela.",
+        "pl": "Poprawiono niektóre błędy zgłaszane przez wartownika",
+        "zh-cn": "更正了通过哨兵报告的一些错误"
+      },
+      "5.1.21": {
+        "en": "Corrected some errors reported via sentry",
+        "de": "Einige Fehler behoben, die über die Wache gemeldet wurden",
+        "ru": "Исправлены некоторые ошибки, о которых сообщал часовой.",
+        "pt": "Corrigidos alguns erros relatados via sentinela",
+        "nl": "Enkele fouten gecorrigeerd die zijn gemeld via schildwacht",
+        "fr": "Correction de quelques erreurs signalées via sentinelle",
+        "it": "Corretti alcuni errori segnalati tramite sentinella",
+        "es": "Se corrigieron algunos errores informados a través de centinela.",
+        "pl": "Poprawiono niektóre błędy zgłaszane przez wartownika",
+        "zh-cn": "更正了通过哨兵报告的一些错误"
+      },
+      "5.1.20": {
+        "en": "Corrected some errors reported via sentry",
+        "de": "Einige Fehler behoben, die über die Wache gemeldet wurden",
+        "ru": "Исправлены некоторые ошибки, о которых сообщал часовой.",
+        "pt": "Corrigidos alguns erros relatados via sentinela",
+        "nl": "Enkele fouten gecorrigeerd die zijn gemeld via schildwacht",
+        "fr": "Correction de quelques erreurs signalées via sentinelle",
+        "it": "Corretti alcuni errori segnalati tramite sentinella",
+        "es": "Se corrigieron algunos errores informados a través de centinela.",
+        "pl": "Poprawiono niektóre błędy zgłaszane przez wartownika",
+        "zh-cn": "更正了通过哨兵报告的一些错误"
+      }
     },
-    "objects": [],
-    "instanceObjects": [
-        {
-            "_id": "info",
-            "type": "channel",
-            "common": {
-                "name": "Information"
-            },
-            "native": {}
-        },
-        {
-            "_id": "",
-            "type": "meta",
-            "common": {
-                "name": "user files and images for background image",
-                "type": "meta.user"
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.connection",
-            "type": "state",
-            "common": {
-                "role": "indicator.connected",
-                "name": "Info about connected socket clients",
-                "type": "string",
-                "read": true,
-                "write": false,
-                "def": ""
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.newsFeed",
-            "type": "state",
-            "common": {
-                "name": "Last news feed as JSON",
-                "type": "json",
-                "read": true,
-                "write": false
-            }
-        },
-        {
-            "_id": "info.newsETag",
-            "type": "state",
-            "common": {
-                "name": "Etag for news feed",
-                "type": "string",
-                "read": true,
-                "write": false
-            }
-        },
-        {
-            "_id": "info.newsLastId",
-            "type": "state",
-            "common": {
-                "name": "last seen news ID",
-                "type": "string",
-                "read": true,
-                "write": false
-            }
-        },
-        {
-            "_id": "info.updatesList",
-            "type": "state",
-            "common": {
-                "role": "indicator.updates",
-                "name": "List of adapters to update",
-                "type": "string",
-                "read": true,
-                "write": false,
-                "def": ""
-            },
-            "native": {}
-        }
-    ]
+    "desc": {
+      "en": "The configuration of ioBroker via Web-Interface",
+      "de": "Die Konfiguration von ioBroker über das Web-Interface",
+      "ru": "Конфигурация ioBroker через веб-интерфейс",
+      "pt": "A configuração do ioBroker via Web-Interface",
+      "fr": "La configuration de ioBroker via Web-Interface",
+      "nl": "De configuratie van ioBroker via de webinterface",
+      "it": "La configurazione di ioBroker tramite interfaccia Web",
+      "zh-cn": "配置ioBroker的Web界面"
+    },
+    "docs": {
+      "en": "docs/en/admin.md",
+      "ru": "docs/ru/admin.md",
+      "de": [
+        "docs/de/admin.md",
+        "docs/de/admin/tab-adapters.md",
+        "docs/de/admin/tab-instances.md",
+        "docs/de/admin/tab-objects.md",
+        "docs/de/admin/tab-states.md",
+        "docs/de/admin/tab-groups.md",
+        "docs/de/admin/tab-users.md",
+        "docs/de/admin/tab-events.md",
+        "docs/de/admin/tab-hosts.md",
+        "docs/de/admin/tab-enums.md",
+        "docs/de/admin/tab-log.md",
+        "docs/de/admin/tab-system.md"
+      ],
+      "pt": "docs/pt/admin.md",
+      "nl": "docs/nl/admin.md",
+      "es": "docs/es/admin.md",
+      "fr": "docs/fr/admin.md",
+      "it": "docs/it/admin.md",
+      "pl": "docs/pl/admin.md",
+      "zh-cn": "docs/zh-cn/admin.md"
+    },
+    "materialize": true,
+    "mode": "daemon",
+    "platform": "Javascript/Node.js",
+    "loglevel": "info",
+    "icon": "admin.png",
+    "messagebox": true,
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/admin/admin.png",
+    "keywords": [
+      "setup",
+      "config",
+      "update",
+      "upgrade",
+      "system",
+      "konfiguration",
+      "administration",
+      "einrichtung",
+      "wartung"
+    ],
+    "compact": true,
+    "readme": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md",
+    "authors": [
+      "bluefox <bluefox@ccu.io>",
+      "hobbyquaker <hq@ccu.io>"
+    ],
+    "dependencies": [
+      {
+        "js-controller": ">=3.2.16"
+      }
+    ],
+    "type": "general",
+    "license": "MIT",
+    "logTransporter": true,
+    "stopBeforeUpdate": true,
+    "wwwDontUpload": true,
+    "nogit": true,
+    "welcomeScreenPro": {
+      "link": "admin/index.html",
+      "name": "Admin",
+      "img": "admin/img/admin.png",
+      "color": "pink",
+      "order": 5,
+      "localLinks": "_default",
+      "localLink": true
+    },
+    "localLinks": {
+      "_default": {
+        "link": "%protocol%://%bind%:%port%",
+        "pro": true
+      }
+    },
+    "plugins": {
+      "sentry": {
+        "dsn": "https://9d2aaf29332a4999b133c693f43203b9@sentry.iobroker.net/18"
+      }
+    },
+    "jsonConfig": true,
+    "adminUI": {
+      "config": "json"
+    }
+  },
+  "native": {
+    "port": 8081,
+    "auth": false,
+    "secure": false,
+    "bind": "0.0.0.0",
+    "cache": false,
+    "material": false,
+    "autoUpdate": 24,
+    "accessLimit": false,
+    "accessApplyRights": false,
+    "accessAllowedConfigs": [],
+    "accessAllowedTabs": [],
+    "certPublic": "",
+    "certPrivate": "",
+    "certChained": "",
+    "ttl": 3600,
+    "defaultUser": "admin",
+    "tmpPath": "/tmp",
+    "tmpPathAllow": false,
+    "thresholdValue": 200,
+    "leEnabled": false,
+    "leUpdate": false,
+    "leCheckPort": 80,
+    "loginBackgroundColor": "",
+    "loginBackgroundImage": false,
+    "loginHideLogo": false,
+    "loginMotto": ""
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "",
+      "type": "meta",
+      "common": {
+        "name": "user files and images for background image",
+        "type": "meta.user"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "Info about connected socket clients",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.newsFeed",
+      "type": "state",
+      "common": {
+        "name": "Last news feed as JSON",
+        "type": "json",
+        "read": true,
+        "write": false
+      }
+    },
+    {
+      "_id": "info.newsETag",
+      "type": "state",
+      "common": {
+        "name": "Etag for news feed",
+        "type": "string",
+        "read": true,
+        "write": false
+      }
+    },
+    {
+      "_id": "info.newsLastId",
+      "type": "state",
+      "common": {
+        "name": "last seen news ID",
+        "type": "string",
+        "read": true,
+        "write": false
+      }
+    },
+    {
+      "_id": "info.updatesList",
+      "type": "state",
+      "common": {
+        "role": "indicator.updates",
+        "name": "List of adapters to update",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    }
+  ]
 }
