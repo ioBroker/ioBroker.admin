@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### 5.1.27 (2021-11-10)
+### __WORK IN PROGRESS__
 * (bluefox) Fixed discovery function
 * (bluefox) Fixed some GUI bugs
 
