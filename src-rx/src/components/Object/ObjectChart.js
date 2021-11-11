@@ -739,26 +739,23 @@ class ObjectChart extends Component {
         } else if (mins === 'week') {
             now.setHours(0);
             now.setMinutes(0);
-            now.setFullYear(now.getFullYear() - 1);
             // find week start
             if (now.getDay()) { // if not sunday
                 now.setDate(now.getDate() - now.getDay() - 1);
             } else {
                 now.setDate(now.getDate() - 6);
             }
-
-            this.chart.min = now.getTime();
+            min = now.getTime();
         } else if (mins === '2weeks') {
             now.setHours(0);
             now.setMinutes(0);
-            now.setFullYear(now.getFullYear() - 1);
             // find week start
             if (now.getDay()) { // if not sunday
                 now.setDate(now.getDate() - now.getDay() - 8);
             } else {
                 now.setDate(now.getDate() - 13);
             }
-            this.chart.min = now.getTime();
+            min = now.getTime();
         } else if (mins === 'month') {
             now.setHours(0);
             now.setMinutes(0);
@@ -832,19 +829,16 @@ class ObjectChart extends Component {
         } else if (mins === 'week') {
             now.setHours(0);
             now.setMinutes(0);
-            now.setFullYear(now.getFullYear() - 1);
             // find week start
             if (now.getDay()) { // if not sunday
                 now.setDate(now.getDate() - now.getDay() - 1);
             } else {
                 now.setDate(now.getDate() - 6);
             }
-
             this.chart.min = now.getTime();
         } else if (mins === '2weeks') {
             now.setHours(0);
             now.setMinutes(0);
-            now.setFullYear(now.getFullYear() - 1);
             // find week start
             if (now.getDay()) { // if not sunday
                 now.setDate(now.getDate() - now.getDay() - 8);
