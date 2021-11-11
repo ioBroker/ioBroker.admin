@@ -522,16 +522,18 @@ class ObjectHistoryData extends Component {
         const oldest = new Date(2000, 0, 1);
 
         this.setState({ loading: true });
+        // this is a code which makes problems. It is no good idea doing this!
         return this.props.socket.getHistory(this.props.obj._id, {
             instance:  this.state.historyInstance,
             start:     oldest.getTime(),
             end:       now.getTime(),
-            step:      3600000 * 24 * 30, // monthly
+            //step:      3600000 * 24 * 30, // monthly
+            limit:     1, // is that a way to make it faster?
             from:      false,
             ack:       false,
             q:         false,
             addID:     false,
-            aggregate: 'minmax'
+            aggregate: 'none'
         })
             .then(values => {
                 if (values.length) {
