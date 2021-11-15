@@ -1,12 +1,13 @@
 ![Logo](admin/admin.png)
 # ioBroker.admin
 
+![Number of Installations](http://iobroker.live/badges/admin-installed.svg)
+![Number of Installations](http://iobroker.live/badges/admin-stable.svg)
 [![NPM version](http://img.shields.io/npm/v/iobroker.admin.svg)](https://www.npmjs.com/package/iobroker.admin)
-[![Downloads](https://img.shields.io/npm/dm/iobroker.admin.svg)](https://www.npmjs.com/package/iobroker.admin)
-[![Stable](http://iobroker.live/badges/admin-stable.svg)](http://iobroker.live/badges/admin-stable.svg)
-[![installed](http://iobroker.live/badges/admin-installed.svg)](http://iobroker.live/badges/admin-installed.svg)
 
-[![NPM](https://nodei.co/npm/iobroker.admin.png?downloads=true)](https://nodei.co/npm/iobroker.admin/)
+![Test and Release](https://github.com/ioBroker/ioBroker.admin/workflows/Test%20and%20Release/badge.svg)
+[![Translation status](https://weblate.iobroker.net/widgets/adapters/-/admin/svg-badge.svg)](https://weblate.iobroker.net/engage/adapters/?utm_source=widget)
+[![Downloads](https://img.shields.io/npm/dm/iobroker.admin.svg)](https://www.npmjs.com/package/iobroker.admin)
 
 User interface for configuration and administration of ioBroker.
 
