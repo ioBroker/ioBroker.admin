@@ -12,6 +12,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import {Avatar, CircularProgress} from '@material-ui/core';
 
+import AdapterUpdateDialog from '../../dialogs/AdapterUpdateDialog';
+
 const styles = theme => ({
     smallAvatar: {
         width: theme.spacing(3),
@@ -73,6 +75,7 @@ class AdaptersUpdater extends Component {
 
     detectUpdates() {
         const updateAvailable = [];
+
         Object.keys(this.props.repository).forEach(adapter => {
             const _installed = this.props.installed[adapter];
             // ignore js-controller in this dialog
@@ -83,7 +86,9 @@ class AdaptersUpdater extends Component {
                 _installed.ignoreVersion !== this.props.repository[adapter].version &&
                 AdaptersUpdater.isUpdateAvailable(_installed.version, this.props.repository[adapter].version)
             ) {
-                updateAvailable.push(adapter);
+                if (!AdapterUpdateDialog.checkCondition(this.props.repository[adapter].messages, _installed.version, this.props.repository[adapter].version)) {
+                    updateAvailable.push(adapter);
+                }
             }
         });
 

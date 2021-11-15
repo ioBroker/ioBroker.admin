@@ -2,7 +2,6 @@ import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import semver from 'semver';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -74,12 +73,8 @@ class SystemSettingsDialog extends Component {
     }
 
     componentDidMount() {
-        this.props.socket.getCurrentInstance()
-            .then(namespace =>
-                this.props.socket.getObject('system.adapter.' + namespace)
-                    .then(obj =>
-                        this.props.socket.getObject('system.host.' + obj.common.host)
-                            .then(data => this.setState({multipleRepos: semver.gte(data.common.installedVersion, '4.0.0')}))));
+        this.props.socket.checkFeatureSupported('CONTROLLER_MULTI_REPO')
+            .then(multipleRepos => this.setState({multipleRepos}));
     }
 
     getSettings() {

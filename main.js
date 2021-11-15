@@ -653,7 +653,7 @@ function updateIcons() {
         ioPackage.objects.forEach(async obj => {
             if (obj.common && obj.common.icon && obj.common.icon.length > 50) {
                 const cObj = await adapter.getForeignObjectAsync(obj._id);
-                if (!cObj.common.icon || cObj.common.icon.length < 50) {
+                if (cObj && (!cObj.common.icon || cObj.common.icon.length < 50)) {
                     adapter.log.debug('Update icon for ' + cObj._id);
                     cObj.common.icon = obj.common.icon;
                     await adapter.setForeignObjectAsync(cObj._id, cObj);

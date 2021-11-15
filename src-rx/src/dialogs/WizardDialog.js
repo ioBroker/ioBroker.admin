@@ -81,9 +81,10 @@ const styles = theme => ({
     logo: {
         width: 32,
         height: 32,
-        float: 'right',
         borderRadius: '50%',
         background: 'white',
+        marginRight: theme.spacing(1),
+        verticalAlign: 'middle',
     },
     themeButton: {
         float: 'right',
@@ -306,7 +307,7 @@ class WizardDialog extends Component {
             fullScreen={ true }
             aria-labelledby="wizard-dialog-title"
         >
-            <DialogTitle id="wizard-dialog-title">{ this.props.t('Initial ioBroker setup') } <img src={Logo} className={this.props.classes.logo} alt="logo"/><ToggleThemeMenu className={this.props.classes.themeButton} t={this.props.t} toggleTheme={this.props.toggleTheme} themeName={this.props.themeName} size="small"/></DialogTitle>
+            <DialogTitle id="wizard-dialog-title"><img src={Logo} className={this.props.classes.logo} alt="logo"/>{ this.props.t('Initial ioBroker setup') } <ToggleThemeMenu className={this.props.classes.themeButton} t={this.props.t} toggleTheme={this.props.toggleTheme} themeName={this.props.themeName} size="small"/></DialogTitle>
             <DialogContent className={ this.props.classes.content }>
                 <AppBar position="static">
                     <Stepper activeStep={ this.state.activeStep }>

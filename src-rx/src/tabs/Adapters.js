@@ -1716,6 +1716,7 @@ class Adapters extends Component {
                     dependencies={this.getDependencies(this.state.adapterToUpdate)}
                     rightDependencies={this.rightDependencies(this.state.adapterToUpdate)}
                     news={this.getNews(this.state.adapterToUpdate)}
+                    installedVersion={this.state.installed[this.state.adapterToUpdate]?.version}
                     onUpdate={version => {
                         const adapter = this.state.adapterToUpdate;
                         this.closeAdapterUpdateDialog(() => this.update(adapter, version));
