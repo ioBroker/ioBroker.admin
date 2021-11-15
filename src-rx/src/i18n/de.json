@@ -5,7 +5,7 @@
     "%s processes": "%s Prozesse",
     "%s was imported": "%s wurde erfolgreich importiert",
     "(without prefix)": "(ohne Präfix)",
-    "1 %d days ago": "vor %d Tag",
+    "1 %d days ago": "vor %d Tag(en)",
     "2 %d days ago": "vor %d Tagen",
     "5 %d days ago": "vor %d Tagen",
     "<p>You have not installed an Info Adapter. The adapter shows you information about the system and is required to display important messages from the ioBroker team.</p><p>Do you want to install the info adapter?</p>": "<p>Der Info Adapter ist nicht installiert. Der Info Adapter zeigt Informationen zum System an und ist erforderlich, um wichtige Meldungen des ioBroker Teams anzuzeigen.</p><p>Soll der Info Adapter installiert werden?</p>",
