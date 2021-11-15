@@ -89,6 +89,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+
+### __WORK IN PROGRESS__
+* (Apollon77) Fix crash cases reported via sentry
+
 ### 5.1.28 (2021-11-10)
 * (bluefox) Fixed discovery function
 * (bluefox) Fixed some GUI bugs

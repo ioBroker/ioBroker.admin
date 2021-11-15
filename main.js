@@ -576,8 +576,10 @@ function main(adapter) {
     adapter.config.autoUpdate && updateRegister();
 
     adapter.getForeignObject('system.meta.uuid', async (err, obj) => {
-        uuid = obj.native.uuid;
-        await updateRatings();
+        if (obj && obj.native) {
+            uuid = obj.native.uuid;
+            await updateRatings();
+        }
     });
 
     updateNews();
