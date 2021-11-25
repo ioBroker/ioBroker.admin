@@ -90,8 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-
-### __WORK IN PROGRESS__
+### 5.1.29 (2021-11-25)
 * (Apollon77) Fix crash cases reported via sentry
 * (bluefox) Added support for multi-repositories
 
@@ -107,9 +106,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 5.1.19 (2021-07-31)
 * (bluefox) Corrected some GUI errors
-
-### 5.1.17 (2021-07-30)
-* (bluefox) Corrected the error on the adapter's tab
 
 ## License
 The MIT License (MIT)
