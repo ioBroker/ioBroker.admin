@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "5.1.29",
+    "version": "5.2.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "5.2.0": {
+        "en": "Fix crash cases reported via sentry\nAdded support for multi-repositories",
+        "de": "Absturzfälle beheben, die über Wache gemeldet wurden\nUnterstützung für Multi-Repositorys hinzugefügt",
+        "ru": "Исправить случаи сбоев, о которых сообщалось через часового\nДобавлена поддержка мульти-репозиториев.",
+        "pt": "Corrigir casos de falha relatados via sentinela\nAdicionado suporte para multi-repositórios",
+        "nl": "Herstel crashgevallen gemeld via schildwacht\nOndersteuning toegevoegd voor meerdere opslagplaatsen",
+        "fr": "Correction des cas de plantage signalés via sentinelle\nAjout de la prise en charge des multi-dépôts",
+        "it": "Risolti i casi di crash segnalati tramite sentinella\nAggiunto supporto per multi-repository",
+        "es": "Solucionar casos de accidentes informados a través de centinelas\nSoporte agregado para repositorios múltiples",
+        "pl": "Napraw przypadki awarii zgłoszone przez Sentry\nDodano obsługę wielu repozytoriów",
+        "zh-cn": "修复通过哨兵报告的崩溃案例\n添加了对多存储库的支持"
+      },
       "5.1.29": {
         "en": "Fix crash cases reported via sentry\nAdded support for multi-repositories",
         "de": "Absturzfälle beheben, die über Wache gemeldet wurden\nUnterstützung für Multi-Repositorys hinzugefügt",
@@ -79,18 +91,6 @@
         "zh-cn": "更正了通过哨兵报告的一些错误"
       },
       "5.1.22": {
-        "en": "Corrected some errors reported via sentry",
-        "de": "Einige Fehler behoben, die über die Wache gemeldet wurden",
-        "ru": "Исправлены некоторые ошибки, о которых сообщал часовой.",
-        "pt": "Corrigidos alguns erros relatados via sentinela",
-        "nl": "Enkele fouten gecorrigeerd die zijn gemeld via schildwacht",
-        "fr": "Correction de quelques erreurs signalées via sentinelle",
-        "it": "Corretti alcuni errori segnalati tramite sentinella",
-        "es": "Se corrigieron algunos errores informados a través de centinela.",
-        "pl": "Poprawiono niektóre błędy zgłaszane przez wartownika",
-        "zh-cn": "更正了通过哨兵报告的一些错误"
-      },
-      "5.1.21": {
         "en": "Corrected some errors reported via sentry",
         "de": "Einige Fehler behoben, die über die Wache gemeldet wurden",
         "ru": "Исправлены некоторые ошибки, о которых сообщал часовой.",

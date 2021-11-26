@@ -90,7 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 5.2.0 (2021-11-26)
 * (Apollon77) Fix crash cases reported via sentry
 * (bluefox) Added support for multi-repositories
 
