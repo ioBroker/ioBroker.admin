@@ -198,6 +198,7 @@ class Objects extends Component {
                 modalNewObject={context =>
                     <ObjectAddNewObject
                         objects={context.objects}
+                        expertMode={this.props.expertMode}
                         open={context.state.modalNewObj}
                         setObject={(id, data) => context.setObject(id, data)}
                         selected={context.state.selected[0] || context.state.selectedNonObject}

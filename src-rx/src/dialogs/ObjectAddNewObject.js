@@ -32,7 +32,7 @@ const TYPES = {
     folder:  {name: 'Folder', value: 'folder'}
 };
 
-const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objects }) => {
+const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objects, expertMode }) => {
     const names = {
         state:   I18n.t('New state'),
         channel: I18n.t('New channel'),
@@ -73,6 +73,11 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
     } else {
         types.push(TYPES.folder);
         initialType = 'folder';
+        if (expertMode && (selected.startsWith('mqtt.') || selected.startsWith('javascript.'))) {
+            types.push(TYPES.state);
+            types.push(TYPES.channel);
+            types.push(TYPES.device);
+        }
     }
 
     const [name, setName] = useState(names[initialType]);
