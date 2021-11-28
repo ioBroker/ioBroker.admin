@@ -90,7 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 5.2.1 (2021-11-28)
 * (bluefox) Allow in expert mode the creation of states and channels in mqtt branch
 
 ### 5.2.0 (2021-11-26)
@@ -106,9 +106,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 5.1.23 (2021-08-05)
 * (bluefox) Corrected some errors reported via sentry
-
-### 5.1.19 (2021-07-31)
-* (bluefox) Corrected some GUI errors
 
 ## License
 The MIT License (MIT)

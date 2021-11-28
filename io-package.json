@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "5.2.0",
+    "version": "5.2.1",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "5.2.1": {
+        "en": "Allow in expert mode the creation of states and channels in mqtt branch",
+        "de": "Erlaube im Expertenmodus die Erstellung von Zuständen und Kanälen im mqtt-Zweig",
+        "ru": "Разрешить в экспертном режиме создание состояний и каналов в ветке mqtt",
+        "pt": "Permitir no modo especialista a criação de estados e canais no ramal mqtt",
+        "nl": "Sta in expertmodus het maken van staten en kanalen toe in mqtt branch",
+        "fr": "Autoriser en mode expert la création d'états et de canaux dans la branche mqtt",
+        "it": "Consenti in modalità esperto la creazione di stati e canali nel ramo mqtt",
+        "es": "Permitir en modo experto la creación de estados y canales en rama mqtt",
+        "pl": "Zezwalaj w trybie eksperta na tworzenie stanów i kanałów w gałęzi mqtt",
+        "zh-cn": "允许在专家模式下在 mqtt 分支中创建状态和通道"
+      },
       "5.2.0": {
         "en": "Fix crash cases reported via sentry\nAdded support for multi-repositories",
         "de": "Absturzfälle beheben, die über Wache gemeldet wurden\nUnterstützung für Multi-Repositorys hinzugefügt",
@@ -79,18 +91,6 @@
         "zh-cn": "更正了通过哨兵和 github 问题报告的一些错误"
       },
       "5.1.23": {
-        "en": "Corrected some errors reported via sentry",
-        "de": "Einige Fehler behoben, die über die Wache gemeldet wurden",
-        "ru": "Исправлены некоторые ошибки, о которых сообщал часовой.",
-        "pt": "Corrigidos alguns erros relatados via sentinela",
-        "nl": "Enkele fouten gecorrigeerd die zijn gemeld via schildwacht",
-        "fr": "Correction de quelques erreurs signalées via sentinelle",
-        "it": "Corretti alcuni errori segnalati tramite sentinella",
-        "es": "Se corrigieron algunos errores informados a través de centinela.",
-        "pl": "Poprawiono niektóre błędy zgłaszane przez wartownika",
-        "zh-cn": "更正了通过哨兵报告的一些错误"
-      },
-      "5.1.22": {
         "en": "Corrected some errors reported via sentry",
         "de": "Einige Fehler behoben, die über die Wache gemeldet wurden",
         "ru": "Исправлены некоторые ошибки, о которых сообщал часовой.",
