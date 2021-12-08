@@ -2,6 +2,7 @@
 import {Component} from 'react';
 import clsx from 'clsx';
 import Dropzone from 'react-dropzone'
+import PropTypes from 'prop-types';
 
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
@@ -20,7 +21,6 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import Utils from '../../Utils';
-import PropTypes from "prop-types";
 
 // icons
 

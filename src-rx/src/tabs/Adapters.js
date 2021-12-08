@@ -1622,9 +1622,9 @@ class Adapters extends Component {
                     </Hidden>
                 </IsVisible>
             </TabHeader>
-            {this.state.viewMode && <TabContent>
+            {this.state.viewMode && this.props.systemConfig && this.props.systemConfig.common && <TabContent>
                 {(typeof this.props.systemConfig.common.activeRepo === 'string' && this.props.systemConfig.common.activeRepo !== 'stable') ||
-                (typeof this.props.systemConfig.common.activeRepo !== 'string' && !this.props.systemConfig.common.activeRepo.includes('stable')) ?
+                (this.props.systemConfig.common.activeRepo && typeof this.props.systemConfig.common.activeRepo !== 'string' && !this.props.systemConfig.common.activeRepo.includes('stable')) ?
                     <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}</div> : null}
                 <TableContainer className={clsx(classes.container, this.props.systemConfig.common.activeRepo !== 'stable' ? classes.containerNotFullHeight : classes.containerFullHeight)}>
                     <Table stickyHeader size="small" className={classes.table}>
@@ -1665,9 +1665,9 @@ class Adapters extends Component {
             {this.renderSetRatingDialog()}
             {this.renderSlowConnectionWarning()}
 
-            {!this.state.viewMode && <>
+            {!this.state.viewMode && this.props.systemConfig.common && this.props.systemConfig.common.activeRepo && <>
                 {(typeof this.props.systemConfig.common.activeRepo === 'string' && this.props.systemConfig.common.activeRepo !== 'stable') ||
-                 (typeof this.props.systemConfig.common.activeRepo !== 'string' && !this.props.systemConfig.common.activeRepo.includes('stable')) ? <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}</div> : null}
+                 (this.props.systemConfig.common.activeRepo && typeof this.props.systemConfig.common.activeRepo !== 'string' && !this.props.systemConfig.common.activeRepo.includes('stable')) ? <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}</div> : null}
                 <div className={this.props.classes.viewModeDiv}>{this.getTiles()}</div>
             </>}
 

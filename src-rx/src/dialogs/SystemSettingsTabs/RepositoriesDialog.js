@@ -20,9 +20,9 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DragHandleIcon from '@material-ui/icons/Menu';
 
-import Utils from '../../Utils';
 import I18n from '@iobroker/adapter-react/i18n';
-import ConfirmDialog from "@iobroker/adapter-react/Dialogs/Confirm";
+import Utils from '../../Utils';
+import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 
 const styles = theme => ({
     tabPanel: {

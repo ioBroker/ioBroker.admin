@@ -11,11 +11,12 @@ import { CardMedia, DialogTitle, makeStyles, ThemeProvider, Typography } from '@
 import InfoIcon from '@material-ui/icons/Info';
 import WarningIcon from '@material-ui/icons/Warning';
 import CancelIcon from '@material-ui/icons/Cancel';
+import CheckIcon from '@material-ui/icons/Check';
+import WorldIcon from '@material-ui/icons/Public';
 
 import I18n from '@iobroker/adapter-react/i18n';
 import theme from '@iobroker/adapter-react/Theme';
 import Utils from '@iobroker/adapter-react/Components/Utils';
-import CheckIcon from "@material-ui/icons/Check";
 
 let node = null;
 
@@ -150,7 +151,13 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, themeName }) =
     }
     let title = newsArr[indexArr].title;
     if (typeof title === 'object') {
-        title = title[lang] || title.e;
+        title = title[lang] || title.en;
+    }
+
+    const link = newsArr[indexArr].link;
+    let linkTitle = newsArr[indexArr].linktTitle;
+    if (linkTitle && typeof linkTitle === 'object') {
+        linkTitle = linkTitle[lang] || linkTitle.en;
     }
     return <ThemeProvider theme={theme(themeName)}>
         <Dialog
@@ -188,6 +195,19 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, themeName }) =
                 </div>
             </DialogContent>
             <DialogActions>
+                {
+                    link ? <Button
+                        variant="contained"
+                        onClick={() => {
+                            const frame = window.open(link, '_blank');
+                            frame && frame.focus();
+                        }}
+                        color="secondary"
+                        startIcon={<WorldIcon/>}
+                    >
+                        {linkTitle || I18n.t('Show more info')}
+                    </Button> : null
+                }
                 <Button
                     variant="contained"
                     autoFocus
@@ -315,7 +335,8 @@ export const checkMessages = function (messages, lastMessageId, context) {
                     content: message.content[context.lang] || message.content.en,
                     'class': message.class,
                     icon: message.icon,
-                    created: message.created
+                    created: message.created,
+                    link: message.link
                 });
             }
         }

@@ -20,6 +20,7 @@ import Router from '@iobroker/adapter-react/Components/Router';
 
 import MainSettingsDialog from './SystemSettingsTabs/MainSettingsDialog';
 import RepositoriesDialog from './SystemSettingsTabs/RepositoriesDialog';
+import LicensesDialog from './SystemSettingsTabs/LicensesDialog';
 import CertificatesDialog from './SystemSettingsTabs/CertificatesDialog';
 import SSLDialog from './SystemSettingsTabs/SSLDialog';
 import ACLDialog from './SystemSettingsTabs/ACLDialog';
@@ -31,6 +32,8 @@ import CloseIcon from '@material-ui/icons/Close';
 
 //style
 import '../assets/css/style.css';
+
+const SOME_PASSWORD = '__SOME_PASSWORD__';
 
 const styles = theme => ({
     tabPanel: {
@@ -67,14 +70,22 @@ class SystemSettingsDialog extends Component {
             systemConfig: null,
             systemCertificates: null,
             systemRepositories: null,
+            systemLicenses: null,
             multipleRepos: false,
+            licenseManager: false,
+            host: '',
         };
         this.getSettings(this.state.currentHost);
     }
 
     componentDidMount() {
         this.props.socket.checkFeatureSupported('CONTROLLER_MULTI_REPO')
-            .then(multipleRepos => this.setState({multipleRepos}));
+            .then(multipleRepos => this.props.socket.checkFeatureSupported('CONTROLLER_LICENSE_MANAGER')
+                    .then(licenseManager => {
+                        return this.props.socket.getCurrentInstance()
+                            .then(namespace => this.props.socket.getObject('system.adapter.' + namespace))
+                                .then(obj => this.setState({host: obj.common.host, multipleRepos, licenseManager}));
+                    }));
     }
 
     getSettings() {
@@ -96,6 +107,7 @@ class SystemSettingsDialog extends Component {
                         delete systemRepositories.native.repositories[repo].hash;
                     }
                 });
+
                 this.originalRepositories = JSON.stringify(systemRepositories);
                 newState.systemRepositories = systemRepositories;
                 return this.props.socket.getSystemConfig(true);
@@ -144,6 +156,26 @@ class SystemSettingsDialog extends Component {
             .then(systemCertificates => {
                 this.originalCertificates = JSON.stringify(systemCertificates);
                 newState.systemCertificates = systemCertificates;
+                return this.props.socket.getObject('system.licenses');
+            })
+            .then(systemLicenses => {
+                systemLicenses = systemLicenses || {
+                    common: {
+                        name: 'Licenses from iobroker.net'
+                    },
+                    native: {
+                        login: '',
+                        password: '',
+                        licenses: [],
+                    },
+                    type: 'config'
+                };
+                if (systemLicenses.native.password) {
+                    systemLicenses.native.password = SOME_PASSWORD;
+                }
+
+                this.originalLicenses = JSON.stringify({login: systemLicenses.native.login, password: systemLicenses.native.password});
+                newState.systemLicenses = systemLicenses;
                 this.setState(newState);
             })
             .catch(e => window.alert('Cannot read settings: ' + e));
@@ -193,6 +225,46 @@ class SystemSettingsDialog extends Component {
                     systemRepositories.native.repositories = newRepo;
                     return this.props.socket.setObject('system.repositories', systemRepositories);
                 })
+                .then(() => this.props.socket.getObject('system.licenses'))
+                .then(systemLicenses => {
+                    systemLicenses = systemLicenses || {};
+                    systemLicenses.type = systemLicenses.type || 'config';
+                    systemLicenses.name = systemLicenses.name || 'Licenses from iobroker.net';
+                    systemLicenses.common = systemLicenses.common || {};
+                    systemLicenses.native = systemLicenses.native || {};
+                    systemLicenses.native.licenses = systemLicenses.native.licenses || [];
+                    systemLicenses.native.password = systemLicenses.native.password || '';
+                    systemLicenses.native.login = systemLicenses.native.login || '';
+
+                    const currentPassword = systemLicenses.native.password ? SOME_PASSWORD : '';
+
+                    if (this.state.systemLicenses.native.password !== currentPassword ||
+                        systemLicenses.native.login !== this.state.systemLicenses.native.login
+                    ) {
+                        systemLicenses.native.login = this.state.systemLicenses.native.login;
+
+                        if (this.state.systemLicenses.native.password !== SOME_PASSWORD && this.state.systemLicenses.native.password) {
+                            // encode it
+                            return this.props.socket.encrypt(this.state.systemLicenses.native.password)
+                                .then(password => {
+                                    systemLicenses.native.password = password;
+                                    return this.props.socket.setObject('system.licenses', systemLicenses)
+                                        .then(() => LicensesDialog.requestLicensesByHost(this.props.socket, this.props.host, null, null, this.props.t))
+                                        .catch(error => window.alert(this.props.t('Cannot update licenses: %s', error)));
+
+                                });
+                        } else {
+                            if (!this.state.systemLicenses.native.password) {
+                                systemLicenses.native.password = '';
+                            }
+                            return this.props.socket.setObject('system.licenses', systemLicenses)
+                                .then(() => LicensesDialog.requestLicensesByHost(this.props.socket, this.props.host, null, null, this.props.t))
+                                .catch(error => window.alert(this.props.t('Cannot update licenses: %s', error)));
+                        }
+                    } else {
+                        return Promise.resolve();
+                    }
+                })
                 .then(() => {
                     // this.getSettings();
                     alert(this.props.t('Settings saved'));
@@ -234,6 +306,16 @@ class SystemSettingsDialog extends Component {
             },
             {
                 id: 2,
+                title: 'Licenses',
+                component: LicensesDialog,
+                data: 'systemLicenses',
+                name: 'tabLicenses',
+                dataAux: null,
+                handle: null,
+                socket: this.props.socket,
+            },
+            {
+                id: 3,
                 title: 'Certificates',
                 component: CertificatesDialog,
                 data: 'systemCertificates',
@@ -242,7 +324,7 @@ class SystemSettingsDialog extends Component {
                 handle: null
             },
             {
-                id: 3,
+                id: 4,
                 title: 'Let\'s encrypt SSL',
                 component: SSLDialog,
                 data: 'systemCertificates',
@@ -251,7 +333,7 @@ class SystemSettingsDialog extends Component {
                 handle: null
             },
             {
-                id: 4,
+                id: 5,
                 title: 'Default ACL',
                 component: ACLDialog,
                 data: 'systemConfig',
@@ -260,7 +342,7 @@ class SystemSettingsDialog extends Component {
                 handle: null
             },
             {
-                id: 5,
+                id: 6,
                 title: 'Statistics',
                 component: StatisticsDialog,
                 data: 'systemConfig',
@@ -309,7 +391,10 @@ class SystemSettingsDialog extends Component {
                 histories={histories}
                 themeName={this.props.themeName}
                 themeType={this.props.themeType}
+                host={this.state.host}
                 t={this.props.t}
+                socket={this.props.socket}
+                saving={this.state.saving}
             />
         </div>;
     }
@@ -332,9 +417,15 @@ class SystemSettingsDialog extends Component {
     render() {
         const changed = !(JSON.stringify(this.state.systemRepositories) === this.originalRepositories &&
             JSON.stringify(this.state.systemConfig) === this.originalConfig &&
-            JSON.stringify(this.state.systemCertificates) === this.originalCertificates);
+            JSON.stringify(this.state.systemCertificates) === this.originalCertificates &&
+            JSON.stringify({login: this.state.systemLicenses.native.login, password: this.state.systemLicenses.native.password}) === this.originalLicenses);
 
-        const tabsList = this.getTabs().filter(tab => this.props.adminGuiConfig.admin.settings[tab.name] !== false);
+        const tabsList = this.getTabs().filter(tab => {
+            if (!this.state.licenseManager && tab.name === 'tabLicenses') {
+                return false;
+            }
+            return this.props.adminGuiConfig.admin.settings[tab.name] !== false
+        });
 
         const tabs = tabsList
             .map(tab => <Tab
@@ -373,9 +464,8 @@ class SystemSettingsDialog extends Component {
                             className={this.props.classes.tab}
                             indicatorColor="primary"
                             value={this.props.currentTab.id || 'tabConfig'}
-                            onChange={(event, newTab) => {
-                                this.onTabChanged(event, newTab);
-                            }}
+                            onChange={(event, newTab) =>
+                                this.onTabChanged(event, newTab)}
                             variant="scrollable"
                             scrollButtons="auto"
                         >

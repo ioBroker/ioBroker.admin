@@ -160,7 +160,7 @@ class ObjectChart extends Component {
             from.setHours(from.getHours() - 24 * 7);
             this.start = from.getTime();
         } else {
-            this.start = this.props.from
+            this.start = this.props.from;
         }
         if (!this.props.end) {
             this.end = Date.now();
@@ -350,13 +350,13 @@ class ObjectChart extends Component {
     readHistoryRange() {
         const now = new Date();
         const oldest = new Date(2000, 0, 1);
-// this is a code which makes problems. It is no good idea doing this!
+
         return this.props.socket.getHistory(this.props.obj._id, {
             instance:  this.state.historyInstance,
             start:     oldest.getTime(),
             end:       now.getTime(),
             //step:      3600000, // hourly
-            limit:     1, // is that a way to make it faster?
+            limit:     1,
             from:      false,
             ack:       false,
             q:         false,
