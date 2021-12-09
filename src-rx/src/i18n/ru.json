@@ -1454,7 +1454,7 @@
   "Settings saved": "Настройки сохранены",
   "Show more info": "Показать больше информации",
   "for ioBroker.net portal": "для портала ioBroker.net",
-  "Login/Email": "Логин (Email",
+  "Login/Email": "Логин/Email",
   "Check": "Проверять",
   "Product": "Продукт",
   "Ordered at": "Заказано в",
@@ -1462,5 +1462,12 @@
   "Valid till": "Годен до",
   "V": "V",
   "Used by": "Использован",
-  "Licenses": "Лицензии"
+  "Licenses": "Лицензии",
+  "Licenses were stored": "Лицензии были сохранены",
+  "Licenses are not changed": "Лицензии не изменились",
+  "New licenses were stored": "Были сохранены новые лицензии",
+  "Licenses have not changed": "Лицензии не изменились",
+  "Cannot update licenses: %s": "Не удается обновить лицензии: %s",
+  "Licenses were not stored. They will be stored after the settings will be saved": "Лицензии не хранились. Они будут сохранены после сохранения настроек",
+  "Authentication required.": "Требуется аутентификация или логин, пароль недействителены"
 }

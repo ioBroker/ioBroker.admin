@@ -1462,5 +1462,12 @@
   "Valid till": "有效期至",
   "V": "V",
   "Used by": "使用人",
-  "Licenses": "执照"
+  "Licenses": "执照",
+  "Licenses were stored": "许可证已存储",
+  "Licenses are not changed": "许可证没有改变",
+  "New licenses were stored": "存储了新的许可证",
+  "Licenses have not changed": "许可证没有改变",
+  "Cannot update licenses: %s": "无法更新许可证：%s",
+  "Licenses were not stored. They will be stored after the settings will be saved": "未存储许可证。它们将在保存设置后存储",
+  "Authentication required.": "需要认证或登录，密码无效"
 }

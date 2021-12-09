@@ -1462,5 +1462,12 @@
   "Valid till": "Ważny do",
   "V": "V",
   "Used by": "Używane przez",
-  "Licenses": "Licencje"
+  "Licenses": "Licencje",
+  "Licenses were stored": "Licencje były przechowywane",
+  "Licenses are not changed": "Licencje się nie zmieniły",
+  "New licenses were stored": "Zapisano nowe licencje",
+  "Licenses have not changed": "Licencje się nie zmieniły",
+  "Cannot update licenses: %s": "Nie można zaktualizować licencji: %s",
+  "Licenses were not stored. They will be stored after the settings will be saved": "Licencje nie były przechowywane. Zostaną zapisane po zapisaniu ustawień",
+  "Authentication required.": "Wymagane uwierzytelnienie lub login, hasło jest nieprawidłowe"
 }

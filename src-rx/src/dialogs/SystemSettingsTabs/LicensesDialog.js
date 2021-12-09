@@ -85,10 +85,14 @@ class LicensesDialog extends Component {
 
     onLicensesChanged = (id, obj) => {
         if (id === 'system.licenses') {
-            if (obj && obj.native && obj.native.licenses) {
-                this.setState({licenses: obj.native.licenses, readTime: obj.native.licenses.readTime});
+            obj = obj || {};
+            obj.native = obj.native || {};
+            obj.native.licenses = obj.native.licenses || [];
+            if (JSON.stringify(obj.native.licenses) !== JSON.stringify(this.state.licenses)) {
+                window.alert(this.props.t('New licenses were stored'));
+                this.setState({licenses: obj.native.licenses, readTime: obj.native.licenses.readTime || 0});
             } else {
-                this.setState({licenses: [], readTime: 0});
+                window.alert(this.props.t('Licenses have not changed'));
             }
         }
     };
@@ -113,51 +117,64 @@ class LicensesDialog extends Component {
 
     static requestLicensesByHost(socket, host, login, password, t) {
         return new Promise((resolve, reject) => {
-            let timeout = setTimeout(() => {
-                if (timeout) {
-                    timeout = null;
-                    reject('getInstalled timeout');
-                }
-            }, 7000);
-
-            socket.getRawSocket().emit('sendToHost', host, 'updateLicenses', {password, login}, data => {
-                if (timeout) {
-                    clearTimeout(timeout);
-                    timeout = null;
-                    if (data === 'permissionError') {
-                        reject(t('May not trigger "updateLicenses"'));
-                    } else if (!data) {
-                        reject(t('Cannot trigger "updateLicenses"'));
+            socket.getRawSocket().emit('updateLicenses', login, password, (err, licenses) => {
+                if (err === 'permissionError') {
+                    reject(t('May not trigger "updateLicenses"'));
+                } else {
+                    if (err && err.error) {
+                        reject(t(err.error));
+                    } else if (err) {
+                        reject(t(err));
                     } else {
-                        if (data.error && data.error.error) {
-                            reject(t(data.error.error));
-                        } else if (data.error) {
-                            reject(t(data.error));
-                        } else {
-                            resolve(data.result || []);
-                        }
+                        resolve(licenses);
                     }
                 }
             });
-        })
+        });
     }
 
     requestLicenses() {
         this.setState({requesting: true});
+        let password;
         return new Promise(resolve => {
+            // if password was not changed
             if (this.props.data.native.password === '__SOME_PASSWORD__') {
                 this.props.socket.getObject('system.licenses')
-                    .then(obj => this.props.socket.decrypt(obj.native.password))
-                    .then(password => resolve(password));
+                    .then(obj => {
+                        // if login was changed
+                        if (obj.native.login !== this.props.data.native.login) {
+                            return this.props.socket.decrypt(obj.native.password)
+                                .then(password => resolve(password));
+                        } else {
+                            resolve(null);
+                        }
+                    });
             } else {
                 resolve(this.props.data.native.password);
             }
         })
-            .then(password => LicensesDialog.requestLicensesByHost(this.props.socket, this.props.host, this.props.data.native.login, password, this.props.t))
-            .then(licenses => this.setState({licenses, requesting: false}))
+            .then(_password => {
+                password = _password;
+                return LicensesDialog.requestLicensesByHost(this.props.socket, this.props.host, password ? this.props.data.native.login : null, password, this.props.t);
+            })
+            .then(licenses => {
+                if (licenses !== null && licenses !== undefined) {
+                    this.setState({licenses, requesting: false});
+                } else {
+                    this.setState({requesting: false});
+                }
+
+                if (password) {
+                    window.alert(this.props.t('Licenses were not stored. They will be stored after the settings will be saved'));
+                }
+            })
             .catch(error => {
                 this.setState({requesting: false});
-                window.alert(this.props.t('Cannot update licenses: %s', error));
+                if (error === 'Authentication required') {
+                    window.alert(this.props.t('Cannot update licenses: %s', this.props.t('Authentication required')));
+                } else {
+                    window.alert(this.props.t('Cannot update licenses: %s', error));
+                }
             });
     }
 
@@ -176,13 +193,13 @@ class LicensesDialog extends Component {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {this.state.licenses.map(license => <TableRow key={license.id}>
+                        {this.state.licenses && this.state.licenses.map(license => <TableRow key={license.id}>
                             <TableCell className={this.props.classes.tableName}>{license.product}</TableCell>
                             <TableCell className={this.props.classes.tableDate}>{new Date(license.time).toLocaleDateString()}</TableCell>
                             <TableCell className={clsx(this.props.classes.tableUuid, license.uuid && this.state.uuid === license.uuid ? this.props.classes.uuidGreen : (license.uuid ? this.props.classes.uuidGrey : ''))}>{license.uuid || ''}</TableCell>
                             <TableCell className={this.props.classes.tableValid}>{license.validTill === '0000-00-00 00:00:00' ? '' : license.validTill || ''}</TableCell>
                             <TableCell className={this.props.classes.tableVersion}>{license.version || ''}</TableCell>
-                            <TableCell className={this.props.classes.tableUsedIn}>{license.usedIn || ''}</TableCell>
+                            <TableCell className={this.props.classes.tableUsedIn}>{license.usedBy || ''}</TableCell>
                         </TableRow>)}
                     </TableBody>
                 </Table>

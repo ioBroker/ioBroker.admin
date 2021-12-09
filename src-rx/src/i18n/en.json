@@ -1462,5 +1462,12 @@
   "Valid till": "Valid till",
   "V": "V",
   "Used by": "Used by",
-  "Licenses": "Licenses"
+  "Licenses": "Licenses",
+  "Licenses were stored": "Licenses were stored",
+  "Licenses are not changed": "Licenses have not changed",
+  "New licenses were stored": "New licenses were stored",
+  "Licenses have not changed": "Licenses have not changed",
+  "Cannot update licenses: %s": "Cannot update licenses: %s",
+  "Licenses were not stored. They will be stored after the settings will be saved": "Licenses were not stored. They will be stored after the settings will be saved",
+  "Authentication required.": "Authentication required or login, password are invalid"
 }

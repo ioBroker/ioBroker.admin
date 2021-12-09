@@ -1454,7 +1454,7 @@
   "diag-type-note-none": "Nada vai a lugar nenhum",
   "diag-type-note-normal": "Estatísticas regulares",
   "for ioBroker.net portal": "para o portal ioBroker.net",
-  "Login/Email": "Login (email",
+  "Login/Email": "Login/email",
   "Check": "Verificar",
   "Product": "produtos",
   "Ordered at": "Pedido em",
@@ -1462,5 +1462,12 @@
   "Valid till": "Válida até",
   "V": "V",
   "Used by": "Usado por",
-  "Licenses": "Licenças"
+  "Licenses": "Licenças",
+  "Licenses were stored": "Licenças foram armazenadas",
+  "Licenses are not changed": "Licenças não mudaram",
+  "New licenses were stored": "Novas licenças foram armazenadas",
+  "Licenses have not changed": "Licenças não mudaram",
+  "Cannot update licenses: %s": "Não é possível atualizar licenças: %s",
+  "Licenses were not stored. They will be stored after the settings will be saved": "As licenças não foram armazenadas. Eles serão armazenados após as configurações serem salvas",
+  "Authentication required.": "Autenticação necessária ou login, senha são inválidos"
 }

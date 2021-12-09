@@ -1454,7 +1454,7 @@
   "diag-type-note-none": "Niets gaat ergens heen",
   "diag-type-note-normal": "Regelmatige statistieken",
   "for ioBroker.net portal": "voor ioBroker.net-portal",
-  "Login/Email": "Login (e-mail",
+  "Login/Email": "Login/e-mail",
   "Check": "Rekening",
   "Product": "Product",
   "Ordered at": "Besteld bij",
@@ -1462,5 +1462,12 @@
   "Valid till": "Geldig tot",
   "V": "V",
   "Used by": "Gebruikt door",
-  "Licenses": "Licenties"
+  "Licenses": "Licenties",
+  "Licenses were stored": "Licenties zijn opgeslagen",
+  "Licenses are not changed": "Licenties zijn niet gewijzigd",
+  "New licenses were stored": "Er zijn nieuwe licenties opgeslagen",
+  "Licenses have not changed": "Licenties zijn niet gewijzigd",
+  "Cannot update licenses: %s": "Kan licenties niet updaten: %s",
+  "Licenses were not stored. They will be stored after the settings will be saved": "Licenties werden niet opgeslagen. Ze worden opgeslagen nadat de instellingen zijn opgeslagen",
+  "Authentication required.": "Authenticatie vereist of login, wachtwoord is ongeldig"
 }

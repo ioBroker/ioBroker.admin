@@ -1462,5 +1462,12 @@
   "Valid till": "Valido fino a",
   "V": "V",
   "Used by": "Usato da",
-  "Licenses": "Licenze"
+  "Licenses": "Licenze",
+  "Licenses were stored": "Le licenze sono state archiviate",
+  "Licenses are not changed": "Le licenze non sono cambiate",
+  "New licenses were stored": "Sono state archiviate nuove licenze",
+  "Licenses have not changed": "Le licenze non sono cambiate",
+  "Cannot update licenses: %s": "Impossibile aggiornare le licenze: %s",
+  "Licenses were not stored. They will be stored after the settings will be saved": "Le licenze non sono state archiviate. Verranno memorizzati dopo il salvataggio delle impostazioni",
+  "Authentication required.": "Autenticazione richiesta o login, password non valide"
 }
