@@ -165,7 +165,7 @@
     ],
     "dependencies": [
       {
-        "js-controller": ">=3.2.16"
+        "js-controller": ">=3.3.22"
       }
     ],
     "type": "general",

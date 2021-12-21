@@ -210,7 +210,7 @@ function preInit () {
         '<button id="close" class="translateB" style="float: right;">cancel</button>&nbsp;' +
         '</div>');
     */
-    if (!noFooter) {
+    if (!noFooter && typeof noConfigDialog === 'undefined') {
         var footer = '<div class="' + (theme ? 'm ' + theme : 'm') + '"><nav class="dialog-config-buttons nav-wrapper footer">';
         footer += '   <a class="btn btn-active btn-save"><i class="material-icons left">save</i><span class="translate">save</span></a> ';
         footer += '   <a class="btn btn-save-close"><i class="material-icons left">save</i><i class="material-icons left">close</i><span class="translate">saveclose</span></a> ';
@@ -432,7 +432,7 @@ function preInit () {
                 common = res.common;
                 res.common && res.common.name && $('.adapter-name').html(res.common.name);
                 if (typeof load === 'undefined') {
-                    alert('Please implement save function in your admin/index.html');
+                    typeof noConfigDialog === 'undefined' && alert('Please implement save function in your admin/index.html');
                 } else {
                     // decode all native attributes listed in res.encryptedNative
                     if (res.encryptedNative && typeof res.encryptedNative === 'object' && res.encryptedNative instanceof Array) {
