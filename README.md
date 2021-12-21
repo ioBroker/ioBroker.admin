@@ -92,6 +92,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### __WORK IN PROGRESS__
 * (bluefox) Changed the minimal required js-controller version to 3.3.21 
+* (bluefox) Used web-socket library 8 (no node 10 support anymore)  
 
 ### 5.2.1 (2021-11-28)
 * (bluefox) Allow in expert mode the creation of states and channels in mqtt branch
