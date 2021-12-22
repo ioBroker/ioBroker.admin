@@ -19,16 +19,16 @@
     "dataSource": "push",
     "news": {
       "5.2.2": {
-        "en": "Changed the minimal required js-controller version to 3.3.21 \nUsed web-socket library 8 (no node 10 support anymore)",
-        "de": "Die minimal erforderliche js-Controller-Version wurde auf 3.3.21 geändert\nVerwendete Web-Socket-Bibliothek 8 (keine Unterstützung von Node 10 mehr)",
-        "ru": "Изменена минимально необходимая версия js-контроллера на 3.3.21\nИспользуемая библиотека веб-сокетов 8 (больше нет поддержки узла 10)",
-        "pt": "Alterada a versão mínima necessária do js-controller para 3.3.21\nUtilizou a biblioteca de soquetes da web 8 (sem suporte a nó 10 mais)",
-        "nl": "De minimaal vereiste js-controllerversie gewijzigd in 3.3.21\nGebruikte web-socket bibliotheek 8 (geen node 10 meer)",
-        "fr": "Modification de la version minimale requise du contrôleur js en 3.3.21\nBibliothèque de sockets Web 8 utilisée (plus de support pour le nœud 10)",
-        "it": "Modificata la versione minima richiesta del controller js in 3.3.21\nLibreria web socket usata 8 (nessun supporto per il nodo 10 più)",
-        "es": "Se cambió la versión mínima requerida de js-controller a 3.3.21\nSe usó la biblioteca 8 de web-socket (ya no es compatible con el nodo 10)",
-        "pl": "Zmieniono minimalną wymaganą wersję kontrolera js na 3.3.21\nUżywana biblioteka gniazd sieciowych 8 (brak obsługi węzła 10)",
-        "zh-cn": "将最低要求的 js-controller 版本更改为 3.3.21\n使用了 web-socket 库 8（不再支持 node 10）"
+        "en": "Changed the minimal required js-controller version to 3.3.22 \nUsed web-socket library 8 (no node 10 support anymore)",
+        "de": "Die minimal erforderliche js-Controller-Version wurde auf 3.3.22 geändert\nVerwendete Web-Socket-Bibliothek 8 (keine Unterstützung von Node 10 mehr)",
+        "ru": "Изменена минимально необходимая версия js-контроллера на 3.3.22\nИспользуемая библиотека веб-сокетов 8 (больше нет поддержки узла 10)",
+        "pt": "Alterada a versão mínima necessária do js-controller para 3.3.22\nUtilizou a biblioteca de soquetes da web 8 (sem suporte a nó 10 mais)",
+        "nl": "De minimaal vereiste js-controllerversie gewijzigd in 3.3.22\nGebruikte web-socket bibliotheek 8 (geen node 10 meer)",
+        "fr": "Modification de la version minimale requise du contrôleur js en 3.3.22\nBibliothèque de sockets Web 8 utilisée (plus de support pour le nœud 10)",
+        "it": "Modificata la versione minima richiesta del controller js in 3.3.22\nLibreria web socket usata 8 (nessun supporto per il nodo 10 più)",
+        "es": "Se cambió la versión mínima requerida de js-controller a 3.3.22\nSe usó la biblioteca 8 de web-socket (ya no es compatible con el nodo 10)",
+        "pl": "Zmieniono minimalną wymaganą wersję kontrolera js na 3.3.22\nUżywana biblioteka gniazd sieciowych 8 (brak obsługi węzła 10)",
+        "zh-cn": "将最低要求的 js-controller 版本更改为 3.3.22\n使用了 web-socket 库 8（不再支持 node 10）"
       },
       "5.2.1": {
         "en": "Allow in expert mode the creation of states and channels in mqtt branch",
