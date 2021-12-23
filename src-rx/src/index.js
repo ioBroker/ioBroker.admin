@@ -35,7 +35,6 @@ function build() {
 }
 
 if (window.location.host !== 'localhost:3000') {
-
     const versionChanged = [
         'ChunkLoadError', // version was changed
         'removeChild',    // version was changed
