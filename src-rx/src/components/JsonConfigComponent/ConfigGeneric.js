@@ -43,14 +43,15 @@ class ConfigGeneric extends Component {
 
     componentDidMount() {
         this.props.registerOnForceUpdate && this.props.registerOnForceUpdate(this.props.attr, this.onUpdate);
-
+        const LIKE_SELECT = ['select', 'autocomplete', 'autocompleteSendTo'];
         // init default value
         if (this.defaultValue !== undefined) {
             const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-            if (value === undefined || (this.props.schema.type === 'select' && (value === '' || value === null))) {
+            if (value === undefined || (LIKE_SELECT.includes(this.props.schema.type) && (value === '' || value === null))) {
                 setTimeout(() => {
                     if (this.props.custom) {
-                        this.props.onChange(this.props.attr, this.defaultValue);
+                        this.props.onChange(this.props.attr, this.defaultValue, () =>
+                            this.props.forceUpdate([this.props.attr], this.props.data));
                         //this.onChange(this.props.attr, this.defaultValue);
                     } else {
                         ConfigGeneric.setValue(this.props.data, this.props.attr, this.defaultValue);
@@ -266,9 +267,8 @@ class ConfigGeneric extends Component {
             if (this.props.custom) {
                 this.props.onChange(attr, newValue);
 
-                changed && changed.length && changed.forEach((_attr,  i) => {
-                    setTimeout(() => this.props.onChange(_attr, data[_attr]), i * 50);
-                });
+                changed && changed.length && changed.forEach((_attr,  i) =>
+                    setTimeout(() => this.props.onChange(_attr, data[_attr]), i * 50));
             } else {
                 this.props.onChange(data, undefined, () =>
                     changed.length && this.props.forceUpdate(changed, data));

@@ -86,9 +86,7 @@ class ConfigAutocompleteSendTo extends ConfigGeneric {
         if (this.props.alive) {
             const context = this.getContext();
             if (context !== this.state.context) {
-                setTimeout(() => {
-                    this.askInstance();
-                }, 300);
+                setTimeout(() => this.askInstance(), 300);
             }
         }
 
@@ -138,7 +136,7 @@ class ConfigAutocompleteSendTo extends ConfigGeneric {
                 fullWidth
                 freeSolo={!!this.props.schema.freeSolo}
                 options={options}
-                getOptionLabel={option => option.label}
+                getOptionLabel={option => (option && option.label) || ''}
                 className={this.props.classes.indeterminate}
                 onChange={(_, value) => {
                     const val = typeof value === 'object' ? (value ? value.value : '') : value;

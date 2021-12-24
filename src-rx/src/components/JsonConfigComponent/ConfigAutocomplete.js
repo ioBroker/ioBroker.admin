@@ -64,7 +64,7 @@ class ConfigAutocomplete extends ConfigGeneric {
                 this.setState({value: val}, () => this.onChange(this.props.attr, val));
             }}
             options={options}
-            getOptionLabel={option => option.label}
+            getOptionLabel={option => (option && option.label) || ''}
             renderInput={params => <TextField
                 {...params}
                 error={!!error}

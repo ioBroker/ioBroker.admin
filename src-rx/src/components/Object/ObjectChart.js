@@ -154,9 +154,8 @@ const GRID_PADDING_RIGHT = 25;
 class ObjectChart extends Component {
     constructor(props) {
         super(props);
-        let from;
         if (!this.props.from) {
-            from = Date.now();
+            const from = new Date();
             from.setHours(from.getHours() - 24 * 7);
             this.start = from.getTime();
         } else {

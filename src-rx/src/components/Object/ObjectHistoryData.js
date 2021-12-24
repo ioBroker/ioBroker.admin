@@ -1116,7 +1116,7 @@ class ObjectHistoryData extends Component {
             <FormControl className={ classes.selectHistoryControl }>
                 <InputLabel>{ this.props.t('History instance') }</InputLabel>
                 <Select
-                    value={ this.state.historyInstance}
+                    value={ this.state.historyInstance || ''}
                     onChange={ e => {
                         const historyInstance = e.target.value;
                         window.localStorage.setItem('App.historyInstance', historyInstance);

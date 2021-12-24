@@ -150,7 +150,7 @@ Possible types:
 
 - `staticLink` - static link
    - `label` - multi-language text
-   - `href` - link
+   - `href` - link. Link could be dynamic like `#tab-objects/customs/${data.parentId}`
    - `button` - show link as button
    - `icon` - icon for button
 

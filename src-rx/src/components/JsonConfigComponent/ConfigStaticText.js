@@ -17,22 +17,31 @@ const styles = theme => ({
 
 class ConfigStaticText extends ConfigGeneric {
     renderItem(error, disabled) {
+
         if (this.props.schema.button) {
             return <Button
                 variant={this.props.schema.variant || undefined}
                 color={this.props.schema.color || undefined}
                 className={this.props.classes.fullWidth}
                 disabled={disabled}
-                onClick={this.props.schema.href ? () => this.props.schema.href && window.open(this.props.schema.href, '_blank') : null}
+                onClick={this.props.schema.href ? () => {
+                    // calculate one more time just before call
+                    const href = this.props.schema.href ? this.getText(this.props.schema.href, true) : null;
+                    href && window.open(href, '_blank');
+                } : null}
             >
                 {this.props.schema.icon ? <Icon src={this.props.schema.icon} className={this.props.classes.icon}/> : null}
                 {this.getText(this.props.schema.text || this.props.schema.label, this.props.schema.noTranslation)}
             </Button>
         } else {
-            const href = this.props.schema.href ? this.getText(this.props.schema.href, true) : null;
 
-            return <span onClick={href ? () => window.open(href, '_blank') : null}
-            >{this.getText(this.props.schema.text || this.props.schema.label)}</span>;
+            return <span onClick={this.props.schema.href ? () => {
+                // calculate one more time just before call
+                const href = this.props.schema.href ? this.getText(this.props.schema.href, true) : null;
+                href && window.open(href, '_blank');
+            } : null}>
+                {this.getText(this.props.schema.text || this.props.schema.label)}
+            </span>;
         }
     }
 }

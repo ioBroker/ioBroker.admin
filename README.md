@@ -90,6 +90,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Fixed error in `AutocompleteSendTo`
+* (bluefox) Fixed error in charts
+
 ### 5.2.2 (2021-12-21)
 * (bluefox) Changed the minimal required js-controller version to 3.3.22 
 * (bluefox) Used web-socket library 8 (no node 10 support anymore)
