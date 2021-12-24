@@ -8,7 +8,7 @@ name: Test and Release
 on:
   push:
     branches:
-      - '*'
+      - master
     tags:
       # normal versions
       - "v?[0-9]+.[0-9]+.[0-9]+"
