@@ -90,7 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 5.2.3 (2021-12-24)
 * (bluefox) Fixed error in `AutocompleteSendTo`
 * (bluefox) Fixed error in charts
 
@@ -108,9 +108,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 5.1.28 (2021-11-10)
 * (bluefox) Fixed discovery function
 * (bluefox) Fixed some GUI bugs
-
-### 5.1.25 (2021-08-15)
-* (bluefox) Corrected some errors reported via sentry and the GitHub issues
 
 ## License
 The MIT License (MIT)
