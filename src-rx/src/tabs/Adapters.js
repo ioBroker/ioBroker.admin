@@ -734,8 +734,8 @@ class Adapters extends Component {
         this.props.executeCommand('rebuild ' + adapter)
     }
 
-    delete(adapter) {
-        this.props.executeCommand('del ' + adapter);
+    delete(adapter, deleteCustom) {
+        this.props.executeCommand(`del ${adapter}${deleteCustom ? ' --custom' : ''}`);
     }
 
     update(adapter, version) {
@@ -1693,8 +1693,9 @@ class Adapters extends Component {
                 <AdapterDeletionDialog
                     open={this.state.adapterDeletionDialog}
                     adapter={this.state.adapterDeletionAdapter}
+                    socket={this.props.socket}
                     t={this.t}
-                    onClick={() => this.delete(this.state.adapterDeletionAdapter)}
+                    onClick={deleteCustom => this.delete(this.state.adapterDeletionAdapter, deleteCustom)}
                     onClose={() => this.closeAdapterDeletionDialog()}
                 />
             }

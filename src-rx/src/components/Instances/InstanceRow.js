@@ -613,7 +613,8 @@ const InstanceRow = ({
     adminInstance,
     classes,
     maxCompactGroupNumber,
-    deletedInstances,
+    onDeleteInstance,
+    deleteCustomSupported,
     expanded,
     expertMode,
     extendObject,
@@ -664,6 +665,7 @@ const InstanceRow = ({
     const [maxCompactGroupNumberValue, setCompactGroupCountValue] = useState(maxCompactGroupNumber);
     const [tierValue, setTierValue] = useState(item.tier);
     const [hostValue, setHostValue] = useState(instance.host);
+    const [deleteCustomValue, setDeleteCustom] = useState(false);
 
     const [visibleEdit, handlerEdit] = useState(false);
     const desktop = window.innerWidth > 1000;
@@ -711,8 +713,8 @@ const InstanceRow = ({
                 setName(instance, value);
                 setOpenDialogText(false);
             } else if (openDialogDelete) {
-                setOpenDialogDelete(false);
-                deletedInstances(instance);
+                onDeleteInstance(instance, deleteCustomValue);
+                setDeleteCustom(false);
             } else if (openDialogMemoryLimit) {
                 setMemoryLimitMB(instance, value);
                 setOpenDialogMemoryLimit(false);
@@ -813,6 +815,11 @@ const InstanceRow = ({
             </Select>
         </FormControl>}
         {openDialogDelete && t('Are you sure you want to delete the instance %s?', instance.id)}
+        {openDialogDelete && deleteCustomSupported && instance.obj.common.supportCustoms && <br />}
+        {openDialogDelete && deleteCustomSupported && instance.obj.common.supportCustoms && <FormControlLabel
+            control={<Checkbox checked={deleteCustomValue} onChange={e => setDeleteCustom(e.target.checked)} />}
+            label={t('Delete all custom object settings of this adapter too')}
+        />}
         {openDialogHost && <SelectWithIcon
             themeType={themeType}
             value={hostValue}
@@ -1313,7 +1320,7 @@ const InstanceRow = ({
                             <IconButton
                                 size="small"
                                 className={classes.button}
-                                onClick={(event) => {
+                                onClick={event => {
                                     setOpenDialogDelete(true);
                                     event.stopPropagation();
                                 }}
@@ -1371,6 +1378,7 @@ InstanceRow.propTypes = {
     deleting: PropTypes.bool,
     onExpandRow: PropTypes.func,
     item: PropTypes.object,
+    deleteCustomSupported: PropTypes.bool,
 };
 
 

@@ -1351,7 +1351,7 @@
   "For systems installed manually under Linux, prefix sudo or run as root.": "对于在Linux下手动安装的系统，请在sudo之前添加前缀或以root用户身份运行。",
   "This way is only necessary in very few cases and please consult the forum beforehand!": "仅在极少数情况下才需要这种方式，请事先咨询论坛！",
   "Otherwise please update the slaves first with an update of master-slave systems and the master last!": "否则，请先更新主从系统，然后再更新主服务器，以更新从服务器！",
-  "For an update from js-controller 1.x to 2.x please always read the information at": "有关从js-controller 1.x到2.x的更新，请始终阅读以下信息：",
+  "For an update from js-controller 1.x to 2.x please always read the information at": "有关从js-controller 的更新，请始终阅读以下信息：",
   "You can export all objects or just the selected branch.": "您可以导出所有对象或仅导出选定的分支。",
   "Select type of export": "选择导出类型",
   "All objects": "所有物件",
@@ -1469,5 +1469,6 @@
   "Licenses have not changed": "许可证没有改变",
   "Cannot update licenses: %s": "无法更新许可证：%s",
   "Licenses were not stored. They will be stored after the settings will be saved": "未存储许可证。它们将在保存设置后存储",
-  "Authentication required.": "需要认证或登录，密码无效"
+  "Authentication required.": "需要认证或登录，密码无效",
+  "Delete all custom object settings of this adapter too": "也删除此适配器的所有自定义对象设置"
 }

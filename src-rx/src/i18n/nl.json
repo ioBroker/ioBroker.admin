@@ -1351,7 +1351,7 @@
   "For systems installed manually under Linux, prefix sudo or run as root.": "Voor systemen die handmatig onder Linux zijn geïnstalleerd, voer je het voorvoegsel sudo uit of voer je het uit als root.",
   "This way is only necessary in very few cases and please consult the forum beforehand!": "Deze manier is slechts in zeer enkele gevallen nodig en raadpleeg daarom vooraf het forum!",
   "Otherwise please update the slaves first with an update of master-slave systems and the master last!": "Werk anders eerst de slaves bij met een update van de master-slave-systemen en als laatste de master!",
-  "For an update from js-controller 1.x to 2.x please always read the information at": "Lees voor een update van js-controller 1.x naar 2.x altijd de informatie op",
+  "For an update from js-controller 1.x to 2.x please always read the information at": "Lees voor een update van js-controller altijd de informatie op",
   "You can export all objects or just the selected branch.": "U kunt alle objecten of alleen de geselecteerde tak exporteren.",
   "Select type of export": "Selecteer het type export",
   "All objects": "Alle objecten",
@@ -1469,5 +1469,6 @@
   "Licenses have not changed": "Licenties zijn niet gewijzigd",
   "Cannot update licenses: %s": "Kan licenties niet updaten: %s",
   "Licenses were not stored. They will be stored after the settings will be saved": "Licenties werden niet opgeslagen. Ze worden opgeslagen nadat de instellingen zijn opgeslagen",
-  "Authentication required.": "Authenticatie vereist of login, wachtwoord is ongeldig"
+  "Authentication required.": "Authenticatie vereist of login, wachtwoord is ongeldig",
+  "Delete all custom object settings of this adapter too": "Verwijder ook alle aangepaste objectinstellingen van deze adapter"
 }

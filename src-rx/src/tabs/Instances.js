@@ -227,6 +227,7 @@ class Instances extends Component {
             filterCompactGroup: 'All',
             sentry: false,
             deleting: null,
+            deleteCustomSupported: false,
 
             expandedFolder,
 
@@ -282,6 +283,8 @@ class Instances extends Component {
         await this.getData();
         await this.getHostsData();
         await this.getInstances();
+        const deleteCustomSupported = await this.props.socket.checkFeatureSupported('DEL_INSTANCE_CUSTOM');
+        deleteCustomSupported && this.setState({deleteCustomSupported});
     }
 
     async componentWillUnmount() {
@@ -771,9 +774,9 @@ class Instances extends Component {
     setMemoryLimitMB = (instance, value) =>
         this.extendObject('system.adapter.' + instance.id, { common: { memoryLimitMB: value } });
 
-    deletedInstances = instance => {
+    onDeleteInstance = (instance, deleteCustom) => {
         this.setState({ deleting: instance.id }, () =>
-            this.props.executeCommand('del ' + instance.id));
+            this.props.executeCommand(`del ${instance.id}${deleteCustom ? ' --custom' : ''}`));
     }
 
     setCompact = instance =>
@@ -937,7 +940,7 @@ class Instances extends Component {
                         deleting={this.state.deleting === instance.id}
                         adminInstance={this.props.adminInstance}
                         maxCompactGroupNumber={this.state.maxCompactGroupNumber}
-                        deletedInstances={this.deletedInstances}
+                        onDeleteInstance={this.onDeleteInstance}
                         expertMode={this.props.expertMode}
                         extendObject={this.extendObject}
                         getMemory={this.getMemory}
@@ -945,6 +948,7 @@ class Instances extends Component {
                         getSchedule={() => this.getSchedule(instance.obj)}
                         hosts={this.props.hosts}
                         id={id}
+                        deleteCustomSupported={this.state.deleteCustomSupported}
 
                         instance={instance}
                         key={instance.id}
@@ -969,9 +973,10 @@ class Instances extends Component {
                     category: item.category,
                     render: <InstanceRow
                         deleting={this.state.deleting === instance.id}
+                        deleteCustomSupported={this.state.deleteCustomSupported}
                         adminInstance={this.props.adminInstance}
                         maxCompactGroupNumber={this.state.maxCompactGroupNumber}
-                        deletedInstances={this.deletedInstances}
+                        onDeleteInstance={this.onDeleteInstance}
                         expanded={this.state.expanded}
                         expertMode={this.props.expertMode}
                         extendObject={this.extendObject}

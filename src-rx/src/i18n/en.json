@@ -1351,7 +1351,7 @@
   "For systems installed manually under Linux, prefix sudo or run as root.": "For systems installed manually under Linux, prefix sudo or run as root.",
   "This way is only necessary in very few cases and please consult the forum beforehand!": "This way is only necessary in very few cases and please consult the forum beforehand!",
   "Otherwise please update the slaves first with an update of master-slave systems and the master last!": "Otherwise please update the slaves first with an update of master-slave systems and the master last!",
-  "For an update from js-controller 1.x to 2.x please always read the information at": "For an update from js-controller 1.x to 2.x please always read the information at",
+  "For an update from js-controller 1.x to 2.x please always read the information at": "For an update from js-controller please always read the information at",
   "You can export all objects or just the selected branch.": "You can export all objects or just the selected branch.",
   "Select type of export": "Select type of the export",
   "All objects": "All objects",
@@ -1469,5 +1469,6 @@
   "Licenses have not changed": "Licenses have not changed",
   "Cannot update licenses: %s": "Cannot update licenses: %s",
   "Licenses were not stored. They will be stored after the settings will be saved": "Licenses were not stored. They will be stored after the settings will be saved",
-  "Authentication required.": "Authentication required or login, password are invalid"
+  "Authentication required.": "Authentication required or login, password are invalid",
+  "Delete all custom object settings of this adapter too": "Delete all custom object settings of this adapter too"
 }

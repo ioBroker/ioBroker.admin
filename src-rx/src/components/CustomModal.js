@@ -26,7 +26,10 @@ const styles = theme => ({
     },
     titleIcon: {
         marginRight: 5,
-    }
+    },
+    content: {
+        fontSize: 16
+    },
 });
 
 const CustomModal = ({ title, fullWidth, help, maxWidth, progress, icon, applyDisabled, applyButton, classes, open, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue, overflowHidden }) => {
@@ -51,7 +54,7 @@ const CustomModal = ({ title, fullWidth, help, maxWidth, progress, icon, applyDi
         className={classes.modalWrapper}
     >
         {title && <DialogTitle>{icon ? <Icon className={classes.titleIcon}/> : null}{title}</DialogTitle>}
-        <DialogContent className={clsx(overflowHidden ? classes.overflowHidden : null)}>
+        <DialogContent className={clsx(overflowHidden ? classes.overflowHidden : null, classes.content)}>
             {textInput && <TextField
                 // className={className}
                 autoComplete="off"

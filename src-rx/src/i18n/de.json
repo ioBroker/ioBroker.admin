@@ -1351,7 +1351,7 @@
   "For systems installed manually under Linux, prefix sudo or run as root.": "Bei Systemen, die manuell unter Linux installiert werden, sudo voranstellen oder als root ausführen.",
   "This way is only necessary in very few cases and please consult the forum beforehand!": "Dieser Weg ist nur in sehr wenigen Fällen notwendig und bitte vorher im Forum konsultieren!",
   "Otherwise please update the slaves first with an update of master-slave systems and the master last!": "Ansonsten aktualisieren Sie bitte zuerst die Slaves mit einem Update der Master-Slave-Systeme und zuletzt den Master!",
-  "For an update from js-controller 1.x to 2.x please always read the information at": "Für ein Update von js-controller 1.x auf 2.x lesen Sie bitte immer die Informationen unter",
+  "For an update from js-controller 1.x to 2.x please always read the information at": "Für ein Update von js-controller lesen Sie bitte immer die Informationen unter",
   "You can export all objects or just the selected branch.": "Sie können alle Objekte oder nur den ausgewählten Zweig exportieren.",
   "Select type of export": "Den Typ des Exports wählen",
   "All objects": "Alle Objekte",
@@ -1469,5 +1469,6 @@
   "Licenses have not changed": "Lizenzen haben sich nicht geändert",
   "Cannot update licenses: %s": "Lizenzen können nicht aktualisiert werden: %s",
   "Licenses were not stored. They will be stored after the settings will be saved": "Lizenzen wurden nicht gespeichert. Sie werden gespeichert, nachdem die Einstellungen gespeichert wurden",
-  "Authentication required.": "Authentifizierung erforderlich oder Login, Passwort ungültig"
+  "Authentication required.": "Authentifizierung erforderlich oder Login, Passwort ungültig",
+  "Delete all custom object settings of this adapter too": "Auch alle benutzerdefinierten Objekteinstellungen dieses Adapters löschen"
 }

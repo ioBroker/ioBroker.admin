@@ -1355,7 +1355,7 @@
   "For systems installed manually under Linux, prefix sudo or run as root.": "Для систем, установленных вручную под Linux, используйте префикс sudo или запускайте от имени пользователя root.",
   "This way is only necessary in very few cases and please consult the forum beforehand!": "Этот способ необходим только в очень редких случаях, и, пожалуйста, заранее проконсультируйтесь на форуме!",
   "Otherwise please update the slaves first with an update of master-slave systems and the master last!": "В противном случае, пожалуйста, сначала обновите ведомые устройства, обновив системы ведущий-ведомый, а затем - ведущее устройство!",
-  "For an update from js-controller 1.x to 2.x please always read the information at": "Для обновления с js-controller 1.x до 2.x, пожалуйста, всегда читайте информацию на",
+  "For an update from js-controller 1.x to 2.x please always read the information at": "Для обновления js-controller, пожалуйста, всегда читайте информацию на",
   "You can export all objects or just the selected branch.": "Вы можете экспортировать все объекты или только выбранную ветку.",
   "Select type of export": "Выберите тип экспорта",
   "All objects": "Все объекты",
@@ -1469,5 +1469,6 @@
   "Licenses have not changed": "Лицензии не изменились",
   "Cannot update licenses: %s": "Не удается обновить лицензии: %s",
   "Licenses were not stored. They will be stored after the settings will be saved": "Лицензии не хранились. Они будут сохранены после сохранения настроек",
-  "Authentication required.": "Требуется аутентификация или логин, пароль недействителены"
+  "Authentication required.": "Требуется аутентификация или логин, пароль недействительны",
+  "Delete all custom object settings of this adapter too": "Удалить также все настройки объектов для этого адаптера."
 }
