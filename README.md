@@ -90,6 +90,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (jogibear9988) Enable http compression in webserver
+
 ### 5.2.3 (2021-12-24)
 * (bluefox) Fixed error in `AutocompleteSendTo`
 * (bluefox) Fixed error in charts
