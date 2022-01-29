@@ -1,8 +1,8 @@
 /*!
  * ioBroker WebSockets
- * Copyright 2020-2021, bluefox <dogafox@gmail.com>
+ * Copyright 2020-2022, bluefox <dogafox@gmail.com>
  * Released under the MIT License.
- * v 0.2.2 (2021_04_23)
+ * v 0.2.3 (2022_01_29)
  */
 /* jshint -W097 */
 /* jshint strict: false */
@@ -34,7 +34,7 @@ const ERRORS = {
     1012: 'Service restart',	    // Server/service is restarting
     1013: 'Try again later',	    // Temporary server condition forced blocking client's request
     1014: 'Bad gateway	Server',    // acting as gateway received an invalid response
-    1015: 'TLS handshake fail',		// Transport Layer Security handshake failure
+    1015: 'TLS handshake fail' 		// Transport Layer Security handshake failure
 };
 
 // possible events: connect, disconnect, reconnect, error, connect_error
@@ -58,7 +58,7 @@ function SocketClient () {
     this.log = {
         debug: text => DEBUG && console.log(`[${new Date().toISOString()}] ${text}`),
         warn:  text => console.warn(`[${new Date().toISOString()}] ${text}`),
-        error: text => console.error(`[${new Date().toISOString()}] ${text}`),
+        error: text => console.error(`[${new Date().toISOString()}] ${text}`)
     };
 
     this.connect = (_url, _options) => {
@@ -67,19 +67,21 @@ function SocketClient () {
         connectTimer && clearInterval(connectTimer);
         connectTimer = null;
 
+        // eslint-disable-next-line no-undef
         url = url || _url || window.location.href;
         options = options || JSON.parse(JSON.stringify(_options || {}));
 
         options.pongTimeout       = parseInt(options.pongTimeout,       10) || 60000; // Timeout for answer for ping (pong)
-	    options.pingInterval      = parseInt(options.pingInterval,      10) || 5000;  // Ping interval
-	    options.connectTimeout    = parseInt(options.connectTimeout,    10) || 3000;  // connection request timeout
-	    options.authTimeout       = parseInt(options.authTimeout,       10) || 3000;  // Authentication timeout
+        options.pingInterval      = parseInt(options.pingInterval,      10) || 5000;  // Ping interval
+        options.connectTimeout    = parseInt(options.connectTimeout,    10) || 3000;  // connection request timeout
+        options.authTimeout       = parseInt(options.authTimeout,       10) || 3000;  // Authentication timeout
         options.connectInterval   = parseInt(options.connectInterval,   10) || 1000;  // Interval between connection attempts
         options.connectMaxAttempt = parseInt(options.connectMaxAttempt, 10) || 5;     // Every connection attempt the interval increasing at options.connectInterval till max this number
 
         sessionID = Date.now();
         try {
             if (url === '/') {
+                // eslint-disable-next-line no-undef
                 url = window.location.protocol + '//' + window.location.host  + '/';
             }
 
@@ -88,6 +90,7 @@ function SocketClient () {
                 u += '&name=' + encodeURIComponent(options.name);
             }
             // "ws://www.example.com/socketserver"
+            // eslint-disable-next-line no-undef
             socket = new WebSocket(u);
         } catch (error) {
             handlers.error && handlers.error.forEach(cb => cb.call(this, error));
@@ -100,7 +103,7 @@ function SocketClient () {
             this.close(); // re-init connection, because no ___ready___ received in 2000 ms
         }, options.connectTimeout);
 
-        socket.onopen = event => {
+        socket.onopen = ()/*event*/ => {
             lastPong = Date.now();
             connectionCount = 0;
 
@@ -340,7 +343,7 @@ function SocketClient () {
             try {
                 socket.close();
             } catch (e) {
-
+                // ignore
             }
             socket = null;
         }
@@ -356,10 +359,10 @@ function SocketClient () {
     };
 
     this.destroy = function () {
-        close();
+        this.close();
         connectTimer && clearTimeout(connectTimer);
         connectTimer = null;
-    }
+    };
 
     this._reconnect = function () {
         if (!connectTimer) {
@@ -379,4 +382,5 @@ function SocketClient () {
     this.connected = false; // simulate socket.io interface
 }
 
+// eslint-disable-next-line no-undef
 window.io = new SocketClient();
