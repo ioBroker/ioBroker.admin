@@ -277,7 +277,6 @@ class LogsWorker {
             return this.promise;
         }
 
-
         this.errors = 0;
         this.warnings = 0;
 

@@ -1,23 +1,23 @@
 'use strict';
 
-const less        = require('gulp-less');
-const sass        = require('gulp-sass')(require('sass'));
-const gulp        = require('gulp');
-const colors      = require('ansi-colors');
-const log         = require('fancy-log');
-const uglify      = require('gulp-terser');
-const htmlmin     = require('gulp-htmlmin');
-const concat      = require('gulp-concat');
-const sourcemaps  = require('gulp-sourcemaps');
-const cleanCSS    = require('gulp-clean-css');
-const pkg         = require('./package.json');
-const iopackage   = require('./io-package.json');
-const babel       = require('gulp-babel');
-const fs          = require('fs');
-const del         = require('del');
+const less       = require('gulp-less');
+const sass       = require('gulp-sass')(require('sass'));
+const gulp       = require('gulp');
+const colors     = require('ansi-colors');
+const log        = require('fancy-log');
+const uglify     = require('gulp-terser');
+const htmlmin    = require('gulp-htmlmin');
+const concat     = require('gulp-concat');
+const sourcemaps = require('gulp-sourcemaps');
+const cleanCSS   = require('gulp-clean-css');
+const pkg        = require('./package.json');
+const iopackage  = require('./io-package.json');
+const babel      = require('gulp-babel');
+const fs         = require('fs');
+const del        = require('del');
 
-const fileName = 'words.js';
-const noSort   = false;
+const fileName   = 'words.js';
+const noSort     = false;
 
 /* How to work with language scripts
 --------------------------------------------------------
