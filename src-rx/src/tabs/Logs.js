@@ -963,7 +963,7 @@ class Logs extends Component {
                                                     this.state.message ? <IconButton
                                                         size="small"
                                                         onClick={e => {
-                                                            this.setState({ message: '' });
+                                                            this.handleMessagechange({ target: { value: ''} });
                                                         }}>
                                                         <ClearIcon />
                                                     </IconButton> : null,
