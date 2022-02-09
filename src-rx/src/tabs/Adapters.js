@@ -656,7 +656,7 @@ class Adapters extends Component {
             const currentHost = this.props.currentHost;
 
             let hostData;
-            let rebuild;
+//            let rebuild;
             let ratings;
 
             return new Promise(resolve => {
@@ -674,11 +674,11 @@ class Adapters extends Component {
                 )
                 .then(_hostData => {
                     hostData = _hostData;
-                    return this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD')
+                    /*return this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD')
                         .catch(e => window.alert('Cannot checkFeatureSupported: ' + e));
                 })
                 .then(_rebuild => {
-                    rebuild = _rebuild;
+                    rebuild = _rebuild;*/
                     if (this.props.adminGuiConfig.adapters?.allowAdapterRating === false) {
                         return Promise.resolve({});
                     }
@@ -700,7 +700,7 @@ class Adapters extends Component {
 
                     this.uuid = ratings?.uuid || null;
                     // BF (2022.02.09)  TODO: Remove all "rebuild" stuff later (when js-controller 4.x will be mainstream)
-                    this.rebuildSupported = false;// rebuild || false; Rebuild is no more supported from js-controller 4.0
+                    // this.rebuildSupported = false;// rebuild || false; Rebuild is no more supported from js-controller 4.0
                     this.calculateInfo(instances, ratings, hostData);
                 });
         } else {
@@ -731,9 +731,9 @@ class Adapters extends Component {
         this.props.executeCommand('upload ' + adapter);
     }
 
-    rebuild(adapter) {
+    /*rebuild(adapter) {
         this.props.executeCommand('rebuild ' + adapter)
-    }
+    }*/
 
     delete(adapter, deleteCustom) {
         this.props.executeCommand(`del ${adapter}${deleteCustom ? ' --custom' : ''}`);
@@ -1130,7 +1130,7 @@ class Adapters extends Component {
                 rightDependencies={cached.rightDependencies}
                 rightOs={cached.rightOs}
                 sentry={cached.sentry}
-                rebuild={this.rebuildSupported}
+                //rebuild={this.rebuildSupported}
                 commandRunning={this.props.commandRunning}
                 rating={adapter.rating}
                 onSetRating={() =>
@@ -1141,7 +1141,7 @@ class Adapters extends Component {
                 }
                 onDeletion={() => this.openAdapterDeletionDialog(value)}
                 onInfo={() => this.openInfoDialog(value)}
-                onRebuild={() => this.rebuild(value)}
+                //onRebuild={() => this.rebuild(value)}
                 onUpdate={() => this.openUpdateDialog(value)}
                 openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
                 onUpload={() => licenseDialogFunc(adapter.license === 'MIT', result =>
@@ -1388,7 +1388,7 @@ class Adapters extends Component {
                     rightDependencies={cached.rightDependencies}
                     rightOs={cached.rightOs}
                     sentry={cached.sentry}
-                    rebuild={this.rebuildSupported}
+                    //rebuild={this.rebuildSupported}
                     rating={adapter.rating}
                     onSetRating={() =>
                         this.setState({ showSetRating: { adapter: value, version: installed && installed.version, rating: adapter.rating}})}
@@ -1397,7 +1397,7 @@ class Adapters extends Component {
                             result && await this.addInstance(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
                     onDeletion={() => this.openAdapterDeletionDialog(value)}
                     onInfo={() => this.openInfoDialog(value)}
-                    onRebuild={() => this.rebuild(value)}
+                    //onRebuild={() => this.rebuild(value)}
                     onUpdate={() => this.openUpdateDialog(value)}
                     openInstallVersionDialog={() => this.openInstallVersionDialog(value)}
                     onUpload={() => licenseDialogFunc(adapter.license === 'MIT', result =>
