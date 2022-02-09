@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "5.2.3",
+    "version": "5.3.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "5.3.0": {
+        "en": "Enable http compression in webserver\nRemoved deprecated package \"request\"\nAdded JSONL option for base settings\nAdded small improvements\nAdded the file viewer for binary states",
+        "de": "HTTP-Komprimierung im Webserver aktivieren\nVeraltetes Paket „request“ entfernt\nJSONL-Option für Basiseinstellungen hinzugefügt\nKleine Verbesserungen hinzugefügt\nDateibetrachter für Binärzustände hinzugefügt",
+        "ru": "Включить сжатие http на веб-сервере\nУдален устаревший пакет «запрос».\nДобавлен параметр JSONL для базовых настроек.\nДобавлены небольшие улучшения\nДобавлен просмотрщик файлов для бинарных состояний",
+        "pt": "Habilitar compressão http no servidor web\nRemoção do pacote obsoleto \"solicitação\"\nAdicionada opção JSONL para configurações básicas\nAdicionadas pequenas melhorias\nAdicionado o visualizador de arquivos para estados binários",
+        "nl": "Schakel http-compressie in webserver in\nVerouderd pakket \"verzoek\" verwijderd\nJSONL-optie toegevoegd voor basisinstellingen\nKleine verbeteringen toegevoegd\nDe bestandsviewer voor binaire toestanden toegevoegd",
+        "fr": "Activer la compression http sur le serveur Web\nSuppression du package obsolète \"request\"\nAjout de l'option JSONL pour les paramètres de base\nAjout de petites améliorations\nAjout de la visionneuse de fichiers pour les états binaires",
+        "it": "Abilita la compressione http nel server web\nRimosso il pacchetto obsoleto \"richiesta\"\nAggiunta l'opzione JSONL per le impostazioni di base\nAggiunti piccoli miglioramenti\nAggiunto il visualizzatore di file per gli stati binari",
+        "es": "Habilitar la compresión http en el servidor web\nSe eliminó el paquete obsoleto \"solicitud\"\nSe agregó la opción JSONL para la configuración básica\nPequeñas mejoras añadidas\nSe agregó el visor de archivos para estados binarios.",
+        "pl": "Włącz kompresję http na serwerze WWW\nUsunięto przestarzały pakiet „request”\nDodano opcję JSONL dla ustawień podstawowych\nDodano drobne ulepszenia\nDodano przeglądarkę plików dla stanów binarnych",
+        "zh-cn": "在网络服务器中启用 http 压缩\n删除了不推荐使用的包“请求”\n为基本设置添加了 JSONL 选项\n添加了小改进\n添加了二进制状态的文件查看器"
+      },
       "5.2.3": {
         "en": "Fixed error in `AutocompleteSendTo`\nFixed error in charts",
         "de": "Fehler in `AutocompleteSendTo` behoben\nFehler in Diagrammen behoben",
@@ -89,18 +101,6 @@
         "es": "Función de descubrimiento fijo\nSe corrigieron algunos errores de GUI",
         "pl": "Naprawiono funkcję wykrywania\nNaprawiono kilka błędów GUI",
         "zh-cn": "固定发现功能\n修复了一些 GUI 错误"
-      },
-      "5.1.25": {
-        "en": "Corrected some errors reported via sentry and the github issues",
-        "de": "Einige Fehler, die über Wache und die Github-Probleme gemeldet wurden, korrigiert",
-        "ru": "Исправлены некоторые ошибки, о которых сообщалось через часовую, и проблемы с github.",
-        "pt": "Corrigidos alguns erros relatados via sentry e os problemas do github",
-        "nl": "Enkele fouten gecorrigeerd die zijn gemeld via sentry en de github-problemen",
-        "fr": "Correction de certaines erreurs signalées via sentinelle et des problèmes de github",
-        "it": "Corretti alcuni errori segnalati tramite sentry e problemi con github",
-        "es": "Se corrigieron algunos errores informados a través de sentry y los problemas de github",
-        "pl": "Poprawiono niektóre błędy zgłaszane przez Sentry i problemy z githubem",
-        "zh-cn": "更正了通过哨兵和 github 问题报告的一些错误"
       }
     },
     "desc": {

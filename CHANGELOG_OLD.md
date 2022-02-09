@@ -1,6 +1,14 @@
 ## 5.1.15 (2021-07-26)
 * (bluefox) Replaced the formula icon in the edit aliases dialog
 * (bluefox) Added the logic for checkbox in JsonConfig
+## 5.1.28 (2021-11-10)
+* (bluefox) Fixed discovery function
+* (bluefox) Fixed some GUI bugs
+
+## 5.1.15 (2021-07-26)
+* (bluefox) Replaced the formula icon in the edit aliases dialog
+* (bluefox) Added the logic for checkbox in JsonConfig
+
 ## 5.1.25 (2021-08-15)
 * (bluefox) Corrected some errors reported via sentry and the GitHub issues
 

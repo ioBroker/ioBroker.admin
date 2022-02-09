@@ -90,7 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 5.3.0 (2022-02-09)
 * (jogibear9988) Enable http compression in webserver
 * (bluefox) Removed deprecated package "request"
 * (bluefox) Added JSONL option for base settings
@@ -111,10 +111,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 5.2.0 (2021-11-26)
 * (Apollon77) Fix crash cases reported via sentry
 * (bluefox) Added support for multi-repositories
-
-### 5.1.28 (2021-11-10)
-* (bluefox) Fixed discovery function
-* (bluefox) Fixed some GUI bugs
 
 ## License
 The MIT License (MIT)
