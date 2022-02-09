@@ -217,21 +217,19 @@ const a11yProps = (index) => {
 }
 
 const TabPanel = ({ children, value, index, classNameBox, ...other }) => {
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`scrollable-force-tabpanel-${index}`}
-            aria-labelledby={`scrollable-force-tab-${index}`}
-            {...other}
-        >
-            {value === index && (
-                <Box className={classNameBox}>
-                    <Typography component="div">{children}</Typography>
-                </Box>
-            )}
-        </div>
-    );
+    return <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`scrollable-force-tabpanel-${index}`}
+        aria-labelledby={`scrollable-force-tab-${index}`}
+        {...other}
+    >
+        { value === index &&
+            <Box className={classNameBox}>
+                <Typography component="div">{children}</Typography>
+            </Box>
+        }
+    </div>;
 }
 
 const HostWarningDialog = ({ message, ackCallback, dateFormat, themeType, themeName, instances }) => {

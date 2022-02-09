@@ -216,6 +216,7 @@ iob start`
                             <div className={classes.standardTextSmall}>iob backup</div>
                             <div className={classes.standardTextSmall}>iob stop</div>
                             <div className={classes.standardTextSmall}>iob update</div>
+                            <div className={classes.standardTextSmall}>iob fix</div>
                             <div className={classes.standardTextSmall}>iob upgrade self</div>
                             <div className={classes.standardTextSmall}>iob start</div>
                         </pre>
@@ -224,13 +225,11 @@ iob start`
                             <pre className={classes.pre}>
                             <IconButton size="small" onClick={() => {
                                 window.alert(I18n.t('Copied'))
-                                copyTextToClipboard(
-                                    `curl -sL https://iobroker.net/fix.sh | bash`
-                                );
+                                copyTextToClipboard(`curl -sL https://iobroker.net/fix.sh | bash -`);
                             }} className={classes.copyButton}>
                                 <IconCopy />
                             </IconButton>
-                            <div className={classes.standardTextSmall}>curl -sL https://iobroker.net/fix.sh | bash-</div>
+                            <div className={classes.standardTextSmall}>curl -sL https://iobroker.net/fix.sh | bash -</div>
                         </pre>
                         <div className={clsx(classes.standardTextSmall2)}>{I18n.t('to fix these issues and upgrade command run again.')}</div>
 
@@ -245,10 +244,11 @@ iob start`
                                     `cd ${location || '/opt/iobroker'}
 iob backup
 iob stop
-iob fix
 iob update
+iob fix
 iob upgrade self
-iob start`
+iob start
+`
                                 );
                             }} className={classes.copyButton}>
                                 <IconCopy />
@@ -279,7 +279,8 @@ iob backup
 iob stop
 iob status
 iob update
-iob upgrade self`
+iob upgrade self
+`
                                 );
                             }} className={classes.copyButton}>
                                 <IconCopy />

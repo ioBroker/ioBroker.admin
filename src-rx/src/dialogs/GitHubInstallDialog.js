@@ -225,7 +225,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                         marginTop: 40
                     }}>{t('Warning!')}</div>
                     <div className={classes.warningText}>
-                        {t('github_warning', 'NPM', 'NPM')}
+                        {t('npm_warning', 'NPM', 'NPM')}
                     </div>
                     <div className={classes.noteText} >
                         {t('github_note')}

@@ -224,8 +224,7 @@ class BaseSettingsDialog extends Component {
         return <Dialog
             className={this.props.classes.dialog}
             open={true}
-            disableBackdropClick={true}
-            disableEscapeKeyDown={true}
+            onClose={() => false}
             fullWidth={true}
             maxWidth="xl"
             aria-labelledby="base-settings-dialog-title"

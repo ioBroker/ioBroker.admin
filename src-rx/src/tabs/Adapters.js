@@ -675,7 +675,7 @@ class Adapters extends Component {
                 .then(_hostData => {
                     hostData = _hostData;
                     return this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD')
-                        .catch(e => window.alert('Cannot checkFeatureSupported: ' + e))
+                        .catch(e => window.alert('Cannot checkFeatureSupported: ' + e));
                 })
                 .then(_rebuild => {
                     rebuild = _rebuild;
@@ -699,7 +699,8 @@ class Adapters extends Component {
                     // setTimeout(() => this.setState({showSlowConnectionWarning: true}), 5000);
 
                     this.uuid = ratings?.uuid || null;
-                    this.rebuildSupported = rebuild || false;
+                    // BF (2022.02.09)  TODO: Remove all "rebuild" stuff later (when js-controller 4.x will be mainstream)
+                    this.rebuildSupported = false;// rebuild || false; Rebuild is no more supported from js-controller 4.0
                     this.calculateInfo(instances, ratings, hostData);
                 });
         } else {
@@ -1330,7 +1331,11 @@ class Adapters extends Component {
                 } else if (installed[b]) {
                     return 1;
                 } else {
-                    return a > b ? 1 : (a < b ? -1 : 0);
+                    // sort by real language name and not by adapter name
+                    const aName = (adapters[a].title || a).toLowerCase();
+                    const bName = (adapters[b].title || b).toLowerCase();
+
+                    return aName > bName ? 1 : (aName < bName ? -1 : 0);
                 }
             }
         });
@@ -1673,6 +1678,7 @@ class Adapters extends Component {
 
             {this.state.addInstanceDialog &&
                 <AddInstanceDialog
+                    themeType={this.props.themeType}
                     open={this.state.addInstanceDialog}
                     adapter={this.state.addInstanceAdapter}
                     hosts={this.props.hosts}
@@ -1795,4 +1801,5 @@ Adapters.propTypes = {
     executeCommand: PropTypes.func,
     adminGuiConfig: PropTypes.object,
 };
+
 export default withStyles(styles)(Adapters);

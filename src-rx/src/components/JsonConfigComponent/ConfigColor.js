@@ -8,19 +8,17 @@ import Dialog from '@material-ui/core/Dialog';
 
 import ClearIcon from '@material-ui/icons/Close';
 
-import ConfigGeneric from './ConfigGeneric';
-
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import ColorPicker from '@iobroker/adapter-react/Components/ColorPicker';
+
+import ConfigGeneric from './ConfigGeneric';
 
 const styles = theme => ({});
 
 class ConfigColor extends ConfigGeneric {
     renderColorDialog() {
         return !!this.state.showColorDialog && <Dialog
-            onClose={() => {
-                this.setState({showColorDialog: false});
-            }}
+            onClose={() => this.setState({showColorDialog: false})}
             open={this.state.showColorDialog}>
             <ChromePicker
                 color={this.state.colorDialogValue}
@@ -39,7 +37,7 @@ class ConfigColor extends ConfigGeneric {
             textColor = undefined;
         }
         return <>
-            {this.renderColorDialog()}
+            { this.renderColorDialog() }
             <TextField
                 disabled={!!disabled}
                 style={{minWidth: 100, width: 'calc(100% - 8px)'}}

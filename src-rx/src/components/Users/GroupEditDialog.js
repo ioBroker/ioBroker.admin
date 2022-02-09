@@ -279,10 +279,12 @@ function GroupEditDialog(props) {
 
     return <Dialog
         open={props.open}
-        onClose={props.onClose}
+        onClose={(event, reason) => {
+            if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                props.onClose();
+            }
+        }}
         fullWidth={props.innerWidth < 500}
-        disableEscapeKeyDown
-        disableBackdropClick
     >
         <DialogTitle className={props.classes.dialogTitle}>
             <Tabs

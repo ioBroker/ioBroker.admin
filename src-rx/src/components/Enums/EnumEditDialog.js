@@ -82,9 +82,11 @@ function EnumEditDialog(props) {
     return <Dialog
         fullWidth={props.innerWidth < 500}
         open={true}
-        onClose={props.onClose}
-        disableEscapeKeyDown
-        disableBackdropClick
+        onClose={(event, reason) => {
+            if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                props.onClose();
+            }
+        }}
     >
         <DialogTitle className={props.classes.dialogTitle} style={{padding: 12}} >
            { props.t( 'Enum parameters' ) }

@@ -18,6 +18,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Switch from "@material-ui/core/Switch";
 
 import DialogConfirm from '@iobroker/adapter-react/Dialogs/Confirm';
+import FormGroup from "@material-ui/core/FormGroup";
 
 const styles = theme => ({
     paper: {
@@ -61,6 +62,9 @@ class BaseSettingsObjects extends Component {
         const settings   = this.props.settings || {};
         settings.options = settings.options    || {};
         settings.backup  = settings.backup     || {};
+        settings.jsonlOptions  = settings.jsonlOptions || {};
+        settings.jsonlOptions.autoCompress  = settings.jsonlOptions.autoCompress || {};
+        settings.jsonlOptions.throttleFS  = settings.jsonlOptions.throttleFS || {};
 
         this.state = {
             type:                    settings.type                    || 'file',
@@ -79,6 +83,11 @@ class BaseSettingsObjects extends Component {
             backup_hours:            settings.backup.hours            || 48,
             backup_period:           settings.backup.period           || 120,
             backup_path:             settings.backup.path             || '',
+            jsonlOptions_autoCompress_sizeFactor: settings.jsonlOptions.autoCompress.sizeFactor || 2,
+            jsonlOptions_autoCompress_sizeFactorMinimumSize: settings.jsonlOptions.autoCompress.sizeFactorMinimumSize || 25000,
+            jsonlOptions_ignoreReadErrors: settings.jsonlOptions.ignoreReadErrors === undefined ? true : settings.jsonlOptions.ignoreReadErrors,
+            jsonlOptions_throttleFS_intervalMs: settings.jsonlOptions.throttleFS.intervalMs || 60000,
+            jsonlOptions_throttleFS_maxBufferedCommands: settings.jsonlOptions.throttleFS.maxBufferedCommands || 100,
             textIP:                  Array.isArray(settings.host) || (settings.host || '').match(/[^.\d]/) || (settings.host || '').includes(','),
 
             IPs:                     ['0.0.0.0', '127.0.0.1'],
@@ -126,6 +135,17 @@ class BaseSettingsObjects extends Component {
                 period:          parseInt(this.state.backup_period, 10),
                 path:            this.state.backup_path,
             },
+            jsonlOptions: {
+                autoCompress: {
+                    sizeFactor: parseInt(this.state.jsonlOptions_autoCompress_sizeFactor, 10),
+                    sizeFactorMinimumSize: parseInt(this.state.jsonlOptions_autoCompress_sizeFactorMinimumSize, 10),
+                },
+                ignoreReadErrors: this.state.jsonlOptions_ignoreReadErrors === true || this.state.jsonlOptions_ignoreReadErrors === 'true',
+                throttleFS: {
+                    intervalMs: parseInt(this.state.jsonlOptions_throttleFS_intervalMs, 10),
+                    maxBufferedCommands: parseInt(this.state.jsonlOptions_throttleFS_maxBufferedCommands, 10),
+                }
+            }
         });
     }
 
@@ -184,6 +204,7 @@ class BaseSettingsObjects extends Component {
                                         }
                                     }}
                                 >
+                                    <MenuItem value="jsonl">JSON Lines</MenuItem>
                                     <MenuItem value="file">{ this.props.t('File') }</MenuItem>
                                     <MenuItem value="redis">Redis</MenuItem>
                                 </Select>
@@ -270,7 +291,7 @@ class BaseSettingsObjects extends Component {
             </Grid>
             <Grid item className={ this.props.classes.gridSettings }>
                 <Grid container direction="column">
-                    { this.state.type === 'file' ? <Grid item>
+                    { this.state.type === 'file' || this.state.type === 'jsonl' ? <Grid item>
                         <TextField
                             className={ this.props.classes.controlItem }
                             value={ this.state.connectTimeout }
@@ -342,21 +363,85 @@ class BaseSettingsObjects extends Component {
                         </FormControl>
                     </Grid> : null }
 
-                    { this.state.type === 'file' ? <Grid item>
-                        <FormControlLabel
-                            className={ this.props.classes.controlItem }
-                            control={
-                                <Checkbox
-                                    checked={ this.state.backup_disabled }
-                                    onChange={ e => this.setState( { backup_disabled: e.target.checked }, () => this.onChange()) }
+                    { this.state.type === 'jsonl' ? <Grid item>
+                        <FormControl component="fieldset" className={ this.props.classes.controlItem }>
+                            <FormGroup>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={ this.state.jsonlOptions_ignoreReadErrors }
+                                            onChange={ e => this.setState( { jsonlOptions_ignoreReadErrors: e.target.checked }, () => this.onChange()) }
+                                        />
+                                    }
+                                    label={ this.props.t(`Ignore read errors`) }
                                 />
-                            }
-                            label={ this.props.t(`No on-the-fly backup`) }
-                        />
-                        <div>{ this.props.t('By every write the backup of object.json will be created.') }</div>
+                            </FormGroup>
+                            <FormHelperText>{ this.props.t('If single lines in the DB are corrupted, they can be ignored without losing the whole DB.') }</FormHelperText>
+                        </FormControl>
                     </Grid> : null }
 
-                    { this.state.type === 'file' && !this.state.backup_disabled ? <Grid item>
+                    { this.state.type === 'jsonl' ? <Grid item>
+                        <TextField
+                            className={ this.props.classes.controlItem }
+                            value={ this.state.jsonlOptions_autoCompress_sizeFactor }
+                            type="number"
+                            helperText={ this.props.t('The JSONL DB is append-only and will contain unnecessary entries after a while.') }
+                            onChange={ e => this.setState({ jsonlOptions_autoCompress_sizeFactor: e.target.value })}
+                            label={ this.props.t('Auto-compress size factor') }
+                        />
+                    </Grid> : null }
+
+                    { this.state.type === 'jsonl' ? <Grid item>
+                        <TextField
+                            className={ this.props.classes.controlItem }
+                            value={ this.state.jsonlOptions_autoCompress_sizeFactorMinimumSize }
+                            type="number"
+                            helperText={ this.props.t('It will be compressed when the uncompressed size is >= size * sizeFactor AND >= sizeFactorMinimumSize') }
+                            onChange={ e => this.setState({ jsonlOptions_autoCompress_sizeFactorMinimumSize: e.target.value })}
+                            label={ this.props.t('Auto-compress size factor minimum size') }
+                        />
+                    </Grid> : null }
+
+                    { this.state.type === 'jsonl' ? <Grid item>
+                        <TextField
+                            className={ this.props.classes.controlItem }
+                            value={ this.state.jsonlOptions_throttleFS_intervalMs }
+                            type="number"
+                            helperText={ this.props.t('Write to the database file no more than every X milliseconds') }
+                            onChange={ e => this.setState({ jsonlOptions_throttleFS_intervalMs: e.target.value })}
+                            label={ this.props.t('Minimal write interval') }
+                        />
+                    </Grid> : null }
+
+                    { this.state.type === 'jsonl' ? <Grid item>
+                        <TextField
+                            className={ this.props.classes.controlItem }
+                            value={ this.state.jsonlOptions_throttleFS_maxBufferedCommands }
+                            type="number"
+                            helperText={ this.props.t('Force writing after this many changes have been buffered. This reduces memory consumption and data loss in case of a crash') }
+                            onChange={ e => this.setState({ jsonlOptions_throttleFS_maxBufferedCommands: e.target.value })}
+                            label={ this.props.t('Maximum changes before write') }
+                        />
+                    </Grid> : null }
+
+                    { this.state.type === 'file' || this.state.type === 'jsonl' ? <Grid item>
+                        <FormControl component="fieldset" className={ this.props.classes.controlItem }>
+                            <FormGroup>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={ this.state.backup_disabled }
+                                            onChange={ e => this.setState( { backup_disabled: e.target.checked }, () => this.onChange()) }
+                                        />
+                                    }
+                                    label={ this.props.t(`No on-the-fly backup`) }
+                                />
+                            </FormGroup>
+                            <FormHelperText>{ this.props.t('By every write the backup of object.json will be created.') }</FormHelperText>
+                        </FormControl>
+                    </Grid> : null }
+
+                    { (this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
                         <TextField
                             className={ this.props.classes.controlItem }
                             value={ this.state.backup_files }
@@ -367,7 +452,7 @@ class BaseSettingsObjects extends Component {
                         />
                     </Grid> : null }
 
-                    { this.state.type === 'file' && !this.state.backup_disabled ? <Grid item>
+                    { (this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
                         <TextField
                             className={ this.props.classes.controlItem }
                             value={ this.state.backup_hours }
@@ -378,7 +463,7 @@ class BaseSettingsObjects extends Component {
                         />
                     </Grid> : null }
 
-                    { this.state.type === 'file' && !this.state.backup_disabled ? <Grid item>
+                    { (this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
                         <TextField
                             className={ this.props.classes.controlItem }
                             value={ this.state.backup_period }
@@ -389,7 +474,7 @@ class BaseSettingsObjects extends Component {
                         />
                     </Grid> : null }
 
-                    { this.state.type === 'file' && !this.state.backup_disabled ? <Grid item>
+                    { (this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
                     <TextField
                         className={ this.props.classes.controlItem }
                         value={ this.state.backup_path }

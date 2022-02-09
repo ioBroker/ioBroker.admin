@@ -102,9 +102,11 @@ function UserEditDialog(props) {
     return <Dialog
         fullWidth={props.innerWidth < 500}
         open={props.open}
-        onClose={props.onClose}
-        disableEscapeKeyDown
-        disableBackdropClick
+        onClose={(event, reason) => {
+            if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                props.onClose();
+            }
+        }}
     >
         <DialogTitle className={props.classes.dialogTitle} style={{ padding: 12 }} >
            { props.t( 'User parameters' ) }

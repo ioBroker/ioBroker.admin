@@ -34,7 +34,7 @@ Let’s Encrypt is a free, automated, and open certificate authority brought to 
 
 You can read about Let’s Encrypt [here](https://letsencrypt.org/).
 
-Some installations use Dynamic DNS and Co to get the domain name and to reach under this domain name own web sites.
+Some installations use Dynamic DNS and Co to get the domain name and to reach under this domain name own websites.
 ioBroker supports automatic request and renew of certificates from Let’s Encrypt Organisation.
 
 There is an option to activate free certificates from Let’s Encrypt almost in every adapter, that can start some web server and supports HTTPS.
@@ -92,6 +92,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### __WORK IN PROGRESS__
 * (jogibear9988) Enable http compression in webserver
+* (bluefox) Removed deprecated package "request"
+* (bluefox) Added JSONL option for base settings
+* (bluefox) Added small improvements
+* (bluefox) Added the file viewer for binary states
 
 ### 5.2.3 (2021-12-24)
 * (bluefox) Fixed error in `AutocompleteSendTo`
@@ -115,4 +119,4 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2014-2021 bluefox <dogafox@gmail.com>
+Copyright (c) 2014-2022 bluefox <dogafox@gmail.com>

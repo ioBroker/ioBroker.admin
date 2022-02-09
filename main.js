@@ -19,7 +19,7 @@ const tools 	  = require(utils.controllerDir + '/lib/tools.js');
 const SocketIO    = require('./lib/socket');
 const Web         = require('./lib/web');
 const semver      = require('semver');
-const request     = require('request');
+const axios       = require('axios');
 const fs          = require('fs');
 
 const ONE_HOUR_MS = 3600000;
@@ -327,7 +327,7 @@ function writeUpdateInfo(adapter, sources) {
             if (systemRepos && systemRepos.native && systemRepos.native.repositories && systemRepos.native.repositories[activeRepo]) {
                 adapter.log.warn(`Repository cannot be read. Active repo: ${activeRepo}`);
             } else {
-                adapter.log.warn(`No repository source configured. Possible values: ${Object.keys(systemRepos.native.repositories).join(', ')}. Active repo: "${activeRepo}"`);
+                adapter.log.warn(`No repository source configured. Possible values: ${systemRepos && systemRepos.native ? Object.keys(systemRepos.native.repositories).join(', ') : 'none'}. Active repo: "${activeRepo}"`);
             }
         }
         return;
@@ -472,33 +472,15 @@ function updateNews() {
     return adapter.getStateAsync('info.newsETag')
         .then(state => {
             oldEtag = state && state.val;
-            return new Promise((resolve, reject) =>
-                request('https://iobroker.live/repo/news-hash.json', (error, state, body) => {
-                    if (!error && body) {
-                        try {
-                            resolve(JSON.parse(body));
-                        } catch (e) {
-                            reject('Cannot parse news');
-                        }
-                    } else {
-                        reject(error || 'Cannot read news URL');
-                    }
-                }));
+            return axios.get('https://iobroker.live/repo/news-hash.json', {timeout: 13000, validateStatus: status => status < 400})
+                .then(response => response.data)
+                .catch(error => adapter.log.warn('Cannot update news: ' + (error.response ? error.response.data : (error.message || error.code))));
         }).then(etag => {
             if (etag && etag.hash !== oldEtag) {
                 newEtag = etag.hash;
-                return new Promise((resolve, reject) =>
-                    request('https://iobroker.live/repo/news.json', (error, state, body) => {
-                        if (!error && body) {
-                            try {
-                                resolve(JSON.parse(body));
-                            } catch (e) {
-                                reject('Cannot parse news');
-                            }
-                        } else {
-                            reject(error || 'Cannot read news URL');
-                        }
-                    }));
+                return axios.get('https://iobroker.live/repo/news.json', {timeout: 14000, validateStatus: status => status < 400})
+                    .then(response => response.data)
+                    .catch(error => adapter.log.warn('Cannot update news_: ' + (error.response ? error.response.data : (error.message || error.code))));
             } else {
                 newEtag = oldEtag;
                 return Promise.resolve([]);
@@ -547,28 +529,21 @@ function updateNews() {
         .then(() =>
             newEtag !== oldEtag ?
                 adapter.setStateAsync('info.newsETag', newEtag, true) :
-                Promise.resolve() )
+                Promise.resolve()
+        )
         .catch(e => adapter.log.error(`Cannot update news: ${e}`))
         .then(() =>
             adapter.timerNews = setTimeout(() => updateNews(), 24 * ONE_HOUR_MS + 1));
 }
 
 function updateRatings() {
-    return new Promise(resolve => {
-        request('https://rating.iobroker.net/rating?uuid=' + uuid, (error, status, body) => {
-            if (body) {
-                try {
-                    body = JSON.parse(body);
-                    adapter._ratings = body;
-                } catch (e) {
-                    adapter.log.error('Cannot parse ratings: ' + e);
-                }
-                if (!adapter._ratings || typeof adapter._ratings !== 'object' || Array.isArray(adapter._ratings)) {
-                    adapter._ratings = {};
-                }
-                adapter._ratings.uuid = uuid;
-                resolve(adapter._ratings);
+    return axios.get('https://rating.iobroker.net/rating?uuid=' + uuid, {timeout: 15000, validateStatus: status => status < 400})
+        .then(response => {
+            adapter._ratings = response.data;
+            if (!adapter._ratings || typeof adapter._ratings !== 'object' || Array.isArray(adapter._ratings)) {
+                adapter._ratings = {};
             }
+            adapter._ratings.uuid = uuid;
 
             adapter.ratingTimeout && clearTimeout(adapter.ratingTimeout);
             adapter.ratingTimeout = setTimeout(() => {
@@ -576,8 +551,11 @@ function updateRatings() {
                 updateRatings()
                     .then(() => adapter.log.info('Adapter rating updated'));
             }, 24 * 3600000);
-        });
-    });
+
+            return adapter._ratings;
+        })
+        .catch(error =>
+            adapter.log.warn('Cannot update rating: ' + (error.response ? error.response.data : (error.message || error.code))));
 }
 
 function main(adapter) {

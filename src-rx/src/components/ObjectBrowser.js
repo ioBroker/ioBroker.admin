@@ -395,6 +395,9 @@ const styles = theme => ({
             display: 'block'
         }
     },
+    cellValueFile: {
+        color: '#2837b9'
+    },
     cellValueTooltipTitle: {
         fontStyle: 'italic',
         width: 100,
@@ -1169,7 +1172,7 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
     const isCommon = obj.common;
 
     const valText = {};
-    let v = !state || state.val === null ? '(null)' : (state.val === undefined ? '[undef]' : state.val);
+    let v = (isCommon && isCommon.type === 'file') ? '[file]' : (!state || state.val === null ? '(null)' : (state.val === undefined ? '[undef]' : state.val));
     const type = typeof v;
 
     if (isCommon && isCommon.role && typeof isCommon.role === 'string' && isCommon.role.match(/^value\.time|^date/)) {
@@ -1556,6 +1559,7 @@ class ObjectBrowser extends Component {
             scrollBarWidth: 16,
             customDialog,
             editObjectDialog: '',
+            viewFileDialog: '',
             enumDialog: null,
             roleDialog: null,
             modalEmptyId: null,
@@ -2110,8 +2114,7 @@ class ObjectBrowser extends Component {
     checkUnsubscribes() {
         // Remove unused subscribed
         for (let i = this.subscribes.length - 1; i >= 0; i--) {
-            !this.recordStates.includes(this.subscribes[i]) &&
-            this.unsubscribe(this.subscribes[i]);
+            !this.recordStates.includes(this.subscribes[i]) && this.unsubscribe(this.subscribes[i]);
         }
         this.recordStates = [];
     }
@@ -3366,15 +3369,18 @@ class ObjectBrowser extends Component {
             return null;
         }
 
+        if (item.data.obj.common?.type === 'file') {
+            return <div className={Utils.clsx(classes.cellValueText, classes.cellValueFile)}>[file]</div>;
+        } else
         if (!this.states[id]) {
             if (item.data.obj.type === 'state') {
-                this.recordStates.push(id);
+                !this.recordStates.includes(id) && this.recordStates.push(id);
                 this.states[id] = { val: null };
                 this.subscribe(id);
             }
             return null;
         } else {
-            this.recordStates.push(id);
+            !this.recordStates.includes(id) && this.recordStates.push(id);
         }
 
         const state = this.states[id];
@@ -3417,6 +3423,7 @@ class ObjectBrowser extends Component {
         if (!this.props.expertMode && item.data.button) {
             val = <PressButtonIcon className={Utils.clsx(this.props.classes.cellValueButton, !this.states[id] || !this.states[id].val ? this.props.classes.cellValueButtonFalse : '')} />;
         }
+
         return <Tooltip
             key="value"
             title={info.valFull}
@@ -3874,7 +3881,10 @@ class ObjectBrowser extends Component {
                 /> :
                 null;
 
-        const valueEditable = !this.props.notEditable && itemType === 'state' && (this.props.expertMode || item.data.obj?.common?.write !== false);
+        let valueEditable = !this.props.notEditable && itemType === 'state' && (this.props.expertMode || item.data.obj?.common?.write !== false);
+        if (this.props.objectBrowserViewFile && item.data.obj?.common?.type === 'file') {
+            valueEditable = true;
+        }
         const enumEditable  = !this.props.notEditable && this.objects[id] && (this.props.expertMode || itemType === 'state' || itemType === 'channel' || itemType === 'device');
         const checkVisibleObjectType = this.state.statesView && (itemType === 'state' || itemType === 'channel' || itemType === 'device');
         let newValue = '';
@@ -4046,9 +4056,13 @@ class ObjectBrowser extends Component {
                 </>
             }
             {this.adapterColumns.map(it => <div className={classes.cellAdapter} style={{ width: this.columnsVisibility[it.id] }} key={it.id} title={it.adapter + ' => ' + it.pathText}>{this.renderCustomValue(obj, it, item)}</div>)}
-            {this.columnsVisibility.val ? <div className={classes.cellValue} style={{ width: this.columnsVisibility.val, cursor: valueEditable ? (item.data.button ? 'grab' : 'text') : 'default' }} onClick={valueEditable ? () => {
+            {this.columnsVisibility.val ? <div className={classes.cellValue} style={{ width: this.columnsVisibility.val, cursor: valueEditable ? (item.data.obj?.common?.type === 'file' ? 'zoom-in' : (item.data.button ? 'grab' : 'text')) : 'default' }} onClick={valueEditable ? () => {
                 if (!item.data.obj || !this.states) {
                     return null;
+                }
+
+                if (item.data.obj?.common?.type === 'file') {
+                    return this.setState({viewFileDialog: id});
                 }
 
                 // in non expert mode control button directly
@@ -4423,6 +4437,7 @@ class ObjectBrowser extends Component {
         if (!this.state.editObjectDialog || !this.props.objectBrowserEditObject) {
             return null;
         }
+
         const ObjectBrowserEditObject = this.props.objectBrowserEditObject;
 
         return <ObjectBrowserEditObject
@@ -4449,6 +4464,28 @@ class ObjectBrowser extends Component {
                 }
             }}
         />
+    }
+
+    /**
+     * @private
+     * @returns {JSX.Element | null}
+     */
+    renderViewObjectFileDialog() {
+        if (!this.state.viewFileDialog || !this.props.objectBrowserViewFile) {
+            return null;
+        }
+        const ObjectBrowserViewFile = this.props.objectBrowserViewFile;
+
+        return <ObjectBrowserViewFile
+            key="viewFile"
+            obj={this.objects[this.state.viewFileDialog]}
+            themeType={this.props.themeType}
+            socket={this.props.socket}
+            dialogName={this.props.dialogName}
+            t={this.props.t}
+            expertMode={this.state.filter.expertMode}
+            onClose={() => this.setState({ viewFileDialog: '' })}
+        />;
     }
 
     /**
@@ -4543,6 +4580,7 @@ class ObjectBrowser extends Component {
                 {this.renderCustomDialog()}
                 {this.renderEditValueDialog()}
                 {this.renderEditObjectDialog()}
+                {this.renderViewObjectFileDialog()}
                 {this.renderEditRoleDialog()}
                 {this.renderEnumDialog()}
                 {this.renderErrorDialog()}
@@ -4608,6 +4646,7 @@ ObjectBrowser.propTypes = {
     objectBrowserValue: PropTypes.object,
     objectBrowserEditObject: PropTypes.object,
     objectBrowserEditRole: PropTypes.object, // on Edit role
+    objectBrowserViewFile: PropTypes.func, // on view file state
     router: PropTypes.oneOfType([
         PropTypes.object,
         PropTypes.func

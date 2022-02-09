@@ -602,7 +602,11 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
 
     return <ThemeProvider theme={theme(themeName)}>
         <Dialog
-            onClose={() => onClose()}
+            onClose={(event, reason) => {
+                if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                    onClose();
+                }
+            }}
             open={true}
             disableBackdropClick
             disableEscapeKeyDown

@@ -38,7 +38,6 @@ const styles = theme => ({
 });
 
 class AddInstanceDialog extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -145,7 +144,7 @@ class AddInstanceDialog extends Component {
                     <div style={{
                         margin: 10,
                         fontSize: 16,
-                        color: '#840101'
+                        color: this.props.themeType === 'dark' ? '#e70000' : '#840101'
                     }}>{checkDeps}</div>
                 </DialogContent>
                 <DialogActions>
@@ -178,6 +177,7 @@ class AddInstanceDialog extends Component {
 
 AddInstanceDialog.propTypes = {
     open: PropTypes.bool.isRequired,
+    themeType: PropTypes.string,
     adapter: PropTypes.string.isRequired,
     hosts: PropTypes.array.isRequired,
     instancesWorker: PropTypes.object.isRequired,

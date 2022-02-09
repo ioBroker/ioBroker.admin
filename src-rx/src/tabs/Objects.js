@@ -26,6 +26,7 @@ import ObjectBrowserEditObject from '../components/Object/ObjectBrowserEditObjec
 import ObjectBrowserEditRole from '../components/Object/ObjectBrowserEditRole';
 import ObjectAddNewObject from '../dialogs/ObjectAddNewObject';
 import ObjectEditOfAccessControl from '../dialogs/ObjectEditOfAccessControl';
+import ObjectViewFileDialog from '../dialogs/ObjectViewFileDialog';
 
 const styles = theme => ({
     buttonIcon: {
@@ -180,6 +181,7 @@ class Objects extends Component {
                 objectBrowserValue={ObjectBrowserValue}
                 objectBrowserEditObject={ObjectBrowserEditObject}
                 objectBrowserEditRole={ObjectBrowserEditRole}
+                objectBrowserViewFile={ObjectViewFileDialog}
                 router={Router}
                 enableStateValueEdit={true}
                 onObjectDelete={(id, hasChildren, exists) =>
