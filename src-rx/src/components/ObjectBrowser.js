@@ -2243,7 +2243,7 @@ class ObjectBrowser extends Component {
 
                 if (event.obj && typeof this.props.filterFunc === 'function' && !this.props.filterFunc(event.obj)) {
                     return;
-                };
+                }
 
                 if (event.id.startsWith('system.adapter.') && event.obj && event.obj.type === 'adapter') {
                     let columnsForAdmin = JSON.parse(JSON.stringify(this.state.columnsForAdmin));
@@ -3277,7 +3277,7 @@ class ObjectBrowser extends Component {
             >
                 <IconDelete className={classes.cellButtonsButtonIcon} />
             </IconButton> : null,
-            this.props.objectCustomDialog && this.info.hasSomeCustoms && item.data.obj.type === 'state' ? <IconButton
+            this.props.objectCustomDialog && this.info.hasSomeCustoms && item.data.obj.type === 'state' && item.data.obj.common?.type !== 'file' ? <IconButton
                 className={Utils.clsx(classes.cellButtonsButton, item.data.hasCustoms && classes.cellButtonsButtonWithCustoms)}
                 key="custom"
                 size="small"

@@ -105,7 +105,11 @@ class BaseSettingsObjects extends Component {
                 const IPs = [..._IPs];
                 !IPs.includes('0.0.0.0') && IPs.push('0.0.0.0');
                 !IPs.includes('127.0.0.1') && IPs.push('127.0.0.1');
-                this.setState({ IPs, loading: false });
+                let textIP = this.state.host.match(/[^.\d]/) || (this.state.host || '').includes(',');
+                if (!textIP && !IPs.includes(IPs)) {
+                    textIP = true;
+                }
+                this.setState({ IPs, loading: false, textIP });
             })
     }
 

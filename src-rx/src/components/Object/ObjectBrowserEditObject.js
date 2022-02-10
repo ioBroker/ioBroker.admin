@@ -40,7 +40,6 @@ import { FormControl, InputLabel, MenuItem, Select, Tooltip } from '@material-ui
 import { Autocomplete } from '@material-ui/lab';
 import UploadImage from '../UploadImage';
 
-
 const styles = theme => ({
     divWithoutTitle: {
         width: '100%',
@@ -170,13 +169,21 @@ class ObjectBrowserEditObject extends Component {
     constructor(props) {
         super(props);
 
+        const withAlias = this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state';
+        let tab = window.localStorage.getItem((this.props.dialogName || 'App') + '.editTab') || 'object';
+
+        // select another tab if alias not present
+        if (tab === 'alias' && !withAlias) {
+            tab = 'common';
+        }
+
         this.state = {
             text: JSON.stringify(this.props.obj, null, 2),
             error: false,
             changed: false,
             readError: this.checkFunction(this.props.obj.common?.alias?.read, false),
             writeError: this.checkFunction(this.props.obj.common?.alias?.write, true),
-            tab: window.localStorage.getItem((this.props.dialogName || 'App') + '.editTab') || 'object',
+            tab,
             showCopyDialog: false,
         };
 
@@ -422,6 +429,7 @@ class ObjectBrowserEditObject extends Component {
             const { classes, t, roleArray, obj } = this.props;
             const checkState = obj.type === 'state';
             const checkRole = obj.type === 'channel' || obj.type === 'device' || checkState;
+
             return <div className={classes.commonTabWrapper}>
                 <div className={classes.commonWrapper}>
                     {typeof json.common.name !== 'undefined' ?
@@ -505,6 +513,7 @@ class ObjectBrowserEditObject extends Component {
             return <div>{this.props.t('Cannot parse JSON!')}</div>;
         }
     }
+
     renderAliasEdit() {
         try {
             const json = JSON.parse(this.state.text);
@@ -719,6 +728,7 @@ class ObjectBrowserEditObject extends Component {
 
             {this.renderTabs()}
             {this.renderCopyDialog()}
+
             <DialogContent>
                 {this.state.tab === 'object' ?
                     <div className={clsx(this.props.classes.divWithoutTitle, withAlias && this.props.classes.divWithoutTitleAndTab, this.state.error && this.props.classes.error)}>
