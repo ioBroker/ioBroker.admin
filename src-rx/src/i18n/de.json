@@ -1481,7 +1481,7 @@
     "Minimal write interval": "Minimales Schreibintervall",
     "Force writing after this many changes have been buffered. This reduces memory consumption and data loss in case of a crash": "Schreiben erzwingen, nachdem so viele Änderungen gepuffert wurden. Dies reduziert den Speicherverbrauch und den Datenverlust im Falle eines Absturzes",
     "Maximum changes before write": "Maximale Änderungen vor dem Schreiben",
-    "npm_warning": "Mit diesem Dialog können Sie die Beta-/neuesten Adapterversionen direkt von %s installieren. Diese Versionen sind möglicherweise noch nicht vollständig getestet. Installieren Sie sie daher nur, wenn Sie Korrekturen oder neue Funktionen dieser Versionen benötigen. Wenn der Entwickler die Version als stabil betrachtet, werden sie im Stable-Repository aktualisiert.",
+    "npm_warning": "Mit diesem Dialog können Beta-/Latest Adapterversionen direkt von %s installiert werden. Diese Versionen sind möglicherweise noch nicht vollständig getestet. Sie sollten daher nur installiert werden, wenn Korrekturen oder neue Funktionen aus diesen Versionen benötigt werden. Wenn der Entwickler die Version als stabil betrachtet, steht diese im Stable-Repository zur Verfügung.",
     "View file in state: %s": "Datei anzeigen im Status: %s",
     "Download": "Herunterladen"
 }
