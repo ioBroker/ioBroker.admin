@@ -729,7 +729,7 @@ class Logs extends Component {
                         className={clsx(classes.cell, classes[this.props.themeType + '_' + severity])}
                         title={typeof message === 'object' ? message.original : message}
                     >
-                        {typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>): message}
+                        {typeof message === 'object' ? message.parts.map((item, i) => <span key={i} style={item.style}>{item.text}</span>) : message}
                     </TableCell>
                 </TableRow>
             );
@@ -963,6 +963,7 @@ class Logs extends Component {
                                                     this.state.message ? <IconButton
                                                         size="small"
                                                         onClick={e => {
+                                                            window.localStorage.removeItem('Log.message');
                                                             this.setState({ message: '' });
                                                         }}>
                                                         <ClearIcon />
