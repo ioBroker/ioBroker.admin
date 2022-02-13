@@ -2461,3 +2461,10 @@ function encrypt(key, value) {
     }
     return result;
 }
+
+// current Theme Style for Adapter CSS settings
+function currentTheme() {
+    if (theme) {
+        return theme;
+    }
+}
