@@ -1732,6 +1732,7 @@ class App extends Router {
                         expertMode={this.state.expertMode}
                         ready={this.state.ready}
                         themeName={this.state.themeName}
+                        themeType={this.state.themeType}
 
                         protocol={this.state.protocol}
                         hostname={this.state.hostname}

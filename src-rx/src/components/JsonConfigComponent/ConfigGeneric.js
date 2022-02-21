@@ -286,8 +286,8 @@ class ConfigGeneric extends Component {
         } else {
             try {
                 // eslint-disable-next-line no-new-func
-                const f = new Function('data', 'originalData', '_system', '_alive', '_common', '_socket', func.includes('return') ? func : 'return ' + func);
-                const result = f(data || this.props.data, this.props.originalData, this.props.systemConfig, this.props.alive, this.props.common, this.props.socket);
+                const f = new Function('data', 'originalData', '_system', '_alive', '_common', '_socket', '_instance', func.includes('return') ? func : 'return ' + func);
+                const result = f(data || this.props.data, this.props.originalData, this.props.systemConfig, this.props.alive, this.props.common, this.props.socket, this.props.instance);
                 // console.log(result);
                 return result;
             } catch (e) {

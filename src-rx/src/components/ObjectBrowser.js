@@ -200,7 +200,7 @@ const styles = theme => ({
         userSelect: 'none',
         width: '100%',
         '&:hover': {
-            background: `${theme.palette.primary.main} !important`,
+            background: `${theme.palette.type === 'dark' ? theme.palette.primary.dark : theme.palette.primary.light} !important`,
             color: Utils.invertColor(theme.palette.primary.main, true),
         },
         whiteSpace: 'nowrap',
@@ -518,7 +518,7 @@ const styles = theme => ({
         opacity: 0.5,
     },
     itemSelected: {
-        background: `${theme.palette.type === 'dark' ? theme.palette.primary.light : theme.palette.primary.dark} !important`,
+        background: `${theme.palette.primary.main} !important`,
         color: `${Utils.invertColor(theme.palette.primary.main, true)} !important`,
     },
     header: {

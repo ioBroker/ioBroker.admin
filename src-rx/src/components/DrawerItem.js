@@ -17,10 +17,16 @@ import { Checkbox } from '@material-ui/core';
 
 const styles = theme => ({
     selected: {
-        background: theme.palette.secondary.main,
-        color: Utils.invertColor(theme.palette.secondary.main, true),
+        background: theme.palette.primary.main,
+        color: theme.palette.type === 'light' ? 'white' : Utils.invertColor(theme.palette.primary.main, true),
         '&:hover': {
-            color: theme.palette.text.primary
+            color: theme.palette.text.secondary
+        }
+    },
+    selectedIcon: {
+        color: theme.palette.type === 'light' ? 'white' : Utils.invertColor(theme.palette.primary.main, true),
+        '&:hover': {
+            color: theme.palette.text.secondary
         }
     },
     compactBadge: {
@@ -76,7 +82,7 @@ const DrawerItem = props => {
                     className={classes.noWrap}
                 >
                     <Grid item>
-                        <ListItemIcon style={{ minWidth: 0 }}>
+                        <ListItemIcon style={{ minWidth: 0 }} classes={{root: clsx(selected && classes.selectedIcon)}}>
                             <Badge
                                 badgeContent={badgeContent || 0}
                                 color={(badgeColor === 'warn' ? 'default' : badgeColor) || 'primary'}
@@ -112,6 +118,7 @@ DrawerItem.propTypes = {
     selected: PropTypes.bool,
     compact: PropTypes.bool,
     text: PropTypes.string,
+    themeType: PropTypes.string,
     badgeContent: PropTypes.number,
     badgeColor: PropTypes.oneOf(['', 'default', 'primary', 'secondary', 'error', 'warn'])
 };

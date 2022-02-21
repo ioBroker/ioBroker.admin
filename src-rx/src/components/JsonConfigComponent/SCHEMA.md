@@ -474,6 +474,7 @@ Following variables are available in JS function in custom settings:
 - _alive - is instance is alive
 - _common - common settings for this instance
 - _socket - socket
+- _instance - instance number
 
 ### Custom settings dialog
 JS functions is:

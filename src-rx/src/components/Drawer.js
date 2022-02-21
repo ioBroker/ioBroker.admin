@@ -556,6 +556,7 @@ class Drawer extends Component {
                 setTabs={newObj => this.setState({ tabs: newObj })}
             >
                 <DrawerItem
+                    themeType={this.props.themeType}
                     key={tab.name}
                     editList={editList}
                     visible={tab.visible}
@@ -627,6 +628,7 @@ class Drawer extends Component {
                 </List>
                 {this.props.isSecure &&
                     <DrawerItem
+                        themeType={this.props.themeType}
                         compact={!this.isSwipeable() && this.props.state !== STATES.opened}
                         onClick={this.props.onLogout}
                         text={this.props.t('Logout')}
@@ -658,6 +660,7 @@ class Drawer extends Component {
                 </List>
                 {this.props.isSecure &&
                     <DrawerItem
+                        themeType={this.props.themeType}
                         style={{flexShrink: 0}}
                         compact={!this.isSwipeable() && this.props.state !== STATES.opened}
                         onClick={this.props.onLogout} text={this.props.t('Logout')}
@@ -691,6 +694,7 @@ Drawer.propTypes = {
     isSecure: PropTypes.bool,
     currentTab: PropTypes.string,
     themeName: PropTypes.string,
+    themeType: PropTypes.string,
     socket: PropTypes.object,
     ready: PropTypes.bool,
     versionAdmin: PropTypes.string,
