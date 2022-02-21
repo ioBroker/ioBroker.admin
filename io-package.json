@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "5.3.0",
+    "version": "5.3.1",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "5.3.1": {
+        "en": "Support of IPv6 address by links (vis, material, end so on)\nCorrected errors in the base settings\nCorrected error with the pre-selected language in wizard",
+        "de": "Unterstützung von IPv6-Adressen durch Links (vis, material, end usw.)\nFehler in den Grundeinstellungen behoben\nFehler bei der vorgewählten Sprache im Assistenten behoben",
+        "ru": "Поддержка адреса IPv6 по ссылкам (vis, material, end и т. д.)\nИсправлены ошибки в базовых настройках\nИсправлена ошибка с предварительно выбранным языком в мастере",
+        "pt": "Suporte de endereço IPv6 por links (vis, material, etc.)\nErros corrigidos nas configurações básicas\nErro corrigido com o idioma pré-selecionado no assistente",
+        "nl": "Ondersteuning van IPv6-adres door links (vis, materiaal, einde enzovoort)\nFouten in de basisinstellingen gecorrigeerd\nFout gecorrigeerd met de vooraf geselecteerde taal in de wizard",
+        "fr": "Prise en charge de l'adresse IPv6 par des liens (vis, matériel, fin etc.)\nErreurs corrigées dans les paramètres de base\nErreur corrigée avec la langue présélectionnée dans l'assistant",
+        "it": "Supporto dell'indirizzo IPv6 tramite collegamenti (vis, materiale, e così via)\nErrori corretti nelle impostazioni di base\nCorretto errore con la lingua preselezionata nella procedura guidata",
+        "es": "Soporte de dirección IPv6 por enlaces (vis, material, etc.)\nErrores corregidos en la configuración base.\nCorregido error con el idioma preseleccionado en asistente",
+        "pl": "Obsługa adresu IPv6 przez linki (vis, material, end itd.)\nPoprawione błędy w ustawieniach podstawowych\nPoprawiony błąd we wstępnie wybranym języku w kreatorze",
+        "zh-cn": "通过链接（vis、material、end 等）支持 IPv6 地址\n更正了基本设置中的错误\n更正了向导中预选语言的错误"
+      },
       "5.3.0": {
         "en": "Enable http compression in webserver\nRemoved deprecated package \"request\"\nAdded JSONL option for base settings\nAdded small improvements\nAdded the file viewer for binary states",
         "de": "HTTP-Komprimierung im Webserver aktivieren\nVeraltetes Paket „request“ entfernt\nJSONL-Option für Basiseinstellungen hinzugefügt\nKleine Verbesserungen hinzugefügt\nDateibetrachter für Binärzustände hinzugefügt",
@@ -89,18 +101,6 @@
         "es": "Solucionar casos de accidentes informados a través de centinelas\nSoporte agregado para repositorios múltiples",
         "pl": "Napraw przypadki awarii zgłoszone przez Sentry\nDodano obsługę wielu repozytoriów",
         "zh-cn": "修复通过哨兵报告的崩溃案例\n添加了对多存储库的支持"
-      },
-      "5.1.28": {
-        "en": "Fixed discovery function\nFixed some GUI bugs",
-        "de": "Feste Erkennungsfunktion\nEinige GUI-Fehler behoben",
-        "ru": "Фиксированная функция обнаружения\nИсправлены некоторые ошибки графического интерфейса.",
-        "pt": "Função de descoberta corrigida\nCorrigidos alguns bugs de GUI",
-        "nl": "Vaste ontdekkingsfunctie\nEnkele GUI-bugs opgelost",
-        "fr": "Fonction de découverte fixe\nCorrection de quelques bugs de l'interface graphique",
-        "it": "Funzione di scoperta fissa\nRisolti alcuni bug della GUI",
-        "es": "Función de descubrimiento fijo\nSe corrigieron algunos errores de GUI",
-        "pl": "Naprawiono funkcję wykrywania\nNaprawiono kilka błędów GUI",
-        "zh-cn": "固定发现功能\n修复了一些 GUI 错误"
       }
     },
     "desc": {

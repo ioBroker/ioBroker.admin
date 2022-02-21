@@ -1,6 +1,14 @@
 ## 5.1.15 (2021-07-26)
 * (bluefox) Replaced the formula icon in the edit aliases dialog
 * (bluefox) Added the logic for checkbox in JsonConfig
+## 5.2.0 (2021-11-26)
+* (Apollon77) Fix crash cases reported via sentry
+* (bluefox) Added support for multi-repositories
+
+## 5.1.15 (2021-07-26)
+* (bluefox) Replaced the formula icon in the edit aliases dialog
+* (bluefox) Added the logic for checkbox in JsonConfig
+
 ## 5.1.28 (2021-11-10)
 * (bluefox) Fixed discovery function
 * (bluefox) Fixed some GUI bugs

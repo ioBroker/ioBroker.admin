@@ -1,6 +1,6 @@
 {
     "name": "src-rx",
-    "version": "5.3.0",
+    "version": "5.3.1",
     "private": true,
     "commentDependencies": {
         "@date-io/core": "DO not update to version 2",
