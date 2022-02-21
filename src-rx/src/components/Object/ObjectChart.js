@@ -472,7 +472,11 @@ class ObjectChart extends Component {
             return data;
         }
         for (let i = 0; i < values.length; i++) {
-            data.push({value: [values[i].ts, values[i].val]});
+            const dp = {value: [values[i].ts, values[i].val]};
+            if (values[i].i) {
+                dp.exact = false;
+            }
+            data.push(dp);
         }
         if (!this.chart.min) {
             this.chart.min = values[0].ts;
@@ -596,7 +600,7 @@ class ObjectChart extends Component {
                     if (value !== null && this.props.isFloatComma) {
                         value = value.toString().replace('.', ',');
                     }
-                    return `${date.toLocaleString()}.${padding3(date.getMilliseconds())}: ${value}${this.unit}`;
+                    return `${params.exact === false ? 'i' : ''}${date.toLocaleString()}.${padding3(date.getMilliseconds())}: ${value}${this.unit}`;
                 },
                 axisPointer: {
                     animation: true
@@ -705,6 +709,9 @@ class ObjectChart extends Component {
 
         if (this.state.relativeRange !== 'absolute') {
             this.setState({ relativeRange: 'absolute' });
+            // stop shift timer
+            this.timeTimer && clearTimeout(this.timeTimer);
+            this.timeTimer = null;
         } else if (this.echartsReact && typeof this.echartsReact.getEchartsInstance === 'function') {
             this.echartsReact.getEchartsInstance().setOption({
                 xAxis: {
@@ -1029,6 +1036,7 @@ class ObjectChart extends Component {
         window.localStorage.setItem('App.absoluteEnd', this.state.max);
 
         this.chart.min = min;
+
         this.setState({ min, relativeRange: 'absolute' }, () =>
             this.updateChart(this.chart.min, this.chart.max, true));
     }

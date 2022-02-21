@@ -88,9 +88,10 @@ class WizardLicenseTab extends Component {
 
         this.state = {
             statisticsAccepted: false,
-            lang: this.props.lang,
+            lang: this.props.lang || I18n.getLanguage(),
             notAgree: false,
         };
+
         this.focusRef = createRef();
     }
 

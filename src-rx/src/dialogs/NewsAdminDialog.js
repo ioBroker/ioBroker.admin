@@ -318,7 +318,12 @@ export const checkMessages = function (messages, lastMessageId, context) {
                 showIt = context.os === message['os'];
             }
             if (showIt && message['repo']) {
-                showIt = context.activeRepo === message['repo'];
+                // If multi-repo
+                if (Array.isArray(context.activeRepo)) {
+                    showIt = context.activeRepo.includes(message['repo']);
+                } else {
+                    showIt = context.activeRepo === message['repo'];
+                }
             }
             if (showIt && message['uuid']) {
                 if (Array.isArray(message['uuid'])) {

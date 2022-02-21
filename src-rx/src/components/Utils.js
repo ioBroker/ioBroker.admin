@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2021 bluefox <dogafox@gmail.com>
+ * Copyright 2018-2022 bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -613,7 +613,7 @@ class Utils {
                             now = new Date(year, a[1] - 1, a[0]);
                         }
                     } else
-                        // DD MM
+                    // DD MM
                     if (Utils.dateFormat[0][0] === 'D' && Utils.dateFormat[1][0] === 'M') {
                         now = new Date(year, a[1] - 1, a[0]);
                         if (Math.abs(now.getTime - Date.now()) > 3600000 * 24 * 10) {
@@ -1323,6 +1323,9 @@ class Utils {
     }
 
     static openLink(url, target) {
+        // replace IPv6 Address with [ipv6]:port
+        url = url.replace(/\/\/([0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*)(:\d+)?\//i, '//$1$2/');
+
         if (target === 'this') {
             window.location = url;
         } else {
@@ -1456,7 +1459,7 @@ class Utils {
                     states = null;
                 }
             } else
-                // if old format val1:text1;val2:text2
+            // if old format val1:text1;val2:text2
             if (typeof states === 'string') {
                 const parts = states.split(';');
                 states = {};

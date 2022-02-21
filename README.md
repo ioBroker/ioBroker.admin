@@ -90,6 +90,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (bluefox) Support of IPv6 address by links (vis, material, end so on)
+* (bluefox) Corrected errors in the base settings
+* (bluefox) Corrected error with the pre-selected language in wizard
+
 ### 5.3.0 (2022-02-09)
 * (jogibear9988) Enable http compression in webserver
 * (bluefox) Removed deprecated package "request"

@@ -927,7 +927,10 @@ const InstanceCard = memo(({
                                     onClick={event => {
                                         event.stopPropagation()
                                         if (instance.links.length === 1) {
-                                            window.open(instance.links[0].link, instance.id);
+                                            // replace http://fe80::ed18:8dyy:f65:cexx:8087/get/ with http://[fe80::ed18:8dyy:f65:cexx]:8087/get/
+                                            let url = instance.links[0].link;
+                                            url = url.replace(/\/\/([0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*)(:\d+)?\//i, '//$1$2/');
+                                            window.open(url, instance.id);
                                         } else {
                                             setShowLinks(true);
                                         }

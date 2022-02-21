@@ -1007,7 +1007,10 @@ const InstanceRow = ({
                                 onClick={event => {
                                     event.stopPropagation();
                                     if (instance.links.length === 1) {
-                                        window.open(instance.links[0].link, instance.id);
+                                        // replace IPv6 Address with [ipv6]:port
+                                        let url = instance.links[0].link;
+                                        url = url.replace(/\/\/([0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*)(:\d+)?\//i, '//$1$2/');
+                                        window.open(url, instance.id);
                                     } else {
                                         setShowLinks(true);
                                     }

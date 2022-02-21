@@ -113,7 +113,7 @@ class BaseSettingsObjects extends Component {
     }
 
     onChange() {
-        this.props.onChange({
+        const settings = {
             type:                this.state.type,
             host:                this.state.host,
             port:                parseInt(this.state.port, 10),
@@ -146,7 +146,25 @@ class BaseSettingsObjects extends Component {
                     maxBufferedCommands: parseInt(this.state.jsonlOptions_throttleFS_maxBufferedCommands, 10),
                 }
             }
-        });
+        };
+
+        if (settings.jsonlOptions.autoCompress.sizeFactor < 2) {
+            settings.jsonlOptions.autoCompress.sizeFactor = 2;
+        }
+
+        if (settings.jsonlOptions.autoCompress.sizeFactorMinimumSize < 0) {
+            settings.jsonlOptions.autoCompress.sizeFactorMinimumSize = 0;
+        }
+
+        if (settings.jsonlOptions.throttleFS.intervalMs < 0) {
+            settings.jsonlOptions.throttleFS.intervalMs = 0;
+        }
+
+        if (settings.jsonlOptions.throttleFS.maxBufferedCommands < 0) {
+            settings.jsonlOptions.throttleFS.maxBufferedCommands = 0;
+        }
+
+        this.props.onChange(settings);
     }
 
     renderWarning() {
@@ -217,7 +235,7 @@ class BaseSettingsObjects extends Component {
                             control={
                                 <Switch
                                     checked={this.state.textIP}
-                                    onChange={e => this.setState({ textIP: e.target.checked })}
+                                    onChange={e => this.setState({ textIP: e.target.checked }, () => this.onChange())}
                                 />
                             }
                             label={this.props.t('IP is domain or more than one address')}
@@ -283,7 +301,7 @@ class BaseSettingsObjects extends Component {
                                 },
                             }}
                             autoComplete="off"
-                            onChange={ e => this.setState({ options_auth_pass: e.target.value })}
+                            onChange={ e => this.setState({ options_auth_pass: e.target.value }, () => this.onChange())}
                             label={ this.state.type === 'redis' ? this.props.t('Redis password') : this.props.t('Connection password') }
                         />
                     </Grid>
@@ -343,7 +361,7 @@ class BaseSettingsObjects extends Component {
                             value={ this.state.options_db }
                             type="number"
                             helperText={ this.props.t('Used for sentinels') }
-                            onChange={ e => this.setState({ options_db: e.target.value })}
+                            onChange={ e => this.setState({ options_db: e.target.value }, () => this.onChange())}
                             label={ this.props.t('DB number') }
                         />
                     </Grid> : null }
@@ -385,8 +403,9 @@ class BaseSettingsObjects extends Component {
                             className={ this.props.classes.controlItem }
                             value={ this.state.jsonlOptions_autoCompress_sizeFactor }
                             type="number"
+                            inputProps={{min: 2}}
                             helperText={ this.props.t('The JSONL DB is append-only and will contain unnecessary entries after a while.') }
-                            onChange={ e => this.setState({ jsonlOptions_autoCompress_sizeFactor: e.target.value })}
+                            onChange={ e => this.setState({ jsonlOptions_autoCompress_sizeFactor: e.target.value }, () => this.onChange())}
                             label={ this.props.t('Auto-compress size factor') }
                         />
                     </Grid> : null }
@@ -396,8 +415,9 @@ class BaseSettingsObjects extends Component {
                             className={ this.props.classes.controlItem }
                             value={ this.state.jsonlOptions_autoCompress_sizeFactorMinimumSize }
                             type="number"
+                            inputProps={{min: 0}}
                             helperText={ this.props.t('It will be compressed when the uncompressed size is >= size * sizeFactor AND >= sizeFactorMinimumSize') }
-                            onChange={ e => this.setState({ jsonlOptions_autoCompress_sizeFactorMinimumSize: e.target.value })}
+                            onChange={ e => this.setState({ jsonlOptions_autoCompress_sizeFactorMinimumSize: e.target.value }, () => this.onChange())}
                             label={ this.props.t('Auto-compress size factor minimum size') }
                         />
                     </Grid> : null }
@@ -407,8 +427,9 @@ class BaseSettingsObjects extends Component {
                             className={ this.props.classes.controlItem }
                             value={ this.state.jsonlOptions_throttleFS_intervalMs }
                             type="number"
+                            inputProps={{min: 0}}
                             helperText={ this.props.t('Write to the database file no more than every X milliseconds') }
-                            onChange={ e => this.setState({ jsonlOptions_throttleFS_intervalMs: e.target.value })}
+                            onChange={ e => this.setState({ jsonlOptions_throttleFS_intervalMs: e.target.value }, () => this.onChange())}
                             label={ this.props.t('Minimal write interval') }
                         />
                     </Grid> : null }
@@ -418,8 +439,9 @@ class BaseSettingsObjects extends Component {
                             className={ this.props.classes.controlItem }
                             value={ this.state.jsonlOptions_throttleFS_maxBufferedCommands }
                             type="number"
+                            inputProps={{min: 0}}
                             helperText={ this.props.t('Force writing after this many changes have been buffered. This reduces memory consumption and data loss in case of a crash') }
-                            onChange={ e => this.setState({ jsonlOptions_throttleFS_maxBufferedCommands: e.target.value })}
+                            onChange={ e => this.setState({ jsonlOptions_throttleFS_maxBufferedCommands: e.target.value }, () => this.onChange())}
                             label={ this.props.t('Maximum changes before write') }
                         />
                     </Grid> : null }
