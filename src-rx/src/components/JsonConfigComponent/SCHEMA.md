@@ -26,6 +26,7 @@ Possible types:
   - `min` - minimal value
   - `max` - maximal value
   - `step` - step
+  - `defaul` - default value
 
 - `color`
 
