@@ -1009,7 +1009,7 @@ const InstanceRow = ({
                                     if (instance.links.length === 1) {
                                         // replace IPv6 Address with [ipv6]:port
                                         let url = instance.links[0].link;
-                                        url = url.replace(/\/\/([0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*)(:\d+)?\//i, '//$1$2/');
+                                        url = url.replace(/\/\/([0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*)(:\d+)?\//i, '//[$1]$2/');
                                         window.open(url, instance.id);
                                     } else {
                                         setShowLinks(true);

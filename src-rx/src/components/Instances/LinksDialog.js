@@ -40,7 +40,7 @@ class LinksDialog extends Component {
                         e.stopPropagation();
                         // replace IPv6 Address with [ipv6]:port
                         let url = link.link;
-                        url = url.replace(/\/\/([0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*)(:\d+)?\//i, '//$1$2/');
+                        url = url.replace(/\/\/([0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*)(:\d+)?\//i, '//[$1]$2/');
                         window.open(url, this.props.instanceId);
                         this.props.onClose();
                     }}

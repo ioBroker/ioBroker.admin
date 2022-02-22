@@ -1324,7 +1324,7 @@ class Utils {
 
     static openLink(url, target) {
         // replace IPv6 Address with [ipv6]:port
-        url = url.replace(/\/\/([0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*)(:\d+)?\//i, '//$1$2/');
+        url = url.replace(/\/\/([0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*)(:\d+)?\//i, '//[$1]$2/');
 
         if (target === 'this') {
             window.location = url;
