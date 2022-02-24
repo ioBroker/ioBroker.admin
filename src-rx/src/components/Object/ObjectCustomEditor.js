@@ -167,6 +167,7 @@ class ObjectCustomEditor extends Component {
                     if (this.jsonConfigs[adapter]) {
                         this.jsonConfigs[adapter].instanceObjs = this.jsonConfigs[adapter].instanceObjs || {};
                         this.jsonConfigs[adapter].instanceObjs[id] = {
+                            _id: id,
                             common: JSON.parse(JSON.stringify(this.props.objects['system.adapter.' + id]?.common)),
                             native: JSON.parse(JSON.stringify(this.props.objects['system.adapter.' + id]?.native))
                         }
