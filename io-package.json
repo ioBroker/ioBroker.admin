@@ -173,6 +173,7 @@
     "logTransporter": true,
     "stopBeforeUpdate": true,
     "wwwDontUpload": true,
+    "eraseOnUpload": true,
     "nogit": true,
     "welcomeScreenPro": {
       "link": "admin/index.html",
