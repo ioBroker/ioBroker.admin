@@ -5,7 +5,7 @@
 /*
  MIT, Copyright 2014-2021 bluefox <dogafox@gmail.com>, soef <soef@gmx.net>
 
- version: 1.1.8 (2021.03.17)
+ version: 1.1.9 (2022.03.07)
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -230,10 +230,19 @@ function filterChanged(e) {
     }
 }
 
+if (typeof systemLang === 'undefined') {
+    window.systemLang = (navigator.language || navigator.userLanguage).split('-')[0];
+    if (window.systemLang === 'zh') {
+        window.systemLang = 'zh-cn';
+    }
+}
+
 (function ($) {
     'use strict';
 
-    if ($.fn.selectId) return;
+    if ($.fn.selectId) {
+        return;
+    }
 
     var isMaterial;
 
@@ -253,7 +262,9 @@ function filterChanged(e) {
         //    ('0' + (dateObj.getMinutes()).toString(10)).slice(-2) + ':' +
         //    ('0' + (dateObj.getSeconds()).toString(10)).slice(-2);
         // Following implementation is 5 times faster
-        if (!dateObj) return '';
+        if (!dateObj) {
+            return '';
+        }
 
         var text = dateObj.getFullYear();
         var v = dateObj.getMonth() + 1;
@@ -304,7 +315,9 @@ function filterChanged(e) {
 
     function filterId(data, id) {
         if (data.rootExp) {
-            if (!data.rootExp.test(id)) return false;
+            if (!data.rootExp.test(id)) {
+                return false;
+            }
         }
         // ignore system objects in expert mode
         if (data.expertModeRegEx && !data.expertMode && data.expertModeRegEx.test(id)) {
@@ -1649,10 +1662,10 @@ function filterChanged(e) {
         }
         if (typeof data.stats === 'object') {
             tds += '<div class="objects-info">' +
-            '<span class="objects-title">' + data.texts['Objects'] + ': </span>' +
-            '<span class="objects-val-objs">' + data.stats.objs + '</span>, ' +
-            '<span class="objects-title">' + data.texts['States'] + ': </span>' +
-            '<span class="objects-val-states">' + data.stats.states + '</span></div>';
+                '<span class="objects-title">' + data.texts['Objects'] + ': </span>' +
+                '<span class="objects-val-objs">' + data.stats.objs + '</span>, ' +
+                '<span class="objects-title">' + data.texts['States'] + ': </span>' +
+                '<span class="objects-val-states">' + data.stats.states + '</span></div>';
         }
 
         var height = '100%';
@@ -1670,8 +1683,8 @@ function filterChanged(e) {
             if (placeholder === undefined) {
                 placeholder = data.texts[filterNo.toLowerCase()] || '';
             }
-            return  '<input autocomplete="new-password" data-index="' + filterNo + '" placeholder="' + placeholder + '" class="filter">' +
-                    '<button data-index="' + filterNo + '" class="filter-btn"></button>\n';
+            return '<input autocomplete="new-password" data-index="' + filterNo + '" placeholder="' + placeholder + '" class="filter">' +
+                   '<button data-index="' + filterNo + '" class="filter-btn"></button>\n';
         }
 
         function textCombobox(filterNo, placeholder) {
@@ -1754,7 +1767,7 @@ function filterChanged(e) {
                     text += textCombobox(name);
                 } else {
                     //if (name === 'buttons' || name === 'button') {
-                        text += '<span style="padding-left: ' + lineIndent + '"></span>';
+                    text += '<span style="padding-left: ' + lineIndent + '"></span>';
                     // } else {
                     //     text += '<table class="main-header-input-table"><tbody><tr><td style="padding-left: ' + lineIndent + '">' + _(name) + '</td></tr></tbody></table>';
                     // }
@@ -1807,8 +1820,8 @@ function filterChanged(e) {
         text += '    </table>\n</div>\n';
         if (isMaterial) {
             text += '<div class="objects-list-running loader"><svg class="spinner" width="100%" height="100%" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">\n' +
-            '      <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>\n' +
-            '</svg></div>\n'
+                '      <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>\n' +
+                '</svg></div>\n'
         } else {
             text += '<div class="objects-list-running" style="display: none;">' + data.texts.wait + '</div>\n';
         }
@@ -3425,7 +3438,7 @@ function filterChanged(e) {
         var len = data.ids.length;
         var cnt = 0;
         if (id.indexOf('.') === -1 || (
-                data.objects[id] && (data.objects[id].type === 'state' || data.objects[id].type === 'adapter'))) {
+            data.objects[id] && (data.objects[id].type === 'state' || data.objects[id].type === 'adapter'))) {
             return cnt;
         }
         if (pos === -1) {

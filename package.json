@@ -38,15 +38,15 @@
     "ws": "^8.5.0"
   },
   "devDependencies": {
-    "@alcalzone/release-script": "^3.5.2",
-    "@alcalzone/release-script-plugin-iobroker": "^3.5.1",
-    "@alcalzone/release-script-plugin-license": "^3.5.0",
+    "@alcalzone/release-script": "^3.5.6",
+    "@alcalzone/release-script-plugin-iobroker": "^3.5.6",
+    "@alcalzone/release-script-plugin-license": "^3.5.3",
     "@babel/core": "^7.17.5",
     "@babel/plugin-transform-arrow-functions": "^7.16.7",
     "@babel/plugin-transform-block-scoping": "^7.16.7",
     "@babel/plugin-transform-classes": "^7.16.7",
     "@babel/plugin-transform-template-literals": "^7.16.7",
-    "@iobroker/testing": "^2.5.4",
+    "@iobroker/testing": "^2.5.6",
     "ansi-colors": "^4.1.1",
     "chai": "^4.3.6",
     "del": "^6.0.0",
@@ -64,7 +64,7 @@
     "gulp-terser": "^2.1.0",
     "materialize-css": "^1.0.0",
     "mocha": "^9.2.1",
-    "sass": "^1.49.8"
+    "sass": "^1.49.9"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.admin/issues"

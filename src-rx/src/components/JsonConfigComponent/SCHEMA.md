@@ -21,6 +21,7 @@ Possible types:
 - `text` - Text component
   - `maxLength` - max length of text in field
   - `readOnly` - read only field
+  - `trim` - default is true. Set this attribute to `false` if trim is not desired.
 
 - `number`
   - `min` - minimal value

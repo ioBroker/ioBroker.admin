@@ -64,7 +64,7 @@ class ConfigText extends ConfigGeneric {
                 onChange={e => {
                     const value = e.target.value;
                     this.setState({value}, () =>
-                        this.onChange(this.props.attr, (value || '').trim()));
+                        this.onChange(this.props.attr, this.props.schema.trim === false ? value : (value || '').trim()));
                 }}
                 placeholder={this.getText(this.props.schema.placeholder)}
                 label={this.getText(this.props.schema.label)}
