@@ -1979,7 +1979,10 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     type:    $(this).data('type') || 'text',
                     def:     $(this).data('default'),
                     style:   $(this).data('style'),
-                    tdstyle: $(this).data('tdstyle')
+                    tdstyle: $(this).data('tdstyle'),
+                    // add radio Button Id and optional span
+                    radioButtomId: $(this).data('radio'),
+                    radioSpan: $(this).data('span')
                 };
                 if (obj.type === 'checkbox') {
                     if (obj.def === 'false') {
@@ -2047,7 +2050,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                         style = (names[i].style ? names[i].style : 'text-align: right;');
                         line += (v + 1);
                     } else if (names[i].type === 'checkbox') {
-                        line += '<input style="' + (names[i].style || '') + '" class="values-input filled-in" type="checkbox" data-index="' + v + '" data-name="' + names[i].name + '" ' + (values[v][names[i].name] ? 'checked' : '') + '" data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"/>';
+                        line += '<input style="' + (names[i].style || '') + '" class="values-input filled-in" type="checkbox" data-index="' + v + '" data-name="' + names[i].name + '" ' + (values[v][names[i].name] ? 'checked' : '') + ' data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"/>';
                         if (isMaterialize) {
                             line += '<span></span>';
                         }
@@ -2081,6 +2084,8 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                             line += '<option value="' + p + '" ' + (val.indexOf(p) !== -1 ? ' selected' : '') + '>' + options[p] + '</option>';
                         }
                         line += '</select>';
+                    } else if (names[i].type === 'radio') { // add radio Button in Table
+                        line += '<label><input class="values-input" data-name="' + names[i].name +'" name="' + names[i].radioButtomId + v + '" data-index="' + v + '" type="radio" '+(values[v][names[i].name] ? 'checked' : '')+' data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"/><span>'+(names[i].radioSpan ? names[i].radioSpan : '')+'</span></label>'
                     } else {
                         line += '<input class="values-input" style="' + (names[i].style ? names[i].style : 'width: 100%') + '" type="' + names[i].type + '" data-index="' + v + '" data-name="' + names[i].name + '"/>';
                     }
@@ -2385,6 +2390,8 @@ function table2values(divId) {
                 var name = $input.data('name');
                 if (name) {
                     if ($input.attr('type') === 'checkbox') {
+                        values[j][name] = $input.prop('checked');
+                    } else if ($input.attr('type') === 'radio') { // add radio Button value save
                         values[j][name] = $input.prop('checked');
                     } else {
                         values[j][name] = $input.val();
