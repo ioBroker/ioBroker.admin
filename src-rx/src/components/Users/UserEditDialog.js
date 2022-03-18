@@ -96,7 +96,7 @@ function UserEditDialog(props) {
         return idArray.join('.');
     }
 
-    let description = getText(props.user.common.desc);
+    let description = getText(props.user.common.desc || props.user.common.description);
     let name = getText(props.user.common.name);
 
     return <Dialog

@@ -304,6 +304,13 @@ const styles = theme => ({
         marginLeft: 5,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+        position: 'relative',
+        '& .copyButton': {
+            display: 'none'
+        },
+        '&:hover .copyButton': {
+            display: 'block'
+        }
     },
     cellIdAlias: {
         fontStyle: 'italic',
@@ -4038,7 +4045,12 @@ class ObjectBrowser extends Component {
                 </div>
             </Grid>
 
-            {this.columnsVisibility.name ? <div className={classes.cellName} style={{ width: this.columnsVisibility.name }}>{(item.data?.title) || ''}</div> : null}
+            {this.columnsVisibility.name ? <div className={classes.cellName} style={{ width: this.columnsVisibility.name }}>
+                {(item.data?.title) || ''}
+                {item.data?.title ? <div style={{ color: checkColor }}>
+                    <IconCopy className={Utils.clsx(classes.cellCopyButton, 'copyButton')} onClick={e => this.onCopy(e, item.data.title)} />
+                </div> : null}
+            </div> : null}
 
             {!this.state.statesView ?
                 <>
@@ -4655,7 +4667,7 @@ ObjectBrowser.propTypes = {
     columns: PropTypes.array,           // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
 
     objectsWorker: PropTypes.object,    // optional cache of objects
-    filterFunc: PropTypes.func,         // function to filter out all unneccessary objects. It cannot be used together with "types"
+    filterFunc: PropTypes.func,         // function to filter out all unnecessary objects. It cannot be used together with "types"
                                         // Example for function: `obj => obj.common && obj.common.type === 'boolean'` to show only boolean states
 
     dragSettings: PropTypes.object,

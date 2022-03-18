@@ -216,63 +216,62 @@ function isTouchDevice() {
 }
 
 const USER_TEMPLATE = {
-    'type': 'user',
-    'common': {
-        'name': '',
-        'password': '',
-        'dontDelete': false,
-        'enabled': true,
-        'color': false,
-        'desc': ''
+    type: 'user',
+    common: {
+        name: '',
+        password: '',
+        dontDelete: false,
+        enabled: true,
+        color: false,
+        desc: ''
     },
-    'native': {},
-    'enums': {}
+    native: {},
+    enums: {}
 };
 
 const GROUP_TEMPLATE = {
-    'type': 'group',
-    'common': {
-        'name': '',
-        'description': '',
-        'members': [],
-        'dontDelete': false,
-        'acl': {
-            'object': {
-                'list': false,
-                'read': false,
-                'write': false,
+    type: 'group',
+    common: {
+        name: '',
+        desc: '',
+        members: [],
+        dontDelete: false,
+        acl: {
+            object: {
+                list: false,
+                read: false,
+                write: false,
                 'delete': false
             },
-            'state': {
-                'list': false,
-                'read': false,
-                'write': false,
-                'create': false,
+            state: {
+                list: false,
+                read: false,
+                write: false,
+                create: false,
                 'delete': false
             },
-            'users': {
-                'list': false,
-                'read': false,
-                'write': false,
-                'create': false,
+            users: {
+                list: false,
+                read: false,
+                write: false,
+                create: false,
                 'delete': false
             },
-            'other': {
-                'execute': false,
-                'http': false,
-                'sendto': false
+            other: {
+                execute: false,
+                http: false,
+                sendto: false
             },
-            'file': {
-                'list': false,
-                'read': false,
-                'write': false,
-                'create': false,
+            file: {
+                list: false,
+                read: false,
+                write: false,
+                create: false,
                 'delete': false
             }
         },
-        'icon': '',
-        'color': false,
-        'desc': ''
+        icon: '',
+        color: false
     }
 };
 

@@ -155,7 +155,7 @@ function GroupEditDialog(props) {
         props.group.common.password === props.group.common.passwordRepeat;
 
     const getText = text =>
-        text && typeof text === 'object' ? text[props.lang] || text.en : text || '';
+        text && typeof text === 'object' ? (text[props.lang] || text.en) : (text || '');
 
     const getShortId = _id =>
         _id.split('.').pop();
@@ -179,7 +179,7 @@ function GroupEditDialog(props) {
         }
     }
 
-    let description = getText(props.group.common.description);
+    let description = getText(props.group.common.desc || props.group.common.description);
     let name = getText(props.group.common.name);
 
     let mainTab = <Grid container spacing={props.innerWidth < 500 ? 1 : 4} className={props.classes.dialog}>
@@ -233,7 +233,7 @@ function GroupEditDialog(props) {
                 value={ description }
                 onChange={e => {
                     let newData = Utils.clone(props.group);
-                    newData.common.description = e.target.value;
+                    newData.common.desc = e.target.value;
                     props.onChange(newData);
                 }}
                 icon={DescriptionIcon}
