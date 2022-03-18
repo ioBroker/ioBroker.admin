@@ -86,10 +86,13 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 <!--
 	Placeholder for the next version (at the beginning of the line):
-	### __WORK IN PROGRESS__
+	### **WORK IN PROGRESS**
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (xXBJXx) added Radio Buttons for value2table
+
 ### 5.3.1 (2022-02-21)
 * (bluefox) Support of IPv6 address by links (vis, material, end so on)
 * (bluefox) Corrected errors in the base settings

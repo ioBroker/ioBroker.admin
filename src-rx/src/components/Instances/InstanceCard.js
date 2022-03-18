@@ -321,7 +321,7 @@ const styles = theme => ({
 });
 
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
-const arrayTier = [{ value: 1, desc: "1: Logic adapters" }, { value: 2, desc: "2: Data provider adapters" }, { value: 3, desc: "3: Other adapters" }];
+const arrayTier = [{ value: 1, desc: '1: Logic adapters' }, { value: 2, desc: '2: Data provider adapters' }, { value: 3, desc: '3: Other adapters' }];
 
 const InstanceCard = memo(({
     adminInstance,
@@ -689,7 +689,7 @@ const InstanceCard = memo(({
 
                     {expertMode && <div className={classes.displayFlex}>
                         <InstanceInfo icon={<LowPriorityIcon className={classes.marginRight} color="inherit" />} tooltip={t('Start order (tier)')}>
-                            {instance.adapter === 'admin' ? t('Always first') : (arrayTier.find(el => el.value === item.tier)?.desc || arrayTier[2])}
+                            {instance.adapter === 'admin' ? t('Always first') : t(arrayTier.find(el => el.value === item.tier)?.desc || arrayTier[2])}
                         </InstanceInfo>
                         {instance.adapter !== 'admin' ? <Tooltip title={t('Edit start order (tier)')}>
                             <IconButton

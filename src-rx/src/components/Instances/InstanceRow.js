@@ -1253,7 +1253,7 @@ const InstanceRow = ({
                         }
                         {expertMode && <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={<LowPriorityIcon className={classes.marginRight} color="inherit" />} tooltip={t('Start order (tier)')}>
-                                {instance.adapter === 'admin' ? t('Always first') : (arrayTier.find(el => el.value === item.tier)?.desc || arrayTier[2])}
+                                {instance.adapter === 'admin' ? t('Always first') : t(arrayTier.find(el => el.value === item.tier)?.desc || arrayTier[2])}
                             </InstanceInfo>
                             {instance.adapter !== 'admin' ? <Tooltip title={t('Edit start order (tier)')}>
                                 <IconButton
