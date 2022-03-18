@@ -107,6 +107,7 @@ class SSLDialog extends Component {
 
     doChange = (name, value) => {
         let newData = JSON.parse(JSON.stringify(this.props.data))
+        newData.native.letsEncrypt = newData.native.letsEncrypt || {};
         newData.native.letsEncrypt[name] = value;
         this.props.onChange(newData);
     }
