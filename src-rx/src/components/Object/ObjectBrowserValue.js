@@ -173,7 +173,8 @@ class ObjectBrowserValue extends Component {
         }, 200);
     }
 
-    onUpdate() {
+    onUpdate(e) {
+        e && e.stopPropagation();
         if (this.state.type === 'states') {
             let type = this.props.type || typeof this.props.value;
 
@@ -335,7 +336,7 @@ class ObjectBrowserValue extends Component {
                                                     <AntSwitch
                                                         autoFocus
                                                         defaultChecked={ !!this.propsValue }
-                                                        onKeyUp={e => e.keyCode === 13 && this.onUpdate() }
+                                                        onKeyUp={e => e.keyCode === 13 && this.onUpdate(e) }
                                                         onChange={e => this.value = e.target.checked}
                                                     />
                                                 </Grid>
@@ -351,7 +352,7 @@ class ObjectBrowserValue extends Component {
                                                     helperText={ this.props.t('Press ENTER to write the value, when focused') }
                                                     label={ this.props.t('Value') }
                                                     defaultValue={ parseFloat(this.propsValue) || 0 }
-                                                    onKeyUp={ e => e.keyCode === 13 && this.onUpdate() }
+                                                    onKeyUp={ e => e.keyCode === 13 && this.onUpdate(e) }
                                                     onChange={ e => this.value = e.target.value }/>
                                                 :
                                                 (this.state.type === 'json' ?
@@ -368,7 +369,7 @@ class ObjectBrowserValue extends Component {
                                                                     label={ this.props.t('Value') }
                                                                     fullWidth={ true }
                                                                     multiline
-                                                                    onKeyUp={e => e.ctrlKey && e.keyCode === 13 && this.onUpdate() }
+                                                                    onKeyUp={e => e.ctrlKey && e.keyCode === 13 && this.onUpdate(e) }
                                                                     defaultValue={ this.propsValue.toString() }
                                                                     onChange={ e => this.value = e.target.value }/>
                                                         )
@@ -434,7 +435,7 @@ class ObjectBrowserValue extends Component {
                 </form>
             </DialogContent>
             <DialogActions className={this.props.classes.wrapperButton}>
-                <Button variant="contained" onClick={ () => this.onUpdate() } color="primary" startIcon={<IconCheck />}>{ this.props.t('Set value') }</Button>
+                <Button variant="contained" onClick={ e => this.onUpdate(e) } color="primary" startIcon={<IconCheck />}>{ this.props.t('Set value') }</Button>
                 <Button variant="contained" onClick={ () => this.props.onClose() } startIcon={<IconCancel />}>{ this.props.t('Cancel') }</Button>
             </DialogActions>
         </Dialog>;
