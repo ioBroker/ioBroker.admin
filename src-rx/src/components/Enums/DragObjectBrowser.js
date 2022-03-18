@@ -80,6 +80,7 @@ const DragObjectBrowser = props => {
         t={props.t}
         socket={props.socket}
         types={['state', 'channel', 'device']}
+        columns={['name', 'type', 'role', 'room', 'func']}
         lang={props.lang}
         dragEnabled
         DragWrapper={wrapperState.DragWrapper}

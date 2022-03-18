@@ -92,6 +92,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### **WORK IN PROGRESS**
 * (xXBJXx) added Radio Buttons for value2table
+* (bluefox) Corrected many GUI errors
 
 ### 5.3.1 (2022-02-21)
 * (bluefox) Support of IPv6 address by links (vis, material, end so on)
