@@ -1183,10 +1183,33 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
     const type = typeof v;
 
     if (isCommon && isCommon.role && typeof isCommon.role === 'string' && isCommon.role.match(/^value\.time|^date/)) {
-        if (typeof v === 'string' && v.length === 13) { // warning, this solution only works till Nov 20 2286 18:46:39CET
-            v = parseInt(v, 10);
+        if (v && typeof v === 'string') {
+            if (v.length === 13) { // (length of "1647597254924") warning, this solution only works till Nov 20 2286 18:46:39CET
+                v = new Date(parseInt(v, 10)).toString();
+            } else if (v.length === 10) { // YYYY.MM.DD
+                const parts = v.split(/[-.]/);
+                if (parts.length === 3) {
+                    if (parts[0].length === 4) { // YYYY.MM.DD
+                        v = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) + 1, parseInt(parts[2], 10));
+                    } else if (parts[0].length === 4) { // DD.MM.YYYY
+                        v = new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) + 1, parseInt(parts[0], 10));
+                    }
+                } else {
+                    v = new Date(v).toString(); // Let the browser convert it somehow
+                }
+            } else if (v.length === 8) { // YY.MM.DD
+                const parts = v.split(/[-.]/);
+                if (parts.length === 3) {
+                    v = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) + 1, parseInt(parts[2], 10));
+                } else {
+                    v = new Date(v).toString(); // Let the browser convert it somehow
+                }
+            } else {
+                v = new Date(v).toString(); // Let the browser convert it somehow
+            }
+        } else {
+            v = v ? new Date(v).toString() : v;
         }
-        v = v ? new Date(v).toString() : v;
     } else {
         if (type === 'number') {
             v = Math.round(v * 100000000) / 100000000; // remove 4.00000000000000001
@@ -1260,7 +1283,7 @@ function getSelectIdIcon(objects, id, imagePrefix) {
         // if not BASE64
         if (!aIcon.startsWith('data:image/')) {
             if (aIcon.includes('.')) {
-                src = imagePrefix + '/adapter/' + objects[_id_].common.name + '/' + aIcon;
+                src = `${imagePrefix}/adapter/${objects[_id_].common.name}/${aIcon}`;
             } else if (aIcon && aIcon.length < 3) {
                 return aIcon; // utf-8
             } else {
@@ -1283,7 +1306,7 @@ function getSelectIdIcon(objects, id, imagePrefix) {
                     if (cIcon.includes('.')) {
                         let instance;
                         if (objects[id].type === 'instance' || objects[id].type === 'adapter') {
-                            src = imagePrefix + '/adapter/' + common.name + '/' + cIcon;
+                            src = `${imagePrefix}/adapter/${common.name}/${cIcon}`;
                         } else if (id && id.startsWith('system.adapter.')) {
                             instance = id.split('.', 3);
                             if (cIcon[0] === '/') {
@@ -1291,7 +1314,7 @@ function getSelectIdIcon(objects, id, imagePrefix) {
                             } else {
                                 instance[2] += '/' + cIcon;
                             }
-                            src = imagePrefix + '/adapter/' + instance[2];
+                            src = `${imagePrefix}/adapter/${instance[2]}`;
                         } else {
                             instance = id.split('.', 2);
                             if (cIcon[0] === '/') {
@@ -1299,7 +1322,7 @@ function getSelectIdIcon(objects, id, imagePrefix) {
                             } else {
                                 instance[0] += '/' + cIcon;
                             }
-                            src = imagePrefix + '/adapter/' + instance[0];
+                            src = `${imagePrefix}/adapter/${instance[0]}`;
                         }
                     } else if (aIcon && aIcon.length < 3) {
                         return aIcon; // utf-8

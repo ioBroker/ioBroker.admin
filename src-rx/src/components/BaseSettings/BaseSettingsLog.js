@@ -74,7 +74,7 @@ class BaseSettingsLog extends Component {
         settings.transport = settings.transport || {};
         Object.keys(settings.transport).forEach(id => {
             if (settings.transport[id].type === 'file') {
-                let multiplier = settings.transport[id].maxSize.includes('k') ? 0.1 : (settings.transport[id].maxSize.includes('g') ? 10 : 1);
+                let multiplier = typeof settings.transport[id].maxSize === 'string' ? (settings.transport[id].maxSize.includes('k') ? 0.1 : (settings.transport[id].maxSize.includes('g') ? 10 : 1)) : 1;
                 settings.transport[id].maxSize = (parseInt(settings.transport[id].maxSize, 10) || 0) * multiplier;
                 settings.transport[id].level = settings.transport[id].level || '';
                 settings.transport[id].maxFiles = settings.transport[id].maxFiles || 0;
@@ -137,7 +137,7 @@ class BaseSettingsLog extends Component {
                 settings.transport[id].maxSize = parseInt(settings.transport[id].maxSize, 10) || null;
                 if (settings.transport[id].maxSize) {
                     // 'k', 'm', or 'g'
-                    settings.transport[id].maxSize += 'm';
+                    settings.transport[id].maxSize = settings.transport[id].maxSize.toString() + 'm';
                 }
                 settings.transport[id].maxFiles = parseInt(settings.transport[id].maxFiles, 10) || null;
             } else if (this.state.transport[id].type === 'syslog') {
