@@ -73,6 +73,9 @@ function EnumEditDialog(props) {
     const name2Id = name =>
         name.replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_');
 
+    const getText = text =>
+        text && typeof text === 'object' ? text[props.lang] || text.en : text || '';
+
     const changeShortId = (_id, short) => {
         let idArray = _id.split('.');
         idArray[idArray.length-1] = short;
@@ -98,7 +101,7 @@ function EnumEditDialog(props) {
                         label="Name"
                         t={props.t}
                         value={ props.getName(props.enum.common.name) }
-                        onChange={e=>{
+                        onChange={e => {
                             let newData = props.enum;
                             if (!props.enum.common.dontDelete && name2Id(props.getName(newData.common.name)) === getShortId(newData._id)) {
                                 newData._id = changeShortId(newData._id, name2Id(e.target.value));
@@ -117,7 +120,7 @@ function EnumEditDialog(props) {
                         t={props.t}
                         disabled={props.enum.common.dontDelete}
                         value={ props.enum._id.split('.')[props.enum._id.split('.').length-1] }
-                        onChange={e=>{
+                        onChange={e => {
                             let newData = JSON.parse(JSON.stringify(props.enum));
                             newData._id = changeShortId(newData._id, name2Id(e.target.value));
                             props.onChange(newData);
@@ -140,8 +143,8 @@ function EnumEditDialog(props) {
                     <IOTextField
                         label="Description"
                         t={props.t}
-                        value={ props.enum.common.desc }
-                        onChange={e=>{
+                        value={ getText(props.enum.common.desc) }
+                        onChange={e => {
                             let newData = props.enum;
                             newData.common.desc = e.target.value;
                             props.onChange(newData);
@@ -158,7 +161,7 @@ function EnumEditDialog(props) {
                         t={props.t}
                         lang={props.lang}
                         value={ props.enum.common.icon }
-                        onChange={fileBlob=>{
+                        onChange={fileBlob => {
                             let newData = props.enum;
                             newData.common.icon = fileBlob;
                             props.onChange(newData);
@@ -174,7 +177,7 @@ function EnumEditDialog(props) {
                         t={props.t}
                         value={ props.enum.common.color }
                         previewClassName={props.classes.iconPreview}
-                        onChange={color=>{
+                        onChange={color => {
                             let newData = props.enum;
                             newData.common.color = color;
                             props.onChange(newData);
