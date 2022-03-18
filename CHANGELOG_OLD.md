@@ -1,6 +1,13 @@
 ## 5.1.15 (2021-07-26)
 * (bluefox) Replaced the formula icon in the edit aliases dialog
 * (bluefox) Added the logic for checkbox in JsonConfig
+## 5.2.1 (2021-11-28)
+* (bluefox) Allow in expert mode the creation of states and channels in mqtt branch
+
+## 5.1.15 (2021-07-26)
+* (bluefox) Replaced the formula icon in the edit aliases dialog
+* (bluefox) Added the logic for checkbox in JsonConfig
+
 ## 5.2.0 (2021-11-26)
 * (Apollon77) Fix crash cases reported via sentry
 * (bluefox) Added support for multi-repositories

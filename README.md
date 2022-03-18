@@ -90,7 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.3.2 (2022-03-18)
 * (xXBJXx) added Radio Buttons for value2table
 * (bluefox) Corrected many GUI errors
 
@@ -113,9 +113,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 5.2.2 (2021-12-21)
 * (bluefox) Changed the minimal required js-controller version to 3.3.22 
 * (bluefox) Used web-socket library 8 (no node 10 support anymore)
-
-### 5.2.1 (2021-11-28)
-* (bluefox) Allow in expert mode the creation of states and channels in mqtt branch
 
 ## License
 The MIT License (MIT)
