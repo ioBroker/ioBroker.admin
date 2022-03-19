@@ -1,5 +1,5 @@
 /**
- * Copyright 2020-2021, bluefox <dogafox@gmail.com>
+ * Copyright 2020-2022, bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -1722,8 +1722,12 @@ class ObjectBrowser extends Component {
                 if (typeof props.filterFunc === 'function') {
                     this.objects = {};
                     Object.keys(objects).forEach(id => {
-                        if (props.filterFunc(objects[id])) {
-                            this.objects[id] = objects[id];
+                        try {
+                            if (props.filterFunc(objects[id])) {
+                                this.objects[id] = objects[id];
+                            }
+                        } catch (e) {
+                            console.log(`Error by filtering of "${id}": ${e}`);
                         }
                     });
                 } else
@@ -1749,7 +1753,7 @@ class ObjectBrowser extends Component {
                 // read default history
                 this.defaultHistory = this.systemConfig.common.defaultHistory;
                 if (this.defaultHistory) {
-                    props.socket.getState('system.adapter.' + this.defaultHistory + '.alive')
+                    props.socket.getState(`system.adapter.${this.defaultHistory}.alive`)
                         .then(state => {
                             if (!state || !state.val) {
                                 this.defaultHistory = '';
@@ -2176,7 +2180,10 @@ class ObjectBrowser extends Component {
 
                 return columnsForAdmin;
             })
-            .catch(e => window.alert('Cannot get adapters: ' + e));
+            .catch(e => {
+                // window.alert('Cannot get adapters: ' + e);
+                // Object browser in Web has no additional columns
+            });
     }
 
     /**
@@ -3900,7 +3907,8 @@ class ObjectBrowser extends Component {
 
         // icon
         let iconFolder;
-        let itemType = item.data.obj?.type;
+        const obj = item.data.obj;
+        let itemType = obj?.type;
 
         if (item.children || itemType === 'folder' || itemType === 'device' || itemType === 'channel' || itemType === 'meta') {
             iconFolder = isExpanded ? <IconOpen
@@ -3927,7 +3935,6 @@ class ObjectBrowser extends Component {
             }
         }
 
-        const obj = item.data.obj;
         const common = obj?.common;
 
         const typeImg = (obj && obj.type && ITEM_IMAGES[obj.type]) || <div className="itemIcon" />;
@@ -3976,8 +3983,8 @@ class ObjectBrowser extends Component {
             }
         }
         if (obj) {
-            obj.from && newValueTitle.push(this.texts.objectChangedFrom + ' ' + obj.from.replace(/^system\.adapter\.|^system\./, ''));
-            obj.user && newValueTitle.push(this.texts.objectChangedBy + ' ' + obj.user.replace(/^system\.user\./, ''));
+            obj.from && newValueTitle.push(this.texts.objectChangedFrom   + ' ' + obj.from.replace(/^system\.adapter\.|^system\./, ''));
+            obj.user && newValueTitle.push(this.texts.objectChangedBy     + ' ' + obj.user.replace(/^system\.user\./, ''));
             obj.ts   && newValueTitle.push(this.texts.objectChangedByUser + ' ' + Utils.formatDate(new Date(obj.ts), this.props.dateFormat));
         }
 
@@ -3985,48 +3992,48 @@ class ObjectBrowser extends Component {
 
         const alias = id.startsWith('alias.') && common?.alias?.id ?
             (readWriteAlias ?
-                    <div className={classes.cellIdAliasReadWriteDiv}>
-                        {obj.common.alias.id.read ? <div
-                            onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                this.onSelect(obj.common.alias.id.read);
-                                setTimeout(() => {
-                                    this.expandAllSelected(() =>
-                                        this.scrollToItem(obj.common.alias.id.read));
-                                }, 100);
-                            }}
-                            className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
-                        >←{obj.common.alias.id.read}</div> : null}
-                        {obj.common.alias.id.write ? <div
-                            onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                this.onSelect(obj.common.alias.id.write);
-                                setTimeout(() => {
-                                    this.expandAllSelected(() =>
-                                        this.scrollToItem(obj.common.alias.id.write));
-                                }, 100);
-                            }}
-                            className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
-                        >→{obj.common.alias.id.write}</div> : null}
-                    </div>
-                    :
-                    <div
+                <div className={classes.cellIdAliasReadWriteDiv}>
+                    {common.alias.id.read ? <div
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
-                            this.onSelect(obj.common.alias.id);
+                            this.onSelect(common.alias.id.read);
                             setTimeout(() => {
                                 this.expandAllSelected(() =>
-                                    this.scrollToItem(obj.common.alias.id));
+                                    this.scrollToItem(common.alias.id.read));
                             }, 100);
                         }}
-                        className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasAlone)}
-                    >→{obj.common.alias.id}</div>
-            ) : null;
+                        className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
+                    >←{common.alias.id.read}</div> : null}
+                    {common.alias.id.write ? <div
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            this.onSelect(common.alias.id.write);
+                            setTimeout(() => {
+                                this.expandAllSelected(() =>
+                                    this.scrollToItem(common.alias.id.write));
+                            }, 100);
+                        }}
+                        className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasReadWrite)}
+                    >→{common.alias.id.write}</div> : null}
+                </div>
+                :
+                <div
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        this.onSelect(common.alias.id);
+                        setTimeout(() => {
+                            this.expandAllSelected(() =>
+                                this.scrollToItem(common.alias.id));
+                        }, 100);
+                    }}
+                    className={Utils.clsx(classes.cellIdAlias, classes.cellIdAliasAlone)}
+                >→{common.alias.id}</div>
+        ) : null;
 
-        let checkColor = item.data?.common?.color;
+        let checkColor = common?.color;
         let invertBackground = 'none';
         if (checkColor && !this.state.selected.includes(id)) {
             invertBackground = Utils.invertColor(checkColor, true);
@@ -4185,7 +4192,7 @@ class ObjectBrowser extends Component {
             {!this.state.statesView ?
                 <>
                     {this.columnsVisibility.type ? <div className={classes.cellType} style={{ width: this.columnsVisibility.type }}>{typeImg} {obj && obj.type}</div> : null}
-                    {this.columnsVisibility.role ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.role, cursor: this.props.expertMode && enumEditable && this.props.objectBrowserEditRole ? 'text' : 'default' }} onClick={this.props.expertMode && enumEditable && this.props.objectBrowserEditRole ? () => this.setState({ roleDialog: item.data.id }) : undefined}>{obj && obj.common && obj.common.role}</div> : null}
+                    {this.columnsVisibility.role ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.role, cursor: this.props.expertMode && enumEditable && this.props.objectBrowserEditRole ? 'text' : 'default' }} onClick={this.props.expertMode && enumEditable && this.props.objectBrowserEditRole ? () => this.setState({ roleDialog: item.data.id }) : undefined}>{common?.role}</div> : null}
                     {this.columnsVisibility.room ? <div className={`${classes.cellRoom} ${item.data.per ? classes.cellEnumParent : ''}`} style={{ width: this.columnsVisibility.room, cursor: enumEditable ? 'text' : 'default' }} onClick={enumEditable ? () => { const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'roomEnums'); this.setState({ enumDialogEnums: enums, enumDialog: { item, type: 'room', enumsOriginal: JSON.parse(JSON.stringify(enums)) } }); } : undefined}>{item.data.rooms}</div> : null}
                     {this.columnsVisibility.func ? <div className={`${classes.cellFunc} ${item.data.pef ? classes.cellEnumParent : ''}`} style={{ width: this.columnsVisibility.func, cursor: enumEditable ? 'text' : 'default' }} onClick={enumEditable ? () => { const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'funcEnums'); this.setState({ enumDialogEnums: enums, enumDialog: { item, type: 'func', enumsOriginal: JSON.parse(JSON.stringify(enums)) } }); } : undefined}>{item.data.funcs}</div> : null}
                 </>
@@ -4430,12 +4437,12 @@ class ObjectBrowser extends Component {
                 this.columnsVisibility.nameHeader = `calc(100% - ${widthSum + 5 + this.state.scrollBarWidth}px)`;
             } else {
                 const newWidth = Object.keys(this.columnsVisibility).reduce((accumulator, name) => {
-                        if (name === 'id' || typeof this.columnsVisibility[name] === 'string' || !this.columnsVisibility[name]) {
-                            return accumulator;
-                        } else {
-                            return  accumulator + this.columnsVisibility[name];
-                        }},
-                    0);
+                    if (name === 'id' || typeof this.columnsVisibility[name] === 'string' || !this.columnsVisibility[name]) {
+                        return accumulator;
+                    } else {
+                        return  accumulator + this.columnsVisibility[name];
+                    }},
+                0);
                 this.columnsVisibility.id = `calc(100% - ${newWidth}px)`;
             }
         }

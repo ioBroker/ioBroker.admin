@@ -90,6 +90,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Implemented the objects coloring depends on other states 
+
 ### 5.3.2 (2022-03-18)
 * (xXBJXx) added Radio Buttons for value2table
 * (bluefox) Corrected many GUI errors
