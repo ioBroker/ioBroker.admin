@@ -1,6 +1,14 @@
 ## 5.1.15 (2021-07-26)
 * (bluefox) Replaced the formula icon in the edit aliases dialog
 * (bluefox) Added the logic for checkbox in JsonConfig
+## 5.2.2 (2021-12-21)
+* (bluefox) Changed the minimal required js-controller version to 3.3.22 
+* (bluefox) Used web-socket library 8 (no node 10 support anymore)
+
+## 5.1.15 (2021-07-26)
+* (bluefox) Replaced the formula icon in the edit aliases dialog
+* (bluefox) Added the logic for checkbox in JsonConfig
+
 ## 5.2.1 (2021-11-28)
 * (bluefox) Allow in expert mode the creation of states and channels in mqtt branch
 

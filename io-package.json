@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "5.3.2",
+    "version": "5.3.3",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "5.3.3": {
+        "en": "Implemented the objects coloring depends on other states",
+        "de": "Die implementierte Objektfarbe hängt von anderen Zuständen ab",
+        "ru": "Реализована окраска объектов в зависимости от других состояний",
+        "pt": "Implementado a coloração dos objetos depende de outros estados",
+        "nl": "Geïmplementeerd de objecten kleuren is afhankelijk van andere staten",
+        "fr": "Implémenté la coloration des objets dépend d'autres états",
+        "it": "Implementata la colorazione degli oggetti dipende da altri stati",
+        "es": "Implementado el coloreado de los objetos depende de otros estados.",
+        "pl": "Zaimplementowane kolory obiektów zależą od innych stanów",
+        "zh-cn": "实现对象着色取决于其他状态"
+      },
       "5.3.2": {
         "en": "added Radio Buttons for value2table\nCorrected many GUI errors",
         "de": "Optionsfelder für value2table hinzugefügt\nViele GUI-Fehler behoben",
@@ -89,18 +101,6 @@
         "es": "Permitir en modo experto la creación de estados y canales en rama mqtt",
         "pl": "Zezwalaj w trybie eksperta na tworzenie stanów i kanałów w gałęzi mqtt",
         "zh-cn": "允许在专家模式下在 mqtt 分支中创建状态和通道"
-      },
-      "5.2.0": {
-        "en": "Fix crash cases reported via sentry\nAdded support for multi-repositories",
-        "de": "Absturzfälle beheben, die über Wache gemeldet wurden\nUnterstützung für Multi-Repositorys hinzugefügt",
-        "ru": "Исправить случаи сбоев, о которых сообщалось через часового\nДобавлена поддержка мульти-репозиториев.",
-        "pt": "Corrigir casos de falha relatados via sentinela\nAdicionado suporte para multi-repositórios",
-        "nl": "Herstel crashgevallen gemeld via schildwacht\nOndersteuning toegevoegd voor meerdere opslagplaatsen",
-        "fr": "Correction des cas de plantage signalés via sentinelle\nAjout de la prise en charge des multi-dépôts",
-        "it": "Risolti i casi di crash segnalati tramite sentinella\nAggiunto supporto per multi-repository",
-        "es": "Solucionar casos de accidentes informados a través de centinelas\nSoporte agregado para repositorios múltiples",
-        "pl": "Napraw przypadki awarii zgłoszone przez Sentry\nDodano obsługę wielu repozytoriów",
-        "zh-cn": "修复通过哨兵报告的崩溃案例\n添加了对多存储库的支持"
       }
     },
     "desc": {

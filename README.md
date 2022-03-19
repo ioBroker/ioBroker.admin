@@ -90,8 +90,8 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
-* (bluefox) Implemented the objects coloring depends on other states 
+### 5.3.3 (2022-03-19)
+* (bluefox) Implemented the objects coloring depends on other states
 
 ### 5.3.2 (2022-03-18)
 * (xXBJXx) added Radio Buttons for value2table
@@ -112,10 +112,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 5.2.3 (2021-12-24)
 * (bluefox) Fixed error in `AutocompleteSendTo`
 * (bluefox) Fixed error in charts
-
-### 5.2.2 (2021-12-21)
-* (bluefox) Changed the minimal required js-controller version to 3.3.22 
-* (bluefox) Used web-socket library 8 (no node 10 support anymore)
 
 ## License
 The MIT License (MIT)
