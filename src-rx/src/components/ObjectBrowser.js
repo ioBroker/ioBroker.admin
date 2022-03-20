@@ -1236,7 +1236,7 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
                 } else {
                     v = new Date(v).toString(); // Let the browser convert it somehow
                 }
-            } else {
+            } else if (v !== 'null') {
                 v = new Date(v).toString(); // Let the browser convert it somehow
             }
         } else {
