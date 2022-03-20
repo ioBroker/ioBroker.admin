@@ -264,14 +264,13 @@ function upToDate(v1, v2) {
 }
 
 function writeUpdateInfo(adapter, sources) {
+    if (!objects['system.config'] || !objects['system.config'].common) {
+        return adapter.log.warn('Repository cannot be read. Invalid "system.config" object.');
+    }
     const activeRepo = objects['system.config'].common.activeRepo;
     const systemRepos = objects['system.repositories'];
 
     if (!sources) {
-        if (!objects['system.config'] || !objects['system.config'].common) {
-            return adapter.log.warn('Repository cannot be read. Invalid "system.config" object.');
-        }
-
         sources = {};
 
         // If multi-repo case
@@ -322,7 +321,7 @@ function writeUpdateInfo(adapter, sources) {
                     found = true;
                 }
             });
-            !found && adapter.log.warn(`No repository source configured. Possible values: ${Object.keys(systemRepos.native.repositories).join(', ')}. Active repo(s): "${activeRepo.join('", "')}"`);
+            !found && adapter.log.warn(`No repository source configured. Possible values: ${systemRepos && systemRepos.native ? Object.keys(systemRepos.native.repositories).join(', ') : 'none'}. Active repo(s): "${activeRepo.join('", "')}"`);
         } else {
             if (systemRepos && systemRepos.native && systemRepos.native.repositories && systemRepos.native.repositories[activeRepo]) {
                 adapter.log.warn(`Repository cannot be read. Active repo: ${activeRepo}`);
