@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "5.3.3",
+    "version": "5.3.4",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "5.3.4": {
+        "en": "Fix some crash cases reported by Sentry\nCorrected user tab",
+        "de": "Einige von Sentry gemeldete Absturzfälle behoben\nBenutzerregisterkarte korrigiert",
+        "ru": "Исправьте некоторые случаи сбоев, о которых сообщил Sentry.\nИсправлена вкладка пользователя",
+        "pt": "Corrija alguns casos de travamento relatados pelo Sentinela\nAba de usuário corrigida",
+        "nl": "Enkele door Sentry gemelde crashgevallen oplossen\nGecorrigeerd gebruikerstabblad",
+        "fr": "Correction de certains cas de plantage signalés par Sentry\nOnglet utilisateur corrigé",
+        "it": "Risolvi alcuni casi di crash segnalati da Sentry\nScheda utente corretta",
+        "es": "Solucionar algunos casos de fallas informados por Sentry\nPestaña de usuario corregida",
+        "pl": "Napraw niektóre przypadki awarii zgłoszone przez Sentry\nPoprawiona zakładka użytkownika",
+        "zh-cn": "修复 Sentry 报告的一些崩溃案例\n更正了用户选项卡"
+      },
       "5.3.3": {
         "en": "Implemented the objects coloring depends on other states",
         "de": "Die implementierte Objektfarbe hängt von anderen Zuständen ab",
@@ -89,18 +101,6 @@
         "es": "Se cambió la versión mínima requerida de js-controller a 3.3.22\nSe usó la biblioteca 8 de web-socket (ya no es compatible con el nodo 10)",
         "pl": "Zmieniono minimalną wymaganą wersję kontrolera js na 3.3.22\nUżywana biblioteka gniazd sieciowych 8 (brak obsługi węzła 10)",
         "zh-cn": "将最低要求的 js-controller 版本更改为 3.3.22\n使用了 web-socket 库 8（不再支持 node 10）"
-      },
-      "5.2.1": {
-        "en": "Allow in expert mode the creation of states and channels in mqtt branch",
-        "de": "Erlaube im Expertenmodus die Erstellung von Zuständen und Kanälen im mqtt-Zweig",
-        "ru": "Разрешить в экспертном режиме создание состояний и каналов в ветке mqtt",
-        "pt": "Permitir no modo especialista a criação de estados e canais no ramal mqtt",
-        "nl": "Sta in expertmodus het maken van staten en kanalen toe in mqtt branch",
-        "fr": "Autoriser en mode expert la création d'états et de canaux dans la branche mqtt",
-        "it": "Consenti in modalità esperto la creazione di stati e canali nel ramo mqtt",
-        "es": "Permitir en modo experto la creación de estados y canales en rama mqtt",
-        "pl": "Zezwalaj w trybie eksperta na tworzenie stanów i kanałów w gałęzi mqtt",
-        "zh-cn": "允许在专家模式下在 mqtt 分支中创建状态和通道"
       }
     },
     "desc": {
