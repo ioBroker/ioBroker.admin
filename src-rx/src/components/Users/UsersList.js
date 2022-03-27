@@ -89,10 +89,10 @@ const styles = theme => ({
         opacity:0.7,
         padding: 5
     },
-    userName: {
-        fontSize: 12,
-        fontWeight: 700,
-        marginLeft: 30,
+    description: {
+        fontSize: 10,
+        fontStyle: 'italic',
+        marginLeft: 5,
         opacity: 0.7
     },
     userGroupMember: {
@@ -302,9 +302,8 @@ class UsersList extends Component {
         }
     }
 
-    getName = name => {
-        return name && typeof name === 'object' ? name[this.props.lang] || name.en || '' : name || '';
-    }
+    getText = name =>
+        name && typeof name === 'object' ? name[this.props.lang] || name.en || '' : name || '';
 
     showUserEditDialog = (user, isNew) => {
         user = JSON.parse(JSON.stringify(user));
@@ -323,10 +322,28 @@ class UsersList extends Component {
         return this.props.socket.getForeignObjects('system.user.*', 'user')
             .then(_users => {
                 users = Object.values(_users).sort((o1, o2) => o1._id > o2._id ? 1 : -1);
+                // remove deprecated field "description"
+                users.forEach(user => {
+                    if (user.common && user.common.description) {
+                        if (!user.common.desc) {
+                            user.common.desc = user.common.description;
+                        }
+                        delete user.common.description;
+                    }
+                });
                 return this.props.socket.getForeignObjects('system.group.*', 'group');
             })
             .then(groups => {
                 groups = Object.values(groups).sort((o1, o2) => o1._id > o2._id ? 1 : -1);
+                // remove deprecated field "description"
+                groups.forEach(group => {
+                    if (group.common && group.common.description) {
+                        if (!group.common.desc) {
+                            group.common.desc = group.common.description;
+                        }
+                        delete group.common.description;
+                    }
+                });
                 this.setState({groups, users});
             });
     }
@@ -443,9 +460,11 @@ class UsersList extends Component {
 
     static _isUniqueName(list, word, i) {
         return !list.find(item =>
-            item._id === ('system.user.' + word.toLowerCase() + '_' + i) ||
-            item.common.name === word + ' ' + i);
+            item._id === (`system.user.${word.toLowerCase()}_${i}`) ||
+            item.common.name === word + ' ' + i
+        );
     }
+
     static findNewUniqueName(isGroup, list, word) {
         let i = 1;
         while (!UsersList._isUniqueName(list,  word, i)) {
@@ -486,8 +505,8 @@ class UsersList extends Component {
                         <div className={this.props.classes.blocksContainer}>{
                             this.state.groups
                                 .sort((a, b) => {
-                                    const _a = (this.getName(a?.common?.name) || a._id).toLowerCase();
-                                    const _b = (this.getName(b?.common?.name) || b._id).toLowerCase();
+                                    const _a = (this.getText(a?.common?.name) || a._id).toLowerCase();
+                                    const _b = (this.getText(b?.common?.name) || b._id).toLowerCase();
                                     if (_a > _b) {
                                         return 1;
                                     } else if (_a < _b) {
@@ -503,7 +522,7 @@ class UsersList extends Component {
                                     showGroupEditDialog={this.showGroupEditDialog}
                                     showGroupDeleteDialog={this.showGroupDeleteDialog}
                                     removeUserFromGroup={this.removeUserFromGroup}
-                                    getName={this.getName}
+                                    getText={this.getText}
                                     {...this.props}
                                 />)
                         }</div>
@@ -534,8 +553,8 @@ class UsersList extends Component {
                         <div className={this.props.classes.blocksContainer}>{
                             this.state.users
                                 .sort((a, b) => {
-                                    const _a = (this.getName(a?.common?.name) || a._id).toLowerCase();
-                                    const _b = (this.getName(b?.common?.name) || b._id).toLowerCase();
+                                    const _a = (this.getText(a?.common?.name) || a._id).toLowerCase();
+                                    const _b = (this.getText(b?.common?.name) || b._id).toLowerCase();
                                     if (_a > _b) {
                                         return 1;
                                     } else if (_a < _b) {
@@ -554,7 +573,7 @@ class UsersList extends Component {
                                     updateData={this.updateData}
                                     addUserToGroup={this.addUserToGroup}
                                     removeUserFromGroup={this.removeUserFromGroup}
-                                    getName={this.getName}
+                                    getText={this.getText}
                                     {...this.props}
                                 />)
                         }</div>
@@ -568,6 +587,7 @@ class UsersList extends Component {
                     isNew={this.state.userEditDialogNew}
                     t={this.props.t}
                     lang={this.props.lang}
+                    getText={this.getText}
                     classes={this.props.classes}
                     onChange={this.changeUserFormData}
                     saveData={this.saveUser}
@@ -581,6 +601,7 @@ class UsersList extends Component {
                     isNew={this.state.groupEditDialogNew}
                     t={this.props.t}
                     lang={this.props.lang}
+                    getText={this.getText}
                     classes={this.props.classes}
                     onChange={this.changeGroupFormData}
                     innerWidth={this.state.innerWidth}

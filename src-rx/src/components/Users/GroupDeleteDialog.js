@@ -33,7 +33,6 @@ function GroupDeleteDialog(props) {
 
 GroupDeleteDialog.propTypes = {
     t: PropTypes.func,
-    lang: PropTypes.string,
     open: PropTypes.bool,
     onClose: PropTypes.func,
     group: PropTypes.object,

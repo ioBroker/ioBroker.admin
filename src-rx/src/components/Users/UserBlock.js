@@ -27,6 +27,7 @@ function UserBlock(props) {
     if (props.user.common.color) {
         style.backgroundColor = props.user.common.color;
     }
+
     /*return <>
     { <DragPreviewImage connect={preview}/> }*/
     return <Card
@@ -77,21 +78,19 @@ function UserBlock(props) {
                     <div>
                         <div>
                             <span className={props.classes.userGroupUserName}>
-                                {props.getName(props.user.common.name)}
+                                {props.getText(props.user.common.name)}
                             </span>
                             <span className={props.classes.userGroupUserID}>
-                                {props.getName(props.user._id)}
+                                [{props.user._id}]
                             </span>
                         </div>
                         <span>
                         {
-                            props.user.common.desc
-                                ?
-                                <div className={props.classes.userName}>
-                                    {props.user.common.desc}
+                            props.user.common.desc ?
+                                <div className={props.classes.description}>
+                                    {props.getText(props.user.common.desc)}
                                 </div>
-                                :
-                                null
+                                : null
                         }
                         </span>
                     </div>
@@ -120,7 +119,7 @@ function UserBlock(props) {
                                         :
                                         <GroupIcon className={props.classes.icon}/>
                                 }
-                                {props.getName(group.common.name)}
+                                {props.getText(group.common.name)}
                                 <IconButton
                                     size="small"
                                     onClick={() => props.removeUserFromGroup(props.user._id, group._id)}
@@ -169,7 +168,6 @@ const UserBlockDrag = props => {
 
 UserBlockDrag.propTypes = {
     t: PropTypes.func,
-    lang: PropTypes.string,
     user: PropTypes.object,
     groups: PropTypes.array,
     showUserEditDialog: PropTypes.func,
@@ -177,7 +175,7 @@ UserBlockDrag.propTypes = {
     updateData: PropTypes.func,
     addUserToGroup: PropTypes.func,
     removeUserFromGroup: PropTypes.func,
-    getName: PropTypes.func,
+    getText: PropTypes.func,
 };
 
 export default UserBlockDrag;

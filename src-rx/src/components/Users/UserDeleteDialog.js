@@ -31,7 +31,6 @@ function UserDeleteDialog(props) {
 
 UserDeleteDialog.propTypes = {
     t: PropTypes.func,
-    lang: PropTypes.string,
     open: PropTypes.bool,
     onClose: PropTypes.func,
     user: PropTypes.object,

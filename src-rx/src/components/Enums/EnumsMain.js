@@ -131,7 +131,18 @@ const enumTemplates = {
     favorites: {
         _id: 'enum.favorites',
         common: {
-            name: 'Favorites'
+            name: {
+                "en": "Favorites",
+                "de": "Favoriten",
+                "ru": "Избранное",
+                "pt": "Favoritos",
+                "nl": "Favorieten",
+                "fr": "Favoris",
+                "it": "Preferiti",
+                "es": "Favoritos",
+                "pl": "Ulubione",
+                "zh-cn": "收藏夹"
+            }
         }
     }
 };

@@ -77,18 +77,18 @@ function GroupBlock(props) {
                 <div>
                     <div>
                         <span className={props.classes.userGroupUserName}>
-                            {props.getName(props.group.common.name)}
+                            {props.getText(props.group.common.name)}
                         </span>
                         <span>
-                            {props.getName(props.group._id)}
+                            [{props.group._id}]
                         </span>
                      </div>
                     {
-                        props.group.common.desc !== ''
+                        props.group.common.desc
                             ?
-                            <span>
-                                {props.group.common.desc}
-                            </span>
+                            <div className={props.classes.description}>
+                                {props.getText(props.group.common.desc)}
+                            </div>
                             :
                             null
                     }
@@ -119,7 +119,7 @@ function GroupBlock(props) {
                             :
                             <PersonIcon className={props.classes.icon}/>
                         }
-                        {props.getName(user.common.name)}
+                        {props.getText(user.common.name)}
                         <IconButton
                             size="small"
                             onClick={() => props.removeUserFromGroup(member, props.group._id)}
@@ -138,13 +138,12 @@ function GroupBlock(props) {
 
 GroupBlock.propTypes = {
     t: PropTypes.func,
-    lang: PropTypes.string,
     group: PropTypes.object,
     users: PropTypes.array,
     showGroupEditDialog: PropTypes.func,
     showGroupDeleteDialog: PropTypes.func,
     removeUserFromGroup: PropTypes.func,
-    getName: PropTypes.func,
+    getText: PropTypes.func,
     themeType: PropTypes.string,
 };
 

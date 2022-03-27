@@ -90,9 +90,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-
 ### __WORK IN PROGRESS__
 * (Apollon77) Fix some crash cases reported by Sentry
+* (bluefox) Corrected user tab
 
 ### 5.3.3 (2022-03-19)
 * (bluefox) Implemented the objects coloring depends on other states

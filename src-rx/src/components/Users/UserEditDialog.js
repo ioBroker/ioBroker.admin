@@ -81,9 +81,6 @@ function UserEditDialog(props) {
         canSave = false;
     }
 
-    const getText = text =>
-        text && typeof text === 'object' ? text[props.lang] || text.en : text || '';
-
     const getShortId = _id =>
         _id.split('.').pop();
 
@@ -96,8 +93,8 @@ function UserEditDialog(props) {
         return idArray.join('.');
     }
 
-    let description = getText(props.user.common.desc || props.user.common.description);
-    let name = getText(props.user.common.name);
+    let description = props.getText(props.user.common.desc);
+    let name = props.getText(props.user.common.name);
 
     return <Dialog
         fullWidth={props.innerWidth < 500}
@@ -257,6 +254,7 @@ UserEditDialog.propTypes = {
     onChange: PropTypes.func,
     saveData: PropTypes.func,
     innerWidth: PropTypes.number,
+    getText: PropTypes.func,
 };
 
 export default withStyles(styles)(UserEditDialog);

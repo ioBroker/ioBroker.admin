@@ -326,6 +326,10 @@ class RepositoriesDialog extends Component {
 
         let newConfig = JSON.parse(JSON.stringify(this.props.dataAux));
 
+        if (typeof newConfig.common.activeRepo === 'string') {
+            newConfig.common.activeRepo = [newConfig.common.activeRepo];
+        }
+
         // sort activeRepo anew
         newConfig.common.activeRepo.sort((a, b) => {
             const indexA = items.findIndex(item => item.title === a);

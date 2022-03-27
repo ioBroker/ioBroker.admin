@@ -95,6 +95,7 @@ class Config extends Component {
         emit(eventName, event => this.closeConfig(event), false);
 
         this.registered && this.props.onUnregisterIframeRef(this.refIframe);
+        this.refIframe = null;
    }
 
     closeConfig(event) {
@@ -154,7 +155,7 @@ class Config extends Component {
 
             if (this.state.checkedExist) {
                 return <iframe
-                    ref={el => this.refIframe = el}
+                    ref={el => this && (this.refIframe = el)}
                     title="config"
                     className={this.props.className}
                     src={src}>

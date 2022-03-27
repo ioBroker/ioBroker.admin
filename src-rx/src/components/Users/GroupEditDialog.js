@@ -154,9 +154,6 @@ function GroupEditDialog(props) {
     let canSave = props.group._id !== 'system.group.' &&
         props.group.common.password === props.group.common.passwordRepeat;
 
-    const getText = text =>
-        text && typeof text === 'object' ? (text[props.lang] || text.en) : (text || '');
-
     const getShortId = _id =>
         _id.split('.').pop();
 
@@ -179,8 +176,8 @@ function GroupEditDialog(props) {
         }
     }
 
-    let description = getText(props.group.common.desc || props.group.common.description);
-    let name = getText(props.group.common.name);
+    let description = props.getText(props.group.common.desc);
+    let name = props.getText(props.group.common.name);
 
     let mainTab = <Grid container spacing={props.innerWidth < 500 ? 1 : 4} className={props.classes.dialog}>
         <Grid item xs={12} md={6}>
@@ -317,6 +314,7 @@ GroupEditDialog.propTypes = {
     onChange: PropTypes.func,
     saveData: PropTypes.func,
     innerWidth: PropTypes.number,
+    getText: PropTypes.func,
 };
 
 export default withStyles(styles)(GroupEditDialog);
