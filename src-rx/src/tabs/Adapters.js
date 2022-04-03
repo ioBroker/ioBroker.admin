@@ -713,7 +713,7 @@ class Adapters extends Component {
             this.setState({
                 addInstanceDialog: true,
                 addInstanceAdapter: adapter,
-                addInstanceHost: this.props.currentHost.replace(/^system\.adapter\./, '')
+                addInstanceHost: this.props.currentHost.replace(/^system\.host\./, '')
             });
         } else {
             if (instance && !customUrl) {
@@ -778,7 +778,7 @@ class Adapters extends Component {
     }
 
     handleHostsChange(event) {
-        this.setState({addInstanceHost: event.target.value});
+        this.setState({addInstanceHost: event.target.value.replace(/^system\.host\./, '')});
     }
 
     handleInstanceChange(event) {
@@ -1681,7 +1681,8 @@ class Adapters extends Component {
                     themeType={this.props.themeType}
                     open={this.state.addInstanceDialog}
                     adapter={this.state.addInstanceAdapter}
-                    hosts={this.props.hosts}
+                    socket={this.props.socket}
+                    hostsWorker={this.props.hostsWorker}
                     instancesWorker={this.props.instancesWorker}
                     repository={this.state.repository}
                     dependencies={this.getDependencies(this.state.addInstanceAdapter)}
@@ -1794,6 +1795,7 @@ Adapters.propTypes = {
     socket: PropTypes.object,
     hosts: PropTypes.array,
     currentHost: PropTypes.string,
+    hostsWorker: PropTypes.object,
     ready: PropTypes.bool,
     t: PropTypes.func,
     lang: PropTypes.string,

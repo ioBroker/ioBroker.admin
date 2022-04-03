@@ -19,6 +19,8 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import AddIcon from '@material-ui/icons/Add';
 
+import HostSelectors from '../components/HostSelectors';
+
 const styles = theme => ({
     formControl: {
         marginTop: theme.spacing(3)
@@ -57,11 +59,6 @@ class AddInstanceDialog extends Component {
             });
     }
 
-    getHosts() {
-        return this.props.hosts.map(host => {
-            return <MenuItem value={host.common.name} key={host._id}>{host.common.name}</MenuItem>
-        });
-    }
 
     getAvailableInstances() {
         const result = [];
@@ -92,86 +89,77 @@ class AddInstanceDialog extends Component {
     }
 
     render() {
-
         const { classes } = this.props;
 
         const checkDeps = this.checkDependencies();
 
-        return (
-            <Dialog
-                onClose={this.props.onClose}
-                open={this.props.open}
-                classes={{ paper: classes.paper }}
-            >
-                <DialogTitle disableTypography={true}>
-                    <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
-                        {this.t('You are going to add new instance: ')} {this.props.adapter}
-                        <IconButton className={classes.closeButton} onClick={this.props.onClose}>
-                            <CloseIcon />
-                        </IconButton>
-                    </Typography>
-                </DialogTitle>
-                <DialogContent dividers>
-                    {!checkDeps ? <Grid
-                        container
-                        direction="column"
-                    >
-                        <FormControl
-                            disabled={(this.props.hosts && this.props.hosts.length <= 1)}
+        return <Dialog
+            onClose={this.props.onClose}
+            open={this.props.open}
+            classes={{ paper: classes.paper }}
+        >
+            <DialogTitle disableTypography={true}>
+                <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
+                    {this.t('You are going to add new instance: ')} {this.props.adapter}
+                    <IconButton className={classes.closeButton} onClick={this.props.onClose}>
+                        <CloseIcon />
+                    </IconButton>
+                </Typography>
+            </DialogTitle>
+            <DialogContent dividers>
+                {!checkDeps ? <Grid
+                    container
+                    direction="column"
+                >
+                    <HostSelectors
+                        tooltip={this.t('Select host to add the instance')}
+                        expertMode={true}
+                        socket={this.props.socket}
+                        hostsWorker={this.props.hostsWorker}
+                        currentHost={this.props.currentHost}
+                        setCurrentHost={(hostName, host) => this.props.onHostChange(host._id.replace(/^system\.host\./, ''))}
+                    />
+                    <FormControl className={classes.formControl}>
+                        <InputLabel id="instance-label">{this.t('Instance')}</InputLabel>
+                        <Select
+                            labelId="instance-label"
+                            value={this.props.currentInstance}
+                            onChange={this.props.onInstanceChange}
                         >
-                            <InputLabel id="host-label">{this.t('Host')}</InputLabel>
-                            <Select
-                                labelId="host-label"
-                                value={this.props.currentHost}
-                                onChange={this.props.onHostChange}
-                            >
-                                {this.getHosts()}
-                            </Select>
-                        </FormControl>
-                        <FormControl
-                            className={classes.formControl}
-                        >
-                            <InputLabel id="instance-label">{this.t('Instance')}</InputLabel>
-                            <Select
-                                labelId="instance-label"
-                                value={this.props.currentInstance}
-                                onChange={this.props.onInstanceChange}
-                            >
-                                {this.getAvailableInstances()}
-                            </Select>
-                        </FormControl>
-                    </Grid> : null}
-                    <div style={{
-                        margin: 10,
-                        fontSize: 16,
-                        color: this.props.themeType === 'dark' ? '#e70000' : '#840101'
-                    }}>{checkDeps}</div>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        variant="contained"
-                        autoFocus
-                        disabled={!!checkDeps}
-                        onClick={() => {
-                            this.props.onClick();
-                            this.props.onClose();
-                        }}
-                        color="primary"
-                        startIcon={<AddIcon/>}
-                    >
-                        {this.t('Add')}
-                    </Button>
-                    <Button
-                        variant="contained"
-                        onClick={() => this.props.onClose()}
-                        color="default"
-                        startIcon={<CloseIcon />}
-                    >
-                        {this.t('Close')}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        );
+                            {this.getAvailableInstances()}
+                        </Select>
+                    </FormControl>
+                </Grid> : null}
+                <div style={{
+                    margin: 10,
+                    fontSize: 16,
+                    color: this.props.themeType === 'dark' ? '#e70000' : '#840101'
+                }}>{checkDeps}</div>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    variant="contained"
+                    autoFocus
+                    disabled={!!checkDeps}
+                    onClick={() => {
+                        this.props.onClick();
+                        this.props.onClose();
+                    }}
+                    color="primary"
+                    startIcon={<AddIcon/>}
+                >
+                    {this.t('Add')}
+                </Button>
+                <Button
+                    variant="contained"
+                    onClick={() => this.props.onClose()}
+                    color="default"
+                    startIcon={<CloseIcon />}
+                >
+                    {this.t('Close')}
+                </Button>
+            </DialogActions>
+        </Dialog>;
     }
 }
 
@@ -179,8 +167,8 @@ AddInstanceDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     themeType: PropTypes.string,
     adapter: PropTypes.string.isRequired,
-    hosts: PropTypes.array.isRequired,
     instancesWorker: PropTypes.object.isRequired,
+    socket: PropTypes.object,
     currentHost: PropTypes.string.isRequired,
     currentInstance: PropTypes.string.isRequired,
     t: PropTypes.func.isRequired,

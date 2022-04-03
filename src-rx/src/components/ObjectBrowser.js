@@ -1236,17 +1236,12 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
                 } else {
                     v = new Date(v).toString(); // Let the browser convert it somehow
                 }
-            } else if (v !== 'null') {
+            } else if (v !== '(null)' && v !== '[undef]') {
                 v = new Date(v).toString(); // Let the browser convert it somehow
             }
         } else {
-            if (v === null || v === 'null') {
-                v = 'null';
-            } else if (v === undefined) {
-                v = 'undefined';
-            } else {
-                v = v ? new Date(v).toString() : v;
-            }
+            // null and undefined could not be here. See `let v = (isCommon && isCommon.type === 'file') ....` above
+            v = v ? new Date(v).toString() : v;
         }
     } else {
         if (type === 'number') {

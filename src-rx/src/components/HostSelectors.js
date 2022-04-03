@@ -171,11 +171,11 @@ class HostSelectors extends Component {
         }
         let selectedHostObj;
         if (this.state.hosts.length) {
-            selectedHostObj = this.state.hosts.find(host => host._id === this.props.currentHost);
+            selectedHostObj = this.state.hosts.find(host => host._id === this.props.currentHost || host._id === 'system.host.' + this.props.currentHost);
         }
 
         return <div>
-            <Tooltip title={I18n.t('Change current host')}>
+            <Tooltip title={this.props.tooltip || I18n.t('Change current host')}>
                 <div>
                     <Button
                         className={this.props.classes.button}
@@ -217,7 +217,7 @@ class HostSelectors extends Component {
                         disabled={!this.state.alive[_id]}
                         selected={_id === this.props.currentHost}
                         style={{ background: color || 'inherit' }}
-                        onClick={el => {
+                        onClick={() => {
                             if (this.props.currentHost !== this.state.hosts[idx]._id) {
                                 this.props.setCurrentHost(this.state.hosts[idx].common.name, this.state.hosts[idx]._id);
                             }
@@ -229,10 +229,7 @@ class HostSelectors extends Component {
                             alignItems: 'center',
                         }}>
                             <div className={this.props.classes.selector}>{_id === this.props.currentHost ? 'ᐅ' : ''}</div>
-                            <Icon
-                                className={this.props.classes.img}
-                                src={icon || 'img/no-image.png'}
-                            />
+                            <Icon className={this.props.classes.img} src={icon || 'img/no-image.png'} />
                             {name}
                         </div>
                     </MenuItem>
@@ -249,8 +246,7 @@ HostSelectors.propTypes = {
     hostsWorker: PropTypes.object,
     expertMode: PropTypes.bool,
     setCurrentHost: PropTypes.func.isRequired,
-    t: PropTypes.func,
-    lang: PropTypes.string,
+    tooltip: PropTypes.string,
 };
 
 export default withStyles(styles)(HostSelectors);
