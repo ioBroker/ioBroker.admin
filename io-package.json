@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "5.3.5",
+    "version": "5.3.6",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "5.3.6": {
+        "en": "Corrected the host selector in \"add instance\" dialog\ncorrected display of \"null\" values, e.g. by time/date",
+        "de": "Die Hostauswahl im Dialog „Instanz hinzufügen“ wurde korrigiert\nkorrigierte Anzeige von \"Null\"-Werten, z.B. nach Zeit/Datum",
+        "ru": "Исправлен селектор хоста в диалоговом окне «Добавить экземпляр».\nисправлено отображение \"нулевых\" значений, т.е. по времени/дате",
+        "pt": "Corrigido o seletor de host na caixa de diálogo \"adicionar instância\"\nexibição corrigida de valores \"nulos\", por exemplo por hora/data",
+        "nl": "De hostselector in het dialoogvenster \"instantie toevoegen\" gecorrigeerd\ngecorrigeerde weergave van \"null\"-waarden, b.v. op tijd/datum",
+        "fr": "Correction du sélecteur d'hôte dans la boîte de dialogue \"ajouter une instance\"\naffichage corrigé des valeurs \"nulles\", par ex. par heure/date",
+        "it": "Corretto il selettore host nella finestra di dialogo \"aggiungi istanza\".\nvisualizzazione corretta di valori \"nulli\", ad es. per ora/data",
+        "es": "Se corrigió el selector de host en el cuadro de diálogo \"agregar instancia\".\nvisualización corregida de valores \"nulos\", p. por hora/fecha",
+        "pl": "Poprawiono selektor hosta w oknie dialogowym „dodaj instancję”\npoprawione wyświetlanie wartości „null”, m.in. według czasu/daty",
+        "zh-cn": "更正了“添加实例”对话框中的主机选择器\n更正了“空”值的显示，例如按时间/日期"
+      },
       "5.3.5": {
         "en": "Corrected the host selector in \"add instance\" dialog\ncorrected display of \"null\" values, e.g. by time/date",
         "de": "Die Hostauswahl im Dialog „Instanz hinzufügen“ wurde korrigiert\nkorrigierte Anzeige von \"Null\"-Werten, z.B. nach Zeit/Datum",
@@ -89,18 +101,6 @@
         "es": "Habilitar la compresión http en el servidor web\nSe eliminó el paquete obsoleto \"solicitud\"\nSe agregó la opción JSONL para la configuración básica\nPequeñas mejoras añadidas\nSe agregó el visor de archivos para estados binarios.",
         "pl": "Włącz kompresję http na serwerze WWW\nUsunięto przestarzały pakiet „request”\nDodano opcję JSONL dla ustawień podstawowych\nDodano drobne ulepszenia\nDodano przeglądarkę plików dla stanów binarnych",
         "zh-cn": "在网络服务器中启用 http 压缩\n删除了不推荐使用的包“请求”\n为基本设置添加了 JSONL 选项\n添加了小改进\n添加了二进制状态的文件查看器"
-      },
-      "5.2.3": {
-        "en": "Fixed error in `AutocompleteSendTo`\nFixed error in charts",
-        "de": "Fehler in `AutocompleteSendTo` behoben\nFehler in Diagrammen behoben",
-        "ru": "Исправлена ошибка в `AutocompleteSendTo`\nИсправлена ошибка в графиках",
-        "pt": "Erro corrigido em `AutocompleteSendTo`\nErro corrigido em gráficos",
-        "nl": "Fout opgelost in `AutocompleteSendTo`\nVaste fout in grafieken",
-        "fr": "Correction d'une erreur dans 'AutocompleteSendTo'\nCorrection d'une erreur dans les graphiques",
-        "it": "Risolto errore in `AutocompleteSendTo`\nRisolto errore nei grafici",
-        "es": "Se corrigió el error en \"AutocompleteSendTo\"\nError fijo en gráficos.",
-        "pl": "Naprawiono błąd w `AutocompleteSendTo`\nNaprawiono błąd w wykresach",
-        "zh-cn": "修复了“AutocompleteSendTo”中的错误\n修复了图表中的错误"
       }
     },
     "desc": {
