@@ -90,7 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### 5.3.5 (2022-04-03)
+### **WORK IN PROGRESS**
 * (bluefox) Corrected the host selector in "add instance" dialog
 * (bluefox) corrected display of "null" values, e.g. by time/date
 
