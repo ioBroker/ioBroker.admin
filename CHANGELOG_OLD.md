@@ -1,6 +1,17 @@
 ## 5.1.15 (2021-07-26)
 * (bluefox) Replaced the formula icon in the edit aliases dialog
 * (bluefox) Added the logic for checkbox in JsonConfig
+## 5.3.0 (2022-02-09)
+* (jogibear9988) Enable http compression in webserver
+* (bluefox) Removed deprecated package "request"
+* (bluefox) Added JSONL option for base settings
+* (bluefox) Added small improvements
+* (bluefox) Added the file viewer for binary states
+
+## 5.1.15 (2021-07-26)
+* (bluefox) Replaced the formula icon in the edit aliases dialog
+* (bluefox) Added the logic for checkbox in JsonConfig
+
 ## 5.2.3 (2021-12-24)
 * (bluefox) Fixed error in `AutocompleteSendTo`
 * (bluefox) Fixed error in charts

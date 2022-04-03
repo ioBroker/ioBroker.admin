@@ -90,7 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.3.5 (2022-04-03)
 * (bluefox) Corrected the host selector in "add instance" dialog
 * (bluefox) corrected display of "null" values, e.g. by time/date
 
@@ -109,13 +109,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (bluefox) Support of IPv6 address by links (vis, material, end so on)
 * (bluefox) Corrected errors in the base settings
 * (bluefox) Corrected error with the pre-selected language in wizard
-
-### 5.3.0 (2022-02-09)
-* (jogibear9988) Enable http compression in webserver
-* (bluefox) Removed deprecated package "request"
-* (bluefox) Added JSONL option for base settings
-* (bluefox) Added small improvements
-* (bluefox) Added the file viewer for binary states
 
 ## License
 The MIT License (MIT)
