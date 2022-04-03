@@ -1222,9 +1222,9 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
                 const parts = v.split(/[-.]/);
                 if (parts.length === 3) {
                     if (parts[0].length === 4) { // YYYY.MM.DD
-                        v = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) + 1, parseInt(parts[2], 10));
+                        v = `${parseInt(parts[0], 10)}.${(parseInt(parts[1], 10) + 1).toString().padStart(2, '0')}.${parseInt(parts[2], 10).toString().padStart(2, '0')}`;
                     } else if (parts[0].length === 4) { // DD.MM.YYYY
-                        v = new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) + 1, parseInt(parts[0], 10));
+                        v = `${parseInt(parts[2], 10)}.${(parseInt(parts[1], 10) + 1).toString().padStart(2, '0')}.${parseInt(parts[0], 10).toString().padStart(2, '0')}`;
                     }
                 } else {
                     v = new Date(v).toString(); // Let the browser convert it somehow
@@ -1232,11 +1232,12 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
             } else if (v.length === 8) { // YY.MM.DD
                 const parts = v.split(/[-.]/);
                 if (parts.length === 3) {
-                    v = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) + 1, parseInt(parts[2], 10));
+                    const y = parseInt(parts[0], 10);
+                    v = (y < 100 ? 2000 + y : y) + '.' + (parseInt(parts[1], 10) + 1).toString().padStart(2, '0') + '.' + parseInt(parts[2], 10).toString().padStart(2, '0');
                 } else {
                     v = new Date(v).toString(); // Let the browser convert it somehow
                 }
-            } else if (v !== '(null)' && v !== '[undef]') {
+            } else if (v !== 'undefined' && v !== 'null' && v !== '(null)' && v !== '[undef]') {
                 v = new Date(v).toString(); // Let the browser convert it somehow
             }
         } else {
