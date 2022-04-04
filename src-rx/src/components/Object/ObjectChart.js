@@ -395,9 +395,11 @@ class ObjectChart extends Component {
             ack:       false,
             q:         false,
             addID:     false,
-            aggregate: 'none'
+            aggregate: 'none',
+            returnNewestEntries: true,
         };
 
+        // if more than 24 hours => aggregate
         if (end - start > 60000 * 24 &&
             !(this.props.obj.common.type === 'boolean' || (this.props.obj.common.type === 'number' && this.props.obj.common.states))) {
             options.aggregate = 'minmax';
