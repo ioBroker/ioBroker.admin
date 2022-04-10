@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-import { version } from '../package.json';
+import pack from '../package.json';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import * as Sentry from '@sentry/browser';
 import * as SentryIntegrations from '@sentry/integrations';
@@ -15,7 +15,7 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 window.adapterName = 'admin';
 
-console.log('iobroker.' + window.adapterName + '@' + version);
+console.log('iobroker.' + window.adapterName + '@' + pack.version);
 let themeName = Utils.getThemeName();
 
 function build() {
@@ -62,7 +62,7 @@ if (window.location.host !== 'localhost:3000') {
     if (!window.disableDataReporting && window.location.port !== '3000') {
         Sentry.init({
             dsn: 'https://43643152dab3481db69950ba866ee9d6@sentry.iobroker.net/58',
-            release: 'iobroker.' + window.adapterName + '@' + version,
+            release: 'iobroker.' + window.adapterName + '@' + pack.version,
             integrations: [
                 new SentryIntegrations.Dedupe()
             ],
