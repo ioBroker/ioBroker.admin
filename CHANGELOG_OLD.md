@@ -1,6 +1,15 @@
 ## 5.1.15 (2021-07-26)
 * (bluefox) Replaced the formula icon in the edit aliases dialog
 * (bluefox) Added the logic for checkbox in JsonConfig
+## 5.3.1 (2022-02-21)
+* (bluefox) Support of IPv6 address by links (vis, material, end so on)
+* (bluefox) Corrected errors in the base settings
+* (bluefox) Corrected error with the pre-selected language in wizard
+
+## 5.1.15 (2021-07-26)
+* (bluefox) Replaced the formula icon in the edit aliases dialog
+* (bluefox) Added the logic for checkbox in JsonConfig
+
 ## 5.1.15 (2021-07-26)
 * (bluefox) Replaced the formula icon in the edit aliases dialog
 * (bluefox) Added the logic for checkbox in JsonConfig

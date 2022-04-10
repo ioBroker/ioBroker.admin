@@ -90,7 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.3.7 (2022-04-10)
 * (bluefox) Changed the charts rendering
 
 ### 5.3.6 (2022-04-03)
@@ -107,11 +107,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 5.3.2 (2022-03-18)
 * (xXBJXx) added Radio Buttons for value2table
 * (bluefox) Corrected many GUI errors
-
-### 5.3.1 (2022-02-21)
-* (bluefox) Support of IPv6 address by links (vis, material, end so on)
-* (bluefox) Corrected errors in the base settings
-* (bluefox) Corrected error with the pre-selected language in wizard
 
 ## License
 The MIT License (MIT)

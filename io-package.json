@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "5.3.6",
+    "version": "5.3.7",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "5.3.7": {
+        "en": "Changed the charts rendering",
+        "de": "Das Rendern der Diagramme wurde geändert",
+        "ru": "Изменено отображение графиков",
+        "pt": "Mudou a renderização dos gráficos",
+        "nl": "De weergave van de grafieken gewijzigd",
+        "fr": "Modification du rendu des graphiques",
+        "it": "Modificato il rendering dei grafici",
+        "es": "Cambió la representación de los gráficos.",
+        "pl": "Zmieniono renderowanie wykresów",
+        "zh-cn": "更改了图表呈现"
+      },
       "5.3.6": {
         "en": "Corrected the host selector in \"add instance\" dialog\ncorrected display of \"null\" values, e.g. by time/date",
         "de": "Die Hostauswahl im Dialog „Instanz hinzufügen“ wurde korrigiert\nkorrigierte Anzeige von \"Null\"-Werten, z.B. nach Zeit/Datum",
@@ -89,18 +101,6 @@
         "es": "Soporte de dirección IPv6 por enlaces (vis, material, etc.)\nErrores corregidos en la configuración base.\nCorregido error con el idioma preseleccionado en asistente",
         "pl": "Obsługa adresu IPv6 przez linki (vis, material, end itd.)\nPoprawione błędy w ustawieniach podstawowych\nPoprawiony błąd we wstępnie wybranym języku w kreatorze",
         "zh-cn": "通过链接（vis、material、end 等）支持 IPv6 地址\n更正了基本设置中的错误\n更正了向导中预选语言的错误"
-      },
-      "5.3.0": {
-        "en": "Enable http compression in webserver\nRemoved deprecated package \"request\"\nAdded JSONL option for base settings\nAdded small improvements\nAdded the file viewer for binary states",
-        "de": "HTTP-Komprimierung im Webserver aktivieren\nVeraltetes Paket „request“ entfernt\nJSONL-Option für Basiseinstellungen hinzugefügt\nKleine Verbesserungen hinzugefügt\nDateibetrachter für Binärzustände hinzugefügt",
-        "ru": "Включить сжатие http на веб-сервере\nУдален устаревший пакет «запрос».\nДобавлен параметр JSONL для базовых настроек.\nДобавлены небольшие улучшения\nДобавлен просмотрщик файлов для бинарных состояний",
-        "pt": "Habilitar compressão http no servidor web\nRemoção do pacote obsoleto \"solicitação\"\nAdicionada opção JSONL para configurações básicas\nAdicionadas pequenas melhorias\nAdicionado o visualizador de arquivos para estados binários",
-        "nl": "Schakel http-compressie in webserver in\nVerouderd pakket \"verzoek\" verwijderd\nJSONL-optie toegevoegd voor basisinstellingen\nKleine verbeteringen toegevoegd\nDe bestandsviewer voor binaire toestanden toegevoegd",
-        "fr": "Activer la compression http sur le serveur Web\nSuppression du package obsolète \"request\"\nAjout de l'option JSONL pour les paramètres de base\nAjout de petites améliorations\nAjout de la visionneuse de fichiers pour les états binaires",
-        "it": "Abilita la compressione http nel server web\nRimosso il pacchetto obsoleto \"richiesta\"\nAggiunta l'opzione JSONL per le impostazioni di base\nAggiunti piccoli miglioramenti\nAggiunto il visualizzatore di file per gli stati binari",
-        "es": "Habilitar la compresión http en el servidor web\nSe eliminó el paquete obsoleto \"solicitud\"\nSe agregó la opción JSONL para la configuración básica\nPequeñas mejoras añadidas\nSe agregó el visor de archivos para estados binarios.",
-        "pl": "Włącz kompresję http na serwerze WWW\nUsunięto przestarzały pakiet „request”\nDodano opcję JSONL dla ustawień podstawowych\nDodano drobne ulepszenia\nDodano przeglądarkę plików dla stanów binarnych",
-        "zh-cn": "在网络服务器中启用 http 压缩\n删除了不推荐使用的包“请求”\n为基本设置添加了 JSONL 选项\n添加了小改进\n添加了二进制状态的文件查看器"
       }
     },
     "desc": {
