@@ -50,7 +50,7 @@ class ConfigSelect extends ConfigGeneric {
         // eslint-disable-next-line
         const item = selectOptions.find(item => item.value == this.state.value); // let "==" be and not ===
 
-        return <FormControl className={this.props.classes.fullWidth}>
+        return <FormControl className={this.props.classes.fullWidth} id={`jsonSelect_${this.props.schema.attr}_${this.props.index}`}>
             <InputLabel>{this.getText(this.props.schema.label)}</InputLabel>
             <Select
                 error={!!error}

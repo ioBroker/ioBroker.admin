@@ -1484,5 +1484,10 @@
   "npm_warning": "Met behulp van dit dialoogvenster kunt u de bèta/nieuwste adapterversies rechtstreeks vanuit %s installeren. Deze versies zijn mogelijk nog niet volledig getest, dus installeer ze alleen als u fixes of nieuwe functies van deze versies nodig heeft. Wanneer de ontwikkelaar de versie als stabiel beschouwt, zullen het updates zijn in de Stabiele repository.",
   "View file in state: %s": "Bekijk bestand in staat: %s",
   "Download": "Downloaden",
-  "Select host to add the instance": "Selecteer host om de instantie toe te voegen"
+  "Select host to add the instance": "Selecteer host om de instantie toe te voegen",
+  "Delete current row": "Huidige rij verwijderen",
+  "Add row": "Rij toevoegen",
+  "Move up": "Omhoog gaan",
+  "Move down": "Naar beneden verplaatsen",
+  "All items are filtered out": "Alle items zijn uitgefilterd"
 }

@@ -44,6 +44,7 @@ import TextWithIcon from '@iobroker/adapter-react/Components/TextWithIcon';
 import SelectWithIcon from '@iobroker/adapter-react/Components/SelectWithIcon';
 
 import sentry from '../../assets/sentry.svg';
+import noSentry from '../../assets/sentryNo.svg';
 import InstanceInfo from './InstanceInfo';
 import State from '../State';
 import CustomModal from '../CustomModal';
@@ -763,7 +764,7 @@ const InstanceCard = memo(({
                             <CardMedia
                                 className={clsx(classes.sentry, !item.sentry && classes.contrast0)}
                                 component="img"
-                                image={sentry}
+                                image={item.sentry ? sentry : noSentry}
                             />
                         </IconButton>
                     </Tooltip>

@@ -121,7 +121,7 @@ class ConfigPanel extends ConfigGeneric {
     renderItems(items, disabled) {
         const classes = this.props.classes || {};
 
-        return Object.keys(items).map(attr => {
+        return items ? Object.keys(items).map(attr => {
             if (this.props.multiEdit && items[attr].noMultiEdit) {
                 return null;
             }
@@ -141,8 +141,13 @@ class ConfigPanel extends ConfigGeneric {
                 ItemComponent = components[type] || ConfigGeneric;
             }
 
+            if (type === 'select') {
+                console.log(`KEY: ${type} - ${attr + '_' + this.props.index} = ${this.props.data[attr]}`)
+            }
+
             return <ItemComponent
-                key={attr}
+                key={attr + '_' + this.props.index}
+                index={this.props.index}
                 onCommandRunning={this.props.onCommandRunning}
                 commandRunning={this.props.commandRunning}
                 className={classes.panel}
@@ -173,7 +178,7 @@ class ConfigPanel extends ConfigGeneric {
                 attr={attr}
                 schema={items[attr]}
             />;
-        });
+        }) : null;
     }
 
     render() {
@@ -221,7 +226,7 @@ class ConfigPanel extends ConfigGeneric {
         } else
         if (this.props.custom) {
             return <Grid
-                key={this.props.attr}
+                key={this.props.attr + '_' + this.props.index}
                 container
                 className={classes.fullWidth}
                 spacing={2}
@@ -232,7 +237,7 @@ class ConfigPanel extends ConfigGeneric {
             let content;
             if (schema.collapsable) {
                 content = <Accordion
-                    key={this.props.attr}
+                    key={this.props.attr + '_' + this.props.index}
                     className={classes.fullWidth}
                     expanded={!!this.state.expanded}
                     onChange={() => {
@@ -255,7 +260,7 @@ class ConfigPanel extends ConfigGeneric {
                 </Accordion>
             } else {
                 content = <div
-                    key={this.props.attr}
+                    key={this.props.attr + '_' + this.props.index}
                     className={clsx(this.props.className, this.props.isParentTab && classes.paper, classes.fullWidth)}
                 >
                     <Grid container className={clsx(classes.fullWidth, this.props.isParentTab && classes.padding)} spacing={2}>
@@ -300,6 +305,7 @@ ConfigPanel.propTypes = {
     data: PropTypes.object.isRequired,
     originalData: PropTypes.object,
     schema: PropTypes.object,
+    index: PropTypes.number,
     customs: PropTypes.object,
     alive: PropTypes.bool,
     systemConfig: PropTypes.object,

@@ -1484,5 +1484,10 @@
   "npm_warning": "Usando questa finestra di dialogo puoi installare le versioni beta/ultime dell'adattatore direttamente da %s. Queste versioni potrebbero non essere ancora completamente testate, quindi installale solo se hai bisogno di correzioni o nuove funzionalità da queste versioni. Quando lo sviluppatore considera la versione stabile, ci saranno aggiornamenti nel repository Stable.",
   "View file in state: %s": "Visualizza il file nello stato: TYPE",
   "Download": "Scarica",
-  "Select host to add the instance": "Seleziona l'host per aggiungere l'istanza"
+  "Select host to add the instance": "Seleziona l'host per aggiungere l'istanza",
+  "Delete current row": "Elimina la riga corrente",
+  "Add row": "Aggiungi riga",
+  "Move up": "Andare avanti",
+  "Move down": "Abbassati",
+  "All items are filtered out": "Tutti gli elementi vengono filtrati"
 }

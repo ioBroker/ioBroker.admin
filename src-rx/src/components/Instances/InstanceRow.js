@@ -22,6 +22,7 @@ import ScheduleIcon from '@material-ui/icons/Schedule';
 import ViewCompactIcon from '@material-ui/icons/ViewCompact';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import sentry from '../../assets/sentry.svg';
+import noSentry from '../../assets/sentryNo.svg';
 import EditIcon from '@material-ui/icons/Edit';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
 import PauseIcon from '@material-ui/icons/Pause';
@@ -1094,7 +1095,7 @@ const InstanceRow = ({
                         <CardMedia
                             className={clsx(classes.sentry, !item.sentry && classes.contrast0)}
                             component="img"
-                            image={sentry}
+                            image={item.sentry ? sentry : noSentry}
                         />
                     </IconButton>
                 </Tooltip>

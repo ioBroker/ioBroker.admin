@@ -1484,5 +1484,10 @@
   "npm_warning": "使用此对话框，您可以直接从 %s 安装 Beta/最新适配器版本。这些版本可能尚未经过全面测试，因此仅当您需要这些版本的修复或新功能时才安装它们。当开发人员认为版本稳定时，它将在稳定存储库中进行更新。",
   "View file in state: %s": "查看文件状态：%s",
   "Download": "下载",
-  "Select host to add the instance": "选择主机添加实例"
+  "Select host to add the instance": "选择主机添加实例",
+  "Delete current row": "删除当前行",
+  "Add row": "添加行",
+  "Move up": "提升",
+  "Move down": "下移",
+  "All items are filtered out": "所有项目都被过滤掉"
 }

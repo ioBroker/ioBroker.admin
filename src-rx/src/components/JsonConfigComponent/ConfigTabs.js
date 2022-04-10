@@ -48,6 +48,7 @@ class ConfigTabs extends ConfigGeneric {
             </Tabs>
             {<ConfigPanel
                 key={this.state.tab}
+                index={1001}
                 isParentTab={true}
                 onCommandRunning={this.props.onCommandRunning}
                 commandRunning={this.props.commandRunning}

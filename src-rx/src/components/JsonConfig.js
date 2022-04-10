@@ -255,16 +255,17 @@ class JsonConfig extends Router {
             });
 
             try {
+                const encryptedObj = JSON.parse(JSON.stringify(obj));
                 // encode all native attributes listed in obj.encryptedNative
-                if (Array.isArray(obj.encryptedNative)) {
-                    obj.encryptedNative.forEach(attr => {
-                        if (obj.native[attr]) {
-                            obj.native[attr] = encrypt(this.secret, obj.native[attr]);
+                if (Array.isArray(encryptedObj.encryptedNative)) {
+                    encryptedObj.encryptedNative.forEach(attr => {
+                        if (encryptedObj.native[attr]) {
+                            encryptedObj.native[attr] = encrypt(this.secret, encryptedObj.native[attr]);
                         }
                     });
                 }
 
-                await this.props.socket.setObject(obj._id, obj);
+                await this.props.socket.setObject(encryptedObj._id, encryptedObj);
             } catch (e) {
                 window.alert(`[JsonConfig] Cannot set object: ${e}`);
             }

@@ -1484,5 +1484,10 @@
   "npm_warning": "Korzystając z tego okna dialogowego, możesz zainstalować wersje beta/najnowsze adapterów bezpośrednio z %s. Wersje te potencjalnie nie zostały jeszcze w pełni przetestowane, więc instaluj je tylko wtedy, gdy potrzebujesz poprawek lub nowych funkcji z tych wersji. Gdy programista uzna wersję za stabilną, będzie to aktualizacja w repozytorium Stabilny.",
   "View file in state: %s": "Wyświetl plik w stanie: %s",
   "Download": "Ściągnij",
-  "Select host to add the instance": "Wybierz hosta, aby dodać instancję"
+  "Select host to add the instance": "Wybierz hosta, aby dodać instancję",
+  "Delete current row": "Usuń bieżący wiersz",
+  "Add row": "Dodaj wiersz",
+  "Move up": "Podnieść",
+  "Move down": "Padnij",
+  "All items are filtered out": "Wszystkie pozycje są odfiltrowane"
 }

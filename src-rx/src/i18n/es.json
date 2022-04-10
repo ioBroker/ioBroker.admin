@@ -1484,5 +1484,10 @@
   "npm_warning": "Con este cuadro de diálogo, puede instalar las versiones Beta/Últimas del adaptador directamente desde %s. Es posible que estas versiones aún no se hayan probado por completo, así que instálelas solo si necesita correcciones o nuevas funciones de estas versiones. Cuando el desarrollador considere que la versión es estable, se actualizará en el repositorio estable.",
   "View file in state: %s": "Ver archivo en estado: %s",
   "Download": "Descargar",
-  "Select host to add the instance": "Seleccionar host para agregar la instancia"
+  "Select host to add the instance": "Seleccionar host para agregar la instancia",
+  "Delete current row": "Eliminar fila actual",
+  "Add row": "Añadir fila",
+  "Move up": "Ascender",
+  "Move down": "Mover hacia abajo",
+  "All items are filtered out": "Todos los elementos se filtran"
 }

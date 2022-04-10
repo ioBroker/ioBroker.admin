@@ -1484,5 +1484,10 @@
   "npm_warning": "Using this dialog you can install the Beta/Latest adapter versions directly from %s. These versions are potentially not yet fully tested, so install them only if you need fixes or new features from these versions. When the developer consider the version stable it will be updates in the Stable repository.",
   "View file in state: %s": "View file in state: %s",
   "Download": "Download",
-  "Select host to add the instance": "Select host to add the instance"
+  "Select host to add the instance": "Select host to add the instance",
+  "Delete current row": "Delete current row",
+  "Add row": "Add row",
+  "Move up": "Move up",
+  "Move down": "Move down",
+  "All items are filtered out": "All items are filtered out"
 }

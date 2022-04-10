@@ -147,7 +147,7 @@ class ConfigTable extends ConfigGeneric {
 
         const visibleValue = value.map((_, i) => i);
 
-        this.setState({ value, visibleValue, orderBy: /*this.props.schema.items.length ? this.props.schema.items[0].attr : */'', order: 'asc' });
+        this.setState({ value, visibleValue, orderBy: /*this.props.schema.items.length ? this.props.schema.items[0].attr : */'', order: 'asc', iteration: 0 });
     }
 
     componentWillUnmount() {
@@ -172,6 +172,7 @@ class ConfigTable extends ConfigGeneric {
         };
 
         return <ConfigPanel
+            index={idx + this.state.iteration}
             socket={this.props.socket}
             adapterName={this.props.adapterName}
             instance={this.props.instance}
@@ -218,7 +219,7 @@ class ConfigTable extends ConfigGeneric {
             const isAsc = orderBy === property && order === 'asc';
             const newOrder = orderCheck ? order : (isAsc ? 'desc' : 'asc');
             const newValue = this.stableSort(newOrder, property);
-            this.setState({ order: newOrder, orderBy: property }, () =>
+            this.setState({ order: newOrder, orderBy: property, iteration: this.state.iteration + 10000 }, () =>
                 this.applyFilter(false, newValue));
         }
     }
@@ -262,13 +263,13 @@ class ConfigTable extends ConfigGeneric {
                             {headCell.filter ?
                                 <TextField
                                     ref={this.filterRefs[headCell.attr]}
-                                    onChange={el => this.applyFilter()}
+                                    onChange={() => this.applyFilter()}
                                     InputProps={{
                                         endAdornment: (
                                             this.filterRefs[headCell.attr]?.current?.children[0]?.children[0]?.value && <InputAdornment position="end">
                                                 <IconButton
                                                     size="small"
-                                                    onClick={(e) => {
+                                                    onClick={() => {
                                                         this.filterRefs[headCell.attr].current.children[0].children[0].value = '';
                                                         this.applyFilter();
                                                     }}
@@ -302,7 +303,7 @@ class ConfigTable extends ConfigGeneric {
                 visibleValue = visibleValue.map(i => i > index ? i - 1 : i);
             }
 
-            this.setState({ value: newValue, visibleValue }, () =>
+            this.setState({ value: newValue, visibleValue, iteration: this.state.iteration + 10000 }, () =>
                 this.onChangeWrapper(newValue));
         };
 
@@ -369,7 +370,7 @@ class ConfigTable extends ConfigGeneric {
         const item = value[idx];
         value.splice(idx, 1);
         value.splice(idx - 1, 0, item);
-        this.setState({ value }, () =>
+        this.setState({ value, iteration: this.state.iteration + 10000 }, () =>
             this.onChangeWrapper(value));
     }
 
@@ -378,7 +379,7 @@ class ConfigTable extends ConfigGeneric {
         const item = value[idx];
         value.splice(idx, 1);
         value.splice(idx + 1, 0, item);
-        this.setState({ value }, () =>
+        this.setState({ value, iteration: this.state.iteration + 10000 }, () =>
             this.onChangeWrapper(value));
     }
 
@@ -417,11 +418,12 @@ class ConfigTable extends ConfigGeneric {
                                 hover
                                 key={idx}
                             >
-                                {schema.items.map(headCell =>
-                                    <TableCell key={headCell.attr + idx} align="left">
+                                {schema.items.map(headCell => {
+                                    console.log(`KEy: ${headCell.attr + idx} = ${value[idx][headCell.attr]}`)
+                                    return <TableCell key={headCell.attr + '_' + idx} align="left">
                                         {this.itemTable(headCell.attr, value[idx], idx)}
-                                    </TableCell>
-                                )}
+                                    </TableCell>;
+                                })}
                                 {!schema.noDelete && <TableCell align="left" className={classes.buttonCell}>
                                     {!doAnyFilterSet && !this.state.orderBy ? (i ? <Tooltip title={I18n.t('Move up')}>
                                         <IconButton size="small" onClick={() => this.onMoveUp(idx)}>

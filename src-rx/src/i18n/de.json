@@ -1484,5 +1484,10 @@
   "npm_warning": "Mit diesem Dialog können Beta-/Latest Adapterversionen direkt von %s installiert werden. Diese Versionen sind möglicherweise noch nicht vollständig getestet. Sie sollten daher nur installiert werden, wenn Korrekturen oder neue Funktionen aus diesen Versionen benötigt werden. Wenn der Entwickler die Version als stabil betrachtet, steht diese im Stable-Repository zur Verfügung.",
   "View file in state: %s": "Datei anzeigen im Status: %s",
   "Download": "Herunterladen",
-  "Select host to add the instance": "Den Host auswählen, um die Instanz hinzuzufügen"
+  "Select host to add the instance": "Den Host auswählen, um die Instanz hinzuzufügen",
+  "Delete current row": "Aktuelle Zeile löschen",
+  "Add row": "Zeile hinzufügen",
+  "Move up": "Bewegen Sie sich nach oben",
+  "Move down": "Sich abwärts bewegen",
+  "All items are filtered out": "Alle Elemente werden herausgefiltert"
 }

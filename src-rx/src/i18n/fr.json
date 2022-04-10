@@ -1484,5 +1484,10 @@
   "npm_warning": "À l'aide de cette boîte de dialogue, vous pouvez installer les versions bêta/dernières de l'adaptateur directement à partir de %s. Ces versions ne sont potentiellement pas encore entièrement testées, donc installez-les uniquement si vous avez besoin de correctifs ou de nouvelles fonctionnalités de ces versions. Lorsque le développeur considère que la version est stable, elle sera mise à jour dans le référentiel Stable.",
   "View file in state: %s": "Afficher le fichier dans l'état : %s",
   "Download": "Télécharger",
-  "Select host to add the instance": "Sélectionnez l'hôte pour ajouter l'instance"
+  "Select host to add the instance": "Sélectionnez l'hôte pour ajouter l'instance",
+  "Delete current row": "Supprimer la ligne actuelle",
+  "Add row": "Ajouter une rangée",
+  "Move up": "Déplacer vers le haut",
+  "Move down": "Descendre",
+  "All items are filtered out": "Tous les éléments sont filtrés"
 }
