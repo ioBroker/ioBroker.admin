@@ -469,7 +469,7 @@ const isValid = func(data, systemConfig.common, instanceAlive, adapter.common, t
 ```
 If alive status changes, so all fields must be updated, validated, disabled, hidden anew.
 
-Following variables are available in JS function in custom settings:
+Following variables are available in JS function in adapter settings:
 - data - native settings for this instance
 - _system - system configuration
 - _alive - is instance is alive
