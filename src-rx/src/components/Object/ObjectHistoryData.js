@@ -443,7 +443,8 @@ class ObjectHistoryData extends Component {
             ack:       true,
             q:         true,
             addID:     false,
-            aggregate: 'none'
+            aggregate: 'none',
+            returnNewestEntries: true,
         }).then(values => {
             // merge range and chart
             let chart       = [];

@@ -90,6 +90,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (Apollon77) Changed the datapoint history list
+
 ### 5.3.7 (2022-04-10)
 * (bluefox) Changed the charts rendering
 
