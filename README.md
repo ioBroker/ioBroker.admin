@@ -90,7 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.3.8 (2022-04-14)
 * (Apollon77) Changed the datapoint history list
 * (bluefox) Added support of swagger adapter
 
@@ -107,10 +107,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 5.3.3 (2022-03-19)
 * (bluefox) Implemented the objects coloring depends on other states
-
-### 5.3.2 (2022-03-18)
-* (xXBJXx) added Radio Buttons for value2table
-* (bluefox) Corrected many GUI errors
 
 ## License
 The MIT License (MIT)

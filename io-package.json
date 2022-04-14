@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "5.3.7",
+    "version": "5.3.8",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "5.3.8": {
+        "en": "Changed the datapoint history list\nAdded support of swagger adapter",
+        "de": "Die Datenpunktverlaufsliste wurde geändert\nUnterstützung für Swagger-Adapter hinzugefügt",
+        "ru": "Изменен список истории точек данных\nДобавлена поддержка адаптера swagger.",
+        "pt": "Alterou a lista de histórico de pontos de dados\nAdicionado suporte de adaptador swagger",
+        "nl": "De geschiedenislijst van datapunten gewijzigd\nOndersteuning van swagger-adapter toegevoegd",
+        "fr": "Modification de la liste d'historique des points de données\nAjout de la prise en charge de l'adaptateur swagger",
+        "it": "Modificato l'elenco della cronologia dei punti dati\nAggiunto il supporto dell'adattatore spavaldo",
+        "es": "Cambió la lista de historial de puntos de datos\nSoporte agregado del adaptador swagger",
+        "pl": "Zmieniono listę historii punktów danych\nDodano obsługę adaptera swagger",
+        "zh-cn": "更改了数据点历史列表\n增加了对 swagger 适配器的支持"
+      },
       "5.3.7": {
         "en": "Changed the charts rendering",
         "de": "Das Rendern der Diagramme wurde geändert",
@@ -89,18 +101,6 @@
         "es": "Botones de radio agregados para value2table\nSe corrigieron muchos errores de GUI",
         "pl": "dodano przyciski radiowe dla value2table\nPoprawiono wiele błędów GUI",
         "zh-cn": "为 value2table 添加了单选按钮\n更正了许多 GUI 错误"
-      },
-      "5.3.1": {
-        "en": "Support of IPv6 address by links (vis, material, end so on)\nCorrected errors in the base settings\nCorrected error with the pre-selected language in wizard",
-        "de": "Unterstützung von IPv6-Adressen durch Links (vis, material, end usw.)\nFehler in den Grundeinstellungen behoben\nFehler bei der vorgewählten Sprache im Assistenten behoben",
-        "ru": "Поддержка адреса IPv6 по ссылкам (vis, material, end и т. д.)\nИсправлены ошибки в базовых настройках\nИсправлена ошибка с предварительно выбранным языком в мастере",
-        "pt": "Suporte de endereço IPv6 por links (vis, material, etc.)\nErros corrigidos nas configurações básicas\nErro corrigido com o idioma pré-selecionado no assistente",
-        "nl": "Ondersteuning van IPv6-adres door links (vis, materiaal, einde enzovoort)\nFouten in de basisinstellingen gecorrigeerd\nFout gecorrigeerd met de vooraf geselecteerde taal in de wizard",
-        "fr": "Prise en charge de l'adresse IPv6 par des liens (vis, matériel, fin etc.)\nErreurs corrigées dans les paramètres de base\nErreur corrigée avec la langue présélectionnée dans l'assistant",
-        "it": "Supporto dell'indirizzo IPv6 tramite collegamenti (vis, materiale, e così via)\nErrori corretti nelle impostazioni di base\nCorretto errore con la lingua preselezionata nella procedura guidata",
-        "es": "Soporte de dirección IPv6 por enlaces (vis, material, etc.)\nErrores corregidos en la configuración base.\nCorregido error con el idioma preseleccionado en asistente",
-        "pl": "Obsługa adresu IPv6 przez linki (vis, material, end itd.)\nPoprawione błędy w ustawieniach podstawowych\nPoprawiony błąd we wstępnie wybranym języku w kreatorze",
-        "zh-cn": "通过链接（vis、material、end 等）支持 IPv6 地址\n更正了基本设置中的错误\n更正了向导中预选语言的错误"
       }
     },
     "desc": {
