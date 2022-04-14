@@ -1489,5 +1489,6 @@
   "Add row": "Ajouter une rangée",
   "Move up": "Déplacer vers le haut",
   "Move down": "Descendre",
-  "All items are filtered out": "Tous les éléments sont filtrés"
+  "All items are filtered out": "Tous les éléments sont filtrés",
+  "Runs as web-extension": "Fonctionne en tant qu'extension Web"
 }

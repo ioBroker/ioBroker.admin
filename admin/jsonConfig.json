@@ -175,7 +175,7 @@
           "newLine": true,
           "type": "staticLink",
           "href": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md#lets-encrypt-certificates",
-          "label": "Read about Let's Encrypt certificates",
+          "text": "Read about Let's Encrypt certificates",
           "style": {
             "fontSize": 16,
             "marginBottom": 20
@@ -249,7 +249,6 @@
           "sm": 12,
           "md": 8,
           "lg": 4,
-          "base64": false,
           "accept": "image/png",
           "label": "Upload image",
           "crop": true
@@ -279,83 +278,6 @@
           "newLine": true,
           "type": "custom",
           "component": "configCustomEasyAccess"
-        }
-      }
-    },
-    "demo": {
-      "type": "panel",
-      "label": "Demo",
-      "items": {
-        "ips": {
-          "type": "table",
-          "sm": 12,
-          "md": 12,
-          "lg": 12,
-          "label": "Devices",
-          "items": [
-            {
-              "type": "checkbox",
-              "attr": "enable",
-              "width": "10% ",
-              "title": "",
-              "filter": false,
-              "sort": false,
-              "default": true
-            },
-            {
-              "type": "number",
-              "min": 1,
-              "max": 999,
-              "step": 1,
-              "attr": "id",
-              "width": "10% ",
-              "title": "Id",
-              "filter": false,
-              "sort": true,
-              "default": ""
-            },
-            {
-              "type": "text",
-              "attr": "ip",
-              "width": "25% ",
-              "title": "IP Address",
-              "filter": false,
-              "sort": true,
-              "default": "0.0.0.0"
-            },
-            {
-              "type": "select",
-              "attr": "snmp-version",
-              "width": "10% ",
-              "title": "SNMP",
-              "options": [
-                {
-                  "label": "snmp v1",
-                  "value": 1
-                },
-                {
-                  "label": "snmp v2",
-                  "value": 2
-                },
-                {
-                  "label": "snmp v3",
-                  "value": 3
-                }
-              ],
-              "filter": false,
-              "sort": true,
-              "default": "1"
-            },
-            {
-              "type": "text",
-              "attr": "community",
-              "width": "25% ",
-              "title": "community",
-              "filter": false,
-              "sort": true,
-              "default": "public"
-            }
-          ]
         }
       }
     }

@@ -692,8 +692,11 @@ class Instances extends Component {
         return headers;
     }
 
-    getModeIcon = (mode, status, className) => {
+    getModeIcon = (mode, status, className, stoppedWhenWebExtension) => {
         if (mode === 'daemon') {
+            if (stoppedWhenWebExtension) {
+                return <div className={clsx(className, this.props.classes.okSymbol)}><div className={this.props.classes.okSymbolInner}/></div>;
+            } else
             if (status === 'orange') {
                 return <WarningIcon className={className}/>;
             } else if (status === 'green') {
@@ -863,6 +866,7 @@ class Instances extends Component {
                 modeSchedule,
                 checkSentry,
                 memoryLimitMB,
+                stoppedWhenWebExtension: instance.obj.common.mode === 'daemon' && instance.obj.common.stoppedWhenWebExtension && !!instance.obj.native.webInstance,
                 allowInstanceSettings: this.props.repository[instance.adapter] ? this.props.repository[instance.adapter].allowInstanceSettings : true,
                 allowInstanceDelete: this.props.repository[instance.adapter] ? this.props.repository[instance.adapter].allowInstanceDelete : true,
                 allowInstanceLink: this.props.repository[instance.adapter] ? this.props.repository[instance.adapter].allowInstanceLink : true,

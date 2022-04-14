@@ -17,7 +17,6 @@ const styles = theme => ({
 
 class ConfigStaticText extends ConfigGeneric {
     renderItem(error, disabled) {
-
         if (this.props.schema.button) {
             return <Button
                 variant={this.props.schema.variant || undefined}

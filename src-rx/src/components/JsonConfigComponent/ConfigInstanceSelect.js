@@ -7,6 +7,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
+import I18n from '@iobroker/adapter-react/i18n';
 import ConfigGeneric from './ConfigGeneric';
 
 const styles = theme => ({
@@ -20,15 +21,29 @@ class ConfigInstanceSelect extends ConfigGeneric {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
-        this.props.socket.getAdapterInstances(this.props.schema.adapter)
+        let adapter = this.props.schema.adapter;
+        if (adapter === '_dataSources') {
+            adapter = undefined;
+        }
+
+        this.props.socket.getAdapterInstances(adapter)
             .then(instances => {
-                const selectOptions = instances.map(instance => ({
+                let selectOptions;
+                if (this.props.schema.adapter === '_dataSources') {
+                    // get only "data-sources", like history, sql, influx
+                    instances = instances.filter(instance => instance && instance.common && instance.common.getHistory);
+                }
+
+                selectOptions = instances.map(instance => ({
                     value: this.props.schema.long ? instance._id :
                         (this.props.schema.short ? instance._id.split('.').pop() : instance._id.replace(/^system\.adapter\./, '')),
                     label: `${instance.common.name} [${instance._id.replace(/^system\.adapter\./, '')}]`
                 }));
 
                 selectOptions.unshift({ label: ConfigGeneric.NONE_LABEL, value: ConfigGeneric.NONE_VALUE });
+                if (this.props.schema.all) {
+                    selectOptions.unshift({ label: I18n.t('all'), value: '*' });
+                }
 
                 this.setState({ value: value || '', selectOptions });
             });

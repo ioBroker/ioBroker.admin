@@ -1489,5 +1489,6 @@
   "Add row": "Rij toevoegen",
   "Move up": "Omhoog gaan",
   "Move down": "Naar beneden verplaatsen",
-  "All items are filtered out": "Alle items zijn uitgefilterd"
+  "All items are filtered out": "Alle items zijn uitgefilterd",
+  "Runs as web-extension": "Draait als webextensie"
 }

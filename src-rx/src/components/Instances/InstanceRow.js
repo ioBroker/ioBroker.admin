@@ -856,9 +856,11 @@ const InstanceRow = ({
     /> : null;
 
     const stateTooltip = [
-        instance.mode === 'daemon' ? <State key={1} state={item.connectedToHost} >{t('Connected to host')}</State> : '',
-        instance.mode === 'daemon' ? <State key={2} state={item.alive} >{t('Heartbeat')}</State> : '',
-        item.connected !== null ? <State key={3} state={!!item.connected}>
+        item.stoppedWhenWebExtension ? <State key={1} state={true} >{t('Runs as web-extension')}</State> : '',
+        instance.mode === 'daemon' && !item.stoppedWhenWebExtension ? <State key={1} state={item.connectedToHost} >{t('Connected to host')}</State> : '',
+        instance.mode === 'daemon' && !item.stoppedWhenWebExtension ? <State key={1} state={item.connectedToHost} >{t('Connected to host')}</State> : '',
+        instance.mode === 'daemon' && !item.stoppedWhenWebExtension ? <State key={2} state={item.alive} >{t('Heartbeat')}</State> : '',
+        item.connected !== null && !item.stoppedWhenWebExtension ? <State key={3} state={!!item.connected}>
             {typeof item.connected === 'string' ? t('Connected:') + ' ' + (item.connected || '-') : t('Connected to device or service')}
         </State> : ''
     ];
@@ -890,8 +892,8 @@ const InstanceRow = ({
                 expandIcon: desktop ? classes.desktopButton : undefined,
             }}
             className={clsx(
-                (!item.running || instance.mode !== 'daemon') && (idx % 2 === 0 ? classes.instanceStateNotEnabled1 : classes.instanceStateNotEnabled2),
-                item.running && instance.mode === 'daemon' && (!item.connectedToHost || !item.alive) && (idx % 2 === 0 ? classes.instanceStateNotAlive1 : classes.instanceStateNotAlive2),
+                (!item.running || instance.mode !== 'daemon' || item.stoppedWhenWebExtension) && (idx % 2 === 0 ? classes.instanceStateNotEnabled1 : classes.instanceStateNotEnabled2),
+                item.running && instance.mode === 'daemon' && !item.stoppedWhenWebExtension && (!item.connectedToHost || !item.alive) && (idx % 2 === 0 ? classes.instanceStateNotAlive1 : classes.instanceStateNotAlive2),
                 item.running && item.connectedToHost && item.alive && item.connected === false && (idx % 2 === 0 ? classes.instanceStateAliveNotConnected1 : classes.instanceStateAliveNotConnected2),
                 item.running && item.connectedToHost && item.alive && item.connected !== false && (idx % 2 === 0 ? classes.instanceStateAliveAndConnected1 : classes.instanceStateAliveAndConnected1),
                 desktop && classes.desktopRow
@@ -932,7 +934,7 @@ const InstanceRow = ({
                                 instance.mode === 'daemon' || instance.mode === 'schedule' ? classes[status] : classes.transparent,
                                 item.connectedToHost && item.alive && item.connected === false && classes.orangeDevice
                             )}>
-                            {getModeIcon(instance.mode, status, classes['statusIcon_' + status])}
+                            {getModeIcon(instance.mode, status, classes['statusIcon_' + status], item.stoppedWhenWebExtension)}
                         </div>
                     </Tooltip>
                     <Avatar
@@ -1121,11 +1123,12 @@ const InstanceRow = ({
                 <Grid item container direction="row" xs={10}>
                     <Grid item container direction="column" xs={12} sm={6} md={4}>
                         <span className={classes.instanceName}>{instance.id}</span>
-                        {item.running && instance.mode === 'daemon' && <State state={item.connectedToHost} >{t('Connected to host')}</State>}
-                        {item.running && instance.mode === 'daemon' && <State state={item.alive} >{t('Heartbeat')}</State>}
-                        {item.running && item.connected !== null &&
+                        {item.stoppedWhenWebExtension && <State state={true} >{t('Runs as web-extension')}</State>}
+                        {item.running && instance.mode === 'daemon' && !item.stoppedWhenWebExtension && <State state={item.connectedToHost} >{t('Connected to host')}</State>}
+                        {item.running && instance.mode === 'daemon' && !item.stoppedWhenWebExtension && <State state={item.alive} >{t('Heartbeat')}</State>}
+                        {item.running && item.connected !== null  && !item.stoppedWhenWebExtension &&
                             <State state={!!item.connected}>
-                                {typeof item.connected === 'string' ? t('Connected:') + ' ' + (item.connected || '-') : t('Connected to device or service')}
+                                {typeof item.connected === 'string' ? `${t('Connected:')} ${item.connected || '-'}` : t('Connected to device or service')}
                             </State>
                         }
                     </Grid>
