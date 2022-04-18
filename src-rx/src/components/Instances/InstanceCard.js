@@ -569,10 +569,10 @@ const InstanceCard = memo(({
                 </div>
                 <Typography gutterBottom component={'span'} variant={'body2'}>
                     <span className={classes.instanceName}>{instance.id}</span>
-                    {item.stoppedWhenWebExtension && <State state={true} >{t('Runs as web-extension')}</State>}
-                    {item.running && instance.mode === 'daemon' && !item.stoppedWhenWebExtension && <State state={item.connectedToHost} >{t('Connected to host')}</State>}
-                    {item.running && instance.mode === 'daemon' && !item.stoppedWhenWebExtension && <State state={item.alive} >{t('Heartbeat')}</State>}
-                    {item.running && item.connected !== null && !item.stoppedWhenWebExtension &&
+                    {item.stoppedWhenWebExtension !== undefined && <State state={item.stoppedWhenWebExtension} >{t('Runs as web-extension')}</State>}
+                    {item.running && instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined && <State state={item.connectedToHost} >{t('Connected to host')}</State>}
+                    {item.running && instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined && <State state={item.alive} >{t('Heartbeat')}</State>}
+                    {item.running && item.connected !== null && item.stoppedWhenWebExtension === undefined &&
                         <State state={!!item.connected}>
                             {typeof item.connected === 'string' ? `${t('Connected:')} ${item.connected || '-'}` : t('Connected to device or service')}
                         </State>

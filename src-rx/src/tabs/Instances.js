@@ -367,7 +367,7 @@ class Instances extends Component {
         let maxCompactGroupNumber = 1;
         const newState = {};
 
-        instances.forEach(obj => {
+        instances.forEach(async obj => {
             const common = obj ? obj.common : null;
             const objId = obj._id.split('.');
             const instanceId = objId[objId.length - 1];
@@ -382,7 +382,7 @@ class Instances extends Component {
             instance.compact = !!common.compact;
             instance.host = common.host;
             instance.name = common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en || common.title || '' : common.title;
-            instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
+            instance.image = common.icon ? `adapter/${common.name}/${common.icon}` : 'img/no-image.png';
             instance.enabled = common.enabled;
 
             if (instance.name && typeof instance.name === 'object') {
@@ -440,6 +440,12 @@ class Instances extends Component {
             instance.loglevel = common.loglevel || null;
             instance.adapter = common.name || null;
             instance.version = common.version || null;
+            instance.stoppedWhenWebExtension = instance.obj.common.mode === 'daemon' && instance.obj.common.webExtension;
+
+            if (instance.stoppedWhenWebExtension) {
+                const eId = this.states[instance.id + '.info.extension'] || (await this.props.socket.getState(instance.id + '.info.extension'));
+                instance.stoppedWhenWebExtension = eId ? eId.val : undefined;
+            }
 
             formatted[obj._id] = instance;
         });
@@ -547,6 +553,7 @@ class Instances extends Component {
         func.call(this.props.socket, 'system.host.*.diskWarning', this.onStateChange);
         func.call(this.props.socket, 'system.host.*.freemem', this.onStateChange);
         func.call(this.props.socket, '*.info.connection', this.onStateChange);
+        func.call(this.props.socket, '*.info.extension', this.onStateChange);
     }
 
     extendObject = (id, data) => {
@@ -574,6 +581,12 @@ class Instances extends Component {
             const alive = this.states[obj._id + '.alive'];
             const connected = this.states[obj._id + '.connected'];
             const connection = this.states[(obj._id).replace('system.adapter.', '') + '.info.connection'];
+            if (common.webExtension && obj.native.webInstance) {
+                const extension = this.states[(obj._id).replace('system.adapter.', '') + '.info.extension'];
+                if (extension) {
+                    return extension.val ? 'green' : 'red';
+                }
+            }
 
             if (!connected?.val || !alive?.val) {
                 status = mode === 'daemon' ? 'red' : 'orangeDevice';
@@ -866,7 +879,7 @@ class Instances extends Component {
                 modeSchedule,
                 checkSentry,
                 memoryLimitMB,
-                stoppedWhenWebExtension: instance.obj.common.mode === 'daemon' && instance.obj.common.stoppedWhenWebExtension && !!instance.obj.native.webInstance,
+                stoppedWhenWebExtension: instance.stoppedWhenWebExtension,
                 allowInstanceSettings: this.props.repository[instance.adapter] ? this.props.repository[instance.adapter].allowInstanceSettings : true,
                 allowInstanceDelete: this.props.repository[instance.adapter] ? this.props.repository[instance.adapter].allowInstanceDelete : true,
                 allowInstanceLink: this.props.repository[instance.adapter] ? this.props.repository[instance.adapter].allowInstanceLink : true,
