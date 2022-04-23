@@ -248,10 +248,10 @@
       "native": {}
     },
     {
-      "_id": "info.connection",
+      "_id": "info.connected",
       "type": "state",
       "common": {
-        "role": "indicator.connected",
+        "role": "state",
         "name": "Info about connected socket clients",
         "type": "string",
         "read": true,

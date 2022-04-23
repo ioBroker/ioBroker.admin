@@ -3,7 +3,7 @@
  *
  *      Controls Adapter-Processes
  *
- *      Copyright 2014-2021 bluefox <dogafox@gmail.com>,
+ *      Copyright 2014-2022 bluefox <dogafox@gmail.com>,
  *      MIT License
  *
  */
@@ -377,6 +377,7 @@ function writeUpdateInfo(adapter, sources) {
 }
 
 function initSocket(server, store, adapter) {
+    adapter.config.allowAdmin = true;
     socket = new SocketIO(server, adapter.config, adapter, objects, store);
     socket.subscribe(null, 'objectChange', '*');
 }
