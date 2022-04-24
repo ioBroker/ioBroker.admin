@@ -384,7 +384,8 @@ function initSocket(server, store, adapter) {
         ws,
         {
             userKey: 'connect.sid',
-            store
+            store,
+            secret
         },
         {
             pingInterval: 120000,
