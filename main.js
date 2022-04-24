@@ -16,7 +16,7 @@
 const adapterName = require('./package.json').name.split('.').pop();
 const utils       = require('@iobroker/adapter-core'); // Get common adapter utils
 const tools 	  = require(utils.controllerDir + '/lib/tools.js');
-const SocketIO    = require('./lib/socket');
+const SocketIO    = require('./lib/socketAdmin');
 const Web         = require('./lib/web');
 const semver      = require('semver');
 const axios       = require('axios');
