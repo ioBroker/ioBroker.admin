@@ -123,8 +123,6 @@ function startAdapter(options) {
     });
 
     adapter.on('unload', callback => {
-        // unsubscribe all
-        socket && socket.unsubscribeAll();
         adapter.timerRepo && clearTimeout(adapter.timerRepo);
         adapter.timerRepo = null;
 
@@ -139,6 +137,7 @@ function startAdapter(options) {
 
         try {
             adapter.log.info(`terminating http${adapter.config.secure ? 's' : ''} server on port ${adapter.config.port}`);
+            socket && socket.close();
             webServer.close();
             callback();
         } catch (e) {

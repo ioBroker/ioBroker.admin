@@ -261,6 +261,19 @@
       "native": {}
     },
     {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "If HTTP server started",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
       "_id": "info.newsFeed",
       "type": "state",
       "common": {
