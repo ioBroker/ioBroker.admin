@@ -21,6 +21,7 @@ const Web         = require('./lib/web');
 const semver      = require('semver');
 const axios       = require('axios');
 const fs          = require('fs');
+const ws          = require('./lib/ws');
 
 const ONE_HOUR_MS = 3600000;
 const ERROR_PERMISSION = 'permissionError';
@@ -377,8 +378,22 @@ function writeUpdateInfo(adapter, sources) {
 
 function initSocket(server, store, adapter) {
     adapter.config.allowAdmin = true;
-    socket = new SocketIO(server, adapter.config, adapter, objects, store);
-    socket.subscribe(null, 'objectChange', '*');
+    socket = new SocketIO(adapter.config, adapter, objects, store);
+    socket.start(
+        server,
+        ws,
+        {
+            userKey: 'connect.sid',
+            store
+        },
+        {
+            pingInterval: 120000,
+            pingTimeout: 30000
+        }
+    );
+
+    // subscribe on all object changes
+    socket.subscribe('objectChange', '*');
 }
 
 function processTasks(adapter) {
