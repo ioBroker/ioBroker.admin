@@ -378,14 +378,14 @@ function writeUpdateInfo(adapter, sources) {
 
 function initSocket(server, store, adapter) {
     adapter.config.allowAdmin = true;
-    socket = new SocketIO(adapter.config, adapter, objects, store);
+    socket = new SocketIO(adapter.config, adapter, objects);
     socket.start(
         server,
         ws,
         {
             userKey: 'connect.sid',
             store,
-            secret
+            secret: adapter.config.secret
         },
         {
             pingInterval: 120000,
