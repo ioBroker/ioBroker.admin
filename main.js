@@ -13,15 +13,17 @@
 /* jslint node: true */
 'use strict';
 
-const adapterName = require('./package.json').name.split('.').pop();
-const utils       = require('@iobroker/adapter-core'); // Get common adapter utils
-const tools 	  = require(utils.controllerDir + '/lib/tools.js');
-const SocketIO    = require('./lib/socketAdmin');
-const Web         = require('./lib/web');
 const semver      = require('semver');
 const axios       = require('axios');
 const fs          = require('fs');
-const ws          = require('./lib/ws');
+
+const utils       = require('@iobroker/adapter-core'); // Get common adapter utils
+const tools 	  = require('@iobroker/js-controller-common').tools;
+const SocketAdmin = require('@iobroker/socket-classes').SocketAdmin;
+const ws          = require('@iobroker/ws-server');
+
+const adapterName = require('./package.json').name.split('.').pop();
+const Web         = require('./lib/web');
 
 const ONE_HOUR_MS = 3600000;
 const ERROR_PERMISSION = 'permissionError';
@@ -377,8 +379,7 @@ function writeUpdateInfo(adapter, sources) {
 }
 
 function initSocket(server, store, adapter) {
-    adapter.config.allowAdmin = true;
-    socket = new SocketIO(adapter.config, adapter, objects);
+    socket = new SocketAdmin(adapter.config, adapter, objects);
     socket.start(
         server,
         ws,
@@ -386,10 +387,6 @@ function initSocket(server, store, adapter) {
             userKey: 'connect.sid',
             store,
             secret: adapter.config.secret
-        },
-        {
-            pingInterval: 120000,
-            pingTimeout: 30000
         }
     );
 

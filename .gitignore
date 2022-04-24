@@ -12,6 +12,12 @@ admin/i18n/flat.txt
 admin/words.js
 src/js/words.js
 .vscode
+/lib/ws.js
+/lib/socketCommon.js
+/lib/socketCommands.js
+/lib/socketAdmin.js
+/lib/socketCommandsAdmin.js
+/lib/passportSocket.js
 /src-rx/build
 /www-react
 /src-rx/package-lock.json

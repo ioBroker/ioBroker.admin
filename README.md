@@ -45,7 +45,7 @@ If the automatic update is activated the instance will try to request certificat
 
 The certificates will be first requested when the given domain address will be accessed. E.g. you have "sub.domain.com" as address, when you try to access https://sub.domain.com the certificates will be first requested, and it can last a little before first answer will come.
 
-The issuing of certificates is rather complex procedure, but if you will follow the explanation you will easy get free certificates.
+The issuing of certificates is rather complex procedure, but if you will follow the explanation you will easily get free certificates.
 
 Description:
 
@@ -90,6 +90,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Used common sockets (could be buggy)
+
 ### 5.3.8 (2022-04-14)
 * (Apollon77) Changed the datapoint history list
 * (bluefox) Added support of swagger adapter
