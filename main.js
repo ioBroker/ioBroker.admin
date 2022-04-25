@@ -392,6 +392,19 @@ function initSocket(server, store, adapter) {
 
     // subscribe on all object changes
     socket.subscribe('objectChange', '*');
+
+    adapter.getForeignObjectAsync('system.meta.uuid')
+        .then(async obj => {
+            if (obj && obj.native) {
+                uuid = obj.native.uuid;
+                try {
+                    await socket.updateRatings();
+                } catch (error) {
+                    adapter.log.error('Cannot fetch ratings: ' + error);
+                }
+            }
+        })
+        .catch(error => adapter.log.error('Cannot read UUID: ' + error));
 }
 
 function processTasks(adapter) {
@@ -548,28 +561,6 @@ function updateNews() {
             adapter.timerNews = setTimeout(() => updateNews(), 24 * ONE_HOUR_MS + 1));
 }
 
-function updateRatings() {
-    return axios.get('https://rating.iobroker.net/rating?uuid=' + uuid, {timeout: 15000, validateStatus: status => status < 400})
-        .then(response => {
-            adapter._ratings = response.data;
-            if (!adapter._ratings || typeof adapter._ratings !== 'object' || Array.isArray(adapter._ratings)) {
-                adapter._ratings = {};
-            }
-            adapter._ratings.uuid = uuid;
-
-            adapter.ratingTimeout && clearTimeout(adapter.ratingTimeout);
-            adapter.ratingTimeout = setTimeout(() => {
-                adapter.ratingTimeout = null;
-                updateRatings()
-                    .then(() => adapter.log.info('Adapter rating updated'));
-            }, 24 * 3600000);
-
-            return adapter._ratings;
-        })
-        .catch(error =>
-            adapter.log.warn('Cannot update rating: ' + (error.response ? error.response.data : (error.message || error.code))));
-}
-
 function main(adapter) {
     // adapter.subscribeForeignStates('*');
     // adapter.subscribeForeignObjects('*');
@@ -578,8 +569,6 @@ function main(adapter) {
     if (!adapter.config.defaultUser.match(/^system\.user\./)) {
         adapter.config.defaultUser = 'system.user.' + adapter.config.defaultUser;
     }
-
-    adapter._updateRatings = updateRatings;
 
     if (adapter.config.secure) {
         // Load certificates
@@ -597,7 +586,7 @@ function main(adapter) {
         applyRights(adapter);
     }
 
-    // By default update repository every 24 hours
+    // By default, update repository every 24 hours
     if (adapter.config.autoUpdate === undefined || adapter.config.autoUpdate === null) {
         adapter.config.autoUpdate = 24;
     }
@@ -606,13 +595,6 @@ function main(adapter) {
     adapter.config.autoUpdate = parseInt(adapter.config.autoUpdate, 10) || 0;
 
     adapter.config.autoUpdate && updateRegister();
-
-    adapter.getForeignObject('system.meta.uuid', async (err, obj) => {
-        if (obj && obj.native) {
-            uuid = obj.native.uuid;
-            await updateRatings();
-        }
-    });
 
     updateNews();
     updateIcons();

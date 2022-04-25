@@ -5,9 +5,10 @@ const jscToolsMock = {
 	// No update checks in unit tests
 	getInstalledInfo() { return {}; },
 };
+
 const jscLEMock = {
 	// No https/letsencrypt in unit tests
-	createServer(app) { return require("http").createServer(app); }
+	createServer(app) { return require('http').createServer(app); }
 };
 
 // Run unit tests - See https://github.com/ioBroker/testing for a detailed explanation and further options

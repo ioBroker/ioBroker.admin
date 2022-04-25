@@ -1,8 +1,8 @@
-const ANSI_RESET  = 0;
-const ANSI_RESET_COLOR  = 39;
-const ANSI_RESET_BG_COLOR  = 49;
-const ANSI_BOLD  = 1;
-const ANSI_RESET_BOLD  = 22;
+const ANSI_RESET = 0;
+const ANSI_RESET_COLOR = 39;
+const ANSI_RESET_BG_COLOR = 49;
+const ANSI_BOLD = 1;
+const ANSI_RESET_BOLD = 22;
 
 const STYLES = {
     30: {color: 'black'}, // ANSI_BLACK

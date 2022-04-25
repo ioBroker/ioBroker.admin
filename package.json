@@ -25,7 +25,7 @@
   "dependencies": {
     "@iobroker/adapter-core": "^2.6.0",
     "@iobroker/ws-server": "^2.0.0",
-    "@iobroker/socket-classes": "^0.1.2",
+    "@iobroker/socket-classes": "^0.1.5",
     "body-parser": "^1.19.2",
     "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
@@ -87,6 +87,7 @@
     "test:package": "mocha test/package --exit",
     "test:unit": "mocha test/unit --exit",
     "test:integration": "mocha test/integration --exit",
+    "test:gui": "mocha test/gui --exit",
     "release": "release-script",
     "release-patch": "release-script patch --yes",
     "release-minor": "release-script minor --yes",

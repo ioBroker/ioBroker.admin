@@ -297,7 +297,7 @@ class AdapterUpdateDialog extends Component {
                     if (message.condition.operand === 'or') {
                         show = results.find(res => res);
                     } else {
-                        show = !results.find(res => !res);
+                        show = results.findIndex(res => !res) === -1;
                     }
                 }
 
