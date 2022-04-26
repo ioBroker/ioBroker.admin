@@ -456,7 +456,7 @@ class Intro extends Component {
                             }
 
                             instance.id          = obj._id.replace('system.adapter.', '') + (linkName === '_default' ? '' : ' ' + linkName);
-                            instance.name        = (common.titleLang ? common.titleLang[this.props.lang] : common.title) + (linkName === '_default' ? '' : ' ' + linkName);
+                            instance.name        = (common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en : common.title) + (linkName === '_default' ? '' : ' ' + linkName);
                             instance.color       = link.color || '';
                             instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
                             instance.image       = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
