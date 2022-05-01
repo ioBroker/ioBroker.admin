@@ -234,7 +234,18 @@
       "_id": "info",
       "type": "channel",
       "common": {
-        "name": "Information"
+        "name": {
+          "en": "Information",
+          "de": "Information",
+          "ru": "Информация",
+          "pt": "Em formação",
+          "nl": "Informatie",
+          "fr": "Information",
+          "it": "Informazione",
+          "es": "Información",
+          "pl": "Informacja",
+          "zh-cn": "信息"
+        }
       },
       "native": {}
     },
@@ -242,7 +253,18 @@
       "_id": "",
       "type": "meta",
       "common": {
-        "name": "user files and images for background image",
+        "name": {
+          "en": "user files and images for background",
+          "de": "Benutzerdateien und Bilder für den Hintergrund",
+          "ru": "пользовательские файлы и изображения для фона",
+          "pt": "arquivos e imagens do usuário para plano de fundo",
+          "nl": "gebruikersbestanden en afbeeldingen voor achtergrond",
+          "fr": "fichiers utilisateur et images pour l'arrière-plan",
+          "it": "file utente e immagini per lo sfondo",
+          "es": "archivos de usuario e imágenes para el fondo",
+          "pl": "pliki użytkownika i obrazy w tle",
+          "zh-cn": "背景的用户文件和图像"
+        },
         "type": "meta.user"
       },
       "native": {}
@@ -252,7 +274,18 @@
       "type": "state",
       "common": {
         "role": "state",
-        "name": "Info about connected socket clients",
+        "name": {
+          "en": "Info about connected socket clients",
+          "de": "Informationen über verbundene Socket-Clients",
+          "ru": "Информация о подключенных клиентах сокетов",
+          "pt": "Informações sobre clientes de soquete conectados",
+          "nl": "Info over aangesloten socket-clients",
+          "fr": "Informations sur les clients socket connectés",
+          "it": "Informazioni sui client socket connessi",
+          "es": "Información sobre clientes de socket conectados",
+          "pl": "Informacje o podłączonych klientach gniazd",
+          "zh-cn": "有关已连接套接字客户端的信息"
+        },
         "type": "string",
         "read": true,
         "write": false,
@@ -265,7 +298,18 @@
       "type": "state",
       "common": {
         "role": "indicator.connected",
-        "name": "If HTTP server started",
+        "name": {
+          "en": "HTTP server started",
+          "de": "HTTP-Server gestartet",
+          "ru": "HTTP-сервер запущен",
+          "pt": "Servidor HTTP iniciado",
+          "nl": "HTTP-server gestart",
+          "fr": "Serveur HTTP démarré",
+          "it": "Server HTTP avviato",
+          "es": "Servidor HTTP iniciado",
+          "pl": "Uruchomiono serwer HTTP",
+          "zh-cn": "HTTP 服务器已启动"
+        },
         "type": "boolean",
         "read": true,
         "write": false,
@@ -277,7 +321,18 @@
       "_id": "info.newsFeed",
       "type": "state",
       "common": {
-        "name": "Last news feed as JSON",
+        "name": {
+          "en": "Last news feed as JSON",
+          "de": "Letzter Newsfeed als JSON",
+          "ru": "Лента последних новостей в формате JSON",
+          "pt": "Último feed de notícias como JSON",
+          "nl": "Laatste nieuwsfeed als JSON",
+          "fr": "Dernier fil d'actualité au format JSON",
+          "it": "Ultimo feed di notizie come JSON",
+          "es": "Últimas noticias como JSON",
+          "pl": "Ostatni kanał wiadomości jako JSON",
+          "zh-cn": "最后一个新闻提要为 JSON"
+        },
         "type": "json",
         "read": true,
         "write": false
@@ -287,7 +342,18 @@
       "_id": "info.newsETag",
       "type": "state",
       "common": {
-        "name": "Etag for news feed",
+        "name": {
+          "en": "Etag for news feed",
+          "de": "Etag für Newsfeed",
+          "ru": "Etag для новостной ленты",
+          "pt": "Etag para feed de notícias",
+          "nl": "Etag voor nieuwsfeed",
+          "fr": "Etag pour le fil d'actualité",
+          "it": "Etag per il feed di notizie",
+          "es": "Etag para noticias",
+          "pl": "Etag dla kanału informacyjnego",
+          "zh-cn": "用于新闻提要的 Etag"
+        },
         "type": "string",
         "read": true,
         "write": false
@@ -297,7 +363,18 @@
       "_id": "info.newsLastId",
       "type": "state",
       "common": {
-        "name": "last seen news ID",
+        "name": {
+          "en": "Last news ID",
+          "de": "Letzte Nachrichten-ID",
+          "ru": "Идентификатор последней новости",
+          "pt": "ID da última notícia",
+          "nl": "Laatste nieuws-ID",
+          "fr": "Identifiant des dernières nouvelles",
+          "it": "Ultime notizie ID",
+          "es": "ID de última noticia",
+          "pl": "Identyfikator ostatnich wiadomości",
+          "zh-cn": "最新消息 ID"
+        },
         "type": "string",
         "read": true,
         "write": false
@@ -308,7 +385,18 @@
       "type": "state",
       "common": {
         "role": "indicator.updates",
-        "name": "List of adapters to update",
+        "name": {
+          "en": "List of adapters to update",
+          "de": "Liste der zu aktualisierenden Adapter",
+          "ru": "Список адаптеров для обновления",
+          "pt": "Lista de adaptadores para atualizar",
+          "nl": "Lijst met adapters die moeten worden bijgewerkt",
+          "fr": "Liste des adaptateurs à mettre à jour",
+          "it": "Elenco degli adattatori da aggiornare",
+          "es": "Lista de adaptadores para actualizar",
+          "pl": "Lista adapterów do aktualizacji",
+          "zh-cn": "要更新的适配器列表"
+        },
         "type": "string",
         "read": true,
         "write": false,

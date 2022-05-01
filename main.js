@@ -165,7 +165,18 @@ function createUpdateInfo(adapter) {
             type: 'state',
             common: {
                 role:  'indicator.updates',
-                name:  'Number of adapters to update',
+                name:  {
+                    en: 'Number of adapters to update',
+                    de: 'Anzahl der zu aktualisierenden Adapter',
+                    ru: 'Количество адаптеров для обновления',
+                    pt: 'Número de adaptadores para atualizar',
+                    nl: 'Aantal adapters om te updaten',
+                    fr: 'Nombre d\'adaptateurs à mettre à jour',
+                    it: 'Numero di adattatori da aggiornare',
+                    es: 'Número de adaptadores para actualizar',
+                    pl: 'Liczba adapterów do aktualizacji',
+                    'zh-cn': '要更新的适配器数量'
+                },
                 type:  'number',
                 read:  true,
                 write: false,
@@ -185,7 +196,18 @@ function createUpdateInfo(adapter) {
             type: 'state',
             common: {
                 role:  'indicator.updates',
-                name:  'List of adapters to update',
+                name:  {
+                    en: 'List of adapters to update',
+                    de: 'Liste der zu aktualisierenden Adapter',
+                    ru: 'Список адаптеров для обновления',
+                    pt: 'Lista de adaptadores para atualizar',
+                    nl: 'Lijst met adapters die moeten worden bijgewerkt',
+                    fr: 'Liste des adaptateurs à mettre à jour',
+                    it: 'Elenco degli adattatori da aggiornare',
+                    es: 'Lista de adaptadores para actualizar',
+                    pl: 'Lista adapterów do aktualizacji',
+                    'zh-cn': '要更新的适配器列表'
+                },
                 type:  'string',
                 read:  true,
                 write: false,
@@ -205,7 +227,18 @@ function createUpdateInfo(adapter) {
             type: 'state',
             common: {
                 role:  'indicator.updates',
-                name:  'Indicator if new adapter updates are available',
+                name:  {
+                    en: 'Indicator if new adapter updates are available',
+                    de: 'Anzeige, ob neue Adapter-Updates verfügbar sind',
+                    ru: 'Индикатор наличия новых обновлений адаптера',
+                    pt: 'Indicador se novas atualizações do adaptador estão disponíveis',
+                    nl: 'Indicator of er nieuwe adapter-updates beschikbaar zijn',
+                    fr: 'Indicateur si de nouvelles mises à jour de l\'adaptateur sont disponibles',
+                    it: 'Indicatore se sono disponibili nuovi aggiornamenti dell\'adattatore',
+                    es: 'Indicador si hay nuevas actualizaciones de adaptadores disponibles',
+                    pl: 'Wskaźnik, czy dostępne są nowe aktualizacje adaptera',
+                    'zh-cn': '指示是否有新的适配器更新可用'
+                },
                 type:  'boolean',
                 read:  true,
                 write: false,
@@ -225,7 +258,18 @@ function createUpdateInfo(adapter) {
             type: 'state',
             common: {
                 role:  'indicator.updates',
-                name:  'JSON string with adapter update information',
+                name:  {
+                    en: 'JSON string with adapter update information',
+                    de: 'JSON-String mit Adapteraktualisierungsinformationen',
+                    ru: 'Строка JSON с информацией об обновлении адаптера',
+                    pt: 'String JSON com informações de atualização do adaptador',
+                    nl: 'JSON-tekenreeks met adapter-update-informatie',
+                    fr: 'Chaîne JSON avec les informations de mise à jour de l\'adaptateur',
+                    it: 'Stringa JSON con informazioni sull\'aggiornamento dell\'adattatore',
+                    es: 'Cadena JSON con información de actualización del adaptador',
+                    pl: 'Ciąg JSON z informacjami o aktualizacji adaptera',
+                    'zh-cn': '带有适配器更新信息的 JSON 字符串'
+                },
                 type:  'string',
                 read:  true,
                 write: false,
@@ -245,7 +289,18 @@ function createUpdateInfo(adapter) {
             type: 'state',
             common: {
                 role:  'value.time',
-                name:  'Timestamp of last update check',
+                name:  {
+                    en: 'Timestamp of last update check',
+                    de: 'Zeitstempel der letzten UpdatePrüfung',
+                    ru: 'Отметка времени последней проверки обнвлений',
+                    pt: 'Timestamp da última verificação de atualizaçã',
+                    nl: 'Tijdstempel van laatste updatecontrole',
+                    fr: 'Horodatage de la dernière vérificationde mise à jour',
+                    it: 'Timestamp dell\'ultimo controllo di aggiornamento',
+                    es: 'Marca de tiempo de la última verificación de actalización',
+                    pl: 'Znacznik czasu ostatniego sprawdzenia aktualizacji',
+                    'zh-cn': '上次更新检查的时间戳'
+                },
                 type:  'number',
                 read:  true,
                 write: false,
