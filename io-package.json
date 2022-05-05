@@ -18,18 +18,6 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "5.4.0": {
-        "en": "Used common sockets (could be buggy)\nAdded chips to JSON config",
-        "de": "Gebrauchte gemeinsame Steckdosen (könnte fehlerhaft sein)\nChips zur JSON-Konfiguration hinzugefügt",
-        "ru": "Использовались обычные розетки (могут глючить)\nДобавлены фишки в конфиг JSON",
-        "pt": "Soquetes comuns usados (podem estar com bugs)\nChips adicionados à configuração JSON",
-        "nl": "Gebruikte gemeenschappelijke stopcontacten (kan buggy zijn)\nChips toegevoegd aan JSON-configuratie",
-        "fr": "Prises communes utilisées (pourraient être boguées)\nAjout de puces à la configuration JSON",
-        "it": "Prese comuni usate (potrebbero essere difettose)\nAggiunti chip alla configurazione JSON",
-        "es": "Enchufes comunes usados (podrían tener errores)\nChips agregados a la configuración JSON",
-        "pl": "Używane wspólne gniazda (mogą być wadliwe)\nDodano chipy do konfiguracji JSON",
-        "zh-cn": "使用过的普通插座（可能有问题）\n将芯片添加到 JSON 配置"
-      },
       "5.3.8": {
         "en": "Changed the datapoint history list\nAdded support of swagger adapter",
         "de": "Die Datenpunktverlaufsliste wurde geändert\nUnterstützung für Swagger-Adapter hinzugefügt",

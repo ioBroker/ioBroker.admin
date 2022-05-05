@@ -90,7 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### 5.4.0 (2022-05-05)
+### **WORK IN PROGRESS**
 * (bluefox) Used common sockets (could be buggy)
 * (bluefox) Added chips to JSON config
 
