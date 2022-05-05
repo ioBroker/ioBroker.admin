@@ -1,6 +1,13 @@
 ## 5.1.15 (2021-07-26)
 * (bluefox) Replaced the formula icon in the edit aliases dialog
 * (bluefox) Added the logic for checkbox in JsonConfig
+## 5.3.3 (2022-03-19)
+* (bluefox) Implemented the objects coloring depends on other states
+
+## 5.1.15 (2021-07-26)
+* (bluefox) Replaced the formula icon in the edit aliases dialog
+* (bluefox) Added the logic for checkbox in JsonConfig
+
 ## 5.3.2 (2022-03-18)
 * (xXBJXx) added Radio Buttons for value2table
 * (bluefox) Corrected many GUI errors

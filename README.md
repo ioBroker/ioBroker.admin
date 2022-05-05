@@ -90,7 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.4.0 (2022-05-05)
 * (bluefox) Used common sockets (could be buggy)
 * (bluefox) Added chips to JSON config
 
@@ -108,9 +108,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 5.3.4 (2022-03-27)
 * (Apollon77) Fix some crash cases reported by Sentry
 * (bluefox) Corrected user tab
-
-### 5.3.3 (2022-03-19)
-* (bluefox) Implemented the objects coloring depends on other states
 
 ## License
 The MIT License (MIT)
