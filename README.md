@@ -92,6 +92,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### **WORK IN PROGRESS**
 * (bluefox) Used common sockets (could be buggy)
+* (bluefox) Added chips to JSON config
 
 ### 5.3.8 (2022-04-14)
 * (Apollon77) Changed the datapoint history list

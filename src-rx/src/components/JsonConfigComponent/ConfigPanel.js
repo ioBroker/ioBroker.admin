@@ -51,7 +51,8 @@ const components = {
     autocompleteSendTo: ConfigAutocompleteSendTo,
     certificate: ConfigCertificateSelect,
     checkbox: ConfigCheckbox,
-    chip: ConfigChip,
+    chips: ConfigChip,
+    chip: ConfigChip, // deprecated. Use "chips"
     color: ConfigColor,
     coordinates: ConfigCoordinates,
     cron: ConfigCRON,
@@ -139,10 +140,6 @@ class ConfigPanel extends ConfigGeneric {
                 ItemComponent = ConfigPanelStyled;
             } else {
                 ItemComponent = components[type] || ConfigGeneric;
-            }
-
-            if (type === 'select') {
-                console.log(`KEY: ${type} - ${attr + '_' + this.props.index} = ${this.props.data[attr]}`)
             }
 
             return <ItemComponent

@@ -18,7 +18,12 @@ class ConfigLanguage extends ConfigGeneric {
         super.componentDidMount();
         const { data, attr } = this.props;
         const value = ConfigGeneric.getValue(data, attr);
-        this.setState({ value: value || [] });
+        if (this.props.schema.delimiter && typeof value === 'string') {
+            const parts = value.split(this.props.schema.delimiter).map(a => a.trim()).filter(a => a);
+            this.setState({ value: parts });
+        } else {
+            this.setState({ value: value || [] });
+        }
     }
 
     renderItem(error, disabled, defaultValue) {
@@ -34,15 +39,23 @@ class ConfigLanguage extends ConfigGeneric {
                         const newValue = JSON.parse(JSON.stringify(value));
                         newValue.push(chip);
                         this.setState({ value: newValue, prevValue: '' }, () => {
-                            this.onChange(attr, newValue);
-                        })
+                            if (this.props.schema.delimiter) {
+                                this.onChange(attr, newValue.join(this.props.schema.delimiter + ' '));
+                            } else {
+                                this.onChange(attr, newValue);
+                            }
+                        });
                 }}
                 onDelete={(chip, index) => {
                     const newValue = JSON.parse(JSON.stringify(value));
-                    newValue.splice(index, 1);;
+                    newValue.splice(index, 1);
                     this.setState({ value: newValue, prevValue: '' }, () => {
-                        this.onChange(attr, newValue);
-                    })
+                        if (this.props.schema.delimiter) {
+                            this.onChange(attr, newValue.join(this.props.schema.delimiter + ' '));
+                        } else {
+                            this.onChange(attr, newValue);
+                        }
+                    });
                 }}
             />
             {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
