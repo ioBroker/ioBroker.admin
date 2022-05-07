@@ -90,7 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.4.4 (2022-05-07)
 * (bluefox) Corrected readLogs command
 
 ### 5.4.3 (2022-05-06)
@@ -107,10 +107,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 5.3.6 (2022-04-03)
 * (bluefox) Corrected the host selector in "add instance" dialog
 * (bluefox) corrected display of "null" values, e.g. by time/date
-
-### 5.3.4 (2022-03-27)
-* (Apollon77) Fix some crash cases reported by Sentry
-* (bluefox) Corrected user tab
 
 ## License
 The MIT License (MIT)

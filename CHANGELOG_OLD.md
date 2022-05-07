@@ -1,6 +1,14 @@
 ## 5.1.15 (2021-07-26)
 * (bluefox) Replaced the formula icon in the edit aliases dialog
 * (bluefox) Added the logic for checkbox in JsonConfig
+## 5.3.4 (2022-03-27)
+* (Apollon77) Fix some crash cases reported by Sentry
+* (bluefox) Corrected user tab
+
+## 5.1.15 (2021-07-26)
+* (bluefox) Replaced the formula icon in the edit aliases dialog
+* (bluefox) Added the logic for checkbox in JsonConfig
+
 ## 5.1.15 (2021-07-26)
 * (bluefox) Replaced the formula icon in the edit aliases dialog
 * (bluefox) Added the logic for checkbox in JsonConfig

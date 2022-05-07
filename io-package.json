@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "5.4.3",
+    "version": "5.4.4",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "5.4.4": {
+        "en": "Corrected readLogs command",
+        "de": "readLogs-Befehl korrigiert",
+        "ru": "Исправлена команда readLogs",
+        "pt": "Comando readLogs corrigido",
+        "nl": "Gecorrigeerde readLogs-opdracht",
+        "fr": "Commande readLogs corrigée",
+        "it": "Corretto il comando readLogs",
+        "es": "Comando readLogs corregido",
+        "pl": "Poprawiono polecenie readLogs",
+        "zh-cn": "更正了 readLogs 命令"
+      },
       "5.4.3": {
         "en": "Used common sockets (could be buggy)\nAdded chips to JSON config",
         "de": "Gebrauchte gemeinsame Steckdosen (könnte fehlerhaft sein)\nChips zur JSON-Konfiguration hinzugefügt",
@@ -89,18 +101,6 @@
         "es": "Se corrigió el selector de host en el cuadro de diálogo \"agregar instancia\".\nvisualización corregida de valores \"nulos\", p. por hora/fecha",
         "pl": "Poprawiono selektor hosta w oknie dialogowym „dodaj instancję”\npoprawione wyświetlanie wartości „null”, m.in. według czasu/daty",
         "zh-cn": "更正了“添加实例”对话框中的主机选择器\n更正了“空”值的显示，例如按时间/日期"
-      },
-      "5.3.4": {
-        "en": "Fix some crash cases reported by Sentry\nCorrected user tab",
-        "de": "Einige von Sentry gemeldete Absturzfälle behoben\nBenutzerregisterkarte korrigiert",
-        "ru": "Исправьте некоторые случаи сбоев, о которых сообщил Sentry.\nИсправлена вкладка пользователя",
-        "pt": "Corrija alguns casos de travamento relatados pelo Sentinela\nAba de usuário corrigida",
-        "nl": "Enkele door Sentry gemelde crashgevallen oplossen\nGecorrigeerd gebruikerstabblad",
-        "fr": "Correction de certains cas de plantage signalés par Sentry\nOnglet utilisateur corrigé",
-        "it": "Risolvi alcuni casi di crash segnalati da Sentry\nScheda utente corretta",
-        "es": "Solucionar algunos casos de fallas informados por Sentry\nPestaña de usuario corregida",
-        "pl": "Napraw niektóre przypadki awarii zgłoszone przez Sentry\nPoprawiona zakładka użytkownika",
-        "zh-cn": "修复 Sentry 报告的一些崩溃案例\n更正了用户选项卡"
       }
     },
     "desc": {
