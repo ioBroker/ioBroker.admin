@@ -83,6 +83,10 @@ function startAdapter(options) {
         socket && socket.stateChange(id, state);
     });
 
+    adapter.on('fileChange', (id, fileName, size) => {
+        socket && socket.fileChange(id, fileName, size);
+    });
+
     adapter.on('ready', () => {
         adapter.getForeignObject('system.config', (err, obj) => {
             if (!err && obj) {
@@ -105,6 +109,8 @@ function startAdapter(options) {
                 adapter.config.secret = secret;
                 adapter.log.error('Cannot find object system.config');
             }
+
+            // adapter.subscribeForeignFiles('*', '*');
         });
     });
 
