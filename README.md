@@ -90,6 +90,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Corrected some errors in Object Browser
+
 ### 5.4.7 (2022-05-09)
 * (bluefox) Reload GUI if new admin version detected
 

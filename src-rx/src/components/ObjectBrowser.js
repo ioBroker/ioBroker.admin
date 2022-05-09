@@ -1255,7 +1255,7 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
     valFull = [{ t: texts.value, v }];
 
     if (state) {
-        if (state.ack !== undefined) {
+        if (state.ack !== undefined && state.ack !== null) {
             valFull.push({ t: texts.ack, v: state.ack.toString() });
         }
         if (state.ts) {
