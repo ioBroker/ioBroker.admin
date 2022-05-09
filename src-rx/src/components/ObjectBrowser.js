@@ -1218,27 +1218,8 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
         if (v && typeof v === 'string') {
             if (v.length === 13) { // (length of "1647597254924") warning, this solution only works till Nov 20 2286 18:46:39CET
                 v = new Date(parseInt(v, 10)).toString();
-            } else if (v.length === 10) { // YYYY.MM.DD
-                const parts = v.split(/[-.]/);
-                if (parts.length === 3) {
-                    if (parts[0].length === 4) { // YYYY.MM.DD
-                        v = `${parseInt(parts[0], 10)}.${(parseInt(parts[1], 10) + 1).toString().padStart(2, '0')}.${parseInt(parts[2], 10).toString().padStart(2, '0')}`;
-                    } else if (parts[0].length === 4) { // DD.MM.YYYY
-                        v = `${parseInt(parts[2], 10)}.${(parseInt(parts[1], 10) + 1).toString().padStart(2, '0')}.${parseInt(parts[0], 10).toString().padStart(2, '0')}`;
-                    }
-                } else {
-                    v = new Date(v).toString(); // Let the browser convert it somehow
-                }
-            } else if (v.length === 8) { // YY.MM.DD
-                const parts = v.split(/[-.]/);
-                if (parts.length === 3) {
-                    const y = parseInt(parts[0], 10);
-                    v = (y < 100 ? 2000 + y : y) + '.' + (parseInt(parts[1], 10) + 1).toString().padStart(2, '0') + '.' + parseInt(parts[2], 10).toString().padStart(2, '0');
-                } else {
-                    v = new Date(v).toString(); // Let the browser convert it somehow
-                }
-            } else if (v !== 'undefined' && v !== 'null' && v !== '(null)' && v !== '[undef]') {
-                v = new Date(v).toString(); // Let the browser convert it somehow
+            } else {
+                // we don't know what is that, so leave it as it is
             }
         } else {
             // null and undefined could not be here. See `let v = (isCommon && isCommon.type === 'file') ....` above
@@ -1261,9 +1242,10 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
         }
     }
 
+    // try to replace number with "common.states"
     if (states && states[v] !== undefined) {
         valText.s = v;
-        v = states[valText.s];
+        v = states[v];
     }
 
     let valFull;
