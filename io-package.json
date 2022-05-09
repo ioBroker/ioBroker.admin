@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "5.4.5",
+    "version": "5.4.6",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "5.4.6": {
+        "en": "Corrected readLogs command\nCorrected file deletion",
+        "de": "readLogs-Befehl korrigiert\nKorrigierte Dateilöschung",
+        "ru": "Исправлена команда readLogs\nИсправлено удаление файла",
+        "pt": "Comando readLogs corrigido\nExclusão de arquivo corrigida",
+        "nl": "Gecorrigeerde readLogs-opdracht\nGecorrigeerde bestandsverwijdering",
+        "fr": "Commande readLogs corrigée\nSuppression de fichier corrigée",
+        "it": "Corretto il comando readLogs\nEliminazione file corretta",
+        "es": "Comando readLogs corregido\nEliminación de archivos corregidos",
+        "pl": "Poprawiono polecenie readLogs\nPoprawione usuwanie plików",
+        "zh-cn": "更正了 readLogs 命令\n更正文件删除"
+      },
       "5.4.3": {
         "en": "Used common sockets (could be buggy)\nAdded chips to JSON config",
         "de": "Gebrauchte gemeinsame Steckdosen (könnte fehlerhaft sein)\nChips zur JSON-Konfiguration hinzugefügt",
