@@ -90,7 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.4.5 (2022-05-09)
 * (bluefox) Corrected readLogs command
 * (bluefox) Corrected file deletion
 
