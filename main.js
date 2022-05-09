@@ -18,7 +18,7 @@ const axios       = require('axios');
 const fs          = require('fs');
 
 const utils       = require('@iobroker/adapter-core'); // Get common adapter utils
-const tools 	  = require('@iobroker/js-controller-common').tools;
+const tools 	  = require(utils.controllerDir + '/lib/tools.js');
 const SocketAdmin = require('@iobroker/socket-classes').SocketAdmin;
 const ws          = require('@iobroker/ws-server');
 
