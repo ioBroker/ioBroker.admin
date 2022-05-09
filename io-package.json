@@ -18,18 +18,6 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "5.4.4": {
-        "en": "Corrected readLogs command",
-        "de": "readLogs-Befehl korrigiert",
-        "ru": "Исправлена команда readLogs",
-        "pt": "Comando readLogs corrigido",
-        "nl": "Gecorrigeerde readLogs-opdracht",
-        "fr": "Commande readLogs corrigée",
-        "it": "Corretto il comando readLogs",
-        "es": "Comando readLogs corregido",
-        "pl": "Poprawiono polecenie readLogs",
-        "zh-cn": "更正了 readLogs 命令"
-      },
       "5.4.3": {
         "en": "Used common sockets (could be buggy)\nAdded chips to JSON config",
         "de": "Gebrauchte gemeinsame Steckdosen (könnte fehlerhaft sein)\nChips zur JSON-Konfiguration hinzugefügt",
