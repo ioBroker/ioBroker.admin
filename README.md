@@ -90,7 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.4.7 (2022-05-09)
 * (bluefox) Reload GUI if new admin version detected
 
 ### 5.4.6 (2022-05-09)
@@ -107,10 +107,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 5.3.7 (2022-04-10)
 * (bluefox) Changed the charts rendering
-
-### 5.3.6 (2022-04-03)
-* (bluefox) Corrected the host selector in "add instance" dialog
-* (bluefox) corrected display of "null" values, e.g. by time/date
 
 ## License
 The MIT License (MIT)
