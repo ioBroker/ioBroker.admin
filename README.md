@@ -90,7 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.4.8 (2022-05-09)
 * (bluefox) Corrected some errors in Object Browser
 
 ### 5.4.7 (2022-05-09)
@@ -107,9 +107,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 5.3.8 (2022-04-14)
 * (Apollon77) Changed the datapoint history list
 * (bluefox) Added support of swagger adapter
-
-### 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
 
 ## License
 The MIT License (MIT)

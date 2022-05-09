@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "5.4.7",
+    "version": "5.4.8",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "5.4.8": {
+        "en": "Corrected some errors in Object Browser",
+        "de": "Einige Fehler im Objektbrowser behoben",
+        "ru": "Исправлены некоторые ошибки в обозревателе объектов.",
+        "pt": "Corrigidos alguns erros no Pesquisador de Objetos",
+        "nl": "Enkele fouten in Objectbrowser gecorrigeerd",
+        "fr": "Correction de quelques erreurs dans le navigateur d'objets",
+        "it": "Corretti alcuni errori nel Browser degli oggetti",
+        "es": "Se corrigieron algunos errores en el Explorador de objetos.",
+        "pl": "Poprawiono niektóre błędy w przeglądarce obiektów",
+        "zh-cn": "更正了对象浏览器中的一些错误"
+      },
       "5.4.7": {
         "en": "Reload GUI if new admin version detected",
         "de": "GUI neu laden, wenn neue Admin-Version erkannt wird",
@@ -89,18 +101,6 @@
         "es": "Cambió la representación de los gráficos.",
         "pl": "Zmieniono renderowanie wykresów",
         "zh-cn": "更改了图表呈现"
-      },
-      "5.3.6": {
-        "en": "Corrected the host selector in \"add instance\" dialog\ncorrected display of \"null\" values, e.g. by time/date",
-        "de": "Die Hostauswahl im Dialog „Instanz hinzufügen“ wurde korrigiert\nkorrigierte Anzeige von \"Null\"-Werten, z.B. nach Zeit/Datum",
-        "ru": "Исправлен селектор хоста в диалоговом окне «Добавить экземпляр».\nисправлено отображение \"нулевых\" значений, т.е. по времени/дате",
-        "pt": "Corrigido o seletor de host na caixa de diálogo \"adicionar instância\"\nexibição corrigida de valores \"nulos\", por exemplo por hora/data",
-        "nl": "De hostselector in het dialoogvenster \"instantie toevoegen\" gecorrigeerd\ngecorrigeerde weergave van \"null\"-waarden, b.v. op tijd/datum",
-        "fr": "Correction du sélecteur d'hôte dans la boîte de dialogue \"ajouter une instance\"\naffichage corrigé des valeurs \"nulles\", par ex. par heure/date",
-        "it": "Corretto il selettore host nella finestra di dialogo \"aggiungi istanza\".\nvisualizzazione corretta di valori \"nulli\", ad es. per ora/data",
-        "es": "Se corrigió el selector de host en el cuadro de diálogo \"agregar instancia\".\nvisualización corregida de valores \"nulos\", p. por hora/fecha",
-        "pl": "Poprawiono selektor hosta w oknie dialogowym „dodaj instancję”\npoprawione wyświetlanie wartości „null”, m.in. według czasu/daty",
-        "zh-cn": "更正了“添加实例”对话框中的主机选择器\n更正了“空”值的显示，例如按时间/日期"
       }
     },
     "desc": {
