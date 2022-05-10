@@ -59,10 +59,6 @@
 ## 5.1.17 (2021-07-30)
 * (bluefox) Corrected the error on the adapter's tab
 
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
-
 ## 5.1.16 (2021-07-30)
 * (bluefox) Make the appearance of buttons configurable
 
