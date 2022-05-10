@@ -1,76 +1,25 @@
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
 ## 5.3.7 (2022-04-10)
 * (bluefox) Changed the charts rendering
-
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
 
 ## 5.3.6 (2022-04-03)
 * (bluefox) Corrected the host selector in "add instance" dialog
 * (bluefox) corrected display of "null" values, e.g. by time/date
 
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
-
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
-
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
-
 ## 5.3.4 (2022-03-27)
 * (Apollon77) Fix some crash cases reported by Sentry
 * (bluefox) Corrected user tab
 
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
-
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
-
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
-
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
-
 ## 5.3.3 (2022-03-19)
 * (bluefox) Implemented the objects coloring depends on other states
-
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
 
 ## 5.3.2 (2022-03-18)
 * (xXBJXx) added Radio Buttons for value2table
 * (bluefox) Corrected many GUI errors
 
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
-
 ## 5.3.1 (2022-02-21)
 * (bluefox) Support of IPv6 address by links (vis, material, end so on)
 * (bluefox) Corrected errors in the base settings
 * (bluefox) Corrected error with the pre-selected language in wizard
-
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
-
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
 
 ## 5.3.0 (2022-02-09)
 * (jogibear9988) Enable http compression in webserver
@@ -79,84 +28,36 @@
 * (bluefox) Added small improvements
 * (bluefox) Added the file viewer for binary states
 
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
-
 ## 5.2.3 (2021-12-24)
 * (bluefox) Fixed error in `AutocompleteSendTo`
 * (bluefox) Fixed error in charts
-
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
 
 ## 5.2.2 (2021-12-21)
 * (bluefox) Changed the minimal required js-controller version to 3.3.22 
 * (bluefox) Used web-socket library 8 (no node 10 support anymore)
 
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
-
 ## 5.2.1 (2021-11-28)
 * (bluefox) Allow in expert mode the creation of states and channels in mqtt branch
-
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
 
 ## 5.2.0 (2021-11-26)
 * (Apollon77) Fix crash cases reported via sentry
 * (bluefox) Added support for multi-repositories
 
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
-
 ## 5.1.28 (2021-11-10)
 * (bluefox) Fixed discovery function
 * (bluefox) Fixed some GUI bugs
 
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
-
 ## 5.1.25 (2021-08-15)
 * (bluefox) Corrected some errors reported via sentry and the GitHub issues
-
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
 
 ## 5.1.23 (2021-08-05)
 * (bluefox) Corrected some errors reported via sentry
 
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
-
 ## 5.1.19 (2021-07-31)
 * (bluefox) Corrected some GUI errors
 
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
-
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
-
 ## 5.1.17 (2021-07-30)
 * (bluefox) Corrected the error on the adapter's tab
-
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
-
-## 5.1.15 (2021-07-26)
-* (bluefox) Replaced the formula icon in the edit aliases dialog
-* (bluefox) Added the logic for checkbox in JsonConfig
 
 ## 5.1.15 (2021-07-26)
 * (bluefox) Replaced the formula icon in the edit aliases dialog
