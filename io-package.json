@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "5.4.8",
+    "version": "5.4.9",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "5.4.9": {
+        "en": "Corrected charts\nCorrected socket command getObjects",
+        "de": "Korrigierte Diagramme\nSocket-Befehl getObjects korrigiert",
+        "ru": "Исправленные графики\nИсправлена команда сокета getObjects",
+        "pt": "Gráficos corrigidos\nComando de socket corrigido getObjects",
+        "nl": "Gecorrigeerde grafieken\nGecorrigeerd socket-commando getObjects",
+        "fr": "Graphiques corrigés\nCommande de socket corrigée getObjects",
+        "it": "Grafici corretti\nCorretto il comando socket getObjects",
+        "es": "Gráficos corregidos\nComando de socket corregido getObjects",
+        "pl": "Poprawione wykresy\nPoprawiono polecenie gniazda getObjects",
+        "zh-cn": "修正图表\n更正了套接字命令 getObjects"
+      },
       "5.4.8": {
         "en": "Corrected some errors in Object Browser",
         "de": "Einige Fehler im Objektbrowser behoben",
@@ -89,18 +101,6 @@
         "es": "Cambió la lista de historial de puntos de datos\nSoporte agregado del adaptador swagger",
         "pl": "Zmieniono listę historii punktów danych\nDodano obsługę adaptera swagger",
         "zh-cn": "更改了数据点历史列表\n增加了对 swagger 适配器的支持"
-      },
-      "5.3.7": {
-        "en": "Changed the charts rendering",
-        "de": "Das Rendern der Diagramme wurde geändert",
-        "ru": "Изменено отображение графиков",
-        "pt": "Mudou a renderização dos gráficos",
-        "nl": "De weergave van de grafieken gewijzigd",
-        "fr": "Modification du rendu des graphiques",
-        "it": "Modificato il rendering dei grafici",
-        "es": "Cambió la representación de los gráficos.",
-        "pl": "Zmieniono renderowanie wykresów",
-        "zh-cn": "更改了图表呈现"
       }
     },
     "desc": {

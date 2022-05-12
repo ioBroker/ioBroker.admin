@@ -90,7 +90,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.4.9 (2022-05-12)
 * (bluefox) Corrected charts
 * (bluefox) Corrected socket command getObjects
 
@@ -107,10 +107,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 5.4.3 (2022-05-06)
 * (bluefox) Used common sockets (could be buggy)
 * (bluefox) Added chips to JSON config
-
-### 5.3.8 (2022-04-14)
-* (Apollon77) Changed the datapoint history list
-* (bluefox) Added support of swagger adapter
 
 ## License
 The MIT License (MIT)
