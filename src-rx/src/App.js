@@ -435,11 +435,7 @@ class App extends Router {
                 return true;
             }
 
-            if (invertedColor === '#000000' && this.state.themeType === 'light') {
-                return true;
-            } else {
-                return false;
-            }
+            return invertedColor === '#000000' && this.state.themeType === 'light';
         }
     }
 
