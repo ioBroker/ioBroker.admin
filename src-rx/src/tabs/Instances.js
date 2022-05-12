@@ -1191,6 +1191,7 @@ class Instances extends Component {
                         themeName={this.props.themeName}
                         themeType={this.props.themeType}
                         width={this.props.width}
+                        version={instance.version}
 
                         onRegisterIframeRef={ref => this.props.onRegisterIframeRef(ref)}
                         onUnregisterIframeRef={ref => this.props.onUnregisterIframeRef(ref)}
