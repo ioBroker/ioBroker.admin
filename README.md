@@ -90,6 +90,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Corrected charts
+* (bluefox) Corrected socket command getObjects
+
 ### 5.4.8 (2022-05-09)
 * (bluefox) Corrected some errors in Object Browser
 
