@@ -368,7 +368,9 @@ const CONVERTER_OPTIONS = {
     strikethrough: true,
     simplifiedAutoLink: true,
     parseImgDimensions: true,
-    splitAdjacentBlockquotes: true
+    splitAdjacentBlockquotes: true,
+    openLinksInNewWindow: true,
+    backslashEscapesHTMLTags: true,
 };
 
 let title;
@@ -463,6 +465,12 @@ class Markdown extends Component {
             } else  {
                 return <h6 id={id}><span>{text}</span><a href={prefix + '?' + id} className={this.props.classes.mdHeaderLink + ' md-h-link'}/></h6>;
             }
+        };
+        this.meta = ({text, id, level, prefix}) => {
+            return 'meta';
+        };
+        this.link = ({text, id, level, prefix}) => {
+            return <div>linkAAAAA</div>;
         };
     }
 
@@ -886,7 +894,11 @@ class Markdown extends Component {
                     classes={{expanded: this.props.classes.summaryExpanded}}
                     expandIcon={<IconExpandMore />}>{I18n.t('License')} <span className={this.props.classes.license}> {this.state.header.license}</span></AccordionSummary>
                 <AccordionActions>
-                    <MarkdownView markdown={this.state.license} options={CONVERTER_OPTIONS} components={{CustomLink, CustomH}}/>
+                    <MarkdownView
+                        markdown={this.state.license}
+                        options={CONVERTER_OPTIONS}
+                        components={{CustomLink, CustomH}}
+                    />
                 </AccordionActions>
             </Accordion>;
         }
@@ -896,14 +908,35 @@ class Markdown extends Component {
         const classes = this.props.classes;
 
         const versions = Object.keys(this.state.changeLog);
+
+        const pos1 = versions.indexOf('**WORK');
+        let pos2;
+        if (pos1 !== -1) {
+            versions.splice(pos1, 1);
+        } else {
+            pos2 = versions.indexOf('__WORK');
+            if (pos2 !== -1) {
+                versions.splice(pos2, 1);
+            }
+        }
+
         try {
             versions.sort(semver.gt);
         } catch (e) {
             console.warn('Cannot semver: ' + e);
         }
+        if (pos1 !== -1) {
+            versions.unshift('**WORK');
+        } else  if (pos2 !== -1) {
+            versions.unshift('__WORK');
+        }
 
         return <div className={classes.changeLog} key="change-log">{versions.map(version => {
             const item = this.state.changeLog[version];
+            if (version.includes('WORK')) {
+                version = 'WORK IN PROGRESS';
+                item.date = '';
+            }
             return <div key={version} className={classes.changeLogDiv}>
                 <div className={classes.changeLogVersion}>{version}{item.date ? <span className={classes.changeLogDate}>{item.date }</span> : ''}</div>
                 <ul className={classes.changeLogUL}>{item.lines.map((line, i) => typeof line === 'object' ?
@@ -1115,6 +1148,8 @@ class Markdown extends Component {
 
         const CustomLink = this.customLink;
         const CustomH = this.customH;
+        const meta = this.meta;
+        const link = this.link;
 
         const reactElements = this.state.parts.map((part, i) => {
             if (part.type === 'table') {
@@ -1140,7 +1175,11 @@ class Markdown extends Component {
                 line = line.replace(/<-/g, '&lt;-');
                 line = line.replace(/<\/ br>/g, '<br/>');
 
-                const rct = <MarkdownView markdown={line} options={CONVERTER_OPTIONS} components={{CustomLink, CustomH}}/>;
+                const rct = <MarkdownView markdown={line} options={CONVERTER_OPTIONS} components={{CustomLink, CustomH, meta, link}}/>;
+                /*cconst rct = <ReactMarkdown
+                    children={line}
+                    components={{ CustomLink, CustomH }}
+                />; */
 
                 if (part.type === 'warn') {
                     return <div key={'parts' + i} className={this.props.classes.warn}>{rct}</div>;
