@@ -195,6 +195,9 @@ class ObjectBrowserEditObject extends Component {
     checkFunction(func, isWrite) {
         if (!func) {
             return '';
+        } else if (func.indexOf('JSON.parse(') > -1) {
+            // Unable to validate (result is unknown)
+            return '';
         } else {
             let json;
             try {
