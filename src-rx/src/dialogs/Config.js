@@ -36,6 +36,11 @@ const styles = theme => ({
         marginRight: 5,
         width: 36,
         height: 36,
+    },
+    version: {
+        fontSize: 12,
+        opacity: 0.8,
+        marginLeft: 20,
     }
 });
 
@@ -179,6 +184,7 @@ class Config extends Component {
                             {this.props.jsonConfig ? <Icon src={this.props.icon} className={this.props.classes.instanceIcon} />
                                 : null}
                             {`${this.props.t('Instance settings')}: ${this.props.adapter}.${this.props.instance}`}
+                            {this.props.version ? <span className={this.props.classes.version}>v{this.props.version}</span> : null}
                         </Typography>
                         {this.renderHelpButton()}
                     </Toolbar>

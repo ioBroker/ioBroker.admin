@@ -1218,27 +1218,8 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
         if (v && typeof v === 'string') {
             if (v.length === 13) { // (length of "1647597254924") warning, this solution only works till Nov 20 2286 18:46:39CET
                 v = new Date(parseInt(v, 10)).toString();
-            } else if (v.length === 10) { // YYYY.MM.DD
-                const parts = v.split(/[-.]/);
-                if (parts.length === 3) {
-                    if (parts[0].length === 4) { // YYYY.MM.DD
-                        v = `${parseInt(parts[0], 10)}.${(parseInt(parts[1], 10) + 1).toString().padStart(2, '0')}.${parseInt(parts[2], 10).toString().padStart(2, '0')}`;
-                    } else if (parts[0].length === 4) { // DD.MM.YYYY
-                        v = `${parseInt(parts[2], 10)}.${(parseInt(parts[1], 10) + 1).toString().padStart(2, '0')}.${parseInt(parts[0], 10).toString().padStart(2, '0')}`;
-                    }
-                } else {
-                    v = new Date(v).toString(); // Let the browser convert it somehow
-                }
-            } else if (v.length === 8) { // YY.MM.DD
-                const parts = v.split(/[-.]/);
-                if (parts.length === 3) {
-                    const y = parseInt(parts[0], 10);
-                    v = (y < 100 ? 2000 + y : y) + '.' + (parseInt(parts[1], 10) + 1).toString().padStart(2, '0') + '.' + parseInt(parts[2], 10).toString().padStart(2, '0');
-                } else {
-                    v = new Date(v).toString(); // Let the browser convert it somehow
-                }
-            } else if (v !== 'undefined' && v !== 'null' && v !== '(null)' && v !== '[undef]') {
-                v = new Date(v).toString(); // Let the browser convert it somehow
+            } else {
+                // we don't know what is that, so leave it as it is
             }
         } else {
             // null and undefined could not be here. See `let v = (isCommon && isCommon.type === 'file') ....` above
@@ -1261,9 +1242,10 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
         }
     }
 
+    // try to replace number with "common.states"
     if (states && states[v] !== undefined) {
         valText.s = v;
-        v = states[valText.s];
+        v = states[v];
     }
 
     let valFull;
@@ -1273,7 +1255,7 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
     valFull = [{ t: texts.value, v }];
 
     if (state) {
-        if (state.ack !== undefined) {
+        if (state.ack !== undefined && state.ack !== null) {
             valFull.push({ t: texts.ack, v: state.ack.toString() });
         }
         if (state.ts) {
@@ -2024,7 +2006,11 @@ class ObjectBrowser extends Component {
                     {/* </ListItemIcon> */}
                     <ListItemText primary={this.texts['filter_' + id] || this.props.t('ra_' + id)} />
                     <ListItemSecondaryAction>
-                        <FormControl className={this.props.classes.columnsDialogInputWidth} style={{ marginTop: 0, marginBottom: 0 }} margin="dense">
+                        <FormControl
+                            className={this.props.classes.columnsDialogInputWidth}
+                            style={{ marginTop: 0, marginBottom: 0 }}
+                            margin="dense"
+                        >
                             <Input
                                 classes={{ underline: 'no-underline' }}
                                 placeholder={this.props.t('ra_Width')}
@@ -2129,7 +2115,11 @@ class ObjectBrowser extends Component {
                                     </ListItemIcon>
                                     <ListItemText primary={column.name + ' (' + adapter + ')'} />
                                     <ListItemSecondaryAction>
-                                        <FormControl className={this.props.classes.columnsDialogInputWidth} style={{ marginTop: 0, marginBottom: 0 }} margin="dense">
+                                        <FormControl
+                                            className={this.props.classes.columnsDialogInputWidth}
+                                            style={{ marginTop: 0, marginBottom: 0 }}
+                                            margin="dense"
+                                        >
                                             <Input
                                                 classes={{ underline: 'no-underline' }}
                                                 placeholder={this.props.t('ra_Width')}
@@ -2845,7 +2835,7 @@ class ObjectBrowser extends Component {
                 }
                 try {
                     await this.props.socket.setObject(id, obj);
-                    enums && await this._createAllEnums(enums, obj._id);
+                    enums && (await this._createAllEnums(enums, obj._id));
                     if (obj.type === 'state') {
                         try {
                             const state = await this.props.socket.getState(obj._id);
@@ -2930,9 +2920,9 @@ class ObjectBrowser extends Component {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="outlined" onClick={() => this.setState({showExportDialog: false}, () => this._exportObjects(true))}>{this.props.t('All objects')}</Button>
-                    <Button variant="contained" autoFocus color="primary" onClick={() => this.setState({showExportDialog: false}, () => this._exportObjects(false))}>{this.props.t('Only selected')}</Button>
-                    <Button variant="contained" onClick={() => this.setState({showExportDialog: false})} startIcon={<IconClose/>}>{this.props.t('Cancel')}</Button>
+                    <Button variant="outlined" onClick={() => this.setState({showExportDialog: false}, () => this._exportObjects(true))}>{this.props.t('ra_All objects')}</Button>
+                    <Button color="primary" variant="contained" autoFocus onClick={() => this.setState({showExportDialog: false}, () => this._exportObjects(false))}>{this.props.t('ra_Only selected')}</Button>
+                    <Button variant="contained" onClick={() => this.setState({showExportDialog: false})} startIcon={<IconClose/>}>{this.props.t('ra_Cancel')}</Button>
                 </DialogActions>
             </Dialog>;
         }
@@ -3016,7 +3006,7 @@ class ObjectBrowser extends Component {
             const id = this.state.selected[0] || this.state.selectedNonObject;
             if (id.split('.').length < 2 || (this.objects[id] && this.objects[id]?.type === 'state')) {
             } else {
-                if (this.props.expertMode) {
+                if (this.state.filter.expertMode) {
                     switch (this.objects[id]?.type) {
                         case 'device':
                             value = [
@@ -3065,7 +3055,7 @@ class ObjectBrowser extends Component {
             if (id.split('.').length < 2 || (this.objects[id] && this.objects[id].type === 'state')) {
                 allowObjectCreation = false;
             } else {
-                if (this.props.expertMode) {
+                if (this.state.filter.expertMode) {
                     allowObjectCreation = true;
                 } else if (id.startsWith('alias.0') || id.startsWith('0_userdata')) {
                     allowObjectCreation = true;
@@ -3086,7 +3076,10 @@ class ObjectBrowser extends Component {
 
                 <Tooltip title={this.props.t('ra_Refresh tree')}>
                     <div>
-                        <IconButton onClick={() => this.refreshComponent()} disabled={this.state.updating}>
+                        <IconButton
+                            onClick={() => this.refreshComponent()}
+                            disabled={this.state.updating}
+                        >
                             <RefreshIcon />
                         </IconButton>
                     </div>
@@ -3154,7 +3147,9 @@ class ObjectBrowser extends Component {
                     </IconButton>
                 </Tooltip>
                 {this.props.objectStatesView && <Tooltip title={this.props.t('ra_Toggle the states view')}>
-                    <IconButton onClick={() => this.onStatesViewVisible()}>
+                    <IconButton
+                        onClick={() => this.onStatesViewVisible()}
+                    >
                         <LooksOneIcon color={this.state.statesView ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip>}
@@ -3162,8 +3157,9 @@ class ObjectBrowser extends Component {
                 {this.props.objectAddBoolean ?
                     <Tooltip title={this.toolTipObjectCreating()}>
                         <div>
-                            <IconButton disabled={!allowObjectCreation} onClick={() =>
-                                this.setState({ modalNewObj: true })}
+                            <IconButton
+                                disabled={!allowObjectCreation}
+                                onClick={() => this.setState({ modalNewObj: true })}
                             >
                                 <AddIcon />
                             </IconButton>
@@ -3174,21 +3170,25 @@ class ObjectBrowser extends Component {
 
                 {this.props.objectImportExport &&
                 <Tooltip title={this.props.t('ra_Add objects tree from JSON file')}>
-                    <IconButton onClick={() => {
-                        const input = document.createElement('input');
-                        input.setAttribute('type', 'file');
-                        input.setAttribute('id', 'files');
-                        input.setAttribute('opacity', 0);
-                        input.addEventListener('change', e => this.handleJsonUpload(e), false);
-                        input.click();
-                    }}>
+                    <IconButton
+                        onClick={() => {
+                            const input = document.createElement('input');
+                            input.setAttribute('type', 'file');
+                            input.setAttribute('id', 'files');
+                            input.setAttribute('opacity', 0);
+                            input.addEventListener('change', e => this.handleJsonUpload(e), false);
+                            input.click();
+                        }}
+                    >
                         <PublishIcon />
                     </IconButton>
                 </Tooltip>
                 }
                 {this.props.objectImportExport && (!!this.state.selected.length || this.state.selectedNonObject) &&
                 <Tooltip title={this.props.t('ra_Save objects tree as JSON file')}>
-                    <IconButton onClick={() => this.setState({showExportDialog: this._getSelectedIdsForExport().length})}>
+                    <IconButton
+                        onClick={() => this.setState({showExportDialog: this._getSelectedIdsForExport().length})}
+                    >
                         <PublishIcon style={{ transform: 'rotate(180deg)' }} />
                     </IconButton>
                 </Tooltip>
@@ -3199,22 +3199,24 @@ class ObjectBrowser extends Component {
             </div>}
             {this.props.objectEditBoolean &&
             <Tooltip title={this.props.t('ra_Edit custom config')}>
-                <IconButton onClick={() => {
-                    // get all visible states
-                    const ids = getVisibleItems(this.root, 'state', this.objects);
+                <IconButton
+                    onClick={() => {
+                        // get all visible states
+                        const ids = getVisibleItems(this.root, 'state', this.objects);
 
-                    if (ids.length) {
-                        this.pauseSubscribe(true);
+                        if (ids.length) {
+                            this.pauseSubscribe(true);
 
-                        if (ids.length === 1) {
-                            window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', this.state.selected[0]);
-                            this.props.router && this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
+                            if (ids.length === 1) {
+                                window.localStorage.setItem((this.props.dialogName || 'App') + '.objectSelected', this.state.selected[0]);
+                                this.props.router && this.props.router.doNavigate(null, 'custom', this.state.selected[0]);
+                            }
+                            this.setState({ customDialog: ids });
+                        } else {
+                            this.setState({ toast: this.props.t('ra_please select object') });
                         }
-                        this.setState({ customDialog: ids });
-                    } else {
-                        this.setState({ toast: this.props.t('ra_please select object') });
-                    }
-                }}>
+                    }}
+                >
                     <BuildIcon />
                 </IconButton>
             </Tooltip>
@@ -3300,7 +3302,7 @@ class ObjectBrowser extends Component {
     renderColumnButtons(id, item, classes) {
         if (!item.data.obj) {
             return this.props.onObjectDelete || this.props.objectEditOfAccessControl ? <div className={classes.buttonDiv}>
-                {this.props.expertMode && this.props.objectEditOfAccessControl ? <IconButton
+                {this.state.filter.expertMode && this.props.objectEditOfAccessControl ? <IconButton
                     className={Utils.clsx(classes.cellButtonsButton, classes.cellButtonsEmptyButton, classes.cellButtonMinWidth)}
                     onClick={() =>
                         this.setState({ modalEditOfAccess: true, modalEmptyId: id, modalEditOfAccessObjData: item.data })}
@@ -3323,8 +3325,9 @@ class ObjectBrowser extends Component {
         const aclSystemConfig = item.data.obj.acl && (item.data.obj.type === 'state' ? this.systemConfig.common.defaultNewAcl.state : this.systemConfig.common.defaultNewAcl.object);
 
         return [
-            this.props.expertMode && this.props.objectEditOfAccessControl ? <Tooltip key="acl" title={item.data.aclTooltip}><IconButton className={classes.cellButtonMinWidth} onClick={() =>
-                this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })}
+            this.state.filter.expertMode && this.props.objectEditOfAccessControl ? <Tooltip key="acl" title={item.data.aclTooltip}><IconButton
+                className={classes.cellButtonMinWidth}
+                onClick={() => this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })}
             >
                 <div className={classes.aclText}>{isNaN(Number(acl).toString(16)) ? Number(aclSystemConfig).toString(16) : Number(acl).toString(16)}</div>
             </IconButton></Tooltip> : <div key="aclEmpty" className={classes.cellButtonMinWidth} />,
@@ -3485,16 +3488,16 @@ class ObjectBrowser extends Component {
             const copyText = info.valText.v || '';
             info.val = copyText;
             info.valText = [
-                <span className={classes.newValue || classes.newValue} key={`${info.valText.v.toString()}valText`}>{info.valText.v.toString()}</span>,
-                info.valText.u ? <span className={Utils.clsx(classes.cellValueTextUnit, classes.newValue)} key={`${info.valText.v.toString()}unit`}>{info.valText.u}</span> : null,
-                info.valText.s !== undefined ? <span className={Utils.clsx(classes.cellValueTextState, classes.newValue)} key={`${info.valText.v.toString()}states`}>({info.valText.s})</span> : null,
-                <IconCopy className={Utils.clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonCopy)} onClick={(e) => this.onCopy(e, copyText)} key="cc" />,
+                <span className={classes.newValue || classes.newValue} key="valText">{info.valText.v.toString()}</span>,
+                info.valText.u ? <span className={Utils.clsx(classes.cellValueTextUnit, classes.newValue)} key="unit">{info.valText.u}</span> : null,
+                info.valText.s !== undefined ? <span className={Utils.clsx(classes.cellValueTextState, classes.newValue)} key="states">({info.valText.s})</span> : null,
+                <IconCopy className={Utils.clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonCopy)} onClick={e => this.onCopy(e, copyText)} key="cc" />,
                 //<IconEdit className={ Utils.clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonEdit) } key="ce" />
             ];
         }
 
         let val = info.valText;
-        if (!this.props.expertMode && item.data.button) {
+        if (!this.state.filter.expertMode && item.data.button) {
             val = <PressButtonIcon className={Utils.clsx(this.props.classes.cellValueButton, !this.states[id] || !this.states[id].val ? this.props.classes.cellValueButtonFalse : '')} />;
         }
 
@@ -3786,7 +3789,7 @@ class ObjectBrowser extends Component {
                         variant="contained"
                         onClick={() => this.onColumnsEditCustomDialogClose()}
                         startIcon={<IconClose />}
-                    >{this.props.t('Cancel')}</Button>
+                    >{this.props.t('ra_Cancel')}</Button>
                 </DialogActions>
             </Dialog>;
         } else {
@@ -3956,11 +3959,11 @@ class ObjectBrowser extends Component {
                 /> :
                 null;
 
-        let valueEditable = !this.props.notEditable && itemType === 'state' && (this.props.expertMode || common?.write !== false);
+        let valueEditable = !this.props.notEditable && itemType === 'state' && (this.state.filter.expertMode || common?.write !== false);
         if (this.props.objectBrowserViewFile && common?.type === 'file') {
             valueEditable = true;
         }
-        const enumEditable  = !this.props.notEditable && this.objects[id] && (this.props.expertMode || itemType === 'state' || itemType === 'channel' || itemType === 'device');
+        const enumEditable  = !this.props.notEditable && this.objects[id] && (this.state.filter.expertMode || itemType === 'state' || itemType === 'channel' || itemType === 'device');
         const checkVisibleObjectType = this.state.statesView && (itemType === 'state' || itemType === 'channel' || itemType === 'device');
         let newValue = '';
         let newValueTitle = [];
@@ -4188,7 +4191,7 @@ class ObjectBrowser extends Component {
             {!this.state.statesView ?
                 <>
                     {this.columnsVisibility.type ? <div className={classes.cellType} style={{ width: this.columnsVisibility.type }}>{typeImg} {obj && obj.type}</div> : null}
-                    {this.columnsVisibility.role ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.role, cursor: this.props.expertMode && enumEditable && this.props.objectBrowserEditRole ? 'text' : 'default' }} onClick={this.props.expertMode && enumEditable && this.props.objectBrowserEditRole ? () => this.setState({ roleDialog: item.data.id }) : undefined}>{common?.role}</div> : null}
+                    {this.columnsVisibility.role ? <div className={classes.cellRole} style={{ width: this.columnsVisibility.role, cursor: this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole ? 'text' : 'default' }} onClick={this.state.filter.expertMode && enumEditable && this.props.objectBrowserEditRole ? () => this.setState({ roleDialog: item.data.id }) : undefined}>{common?.role}</div> : null}
                     {this.columnsVisibility.room ? <div className={`${classes.cellRoom} ${item.data.per ? classes.cellEnumParent : ''}`} style={{ width: this.columnsVisibility.room, cursor: enumEditable ? 'text' : 'default' }} onClick={enumEditable ? () => { const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'roomEnums'); this.setState({ enumDialogEnums: enums, enumDialog: { item, type: 'room', enumsOriginal: JSON.parse(JSON.stringify(enums)) } }); } : undefined}>{item.data.rooms}</div> : null}
                     {this.columnsVisibility.func ? <div className={`${classes.cellFunc} ${item.data.pef ? classes.cellEnumParent : ''}`} style={{ width: this.columnsVisibility.func, cursor: enumEditable ? 'text' : 'default' }} onClick={enumEditable ? () => { const enums = findEnumsForObjectAsIds(this.info, item.data.id, 'funcEnums'); this.setState({ enumDialogEnums: enums, enumDialog: { item, type: 'func', enumsOriginal: JSON.parse(JSON.stringify(enums)) } }); } : undefined}>{item.data.funcs}</div> : null}
                 </>
@@ -4211,7 +4214,7 @@ class ObjectBrowser extends Component {
                 }
 
                 // in non-expert mode control button directly
-                if (!this.props.expertMode && item.data.button) {
+                if (!this.state.filter.expertMode && item.data.button) {
                     return this.props.socket.setState(id, true)
                         .catch(e => window.alert(`Cannot write state "${id}": ${e}`));
                 }
@@ -4453,7 +4456,11 @@ class ObjectBrowser extends Component {
 
         let filterClearInValue = null;
         if (!this.columnsVisibility.buttons && !this.isFilterEmpty()) {
-            filterClearInValue = <IconButton onClick={() => this.clearFilter()} className={classes.buttonClearFilter} title={this.props.t('ra_Clear filter')}>
+            filterClearInValue = <IconButton
+                onClick={() => this.clearFilter()}
+                className={classes.buttonClearFilter}
+                title={this.props.t('ra_Clear filter')}
+            >
                 <IconClearFilter />
                 <IconClose className={classes.buttonClearFilterIcon} />
             </IconButton>;

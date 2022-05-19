@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "5.3.8",
+    "version": "5.4.9",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,78 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "5.4.9": {
+        "en": "Corrected charts\nCorrected socket command getObjects",
+        "de": "Korrigierte Diagramme\nSocket-Befehl getObjects korrigiert",
+        "ru": "Исправленные графики\nИсправлена команда сокета getObjects",
+        "pt": "Gráficos corrigidos\nComando de socket corrigido getObjects",
+        "nl": "Gecorrigeerde grafieken\nGecorrigeerd socket-commando getObjects",
+        "fr": "Graphiques corrigés\nCommande de socket corrigée getObjects",
+        "it": "Grafici corretti\nCorretto il comando socket getObjects",
+        "es": "Gráficos corregidos\nComando de socket corregido getObjects",
+        "pl": "Poprawione wykresy\nPoprawiono polecenie gniazda getObjects",
+        "zh-cn": "修正图表\n更正了套接字命令 getObjects"
+      },
+      "5.4.8": {
+        "en": "Corrected some errors in Object Browser",
+        "de": "Einige Fehler im Objektbrowser behoben",
+        "ru": "Исправлены некоторые ошибки в обозревателе объектов.",
+        "pt": "Corrigidos alguns erros no Pesquisador de Objetos",
+        "nl": "Enkele fouten in Objectbrowser gecorrigeerd",
+        "fr": "Correction de quelques erreurs dans le navigateur d'objets",
+        "it": "Corretti alcuni errori nel Browser degli oggetti",
+        "es": "Se corrigieron algunos errores en el Explorador de objetos.",
+        "pl": "Poprawiono niektóre błędy w przeglądarce obiektów",
+        "zh-cn": "更正了对象浏览器中的一些错误"
+      },
+      "5.4.7": {
+        "en": "Reload GUI if new admin version detected",
+        "de": "GUI neu laden, wenn neue Admin-Version erkannt wird",
+        "ru": "Перезагрузите графический интерфейс, если обнаружена новая версия администратора",
+        "pt": "Recarregue a GUI se uma nova versão do administrador for detectada",
+        "nl": "Herlaad GUI als er een nieuwe beheerdersversie is gedetecteerd",
+        "fr": "Recharger l'interface graphique si une nouvelle version d'administrateur est détectée",
+        "it": "Ricarica la GUI se viene rilevata una nuova versione dell'amministratore",
+        "es": "Vuelva a cargar la GUI si se detecta una nueva versión de administrador",
+        "pl": "Przeładuj GUI, jeśli wykryta zostanie nowa wersja administratora",
+        "zh-cn": "如果检测到新的管理员版本，则重新加载 GUI"
+      },
+      "5.4.6": {
+        "en": "Corrected readLogs command\nCorrected file deletion",
+        "de": "readLogs-Befehl korrigiert\nKorrigierte Dateilöschung",
+        "ru": "Исправлена команда readLogs\nИсправлено удаление файла",
+        "pt": "Comando readLogs corrigido\nExclusão de arquivo corrigida",
+        "nl": "Gecorrigeerde readLogs-opdracht\nGecorrigeerde bestandsverwijdering",
+        "fr": "Commande readLogs corrigée\nSuppression de fichier corrigée",
+        "it": "Corretto il comando readLogs\nEliminazione file corretta",
+        "es": "Comando readLogs corregido\nEliminación de archivos corregidos",
+        "pl": "Poprawiono polecenie readLogs\nPoprawione usuwanie plików",
+        "zh-cn": "更正了 readLogs 命令\n更正文件删除"
+      },
+      "5.4.3": {
+        "en": "Used common sockets (could be buggy)\nAdded chips to JSON config",
+        "de": "Gebrauchte gemeinsame Steckdosen (könnte fehlerhaft sein)\nChips zur JSON-Konfiguration hinzugefügt",
+        "ru": "Использовались обычные розетки (могут глючить)\nДобавлены фишки в конфиг JSON",
+        "pt": "Soquetes comuns usados (podem estar com bugs)\nChips adicionados à configuração JSON",
+        "nl": "Gebruikte gemeenschappelijke stopcontacten (kan buggy zijn)\nChips toegevoegd aan JSON-configuratie",
+        "fr": "Prises communes utilisées (pourraient être boguées)\nAjout de puces à la configuration JSON",
+        "it": "Prese comuni usate (potrebbero essere difettose)\nAggiunti chip alla configurazione JSON",
+        "es": "Enchufes comunes usados (podrían tener errores)\nChips agregados a la configuración JSON",
+        "pl": "Używane wspólne gniazda (mogą być wadliwe)\nDodano chipy do konfiguracji JSON",
+        "zh-cn": "使用过的普通插座（可能有问题）\n将芯片添加到 JSON 配置"
+      },
+      "5.4.2": {
+        "en": "Used common sockets (could be buggy)\nAdded chips to JSON config",
+        "de": "Gebrauchte gemeinsame Steckdosen (könnte fehlerhaft sein)\nChips zur JSON-Konfiguration hinzugefügt",
+        "ru": "Использовались обычные розетки (могут глючить)\nДобавлены фишки в конфиг JSON",
+        "pt": "Soquetes comuns usados (podem estar com bugs)\nChips adicionados à configuração JSON",
+        "nl": "Gebruikte gemeenschappelijke stopcontacten (kan buggy zijn)\nChips toegevoegd aan JSON-configuratie",
+        "fr": "Prises communes utilisées (pourraient être boguées)\nAjout de puces à la configuration JSON",
+        "it": "Prese comuni usate (potrebbero essere difettose)\nAggiunti chip alla configurazione JSON",
+        "es": "Enchufes comunes usados (podrían tener errores)\nChips agregados a la configuración JSON",
+        "pl": "Używane wspólne gniazda (mogą być wadliwe)\nDodano chipy do konfiguracji JSON",
+        "zh-cn": "使用过的普通插座（可能有问题）\n将芯片添加到 JSON 配置"
+      },
       "5.3.8": {
         "en": "Changed the datapoint history list\nAdded support of swagger adapter",
         "de": "Die Datenpunktverlaufsliste wurde geändert\nUnterstützung für Swagger-Adapter hinzugefügt",
@@ -29,78 +101,6 @@
         "es": "Cambió la lista de historial de puntos de datos\nSoporte agregado del adaptador swagger",
         "pl": "Zmieniono listę historii punktów danych\nDodano obsługę adaptera swagger",
         "zh-cn": "更改了数据点历史列表\n增加了对 swagger 适配器的支持"
-      },
-      "5.3.7": {
-        "en": "Changed the charts rendering",
-        "de": "Das Rendern der Diagramme wurde geändert",
-        "ru": "Изменено отображение графиков",
-        "pt": "Mudou a renderização dos gráficos",
-        "nl": "De weergave van de grafieken gewijzigd",
-        "fr": "Modification du rendu des graphiques",
-        "it": "Modificato il rendering dei grafici",
-        "es": "Cambió la representación de los gráficos.",
-        "pl": "Zmieniono renderowanie wykresów",
-        "zh-cn": "更改了图表呈现"
-      },
-      "5.3.6": {
-        "en": "Corrected the host selector in \"add instance\" dialog\ncorrected display of \"null\" values, e.g. by time/date",
-        "de": "Die Hostauswahl im Dialog „Instanz hinzufügen“ wurde korrigiert\nkorrigierte Anzeige von \"Null\"-Werten, z.B. nach Zeit/Datum",
-        "ru": "Исправлен селектор хоста в диалоговом окне «Добавить экземпляр».\nисправлено отображение \"нулевых\" значений, т.е. по времени/дате",
-        "pt": "Corrigido o seletor de host na caixa de diálogo \"adicionar instância\"\nexibição corrigida de valores \"nulos\", por exemplo por hora/data",
-        "nl": "De hostselector in het dialoogvenster \"instantie toevoegen\" gecorrigeerd\ngecorrigeerde weergave van \"null\"-waarden, b.v. op tijd/datum",
-        "fr": "Correction du sélecteur d'hôte dans la boîte de dialogue \"ajouter une instance\"\naffichage corrigé des valeurs \"nulles\", par ex. par heure/date",
-        "it": "Corretto il selettore host nella finestra di dialogo \"aggiungi istanza\".\nvisualizzazione corretta di valori \"nulli\", ad es. per ora/data",
-        "es": "Se corrigió el selector de host en el cuadro de diálogo \"agregar instancia\".\nvisualización corregida de valores \"nulos\", p. por hora/fecha",
-        "pl": "Poprawiono selektor hosta w oknie dialogowym „dodaj instancję”\npoprawione wyświetlanie wartości „null”, m.in. według czasu/daty",
-        "zh-cn": "更正了“添加实例”对话框中的主机选择器\n更正了“空”值的显示，例如按时间/日期"
-      },
-      "5.3.5": {
-        "en": "Corrected the host selector in \"add instance\" dialog\ncorrected display of \"null\" values, e.g. by time/date",
-        "de": "Die Hostauswahl im Dialog „Instanz hinzufügen“ wurde korrigiert\nkorrigierte Anzeige von \"Null\"-Werten, z.B. nach Zeit/Datum",
-        "ru": "Исправлен селектор хоста в диалоговом окне «Добавить экземпляр».\nисправлено отображение \"нулевых\" значений, т.е. по времени/дате",
-        "pt": "Corrigido o seletor de host na caixa de diálogo \"adicionar instância\"\nexibição corrigida de valores \"nulos\", por exemplo por hora/data",
-        "nl": "De hostselector in het dialoogvenster \"instantie toevoegen\" gecorrigeerd\ngecorrigeerde weergave van \"null\"-waarden, b.v. op tijd/datum",
-        "fr": "Correction du sélecteur d'hôte dans la boîte de dialogue \"ajouter une instance\"\naffichage corrigé des valeurs \"nulles\", par ex. par heure/date",
-        "it": "Corretto il selettore host nella finestra di dialogo \"aggiungi istanza\".\nvisualizzazione corretta di valori \"nulli\", ad es. per ora/data",
-        "es": "Se corrigió el selector de host en el cuadro de diálogo \"agregar instancia\".\nvisualización corregida de valores \"nulos\", p. por hora/fecha",
-        "pl": "Poprawiono selektor hosta w oknie dialogowym „dodaj instancję”\npoprawione wyświetlanie wartości „null”, m.in. według czasu/daty",
-        "zh-cn": "更正了“添加实例”对话框中的主机选择器\n更正了“空”值的显示，例如按时间/日期"
-      },
-      "5.3.4": {
-        "en": "Fix some crash cases reported by Sentry\nCorrected user tab",
-        "de": "Einige von Sentry gemeldete Absturzfälle behoben\nBenutzerregisterkarte korrigiert",
-        "ru": "Исправьте некоторые случаи сбоев, о которых сообщил Sentry.\nИсправлена вкладка пользователя",
-        "pt": "Corrija alguns casos de travamento relatados pelo Sentinela\nAba de usuário corrigida",
-        "nl": "Enkele door Sentry gemelde crashgevallen oplossen\nGecorrigeerd gebruikerstabblad",
-        "fr": "Correction de certains cas de plantage signalés par Sentry\nOnglet utilisateur corrigé",
-        "it": "Risolvi alcuni casi di crash segnalati da Sentry\nScheda utente corretta",
-        "es": "Solucionar algunos casos de fallas informados por Sentry\nPestaña de usuario corregida",
-        "pl": "Napraw niektóre przypadki awarii zgłoszone przez Sentry\nPoprawiona zakładka użytkownika",
-        "zh-cn": "修复 Sentry 报告的一些崩溃案例\n更正了用户选项卡"
-      },
-      "5.3.3": {
-        "en": "Implemented the objects coloring depends on other states",
-        "de": "Die implementierte Objektfarbe hängt von anderen Zuständen ab",
-        "ru": "Реализована окраска объектов в зависимости от других состояний",
-        "pt": "Implementado a coloração dos objetos depende de outros estados",
-        "nl": "Geïmplementeerd de objecten kleuren is afhankelijk van andere staten",
-        "fr": "Implémenté la coloration des objets dépend d'autres états",
-        "it": "Implementata la colorazione degli oggetti dipende da altri stati",
-        "es": "Implementado el coloreado de los objetos depende de otros estados.",
-        "pl": "Zaimplementowane kolory obiektów zależą od innych stanów",
-        "zh-cn": "实现对象着色取决于其他状态"
-      },
-      "5.3.2": {
-        "en": "added Radio Buttons for value2table\nCorrected many GUI errors",
-        "de": "Optionsfelder für value2table hinzugefügt\nViele GUI-Fehler behoben",
-        "ru": "добавлены радиокнопки для value2table\nИсправлено множество ошибок графического интерфейса.",
-        "pt": "botões de rádio adicionados para value2table\nCorrigidos muitos erros de GUI",
-        "nl": "keuzerondjes toegevoegd voor value2table\nVeel GUI-fouten gecorrigeerd",
-        "fr": "Ajout de boutons radio pour value2table\nCorrection de nombreuses erreurs d'interface graphique",
-        "it": "aggiunti i pulsanti di opzione per value2table\nCorretti molti errori della GUI",
-        "es": "Botones de radio agregados para value2table\nSe corrigieron muchos errores de GUI",
-        "pl": "dodano przyciski radiowe dla value2table\nPoprawiono wiele błędów GUI",
-        "zh-cn": "为 value2table 添加了单选按钮\n更正了许多 GUI 错误"
       }
     },
     "desc": {

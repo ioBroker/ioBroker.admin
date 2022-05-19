@@ -18,7 +18,7 @@ const axios       = require('axios');
 const fs          = require('fs');
 
 const utils       = require('@iobroker/adapter-core'); // Get common adapter utils
-const tools 	  = require('@iobroker/js-controller-common').tools;
+const tools 	  = require(utils.controllerDir + '/lib/tools.js');
 const SocketAdmin = require('@iobroker/socket-classes').SocketAdmin;
 const ws          = require('@iobroker/ws-server');
 
@@ -83,6 +83,10 @@ function startAdapter(options) {
         socket && socket.stateChange(id, state);
     });
 
+    adapter.on('fileChange', (id, fileName, size) => {
+        socket && socket.fileChange(id, fileName, size);
+    });
+
     adapter.on('ready', () => {
         adapter.getForeignObject('system.config', (err, obj) => {
             if (!err && obj) {
@@ -105,6 +109,8 @@ function startAdapter(options) {
                 adapter.config.secret = secret;
                 adapter.log.error('Cannot find object system.config');
             }
+
+            // adapter.subscribeForeignFiles('*', '*');
         });
     });
 

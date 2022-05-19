@@ -90,26 +90,23 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 5.4.9 (2022-05-12)
+* (bluefox) Corrected charts
+* (bluefox) Corrected socket command getObjects
+
+### 5.4.8 (2022-05-09)
+* (bluefox) Corrected some errors in Object Browser
+
+### 5.4.7 (2022-05-09)
+* (bluefox) Reload GUI if new admin version detected
+
+### 5.4.6 (2022-05-09)
+* (bluefox) Corrected readLogs command
+* (bluefox) Corrected file deletion
+
+### 5.4.3 (2022-05-06)
 * (bluefox) Used common sockets (could be buggy)
-
-### 5.3.8 (2022-04-14)
-* (Apollon77) Changed the datapoint history list
-* (bluefox) Added support of swagger adapter
-
-### 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
-### 5.3.6 (2022-04-03)
-* (bluefox) Corrected the host selector in "add instance" dialog
-* (bluefox) corrected display of "null" values, e.g. by time/date
-
-### 5.3.4 (2022-03-27)
-* (Apollon77) Fix some crash cases reported by Sentry
-* (bluefox) Corrected user tab
-
-### 5.3.3 (2022-03-19)
-* (bluefox) Implemented the objects coloring depends on other states
+* (bluefox) Added chips to JSON config
 
 ## License
 The MIT License (MIT)

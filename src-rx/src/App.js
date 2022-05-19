@@ -433,12 +433,9 @@ class App extends Router {
             const invertedColor = Utils.invertColor(color, true);
             if (invertedColor === '#FFFFFF' && this.state.themeType === 'dark') {
                 return true;
-            } else
-            if (invertedColor === '#000000' && this.state.themeType === 'light') {
-                return true;
-            } else {
-                return false;
             }
+
+            return invertedColor === '#000000' && this.state.themeType === 'light';
         }
     }
 
@@ -463,22 +460,33 @@ class App extends Router {
                             connected: false
                         });
                     } else if (progress === PROGRESS.READY) {
-                        const newState = {
-                            connected: true,
-                            progress: 100
-                        };
-                        if (this.state.cmd && this.state.cmd.match(/ admin(@[-.\w]+)?$/)) {
-                            // close command dialog after reconnect (may be admin was restarted and update is now finished)
-                            newState.commandRunning = false;
-                            newState.forceUpdateAdapters = this.state.forceUpdateAdapters + 1;
+                        // BF: (2022.05.09) here must be this.socket.getVersion(true), but I have no Idea, why it does not work :(
+                        this.socket._socket.emit('getVersion', (err, version) => {
+                            console.log(`Stored version: ${this.state.versionAdmin}, new version: ${version}`);
+                            if (this.state.versionAdmin && this.state.versionAdmin !== version) {
+                                window.alert('New adapter version detected. Reloading...')
+                                setTimeout(() => window.location.reload(), 500)
+                            }
 
-                            this.closeCmdDialog(() => {
+                            const newState = {
+                                connected: true,
+                                progress: 100,
+                                versionAdmin: version
+                            };
+
+                            if (this.state.cmd && this.state.cmd.match(/ admin(@[-.\w]+)?$/)) {
+                                // close command dialog after reconnect (maybe admin was restarted and update is now finished)
+                                newState.commandRunning = false;
+                                newState.forceUpdateAdapters = this.state.forceUpdateAdapters + 1;
+
+                                this.closeCmdDialog(() => {
+                                    this.setState(newState);
+                                    window.location.reload();
+                                });
+                            } else {
                                 this.setState(newState);
-                                window.location.reload(false);
-                            });
-                        } else {
-                            this.setState(newState);
-                        }
+                            }
+                        });
                     } else {
                         this.setState({
                             connected: true,
@@ -530,7 +538,6 @@ class App extends Router {
                                 try {
                                     newState.systemConfig = await this.socket.getCompactSystemConfig();
                                     newState.wizard = !newState.systemConfig.common.licenseConfirmed;
-                                    newState.versionAdmin = (await this.socket.getVersion()).version;
                                     await this.findCurrentHost(newState);
                                     await this.readRepoAndInstalledInfo(newState.currentHost, newState.hosts);
                                 } catch (error) {

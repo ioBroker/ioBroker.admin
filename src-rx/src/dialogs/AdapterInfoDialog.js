@@ -72,6 +72,7 @@ class AdapterInfoDialog extends Component {
             readme = readme.replace(/\(zh-cn\/adapterref\//g, '(https://www.iobroker.net/zh-cn/adapterref/');
             readme = readme.replace(/\(zh-cn\/adapterref\//g, '(https://www.iobroker.net/zh-cn/adapterref/');*/
             readme = readme.replace(/src="([-\w]+)\/adapterref\//g, 'src="https://www.iobroker.net/zh-cn/adapterref/');
+            // readme = readme.replace(/(<meta[^>]+>)/g, '\\$1');
 
             this.setState({text: readme});
         } catch(error) {
@@ -80,7 +81,6 @@ class AdapterInfoDialog extends Component {
     }
 
     trimArr(lines) {
-
         let j = lines.length - 1;
 
         while (j >= 0 && !lines[j]) {

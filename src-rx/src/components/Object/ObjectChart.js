@@ -246,12 +246,14 @@ class ObjectChart extends Component {
             this.rangeValues &&
             (!this.rangeValues.length || this.rangeValues[this.rangeValues.length - 1].ts < state.ts)) {
 
-            this.chartValues && this.chartValues.push({val: state.val, ts: state.ts});
-            this.rangeValues.push({val: state.val, ts: state.ts});
+            if (!this.state.max || state.ts - this.state.max < 120000) {
+                this.chartValues && this.chartValues.push({val: state.val, ts: state.ts});
+                this.rangeValues.push({val: state.val, ts: state.ts});
 
-            // update only if end is near to now
-            if (state.ts >= this.chart.min && state.ts <= this.chart.max + 300000) {
-                this.updateChart();
+                // update only if end is near to now
+                if (state.ts >= this.chart.min && state.ts <= this.chart.max + 300000) {
+                    this.updateChart();
+                }
             }
         }
     }
@@ -576,6 +578,11 @@ class ObjectChart extends Component {
             widthAxis = ((max.length * 9) || 50) + 12;
         }
 
+        const splitNumber = this.chart.withSeconds ?
+            Math.round((this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT) / 100)
+            :
+            Math.round((this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT) / 60);
+
         return {
             backgroundColor: 'transparent',
             title: {
@@ -613,13 +620,10 @@ class ObjectChart extends Component {
                 splitLine: {
                     show: false
                 },
-                splitNumber: this.chart.withSeconds ?
-                    Math.round((this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT) / 70)
-                    :
-                    Math.round((this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT) / 50),
+                splitNumber,
                 min: this.chart.min,
                 max: this.chart.max,
-                axisTick: {alignWithLabel: true,},
+                axisTick: { alignWithLabel: true },
                 axisLabel: {
                     formatter: (value, index) => {
                         const date = new Date(value);
@@ -806,6 +810,7 @@ class ObjectChart extends Component {
         if (mins === 'absolute') {
             this.timeTimer && clearTimeout(this.timeTimer);
             this.timeTimer = null;
+            this.updateChart(this.chart.min, this.chart.max, true, cb);
             return;
         } else {
             window.localStorage.removeItem('App.absoluteStart');

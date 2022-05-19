@@ -152,6 +152,7 @@ class EasyMode extends Component {
                         configStored={configStored}
                         dateFormat={dateFormat}
                         isFloatComma={isFloatComma}
+                        // version={currentInstance.version} We don't need version in easy mode
 
                         onRegisterIframeRef={ref => this.props.onRegisterIframeRef(ref)}
                         onUnregisterIframeRef={ref => this.props.onUnregisterIframeRef(ref)}
