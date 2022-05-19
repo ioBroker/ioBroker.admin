@@ -914,6 +914,8 @@
   "Logs": "Zaloguj wiadomości",
   "Files": "Akta",
   "Edit object:": "Edytuj obiekt:",
+  "Add attribute %s": "Dodaj atrybut %s",
+  "Remove attribute %s": "Usuń atrybut %s",
   "Write": "pisać",
   "Sorry, you cannot use ioBroker.": "Przepraszamy, nie możesz używać programu ioBroker.",
   "Understand": "Rozumiesz",

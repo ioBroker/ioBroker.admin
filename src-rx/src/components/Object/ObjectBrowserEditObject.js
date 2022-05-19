@@ -406,13 +406,13 @@ class ObjectBrowserEditObject extends Component {
                 variant="contained"
                 color="secondary"
                 startIcon={<AddIcon />}
-                onClick={cb}>{t('add %s', nameKey)}</Button>
+                onClick={cb}>{t('Add attribute %s', nameKey)}</Button>
         </div>;
     }
 
     buttonRemoveKey(nameKey, cb) {
         const { t, classes } = this.props;
-        return <Tooltip title={t('Remove %s', nameKey)}><div className={classes.close} onClick={cb} /></Tooltip>;
+        return <Tooltip title={t('Remove attribute %s', nameKey)}><div className={classes.close} onClick={cb} /></Tooltip>;
     }
 
     renderCommonEdit() {

@@ -914,6 +914,8 @@
   "Logs": "Registro",
   "Files": "Archivos",
   "Edit object:": "Editar objeto:",
+  "Add attribute %s": "Agregar atributo %s",
+  "Remove attribute %s": "Eliminar atributo %s",
   "Write": "Escribir",
   "Sorry, you cannot use ioBroker.": "Lo sentimos, no puede utilizar ioBroker.",
   "Understand": "Comprender",

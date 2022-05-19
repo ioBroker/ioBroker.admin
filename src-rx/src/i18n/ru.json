@@ -918,6 +918,8 @@
   "Logs": "Журнал",
   "Files": "Файлы",
   "Edit object:": "Изменить объект:",
+  "Add attribute %s": "Добавить атрибут %s",
+  "Remove attribute %s": "Удалить атрибут %s",
   "Write": "Сохранить",
   "Sorry, you cannot use ioBroker.": "К сожалению, вы не можете использовать ioBroker.",
   "Understand": "Понятно",
