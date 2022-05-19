@@ -1206,6 +1206,7 @@
   "Readme": "Readme",
   "Delete adapter": "Usuń adapter",
   "Install a specific version": "Zainstaluj określoną wersję",
+  "Please select specific version of %s": "Wybierz konkretną wersję %s",
   "Rebuild": "Odbudować",
   "votes": "głosów",
   "Have fun automating your home with": "Baw się automatyzując swój dom za pomocą",

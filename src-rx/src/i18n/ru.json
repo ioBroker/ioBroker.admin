@@ -1210,6 +1210,7 @@
   "Readme": "Прочти меня",
   "Delete adapter": "Удалить адаптер",
   "Install a specific version": "Установить конкретную версию",
+  "Please select specific version of %s": "Выберите конкретную версию %s",
   "Rebuild": "Восстановить",
   "votes": "Голосование",
   "Have fun automating your home with": "Получайте удовольствие, автоматизируя свой дом с",

@@ -1206,6 +1206,7 @@
   "Readme": "自述文件",
   "Delete adapter": "删除适配器",
   "Install a specific version": "安装特定版本",
+  "Please select specific version of %s": "请选择 %s 的特定版本",
   "Rebuild": "重建",
   "votes": "票数",
   "Have fun automating your home with": "享受与家庭自动化的乐趣",
