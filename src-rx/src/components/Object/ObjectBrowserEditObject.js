@@ -517,7 +517,7 @@ class ObjectBrowserEditObject extends Component {
     renderAliasEdit() {
         try {
             const json = JSON.parse(this.state.text);
-            const funcVisible = json.common?.alias?.read !== undefined;
+            const funcVisible = json.common?.alias?.read !== undefined || json.common?.alias?.write !== undefined;
 
             return <Grid container direction="column" className={this.props.classes.marginTop}>
                 <Grid item>
@@ -589,7 +589,7 @@ class ObjectBrowserEditObject extends Component {
                     <FormControlLabel
                         control={
                             <Checkbox
-                                checked={json.common?.alias?.read !== undefined}
+                                checked={json.common?.alias?.read !== undefined || json.common?.alias?.write !== undefined}
                                 onChange={() => {
                                     if (funcVisible) {
                                         delete json.common.alias.read;
@@ -611,7 +611,7 @@ class ObjectBrowserEditObject extends Component {
                     <Grid item>
                         <TextField
                             label={this.props.t('Read converter')}
-                            value={json.common?.alias?.read || ''}
+                            value={json.common?.alias?.read || 'val'}
                             className={this.props.classes.funcEdit}
                             error={!!this.state.readError}
                             InputProps={{
@@ -628,7 +628,7 @@ class ObjectBrowserEditObject extends Component {
                         <TextField
                             label={this.props.t('Write converter')}
                             error={!!this.state.writeError}
-                            value={json.common?.alias?.write || ''}
+                            value={json.common?.alias?.write || 'val'}
                             helperText={this.state.writeError || (this.props.t('JS function like') + ' "(val - 21) * 5"')}
                             className={this.props.classes.funcEdit}
                             InputProps={{
