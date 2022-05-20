@@ -655,7 +655,7 @@ const HostRow = ({
                             </Tooltip> : <div className={classes.emptyButton} />
                         }
                         <Tooltip title={t('Remove')}>
-                            <IconButton disabled={alive || currentHost} onClick={(e) => {
+                            <IconButton disabled={alive || currentHost} title={alive || currentHost ? t('You cannot delete host, when it is alive') : ''} onClick={(e) => {
                                 executeCommandRemove();
                                 e.stopPropagation();
                             }}>
