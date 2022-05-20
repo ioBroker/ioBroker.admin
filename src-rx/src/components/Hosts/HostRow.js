@@ -654,14 +654,16 @@ const HostRow = ({
                                 </IconButton>
                             </Tooltip> : <div className={classes.emptyButton} />
                         }
-                        {!alive && !currentHost ? <Tooltip title={t('Remove')}>
-                            <IconButton onClick={(e) => {
-                                executeCommandRemove();
-                                e.stopPropagation();
-                            }}>
-                                <DeleteIcon />
-                            </IconButton>
-                        </Tooltip> : <div className={classes.emptyButton} />}
+                        <Tooltip title={t('Remove')}>
+                            <span>
+                                <IconButton disabled={alive || currentHost} title={alive || currentHost ? t('You cannot delete host, when it is alive') : ''} onClick={(e) => {
+                                    executeCommandRemove();
+                                    e.stopPropagation();
+                                }}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </span>
+                        </Tooltip>
                     </Typography>
                 </div>
             </CardContent>
