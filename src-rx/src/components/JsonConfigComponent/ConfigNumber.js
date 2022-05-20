@@ -78,12 +78,12 @@ class ConfigNumber extends ConfigGeneric {
                     const value = e.target.value;
                     if (this.props.schema.min !== undefined && value < this.props.schema.min) {
                         this.onError(this.props.attr, I18n.t('Too small'));
-                    }
-                    if (this.props.schema.max !== undefined && value > this.props.schema.max) {
+                    } else if (this.props.schema.max !== undefined && value > this.props.schema.max) {
                         this.onError(this.props.attr, I18n.t('Too big'));
+                    } else {
+                        this.onError(this.props.attr); // clear error
                     }
-                    this.setState({value}, () =>
-                        this.onChange(this.props.attr, parseFloat(value) || 0));
+                    this.setState({value}, () => this.onChange(this.props.attr, parseFloat(value) || 0));
                 }}
                 placeholder={this.getText(this.props.schema.placeholder)}
                 label={this.getText(this.props.schema.label)}
