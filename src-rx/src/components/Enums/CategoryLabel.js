@@ -25,7 +25,7 @@ const CategoryLabel = (props) => {
             className={ props.classes.icon }
             style={{ backgroundImage: 'url(' + props.categoryData.common.icon + ')' }}
         /> : null}
-        {typeof props.categoryData.common.name === 'string' ? props.categoryData.common.name : props.categoryData.common.name[props.lang]}
+        {typeof props.categoryData.common.name === 'string' ? props.categoryData.common.name : (props.categoryData.common.name[props.lang] || props.categoryData.common.name.en)}
         <IconButton
             size="small"
             style={{color: textColor}}
