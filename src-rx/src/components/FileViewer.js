@@ -62,6 +62,7 @@ class FileViewer extends Component {
     constructor(props) {
         super(props);
         this.ext = Utils.getFileExtension(this.props.href);
+        // await fetch(this.props.href);
 
         this.state = {
             text: null,

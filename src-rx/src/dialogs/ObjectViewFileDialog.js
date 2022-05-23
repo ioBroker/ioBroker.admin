@@ -57,6 +57,22 @@ export const EXTENSIONS = {
     txt: ['log', 'txt', 'html', 'css', 'xml'],
 };
 
+const SIGNATURES = {
+    JVBERi0: "pdf",
+    R0lGODdh: "gif",
+    R0lGODlh: "gif",
+    iVBORw0KGgo: "png",
+    "/9j/": "jpg"
+  };
+
+  function detectMimeType(b64) {
+    for (var s in SIGNATURES) {
+      if (b64.startsWith(s)) {
+        return SIGNATURES[s];
+      }
+    }
+  }
+
 class ObjectViewFileDialog extends Component {
     constructor(props) {
         super(props);
@@ -79,7 +95,14 @@ class ObjectViewFileDialog extends Component {
         this.props.socket.getBinaryState(this.props.obj._id)
             .then(data => {
                 console.log('Data: ' + data);
-                const ext = this.props.obj._id.toLowerCase().split('.').pop();
+                let ext = this.props.obj._id.toLowerCase().split('.').pop();
+
+                const detectedMimeType = detectMimeType(data);
+                console.log(detectedMimeType);
+                if (detectedMimeType) {
+                    ext = detectedMimeType;
+                }
+                // ext = 'png';
 
                 if (ext === 'jpg') {
                     this.setState({image: true, binary: data, mime: 'image/jpeg'});
