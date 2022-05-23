@@ -86,7 +86,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
     const [unique, setUnique] = useState(!objects[buildId(names.state)]);
 
     function buildId(name) {
-        return name.toString().replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_');
+        return selected + '.' + name.toString().replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_');
     }
 
     const onLocalApply = () => {
