@@ -10,10 +10,11 @@ import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-noconflict/theme-chrome';
-import 'ace-builds/src-noconflict/ext-language_tools'
+import 'ace-builds/src-noconflict/ext-language_tools';
 
 import {Grid, Paper, Card, Typography, MenuItem, FormControl, Select, InputLabel} from '@material-ui/core';
-import blueGrey from '@material-ui/core/colors/blueGrey'
+
+import blueGrey from '@material-ui/core/colors/blueGrey';
 
 const styles = theme => ({
     tabPanel: {

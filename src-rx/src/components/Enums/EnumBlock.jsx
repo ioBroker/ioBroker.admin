@@ -1,4 +1,4 @@
-import {useEffect, useRef, Component} from 'react'
+import {useEffect, useRef, Component} from 'react';
 import PropTypes from 'prop-types';
 import {useDrag, useDrop} from 'react-dnd';
 import {getEmptyImage} from 'react-dnd-html5-backend';
