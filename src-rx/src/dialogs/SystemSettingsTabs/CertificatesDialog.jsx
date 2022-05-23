@@ -1,7 +1,7 @@
 // CertificatesDialog.js
 import {Component} from 'react';
 import clsx from 'clsx';
-import Dropzone from 'react-dropzone'
+import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
 
 import withWidth from '@material-ui/core/withWidth';

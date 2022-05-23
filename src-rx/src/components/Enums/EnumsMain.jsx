@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { DndProvider } from 'react-dnd'
+import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { usePreview } from 'react-dnd-preview';
@@ -23,14 +23,14 @@ import { FaRegFolder as IconCollapsed } from 'react-icons/fa';
 import { FaRegFolderOpen as IconExpanded } from 'react-icons/fa';
 import DownIcon from '@material-ui/icons/KeyboardArrowDown';
 import UpIcon from '@material-ui/icons/KeyboardArrowUp';
+import ClearIcon from '@material-ui/icons/Clear';
 
 import EnumBlock from './EnumBlock';
 import CategoryLabel from './CategoryLabel';
 import EnumEditDialog from './EnumEditDialog';
 import EnumTemplateDialog from './EnumTemplateDialog';
 import EnumDeleteDialog from './EnumDeleteDialog';
-import DragObjectBrowser from './DragObjectBrowser'
-import ClearIcon from "@material-ui/icons/Clear";
+import DragObjectBrowser from './DragObjectBrowser';
 
 const styles = theme => ({
     mainGridCont: {

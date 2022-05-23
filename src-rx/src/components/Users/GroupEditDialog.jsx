@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react'
-import {withStyles} from '@material-ui/core';
+import { useState, useEffect } from 'react';
+import { withStyles } from '@material-ui/core';
 import clsx from 'clsx';
 
 import Dialog from '@material-ui/core/Dialog';
@@ -23,7 +23,7 @@ import ImageIcon from '@material-ui/icons/Image';
 import IconCancel from '@material-ui/icons/Close';
 import IconCheck from '@material-ui/icons/Check';
 
-import {IOTextField, IOColorPicker} from '../IOFields/Fields';
+import { IOTextField, IOColorPicker } from '../IOFields/Fields';
 
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import IconPicker from '@iobroker/adapter-react/Components/IconPicker';

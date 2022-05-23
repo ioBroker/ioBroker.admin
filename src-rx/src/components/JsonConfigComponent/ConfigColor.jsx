@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core/styles';
-import { ChromePicker } from 'react-color'
+import { ChromePicker } from 'react-color';
 
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';

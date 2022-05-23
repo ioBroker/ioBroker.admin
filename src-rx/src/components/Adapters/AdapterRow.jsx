@@ -42,7 +42,7 @@ import {
 } from '@material-ui/core/colors';
 
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
-import IsVisible from "../IsVisible";
+import IsVisible from '../IsVisible';
 
 
 const styles = theme => ({

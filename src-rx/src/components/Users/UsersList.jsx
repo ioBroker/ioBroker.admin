@@ -3,10 +3,10 @@ import {withStyles} from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
-import { DndProvider } from 'react-dnd'
+import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
-import { usePreview } from 'react-dnd-preview'
+import { usePreview } from 'react-dnd-preview';
 
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Grid from '@material-ui/core/Grid';
