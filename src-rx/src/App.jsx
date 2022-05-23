@@ -270,37 +270,40 @@ class App extends Router {
             }
         };
         // init translations
-        this.translations = {
-            'en': import('@iobroker/adapter-react/i18n/en'),
-            'de': import('@iobroker/adapter-react/i18n/de'),
-            'ru': import('@iobroker/adapter-react/i18n/ru'),
-            'pt': import('@iobroker/adapter-react/i18n/pt'),
-            'nl': import('@iobroker/adapter-react/i18n/nl'),
-            'fr': import('@iobroker/adapter-react/i18n/fr'),
-            'it': import('@iobroker/adapter-react/i18n/it'),
-            'es': import('@iobroker/adapter-react/i18n/es'),
-            'pl': import('@iobroker/adapter-react/i18n/pl'),
-            'zh-cn': import('@iobroker/adapter-react/i18n/zh-cn'),
-        };
+        (async () => {
+            this.translations = {
+                'en': (await import('@iobroker/adapter-react/i18n/en.json')).default,
+                'de': (await import('@iobroker/adapter-react/i18n/de.json')).default,
+                'ru': (await import('@iobroker/adapter-react/i18n/ru.json')).default,
+                'pt': (await import('@iobroker/adapter-react/i18n/pt.json')).default,
+                'nl': (await import('@iobroker/adapter-react/i18n/nl.json')).default,
+                'fr': (await import('@iobroker/adapter-react/i18n/fr.json')).default,
+                'it': (await import('@iobroker/adapter-react/i18n/it.json')).default,
+                'es': (await import('@iobroker/adapter-react/i18n/es.json')).default,
+                'pl': (await import('@iobroker/adapter-react/i18n/pl.json')).default,
+                'zh-cn': (await import('@iobroker/adapter-react/i18n/zh-cn.json')).default,
+            };
 
-        const translations = {
-            'en': import('./i18n/en'),
-            'de': import('./i18n/de'),
-            'ru': import('./i18n/ru'),
-            'pt': import('./i18n/pt'),
-            'nl': import('./i18n/nl'),
-            'fr': import('./i18n/fr'),
-            'it': import('./i18n/it'),
-            'es': import('./i18n/es'),
-            'pl': import('./i18n/pl'),
-            'zh-cn': import('./i18n/zh-cn'),
-        };
-        // merge together
-        Object.keys(translations).forEach(lang => this.translations[lang] = Object.assign(this.translations[lang], translations[lang]));
+            const translations = {
+                'en': (await import('./i18n/en.json')).default,
+                'de': (await import('./i18n/de.json')).default,
+                'ru': (await import('./i18n/ru.json')).default,
+                'pt': (await import('./i18n/pt.json')).default,
+                'nl': (await import('./i18n/nl.json')).default,
+                'fr': (await import('./i18n/fr.json')).default,
+                'it': (await import('./i18n/it.json')).default,
+                'es': (await import('./i18n/es.json')).default,
+                'pl': (await import('./i18n/pl.json')).default,
+                'zh-cn': (await import('./i18n/zh-cn.json')).default,
+            };
+            // merge together
+            Object.keys(translations).forEach(lang => this.translations[lang] = Object.assign(this.translations[lang], translations[lang]));
 
-        // init translations
-        I18n.setTranslations(this.translations);
-        I18n.setLanguage((navigator.language || navigator.userLanguage || 'en').substring(0, 2).toLowerCase());
+            console.log(this.translations);
+            // init translations
+            I18n.setTranslations(this.translations);
+            I18n.setLanguage((navigator.language || navigator.userLanguage || 'en').substring(0, 2).toLowerCase());
+        })();
 
         this.refConfigIframe = null;
         this.refUser = React.createRef();
