@@ -57,7 +57,6 @@ Possible types:
 - `autocomplete`
   - `options` - `["value1", "value2", ...]` or `[{"value": "value", "label": "Value1"}, "value2", ...]`
   - `freeSolo` - Set freeSolo to true so the textbox can contain any arbitrary value.
-  - `maxLength` - max length of text in field
 
 - `!icon` - base64 icon
   - `maxSize`
@@ -509,4 +508,4 @@ Following variables are available in JS function in custom settings:
 ````
 
 ## Schema
-Schema is [here](https://github.com/ioBroker/adapter-react/tree/master/schemas)
+Schema is [here](https://github.com/ioBroker/adapter-react-v5/tree/master/schemas)
