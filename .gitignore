@@ -19,6 +19,7 @@ src/js/words.js
 /lib/socketCommandsAdmin.js
 /lib/passportSocket.js
 /src-rx/build
+/src-rx/dist
 /www-react
 /src-rx/package-lock.json
 /package-lock.json

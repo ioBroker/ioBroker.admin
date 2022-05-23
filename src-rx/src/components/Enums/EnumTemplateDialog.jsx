@@ -83,12 +83,12 @@ class EnumTemplateDialog extends Component {
             const promises = templates.map((template, i) => {
                 let image;
                 try {
-                    image = require(`../../assets/${this.props.prefix.startsWith('enum.functions') ? 'devices' : 'rooms'}/${template.icon}`);
+                    image = import(`../../assets/${this.props.prefix.startsWith('enum.functions') ? 'devices' : 'rooms'}/${template.icon}.svg`);
                 } catch (e) {
                     return Promise.resolve(null);
                 }
 
-                return Utils.getSvg(image.default)
+                return image.then(im => Utils.getSvg(im.default))
                     .then(icon =>
                         icons[i] = icon);
             });

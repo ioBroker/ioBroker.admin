@@ -13,7 +13,7 @@
       "es": "Campana",
       "zh-cn": "抽油烟机"
     },
-    "icon": "Hoods.svg"
+    "icon": "Hoods"
   },
   {
     "_id": "alarm_system",
@@ -29,7 +29,7 @@
       "es": "Sistemas De Alarma",
       "zh-cn": "报警系统"
     },
-    "icon": "Alarm Systems.svg"
+    "icon": "Alarm Systems"
   },
   {
     "_id": "battery_status",
@@ -45,7 +45,7 @@
       "es": "Estado De La Batería",
       "zh-cn": "电池状态"
     },
-    "icon": "Battery Status.svg"
+    "icon": "Battery Status"
   },
   {
     "_id": "lighting",
@@ -61,7 +61,7 @@
       "es": "Iluminaciones",
       "zh-cn": "照明"
     },
-    "icon": "Lightings.svg"
+    "icon": "Lightings"
   },
   {
     "_id": "shading",
@@ -77,7 +77,7 @@
       "es": "Sombreado",
       "zh-cn": "底纹"
     },
-    "icon": "Shading.svg"
+    "icon": "Shading"
   },
   {
     "_id": "irrigation",
@@ -93,7 +93,7 @@
       "es": "Irrigación",
       "zh-cn": "灌溉"
     },
-    "icon": "Irrigation.svg"
+    "icon": "Irrigation"
   },
   {
     "_id": "iron",
@@ -109,7 +109,7 @@
       "es": "Hierro",
       "zh-cn": "铁"
     },
-    "icon": "Iron.svg"
+    "icon": "Iron"
   },
   {
     "_id": "computer",
@@ -125,7 +125,7 @@
       "es": "Ordenador",
       "zh-cn": "电脑"
     },
-    "icon": "Computer.svg"
+    "icon": "Computer"
   },
   {
     "_id": "ceiling_spotlight",
@@ -141,7 +141,7 @@
       "es": "Focos De Techo",
       "zh-cn": "天花射灯"
     },
-    "icon": "Ceiling Spotlights.svg"
+    "icon": "Ceiling Spotlights"
   },
   {
     "_id": "printer",
@@ -157,7 +157,7 @@
       "pl": "Drukarka",
       "zh-cn": "打印机"
     },
-    "icon": "Printer.svg"
+    "icon": "Printer"
   },
   {
     "_id": "power_consumption",
@@ -173,7 +173,7 @@
       "es": "El Consumo De Energía",
       "zh-cn": "能量消耗"
     },
-    "icon": "Power Consumption.svg"
+    "icon": "Power Consumption"
   },
   {
     "_id": "window",
@@ -189,7 +189,7 @@
       "es": "Ventana",
       "zh-cn": "窗户"
     },
-    "icon": "Window.svg"
+    "icon": "Window"
   },
   {
     "_id": "garage_door",
@@ -205,7 +205,7 @@
       "es": "Las Puertas De Garaje",
       "zh-cn": "车库门"
     },
-    "icon": "Garage Doors.svg"
+    "icon": "Garage Doors"
   },
   {
     "_id": "hairdryer",
@@ -221,7 +221,7 @@
       "es": "Secador De Pelo",
       "zh-cn": "电吹风"
     },
-    "icon": "Hairdryer.svg"
+    "icon": "Hairdryer"
   },
   {
     "_id": "hanging_lamp",
@@ -237,7 +237,7 @@
       "es": "Lámparas Colgantes",
       "zh-cn": "挂灯"
     },
-    "icon": "Hanging Lamps.svg"
+    "icon": "Hanging Lamps"
   },
   {
     "_id": "doorstep",
@@ -253,7 +253,7 @@
       "es": "Peldaño",
       "zh-cn": "门阶"
     },
-    "icon": "Doorstep.svg"
+    "icon": "Doorstep"
   },
   {
     "_id": "hot_water",
@@ -269,7 +269,7 @@
       "es": "Agua Caliente",
       "zh-cn": "热水"
     },
-    "icon": "Hot Water.svg"
+    "icon": "Hot Water"
   },
   {
     "_id": "heating",
@@ -285,7 +285,7 @@
       "es": "Calentador",
       "zh-cn": "加热器"
     },
-    "icon": "Heater.svg"
+    "icon": "Heater"
   },
   {
     "_id": "stove",
@@ -301,7 +301,7 @@
       "es": "Cocina",
       "zh-cn": "火炉"
     },
-    "icon": "Stove.svg"
+    "icon": "Stove"
   },
   {
     "_id": "louvre",
@@ -317,7 +317,7 @@
       "es": "Lumbrera",
       "zh-cn": "卢浮宫"
     },
-    "icon": "Louvre.svg"
+    "icon": "Louvre"
   },
   {
     "_id": "coffee_maker",
@@ -333,7 +333,7 @@
       "es": "Cafetera",
       "zh-cn": "咖啡壶"
     },
-    "icon": "Coffee Makers.svg"
+    "icon": "Coffee Makers"
   },
   {
     "_id": "cold_water",
@@ -349,7 +349,7 @@
       "es": "Agua Fría",
       "zh-cn": "冷水"
     },
-    "icon": "Cold Water.svg"
+    "icon": "Cold Water"
   },
   {
     "_id": "climate",
@@ -365,7 +365,7 @@
       "es": "Clima",
       "zh-cn": "气候"
     },
-    "icon": "Climate.svg"
+    "icon": "Climate"
   },
   {
     "_id": "speaker",
@@ -381,7 +381,7 @@
       "es": "Altavoz",
       "zh-cn": "扬声器"
     },
-    "icon": "Speaker.svg"
+    "icon": "Speaker"
   },
   {
     "_id": "led_strip",
@@ -397,7 +397,7 @@
       "es": "Tira Llevada",
       "zh-cn": "灯带"
     },
-    "icon": "Led Strip.svg"
+    "icon": "Led Strip"
   },
   {
     "_id": "light",
@@ -413,7 +413,7 @@
       "es": "Luz",
       "zh-cn": "光"
     },
-    "icon": "Light.svg"
+    "icon": "Light"
   },
   {
     "_id": "fan",
@@ -429,7 +429,7 @@
       "es": "Ventilador",
       "zh-cn": "扇子"
     },
-    "icon": "Fan.svg"
+    "icon": "Fan"
   },
   {
     "_id": "humidity",
@@ -445,7 +445,7 @@
       "es": "Humedad",
       "zh-cn": "湿度"
     },
-    "icon": "Humidity.svg"
+    "icon": "Humidity"
   },
   {
     "_id": "ventilation",
@@ -461,7 +461,7 @@
       "es": "Ventilación",
       "zh-cn": "通风"
     },
-    "icon": "Ventilation.svg"
+    "icon": "Ventilation"
   },
   {
     "_id": "chandelier",
@@ -477,7 +477,7 @@
       "es": "Candelabro",
       "zh-cn": "枝形吊灯"
     },
-    "icon": "Chandelier.svg"
+    "icon": "Chandelier"
   },
   {
     "_id": "awning",
@@ -493,7 +493,7 @@
       "es": "Toldos",
       "zh-cn": "遮阳篷"
     },
-    "icon": "Awnings.svg"
+    "icon": "Awnings"
   },
   {
     "_id": "music",
@@ -509,7 +509,7 @@
       "es": "Música",
       "zh-cn": "音乐"
     },
-    "icon": "Music.svg"
+    "icon": "Music"
   },
   {
     "_id": "people",
@@ -525,7 +525,7 @@
       "es": "Personas",
       "zh-cn": "人们"
     },
-    "icon": "People.svg"
+    "icon": "People"
   },
   {
     "_id": "pool",
@@ -541,7 +541,7 @@
       "es": "Piscina",
       "zh-cn": "水池"
     },
-    "icon": "Pool.svg"
+    "icon": "Pool"
   },
   {
     "_id": "pump",
@@ -557,7 +557,7 @@
       "es": "Bomba",
       "zh-cn": "泵"
     },
-    "icon": "Pump.svg"
+    "icon": "Pump"
   },
   {
     "_id": "outdoor_blinds",
@@ -573,7 +573,7 @@
       "es": "Persianas Exteriores",
       "zh-cn": "室外百叶窗"
     },
-    "icon": "Outdoor Blinds.svg"
+    "icon": "Outdoor Blinds"
   },
   {
     "_id": "mowing_machine",
@@ -589,7 +589,7 @@
       "es": "Segadora",
       "zh-cn": "割草机"
     },
-    "icon": "Mowing Machine.svg"
+    "icon": "Mowing Machine"
   },
   {
     "_id": "receiver",
@@ -605,7 +605,7 @@
       "es": "Receptor",
       "zh-cn": "接收者"
     },
-    "icon": "Receiver.svg"
+    "icon": "Receiver"
   },
   {
     "_id": "shutters",
@@ -621,7 +621,7 @@
       "es": "Persianas",
       "zh-cn": "百叶窗"
     },
-    "icon": "Shutters.svg"
+    "icon": "Shutters"
   },
   {
     "_id": "smoke_detector",
@@ -637,7 +637,7 @@
       "pl": "Wykrywacz dymu",
       "zh-cn": "烟雾探测器"
     },
-    "icon": "SmokeDetector.svg"
+    "icon": "SmokeDetector"
   },
   {
     "_id": "lock",
@@ -653,7 +653,7 @@
       "es": "Cerrar Con Llave",
       "zh-cn": "锁"
     },
-    "icon": "Lock.svg"
+    "icon": "Lock"
   },
   {
     "_id": "security",
@@ -669,7 +669,7 @@
       "es": "Seguridad",
       "zh-cn": "安全"
     },
-    "icon": "Security.svg"
+    "icon": "Security"
   },
   {
     "_id": "dishwasher",
@@ -685,7 +685,7 @@
       "es": "Lavaplatos",
       "zh-cn": "洗碗机"
     },
-    "icon": "Dishwashers.svg"
+    "icon": "Dishwashers"
   },
   {
     "_id": "vacuum_cleaner",
@@ -701,7 +701,7 @@
       "es": "Aspiradora",
       "zh-cn": "吸尘器"
     },
-    "icon": "Vacuum Cleaner.svg"
+    "icon": "Vacuum Cleaner"
   },
   {
     "_id": "socket",
@@ -717,7 +717,7 @@
       "es": "Zócalo",
       "zh-cn": "套接字"
     },
-    "icon": "Sockets.svg"
+    "icon": "Sockets"
   },
   {
     "_id": "floor_lamp",
@@ -733,7 +733,7 @@
       "es": "Lámparas De Pie",
       "zh-cn": "落地灯"
     },
-    "icon": "Floor Lamps.svg"
+    "icon": "Floor Lamps"
   },
   {
     "_id": "power_consumption",
@@ -749,7 +749,7 @@
       "es": "El Consumo De Energía",
       "zh-cn": "能量消耗"
     },
-    "icon": "Power Consumption.svg"
+    "icon": "Power Consumption"
   },
   {
     "_id": "temperature_sensor",
@@ -765,7 +765,7 @@
       "es": "Sensores De Temperatura",
       "zh-cn": "温度传感器"
     },
-    "icon": "Temperature Sensors.svg"
+    "icon": "Temperature Sensors"
   },
   {
     "_id": "table_lamp",
@@ -781,7 +781,7 @@
       "es": "Lámparas De Mesa",
       "zh-cn": "台灯"
     },
-    "icon": "Table Lamps.svg"
+    "icon": "Table Lamps"
   },
   {
     "_id": "gate",
@@ -797,7 +797,7 @@
       "es": "Puertas",
       "zh-cn": "盖茨"
     },
-    "icon": "Gates.svg"
+    "icon": "Gates"
   },
   {
     "_id": "dryer",
@@ -813,7 +813,7 @@
       "es": "Secadora",
       "zh-cn": "烘干机"
     },
-    "icon": "Dryer.svg"
+    "icon": "Dryer"
   },
   {
     "_id": "door",
@@ -829,7 +829,7 @@
       "es": "Puertas",
       "zh-cn": "门"
     },
-    "icon": "Doors.svg"
+    "icon": "Doors"
   },
   {
     "_id": "tv",
@@ -845,7 +845,7 @@
       "es": "Televisor",
       "zh-cn": "电视"
     },
-    "icon": "Tv.svg"
+    "icon": "Tv"
   },
   {
     "_id": "consumption",
@@ -861,7 +861,7 @@
       "es": "Consumo",
       "zh-cn": "消费"
     },
-    "icon": "Consumption.svg"
+    "icon": "Consumption"
   },
   {
     "_id": "amplifier",
@@ -877,7 +877,7 @@
       "es": "Amplificador",
       "zh-cn": "放大器"
     },
-    "icon": "Amplifier.svg"
+    "icon": "Amplifier"
   },
   {
     "_id": "curtains",
@@ -893,7 +893,7 @@
       "es": "Cortinas",
       "zh-cn": "窗帘"
     },
-    "icon": "Curtains.svg"
+    "icon": "Curtains"
   },
   {
     "_id": "sconce",
@@ -909,7 +909,7 @@
       "es": "Los Apliques",
       "zh-cn": "壁灯"
     },
-    "icon": "Sconces.svg"
+    "icon": "Sconces"
   },
   {
     "_id": "washing_machine",
@@ -925,7 +925,7 @@
       "es": "Lavadoras",
       "zh-cn": "洗衣机"
     },
-    "icon": "Washing Machines.svg"
+    "icon": "Washing Machines"
   },
   {
     "_id": "water",
@@ -941,7 +941,7 @@
       "es": "Agua",
       "zh-cn": "水"
     },
-    "icon": "Water.svg"
+    "icon": "Water"
   },
   {
     "_id": "water_heater",
@@ -957,7 +957,7 @@
       "es": "Calentador De Agua",
       "zh-cn": "热水器"
     },
-    "icon": "Water Heater.svg"
+    "icon": "Water Heater"
   },
   {
     "_id": "water_consumption",
@@ -973,7 +973,7 @@
       "es": "Consumo De Agua",
       "zh-cn": "耗水量"
     },
-    "icon": "Water Consumption.svg"
+    "icon": "Water Consumption"
   },
   {
     "_id": "weather",
@@ -989,6 +989,6 @@
       "es": "Tiempo",
       "zh-cn": "天气"
     },
-    "icon": "Weather.svg"
+    "icon": "Weather"
   }
 ]

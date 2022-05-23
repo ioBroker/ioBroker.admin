@@ -6,7 +6,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import GenericApp from '@iobroker/adapter-react/GenericApp';
-import Loader from '@iobroker/adapter-react/Components/Loader'
+// import Loader from '@iobroker/adapter-react/Components/Loader'
 
 
 import I18n from '@iobroker/adapter-react/i18n';
@@ -68,7 +68,7 @@ class App extends GenericApp {
     render() {
         if (!this.state.loaded) {
             return <MuiThemeProvider theme={this.state.theme}>
-                <Loader theme={this.state.themeType} />
+                {/* <Loader theme={this.state.themeType} /> */}
             </MuiThemeProvider>
         }
 
