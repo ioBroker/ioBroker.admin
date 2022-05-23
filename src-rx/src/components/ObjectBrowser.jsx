@@ -2336,7 +2336,7 @@ class ObjectBrowser extends Component {
 
             if (obj && typeof this.props.filterFunc === 'function' && !this.props.filterFunc(obj)) {
                 return;
-            };
+            }
 
             if (id.startsWith('system.adapter.') && obj && obj.type === 'adapter') {
                 let columnsForAdmin = JSON.parse(JSON.stringify(this.state.columnsForAdmin));
@@ -4647,6 +4647,16 @@ class ObjectBrowser extends Component {
      */
     renderEditValueDialog() {
         if (!this.state.updateOpened || !this.props.objectBrowserValue) {
+            return null;
+        }
+
+        if (!this.edit.id) {
+            console.error('Invalid ID for edit: ' + JSON.stringify(this.edit));
+            return null;
+        }
+
+        if (!this.objects[this.edit.id]) {
+            console.error(`Something went wrong. Possibly the object ${this.edit.id} was deleted.`);
             return null;
         }
 

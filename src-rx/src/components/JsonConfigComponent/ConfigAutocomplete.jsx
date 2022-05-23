@@ -58,10 +58,21 @@ class ConfigAutocomplete extends ConfigGeneric {
             fullWidth
             freeSolo={!!this.props.schema.freeSolo}
             value={item}
+            // autoComplete
             //getOptionSelected={(option, value) => option.value === value.value}
+            onInputChange={e => {
+                if (e) {
+                    const val = e.target.value;
+                    if (val !== this.state.value) {
+                        this.setState({value: val}, () => this.onChange(this.props.attr, val));
+                    }
+                }
+            }}
             onChange={(_, value) => {
                 const val = typeof value === 'object' ? (value ? value.value : '') : value;
-                this.setState({value: val}, () => this.onChange(this.props.attr, val));
+                if (val !== this.state.value) {
+                    this.setState({value: val}, () => this.onChange(this.props.attr, val));
+                }
             }}
             options={options}
             getOptionLabel={option => (option && option.label) || ''}

@@ -80,15 +80,12 @@ class ObjectViewFileDialog extends Component {
     componentDidMount() {
         this.props.socket.getBinaryState(this.props.obj._id)
             .then(data => {
-                console.log('Data: ' + data);
                 let ext = this.props.obj._id.toLowerCase().split('.').pop();
 
                 const detectedMimeType = Utils.detectMimeType(data);
-                console.log(detectedMimeType);
                 if (detectedMimeType) {
                     ext = detectedMimeType;
                 }
-                // ext = 'png';
 
                 if (ext === 'jpg') {
                     this.setState({image: true, binary: data, mime: 'image/jpeg'});

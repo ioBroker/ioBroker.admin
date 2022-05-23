@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import JSON5 from 'json5';
 
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -167,15 +168,22 @@ class JsonConfig extends Router {
     }
 
     getConfigFile() {
-        return this.props.socket.readFile(this.props.adapterName + '.admin', 'jsonConfig.json')
+        return this.props.socket.fileExists(this.props.adapterName + '.admin', 'jsonConfig.json5')
+            .then(exist => {
+                if (exist) {
+                    return this.props.socket.readFile(this.props.adapterName + '.admin', 'jsonConfig.json5')
+                } else {
+                    return this.props.socket.readFile(this.props.adapterName + '.admin', 'jsonConfig.json')
+                }
+            })
             .then(data => {
                 if (data.file !== undefined) {
                     data = data.file;
                 }
                 try {
-                    return JSON.parse(data);
+                    return JSON5.parse(data);
                 } catch (e) {
-                    window.alert('[JsonConfig] Cannot parse json config!');
+                    window.alert('[JsonConfig] Cannot parse json5 config!');
                 }
             })
             .catch(e => window.alert('[JsonConfig] Cannot read file: ' + e));

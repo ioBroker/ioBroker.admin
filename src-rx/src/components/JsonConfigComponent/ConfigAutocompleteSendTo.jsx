@@ -102,9 +102,8 @@ class ConfigAutocompleteSendTo extends ConfigGeneric {
             item = {label: ConfigGeneric.DIFFERENT_LABEL, value: ConfigGeneric.DIFFERENT_VALUE};
             options.unshift(item);
         } else {
-            // eslint-disable-next-line
             item = this.state.value !== null && this.state.value !== undefined &&
-                // eslint-disable-next-line
+                //eslint-disable-next-line
                 options.find(item => item.value == this.state.value); // let "==" be and not ===
 
             if (this.state.value !== null && this.state.value !== undefined && !item) {
@@ -136,11 +135,22 @@ class ConfigAutocompleteSendTo extends ConfigGeneric {
                 fullWidth
                 freeSolo={!!this.props.schema.freeSolo}
                 options={options}
+                // autoComplete
                 getOptionLabel={option => (option && option.label) || ''}
                 className={this.props.classes.indeterminate}
+                onInputChange={e => {
+                    if (e) {
+                        const val = e.target.value;
+                        if (val !== this.state.value) {
+                            this.setState({value: val}, () => this.onChange(this.props.attr, val));
+                        }
+                    }
+                }}
                 onChange={(_, value) => {
                     const val = typeof value === 'object' ? (value ? value.value : '') : value;
-                    this.setState({value: val}, () => this.onChange(this.props.attr, val));
+                    if (val !== this.state.value) {
+                        this.setState({value: val}, () => this.onChange(this.props.attr, val));
+                    }
                 }}
                 renderInput={(params) =>
                     <TextField
