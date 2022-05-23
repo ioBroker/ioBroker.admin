@@ -4,6 +4,14 @@ const ANSI_RESET_BG_COLOR = 49;
 const ANSI_BOLD = 1;
 const ANSI_RESET_BOLD = 22;
 
+const SIGNATURES = {
+    JVBERi0: "pdf",
+    R0lGODdh: "gif",
+    R0lGODlh: "gif",
+    iVBORw0KGgo: "png",
+    "/9j/": "jpg"
+  };
+
 const STYLES = {
     30: {color: 'black'}, // ANSI_BLACK
     31: {color: 'red'}, // ANSI_RED
@@ -93,6 +101,28 @@ class Utils {
         } else {
             return null;
         }
+    }
+
+    static detectMimeType(b64) {
+        for (const s in SIGNATURES) {
+          if (b64.startsWith(s)) {
+            return SIGNATURES[s];
+          }
+        }
+      }
+
+    static fetchMimeType(url, callback) {
+        const that = this;
+        fetch(url)
+            .then( response => response.blob() )
+            .then( blob =>{
+                var reader = new FileReader() ;
+                reader.onload = function() { 
+                    const detectedExt = that.detectMimeType(this.result.split(',')[1]);
+                    callback(detectedExt);
+                }
+                reader.readAsDataURL(blob);
+            });
     }
 
     // Big thanks to : https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color

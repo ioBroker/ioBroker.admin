@@ -20,6 +20,7 @@ import { IconButton } from '@material-ui/core';
 
 import NoImage from '@iobroker/adapter-react/assets/no_icon.svg';
 import Utils from '@iobroker/adapter-react/Components/Utils';
+import AdminUtils from '../Utils';
 
 // Icons
 import { FaCopy as CopyIcon } from 'react-icons/fa';
@@ -61,16 +62,23 @@ export const EXTENSIONS = {
 class FileViewer extends Component {
     constructor(props) {
         super(props);
-        this.ext = Utils.getFileExtension(this.props.href);
-        // await fetch(this.props.href);
+        const ext = Utils.getFileExtension(this.props.href);
 
         this.state = {
             text: null,
             code: null,
+            ext,
             editing: !!this.props.formatEditFile || false,
             editingValue: null,
-            copyPossible: EXTENSIONS.code.includes(this.ext) || EXTENSIONS.txt.includes(this.ext)
+            copyPossible: EXTENSIONS.code.includes(ext) || EXTENSIONS.txt.includes(ext)
         };
+        if (this.props.href) {
+            AdminUtils.fetchMimeType(this.props.href, (detectedExt) => {
+                if (!this.state.ext) {
+                    this.setState({ext: detectedExt});
+                }
+            });
+        }
 
         if (this.state.copyPossible) {
             const parts = this.props.href.split('/');
@@ -83,9 +91,9 @@ class FileViewer extends Component {
                         data = data.file;
                     }
 
-                    if (EXTENSIONS.txt.includes(this.ext)) {
+                    if (EXTENSIONS.txt.includes(this.state.ext)) {
                         this.setState({ text: data, editingValue: data });
-                    } else if (EXTENSIONS.code.includes(this.ext)) {
+                    } else if (EXTENSIONS.code.includes(this.state.ext)) {
                         this.setState({ code: data, editingValue: data });
                     }
                 })
@@ -120,7 +128,7 @@ class FileViewer extends Component {
     }
 
     getContent() {
-        if (EXTENSIONS.images.includes(this.ext)) {
+        if (EXTENSIONS.images.includes(this.state.ext)) {
             return <img
                 onError={e => {
                     e.target.onerror = null;
@@ -162,7 +170,7 @@ class FileViewer extends Component {
         >
             <div className={this.props.classes.dialogTitle}>
                 <DialogTitle id="form-dialog-title">{this.props.t(this.state.editing ? 'Edit' : 'View') + ': ' + this.props.href}</DialogTitle>
-                {EXTENSIONS.images.includes(this.ext) && <div>
+                {EXTENSIONS.images.includes(this.state.ext) && <div>
                     <IconButton
                         color={'inherit'}
                         onClick={this.props.setStateBackgroundImage}

@@ -71,6 +71,7 @@
         "not dead",
         "not op_mini all"
     ],
+    "proxy": "http://localhost:8081",
     "plugins": [
         [
             "@babel/plugin-proposal-decorators",
