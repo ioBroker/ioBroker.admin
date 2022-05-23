@@ -102,7 +102,7 @@ class JsonConfig extends Router {
             common: null,
             changed: false,
             confirmDialog: false,
-            theme: theme(props.themeName), // buttons requires special theme
+            theme: theme(props.themeName), // buttons require special theme
         };
 
         this.getInstanceObject()

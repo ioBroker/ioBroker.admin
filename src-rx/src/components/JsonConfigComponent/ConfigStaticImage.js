@@ -12,9 +12,14 @@ const styles = theme => ({
 
 class ConfigStaticImage extends ConfigGeneric {
     renderItem() {
+        let src = this.props.schema.src;
+        if (src && !src.startsWith('.') && !src.startsWith('http')) {
+            src = `adapter/${this.props.adapterName}/${src}`;
+        }
+
         return <img
             className={this.props.classes.fullWidth}
-            src={this.props.schema.src}
+            src={src}
             onClick={this.props.schema.href ? () => this.props.schema.href && window.open(this.props.schema.href, '_blank') : null}
             alt=""
         />;
