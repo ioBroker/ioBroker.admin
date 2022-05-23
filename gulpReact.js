@@ -60,15 +60,15 @@ function build() {
 
         console.log(options.cwd);
 
-        let script = src + 'node_modules/react-scripts/scripts/build.js';
+        let script = src + 'node_modules/vite/bin/vite.js';
         if (!fs.existsSync(script)) {
-            script = __dirname + '/node_modules/react-scripts/scripts/build.js';
+            script = __dirname + '/node_modules/vite/bin/vite.js';
         }
         if (!fs.existsSync(script)) {
             console.error('Cannot find execution file: ' + script);
             reject('Cannot find execution file: ' + script);
         } else {
-            const child = cp.fork(script, [], options);
+            const child = cp.fork(script, ['build'], options);
             child.stdout.on('data', data => console.log(data.toString()));
             child.stderr.on('data', data => console.log(data.toString()));
             child.on('close', code => {
@@ -85,22 +85,22 @@ function copyFiles(gulp) {
     ])
         .then(() => Promise.all([
             gulp.src([
-                srcRx + 'build/**/*',
-                `!${srcRx}build/index.html`,
-                `!${srcRx}build/static/js/main.*.chunk.js`,
-                `!${srcRx}build/i18n/**/*`,
-                `!${srcRx}build/i18n`
+                srcRx + 'dist/**/*',
+                `!${srcRx}dist/index.html`,
+                `!${srcRx}dist/static/js/main.*.chunk.js`,
+                `!${srcRx}dist/i18n/**/*`,
+                `!${srcRx}dist/i18n`
             ])
                 .pipe(gulp.dest(dest)),
 
             gulp.src([
-                `${srcRx}build/index.html`,
+                `${srcRx}dist/index.html`,
             ])
                 .pipe(replace('href="/', 'href="'))
                 .pipe(replace('src="/', 'src="'))
                 .pipe(gulp.dest(dest)),
             gulp.src([
-                `${srcRx}build/static/js/main.*.chunk.js`,
+                `${srcRx}dist/static/js/main.*.chunk.js`,
             ])
                 .pipe(replace('s.p+"static/media/copy-content', '"./static/media/copy-content'))
                 .pipe(gulp.dest(dest + 'static/js/')),
@@ -161,7 +161,7 @@ function i18n2flat() {
         keys.forEach(key => {
             words.push(index[key][lang]);
         });
-        fs.writeFileSync(dir + '/flat/' + lang + '.txt', words.join('\n'));
+        fs.writeFileSync(`${dir}/flat/${lang}.txt`, words.join('\n'));
     });
     fs.writeFileSync(dir + '/flat/index.txt', keys.join('\n'));
 }
@@ -190,11 +190,11 @@ function flat2i18n() {
         const words = {};
         keys.forEach((key, line) => {
             if (!index[key]) {
-                console.log('No word ' + key + ', ' + lang + ', line: ' + line);
+                console.log(`No word ${key}, ${lang}, line: ${line}`);
             }
             words[key] = index[key][lang];
         });
-        fs.writeFileSync(dir + '/' + lang + '.json', JSON.stringify(words, null, 4));
+        fs.writeFileSync(`${dir}/${lang}.json`, JSON.stringify(words, null, 4));
     });
 }
 
@@ -250,10 +250,10 @@ function init(gulp) {
             // 'src/node_modules/**/*',
             dest + '**/*',
             dest + '*',
-            srcRx + 'build/**/*'
+            srcRx + 'dist/**/*'
         ]).then(del([
             // 'src/node_modules',
-            'src/build',
+            'src/dist',
             dest
         ]));
     });
