@@ -8,7 +8,7 @@ import { AppBar, CardMedia, CircularProgress, IconButton, Paper, Toolbar } from 
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import ToggleThemeMenu from '../components/ToggleThemeMenu';
-import Config from '../dialogs/Config';
+import Config from './Config';
 import EasyModeCard from '../components/EasyModeCard';
 
 const styles = theme => ({

@@ -38,7 +38,7 @@ import red from '@material-ui/core/colors/red';
 
 import Router from '@iobroker/adapter-react/Components/Router';
 
-import Config from '../dialogs/Config';
+import Config from './Config';
 import Utils from '../Utils';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
@@ -561,7 +561,7 @@ class Instances extends Component {
             .catch(error => window.alert(error));
     }
 
-    openConfig = (instance) => {
+    openConfig = instance => {
         Router.doNavigate('tab-instances', 'config', instance);
     }
 
@@ -602,7 +602,7 @@ class Instances extends Component {
     }
 
     isRunning = obj => {
-        return (obj?.common?.onlyWWW || obj?.common?.enabled);
+        return obj?.common?.onlyWWW || obj?.common?.enabled;
     }
 
     isCompactGroup = obj => {
@@ -837,9 +837,9 @@ class Instances extends Component {
             const running         = this.isRunning(instance.obj);
             const compactGroup    = this.isCompactGroup(instance.obj);
             const checkCompact    = this.isCompactGroupCheck(instance.adapter) && this.state.compact;
-            const alive           = this.isAlive(id);
             const compact         = this.isCompact(instance.obj);
             const supportCompact  = instance.compact || false;
+            const alive           = this.isAlive(id);
             const connectedToHost = this.isConnectedToHost(id);
             const connected       = this.isConnected(id);
             const name            = this.getName(instance.obj);
@@ -1175,6 +1175,7 @@ class Instances extends Component {
                 return <Paper className={classes.paper}>
                     <Config
                         adapter={instance.id.split('.')[0]}
+                        adminInstance={this.props.adminInstance}
                         className={classes.iframe}
                         configStored={this.props.configStored}
                         dateFormat={this.props.dateFormat}
