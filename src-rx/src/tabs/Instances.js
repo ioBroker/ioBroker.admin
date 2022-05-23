@@ -321,8 +321,7 @@ class Instances extends Component {
         let instances = [];
         let instancesWorker = await this.props.instancesWorker.getInstances();
 
-        Object.keys(instancesWorker).forEach(el =>
-            instances.push(instancesWorker[el]));
+        instances = Object.values(instancesWorker);
 
         let memRssId = `${this.props.currentHost}.memRss`;
         this.states[memRssId] = this.states[memRssId] || (await this.props.socket.getState(memRssId));
@@ -367,7 +366,9 @@ class Instances extends Component {
         let maxCompactGroupNumber = 1;
         const newState = {};
 
-        instances.forEach(async obj => {
+        // Do not make here Object.keys, as we have got invalid order in this case
+        for (let i = 0; i < instances.length; i++) {
+            const obj = instances[i];
             const common = obj ? obj.common : null;
             const objId = obj._id.split('.');
             const instanceId = objId[objId.length - 1];
@@ -447,8 +448,9 @@ class Instances extends Component {
                 instance.stoppedWhenWebExtension = eId ? eId.val : undefined;
             }
 
+            console.log(obj._id);
             formatted[obj._id] = instance;
-        });
+        }
 
         console.log('getInstances: ' + (Date.now() - start));
 
