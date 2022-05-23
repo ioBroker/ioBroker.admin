@@ -2,6 +2,7 @@
   "type": "tabs",
   "i18n": true,
   "items": {
+    // main tab
     "mainTab": {
       "type": "panel",
       "label": "Main settings",

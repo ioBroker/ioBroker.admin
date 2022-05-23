@@ -29,6 +29,7 @@
         "date-fns": "^2.28.0",
         "echarts": "^5.3.2",
         "echarts-for-react": "^3.0.2",
+        "json5": "^2.2.1",
         "leaflet": "^1.8.0",
         "leaflet-geosearch": "^3.6.0",
         "lodash": "^4.17.21",

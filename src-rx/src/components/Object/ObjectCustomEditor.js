@@ -3,6 +3,7 @@ import {withStyles} from '@material-ui/core/styles';
 import withWidth from '@material-ui/core/withWidth';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
+import JSON5 from 'json5';
 
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Accordion from '@material-ui/core/Accordion';
@@ -187,17 +188,23 @@ class ObjectCustomEditor extends Component {
             console.error(`Cannot find adapter "${ad}"`);
             return Promise.resolve(null);
         } else {
-
             Utils.fixAdminUI(ad);
 
             if (ad.common?.adminUI.custom === 'json') {
-                return this.props.socket.readFile(adapter + '.admin', 'jsonCustom.json')
+                return this.props.socket.fileExists(adapter + '.admin', 'jsonCustom.json5')
+                    .then(exist => {
+                        if (exist) {
+                            return this.props.socket.readFile(adapter + '.admin', 'jsonCustom.json5');
+                        } else {
+                            return this.props.socket.readFile(adapter + '.admin', 'jsonCustom.json')
+                        }
+                    })
                     .then(json => {
                         if (json.file !== undefined) {
                             json = json.file;
                         }
                         try {
-                            json = JSON.parse(json);
+                            json = JSON5.parse(json);
                             this.jsonConfigs[adapter] = this.jsonConfigs[adapter] || {};
                             this.jsonConfigs[adapter].json = json;
                         } catch (e) {
