@@ -4656,7 +4656,7 @@ class ObjectBrowser extends Component {
         }
 
         if (!this.objects[this.edit.id]) {
-            console.error(`Something goes wrong. Possibly the object ${this.edit.id} was deleted.`);
+            console.error(`Something went wrong. Possibly the object ${this.edit.id} was deleted.`);
             return null;
         }
 
