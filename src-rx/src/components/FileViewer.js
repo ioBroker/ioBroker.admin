@@ -54,10 +54,20 @@ const styles = theme => ({
 });
 
 export const EXTENSIONS = {
-    images: ['png', 'jpg', 'svg', 'jpeg', 'jpg', 'bmp'],
+    images: ['png', 'jpg', 'svg', 'jpeg', 'bmp'],
     code:   ['js', 'json', 'md'],
     txt:    ['log', 'txt', 'html', 'css', 'xml'],
 };
+
+function bufferToBase64(buffer) {
+    let binary = '';
+    let bytes = new Uint8Array(buffer);
+    let len = bytes.byteLength;
+    for (let i = 0; i < len && i < 50; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return window.btoa(binary);
+}
 
 class FileViewer extends Component {
     constructor(props) {
@@ -72,30 +82,40 @@ class FileViewer extends Component {
             editingValue: null,
             copyPossible: EXTENSIONS.code.includes(ext) || EXTENSIONS.txt.includes(ext)
         };
-        if (this.props.href) {
-            AdminUtils.fetchMimeType(this.props.href, (detectedExt) => {
-                if (!this.state.ext) {
-                    this.setState({ext: detectedExt});
-                }
-            });
-        }
 
-        if (this.state.copyPossible) {
+        if (this.props.href) {
             const parts = this.props.href.split('/');
             parts.splice(0, 2);
             const adapter = parts[0];
             const name = parts.splice(1).join('/');
+
             this.props.socket.readFile(adapter, name)
                 .then(data => {
                     if (data.file !== undefined) {
                         data = data.file;
                     }
 
-                    if (EXTENSIONS.txt.includes(this.state.ext)) {
-                        this.setState({ text: data, editingValue: data });
-                    } else if (EXTENSIONS.code.includes(this.state.ext)) {
-                        this.setState({ code: data, editingValue: data });
+                    const newState = {copyPossible: this.state.copyPossible};
+                    // try to detect valid extension
+                    if (data.type === 'Buffer') {
+                        const ext = AdminUtils.detectMimeType(bufferToBase64(data.data));
+                        if (ext) {
+                            newState.ext = ext;
+                            newState.copyPossible = EXTENSIONS.code.includes(ext) || EXTENSIONS.txt.includes(ext);
+                        }
                     }
+
+                    if (newState.copyPossible) {
+                        if (EXTENSIONS.txt.includes(this.state.ext)) {
+                            newState.text = data;
+                            newState.editingValue = data;
+                        } else if (EXTENSIONS.code.includes(this.state.ext)) {
+                            newState.code = data;
+                            newState.editingValue = data;
+                        }
+                    }
+
+                    this.setState(newState);
                 })
                 .catch(e => window.alert('Cannot read file: ' + e));
         }
