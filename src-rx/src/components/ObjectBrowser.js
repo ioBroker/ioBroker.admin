@@ -717,7 +717,8 @@ function binarySearch(list, find, _start, _end) {
     }
 }
 
-function applyFilter(item, filters, lang, objects, context, counter, customFilter, selectedTypes) {
+function applyFilter(item, filters, lang, objects, context, counter, customFilter, selectedTypes, _depth) {
+    _depth = _depth || 0;
     let filteredOut = false;
     if (!context) {
         context = {};
@@ -816,9 +817,9 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
     }
     data.visible = !filteredOut;
     data.hasVisibleChildren = false;
-    if (item.children) {
+    if (item.children && _depth < 20) {
         item.children.forEach(_item => {
-            const visible = applyFilter(_item, filters, lang, objects, context, counter, customFilter, selectedTypes);
+            const visible = applyFilter(_item, filters, lang, objects, context, counter, customFilter, selectedTypes, _depth + 1);
             if (visible) {
                 data.hasVisibleChildren = true;
             }
