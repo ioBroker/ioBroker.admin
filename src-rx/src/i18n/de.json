@@ -1494,5 +1494,7 @@
   "Move down": "Sich abwärts bewegen",
   "All items are filtered out": "Alle Elemente werden herausgefiltert",
   "Runs as web-extension": "Läuft als Web-Erweiterung",
-  "No restart": "Kein Neustart"
+  "No restart": "Kein Neustart",
+  "End date": "Enddatum",
+  "End time": "Zeit"
 }

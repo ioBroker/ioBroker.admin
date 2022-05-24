@@ -25,7 +25,7 @@ const styles = theme => ({
         color: theme.palette.secondary.main,
     },
     form: {
-        height: `calc(100% - ${TOOLBAR_HEIGHT + theme.spacing(1)})`,
+        height: `calc(100% - ${TOOLBAR_HEIGHT + parseInt(theme.spacing(1), 10)}px)`,
         overflow: 'auto',
     },
     input: {

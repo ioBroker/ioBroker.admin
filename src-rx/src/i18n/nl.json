@@ -1494,5 +1494,7 @@
   "Move down": "Naar beneden verplaatsen",
   "All items are filtered out": "Alle items zijn uitgefilterd",
   "Runs as web-extension": "Draait als webextensie",
-  "No restart": "Geen herstart"
+  "No restart": "Geen herstart",
+  "End date": "Einddatum",
+  "End time": "Tijd"
 }

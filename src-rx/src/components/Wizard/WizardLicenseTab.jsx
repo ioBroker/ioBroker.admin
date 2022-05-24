@@ -47,7 +47,7 @@ const styles = theme => ({
     },
     licenseDiv: {
         width: '100%',
-        height: 'calc(100% - ' + (theme.mixins.toolbar.minHeight + theme.spacing(1) + 70) + ')',
+        height: `calc(100% - ${theme.mixins.toolbar.minHeight + parseInt(theme.spacing(1), 10) + 70}px)`,
         overflow: 'auto',
     },
     grow: {

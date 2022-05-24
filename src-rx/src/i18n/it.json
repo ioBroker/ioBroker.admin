@@ -1494,5 +1494,7 @@
   "Move down": "Abbassati",
   "All items are filtered out": "Tutti gli elementi vengono filtrati",
   "Runs as web-extension": "Funziona come estensione web",
-  "No restart": "Nessun riavvio"
+  "No restart": "Nessun riavvio",
+  "End date": "Data di fine",
+  "End time": "Tempo"
 }

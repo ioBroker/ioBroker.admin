@@ -6,6 +6,11 @@
     url('./fonts/material.woff') format('woff');
 }
 
+/* hide link on maps */
+.leaflet-control-attribution .leaflet-control {
+  display: none
+}
+
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;

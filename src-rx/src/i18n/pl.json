@@ -1494,5 +1494,7 @@
   "Move down": "Padnij",
   "All items are filtered out": "Wszystkie pozycje są odfiltrowane",
   "Runs as web-extension": "Działa jako rozszerzenie internetowe",
-  "No restart": "Brak restartu"
+  "No restart": "Brak restartu",
+  "End date": "Data końcowa",
+  "End time": "Czas"
 }

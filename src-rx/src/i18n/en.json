@@ -1494,5 +1494,7 @@
   "Move down": "Move down",
   "All items are filtered out": "All items are filtered out",
   "Runs as web-extension": "Runs as web-extension",
-  "No restart": "No restart"
+  "No restart": "No restart",
+  "End date": "End date",
+  "End time": "Time"
 }

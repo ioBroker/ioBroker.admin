@@ -159,7 +159,7 @@ const styles = theme => ({
         color: '#ffffff',
         backgroundColor: grey[500],
         position: 'absolute',
-        top: theme.spacing(2) + 48, // 48 is the height of button
+        top: parseInt(theme.spacing(2), 10) + 48, // 48 is the height of button
         right: theme.spacing(1),
         boxShadow,
         '&:hover': {
@@ -173,7 +173,7 @@ const styles = theme => ({
         color: '#ffffff',
         backgroundColor: red[500],
         position: 'absolute',
-        top: theme.spacing(3) + 48 + 48, // 48 is the height of button
+        top: parseInt(theme.spacing(3), 10) + 48 + 48, // 48 is the height of button
         right: theme.spacing(1),
         boxShadow,
         '&:hover': {

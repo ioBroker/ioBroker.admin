@@ -97,7 +97,7 @@ const styles = theme => ({
         overflow: 'hidden',
     },
     tableDiv: {
-        height: `calc(100% - ${theme.mixins.toolbar.minHeight + theme.spacing(1)})`,
+        height: `calc(100% - ${theme.mixins.toolbar.minHeight + parseInt(theme.spacing(1), 10)}px)`,
         overflow: 'hidden',
         width: '100%',
     },
@@ -195,6 +195,8 @@ const styles = theme => ({
         marginLeft: theme.spacing(1),
         paddingLeft: theme.spacing(1),
         paddingRight: theme.spacing(1),
+        paddingTop: theme.spacing(0.5),
+        paddingBottom: theme.spacing(0.5),
         border: '1px dotted #AAAAAA',
         borderRadius: theme.spacing(1),
     },
@@ -1040,10 +1042,11 @@ class ObjectHistoryData extends Component {
                                     margin="normal"
                                     label={this.props.t('Date')}
                                     //format="fullDate"
-                                    format={this.state.dateFormat}
+                                    inputFormat={this.state.dateFormat}
                                     value={ this.state.edit.date }
                                     onChange={date =>
                                         this.updateEdit('date', date)}
+                                    renderInput={params => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
                                 />
                                 {/*<TextField
                                     variant="standard"
@@ -1064,6 +1067,7 @@ class ObjectHistoryData extends Component {
                                     value={ this.state.edit.time }
                                     onChange={time =>
                                         this.updateEdit('time', time)}
+                                    renderInput={params => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
                                 />
                                 {/*<TextField
                                     variant="standard"
@@ -1175,7 +1179,7 @@ class ObjectHistoryData extends Component {
                         disableToolbar
                         variant="inline"
                         margin="normal"
-                        format={this.state.dateFormat}
+                        inputFormat={this.state.dateFormat}
                         //format="fullDate"
                         label={ this.props.t('Start date') }
                         value={ new Date(this.state.start) }
@@ -1199,7 +1203,7 @@ class ObjectHistoryData extends Component {
                         disabled={ this.state.relativeRange !== 'absolute' }
                         className={ classes.toolbarDate }
                         disableToolbar
-                        format={this.state.dateFormat}
+                        inputFormat={this.state.dateFormat}
                         variant="inline"
                         //format="fullDate"
                         margin="normal"

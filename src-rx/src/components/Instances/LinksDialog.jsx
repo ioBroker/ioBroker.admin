@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
@@ -30,8 +30,7 @@ class LinksDialog extends Component {
         return <Dialog onClose={() => this.props.onClose()} open={true}>
             <DialogTitle>{this.props.t('Links')}</DialogTitle>
             <List>
-                {this.props.links.map(link => <ListItem
-                    button
+                {this.props.links.map(link => <ListItemButton
                     style={link.color ? {
                         backgroundColor: link.color,
                         color: Utils.getInvertedColor(link.color, this.props.themeType, true)
@@ -51,8 +50,8 @@ class LinksDialog extends Component {
                             <img className={this.props.classes.img} src={this.props.image} alt={this.props.instanceId}/>
                         </Avatar>
                     </ListItemAvatar>
-                    <ListItemText primary={link.name + (showPort ? ' [:' + link.port + ']' : '')} />
-                </ListItem>)}
+                    <ListItemText primary={link.name + (showPort ? ` [:${link.port}]` : '')} />
+                </ListItemButton>)}
             </List>
         </Dialog>;
     }

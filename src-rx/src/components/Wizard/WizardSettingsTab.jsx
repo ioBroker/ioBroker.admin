@@ -51,7 +51,7 @@ const styles = theme => ({
     },
     mapGrid: {
         height: '100%',
-        width: 'calc(100% - ' + (SETTINGS_WIDTH + theme.spacing(4)) + ')',
+        width: `calc(100% - ${SETTINGS_WIDTH + parseInt(theme.spacing(4), 10)}px)`,
         overflow: 'hidden',
     },
     map: {
@@ -68,7 +68,7 @@ const styles = theme => ({
         marginBottom: theme.spacing(1),
     },
     gridSettings: {
-        width: SETTINGS_WIDTH + theme.spacing(2),
+        width: SETTINGS_WIDTH + parseInt(theme.spacing(2), 10),
         margin: theme.spacing(1),
         textAlign: 'left',
         height: '100%',

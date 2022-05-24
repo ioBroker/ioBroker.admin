@@ -5,7 +5,7 @@ import { withStyles } from '@mui/styles';
 
 import Badge from '@mui/material/Badge';
 import Grid from '@mui/material/Grid';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Tooltip from '@mui/material/Tooltip';
@@ -69,8 +69,7 @@ const DrawerItem = props => {
 
     return <div style={Object.assign({ display: 'flex' }, style || {})}>
         {!!editList && <Checkbox checked={visible} onChange={editListFunc} />}
-        <ListItem
-            button
+        <ListItemButton
             className={clsx({ [classes.selected]: selected }, compact && classes.compactBadge)}
             onClick={onClick}
         >
@@ -107,7 +106,7 @@ const DrawerItem = props => {
                     }
                 </Grid>
             </Tooltip>
-        </ListItem>
+        </ListItemButton>
     </div>;
 }
 

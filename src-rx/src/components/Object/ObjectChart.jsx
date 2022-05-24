@@ -94,7 +94,7 @@ const styles = theme => ({
         overflow: 'hidden',
     },
     chartWithToolbar: {
-        height: `calc(100% - ${theme.mixins.toolbar.minHeight + theme.spacing(1)})`,
+        height: `calc(100% - ${theme.mixins.toolbar.minHeight + parseInt(theme.spacing(1), 10)}px)`,
     },
     chartWithoutToolbar: {
         height: `100%`,
@@ -135,6 +135,8 @@ const styles = theme => ({
         marginLeft: theme.spacing(1),
         paddingLeft: theme.spacing(1),
         paddingRight: theme.spacing(1),
+        paddingTop: theme.spacing(0.5),
+        paddingBottom: theme.spacing(0.5),
         border: '1px dotted #AAAAAA',
         borderRadius: theme.spacing(1),
         display: 'flex'
@@ -153,7 +155,7 @@ const styles = theme => ({
         marginRight: theme.spacing(1)
     },
     timeInput: {
-        width: 100,
+        width: 80,
     }
 });
 
@@ -1141,7 +1143,7 @@ class ObjectChart extends Component {
                         disableToolbar
                         variant="inline"
                         margin="normal"
-                        format={this.state.dateFormat}
+                        inputFormat={this.state.dateFormat}
                         //format="fullDate"
                         label={ this.props.t('Start date') }
                         value={ new Date(this.state.min) }
@@ -1165,7 +1167,7 @@ class ObjectChart extends Component {
                         disabled={ this.state.relativeRange !== 'absolute' }
                         className={ classes.toolbarDate }
                         disableToolbar
-                        format={this.state.dateFormat}
+                        inputFormat={this.state.dateFormat}
                         variant="inline"
                         //format="fullDate"
                         margin="normal"

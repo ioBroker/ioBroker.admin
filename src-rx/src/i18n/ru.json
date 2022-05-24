@@ -1494,5 +1494,7 @@
   "Move down": "Вниз",
   "All items are filtered out": "Все элементы отфильтрованы",
   "Runs as web-extension": "Работает как веб-расширение",
-  "No restart": "Нет перезагрузки"
+  "No restart": "Нет перезагрузки",
+  "End date": "Дата окончания",
+  "End time": "Время"
 }

@@ -83,10 +83,10 @@ const styles = theme => ({
         padding: theme.spacing(1),
     },
     filesDivTable: {
-        height: `calc(100% - ${48 + theme.spacing(1)})`,
+        height: `calc(100% - ${48 + parseInt(theme.spacing(1), 10)}px)`,
     },
     filesDivTile: {
-        height: `calc(100% - ${48 * 2 + theme.spacing(1)})`,
+        height: `calc(100% - ${48 * 2 + parseInt(theme.spacing(1), 10)}px)`,
         display: 'flex',
         alignContent: 'flex-start',
         alignItems: 'stretch',

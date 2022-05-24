@@ -25,6 +25,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Checkbox from '@mui/material/Checkbox';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
@@ -478,6 +479,7 @@ const styles = theme => ({
             opacity: 1,
         },
         paddingTop: 0,
+        paddingLeft: 0,
         marginTop: -2,
     },
     cellButtonsEmptyButton: {
@@ -511,7 +513,7 @@ const styles = theme => ({
         cursor: 'pointer',
     },
     cellButtonsValueButtonEdit: {
-        right: SMALL_BUTTON_SIZE / 2 + theme.spacing(2),
+        right: SMALL_BUTTON_SIZE / 2 + parseInt(theme.spacing(2), 10),
     },
 
     filteredOut: {
@@ -1982,7 +1984,7 @@ class ObjectBrowser extends Component {
         return cols
             .filter(id => (isLast && (id === 'val' || id === 'buttons')) || (!isLast && id !== 'val' && id !== 'buttons'))
             .map(id =>
-                <ListItem button onClick={() => {
+                <ListItemButton onClick={() => {
                     if (!this.state.columnsAuto && id !== 'id') {
                         const columns = [...(this.state.columns || [])];
                         const pos = columns.indexOf(id);
@@ -2028,7 +2030,7 @@ class ObjectBrowser extends Component {
                             />
                         </FormControl>
                     </ListItemSecondaryAction>
-                </ListItem>
+                </ListItemButton>
             );
     }
 
@@ -2091,7 +2093,7 @@ class ObjectBrowser extends Component {
 
                         {this.state.columnsForAdmin && Object.keys(this.state.columnsForAdmin).sort().map(adapter =>
                             this.state.columnsForAdmin[adapter].map(column =>
-                                <ListItem button onClick={() => {
+                                <ListItemButton onClick={() => {
                                     if (!this.state.columnsAuto) {
                                         const columns = [...(this.state.columns || [])];
                                         const id = '_' + adapter + '_' + column.path;
@@ -2138,7 +2140,7 @@ class ObjectBrowser extends Component {
                                             />
                                         </FormControl>
                                     </ListItemSecondaryAction>
-                                </ListItem>
+                                </ListItemButton>
                             )
                         )}
                         {this._renderDefinedList(true)}
