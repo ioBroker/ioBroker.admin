@@ -190,7 +190,7 @@ class BaseSettingsObjects extends Component {
             settings.jsonlOptions.throttleFS.maxBufferedCommands = 0;
         }
 
-        this.props.onChange();
+        this.props.onChange(settings);
     }
 
     renderWarning() {
