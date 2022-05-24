@@ -120,6 +120,7 @@ class EnumTemplateDialog extends Component {
             <DialogTitle>
                     {this.props.t(this.props.prefix.startsWith('enum.functions') ? 'Create new function' : 'Create new room')}
                 <TextField
+                    variant="standard"
                     className={this.props.classes.filter}
                     value={this.state.filter}
                     onChange={e => this.setState({filter: e.target.value.toLowerCase()})}

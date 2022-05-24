@@ -100,6 +100,7 @@ class BaseSettingsMultihost extends Component {
                         </Grid>
                         { this.state.secure ? <Grid item>
                             <TextField
+                                variant="standard"
                                 label={ this.props.t('Multi-host password') }
                                 className={ this.props.classes.controlItem }
                                 value={ this.state.password }

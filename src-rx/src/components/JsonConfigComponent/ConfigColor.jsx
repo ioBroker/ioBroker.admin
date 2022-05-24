@@ -39,6 +39,7 @@ class ConfigColor extends ConfigGeneric {
         return <>
             { this.renderColorDialog() }
             <TextField
+                variant="standard"
                 disabled={!!disabled}
                 style={{minWidth: 100, width: 'calc(100% - 8px)'}}
                 label={this.getText(this.props.schema.label)}

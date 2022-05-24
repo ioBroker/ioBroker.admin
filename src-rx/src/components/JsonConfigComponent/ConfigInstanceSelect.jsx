@@ -59,6 +59,7 @@ class ConfigInstanceSelect extends ConfigGeneric {
         return <FormControl className={this.props.classes.fullWidth} key={this.props.attr}>
             <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel>
             <Select
+                variant="standard"
                 error={!!error}
                 displayEmpty
                 disabled={!!disabled}

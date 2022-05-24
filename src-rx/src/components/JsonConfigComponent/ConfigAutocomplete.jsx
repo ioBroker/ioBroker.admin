@@ -77,6 +77,7 @@ class ConfigAutocomplete extends ConfigGeneric {
             options={options}
             getOptionLabel={option => (option && option.label) || ''}
             renderInput={params => <TextField
+                variant="standard"
                 {...params}
                 error={!!error}
                 // inputProps are important and will be given in params

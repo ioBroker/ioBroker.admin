@@ -84,6 +84,7 @@ class StatisticsDialog extends Component {
                 {this.props.t('Statistics')}
             </InputLabel>
             <Select
+                variant="standard"
                 className={classes.formControl}
                 id="statistics"
                 value={common.diag}

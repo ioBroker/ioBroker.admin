@@ -69,6 +69,7 @@ class ConfigTextSendTo extends ConfigGeneric {
 
         if (this.props.schema.container === 'text') {
             return <TextField
+                variant="standard"
                 fullWidth
                 InputProps={{
                     endAdornment: this.props.schema.copyToClipboard ?

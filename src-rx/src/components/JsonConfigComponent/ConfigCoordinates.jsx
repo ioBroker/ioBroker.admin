@@ -60,6 +60,7 @@ class ConfigCoordinates extends ConfigGeneric {
     renderItem(error, disabled, defaultValue) {
         return <>
             <TextField
+                variant="standard"
                 className={this.props.classes.width}
                 value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
                 error={!!error}

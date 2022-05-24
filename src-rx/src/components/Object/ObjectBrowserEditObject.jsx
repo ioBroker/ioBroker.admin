@@ -437,6 +437,7 @@ class ObjectBrowserEditObject extends Component {
                 <div className={classes.commonWrapper}>
                     {typeof json.common.name !== 'undefined' ?
                         <TextField
+                            variant="standard"
                             disabled={disabled}
                             label={t('Name')}
                             className={clsx(classes.marginBlock, classes.textField)}
@@ -453,6 +454,7 @@ class ObjectBrowserEditObject extends Component {
                                 fullWidth>
                                 <InputLabel >{t('State type')}</InputLabel>
                                 <Select
+                                    variant="standard"
                                     disabled={disabled}
                                     value={json.common.type}
                                     onChange={(el) => this.setCommonItem(json, 'type', el.target.value)}
@@ -475,7 +477,7 @@ class ObjectBrowserEditObject extends Component {
                                 getOptionSelected={(option, value) => option.name === value.name}
                                 onChange={(_, e) => this.setCommonItem(json, 'role', e)}
                                 options={roleArray}
-                                renderInput={(params) => <TextField {...params} label={t('Role')} />}
+                                renderInput={(params) => <TextField variant="standard" {...params} label={t('Role')} />}
                             />
                             {this.buttonRemoveKey('role', () => this.removeCommonItem(json, 'role'))}
                         </div> :
@@ -484,6 +486,7 @@ class ObjectBrowserEditObject extends Component {
                     {typeof json.common.color !== 'undefined' ?
                         <div className={classes.flex}>
                             <TextField
+                                variant="standard"
                                 disabled={disabled}
                                 className={clsx(classes.marginBlock, classes.color)}
                                 label={t('Color')}
@@ -537,15 +540,16 @@ class ObjectBrowserEditObject extends Component {
                 </Grid>
                 {typeof json.common?.alias?.id !== 'object' ? <Grid item>
                     <TextField
-                            label={this.props.t('Alias state')}
-                            value={json.common?.alias?.id || ''}
-                            className={this.props.classes.aliasIdEdit}
-                            InputProps={{
-                                endAdornment: json.common?.alias?.id ? <InputAdornment position="end"><IconButton
-                                    onClick={() => this.setAliasItem(json, 'id', '')}><IconClose/></IconButton></InputAdornment> : null,
-                            }}
-                            onChange={e => this.setAliasItem(json, 'id', e.target.value)}
-                            margin="normal"
+                        variant="standard"
+                        label={this.props.t('Alias state')}
+                        value={json.common?.alias?.id || ''}
+                        className={this.props.classes.aliasIdEdit}
+                        InputProps={{
+                            endAdornment: json.common?.alias?.id ? <InputAdornment position="end"><IconButton
+                                onClick={() => this.setAliasItem(json, 'id', '')}><IconClose/></IconButton></InputAdornment> : null,
+                        }}
+                        onChange={e => this.setAliasItem(json, 'id', e.target.value)}
+                        margin="normal"
                     />
                     <Fab
                         className={this.props.classes.button}
@@ -555,6 +559,7 @@ class ObjectBrowserEditObject extends Component {
 
                 {typeof json.common?.alias?.id === 'object' ? <Grid item>
                     <TextField
+                        variant="standard"
                         label={this.props.t('Alias read state')}
                         value={json.common?.alias?.id?.read || ''}
                         className={this.props.classes.aliasIdEdit}
@@ -573,6 +578,7 @@ class ObjectBrowserEditObject extends Component {
 
                 {typeof json.common?.alias?.id === 'object' ? <Grid item>
                     <TextField
+                        variant="standard"
                         label={this.props.t('Alias write state')}
                         value={json.common?.alias?.id?.write || ''}
                         className={this.props.classes.aliasIdEdit}
@@ -613,6 +619,7 @@ class ObjectBrowserEditObject extends Component {
                 {funcVisible ?
                     <Grid item>
                         <TextField
+                            variant="standard"
                             label={this.props.t('Read converter')}
                             value={json.common?.alias?.read || 'val'}
                             className={this.props.classes.funcEdit}
@@ -629,6 +636,7 @@ class ObjectBrowserEditObject extends Component {
                 {funcVisible ?
                     <Grid item>
                         <TextField
+                            variant="standard"
                             label={this.props.t('Write converter')}
                             error={!!this.state.writeError}
                             value={json.common?.alias?.write || 'val'}
@@ -678,6 +686,7 @@ class ObjectBrowserEditObject extends Component {
                 <DialogTitle>{this.props.t('Enter new ID for this object')}</DialogTitle>
                 <DialogContent>
                     <TextField
+                        variant="standard"
                         autoFocus
                         fullWidth
                         label={this.props.t('New object ID')}

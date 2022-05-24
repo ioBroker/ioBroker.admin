@@ -135,6 +135,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
                 fontSize: 20
             }}><AddIcon/> {I18n.t('Add new object:')} <span style={{fontStyle: 'italic'}}>{selected}.{name}</span></div>
             <TextField
+                variant="standard"
                 label={I18n.t('Parent')}
                 style={{ margin: '5px 0' }}
                 disabled
@@ -143,6 +144,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
             <FormControl style={{ marginTop: 10, marginBottom: 10 }}>
                 <InputLabel>{I18n.t('Type')}</InputLabel>
                 <Select
+                    variant="standard"
                     value={type}
                     onChange={(el) => {
                         if (name === names[type]) {
@@ -157,6 +159,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
             </FormControl>            {type === 'state' && <FormControl >
                 <InputLabel>{I18n.t('State type')}</InputLabel>
                 <Select
+                    variant="standard"
                     value={stateType}
                     onChange={el => setStateType(el.target.value)}
                 >
@@ -164,6 +167,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
                 </Select>
             </FormControl>}
             <TextField
+                variant="standard"
                 label={I18n.t('Name')}
                 style={{ margin: '5px 0' }}
                 autoFocus

@@ -41,6 +41,7 @@ class ConfigCRON extends ConfigGeneric {
             <InputLabel shrink>{this.getText(schema.label)}</InputLabel>
             <div className={classes.flex}>
                 <TextField
+                    variant="standard"
                     fullWidth
                     value={value}
                     error={!!error}

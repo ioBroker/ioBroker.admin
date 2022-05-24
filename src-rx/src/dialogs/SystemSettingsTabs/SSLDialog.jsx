@@ -57,6 +57,7 @@ class SSLDialog extends Component {
                 <Grid item md={3} xs={12}>
                     <FormControl className={classes.formControl}>
                         <TextField
+                            variant="standard"
                             id="email"
                             label={this.props.t('Email for account:')}
                             value={letsEncrypt ? letsEncrypt.email : ''}
@@ -71,6 +72,7 @@ class SSLDialog extends Component {
                 <Grid item md={3} xs={12}>
                     <FormControl className={classes.formControl}>
                         <TextField
+                            variant="standard"
                             id="domains"
                             label={this.props.t('Domains:')}
                             value={letsEncrypt ? letsEncrypt.domains : ''}
@@ -85,6 +87,7 @@ class SSLDialog extends Component {
                 <Grid item md={3} xs={12}>
                     <FormControl className={classes.formControl}>
                         <TextField
+                            variant="standard"
                             id="path"
                             label={this.props.t('Path to storage:')}
                             value={letsEncrypt ? letsEncrypt.path : ''}

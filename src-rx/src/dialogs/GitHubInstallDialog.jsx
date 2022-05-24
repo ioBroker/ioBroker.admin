@@ -204,6 +204,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                                 </InputAdornment>;
 
                                 return <TextField
+                                    variant="standard"
                                     {...params}
                                     label={I18n.t('Select adapter')}
                                 />;
@@ -265,6 +266,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                                 </InputAdornment>;
 
                                 return <TextField
+                                    variant="standard"
                                     {...params}
                                     label={I18n.t('Select adapter')}
                                 />;
@@ -292,6 +294,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                 {currentTab === 'URL' ? <Paper className={classes.tabPaper}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <TextField
+                            variant="standard"
                             fullWidth
                             label={t('URL')}
                             helperText={t('URL or file path')}

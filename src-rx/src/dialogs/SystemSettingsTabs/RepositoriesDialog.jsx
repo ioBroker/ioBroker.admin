@@ -154,6 +154,7 @@ const SortableItem = SortableElement(({
     </TableCell>
     <TableCell className={clsx(classes.nameRow, 'float_cell')}>
         <TextField
+            variant="standard"
             value={item.title}
             InputLabelProps={{
                 readOnly: false,
@@ -165,6 +166,7 @@ const SortableItem = SortableElement(({
     </TableCell>
     <TableCell className={clsx('grow_cell', 'float_cell')}>
         <TextField
+            variant="standard"
             id={'default_' + _index}
             value={item.link}
             InputLabelProps={{

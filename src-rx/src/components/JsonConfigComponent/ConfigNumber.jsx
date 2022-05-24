@@ -49,6 +49,7 @@ class ConfigNumber extends ConfigGeneric {
                 options={arr}
                 getOptionLabel={option => option.label}
                 renderInput={params => <TextField
+                    variant="standard"
                     {...params}
                     error={!!error}
                     placeholder={this.getText(this.props.schema.placeholder)}
@@ -68,6 +69,7 @@ class ConfigNumber extends ConfigGeneric {
             }
 
             return <TextField
+                variant="standard"
                 type="number"
                 fullWidth
                 inputProps={{min: this.props.schema.min, max: this.props.schema.max, step: this.props.schema.step}}

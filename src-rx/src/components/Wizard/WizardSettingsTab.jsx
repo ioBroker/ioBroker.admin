@@ -229,6 +229,7 @@ class WizardSettingsTab extends Component {
                                 <FormControl className={ this.props.classes.controlItem }>
                                     <InputLabel>{ this.props.t('Temperature unit') }</InputLabel>
                                     <Select
+                                        variant="standard"
                                         value={ this.state.tempUnit }
                                         onChange={e => this.setState({tempUnit: e.target.value}) }
                                     >
@@ -239,6 +240,7 @@ class WizardSettingsTab extends Component {
                             </Grid>
                             <Grid item>
                                 <TextField
+                                    variant="standard"
                                     label={ this.props.t('Currency') }
                                     className={ this.props.classes.controlItem }
                                     value={ this.state.currency }
@@ -249,6 +251,7 @@ class WizardSettingsTab extends Component {
                                 <FormControl className={ this.props.classes.controlItem }>
                                     <InputLabel>{ this.props.t('Date format') }</InputLabel>
                                     <Select
+                                        variant="standard"
                                         value={ this.state.dateFormat }
                                         onChange={e => this.setState({dateFormat: e.target.value}) }
                                     >
@@ -262,6 +265,7 @@ class WizardSettingsTab extends Component {
                                 <FormControl className={ this.props.classes.controlItem }>
                                     <InputLabel>{ this.props.t('Float divider') }</InputLabel>
                                     <Select
+                                        variant="standard"
                                         value={ this.state.isFloatComma }
                                         onChange={e => this.setState({isFloatComma: e.target.value}) }
                                     >
@@ -274,6 +278,7 @@ class WizardSettingsTab extends Component {
                                 <FormControl className={ this.props.classes.controlItem }>
                                     <InputLabel>{ this.props.t('Country') }</InputLabel>
                                     <Select
+                                        variant="standard"
                                         value={ this.state.country || '' }
                                         onChange={e => this.setState({country: e.target.value}) }
                                     >
@@ -527,6 +532,7 @@ class WizardSettingsTab extends Component {
                             </Grid>
                             <Grid item>
                                 <TextField
+                                    variant="standard"
                                     label={ this.props.t('City') }
                                     className={ this.props.classes.controlItem }
                                     value={ this.state.city }
@@ -535,6 +541,7 @@ class WizardSettingsTab extends Component {
                             </Grid>
                             <Grid item>
                                 <TextField
+                                    variant="standard"
                                     label={ this.props.t('Address') }
                                     className={ this.props.classes.controlItemAddress }
                                     value={ this.state.address }
@@ -546,6 +553,7 @@ class WizardSettingsTab extends Component {
                             </Grid>
                             <Grid item>
                                 <TextField
+                                    variant="standard"
                                     label={ this.props.t('Longitude') }
                                     className={ this.props.classes.controlItem }
                                     value={ this.state.longitude }
@@ -554,6 +562,7 @@ class WizardSettingsTab extends Component {
                             </Grid>
                             <Grid item>
                                 <TextField
+                                    variant="standard"
                                     label={ this.props.t('Latitude') }
                                     className={ this.props.classes.controlItem }
                                     value={ this.state.latitude }
@@ -564,6 +573,7 @@ class WizardSettingsTab extends Component {
                                 <FormControl className={ this.props.classes.controlItem }>
                                     <InputLabel>{ this.props.t('Week starts with') }</InputLabel>
                                     <Select
+                                        variant="standard"
                                         value={ this.state.firstDayOfWeek }
                                         onChange={e => this.setState({firstDayOfWeek: e.target.value}) }
                                     >

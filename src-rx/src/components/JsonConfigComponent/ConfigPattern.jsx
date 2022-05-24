@@ -16,6 +16,7 @@ const styles = theme => ({
 class ConfigPattern extends ConfigGeneric {
     renderItem(error, disabled) {
         return <TextField
+            variant="standard"
             fullWidth
             disabled={!!disabled}
             InputProps={{

@@ -46,6 +46,7 @@ class ConfigText extends ConfigGeneric {
                 options={arr}
                 getOptionLabel={option => option.label}
                 renderInput={params => <TextField
+                    variant="standard"
                     {...params}
                     error={!!error}
                     placeholder={this.getText(this.props.schema.placeholder)}
@@ -56,6 +57,7 @@ class ConfigText extends ConfigGeneric {
             />;
         } else {
             return <TextField
+                variant="standard"
                 fullWidth
                 value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
                 error={!!error}

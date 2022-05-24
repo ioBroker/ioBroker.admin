@@ -212,6 +212,7 @@ class LicensesDialog extends Component {
 
         return <div className={classes.tabPanel}>
             <TextField
+                variant="standard"
                 className={this.props.classes.input}
                 value={this.props.data.native.login}
                 helperText={this.props.t('for ioBroker.net portal')}
@@ -223,6 +224,7 @@ class LicensesDialog extends Component {
                 }}
             />
             <TextField
+                variant="standard"
                 className={this.props.classes.input}
                 type="password"
                 value={this.props.data.native.password}

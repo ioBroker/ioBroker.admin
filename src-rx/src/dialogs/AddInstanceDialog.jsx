@@ -122,6 +122,7 @@ class AddInstanceDialog extends Component {
                     <FormControl className={classes.formControl}>
                         <InputLabel id="instance-label">{this.t('Instance')}</InputLabel>
                         <Select
+                            variant="standard"
                             labelId="instance-label"
                             value={this.props.currentInstance}
                             onChange={this.props.onInstanceChange}

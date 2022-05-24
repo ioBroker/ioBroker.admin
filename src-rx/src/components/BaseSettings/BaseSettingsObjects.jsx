@@ -231,6 +231,7 @@ class BaseSettingsObjects extends Component {
                             <FormControl className={this.props.classes.controlItem}>
                                 <InputLabel>{ this.props.t('Type') }</InputLabel>
                                 <Select
+                                    variant="standard"
                                     value={ this.state.type }
                                     onChange={ e => {
                                         if (e.target.value !== this.state.originalDBType) {
@@ -271,6 +272,7 @@ class BaseSettingsObjects extends Component {
                     <Grid item>
                         {this.state.textIP ?
                             <TextField
+                                variant="standard"
                                 className={ this.props.classes.controlItem }
                                 value={ this.state.host }
                                 type="text"
@@ -282,6 +284,7 @@ class BaseSettingsObjects extends Component {
                             <FormControl className={this.props.classes.controlItem}>
                                 <InputLabel>{ this.props.t('Bind IP address') }</InputLabel>
                                 <Select
+                                    variant="standard"
                                     value={ this.state.host }
                                     onChange={ e => this.setState({ host: e.target.value }, () => this.onChange())}
                                 >
@@ -293,6 +296,7 @@ class BaseSettingsObjects extends Component {
 
                     <Grid item>
                         <TextField
+                            variant="standard"
                             className={ this.props.classes.controlItem }
                             value={ this.state.port }
                             type="number"
@@ -305,6 +309,7 @@ class BaseSettingsObjects extends Component {
 
                     { this.state.type === 'file' || this.state.type === 'jsonl' ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={ this.props.classes.controlItem }
                             value={ this.state.dataDir }
                             helperText={ this.props.t('Optional. Always relative to iobroker.js-controller/') }
@@ -315,6 +320,7 @@ class BaseSettingsObjects extends Component {
 
                     <Grid item>
                         <TextField
+                            variant="standard"
                             className={ this.props.classes.controlItem }
                             value={ this.state.options_auth_pass }
                             type="password"
@@ -336,6 +342,7 @@ class BaseSettingsObjects extends Component {
                 <Grid container direction="column">
                     { this.state.type === 'file' || this.state.type === 'jsonl' ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={ this.props.classes.controlItem }
                             value={ this.state.connectTimeout }
                             helperText={ this.props.t('ms') }
@@ -365,6 +372,7 @@ class BaseSettingsObjects extends Component {
 
                     { this.state.type === 'file' ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={ this.props.classes.controlItem }
                             value={ this.state.writeFileInterval }
                             helperText={ this.props.t('How often the data from RAM will be saved on disk in ms') }
@@ -377,6 +385,7 @@ class BaseSettingsObjects extends Component {
 
                     { this.state.type === 'redis' ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={ this.props.classes.controlItem }
                             value={ this.state.options_retry_max_delay }
                             type="number"
@@ -388,6 +397,7 @@ class BaseSettingsObjects extends Component {
 
                     { this.state.type === 'redis' ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={ this.props.classes.controlItem }
                             value={ this.state.options_retry_max_count }
                             type="number"
@@ -399,6 +409,7 @@ class BaseSettingsObjects extends Component {
 
                     { this.state.type === 'redis' ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={ this.props.classes.controlItem }
                             value={ this.state.options_db }
                             type="number"
@@ -412,6 +423,7 @@ class BaseSettingsObjects extends Component {
                         <FormControl className={this.props.classes.controlItem}>
                             <InputLabel>{ this.props.t('Family number') }</InputLabel>
                             <Select
+                                variant="standard"
                                 value={ this.state.options_family }
                                 onChange={ e => this.setState({ options_family: e.target.value}, () => this.onChange())}
                             >
@@ -425,6 +437,7 @@ class BaseSettingsObjects extends Component {
 
                     { this.state.type === 'jsonl' ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={ this.props.classes.controlItem }
                             value={ this.state.jsonlOptions_autoCompress_sizeFactor }
                             type="number"
@@ -437,6 +450,7 @@ class BaseSettingsObjects extends Component {
 
                     { this.state.type === 'jsonl' ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={ this.props.classes.controlItem }
                             value={ this.state.jsonlOptions_autoCompress_sizeFactorMinimumSize }
                             type="number"
@@ -449,6 +463,7 @@ class BaseSettingsObjects extends Component {
 
                     { this.state.type === 'jsonl' ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={ this.props.classes.controlItem }
                             value={ this.state.jsonlOptions_throttleFS_intervalMs }
                             type="number"
@@ -461,6 +476,7 @@ class BaseSettingsObjects extends Component {
 
                     { this.state.type === 'jsonl' ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={ this.props.classes.controlItem }
                             value={ this.state.jsonlOptions_throttleFS_maxBufferedCommands }
                             type="number"
@@ -490,6 +506,7 @@ class BaseSettingsObjects extends Component {
 
                     { (this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={ this.props.classes.controlItem }
                             value={ this.state.backup_files }
                             type="number"
@@ -501,6 +518,7 @@ class BaseSettingsObjects extends Component {
 
                     { (this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={ this.props.classes.controlItem }
                             value={ this.state.backup_hours }
                             type="number"
@@ -512,6 +530,7 @@ class BaseSettingsObjects extends Component {
 
                     { (this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={ this.props.classes.controlItem }
                             value={ this.state.backup_period }
                             type="number"
@@ -523,6 +542,7 @@ class BaseSettingsObjects extends Component {
 
                     { (this.state.type === 'file' || this.state.type === 'jsonl') && !this.state.backup_disabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={ this.props.classes.controlItem }
                             value={ this.state.backup_path }
                             helperText={ this.props.t('Absolute path to backup directory or empty to backup in data directory. Leave it empty for default storage place.') }
