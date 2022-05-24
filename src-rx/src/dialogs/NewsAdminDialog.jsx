@@ -7,7 +7,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { CardMedia, DialogTitle, Typography } from '@mui/material';
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
 import InfoIcon from '@mui/icons-material/Info';
@@ -360,5 +360,7 @@ export const newsAdminDialogFunc = (newsArr, current, themeName, themeType, call
         node.id = 'renderModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<NewsAdminDialog newsArr={newsArr} themeName={themeName} themeType={themeType} current={current} callback={callback} />, node);
+    return ReactDOM.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
+    <NewsAdminDialog newsArr={newsArr} themeName={themeName} themeType={themeType} current={current} callback={callback} />
+    </ThemeProvider></StyledEngineProvider>, node);
 }

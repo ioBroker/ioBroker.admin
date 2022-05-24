@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import withWidth from './withWidth';
 import { withStyles } from '@mui/styles';
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
@@ -1524,18 +1524,18 @@ class App extends Router {
         }
 
         if (this.state.login) {
-            return <ThemeProvider theme={this.state.theme}>
+            return <StyledEngineProvider injectFirst><ThemeProvider theme={this.state.theme}>
                 <Login t={I18n.t} />
-            </ThemeProvider>;
+            </ThemeProvider></StyledEngineProvider>;
         } else
         if (!this.state.ready) {
-            return <ThemeProvider theme={this.state.theme}>
+            return <StyledEngineProvider injectFirst><ThemeProvider theme={this.state.theme}>
                 {window.vendorPrefix === 'PT' ? <LoaderPT theme={this.state.themeType}/> :null}
                 {window.vendorPrefix && window.vendorPrefix !== 'PT' && window.vendorPrefix !== '@@vendorPrefix@@' ? <LoaderVendor theme={this.state.themeType}/> :null}
                 {!window.vendorPrefix || window.vendorPrefix === '@@vendorPrefix@@' ? <Loader theme={this.state.themeType} /> : null}
-            </ThemeProvider>;
+            </ThemeProvider></StyledEngineProvider>;
         } else if (this.state.strictEasyMode || this.state.currentTab.tab === 'easy') {
-            return <ThemeProvider theme={this.state.theme}>
+            return <StyledEngineProvider injectFirst><ThemeProvider theme={this.state.theme}>
                 {!this.state.connected && <Connecting />}
                 <Suspense fallback={<Connecting />}>
                     <EasyMode
@@ -1563,12 +1563,12 @@ class App extends Router {
                         }}
                     />
                 </Suspense>
-            </ThemeProvider>;
+            </ThemeProvider></StyledEngineProvider>;
         }
 
         const expertModePermanent = !window.sessionStorage.getItem('App.expertMode') || (window.sessionStorage.getItem('App.expertMode') === 'true') === !!this.state.systemConfig.common.expertMode;
 
-        return <ThemeProvider theme={this.state.theme}>
+        return <StyledEngineProvider injectFirst><ThemeProvider theme={this.state.theme}>
             <Paper elevation={0} className={classes.root}>
                 <AppBar
                     color="default"
@@ -1782,7 +1782,7 @@ class App extends Router {
             {this.renderWizardDialog()}
             {this.renderSlowConnectionWarning()}
             {!this.state.connected && <Connecting />}
-        </ThemeProvider>;
+        </ThemeProvider></StyledEngineProvider>;
     }
 }
 

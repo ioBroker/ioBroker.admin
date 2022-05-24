@@ -6,7 +6,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { Avatar, Card, Checkbox, DialogTitle, FormControlLabel, MenuItem, Select } from '@mui/material';
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
 import WarningIcon from '@mui/icons-material/Warning';
@@ -335,5 +335,7 @@ export const instanceFilterDialogCallback = (cb, filterMode, filterStatus, getMo
         node.id = 'renderModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<InstanceFilterDialog cb={cb} getModeIcon={getModeIcon} filterMode={filterMode} filterStatus={filterStatus} />, node);
+    return ReactDOM.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
+    <InstanceFilterDialog cb={cb} getModeIcon={getModeIcon} filterMode={filterMode} filterStatus={filterStatus} />
+    </ThemeProvider></StyledEngineProvider>, node);
 }

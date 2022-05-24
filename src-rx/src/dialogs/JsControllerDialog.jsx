@@ -10,7 +10,7 @@ import DialogContent from '@mui/material/DialogContent';
 import IconCopy from '@iobroker/adapter-react-v5/icons/IconCopy';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Accordion, AccordionDetails, AccordionSummary, Card, DialogTitle, IconButton } from '@mui/material';
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
 import CloseIcon from '@mui/icons-material/Close';
@@ -364,5 +364,7 @@ export const JsControllerDialogFunc = (socket, hostId) => {
         node.id = 'renderModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<JsControllerDialog hostId={hostId} socket={socket} />, node);
+    return ReactDOM.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
+    <JsControllerDialog hostId={hostId} socket={socket} />
+    </ThemeProvider></StyledEngineProvider>, node);
 }

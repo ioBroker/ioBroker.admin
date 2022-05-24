@@ -7,7 +7,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { Accordion, AccordionDetails, AccordionSummary, AppBar, Box, CardMedia, Tab, Tabs, Typography } from '@mui/material';
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
 import UpdateIcon from '@mui/icons-material/Update';
@@ -391,5 +391,7 @@ export const hostWarningDialogFunc = (message, dateFormat, themeType, themeName,
         node.id = 'renderModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<HostWarningDialog instances={instances} message={message} themeName={themeName} themeType={themeType} dateFormat={dateFormat} ackCallback={ackCallback} />, node);
+    return ReactDOM.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
+    <HostWarningDialog instances={instances} message={message} themeName={themeName} themeType={themeType} dateFormat={dateFormat} ackCallback={ackCallback} />
+    </ThemeProvider></StyledEngineProvider>, node);
 }

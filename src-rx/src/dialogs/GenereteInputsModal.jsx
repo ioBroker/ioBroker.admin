@@ -7,7 +7,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { AppBar, Box, Paper, Typography } from '@mui/material';
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -369,5 +369,7 @@ export const GenerateInputsFunc = (themeType, themeName, socket, newInstances, o
         node.id = 'renderDiscoveryModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<GenerateInputsModal onCloseModal={onCloseModal} newInstances={newInstances} onApplyModal={onApplyModal} themeName={themeName} themeType={themeType} socket={socket} />, node);
+    return ReactDOM.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
+    <GenerateInputsModal onCloseModal={onCloseModal} newInstances={newInstances} onApplyModal={onApplyModal} themeName={themeName} themeType={themeType} socket={socket} />
+    </ThemeProvider></StyledEngineProvider>, node);
 }

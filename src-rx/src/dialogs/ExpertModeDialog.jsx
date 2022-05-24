@@ -11,7 +11,7 @@ import Grid from '@mui/material/Grid';
 
 import I18n from '@iobroker/adapter-react-v5/i18n';
 import { DialogTitle, IconButton, Typography } from '@mui/material';
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
 import theme from '@iobroker/adapter-react-v5/Theme';
@@ -74,8 +74,7 @@ const ExpertModeDialog = ({ boolSettings, func, buttonIcon, themeType }) => {
         node = null;
     };
 
-    return <ThemeProvider theme={theme(Utils.getThemeName())}>
-        <Dialog
+    return <Dialog
             onClose={onClose}
             open={open}
             classes={{ paper: classes.paper }}
@@ -143,8 +142,7 @@ const ExpertModeDialog = ({ boolSettings, func, buttonIcon, themeType }) => {
                     {I18n.t('Ok')}
                 </Button>
             </DialogActions>
-        </Dialog>
-    </ThemeProvider>;
+        </Dialog>;
 }
 
 export const expertModeDialogFunc = (boolSettings, themeType, func, buttonIcon) => {
@@ -153,5 +151,7 @@ export const expertModeDialogFunc = (boolSettings, themeType, func, buttonIcon) 
         node.id = 'renderModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<ExpertModeDialog themeType={themeType} buttonIcon={buttonIcon} boolSettings={boolSettings} func={func} />, node);
+    return ReactDOM.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
+    <ExpertModeDialog themeType={themeType} buttonIcon={buttonIcon} boolSettings={boolSettings} func={func} />
+    </ThemeProvider></StyledEngineProvider>, node);
 }

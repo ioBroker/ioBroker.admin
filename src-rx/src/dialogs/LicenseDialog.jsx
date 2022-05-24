@@ -6,7 +6,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import {DialogTitle, LinearProgress} from '@mui/material';
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
 import IconClose from '@mui/icons-material/Close';
@@ -125,5 +125,7 @@ export const licenseDialogFunc = (license, cb, url) => {
         node.id = 'renderModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<LicenseDialog url={url} cb={cb} />, node);
+    return ReactDOM.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
+    <LicenseDialog url={url} cb={cb} />
+    </ThemeProvider></StyledEngineProvider>, node);
 }
