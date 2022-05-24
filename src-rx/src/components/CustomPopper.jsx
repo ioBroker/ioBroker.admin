@@ -28,7 +28,7 @@ const CustomPopper = ({ editList, onClick }) => {
         setPlacement(newPlacement);
     };
     return <>
-        <IconButton size="large" size="large"
+        <IconButton size="large"
             style={editList ? { color: 'red' } : null}
             onClick={(el) => {
                 onClick();

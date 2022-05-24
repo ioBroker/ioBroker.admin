@@ -592,7 +592,7 @@ const HostRow = ({
                                 <div onClick={(e) => {
                                     e.stopPropagation();
                                     openHostUpdateDialog()
-                                }} className={classes.buttonUpdate}><IconButton size="large"
+                                }} className={classes.buttonUpdate}><IconButton
                                     className={classes.buttonUpdateIcon}
                                     size="small"
                                 >

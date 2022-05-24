@@ -84,7 +84,7 @@ const ExpertModeDialog = ({ boolSettings, func, buttonIcon, themeType }) => {
                 <Grid container>
                     <Grid item className={classes.width100}>
                         <div className={classes.root}>
-                            <div className={classes.pre} style={{color: themeType === 'dark' ? '#111': null}}>
+                            <div className={classes.pre}>
                                 <Typography
                                     className={classes.text}
                                     variant="body2"
@@ -112,7 +112,6 @@ const ExpertModeDialog = ({ boolSettings, func, buttonIcon, themeType }) => {
                                 {I18n.t('Use this button:')}
                                 <IconButton
                                     color="primary"
-                                    style={{color: themeType === 'dark' ? '#111': null}}
                                     size="small"
                                     onClick={() => {
                                         onClose();
