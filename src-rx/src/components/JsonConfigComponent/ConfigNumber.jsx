@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import TextField from '@mui/material/TextField';
-import {Autocomplete} from '@mui/lab';
+import { Autocomplete, TextField } from '@mui/material';
 
 import I18n from '@iobroker/adapter-react-v5/i18n';
 

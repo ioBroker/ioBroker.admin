@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import pack from '../package.json';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import * as Sentry from '@sentry/browser';
@@ -19,7 +19,9 @@ console.log('iobroker.' + window.adapterName + '@' + pack.version);
 let themeName = Utils.getThemeName();
 
 function build() {
-    return ReactDOM.render(
+    const container = document.getElementById('root');
+    const root = createRoot(container);
+    return root.render(
         <StyledEngineProvider injectFirst><ThemeProvider theme={theme(themeName)}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <ContextWrapperProvider>
@@ -30,8 +32,7 @@ function build() {
                 </ContextWrapperProvider>
                 </LocalizationProvider>
             </ThemeProvider>
-        </StyledEngineProvider>,
-        document.getElementById('root')
+        </StyledEngineProvider>
     );
 }
 

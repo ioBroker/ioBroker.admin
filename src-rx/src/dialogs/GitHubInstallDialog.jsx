@@ -8,8 +8,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import { Autocomplete } from '@mui/lab';
-import { AppBar, Box, Checkbox, FormControlLabel, IconButton, InputAdornment, Tab, Tabs, TextField } from '@mui/material';
+import { AppBar, Box, Checkbox, FormControlLabel, IconButton, InputAdornment, Tab, Tabs, TextField, Autocomplete } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
 import npmIcon from '../assets/npm.png';

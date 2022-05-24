@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import {Autocomplete} from '@mui/lab';
-import TextField from '@mui/material/TextField';
+import { Autocomplete, TextField } from '@mui/material';
 
 import ConfigGeneric from './ConfigGeneric';
 

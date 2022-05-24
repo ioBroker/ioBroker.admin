@@ -215,7 +215,7 @@ class HostSelectors extends Component {
                 {this.state.hosts.map(({ _id, common: { name, icon, color } }, idx) =>
                     <MenuItem
                         key={_id}
-                        button
+                        // button
                         disabled={!this.state.alive[_id]}
                         selected={_id === this.props.currentHost}
                         style={{ background: color || 'inherit' }}
