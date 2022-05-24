@@ -8,6 +8,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/files': 'http://localhost:8081',
+      '/adapter': 'http://localhost:8081',
     },
   },
   optimizeDeps: {
