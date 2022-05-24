@@ -146,14 +146,6 @@
           "sm": 12,
           "md": 4,
           "lg": 2
-        },
-        "material": {
-          "newLine": true,
-          "type": "checkbox",
-          "label": "Use old UI",
-          "sm": 12,
-          "md": 6,
-          "lg": 3
         }
       }
     },

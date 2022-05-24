@@ -3,7 +3,7 @@
 import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
 
-import withWidth from '../../withWidth';
+import withWidth from '../../components/withWidth';
 import {withStyles} from '@mui/styles';
 import {Grid, Typography, FormControl, Checkbox} from '@mui/material';
 import Table from '@mui/material/Table';

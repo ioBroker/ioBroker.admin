@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
-import withWidth from '../withWidth';
+import withWidth from '../components/withWidth';
 
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';

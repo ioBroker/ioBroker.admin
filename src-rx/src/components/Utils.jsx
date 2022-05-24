@@ -70,9 +70,9 @@ class Utils {
         }
         let text = '';
         if (days) {
-            text += days + ' ' + I18n.t('daysShortText') + ' ';
+            text += `${days} ${I18n.t('ra_daysShortText')} `;
         }
-        text += hours + ':' + minutes + ':' + seconds;
+        text += `${hours}:${minutes}:${seconds}`;
 
         return text;
     }

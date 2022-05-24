@@ -1,4 +1,4 @@
-import withWidth from '../withWidth';
+import withWidth from '../components/withWidth';
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';

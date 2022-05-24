@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import withWidth from '../withWidth';
+import withWidth from './withWidth';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';

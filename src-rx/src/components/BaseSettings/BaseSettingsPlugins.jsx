@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import {withStyles} from '@mui/styles';
-import withWidth from '../../withWidth';
+import withWidth from '../withWidth';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import Paper from  '@mui/material/Paper';
