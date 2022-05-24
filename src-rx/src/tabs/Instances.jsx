@@ -1215,6 +1215,12 @@ class Instances extends Component {
             }
         }
 
+        const hostData = this.state.hostData ?
+            (this.state.hostData['Disk free'] ? `${this.t('Disk free')}: ${Math.round(this.state.hostData['Disk free'] / (this.state.hostData['Disk size'] / 100))}%, ` : '') +
+            `${this.t('Total RAM usage')}: ${this.state.mem} Mb / ` +
+            `${this.t('Free')}: ${this.state.percent}% = ${this.state.memFree} Mb ` +
+            `[${this.t('Host')}: ${this.props.currentHostName} - ${this.state.processes} ${this.t('processes')}]` : null;
+
         return <TabContainer>
             <TabHeader>
                 <Tooltip title={this.t('Show / hide List')}>
@@ -1338,8 +1344,7 @@ class Instances extends Component {
                 />
                 <div className={classes.grow} />
                 <Hidden xsDown>
-                    {this.state.hostData &&
-                        `${this.t('Disk free')}: ${Math.round(this.state.hostData['Disk free'] / (this.state.hostData['Disk size'] / 100))}%, ${this.t('Total RAM usage')}: ${this.state.mem} Mb / ${this.t('Free')}: ${this.state.percent}% = ${this.state.memFree} Mb [${this.t('Host')}: ${this.props.currentHostName} - ${this.state.processes} ${this.t('processes')}]`}
+                    {hostData}
                 </Hidden>
             </TabHeader>
             <TabContent overflow="auto">
