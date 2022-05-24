@@ -8,7 +8,9 @@ import Toolbar from '@material-ui/core/Grid';
 
 import Button from '@material-ui/core/Button';
 import Paper from  '@material-ui/core/Paper';
-import IconCheck from "@material-ui/icons/Check";
+import IconCheck from '@material-ui/icons/Check';
+
+import AdminUtils from '../../Utils';
 
 const TOOLBAR_HEIGHT = 64;
 
@@ -57,20 +59,6 @@ class WizardPasswordTab extends Component {
         this.focusRef.current && this.focusRef.current.focus();
     }
 
-    checkPassword(password, passwordRepeat) {
-        if (password !== null && password !== undefined) {
-            return password.length < 8 || !password.match(/\d/) || !password.match(/[a-z]/) || !password.match(/[A-Z]/);
-        } else {
-            if (passwordRepeat.length < 8 || !passwordRepeat.match(/\d/) || !passwordRepeat.match(/[a-z]/) || !passwordRepeat.match(/[A-Z]/)) {
-                return this.props.t('Password must be at least 8 characters long and have numbers, upper and lower case letters');
-            } else if (this.state.password !== passwordRepeat) {
-                return this.props.t('Passwords are not equal');
-            } else {
-                return false;
-            }
-        }
-    }
-
     render() {
         return <Paper className={ this.props.classes.paper }>
             <form className={ this.props.classes.form} noValidate autoComplete="off">
@@ -101,7 +89,15 @@ class WizardPasswordTab extends Component {
                             type="password"
                             value={ this.state.password }
                             error={ this.state.errorPassword }
-                            onChange={ e => this.setState({ password: e.target.value, errorPassword: this.checkPassword(e.target.value), errorPasswordRepeat: this.checkPassword(null, this.state.passwordRepeat)}) }
+                            onChange={ e => {
+                                const errorPassword = AdminUtils.checkPassword(e.target.value);
+                                const errorPasswordRepeat = AdminUtils.checkPassword(e.target.value, this.state.passwordRepeat);
+                                this.setState({
+                                    password: e.target.value,
+                                    errorPassword: errorPassword ? this.props.t(errorPassword) : false,
+                                    errorPasswordRepeat: errorPasswordRepeat ? this.props.t(errorPasswordRepeat) : false
+                                });
+                            } }
                             helperText={ this.props.t('Password must be at least 8 characters long and have numbers, upper and lower case letters') }
                         />
                     </Grid>
@@ -123,7 +119,13 @@ class WizardPasswordTab extends Component {
                             value={ this.state.passwordRepeat }
                             type="password"
                             error={ !!this.state.errorPasswordRepeat }
-                            onChange={ e => this.setState({ passwordRepeat: e.target.value, errorPasswordRepeat: this.checkPassword(null, e.target.value), errorPassword: this.checkPassword(this.state.password)}) }
+                            onChange={ e => {
+                                const errorPasswordRepeat = AdminUtils.checkPassword(this.state.password, e.target.value);
+                                this.setState({
+                                    passwordRepeat: e.target.value,
+                                    errorPasswordRepeat: errorPasswordRepeat ? this.props.t(errorPasswordRepeat) : false
+                                });
+                            } }
                             helperText={ this.state.errorPasswordRepeat || '' }
                         />
                     </Grid>

@@ -544,6 +544,41 @@ class Utils {
             return text;
         }
     }
+
+    static PASSWORD_ERROR_LENGTH = 'Password must be at least 8 characters long and have numbers, upper and lower case letters';
+    static PASSWORD_ERROR_NOT_EQUAL = 'Repeat password is not equal with password';
+    static PASSWORD_ERROR_EMPTY = 'Empty password is not allowed';
+    static PASSWORD_SET = '***********';
+
+    static checkPassword(password, passwordRepeat) {
+        password = password || '';
+        passwordRepeat = passwordRepeat || '';
+        if (password && passwordRepeat && password !== Utils.PASSWORD_SET && passwordRepeat !== Utils.PASSWORD_SET) {
+            if (password.length < 8 || !password.match(/\d/) || !password.match(/[a-z]/) || !password.match(/[A-Z]/)) {
+                return Utils.PASSWORD_ERROR_LENGTH;
+            } else if (password !== passwordRepeat) {
+                return Utils.PASSWORD_ERROR_NOT_EQUAL;
+            } else {
+                return false;
+            }
+        } else if (password && password !== Utils.PASSWORD_SET) {
+            if (password.length < 8 || !password.match(/\d/) || !password.match(/[a-z]/) || !password.match(/[A-Z]/)) {
+                return Utils.PASSWORD_ERROR_LENGTH;
+            } else {
+                return false;
+            }
+        } else if (passwordRepeat && passwordRepeat !== Utils.PASSWORD_SET) {
+            if (passwordRepeat.length < 8 || !passwordRepeat.match(/\d/) || !passwordRepeat.match(/[a-z]/) || !passwordRepeat.match(/[A-Z]/)) {
+                return Utils.PASSWORD_ERROR_LENGTH;
+            } else {
+                return false;
+            }
+        } else if (password === Utils.PASSWORD_SET || passwordRepeat === Utils.PASSWORD_SET) {
+            return false;
+        } else {
+            return Utils.PASSWORD_ERROR_EMPTY;
+        }
+    }
 }
 
 export default Utils;
