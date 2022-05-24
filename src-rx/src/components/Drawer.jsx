@@ -459,7 +459,8 @@ class Drawer extends Component {
                             }
                         });
                     });
-            });
+            })
+            .catch(error => window.alert('Cannot get instances: ' + error));
     }
 
     getHeader() {
