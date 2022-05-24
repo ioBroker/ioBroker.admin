@@ -23,7 +23,8 @@ import IconCheck from '@mui/icons-material/Check';
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 import IconPicker from '@iobroker/adapter-react-v5/Components/IconPicker';
 
-import {IOTextField, IOColorPicker} from '../IOFields/Fields';
+import { IOTextField, IOColorPicker } from '../IOFields/Fields';
+import AdminUtils from '../../Utils';
 
 import User1 from '../../assets/users/user1.svg';
 import User2 from '../../assets/users/user2.svg';
@@ -72,14 +73,6 @@ function UserEditDialog(props) {
     let idExists = props.users.find(user => user._id === props.user._id);
     let idChanged = props.user._id !== originalId;
 
-    let canSave = props.user._id !== 'system.user.' &&
-        props.user.common.password === props.user.common.passwordRepeat && props.user.common.password;
-
-    if (props.isNew && idExists) {
-        canSave = false;
-    } else if (idExists && idChanged) {
-        canSave = false;
-    }
 
     const getShortId = _id =>
         _id.split('.').pop();
@@ -89,12 +82,23 @@ function UserEditDialog(props) {
 
     const changeShortId = (_id, short) => {
         let idArray = _id.split('.');
-        idArray[idArray.length-1] = short;
+        idArray[idArray.length - 1] = short;
         return idArray.join('.');
-    }
+    };
 
     let description = props.getText(props.user.common.desc);
     let name = props.getText(props.user.common.name);
+
+    const errorPassword = AdminUtils.checkPassword(props.user.common.password);
+    const errorPasswordRepeat = AdminUtils.checkPassword(props.user.common.password, props.user.common.passwordRepeat);
+
+    let canSave = props.user._id !== 'system.user.' && !errorPassword && !errorPasswordRepeat;
+
+    if (props.isNew && idExists) {
+        canSave = false;
+    } else if (idExists && idChanged) {
+        canSave = false;
+    }
 
     return <Dialog
         fullWidth={props.innerWidth < 500}
@@ -133,7 +137,7 @@ function UserEditDialog(props) {
                         label="ID edit"
                         t={props.t}
                         disabled={props.user.common.dontDelete}
-                        value={ props.user._id.split('.')[props.user._id.split('.').length-1] }
+                        value={ props.user._id.split('.')[props.user._id.split('.').length - 1] }
                         onChange={e => {
                             let newData = Utils.clone(props.user);
                             newData._id = changeShortId(newData._id, name2Id(e.target.value));
@@ -172,7 +176,7 @@ function UserEditDialog(props) {
                         label="Password"
                         t={props.t}
                         value={ props.user.common.password }
-                        error={ props.user.common.passwordRepeat !== props.user.common.password ? props.t('Repeat password is not equal with password') : ((props.user.common.password || '').trim() ? '' : props.t('Empty password is not allowed')) }
+                        error={ errorPassword ? props.t(errorPassword) : false }
                         onChange={e => {
                             let newData = Utils.clone(props.user);
                             newData.common.password = e.target.value;
@@ -189,7 +193,7 @@ function UserEditDialog(props) {
                         label="Password repeat"
                         t={props.t}
                         value={ props.user.common.passwordRepeat }
-                        error={props.user.common.passwordRepeat !== props.user.common.password ? props.t('Repeat password is not equal with password') : ''}
+                        error={ errorPasswordRepeat ? props.t(errorPasswordRepeat) : false }
                         onChange={e => {
                             let newData = Utils.clone(props.user);
                             newData.common.passwordRepeat = e.target.value;
@@ -237,8 +241,19 @@ function UserEditDialog(props) {
             </Grid>
         </DialogContent>
         <DialogActions className={props.classes.dialogActions} >
-            <Button variant="contained" color="primary" autoFocus onClick={() => props.saveData(props.isNew ? null : originalId)} disabled={!canSave} startIcon={<IconCheck/>}>{props.t('Save')}</Button>
-            <Button variant="contained" onClick={props.onClose} startIcon={<IconCancel/>}>{props.t('Cancel')}</Button>
+            <Button
+                variant="contained"
+                color="primary"
+                autoFocus
+                onClick={() => props.saveData(props.isNew ? null : originalId)}
+                disabled={!canSave}
+                startIcon={<IconCheck/>}
+            >{props.t('Save')}</Button>
+            <Button
+                variant="contained"
+                onClick={props.onClose}
+                startIcon={<IconCancel/>}
+            >{props.t('Cancel')}</Button>
         </DialogActions>
     </Dialog>;
 }
