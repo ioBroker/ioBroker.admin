@@ -60,18 +60,9 @@ const DEFAULT_JSONL_OPTIONS = {
         sizeFactor: 2,
         sizeFactorMinimumSize: 25000
     },
-    ignoreReadErrors: true,
     throttleFS: {
         intervalMs: 60000,
         maxBufferedCommands: 1000
-    },
-    lockfile: {
-        // 5 retries starting at 250ms add up to just above 2s,
-        // so the DB has 3 more seconds to load all data if it wants to stay within the 5s connectionTimeout
-        retries: 5,
-        retryMinTimeoutMs: 250,
-        // This makes sure the DB stays locked for maximum 2s even if the process crashes
-        staleMs: 2000
     }
 };
 
@@ -97,10 +88,6 @@ class BaseSettingsObjects extends Component {
         settings.jsonlOptions = settings.jsonlOptions || DEFAULT_JSONL_OPTIONS;
         settings.jsonlOptions.autoCompress = settings.jsonlOptions.autoCompress || DEFAULT_JSONL_OPTIONS.autoCompress;
         settings.jsonlOptions.throttleFS = settings.jsonlOptions.throttleFS || DEFAULT_JSONL_OPTIONS.throttleFS;
-        settings.jsonlOptions.lockfile = settings.jsonlOptions.lockfile || DEFAULT_JSONL_OPTIONS.lockfile;
-        if (settings.jsonlOptions.ignoreReadErrors === undefined) {
-            settings.jsonlOptions.ignoreReadErrors = true;
-        }
 
         this.state = {
             type:                    settings.type                    || 'file',
@@ -121,12 +108,8 @@ class BaseSettingsObjects extends Component {
             backup_path:             settings.backup.path             || '',
             jsonlOptions_autoCompress_sizeFactor: settings.jsonlOptions.autoCompress.sizeFactor || 2,
             jsonlOptions_autoCompress_sizeFactorMinimumSize: settings.jsonlOptions.autoCompress.sizeFactorMinimumSize || 25000,
-            jsonlOptions_ignoreReadErrors: settings.jsonlOptions.ignoreReadErrors,
             jsonlOptions_throttleFS_intervalMs: settings.jsonlOptions.throttleFS.intervalMs || 60000,
             jsonlOptions_throttleFS_maxBufferedCommands: settings.jsonlOptions.throttleFS.maxBufferedCommands || 100,
-            jsonlOptions_lockfile_retries: settings.jsonlOptions.lockfile.retries || 5,
-            jsonlOptions_lockfile_retryMinTimeoutMs: settings.jsonlOptions.lockfile.retryMinTimeoutMs || 250,
-            jsonlOptions_lockfile_staleMs: settings.jsonlOptions.lockfile.staleMs || 2000,
             textIP:                  Array.isArray(settings.host) || (settings.host || '').match(/[^.\d]/) || (settings.host || '').includes(','),
 
             IPs:                     ['0.0.0.0', '127.0.0.1'],
@@ -179,16 +162,10 @@ class BaseSettingsObjects extends Component {
                     sizeFactor: parseInt(this.state.jsonlOptions_autoCompress_sizeFactor, 10),
                     sizeFactorMinimumSize: parseInt(this.state.jsonlOptions_autoCompress_sizeFactorMinimumSize, 10),
                 },
-                ignoreReadErrors: this.state.jsonlOptions_ignoreReadErrors === true || this.state.jsonlOptions_ignoreReadErrors === 'true',
                 throttleFS: {
                     intervalMs: parseInt(this.state.jsonlOptions_throttleFS_intervalMs, 10),
                     maxBufferedCommands: parseInt(this.state.jsonlOptions_throttleFS_maxBufferedCommands, 10),
                 },
-                lockfile: {
-                    retries: parseInt(this.state.jsonlOptions_lockfile_retries, 10),
-                    retryMinTimeoutMs: parseInt(this.state.jsonlOptions_lockfile_retryMinTimeoutMs, 10),
-                    staleMs: parseInt(this.state.jsonlOptions_lockfile_staleMs, 10),
-                }
             }
         };
 
@@ -427,23 +404,6 @@ class BaseSettingsObjects extends Component {
                     </Grid> : null }
 
                     { this.state.type === 'jsonl' ? <Grid item>
-                        <FormControl component="fieldset" className={ this.props.classes.controlItem }>
-                            <FormGroup>
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={ this.state.jsonlOptions_ignoreReadErrors }
-                                            onChange={ e => this.setState( { jsonlOptions_ignoreReadErrors: e.target.checked }, () => this.onChange()) }
-                                        />
-                                    }
-                                    label={ this.props.t(`Ignore read errors`) }
-                                />
-                            </FormGroup>
-                            <FormHelperText>{ this.props.t('If single lines in the DB are corrupted, they can be ignored without losing the whole DB.') }</FormHelperText>
-                        </FormControl>
-                    </Grid> : null }
-
-                    { this.state.type === 'jsonl' ? <Grid item>
                         <TextField
                             className={ this.props.classes.controlItem }
                             value={ this.state.jsonlOptions_autoCompress_sizeFactor }
@@ -488,42 +448,6 @@ class BaseSettingsObjects extends Component {
                             helperText={ this.props.t('Force writing after this many changes have been buffered. This reduces memory consumption and data loss in case of a crash') }
                             onChange={ e => this.setState({ jsonlOptions_throttleFS_maxBufferedCommands: e.target.value }, () => this.onChange())}
                             label={ this.props.t('Maximum changes before write') }
-                        />
-                    </Grid> : null }
-
-                    { this.state.type === 'jsonl' ? <Grid item>
-                        <TextField
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.jsonlOptions_lockfile_retries }
-                            type="number"
-                            inputProps={{min: 0}}
-                            helperText={ this.props.t('Required description') }
-                            onChange={ e => this.setState({ jsonlOptions_lockfile_retries: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('Lockfile => retries') }
-                        />
-                    </Grid> : null }
-
-                    { this.state.type === 'jsonl' ? <Grid item>
-                        <TextField
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.jsonlOptions_lockfile_retryMinTimeoutMs }
-                            type="number"
-                            inputProps={{min: 0}}
-                            helperText={ this.props.t('Required description') }
-                            onChange={ e => this.setState({ jsonlOptions_lockfile_retryMinTimeoutMs: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('Lockfile => retryMinTimeoutMs') }
-                        />
-                    </Grid> : null }
-
-                    { this.state.type === 'jsonl' ? <Grid item>
-                        <TextField
-                            className={ this.props.classes.controlItem }
-                            value={ this.state.jsonlOptions_lockfile_staleMs }
-                            type="number"
-                            inputProps={{min: 0}}
-                            helperText={ this.props.t('Required description') }
-                            onChange={ e => this.setState({ jsonlOptions_lockfile_staleMs: e.target.value }, () => this.onChange())}
-                            label={ this.props.t('Lockfile => staleMs') }
                         />
                     </Grid> : null }
 
