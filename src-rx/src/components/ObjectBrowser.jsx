@@ -3760,6 +3760,7 @@ class ObjectBrowser extends Component {
                             :
                             <TextField
                                 defaultValue={this.customColumnDialog.value}
+                                variant="standard"
                                 fullWidth
                                 onKeyUp={e => e.keyCode === 13 && this.onColumnsEditCustomDialogClose(true)}
                                 label={this.state.columnsEditCustomDialog.it.name + ' (' + this.state.columnsEditCustomDialog.it.pathText + ')'}

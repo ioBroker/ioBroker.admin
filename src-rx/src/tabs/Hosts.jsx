@@ -576,6 +576,7 @@ const Hosts = ({
             </Tooltip>
             <div className={classes.grow} />
             {hosts.length > 2 ? <TextField
+                variant="standard"
                 label={t('Filter')}
                 style={{ margin: '5px 0' }}
                 value={filterText}

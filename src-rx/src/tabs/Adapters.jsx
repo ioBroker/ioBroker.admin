@@ -1576,6 +1576,7 @@ class Adapters extends Component {
                 }
                 <div className={classes.grow} />
                 <TextField
+                    variant="standard"
                     inputRef={this.inputRef}
                     label={this.t('Filter by name')}
                     defaultValue={this.state.search}

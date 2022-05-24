@@ -925,6 +925,7 @@ class Logs extends Component {
                                     <FormControl className={classes.formControl}>
                                         <InputLabel id="source-label" />
                                         <Select
+                                            variant="standard"
                                             labelId="source-label"
                                             value={sources.includes(this.state.source) ? this.state.source : '1' }
                                             onChange={event => this.handleSourceChange(event)}
@@ -934,15 +935,16 @@ class Logs extends Component {
                                     </FormControl>
                                 </TableCell>
                                 {this.state.pid && <TableCell className={classes.pid}>
-                                    <TextField disabled label={this.t('PID')} className={classes.header} />
+                                    <TextField disabled label={this.t('PID')} className={classes.header} variant="standard"/>
                                 </TableCell>}
                                 <TableCell className={classes.timestamp}>
-                                    <TextField disabled label={this.t('Time')} className={classes.header} />
+                                    <TextField disabled label={this.t('Time')} className={classes.header} variant="standard"/>
                                 </TableCell>
                                 <TableCell className={classes.severity}>
                                     <FormControl className={classes.formControl}>
                                         <InputLabel id="severity-label" />
                                         <Select
+                                            variant="standard"
                                             labelId="severity-label"
                                             value={this.state.severity}
                                             onChange={event => this.handleSeverityChange(event)}
@@ -954,6 +956,7 @@ class Logs extends Component {
                                 <TableCell className={classes.message}>
                                     <FormControl className={classes.formControl}>
                                         <TextField
+                                            variant="standard"
                                             className={classes.messageText}
                                             label={this.t('Message')}
                                             onChange={event => this.handleMessageChange(event)}

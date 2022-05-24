@@ -1493,5 +1493,6 @@
   "Move up": "Bewegen Sie sich nach oben",
   "Move down": "Sich abwärts bewegen",
   "All items are filtered out": "Alle Elemente werden herausgefiltert",
-  "Runs as web-extension": "Läuft als Web-Erweiterung"
+  "Runs as web-extension": "Läuft als Web-Erweiterung",
+  "No restart": "Kein Neustart"
 }

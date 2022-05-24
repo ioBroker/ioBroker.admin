@@ -1493,5 +1493,6 @@
   "Move up": "Вверх",
   "Move down": "Вниз",
   "All items are filtered out": "Все элементы отфильтрованы",
-  "Runs as web-extension": "Работает как веб-расширение"
+  "Runs as web-extension": "Работает как веб-расширение",
+  "No restart": "Нет перезагрузки"
 }

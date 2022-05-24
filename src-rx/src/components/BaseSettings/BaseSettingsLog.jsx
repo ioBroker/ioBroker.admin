@@ -236,6 +236,7 @@ class BaseSettingsLog extends Component {
                     {this.renderLogLevel(name)}
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].host}
                             helperText={this.props.t('The host running syslogd, defaults to localhost')}
@@ -249,6 +250,7 @@ class BaseSettingsLog extends Component {
                     </Grid> : null}
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].port}
                             type="number"
@@ -281,6 +283,7 @@ class BaseSettingsLog extends Component {
                     </Grid> : null}
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].path}
                             helperText={this.props.t('The path to the syslog dgram socket (i.e. /dev/log or /var/run/syslog for OS X).')}
@@ -294,6 +297,7 @@ class BaseSettingsLog extends Component {
                     </Grid> : null}
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].facility}
                             helperText={this.props.t('Syslog facility to use (Default: local0).')}
@@ -307,6 +311,7 @@ class BaseSettingsLog extends Component {
                     </Grid> : null}
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].localhost}
                             helperText={this.props.t('Host to indicate that log messages are coming from (Default: localhost).')}
@@ -320,6 +325,7 @@ class BaseSettingsLog extends Component {
                     </Grid> : null}
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].sysLogType}
                             helperText={this.props.t('The type of the syslog protocol to use (Default: BSD).')}
@@ -333,6 +339,7 @@ class BaseSettingsLog extends Component {
                     </Grid> : null}
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].app_name}
                             helperText={this.props.t('The name of the application (Default: process.title).')}
@@ -346,6 +353,7 @@ class BaseSettingsLog extends Component {
                     </Grid> : null}
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].eol}
                             helperText={this.props.t('The end of line character to be added to the end of the message (Default: Message without modifications).')}
@@ -385,6 +393,7 @@ class BaseSettingsLog extends Component {
                     {this.renderLogLevel(name)}
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].filename}
                             onChange={e => {
@@ -398,6 +407,7 @@ class BaseSettingsLog extends Component {
 
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].fileext}
                             onChange={e => {
@@ -411,6 +421,7 @@ class BaseSettingsLog extends Component {
 
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].maxSize}
                             type="number"
@@ -426,6 +437,7 @@ class BaseSettingsLog extends Component {
 
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].maxFiles}
                             type="number"
@@ -465,6 +477,7 @@ class BaseSettingsLog extends Component {
                     {this.renderLogLevel(name)}
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].host}
                             helperText={this.props.t('Remote host of the HTTP logging endpoint')}
@@ -478,6 +491,7 @@ class BaseSettingsLog extends Component {
                     </Grid> : null}
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].port}
                             type="number"
@@ -492,6 +506,7 @@ class BaseSettingsLog extends Component {
                     </Grid> : null}
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].path}
                             helperText={this.props.t('Remote URI of the HTTP logging endpoint')}
@@ -505,6 +520,7 @@ class BaseSettingsLog extends Component {
                     </Grid> : null}
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].auth}
                             helperText={this.props.t('An object representing the username and password for HTTP Basic Auth')}
@@ -559,6 +575,7 @@ class BaseSettingsLog extends Component {
                     {this.renderEnabled(name)}
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].stream}
                             helperText={this.props.t('any Node.js stream. If an objectMode stream is provided then the entire info object will be written. Otherwise info[MESSAGE] will be written')}
@@ -588,6 +605,7 @@ class BaseSettingsLog extends Component {
                     </Grid> : null}
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].eol}
                             helperText={this.props.t('Line-ending character to use. (default: os.EOL).)')}
@@ -627,6 +645,7 @@ class BaseSettingsLog extends Component {
                     {this.renderLogLevel(name)}
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].serverUrl}
                             helperText={this.props.t('The http(s) URL including port of the seq server. If you use HTTPS a real certificate is needed; self signed certs are ot accepted.')}
@@ -640,6 +659,7 @@ class BaseSettingsLog extends Component {
                     </Grid> : null}
                     {this.state.transport[name].enabled ? <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.transport[name].apiKey}
                             helperText={this.props.t('The apiKey of the seq system')}
@@ -776,6 +796,7 @@ class BaseSettingsLog extends Component {
                     </Grid>
                     <Grid item>
                         <TextField
+                            variant="standard"
                             className={this.props.classes.controlItem}
                             value={this.state.maxDays}
                             helperText={this.props.t('Every day one file')}

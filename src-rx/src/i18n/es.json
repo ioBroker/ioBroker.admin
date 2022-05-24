@@ -1493,5 +1493,6 @@
   "Move up": "Ascender",
   "Move down": "Mover hacia abajo",
   "All items are filtered out": "Todos los elementos se filtran",
-  "Runs as web-extension": "Se ejecuta como extensión web"
+  "Runs as web-extension": "Se ejecuta como extensión web",
+  "No restart": "sin reinicio"
 }
