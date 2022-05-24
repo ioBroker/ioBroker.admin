@@ -4,17 +4,6 @@ const ANSI_RESET_BG_COLOR = 49;
 const ANSI_BOLD = 1;
 const ANSI_RESET_BOLD = 22;
 
-const SIGNATURES = {
-    JVBERi0: 'pdf',
-    R0lGODdh: 'gif',
-    R0lGODlh: 'gif',
-    iVBORw0KGgo: 'png',
-    '/9j/': 'jpg',
-    PHN2Zw: 'svg',
-    Qk1: 'bmp',
-    AAABAA: 'ico' // 00 00 01 00 according to https://en.wikipedia.org/wiki/List_of_file_signatures
-  };
-
 const STYLES = {
     30: {color: 'black'}, // ANSI_BLACK
     31: {color: 'red'}, // ANSI_RED
@@ -104,25 +93,6 @@ class Utils {
         } else {
             return null;
         }
-    }
-
-    static detectMimeType(b64) {
-        const signature = Object.keys(SIGNATURES).find(s => b64.startsWith(s));
-        return signature ? SIGNATURES[signature] : null;
-    }
-
-    static fetchMimeType(url) {
-        return fetch(url)
-            .then(response => response.blob() )
-            .then(blob => new Promise(resolve => {
-                    const reader = new FileReader() ;
-                    // Do not convert this function to lambda =>
-                    reader.onload = function () {
-                        const detectedExt = Utils.detectMimeType(this.result.split(',')[1]);
-                        resolve(detectedExt);
-                    }
-                    reader.readAsDataURL(blob);
-                }));
     }
 
     // Big thanks to: https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color

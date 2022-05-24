@@ -488,13 +488,16 @@ class Drawer extends Component {
                 </a>
                 {!this.props.adminGuiConfig.icon && this.props.versionAdmin && <Typography className={classes.styleVersion}>v{this.props.versionAdmin}</Typography>}
             </div>
-            <IconButton size="large" onClick={() => {
-                if (this.isSwipeable() || this.props.state === STATES.compact) {
-                    this.props.onStateChange(STATES.closed);
-                } else {
-                    this.props.onStateChange(STATES.compact)
-                }
-            }}>
+            <IconButton
+                size="large"
+                onClick={() => {
+                    if (this.isSwipeable() || this.props.state === STATES.compact) {
+                        this.props.onStateChange(STATES.closed);
+                    } else {
+                        this.props.onStateChange(STATES.compact)
+                    }
+                }}
+            >
                 <ChevronLeftIcon />
             </IconButton>
         </div>;

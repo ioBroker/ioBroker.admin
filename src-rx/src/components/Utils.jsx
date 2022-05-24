@@ -32,6 +32,16 @@ const QUALITY_BITS = {
     0x44: '0x44 - device reports error',
     0x84: '0x84 - sensor reports error',
 };
+const SIGNATURES = {
+    JVBERi0: 'pdf',
+    R0lGODdh: 'gif',
+    R0lGODlh: 'gif',
+    iVBORw0KGgo: 'png',
+    '/9j/': 'jpg',
+    PHN2Zw: 'svg',
+    Qk1: 'bmp',
+    AAABAA: 'ico' // 00 00 01 00 according to https://en.wikipedia.org/wiki/List_of_file_signatures
+};
 
 class Utils {
     static namespace = NAMESPACE;
@@ -1493,6 +1503,16 @@ class Utils {
                     reader.readAsDataURL(blob);
                 });
             });
+    }
+
+    /**
+     * Detect file xtension by its content
+     * @param {string} base64 Base64 encoded binary file
+     * @returns {string} Detected extension, like 'jpg'
+     */
+    static detectMimeType(base64) {
+        const signature = Object.keys(SIGNATURES).find(s => base64.startsWith(s));
+        return signature ? SIGNATURES[signature] : null;
     }
 }
 

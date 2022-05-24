@@ -15,7 +15,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import PlayIcon from '@mui/icons-material/PlayArrow';
 import DownloadIcon from '@mui/icons-material/GetApp';
 
-import Utils from '../Utils';
+import Utils from '../components/Utils';
 
 const styles = theme => ({
     dialog: {
