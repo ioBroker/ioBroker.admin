@@ -1493,5 +1493,6 @@
   "Move up": "提升",
   "Move down": "下移",
   "All items are filtered out": "所有项目都被过滤掉",
-  "Runs as web-extension": "作为网络扩展运行"
+  "Runs as web-extension": "作为网络扩展运行",
+  "No restart": "不重启"
 }

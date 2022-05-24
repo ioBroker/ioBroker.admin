@@ -1493,5 +1493,6 @@
   "Move up": "Andare avanti",
   "Move down": "Abbassati",
   "All items are filtered out": "Tutti gli elementi vengono filtrati",
-  "Runs as web-extension": "Funziona come estensione web"
+  "Runs as web-extension": "Funziona come estensione web",
+  "No restart": "Nessun riavvio"
 }

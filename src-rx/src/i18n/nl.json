@@ -1493,5 +1493,6 @@
   "Move up": "Omhoog gaan",
   "Move down": "Naar beneden verplaatsen",
   "All items are filtered out": "Alle items zijn uitgefilterd",
-  "Runs as web-extension": "Draait als webextensie"
+  "Runs as web-extension": "Draait als webextensie",
+  "No restart": "Geen herstart"
 }

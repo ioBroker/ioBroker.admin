@@ -1493,5 +1493,6 @@
   "Move up": "Podnieść",
   "Move down": "Padnij",
   "All items are filtered out": "Wszystkie pozycje są odfiltrowane",
-  "Runs as web-extension": "Działa jako rozszerzenie internetowe"
+  "Runs as web-extension": "Działa jako rozszerzenie internetowe",
+  "No restart": "Brak restartu"
 }
