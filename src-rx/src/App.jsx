@@ -302,8 +302,8 @@ class App extends Router {
             console.log(this.translations);
             // init translations
             I18n.setTranslations(this.translations);
-            I18n.setLanguage((navigator.language || navigator.userLanguage || 'en').substring(0, 2).toLowerCase());
         })();
+        I18n.setLanguage((navigator.language || navigator.userLanguage || 'en').substring(0, 2).toLowerCase());
 
         this.refConfigIframe = null;
         this.refUser = React.createRef();
