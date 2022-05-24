@@ -1312,6 +1312,7 @@ class Instances extends Component {
                     : null}
                 <div className={classes.grow} />
                 <TextField
+                    variant="standard"
                     inputRef={this.inputRef}
                     label={this.t('Filter')}
                     style={{ margin: '5px 0' }}
