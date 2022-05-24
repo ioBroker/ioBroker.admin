@@ -5,10 +5,11 @@ import {withStyles} from '@mui/styles';
 import clsx from 'clsx';
 
 import {
-    MuiPickersUtilsProvider,
     TimePicker,
     DatePicker,
 } from '@mui/x-date-pickers';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';4
 import Paper from '@mui/material/Paper';
 import LinearProgress from '@mui/material/LinearProgress';
 import InputLabel from '@mui/material/InputLabel';
@@ -1026,7 +1027,7 @@ class ObjectHistoryData extends Component {
                     />
 
                     {this.state.insertOpened ?
-                        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeMap[this.props.lang]}>
+                        <LocalizationProvider dateAdapter={AdapterDateFns} locale={localeMap[this.props.lang]}>
                             <Grid container justify="space-around">
                                 <DatePicker
                                     className={ this.props.classes.editorDatePicker}
@@ -1075,7 +1076,7 @@ class ObjectHistoryData extends Component {
                                     onChange={e => this.updateEdit('ms', e.target.value) }
                                 />
                             </Grid>
-                        </MuiPickersUtilsProvider>
+                        </LocalizationProvider>
                         : null }
                 </form>
             </DialogContent>
@@ -1160,7 +1161,7 @@ class ObjectHistoryData extends Component {
                 </Select>
             </FormControl>
 
-            <MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeMap[this.props.lang]}>
+            <LocalizationProvider dateAdapter={AdapterDateFns} locale={localeMap[this.props.lang]}>
                 <div className={ classes.toolbarTimeGrid }>
                     <DatePicker
                         className={ classes.toolbarDate }
@@ -1209,7 +1210,7 @@ class ObjectHistoryData extends Component {
                         onChange={date => this.setEndDate(date)}
                     />
                 </div>
-            </MuiPickersUtilsProvider>
+            </LocalizationProvider>
             <div className={classes.grow} />
 
             { this.state.values && this.state.values.length ? <IconButton onClick={ () => this.exportData() } title={this.props.t('Save data as csv')}>

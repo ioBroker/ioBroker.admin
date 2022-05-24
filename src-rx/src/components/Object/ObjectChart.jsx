@@ -4,7 +4,9 @@ import withWidth from '../../withWidth';
 import {withStyles} from '@mui/styles';
 import clsx from 'clsx';
 
-import {MuiPickersUtilsProvider, TimePicker, DatePicker} from '@mui/x-date-pickers';
+import {TimePicker, DatePicker} from '@mui/x-date-pickers';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import Paper from '@mui/material/Paper';
 import LinearProgress from '@mui/material/LinearProgress';
 import InputLabel from '@mui/material/InputLabel';
@@ -1124,7 +1126,7 @@ class ObjectChart extends Component {
                     <MenuItem key={ '13' } value={ '12months' }    >{ this.props.t('last 12 months') }</MenuItem>
                 </Select>
             </FormControl>
-            <MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeMap[this.props.lang]}>
+            <LocalizationProvider dateAdapter={AdapterDateFns} locale={localeMap[this.props.lang]}>
                 <div className={ classes.toolbarTimeGrid }>
                     <DatePicker
                         className={ classes.toolbarDate }
@@ -1173,7 +1175,7 @@ class ObjectChart extends Component {
                         onChange={date => this.setEndDate(date)}
                     />
                 </div>
-            </MuiPickersUtilsProvider>
+            </LocalizationProvider>
             <div className={classes.grow} />
             {this.props.showJumpToEchart && this.state.echartsJump && <Fab
                 className={classes.echartsButton}
