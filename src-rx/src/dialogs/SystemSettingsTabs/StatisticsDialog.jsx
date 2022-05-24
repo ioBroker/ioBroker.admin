@@ -79,7 +79,7 @@ class StatisticsDialog extends Component {
                 {this.props.t(elem.title)}
             </MenuItem>);
 
-        return <FormControl className={classes.formControl}>
+        return <FormControl variant="standard" className={classes.formControl}>
             <InputLabel shrink id={"statistics-label"}>
                 {this.props.t('Statistics')}
             </InputLabel>

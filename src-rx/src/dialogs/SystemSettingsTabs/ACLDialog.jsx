@@ -174,7 +174,7 @@ class ACLDialog extends Component {
             </Typography>
             <Grid container spacing={3}>
                 <Grid item lg={3} md={6} xs={12}>
-                    <FormControl className={classes.formControl}>
+                    <FormControl variant="standard" className={classes.formControl}>
                         <InputLabel shrink id="owner-label">
                             {this.props.t('Owner user')}
                         </InputLabel>
@@ -192,7 +192,7 @@ class ACLDialog extends Component {
                     </FormControl>
                 </Grid>
                 <Grid item lg={3} md={6} xs={12}>
-                    <FormControl className={classes.formControl}>
+                    <FormControl variant="standard" className={classes.formControl}>
                         <InputLabel shrink id={'ownerGroup-label'}>
                             {this.props.t('Owner group')}
                         </InputLabel>

@@ -9,7 +9,7 @@ export function IOTextField(props) {
     let IconCustom = props.icon;
     return <div className={props.classes.formContainer}>
         {IconCustom ? <IconCustom className={ props.classes.formIcon } /> : null}
-        <FormControl className={props.classes.formControl}>
+        <FormControl className={props.classes.formControl} variant="standard">
             <TextField
                 variant="standard"
                 label={props.t(props.label)}

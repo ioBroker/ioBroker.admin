@@ -255,7 +255,7 @@ class ObjectBrowserValue extends Component {
         if (!this.props.states) {
             return null;
         } else {
-            return <FormControl className={ this.props.classes.formControl }>
+            return <FormControl variant="standard" className={ this.props.classes.formControl }>
                 <InputLabel>{ this.props.t('Value') }</InputLabel>
                 <Select
                     variant="standard"
@@ -391,7 +391,7 @@ class ObjectBrowserValue extends Component {
                                     />
                                 </Grid>
 
-                                { this.props.expertMode ? <Grid item><FormControl className={ this.props.classes.quality }>
+                                { this.props.expertMode ? <Grid item><FormControl variant="standard" className={ this.props.classes.quality }>
                                     <InputLabel>{ this.props.t('Quality') }</InputLabel>
                                     <Select
                                         variant="standard"

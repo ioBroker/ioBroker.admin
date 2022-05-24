@@ -190,7 +190,7 @@ class BaseSettingsLog extends Component {
 
     renderLogLevel(name) {
         return this.state.transport[name].enabled ? <Grid item>
-            <FormControl className={this.props.classes.controlItem}>
+            <FormControl className={this.props.classes.controlItem} variant="standard">
                 <InputLabel>{this.props.t('Level')}</InputLabel>
                 <Select
                     variant="standard"
@@ -265,7 +265,7 @@ class BaseSettingsLog extends Component {
                         />
                     </Grid> : null}
                     {this.state.transport[name].enabled ? <Grid item>
-                        <FormControl className={this.props.classes.controlItem}>
+                        <FormControl className={this.props.classes.controlItem} variant="standard">
                             <InputLabel>{this.props.t('Protocol')}</InputLabel>
                             <Select
                                 variant="standard"
@@ -782,7 +782,7 @@ class BaseSettingsLog extends Component {
             <Grid item className={this.props.classes.gridSettings}>
                 <Grid container direction="column">
                     <Grid item>
-                        <FormControl className={this.props.classes.controlItem}>
+                        <FormControl className={this.props.classes.controlItem} variant="standard">
                             <InputLabel>{this.props.t('Level')}</InputLabel>
                             <Select
                                 variant="standard"

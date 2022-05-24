@@ -55,7 +55,7 @@ class SSLDialog extends Component {
             </div>
             <Grid container spacing={6}>
                 <Grid item md={3} xs={12}>
-                    <FormControl className={classes.formControl}>
+                    <FormControl variant="standard" className={classes.formControl}>
                         <TextField
                             variant="standard"
                             id="email"
@@ -70,7 +70,7 @@ class SSLDialog extends Component {
                     </FormControl>
                 </Grid>
                 <Grid item md={3} xs={12}>
-                    <FormControl className={classes.formControl}>
+                    <FormControl variant="standard" className={classes.formControl}>
                         <TextField
                             variant="standard"
                             id="domains"
@@ -85,7 +85,7 @@ class SSLDialog extends Component {
                     </FormControl>
                 </Grid>
                 <Grid item md={3} xs={12}>
-                    <FormControl className={classes.formControl}>
+                    <FormControl variant="standard" className={classes.formControl}>
                         <TextField
                             variant="standard"
                             id="path"

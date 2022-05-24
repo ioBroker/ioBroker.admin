@@ -79,7 +79,7 @@ class ConfigLanguage extends ConfigGeneric {
 
         const item = this.state.selectOptions?.find(item => item.value === this.state.value || (!item.value && !this.state.value));
 
-        return <FormControl className={this.props.classes.fullWidth}>
+        return <FormControl className={this.props.classes.fullWidth} variant="standard">
             <InputLabel>{this.getText(this.props.schema.label)}</InputLabel>
             <Select
                 variant="standard"

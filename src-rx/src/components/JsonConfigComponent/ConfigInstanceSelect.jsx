@@ -56,7 +56,7 @@ class ConfigInstanceSelect extends ConfigGeneric {
 
         const item = this.state.selectOptions?.find(item => item.value === this.state.value);
 
-        return <FormControl className={this.props.classes.fullWidth} key={this.props.attr}>
+        return <FormControl className={this.props.classes.fullWidth} key={this.props.attr} variant="standard">
             <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel>
             <Select
                 variant="standard"

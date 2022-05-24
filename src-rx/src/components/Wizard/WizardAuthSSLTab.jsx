@@ -92,7 +92,7 @@ class WizardAuthSSLTab extends Component {
                         </FormGroup>
                     </Grid>
                     <Grid item>
-                        <FormControl className={this.props.classes.input}>
+                        <FormControl variant="standard" className={this.props.classes.input}>
                             <InputLabel>{this.props.t('Certificates')}</InputLabel>
                             <Select
                                 variant="standard"

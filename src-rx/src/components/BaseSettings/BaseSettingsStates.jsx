@@ -223,7 +223,7 @@ class BaseSettingsObjects extends Component {
                 <Grid container direction="column">
                     <Grid item>
                         <Tooltip title={this.props.t('switch_db_note')}>
-                            <FormControl className={this.props.classes.controlItem}>
+                            <FormControl className={this.props.classes.controlItem} variant="standard">
                                 <InputLabel>{ this.props.t('Type') }</InputLabel>
                                 <Select
                                     variant="standard"
@@ -276,7 +276,7 @@ class BaseSettingsObjects extends Component {
                                 helperText={this.props.t('You can enter more than one address divided by comma')}
                             />
                             :
-                            <FormControl className={this.props.classes.controlItem}>
+                            <FormControl className={this.props.classes.controlItem} variant="standard">
                                 <InputLabel>{this.props.t('Bind IP address')}</InputLabel>
                                 <Select
                                     variant="standard"
@@ -399,7 +399,7 @@ class BaseSettingsObjects extends Component {
                     </Grid> : null }
 
                     { this.state.type === 'redis' ? <Grid item>
-                        <FormControl className={this.props.classes.controlItem}>
+                        <FormControl className={this.props.classes.controlItem} variant="standard">
                             <InputLabel>{ this.props.t('Family number') }</InputLabel>
                             <Select
                                 variant="standard"
@@ -467,7 +467,7 @@ class BaseSettingsObjects extends Component {
                     </Grid> : null }
 
                     { this.state.type === 'file' || this.state.type === 'jsonl' ? <Grid item>
-                        <FormControl component="fieldset" className={ this.props.classes.controlItem }>
+                        <FormControl component="fieldset" className={ this.props.classes.controlItem } variant="standard">
                             <FormGroup>
                                 <FormControlLabel
                                     control={

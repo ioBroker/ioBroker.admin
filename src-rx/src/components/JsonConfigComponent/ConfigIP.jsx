@@ -49,7 +49,7 @@ class ConfigIP extends ConfigGeneric {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         const item = this.state.ips?.find(item => item.address === value);
 
-        return <FormControl className={this.props.classes.fullWidth}>
+        return <FormControl className={this.props.classes.fullWidth} variant="standard">
             <InputLabel>{this.getText(this.props.schema.label)}</InputLabel>
             <Select
                 variant="standard"

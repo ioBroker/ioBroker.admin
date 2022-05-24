@@ -1133,7 +1133,7 @@ class ObjectHistoryData extends Component {
     renderToolbar() {
         const classes = this.props.classes;
         return <Toolbar>
-            <FormControl className={ classes.selectHistoryControl }>
+            <FormControl variant="standard" className={ classes.selectHistoryControl }>
                 <InputLabel>{ this.props.t('History instance') }</InputLabel>
                 <Select
                     variant="standard"
@@ -1150,7 +1150,7 @@ class ObjectHistoryData extends Component {
                     { this.state.historyInstances.map(it => <MenuItem key={ it.id } value={ it.id } className={ clsx(!it.alive && classes.notAliveInstance )}>{ it.id }</MenuItem>) }
                 </Select>
             </FormControl>
-            <FormControl className={ classes.selectRelativeTime }>
+            <FormControl variant="standard" className={ classes.selectRelativeTime }>
                 <InputLabel>{ this.props.t('Relative') }</InputLabel>
                 <Select
                     variant="standard"

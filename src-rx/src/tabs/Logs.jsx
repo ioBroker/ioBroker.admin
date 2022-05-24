@@ -922,7 +922,7 @@ class Logs extends Component {
                         <TableHead>
                             <TableRow>
                                 <TableCell className={classes.source}>
-                                    <FormControl className={classes.formControl}>
+                                    <FormControl variant="standard" className={classes.formControl}>
                                         <InputLabel id="source-label" />
                                         <Select
                                             variant="standard"
@@ -941,7 +941,7 @@ class Logs extends Component {
                                     <TextField disabled label={this.t('Time')} className={classes.header} variant="standard"/>
                                 </TableCell>
                                 <TableCell className={classes.severity}>
-                                    <FormControl className={classes.formControl}>
+                                    <FormControl variant="standard" className={classes.formControl}>
                                         <InputLabel id="severity-label" />
                                         <Select
                                             variant="standard"
@@ -954,7 +954,7 @@ class Logs extends Component {
                                     </FormControl>
                                 </TableCell>
                                 <TableCell className={classes.message}>
-                                    <FormControl className={classes.formControl}>
+                                    <FormControl variant="standard" className={classes.formControl}>
                                         <TextField
                                             variant="standard"
                                             className={classes.messageText}

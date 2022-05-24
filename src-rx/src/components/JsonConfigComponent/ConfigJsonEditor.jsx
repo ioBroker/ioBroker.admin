@@ -48,7 +48,7 @@ class ConfigJsonEditor extends ConfigGeneric {
         }
         const { classes, schema, data, attr } = this.props;
         const { value, showSelectId } = this.state;
-        return <FormControl className={classes.fullWidth}>
+        return <FormControl className={classes.fullWidth} variant="standard">
             <div className={classes.flex}>
                 <Button
                     color="grey"

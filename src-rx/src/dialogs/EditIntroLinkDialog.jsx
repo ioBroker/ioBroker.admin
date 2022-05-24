@@ -208,7 +208,7 @@ class EditIntroLinkDialog extends Component {
                                 container
                                 direction="column"
                             >
-                                <FormControl className={classes.formControl}>
+                                <FormControl variant="standard" className={classes.formControl}>
                                     <InputLabel id="select-helper-label">{this.props.t('Link type')}</InputLabel>
                                     <Select
                                         variant="standard"

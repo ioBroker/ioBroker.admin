@@ -37,7 +37,7 @@ class ConfigCertificateSelect extends ConfigGeneric {
         // eslint-disable-next-line
         const item = this.state.selectOptions?.find(item => item.value === this.state.value);
 
-        return <FormControl className={this.props.classes.fullWidth}>
+        return <FormControl className={this.props.classes.fullWidth} variant="standard">
             <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel>
             <Select
                 variant="standard"

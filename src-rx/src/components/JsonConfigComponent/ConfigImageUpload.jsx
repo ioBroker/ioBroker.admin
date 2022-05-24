@@ -55,7 +55,7 @@ class ConfigCertificateSelect extends ConfigGeneric {
 
     renderItem(error, disabled, defaultValue) {
         // eslint-disable-next-line
-        return <FormControl className={this.props.classes.fullWidth}>
+        return <FormControl className={this.props.classes.fullWidth} variant="standard">
             <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel>
             <UploadImage
                 error={!!error}

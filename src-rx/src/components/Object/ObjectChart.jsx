@@ -1098,7 +1098,7 @@ class ObjectChart extends Component {
         const classes = this.props.classes;
 
         return <Toolbar>
-            {!this.props.historyInstance && <FormControl className={ classes.selectHistoryControl }>
+            {!this.props.historyInstance && <FormControl variant="standard" className={ classes.selectHistoryControl }>
                 <InputLabel>{ this.props.t('History instance') }</InputLabel>
                 <Select
                     variant="standard"
@@ -1111,7 +1111,7 @@ class ObjectChart extends Component {
                     { this.state.historyInstances.map(it => <MenuItem key={ it.id } value={ it.id } className={ clsx(!it.alive && classes.notAliveInstance )}>{ it.id }</MenuItem>) }
                 </Select>
             </FormControl>}
-            <FormControl className={ classes.selectRelativeTime }>
+            <FormControl variant="standard" className={ classes.selectRelativeTime }>
                 <InputLabel>{ this.props.t('Relative') }</InputLabel>
                 <Select
                     variant="standard"

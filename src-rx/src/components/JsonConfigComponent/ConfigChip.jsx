@@ -29,7 +29,7 @@ class ConfigLanguage extends ConfigGeneric {
     renderItem(error, disabled, defaultValue) {
         const { attr,schema } = this.props;
         const { value } = this.state;
-        return <FormControl className={this.props.classes.fullWidth}>
+        return <FormControl className={this.props.classes.fullWidth} variant="standard">
             <ChipInput
                 value={value}
                 disabled={!!disabled}

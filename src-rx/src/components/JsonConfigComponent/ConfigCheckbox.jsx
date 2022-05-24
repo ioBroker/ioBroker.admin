@@ -20,7 +20,7 @@ class ConfigCheckbox extends ConfigGeneric {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         let isIndeterminate = Array.isArray(value);
 
-        return <FormControl className={this.props.classes.fullWidth}>
+        return <FormControl className={this.props.classes.fullWidth} variant="standard">
             <FormControlLabel
             onClick={e => {
                 e.preventDefault();

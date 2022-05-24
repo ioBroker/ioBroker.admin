@@ -141,7 +141,7 @@ class ConfigSelectSendTo extends ConfigGeneric {
 
             const item = selectOptions.find(item => item.value === value);
 
-            return <FormControl className={this.props.classes.fullWidth}>
+            return <FormControl variant="standard" className={this.props.classes.fullWidth}>
                 <InputLabel>{this.getText(this.props.schema.label)}</InputLabel>
                 <Select
                     variant="standard"

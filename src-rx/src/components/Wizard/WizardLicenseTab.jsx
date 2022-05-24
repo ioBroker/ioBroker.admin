@@ -135,7 +135,7 @@ class WizardLicenseTab extends Component {
         return <Paper className={ this.props.classes.paper }>
             <Grid container className={ this.props.classes.gridDiv } direction="column">
                 <Grid item>
-                    <FormControl className={ this.props.classes.languageSelect }>
+                    <FormControl variant="standard" className={ this.props.classes.languageSelect }>
                         <InputLabel><IconWorld/>{ this.props.t('Language') }</InputLabel>
                         <Select
                             variant="standard"

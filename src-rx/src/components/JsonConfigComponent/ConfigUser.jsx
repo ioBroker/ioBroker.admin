@@ -54,7 +54,7 @@ class ConfigUser extends ConfigGeneric {
     renderItem(error, disabled, defaultValue) {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
-        return <FormControl className={this.props.classes.fullWidth}>
+        return <FormControl variant="standard" className={this.props.classes.fullWidth}>
             <InputLabel>{this.getText(this.props.schema.label)}</InputLabel>
             <Select
                 variant="standard"

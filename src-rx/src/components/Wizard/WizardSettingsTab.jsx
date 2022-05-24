@@ -226,7 +226,7 @@ class WizardSettingsTab extends Component {
                         </Grid>
                         <Grid container direction="column" className={this.props.classes.settingsGrid}>
                             <Grid item style={{textAlign: 'left'}}>
-                                <FormControl className={ this.props.classes.controlItem }>
+                                <FormControl variant="standard" className={ this.props.classes.controlItem }>
                                     <InputLabel>{ this.props.t('Temperature unit') }</InputLabel>
                                     <Select
                                         variant="standard"
@@ -248,7 +248,7 @@ class WizardSettingsTab extends Component {
                                 />
                             </Grid>
                             <Grid item style={{textAlign: 'left'}}>
-                                <FormControl className={ this.props.classes.controlItem }>
+                                <FormControl variant="standard" className={ this.props.classes.controlItem }>
                                     <InputLabel>{ this.props.t('Date format') }</InputLabel>
                                     <Select
                                         variant="standard"
@@ -262,7 +262,7 @@ class WizardSettingsTab extends Component {
                                 </FormControl>
                             </Grid>
                             <Grid item style={{textAlign: 'left'}}>
-                                <FormControl className={ this.props.classes.controlItem }>
+                                <FormControl variant="standard" className={ this.props.classes.controlItem }>
                                     <InputLabel>{ this.props.t('Float divider') }</InputLabel>
                                     <Select
                                         variant="standard"
@@ -275,7 +275,7 @@ class WizardSettingsTab extends Component {
                                 </FormControl>
                             </Grid>
                             <Grid item style={{textAlign: 'left'}}>
-                                <FormControl className={ this.props.classes.controlItem }>
+                                <FormControl variant="standard" className={ this.props.classes.controlItem }>
                                     <InputLabel>{ this.props.t('Country') }</InputLabel>
                                     <Select
                                         variant="standard"
@@ -570,7 +570,7 @@ class WizardSettingsTab extends Component {
                                 />
                             </Grid>
                             <Grid item style={{textAlign: 'left'}}>
-                                <FormControl className={ this.props.classes.controlItem }>
+                                <FormControl variant="standard" className={ this.props.classes.controlItem }>
                                     <InputLabel>{ this.props.t('Week starts with') }</InputLabel>
                                     <Select
                                         variant="standard"

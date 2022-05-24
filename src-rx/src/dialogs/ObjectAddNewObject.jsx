@@ -141,7 +141,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
                 disabled
                 value={selected}
             />
-            <FormControl style={{ marginTop: 10, marginBottom: 10 }}>
+            <FormControl variant="standard" style={{ marginTop: 10, marginBottom: 10 }}>
                 <InputLabel>{I18n.t('Type')}</InputLabel>
                 <Select
                     variant="standard"

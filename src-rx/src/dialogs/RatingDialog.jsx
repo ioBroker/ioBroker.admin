@@ -181,7 +181,7 @@ class RatingDialog extends Component {
 
             return <div style={{ width: '100%', textAlign: 'left'}}>
                 <h3 className={this.props.classes.listTitle} >{this.props.t('Comments')}</h3>
-                <FormControl className={this.props.classes.languageFilter}>
+                <FormControl variant="standard" className={this.props.classes.languageFilter}>
                     <InputLabel>{this.props.t('Show comments in language')}</InputLabel>
                     <Select
                         variant="standard"
@@ -264,7 +264,7 @@ class RatingDialog extends Component {
                         onChange={e =>
                             this.setState({ ratingComment: e.target.value })}
                     />
-                    <FormControl className={this.props.classes.ratingLanguageControl}>
+                    <FormControl variant="standard" className={this.props.classes.ratingLanguageControl}>
                         <InputLabel>{this.props.t('Language')}</InputLabel>
                         <Select
                             variant="standard"

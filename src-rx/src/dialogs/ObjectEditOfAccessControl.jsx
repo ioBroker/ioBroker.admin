@@ -362,7 +362,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                     fontSize: 20
                 }}>{t('Access control list: %s', selected || modalEmptyId)}</div>
                 <div style={{ display: 'flex' }}>
-                    <FormControl fullWidth style={{ marginRight: 10 }}>
+                    <FormControl variant="standard" fullWidth style={{ marginRight: 10 }}>
                         <InputLabel>{t('Owner user')}</InputLabel>
                         <Select
                             variant="standard"
@@ -382,7 +382,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                             </MenuItem>)}
                         </Select>
                     </FormControl>
-                    <FormControl fullWidth>
+                    <FormControl variant="standard" fullWidth>
                         <InputLabel>{t('Owner group')}</InputLabel>
                         <Select
                             variant="standard"
