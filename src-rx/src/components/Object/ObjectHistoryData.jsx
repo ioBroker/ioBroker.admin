@@ -1036,7 +1036,7 @@ class ObjectHistoryData extends Component {
 
                     {this.state.insertOpened ?
                         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
-                            <Grid container justify="space-around">
+                            <Grid container justifyContent="space-around">
                                 <DatePicker
                                     className={ this.props.classes.editorDatePicker}
                                     margin="normal"

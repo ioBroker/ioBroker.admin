@@ -345,7 +345,7 @@ class IntroCard extends Component {
                 item
                 container
                 className={classes.imgContainer}
-                justify="center"
+                justifyContent="center"
                 alignItems="center"
             >
                 <img
