@@ -229,7 +229,7 @@ const styles = theme => ({
         height: 24
     },
     statusIndicator: {
-        marginTop: 8,
+        marginTop: 12,
     },
     statusIcon_green: { // square
         border: '2px solid grey',
@@ -499,7 +499,7 @@ const styles = theme => ({
     gridStyle: {
         display: 'flex',
         minWidth: 270,
-        lineHeight: '42px',
+        lineHeight: '34px',
         justifyContent: 'space-around'
     },
     wrapperAvatar: {
@@ -593,7 +593,7 @@ const styles = theme => ({
     desktopIcon: {
         height: 32,
         width: 32,
-        marginTop: 4
+        marginTop: 8
     },
     desktopRowContent: {
         marginTop: 2,

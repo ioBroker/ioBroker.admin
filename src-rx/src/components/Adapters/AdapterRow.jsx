@@ -58,7 +58,8 @@ const styles = theme => ({
     },
     name: {
         flexWrap: 'nowrap',
-        width: 300
+        width: 300,
+        marginTop: 0
     },
     nameDiv: {
         display: 'flex',

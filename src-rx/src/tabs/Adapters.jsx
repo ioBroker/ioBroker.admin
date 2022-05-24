@@ -97,7 +97,9 @@ const styles = theme => ({
         '& td': {
             whiteSpace: 'nowrap',
             overflow: 'hidden',
-            textOverflow: 'ellipsis'
+            textOverflow: 'ellipsis',
+            paddingTop: 2,
+            paddingBottom: 2,
         }
     },
     hidden: {
