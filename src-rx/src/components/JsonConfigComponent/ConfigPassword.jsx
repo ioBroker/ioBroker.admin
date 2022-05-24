@@ -19,12 +19,12 @@ const styles = theme => ({
         display: 'inline-block'
     },
     halfWidth1: {
-        width: 'calc(50% - ' + theme.spacing(1) / 2 + 'px)',
+        width: 'calc(50% - ' + theme.spacing(1) / 2 + ')',
         display: 'inline-block',
         marginRight: theme.spacing(1),
     },
     halfWidth2: {
-        width: 'calc(50% - ' + theme.spacing(1) / 2 + 'px)',
+        width: 'calc(50% - ' + theme.spacing(1) / 2 + ')',
         display: 'inline-block'
     }
 });

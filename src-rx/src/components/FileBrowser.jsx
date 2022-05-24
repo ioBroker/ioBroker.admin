@@ -77,16 +77,16 @@ const styles = theme => ({
         position: 'relative',
     },
     filesDiv: {
-        width: `calc(100% - ${theme.spacing(2)}px)`,
+        width: `calc(100% - ${theme.spacing(2)})`,
         overflowX: 'hidden',
         overflowY: 'auto',
         padding: theme.spacing(1),
     },
     filesDivTable: {
-        height: `calc(100% - ${48 + theme.spacing(1)}px)`,
+        height: `calc(100% - ${48 + theme.spacing(1)})`,
     },
     filesDivTile: {
-        height: `calc(100% - ${48 * 2 + theme.spacing(1)}px)`,
+        height: `calc(100% - ${48 * 2 + theme.spacing(1)})`,
         display: 'flex',
         alignContent: 'flex-start',
         alignItems: 'stretch',
@@ -315,7 +315,7 @@ const styles = theme => ({
     },
     pathDiv: {
         display: 'flex',
-        width: `calc(100% - ${theme.spacing(2)}px)`,
+        width: `calc(100% - ${theme.spacing(2)})`,
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
         textOverflow: 'clip',

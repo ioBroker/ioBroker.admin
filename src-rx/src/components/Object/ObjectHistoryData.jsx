@@ -97,7 +97,7 @@ const styles = theme => ({
         overflow: 'hidden',
     },
     tableDiv: {
-        height: `calc(100% - ${theme.mixins.toolbar.minHeight + theme.spacing(1)}px)`,
+        height: `calc(100% - ${theme.mixins.toolbar.minHeight + theme.spacing(1)})`,
         overflow: 'hidden',
         width: '100%',
     },

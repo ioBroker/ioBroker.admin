@@ -51,7 +51,7 @@ const styles = theme => ({
     },
     mapGrid: {
         height: '100%',
-        width: 'calc(100% - ' + (SETTINGS_WIDTH + theme.spacing(4)) + 'px)',
+        width: 'calc(100% - ' + (SETTINGS_WIDTH + theme.spacing(4)) + ')',
         overflow: 'hidden',
     },
     map: {

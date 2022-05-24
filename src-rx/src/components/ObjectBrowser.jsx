@@ -196,7 +196,7 @@ const styles = theme => ({
     tableDiv: {
         paddingTop: 0,//theme.spacing(1),
         paddingLeft: 0,
-        width: `calc(100% - ${theme.spacing(1)}px)`,
+        width: `calc(100% - ${theme.spacing(1)})`,
         height: `calc(100% - 38px)`,
         overflow: 'auto'
     },
