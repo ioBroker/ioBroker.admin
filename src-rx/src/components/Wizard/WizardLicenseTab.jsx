@@ -115,7 +115,8 @@ class WizardLicenseTab extends Component {
             </DialogContent>
             <DialogActions>
                 <Button
-                    onClick={() => this.setState({ notAgree: false }) } color="primary"
+                    onClick={() => this.setState({ notAgree: false }) }
+                    color="primary"
                     startIcon={<IconCheck/>}
                 >
                     { I18n.t('Understand') }
@@ -174,7 +175,7 @@ class WizardLicenseTab extends Component {
             </Grid>
             <Toolbar className={ this.props.classes.toolbar }>
                 <div className={ this.props.classes.grow }/>
-                <Button variant="contained" onClick={ () => this.setState({notAgree: true}) } startIcon={<IconCancel/>}>{ this.props.t('Not agree') }</Button>
+                <Button variant="contained" color="grey" onClick={ () => this.setState({notAgree: true}) } startIcon={<IconCancel/>}>{ this.props.t('Not agree') }</Button>
                 <Button variant="contained" color="primary" className={ this.props.classes.greenButton } disabled={ !this.state.statisticsAccepted } onClick={ () => this.props.onDone({lang: this.state.lang}) } startIcon={<IconCheck/>}>{ this.props.t('Agree') }</Button>
                 <div className={ this.props.classes.grow }/>
             </Toolbar>

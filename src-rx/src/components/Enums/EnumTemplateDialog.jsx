@@ -149,24 +149,25 @@ class EnumTemplateDialog extends Component {
                         return null;
                     } else if (!this.state.filter || name.toLowerCase().includes(this.state.filter)) {
                         return <Button
-                                key={i}
-                                variant="outlined"
-                                onClick={() => {
-                                    this.props.onClose();
-                                    this.props.createEnumTemplate(this.props.prefix, {
-                                        _id: `${this.props.prefix}.${template._id}`,
-                                        common: {
-                                            name: template.name,
-                                            icon: this.state.icons[i]
-                                        }
-                                    });
-                                }}
-                                //startIcon={<Icon src={this.state.icons[i]} className={this.props.classes.icon}/>}
-                                className={this.props.classes.enumTemplateButton}
-                                startIcon={<Icon src={this.state.icons[i]} className={this.props.classes.icon}/>}
-                            >
-                                <span className={this.props.classes.enumTemplateLabel}>{this.getName(template)}</span>
-                            </Button>;
+                            color="grey"
+                            key={i}
+                            variant="outlined"
+                            onClick={() => {
+                                this.props.onClose();
+                                this.props.createEnumTemplate(this.props.prefix, {
+                                    _id: `${this.props.prefix}.${template._id}`,
+                                    common: {
+                                        name: template.name,
+                                        icon: this.state.icons[i]
+                                    }
+                                });
+                            }}
+                            //startIcon={<Icon src={this.state.icons[i]} className={this.props.classes.icon}/>}
+                            className={this.props.classes.enumTemplateButton}
+                            startIcon={<Icon src={this.state.icons[i]} className={this.props.classes.icon}/>}
+                        >
+                            <span className={this.props.classes.enumTemplateLabel}>{this.getName(template)}</span>
+                        </Button>;
                     } else {
                         return null;
                     }
@@ -186,7 +187,7 @@ class EnumTemplateDialog extends Component {
                 >
                     {this.props.prefix === 'enum.rooms' ? this.props.t('Custom room') : (this.props.prefix === 'enum.functions' ? this.props.t('Custom function') : this.props.t('Custom enumeration'))}
                 </Button>
-                <Button variant="contained" onClick={this.props.onClose} startIcon={<CloseIcon />}>{this.props.t('Cancel')}</Button>
+                <Button color="grey" variant="contained" onClick={this.props.onClose} startIcon={<CloseIcon />}>{this.props.t('Cancel')}</Button>
             </DialogActions>
         </Dialog>;
     }

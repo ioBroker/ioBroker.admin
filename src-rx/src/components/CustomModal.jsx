@@ -83,6 +83,7 @@ const CustomModal = ({ title, fullWidth, help, maxWidth, progress, icon, applyDi
                 {i18n.t(titleButtonApply)}
             </Button>}
             <Button
+                color="grey"
                 onClick={onClose}
                 disabled={progress}
                 variant="contained"

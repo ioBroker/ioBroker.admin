@@ -248,6 +248,7 @@ class LicensesDialog extends Component {
                 }
                 onClick={() => this.requestLicenses()}
                 className={this.props.classes.button}
+                color="grey"
             >{this.props.t('Check')}</Button>
             { this.renderLicenses() }
         </div>;

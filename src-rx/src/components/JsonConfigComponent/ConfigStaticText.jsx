@@ -20,7 +20,7 @@ class ConfigStaticText extends ConfigGeneric {
         if (this.props.schema.button) {
             return <Button
                 variant={this.props.schema.variant || undefined}
-                color={this.props.schema.color || undefined}
+                color={this.props.schema.color || 'grey'}
                 className={this.props.classes.fullWidth}
                 disabled={disabled}
                 onClick={this.props.schema.href ? () => {

@@ -591,16 +591,21 @@ class WizardSettingsTab extends Component {
                 </Grid>
             <Toolbar className={ this.props.classes.toolbar }>
                 <div className={ this.props.classes.grow }/>
-                <Button variant="contained" color="primary" onClick={ () => this.props.onDone({
-                    tempUnit:     this.state.tempUnit,
-                    currency:     this.state.currency,
-                    dateFormat:   this.state.dateFormat,
-                    isFloatComma: this.state.isFloatComma,
-                    country:      this.state.country,
-                    city:         this.state.city,
-                    longitude:    this.state.longitude,
-                    latitude:     this.state.latitude,
-                }) } startIcon={<IconCheck/>}>{ this.props.t('Save') }</Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={ () => this.props.onDone({
+                        tempUnit:     this.state.tempUnit,
+                        currency:     this.state.currency,
+                        dateFormat:   this.state.dateFormat,
+                        isFloatComma: this.state.isFloatComma,
+                        country:      this.state.country,
+                        city:         this.state.city,
+                        longitude:    this.state.longitude,
+                        latitude:     this.state.latitude,
+                    }) }
+                    startIcon={<IconCheck/>}
+                >{ this.props.t('Save') }</Button>
                 <div className={ this.props.classes.grow }/>
             </Toolbar>
         </Paper>;

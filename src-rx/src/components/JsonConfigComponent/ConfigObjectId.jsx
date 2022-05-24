@@ -58,6 +58,7 @@ class ConfigObjectId extends ConfigGeneric {
                     }}
                 />
                 <Button
+                    color="grey"
                     className={this.props.classes.button}
                     size="small"
                     variant="outlined"

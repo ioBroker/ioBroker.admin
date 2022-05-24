@@ -233,8 +233,13 @@ class AdaptersUpdaterDialog extends Component {
                 >
                     {this.props.t('Update')}
                 </Button>
-                <Button variant="contained" onClick={() => this.props.onClose(!!this.state.updated.length)} disabled={this.state.inProcess}
-                        startIcon={<CloseIcon />}>
+                <Button
+                    variant="contained"
+                    onClick={() => this.props.onClose(!!this.state.updated.length)}
+                    disabled={this.state.inProcess}
+                    color="grey"
+                    startIcon={<CloseIcon />}
+                >
                     {this.props.t('Close')}
                 </Button>
             </DialogActions>

@@ -260,7 +260,7 @@ class HostEdit extends Component {
             </DialogContent>
             <DialogActions>
                 <Button variant="contained" disabled={this.state.error || !this.state.changed} onClick={() => this.onUpdate()} color="primary" startIcon={<IconCheck />}>{this.props.t('Write')}</Button>
-                <Button variant="contained" onClick={() => this.props.onClose()} startIcon={<IconClose />}>{this.props.t('Cancel')}</Button>
+                <Button variant="contained" onClick={() => this.props.onClose()} color="grey" startIcon={<IconClose />}>{this.props.t('Cancel')}</Button>
             </DialogActions>
         </Dialog>;
     }

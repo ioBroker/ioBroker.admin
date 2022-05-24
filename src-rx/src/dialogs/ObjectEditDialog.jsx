@@ -97,6 +97,7 @@ class ObjectEditDialog extends Component {
                     variant="contained"
                     onClick={() => this.props.onClose()}
                     startIcon={<CloseIcon />}
+                    color="grey"
                 >
                     {this.props.t('Close')}
                 </Button>

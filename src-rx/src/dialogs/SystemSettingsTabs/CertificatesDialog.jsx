@@ -103,10 +103,8 @@ class CertificatesDialog extends Component {
                     <TextField
                         variant="standard"
                         value={e.title}
-                        InputLabelProps={{
-                            readOnly: false,
-                            shrink: true,
-                        }}
+                        InputLabelProps={{shrink: true}}
+                        InputProps={{readOnly: false}}
                         className={this.props.classes.input + ' xs-centered'}
                         onChange={evt => this.onChangeText(evt, e.title, 'title')}
                     />
@@ -116,10 +114,8 @@ class CertificatesDialog extends Component {
                         variant="standard"
                         id={'default_' + i}
                         value={e.data}
-                        InputLabelProps={{
-                            readOnly: false,
-                            shrink: true,
-                        }}
+                        InputLabelProps={{ shrink: true }}
+                        InputProps={{ readOnly: false }}
                         className={this.props.classes.input + ' xs-centered'}
                         onChange={evt => this.onChangeText(evt, e.title, 'data')}
                     />

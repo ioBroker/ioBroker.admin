@@ -1091,13 +1091,17 @@ class ObjectHistoryData extends Component {
                 </form>
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" onClick={ () => {
-                    const isUpdate = this.state.updateOpened;
-                    this.setState({ updateOpened: false, insertOpened: false }, () =>
-                        isUpdate ? this.onUpdate() : this.onInsert());
-                }}
-                color="primary" autoFocus>{ this.state.updateOpened ? this.props.t('Update') : this.props.t('Add') }</Button>
-                <Button variant="contained" onClick={ () => this.setState({ updateOpened: false, insertOpened: false }) }>{ this.props.t('Cancel') }</Button>
+                <Button
+                    variant="contained"
+                    onClick={ () => {
+                        const isUpdate = this.state.updateOpened;
+                        this.setState({ updateOpened: false, insertOpened: false }, () =>
+                            isUpdate ? this.onUpdate() : this.onInsert());
+                    }}
+                    color="primary"
+                    autoFocus
+                >{ this.state.updateOpened ? this.props.t('Update') : this.props.t('Add') }</Button>
+                <Button variant="contained" onClick={() => this.setState({ updateOpened: false, insertOpened: false })} color="grey">{ this.props.t('Cancel') }</Button>
             </DialogActions>
         </Dialog>;
     }

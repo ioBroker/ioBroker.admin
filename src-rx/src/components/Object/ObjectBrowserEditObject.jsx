@@ -713,6 +713,7 @@ class ObjectBrowserEditObject extends Component {
                         {this.props.t('Clone')}
                     </Button>
                     <Button
+                        color="grey"
                         onClick={() => this.setState({showCopyDialog: ''})}
                         startIcon={<IconClose />}
                     >
@@ -770,13 +771,15 @@ class ObjectBrowserEditObject extends Component {
                 {this.renderSelectDialog()}
             </DialogContent>
             <DialogActions className={this.props.classes.wrapperButton}>
-                {<Button
+                <Button
+                    color="grey"
                     onClick={() => this.setState({showCopyDialog: this.props.obj._id, newId: this.props.obj._id})}
                     disabled={this.state.error || this.state.changed}
                     title={this.props.t('Create a copy of this object')}
-                ><IconCopy/></Button>}
+                ><IconCopy/></Button>
                 <div style={{flexGrow: 1}}/>
                 {this.state.tab === 'object' && <Button
+                    color="grey"
                     onClick={e => this.onCopy(e)}
                     disabled={this.state.error}
                     title={this.isMobile ? this.props.t('Copy into clipboard') : ''}
@@ -789,6 +792,7 @@ class ObjectBrowserEditObject extends Component {
                     startIcon={<IconCheck />}
                     color="primary">{this.props.t('Write')}</Button>
                 <Button
+                    color="grey"
                     variant="contained"
                     onClick={() => this.props.onClose()}
                     startIcon={<IconClose />}

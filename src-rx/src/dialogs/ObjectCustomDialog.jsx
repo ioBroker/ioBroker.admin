@@ -237,7 +237,9 @@ class ObjectCustomDialog extends MobileDialog {
                 <Button
                     disabled={this.state.progressRunning}
                     variant="contained"
-                    onClick={() => this.onClose()} >
+                    onClick={() => this.onClose()}
+                    color="grey"
+                >
                     {this.getButtonTitle(<CloseIcon />, this.props.t('Close'))}
                 </Button>
             </DialogActions>

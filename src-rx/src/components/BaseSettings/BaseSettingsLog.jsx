@@ -844,11 +844,11 @@ class BaseSettingsLog extends Component {
                 </Grid>
             </Grid>
             <Toolbar>
-                <Button className={this.props.classes.addButton} variant="contained" onClick={() => this.add('file')} startIcon={<IconPlus />}><IconFile className={this.props.classes.buttonIcon} />{this.props.t('File log')}</Button>
-                <Button className={this.props.classes.addButton} variant="contained" onClick={() => this.add('syslog')} startIcon={<IconPlus />}><IconSyslog className={this.props.classes.buttonIcon} />{this.props.t('Syslog')}</Button>
-                <Button className={this.props.classes.addButton} variant="contained" onClick={() => this.add('http')} startIcon={<IconPlus />}><IconHttp className={this.props.classes.buttonIcon} />{this.props.t('HTTP log')}</Button>
-                <Button className={this.props.classes.addButton} variant="contained" onClick={() => this.add('stream')} startIcon={<IconPlus />}><IconStream className={this.props.classes.buttonIcon} />{this.props.t('Stream log')}</Button>
-                <Button className={this.props.classes.addButton} variant="contained" onClick={() => this.add('seq')} startIcon={<IconPlus />}><img src={IconSeq} className={this.props.classes.buttonIcon} alt="seq" />{this.props.t('SEQ log')}</Button>
+                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('file')} startIcon={<IconPlus />}><IconFile className={this.props.classes.buttonIcon} />{this.props.t('File log')}</Button>
+                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('syslog')} startIcon={<IconPlus />}><IconSyslog className={this.props.classes.buttonIcon} />{this.props.t('Syslog')}</Button>
+                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('http')} startIcon={<IconPlus />}><IconHttp className={this.props.classes.buttonIcon} />{this.props.t('HTTP log')}</Button>
+                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('stream')} startIcon={<IconPlus />}><IconStream className={this.props.classes.buttonIcon} />{this.props.t('Stream log')}</Button>
+                <Button color="grey" className={this.props.classes.addButton} variant="contained" onClick={() => this.add('seq')} startIcon={<IconPlus />}><img src={IconSeq} className={this.props.classes.buttonIcon} alt="seq" />{this.props.t('SEQ log')}</Button>
             </Toolbar>
         </Paper>;
     }

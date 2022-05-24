@@ -78,6 +78,7 @@ class SlowConnectionWarningDialog extends Component {
                         this.props.onClose(60000);
                     }}
                     startIcon={<TimeIcon/>}
+                    color="grey"
                 >
                     {this.mobile ? this.props.t('1 minute') : this.props.t('Set timeout to 1 minute')}
                 </Button>

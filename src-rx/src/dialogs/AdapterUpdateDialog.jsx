@@ -335,6 +335,7 @@ class AdapterUpdateDialog extends Component {
                     }}
                     startIcon={<IconWeb />}
                     variant="contained"
+                    color="grey"
                 >{this.getText(message.linkText) || this.props.t('More info')}</Button>
                 : null}
         </Grid>
@@ -419,6 +420,7 @@ class AdapterUpdateDialog extends Component {
                                 variant="contained"
                                 onClick={() => this.setState({showMessageDialog: false})}
                                 startIcon={<CloseIcon />}
+                                color="grey"
                             >
                                 {this.t('Cancel')}
                             </Button>

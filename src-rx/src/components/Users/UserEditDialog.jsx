@@ -251,6 +251,7 @@ function UserEditDialog(props) {
             >{props.t('Save')}</Button>
             <Button
                 variant="contained"
+                color="grey"
                 onClick={props.onClose}
                 startIcon={<IconCancel/>}
             >{props.t('Cancel')}</Button>

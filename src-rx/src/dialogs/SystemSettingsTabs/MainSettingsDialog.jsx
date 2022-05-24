@@ -268,7 +268,8 @@ class MainSettingsDialog extends Component {
                         variant="standard"
                         id={e.id}
                         value={value.toString()}
-                        InputLabelProps={{readOnly: false, shrink: true}}
+                        InputLabelProps={{ shrink: true }}
+                        InputProps={{ readOnly: false }}
                         onChange={evt => this.handleChange(evt, i)}
                         helperText={e.help ? this.props.t(e.help) : ''}
                     />
@@ -453,10 +454,8 @@ class MainSettingsDialog extends Component {
                             id="city"
                             label={this.props.t('City:')}
                             value={this.props.data.common.city}
-                            InputLabelProps={{
-                                readOnly: false,
-                                shrink: true,
-                            }}
+                            InputLabelProps={{ shrink: true }}
+                            InputProps={{readOnly: false}}
                             onChange={evt => this.onChangeCity(evt)}
                         />
                     </FormControl>
@@ -471,10 +470,8 @@ class MainSettingsDialog extends Component {
                             id="latitude"
                             label={this.props.t('Latitude:')}
                             value={this.props.data.common.latitude || 0}
-                            InputLabelProps={{
-                                readOnly: false,
-                                shrink: true,
-                            }}
+                            InputLabelProps={{ shrink: true }}
+                            InputProps={{ readOnly: false }}
                             onChange={evt => this.onChangeText(evt, 'latitude')}
                         />
                     </FormControl>
@@ -489,10 +486,8 @@ class MainSettingsDialog extends Component {
                             id="longitude"
                             label={this.props.t('Longitude:')}
                             value={this.props.data.common.longitude || 0}
-                            InputLabelProps={{
-                                readOnly: false,
-                                shrink: true,
-                            }}
+                            InputLabelProps={{ shrink: true }}
+                            InputProps={{ readOnly: false }}
                             onChange={evt => this.onChangeText(evt, 'longitude')}
                         />
                     </FormControl>

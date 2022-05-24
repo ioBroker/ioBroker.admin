@@ -79,7 +79,7 @@ class ConfigSetState extends ConfigGeneric {
     renderItem(error, disabled, defaultValue) {
         return <Button
             variant={this.props.schema.variant || undefined}
-            color={this.props.schema.color || undefined}
+            color={this.props.schema.color || 'grey'}
             className={this.props.classes.fullWidth}
             disabled={disabled}
             onClick={async () => {

@@ -206,6 +206,7 @@ class FileViewer extends Component {
             <DialogActions>
                 {this.state.copyPossible ?
                     <Button
+                        color="grey"
                         onClick={e => Utils.copyToClipboard(this.state.text || this.state.code, e)}
                         startIcon={<CopyIcon />}
                     >
@@ -213,6 +214,7 @@ class FileViewer extends Component {
                     </Button> : null}
                 {this.state.editing ?
                     <Button
+                        color="grey"
                         disabled={this.state.editingValue === this.state.code || this.state.editingValue === this.state.text}
                         variant="contained"
                         onClick={this.writeFile64}

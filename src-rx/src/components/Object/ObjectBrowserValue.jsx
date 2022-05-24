@@ -442,7 +442,7 @@ class ObjectBrowserValue extends Component {
             </DialogContent>
             <DialogActions className={this.props.classes.wrapperButton}>
                 <Button variant="contained" onClick={ e => this.onUpdate(e) } color="primary" startIcon={<IconCheck />}>{ this.props.t('Set value') }</Button>
-                <Button variant="contained" onClick={ () => this.props.onClose() } startIcon={<IconCancel />}>{ this.props.t('Cancel') }</Button>
+                <Button variant="contained" onClick={ () => this.props.onClose() } color="grey" startIcon={<IconCancel />}>{ this.props.t('Cancel') }</Button>
             </DialogActions>
         </Dialog>;
     }

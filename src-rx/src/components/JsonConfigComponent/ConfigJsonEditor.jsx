@@ -51,6 +51,7 @@ class ConfigJsonEditor extends ConfigGeneric {
         return <FormControl className={classes.fullWidth}>
             <div className={classes.flex}>
                 <Button
+                    color="grey"
                     className={classes.button}
                     size="small"
                     variant="outlined"

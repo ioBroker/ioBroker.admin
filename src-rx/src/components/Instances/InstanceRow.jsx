@@ -789,7 +789,7 @@ const InstanceRow = ({
                     e.stopPropagation();
                 }}
                     className={classes.selectStyle}>
-                    <Button onClick={e => {
+                    <Button color="grey" onClick={() => {
                         setOpenSelectCompactGroup(false);
                         setCompactValue(maxCompactGroupNumberValue + 1);
                         setCompactGroupCountValue(maxCompactGroupNumberValue + 1);

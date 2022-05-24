@@ -19,10 +19,8 @@ export function IOTextField(props) {
                 value={props.value}
                 onChange={props.onChange}
                 disabled={props.disabled}
-                InputLabelProps={{
-                    readOnly: false,
-                    shrink: true,
-                }}
+                InputLabelProps={{shrink: true}}
+                InputProps={{readOnly: false}}
                 type={props.type}
             />
         </FormControl>

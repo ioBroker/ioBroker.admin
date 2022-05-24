@@ -377,6 +377,7 @@ const HostWarningDialog = ({ message, ackCallback, dateFormat, themeType, themeN
                     variant="contained"
                     onClick={onClose}
                     startIcon={<CloseIcon />}
+                    color="grey"
                 >
                     {I18n.t('Ok')}
                 </Button>

@@ -274,6 +274,7 @@ class BaseSettingsDialog extends Component {
                 >{this.props.t('Save & Close')}</Button>
                 <Button
                     variant="contained"
+                    color="grey"
                     disabled={this.state.saving}
                     onClick={() => this.state.hasChanges.length ? this.setState({confirmExit: true}) : this.props.onClose()}
                     startIcon={<CloseIcon/>}

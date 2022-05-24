@@ -156,10 +156,8 @@ const SortableItem = SortableElement(({
         <TextField
             variant="standard"
             value={item.title}
-            InputLabelProps={{
-                readOnly: false,
-                shrink: true,
-            }}
+            InputLabelProps={{ shrink: true }}
+            InputProps={{ readOnly: false }}
             className={clsx(classes.input, 'xs-centered')}
             onChange={evt => onChangeText(evt, item.title, 'title')}
         />
@@ -169,10 +167,8 @@ const SortableItem = SortableElement(({
             variant="standard"
             id={'default_' + _index}
             value={item.link}
-            InputLabelProps={{
-                readOnly: false,
-                shrink: true,
-            }}
+            InputLabelProps={{ shrink: true }}
+            InputProps={{ readOnly: false }}
             className={clsx(classes.input, 'xs-centered')}
             onChange={evt => onChangeText(evt, item.title, 'link')}
         />

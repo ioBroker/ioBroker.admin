@@ -298,7 +298,7 @@ function GroupEditDialog(props) {
         </DialogContent>
         <DialogActions className={props.classes.dialogActions} >
             <Button variant="contained" color="primary" autoFocus onClick={() => props.saveData(props.isNew ? null : originalId)} disabled={!canSave} startIcon={<IconCheck />}>{props.t('Save')}</Button>
-            <Button variant="contained" onClick={props.onClose} startIcon={<IconCancel />}>{props.t('Cancel')}</Button>
+            <Button variant="contained" color="grey" onClick={props.onClose} startIcon={<IconCancel />}>{props.t('Cancel')}</Button>
         </DialogActions>
     </Dialog>;
 }

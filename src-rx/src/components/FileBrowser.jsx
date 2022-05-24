@@ -1469,12 +1469,16 @@ class FileBrowser extends Component {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="contained" onClick={() => {
-                        this.suppressDeleteConfirm = Date.now() + 60000 * 5;
-                        this.deleteItem();
-                    }} >{this.props.t('ra_Delete (no confirm for 5 mins)')}</Button>
+                    <Button
+                        variant="contained"
+                        onClick={() => {
+                            this.suppressDeleteConfirm = Date.now() + 60000 * 5;
+                            this.deleteItem();
+                        }}
+                        color="grey"
+                    >{this.props.t('ra_Delete (no confirm for 5 mins)')}</Button>
                     <Button variant="contained" onClick={() => this.deleteItem()} color="primary" autoFocus>{this.props.t('ra_Delete')}</Button>
-                    <Button variant="contained" onClick={() => this.setState({ deleteItem: '' })} >{this.props.t('ra_Cancel')}</Button>
+                    <Button variant="contained" onClick={() => this.setState({ deleteItem: '' })} color="grey">{this.props.t('ra_Cancel')}</Button>
                 </DialogActions>
             </Dialog>;
         } else {
