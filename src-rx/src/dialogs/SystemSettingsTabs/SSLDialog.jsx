@@ -2,7 +2,7 @@
 import {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import withWidth from '../../withWidth';
+import withWidth from '../../components/withWidth';
 import {withStyles} from '@mui/styles';
 import Grid from '@mui/material/Grid';
 import FormControl from '@mui/material/FormControl';

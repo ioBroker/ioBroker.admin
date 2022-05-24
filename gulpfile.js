@@ -1,517 +1,211 @@
 'use strict';
 
-const less       = require('gulp-less');
-const sass       = require('gulp-sass')(require('sass'));
-const gulp       = require('gulp');
-const colors     = require('ansi-colors');
-const log        = require('fancy-log');
-const uglify     = require('gulp-terser');
-const htmlmin    = require('gulp-htmlmin');
-const concat     = require('gulp-concat');
-const sourcemaps = require('gulp-sourcemaps');
-const cleanCSS   = require('gulp-clean-css');
-const pkg        = require('./package.json');
-const iopackage  = require('./io-package.json');
-const babel      = require('gulp-babel');
 const fs         = require('fs');
+const cp         = require('child_process');
+const gulp       = require('gulp');
 const del        = require('del');
+const replace    = require('gulp-replace');
+const sourcemaps = require('gulp-sourcemaps');
+const less       = require('gulp-less');
+const concat     = require('gulp-concat');
+const cleanCSS   = require('gulp-clean-css');
 
-const fileName   = 'words.js';
-const noSort     = false;
+const srcRx = 'src-rx/';
+const src = __dirname + '/' + srcRx;
+const dir = src + '/src/i18n/';
+const dest = 'www/';
 
-/* How to work with language scripts
---------------------------------------------------------
-    you can use for edit this tool https://github.com/ldittmar81/ioBroker-i18n-editor
-    to do that you can convert words from words.js into 6 json files, that i18n editor can understand. Use "www (words.js => json).
+function npmInstall() {
+    return new Promise((resolve, reject) => {
+        // Install node modules
+        const cwd = src.replace(/\\/g, '/');
 
-    To combine from json files the words.js again, just call www (json => words.js)
+        const cmd = `npm install -f`;
+        console.log(`"${cmd} in ${cwd}`);
 
-    wwwWords2languages - converts src/js/words.js into 6 different json files in src/i18n/xxx/translations.json
-    wwwLanguages2words - converts 6 different json files from src/i18n/xxx/translations.json into src/js/words.js
---------------------------------------------------------
-    You can export just a flat texts and translate them with e.g. google translator.
-    to do that you can convert words from words.js into 7 txt files. www (words.js => flat)
+        // System call used for update of js-controller itself,
+        // because during installation npm packet will be deleted too, but some files must be loaded even during the install process.
+        const exec = require('child_process').exec;
+        const child = exec(cmd, {cwd});
 
-    To combine from json files the words.js again, just call www (flat => words.js)
+        child.stderr.pipe(process.stderr);
+        child.stdout.pipe(process.stdout);
 
-    wwwWords2languagesFlat - converts src/js/words.js into 6 different txt files in src/i18n/xxx/flat.txt. Additionally it creates extra files with keys in src/i18n/flat.txt
-    wwwLanguagesFlat2words - converts src/i18n/xxx/flat.txt into src/js/words.js
-
-    adminWordsXXx is just the same, but for /admin/words.js
- */
-
-function lang2data(lang, isFlat) {
-    let str = isFlat ? '' : '{\r\n';
-    let count = 0;
-    for (const w in lang) {
-        if (lang.hasOwnProperty(w)) {
-            count++;
-            if (isFlat) {
-                str += (lang[w] === '' ? (isFlat[w] || w) : lang[w]) + '\r\n';
+        child.on('exit', (code /* , signal */) => {
+            // code 1 is strange error that cannot be explained. Everything is installed but error :(
+            if (code && code !== 1) {
+                reject('Cannot install: ' + code);
             } else {
-                const key = '  "' + w.replace(/"/g, '\\"') + '": ';
-                str += /*padRight(*/key/*, 42)*/ +  '"' + lang[w].replace(/"/g, '\\"') + '",\r\n';
+                console.log(`"${cmd} in ${cwd} finished.`);
+                // command succeeded
+                resolve();
             }
-        }
-    }
-    if (!count) return isFlat ? '' : '{\r\n}';
-    if (isFlat) {
-        return str;
-    } else {
-        return str.substring(0, str.length - 3) + '\r\n}\r\n';
-    }
-}
-
-function readWordJs(src) {
-    try {
-        let words;
-        if (fs.existsSync(src + 'js/' + fileName)) {
-            words = fs.readFileSync(src + 'js/' + fileName).toString();
-        } else {
-            words = fs.readFileSync(src + fileName).toString();
-        }
-
-        const lines = words.split(/\r\n|\r|\n/g);
-        let i = 0;
-        while (!lines[i].match(/^systemDictionary = {/)) {
-            i++;
-        }
-        lines.splice(0, i);
-
-        // remove last empty lines
-        i = lines.length - 1;
-        while (!lines[i]) {
-            i--;
-        }
-        if (i < lines.length - 1) {
-            lines.splice(i + 1);
-        }
-
-        lines[0] = lines[0].replace('systemDictionary = ', '');
-        lines[lines.length - 1] = lines[lines.length - 1].trim().replace(/};$/, '}');
-        words = lines.join('\n');
-        const resultFunc = new Function('return ' + words + ';');
-
-        return resultFunc();
-    } catch (e) {
-        return null;
-    }
-}
-function padRight(text, totalLength) {
-    return text + (text.length < totalLength ? new Array(totalLength - text.length).join(' ') : '');
-}
-function writeWordJs(data, src) {
-    let text = '// DO NOT EDIT THIS FILE!!! IT WILL BE AUTOMATICALLY GENERATED FROM src/i18n\n';
-    text += '/*global systemDictionary:true */\n';
-    text += '\'use strict\';\n\n';
-    text += 'systemDictionary = {\n';
-    for (const word in data) {
-        if (data.hasOwnProperty(word)) {
-            text += '    ' + padRight('"' + word.replace(/"/g, '\\"') + '": {', 50);
-            let line = '';
-            for (const lang in data[word]) {
-                if (data[word].hasOwnProperty(lang)) {
-                    line += '"' + lang + '": "' + padRight(data[word][lang].replace(/"/g, '\\"') + '",', 50) + ' ';
-                }
-            }
-            if (line) {
-                line = line.trim();
-                line = line.substring(0, line.length - 1);
-            }
-            text += line + '},\n';
-        }
-    }
-    text += '};\n';
-    if (src.indexOf('admin') === -1) {
-        fs.writeFileSync(src + 'js/' + fileName, text);
-    } else {
-        fs.writeFileSync(src + fileName, text);
-    }
-}
-
-const EMPTY = '';
-
-function words2languages(src) {
-    const langs =  {
-        'en': {},
-        'de': {},
-        'ru': {},
-        'pt': {},
-        'nl': {},
-        'fr': {},
-        'it': {},
-        'es': {},
-        'pl': {},
-        'zh-cn': {}
-    };
-    const data = readWordJs(src);
-    if (data) {
-        for (const word in data) {
-            if (data.hasOwnProperty(word)) {
-                for (const lang in data[word]) {
-                    if (data[word].hasOwnProperty(lang)) {
-                        langs[lang][word] = data[word][lang];
-                        //  pre-fill all other languages
-                        for (const j in langs) {
-                            if (langs.hasOwnProperty(j)) {
-                                langs[j][word] = langs[j][word] || EMPTY;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (!fs.existsSync(src + 'i18n/')) {
-            fs.mkdirSync(src + 'i18n/');
-        }
-        for (const l in langs) {
-            const keys = Object.keys(langs[l]);
-            if (!noSort) keys.sort();
-            const obj = {};
-            for (let k = 0; k < keys.length; k++) {
-                obj[keys[k]] = langs[l][keys[k]];
-            }
-            if (!fs.existsSync(src + 'i18n/' + l)) {
-                fs.mkdirSync(src + 'i18n/' + l);
-            }
-
-            fs.writeFileSync(src + 'i18n/' + l + '/translations.json', lang2data(obj));
-        }
-    } else {
-        console.error('Cannot read or parse ' + fileName);
-    }
-}
-
-function words2languagesFlat(src) {
-    const langs =  {
-        'en': {},
-        'de': {},
-        'ru': {},
-        'pt': {},
-        'nl': {},
-        'fr': {},
-        'it': {},
-        'es': {},
-        'pl': {},
-        'zh-cn': {}
-    };
-    const data = readWordJs(src);
-    if (data) {
-        for (const word in data) {
-            if (data.hasOwnProperty(word)) {
-                for (const lang in data[word]) {
-                    if (data[word].hasOwnProperty(lang)) {
-                        langs[lang][word] = data[word][lang];
-                        //  pre-fill all other languages
-                        for (const j in langs) {
-                            if (langs.hasOwnProperty(j)) {
-                                langs[j][word] = langs[j][word] || EMPTY;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        const keys = Object.keys(langs.en);
-        if (!noSort) keys.sort();
-        for (const l in langs) {
-            const obj = {};
-            for (let k = 0; k < keys.length; k++) {
-                obj[keys[k]] = langs[l][keys[k]];
-            }
-            langs[l] = obj;
-        }
-        if (!fs.existsSync(src + 'i18n/')) {
-            fs.mkdirSync(src + 'i18n/');
-        }
-        for (const ll in langs) {
-            if (!fs.existsSync(src + 'i18n/' + ll)) {
-                fs.mkdirSync(src + 'i18n/' + ll);
-            }
-
-            fs.writeFileSync(src + 'i18n/' + ll + '/flat.txt', lang2data(langs[ll], langs.en));
-        }
-        fs.writeFileSync(src + 'i18n/flat.txt', keys.join('\n'));
-    } else {
-        console.error('Cannot read or parse ' + fileName);
-    }
-}
-function languagesFlat2words(src) {
-    const dirs = fs.readdirSync(src + 'i18n/');
-    const langs = {};
-    const bigOne = {};
-    const order = ['en', 'de', 'ru', 'pt', 'nl', 'fr', 'it', 'es', 'pl', 'zh-cn'];
-    dirs.sort(function (a, b) {
-        const posA = order.indexOf(a);
-        const posB = order.indexOf(b);
-        if (posA === -1 && posB === -1) {
-            if (a > b) return 1;
-            if (a < b) return -1;
-            return 0;
-        } else if (posA === -1) {
-            return -1;
-        } else if (posB === -1) {
-            return 1;
-        } else {
-            if (posA > posB) return 1;
-            if (posA < posB) return -1;
-            return 0;
-        }
-    });
-
-    const keys = fs.readFileSync(src + 'i18n/flat.txt').toString().split(/\r\n|\n|\r/);
-
-    for (let l = 0; l < dirs.length; l++) {
-        if (dirs[l] === 'flat.txt') continue;
-        const lang = dirs[l];
-        const values = fs.readFileSync(src + 'i18n/' + lang + '/flat.txt').toString().split(/\r\n|\n|\r/);
-        langs[lang] = {};
-        keys.forEach(function (word, i) {
-             langs[lang][word] = values[i];
         });
-
-        const words = langs[lang];
-        for (const word in words) {
-            if (words.hasOwnProperty(word)) {
-                bigOne[word] = bigOne[word] || {};
-                if (words[word] !== EMPTY) {
-                    bigOne[word][lang] = words[word];
-                }
-            }
-        }
-    }
-    // read actual words.js
-    const aWords = readWordJs();
-
-    const temporaryIgnore = ['flat.txt'];
-    if (aWords) {
-        // Merge words together
-        for (const w in aWords) {
-            if (aWords.hasOwnProperty(w)) {
-                if (!bigOne[w]) {
-                    console.warn('Take from actual ' + fileName + ': ' + w);
-                    bigOne[w] = aWords[w];
-                }
-                dirs.forEach(function (lang) {
-                    if (temporaryIgnore.indexOf(lang) !== -1) return;
-                    if (!bigOne[w][lang]) {
-                        console.warn('Missing "' + lang + '": ' + w);
-                    }
-                });
-            }
-        }
-
-    }
-
-    writeWordJs(bigOne, src);
+    });
 }
-function languages2words(src) {
-    const dirs = fs.readdirSync(src + 'i18n/');
-    const langs = {};
-    const bigOne = {};
-    const order = ['en', 'de', 'ru', 'pt', 'nl', 'fr', 'it', 'es', 'pl', 'zh-cn'];
-    dirs.sort(function (a, b) {
-        const posA = order.indexOf(a);
-        const posB = order.indexOf(b);
-        if (posA === -1 && posB === -1) {
-            if (a > b) return 1;
-            if (a < b) return -1;
-            return 0;
-        } else if (posA === -1) {
-            return -1;
-        } else if (posB === -1) {
-            return 1;
+
+function build() {
+    fs.writeFileSync(src + 'public/lib/js/sparkline.js',     fs.readFileSync(src + 'node_modules/@fnando/sparkline/dist/sparkline.js'));
+    fs.writeFileSync(src + 'public/lib/js/sparkline.js.map', fs.readFileSync(src + 'node_modules/@fnando/sparkline/dist/sparkline.js.map'));
+
+    const version = JSON.parse(fs.readFileSync(__dirname + '/package.json').toString('utf8')).version;
+    const data    = JSON.parse(fs.readFileSync(src + 'package.json').toString('utf8'));
+
+    data.version = version;
+
+    fs.writeFileSync(src + 'package.json', JSON.stringify(data, null, 4));
+
+    return new Promise((resolve, reject) => {
+        const options = {
+            stdio: 'pipe',
+            cwd:   src
+        };
+
+        console.log(options.cwd);
+
+        let script = src + 'node_modules/vite/bin/vite.js';
+        if (!fs.existsSync(script)) {
+            script = __dirname + '/node_modules/vite/bin/vite.js';
+        }
+        if (!fs.existsSync(script)) {
+            console.error('Cannot find execution file: ' + script);
+            reject('Cannot find execution file: ' + script);
         } else {
-            if (posA > posB) return 1;
-            if (posA < posB) return -1;
-            return 0;
+            const child = cp.fork(script, ['build'], options);
+            child.stdout.on('data', data => console.log(data.toString()));
+            child.stderr.on('data', data => console.log(data.toString()));
+            child.on('close', code => {
+                console.log(`child process exited with code ${code}`);
+                code ? reject('Exit code: ' + code) : resolve();
+            });
+        }
+    });
+}
+
+function copyFiles() {
+    return del([
+        dest + '**/*'
+    ])
+        .then(() => Promise.all([
+            gulp.src([
+                srcRx + 'dist/**/*',
+                `!${srcRx}dist/index.html`,
+                `!${srcRx}dist/static/js/main.*.chunk.js`,
+                `!${srcRx}dist/i18n/**/*`,
+                `!${srcRx}dist/i18n`
+            ])
+                .pipe(gulp.dest(dest)),
+
+            gulp.src([
+                `${srcRx}dist/index.html`,
+            ])
+                .pipe(replace('href="/', 'href="'))
+                .pipe(replace('src="/', 'src="'))
+                .pipe(gulp.dest(dest)),
+            gulp.src([
+                `${srcRx}dist/static/js/main.*.chunk.js`,
+            ])
+                .pipe(replace('s.p+"static/media/copy-content', '"./static/media/copy-content'))
+                .pipe(gulp.dest(dest + 'static/js/')),
+        ]));
+}
+
+function patchIndex() {
+    return new Promise(resolve => {
+        if (fs.existsSync(dest + '/index.html')) {
+            let code = fs.readFileSync(dest + '/index.html').toString('utf8');
+            // replace code
+            code = code.replace(/<script>const script=document[^<]+<\/script>/, `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./lib/js/socket.io.js"></script>`);
+            code = code.replace(/<script>var script=document[^<]+<\/script>/, `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./lib/js/socket.io.js"></script>`);
+            fs.writeFileSync(dest + '/index.html', code);
+            resolve();
+        } else {
+            // wait till finished
+            setTimeout(() => {
+                if (fs.existsSync(dest + '/index.html')) {
+                    let code = fs.readFileSync(dest + '/index.html').toString('utf8');
+                    // replace code
+                    code = code.replace(/<script>const script=document[^<]+<\/script>/, `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./lib/js/socket.io.js"></script>`);
+                    code = code.replace(/<script>var script=document[^<]+<\/script>/, `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./lib/js/socket.io.js"></script>`);
+                    fs.writeFileSync(dest + '/index.html', code);
+                }
+                resolve();
+            }, 2000);
+        }
+    });
+}
+
+function i18n2flat() {
+    const files = fs.readdirSync(dir).filter(name => name.match(/\.json$/));
+    const index = {};
+    const langs = [];
+    files.forEach(file => {
+        const lang = file.replace(/\.json$/, '');
+        langs.push(lang);
+        const text = require(dir + file);
+
+        for (const id in text) {
+            if (text.hasOwnProperty(id)) {
+                index[id] = index[id] || {};
+                index[id][lang] = text[id] === undefined ? id : text[id];
+            }
         }
     });
 
-    for (let l = 0; l < dirs.length; l++) {
-        if (dirs[l] === 'flat.txt' || dirs[l] === '.i18n-editor-metadata') continue;
-        const lang = dirs[l];
-        langs[lang] = fs.readFileSync(src + 'i18n/' + lang + '/translations.json').toString();
-        langs[lang] = JSON.parse(langs[lang]);
-        const words = langs[lang];
-        for (const word in words) {
-            if (words.hasOwnProperty(word)) {
-                bigOne[word] = bigOne[word] || {};
-                if (words[word] !== EMPTY) {
-                    bigOne[word][lang] = words[word].replace(/<\/ i>/g, '</i>').replace(/<\/ b>/g, '</b>').replace(/<\/ span>/g, '</span>').replace(/% s/g, ' %s');
-                }
-            }
-        }
-    }
-    // read actual words.js
-    const aWords = readWordJs();
+    const keys = Object.keys(index);
+    keys.sort();
 
-    const temporaryIgnore = [];
-    if (aWords) {
-        // Merge words together
-        for (const w in aWords) {
-            if (aWords.hasOwnProperty(w)) {
-                if (!bigOne[w]) {
-                    console.warn('Take from actual ' + fileName + ': ' + w);
-                    bigOne[w] = aWords[w];
-                }
-                dirs.forEach(function (lang) {
-                    if (temporaryIgnore.indexOf(lang) !== -1) return;
-                    if (!bigOne[w][lang]) {
-                        console.warn('Missing "' + lang + '": ' + w);
-                    }
-                });
-            }
-        }
-
+    if (!fs.existsSync(dir + '/flat/')) {
+        fs.mkdirSync(dir + '/flat/');
     }
 
-    writeWordJs(bigOne, src);
+    langs.forEach(lang => {
+        const words = [];
+        keys.forEach(key => {
+            words.push(index[key][lang]);
+        });
+        fs.writeFileSync(`${dir}/flat/${lang}.txt`, words.join('\n'));
+    });
+    fs.writeFileSync(dir + '/flat/index.txt', keys.join('\n'));
 }
 
-gulp.task('www (words.js => json)', done => {
-    words2languages('./src/');
-    done();
-});
-
-gulp.task('www (words.js => flat)', done => {
-    words2languagesFlat('./src/');
-    done();
-});
-
-gulp.task('www (flat => words.js)', done => {
-    languagesFlat2words('./src/');
-    done();
-});
-
-gulp.task('www (json => words.js)', done => {
-    languages2words('./src/');
-    done();
-});
-
-gulp.task('admin (words.js => json)', done => {
-    words2languages('./admin/');
-    done();
-});
-
-gulp.task('admin (words.js => flat)', done => {
-    words2languagesFlat('./admin/');
-    done();
-});
-
-gulp.task('admin (flat => words.js)', done => {
-    languagesFlat2words('./admin/');
-    done();
-});
-
-gulp.task('admin (json => words.js)', done => {
-    languages2words('./admin/');
-    done();
-});
-
-gulp.task('updatePackages', done => {
-    iopackage.common.version = pkg.version;
-    iopackage.common.news = iopackage.common.news || {};
-    if (!iopackage.common.news[pkg.version]) {
-        const news = iopackage.common.news;
-        const newNews = {};
-
-        newNews[pkg.version] = {
-            en: 'news',
-            de: 'neues',
-            ru: 'новое',
-            pt: 'novidades',
-            nl: 'nieuws',
-            fr: 'nouvelles',
-            it: 'notizie',
-            es: 'noticias',
-            pl: 'aktualności',
-            'zh-cn': '消息'
-        };
-        iopackage.common.news = Object.assign(newNews, news);
+function flat2i18n() {
+    if (!fs.existsSync(dir + '/flat/')) {
+        console.error(dir + '/flat/ directory not found');
+        return done();
     }
-    fs.writeFileSync('io-package.json', JSON.stringify(iopackage, null, 4));
-    done();
-});
+    const keys = fs.readFileSync(dir + '/flat/index.txt').toString().split(/[\r\n]/);
+    while (!keys[keys.length - 1]) keys.splice(keys.length - 1, 1);
 
-gulp.task('updateReadme', done => {
-    const readme = fs.readFileSync('README.md').toString();
-    const pos = readme.indexOf('## Changelog\n');
-    if (pos !== -1) {
-        const readmeStart = readme.substring(0, pos + '## Changelog\n'.length);
-        const readmeEnd   = readme.substring(pos + '## Changelog\n'.length);
-
-        if (readme.indexOf(version) === -1) {
-            const timestamp = new Date();
-            const date = timestamp.getFullYear() + '-' +
-                ('0' + (timestamp.getMonth() + 1).toString(10)).slice(-2) + '-' +
-                ('0' + (timestamp.getDate()).toString(10)).slice(-2);
-
-            let news = '';
-            if (iopackage.common.news && iopackage.common.news[pkg.version]) {
-                news += '* ' + iopackage.common.news[pkg.version].en;
+    const files = fs.readdirSync(dir + '/flat/').filter(name => name.match(/\.txt$/) && name !== 'index.txt');
+    const index = {};
+    const langs = [];
+    files.forEach(file => {
+        const lang = file.replace(/\.txt$/, '');
+        langs.push(lang);
+        const lines = fs.readFileSync(dir + '/flat/' + file).toString().split(/[\r\n]/);
+        lines.forEach((word, i) => {
+            index[keys[i]] = index[keys[i]] || {};
+            index[keys[i]][lang] = word;
+        });
+    });
+    langs.forEach(lang => {
+        const words = {};
+        keys.forEach((key, line) => {
+            if (!index[key]) {
+                console.log(`No word ${key}, ${lang}, line: ${line}`);
             }
+            words[key] = index[key][lang];
+        });
+        fs.writeFileSync(`${dir}/${lang}.json`, JSON.stringify(words, null, 4));
+    });
+}
 
-            fs.writeFileSync('README.md', readmeStart + '### ' + version + ' (' + date + ')\n' + (news ? news + '\n\n' : '\n') + readmeEnd);
-        }
-    }
-    done();
-});
-
-gulp.task('materializeCSS', () => {
-    return gulp.src(['./src/materialize-css/sass/**/*.scss'])
-        .pipe(sass({
-            paths: [ ]
-        }))
-        .pipe(concat('materialize.css'))
-        .pipe(cleanCSS({compatibility: 'ie8'}))
-        .pipe(gulp.dest('./www/lib/css'));
-
-});
-
-gulp.task('materializeJS', () => {
+gulp.task('react-0-configCSS', () => {
     return gulp.src([
-        './src/materialize-css/js/global.js',
-        './src/materialize-css/js/component.js',
-        './src/materialize-css/js/anime.min.js',
-        './src/materialize-css/js/cash.js',
-        './src/materialize-css/js/cards.js',
-        './src/materialize-css/js/tabs.js',
-        './src/materialize-css/js/dropdown.js',
-        './src/materialize-css/js/toasts.js',
-        './src/materialize-css/js/modal.js',
-        './src/materialize-css/js/select.js',
-        './src/materialize-css/js/forms.js',
-        './src/materialize-css/js/range.js',
-        './src/materialize-css/js/collapsible.js',
-        './src/materialize-css/js/chips.js',
-        './src/materialize-css/js/datepicker.js',
-        './src/materialize-css/js/autocomplete.js',
-        './src/materialize-css/js/timepicker.js',
-        './src/materialize-css/js/tooltip.js',
-        './src/materialize-css/js/autocomplete.js',
-        './src/colorpicker/js/materialize-colorpicker.js'
-    ])
-    .pipe(sourcemaps.init())
-    .pipe(concat('materialize.js'))
-    .pipe(babel({
-        plugins: [
-            '@babel/plugin-transform-arrow-functions',
-            '@babel/plugin-transform-block-scoping',
-            '@babel/plugin-transform-classes',
-            '@babel/plugin-transform-template-literals'
-        ]
-    }))
-    .pipe(uglify())
-    .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('./www/lib/js'));
-});
-
-gulp.task('configCSS', () => {
-    return gulp.src([
-        './src/lib/css/iob/selectID.less',
-        './src/less/adapter.less',
-        './src/less/materializeCorrect.less'
+        './src-rx/less/selectID.less',
+        './src-rx/less/adapter.less',
+        './src-rx/less/materializeCorrect.less'
     ])
         .pipe(sourcemaps.init())
         .pipe(less({
@@ -520,218 +214,75 @@ gulp.task('configCSS', () => {
         .pipe(concat('adapter.css'))
         .pipe(cleanCSS({compatibility: 'ie8'}))
         .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('./www/css'));
+        .pipe(gulp.dest('./src-rx/public/css'));
 });
 
-gulp.task('iobCSS', () => {
-    return gulp.src(['./src/lib/css/iob/*.less'])
+gulp.task('react-0-iobCSS', () => {
+    return gulp.src(['./src-rx/less/selectID.less'])
         .pipe(sourcemaps.init())
         .pipe(less({
             paths: [ ]
         }))
         .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('./www/lib/css/iob'));
+        .pipe(gulp.dest('./src-rx/public/lib/css/iob'));
 });
 
-// for older selectID
-gulp.task('adminCSS', () => {
-    return gulp.src(['./src/less/admin.less'])
+gulp.task('react-0-treeTableCSS', () => {
+    return gulp.src(['./src-rx/less/jquery.treetable.theme.less'])
         .pipe(sourcemaps.init())
         .pipe(less({
             paths: [ ]
         }))
         .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('./www/css/'));
+        .pipe(gulp.dest('./src-rx/public/lib/css'));
 });
 
-gulp.task('treeTableCSS', () => {
-    return gulp.src(['./src/lib/css/jquery.treetable.theme.less'])
-        .pipe(sourcemaps.init())
-        .pipe(less({
-            paths: [ ]
-        }))
-        .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('./www/lib/css'));
+gulp.task('react-i18n=>react-flat', done => {
+    i18n2flat();
+    done();
 });
 
-gulp.task('fancyTreeJS', () => {
-    return gulp.src([
-        './src/lib/js/jquery.fancytree-all.js'
-    ])
-        .pipe(sourcemaps.init())
-        .pipe(concat('jquery.fancytree-all.min.js'))
-        .pipe(uglify())
-        .on('error', function (err) {
-            log.error(colors.red('[Error] ') + err.toString());
-        })
-        .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('./www/lib/js'));
+gulp.task('react-flat=>react-i18n', done => {
+    flat2i18n();
+    done();
 });
 
-gulp.task('appJS', () => {
-    return gulp.src([
-        './src/js/*.js',
-        '!./src/js/adapter-settings.js'
-    ])
-        .pipe(sourcemaps.init())
-        .pipe(concat('app.js'))
-        .pipe(uglify())
-        .on('error', err => log.error(colors.red('[Error] ') + err.toString()))
-        .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('./www/js'));
-});
-
-gulp.task('appHTML', () => {
-    return gulp.src([
-        './src/indexStart.html',
-        './src/admin*.html',
-        './src/indexEnd.html'
-    ])
-        .pipe(sourcemaps.init())
-        .pipe(concat('index.html'))
-        .pipe(htmlmin({collapseWhitespace: true, removeComments: true}))
-        .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('./www/'));
-});
-
-gulp.task('appCSS', () => {
-    return gulp.src([
-        './src/less/*.less',
-        './src/colorpicker/less/*.less',
-        '!./src/less/adapter.less'
-    ])
-        .pipe(sourcemaps.init())
-        .pipe(less({
-            paths: [ ]
-        }))
-        .pipe(concat('app.css'))
-        .pipe(cleanCSS({compatibility: 'ie8'}))
-        .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('./www/css'));
-});
-
-gulp.task('vendorJS', () => {
-    return gulp.src([
-        './src/lib/js/jquery-3.2.1.min.js',
-        './src/lib/js/jquery-migrate-3.0.1.js',
-        './src/lib/js/jquery-ui.min.js',
-        './src/lib/js/colResizable-1.6.js',
-        './src/lib/js/jquery.multiselect-1.13.min.js',
-        './src/lib/js/semver.min.js',
-        './src/lib/js/ace-1.2.0/ace.js',
-        './src/lib/js/loStorage.js',
-        './src/lib/js/translate.js',
-        './src/lib/js/jquery.fancytree-all.js',
-        './src/lib/js/jquery.treetable.js',
-        './src/lib/js/jquery.ui.touch-punch.min.js',
-        './src/lib/js/selectID.js',
-        './src/lib/js/cron/jquery.cron.locale.js',
-        './src/lib/js/cron/jquery.cron.words.js',
-        './src/lib/js/cron/jquery.cron.js',
-        './src/lib/js/cron/cron2text.js',
-        './src/lib/js/showdown.min.js'
-    ])
-        .pipe(sourcemaps.init())
-        .pipe(concat('vendor.js'))
-        .pipe(uglify())
-        .on('error', function (err) {
-            log.error(colors.red('[Error] ') + err.toString());
-        })
-        .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('./www/lib/js'));
-});
-
-gulp.task('colorpick.min', () => {
-    return gulp.src([
-        './src/lib/js/colResizable-1.6.js'
-    ])
-        .pipe(sourcemaps.init())
-        .pipe(concat('colResizable-1.6.min.js'))
-        .pipe(uglify())
-        .on('error', function (err) {
-            log.error(colors.red('[Error] ') + err.toString());
-        })
-        .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('./www/lib/js'));
-});
-
-gulp.task('appCopy', gulp.series('colorpick.min', () =>
-    gulp.src([
-        './src/**/*.*',
-        '!./src/i18n/**/*',
-        '!./src/*.html',
-        '!./src/lib/js/jquery.migrate-3.0.1.js',
-        '!./src/lib/js/jquery.fancytree-all.js',
-        '!./src/lib/js/colResizable-1.6.js',
-        '!./src/**/*.less',
-        '!./src/js/**/admin*.js',
-        '!./src/js/**/words.js',
-        '!./src/materialize-css/**/*',
-        '!./src/colorpicker/**/*',
-        './src/configs.html'
-    ])
-    .pipe(gulp.dest('./www'))));
-
-gulp.task('colorpickerCopy', () => {
-    return gulp.src([
-        './src/colorpicker/**/*.png'
-    ])
-        .pipe(gulp.dest('./www'));
-});
-gulp.task('aceCopy', () => {
-    return gulp.src([
-        './src/lib/js/ace-1.2.0/mode-json.js',
-        './src/lib/js/ace-1.2.0/worker-json.js'
-    ],  {base: './src/lib/js/ace-1.2.0/'})
-    .pipe(gulp.dest('./www'));
-});
-gulp.task('copy', gulp.parallel('appCopy', 'aceCopy', 'colorpickerCopy'));
-
-gulp.task('watch', () => {
-    gulp.watch('./src/css/*.less', ['lessApp']);
-    gulp.watch('./src/lib/css/iob/*.less', ['lessApp']);
-    gulp.watch(['./src/materialize-css/sass/**/*.scss'], ['sassMaterialize']);
-    gulp.watch(['./src/js/*.js'], ['compressApp']);
-});
-
-gulp.task('0_clean', () => {
+gulp.task('react-1-clean', () => {
     return del([
         // 'src/node_modules/**/*',
-        'www/**/*',
-        'www/*',
+        dest + '**/*',
+        dest + '*',
+        srcRx + 'dist/**/*'
     ]).then(del([
-        'www'
+        // 'src/node_modules',
+        'src/dist',
+        dest
     ]));
 });
 
-gulp.task('1_words',  gulp.parallel('www (json => words.js)', 'admin (json => words.js)'));
-gulp.task('2_css',    gulp.parallel('iobCSS', 'adminCSS', 'appCSS', 'treeTableCSS', 'configCSS', 'materializeCSS'));
-gulp.task('3_js',     gulp.parallel('vendorJS', 'materializeJS', 'appJS', 'fancyTreeJS')); //compressApp is last, to give the time for 1_words to be finshed. Because words.js is used in app.js
-gulp.task('4_static', gulp.parallel('appHTML', 'aceCopy', 'colorpickerCopy', 'appCopy'));
+gulp.task('react-2-npm', () => {
+    if (fs.existsSync(src + 'node_modules')) {
+        return Promise.resolve();
+    } else {
+        return npmInstall();
+    }
+});
 
-// add react tasks
-require('./gulpReact')(gulp);
+gulp.task('react-2-npm-dep', gulp.series('react-1-clean', 'react-2-npm', 'react-0-configCSS', 'react-0-iobCSS', 'react-0-treeTableCSS'));
 
-gulp.task('betaCopy', () =>
-	new Promise(resolve => {
-		const ioPack = require('./io-package.json');
-        const pack = require('./package.json');
-		ioPack.common.name = 'admin-beta';
-		ioPack.common.title = 'ioBroker Admin Beta';
-		ioPack.native.port = 9081;
-		ioPack.native.react = true;
-		fs.writeFileSync('./io-package.json', JSON.stringify(ioPack, null, 2));
-		pack.name = 'iobroker.admin-beta';
-		fs.writeFileSync('./package.json', JSON.stringify(pack, null, 2));
-		resolve();
-	}));
+gulp.task('react-3-build', () => build());
 
-gulp.task('beta', gulp.series('react-build', 'betaCopy'));
+gulp.task('react-3-build-dep', gulp.series('react-2-npm-dep', 'react-3-build'));
 
-gulp.task('default', gulp.series(
-    '0_clean',
-    '1_words',
-    '2_css',
-    '3_js',
-    '4_static', 'react-build'));
+gulp.task('react-5-copy', () => copyFiles());
+
+gulp.task('react-5-copy-dep', gulp.series('react-3-build-dep', 'react-5-copy'));
+
+gulp.task('react-6-patch', () => patchIndex());
+
+gulp.task('react-6-patch-dep', gulp.series('react-5-copy-dep', 'react-6-patch'));
+
+gulp.task('react-build', gulp.series('react-6-patch-dep'));
+
+gulp.task('default', gulp.series('react-build'));
 

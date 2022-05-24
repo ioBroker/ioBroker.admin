@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import withWidth from '../../withWidth';
+import withWidth from '../withWidth';
 import {withStyles} from '@mui/styles';
 import clsx from 'clsx';
 
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import {
+    LocalizationProvider,
     TimePicker,
     DatePicker,
 } from '@mui/x-date-pickers';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';4
 import Paper from '@mui/material/Paper';
 import LinearProgress from '@mui/material/LinearProgress';
 import InputLabel from '@mui/material/InputLabel';
@@ -35,7 +35,6 @@ import TextField from '@mui/material/TextField';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 
-import DateFnsUtils from '@date-io/date-fns';
 import frLocale from 'date-fns/locale/fr';
 import ruLocale from 'date-fns/locale/ru';
 import enLocale from 'date-fns/locale/en-US';
@@ -219,6 +218,13 @@ const styles = theme => ({
     colTs: {
         width: 200,
     },
+    dateInput: {
+        width: 140,
+        marginRight: theme.spacing(1)
+    },
+    timeInput: {
+        width: 100,
+    }
 });
 
 class ObjectHistoryData extends Component {
@@ -1027,7 +1033,7 @@ class ObjectHistoryData extends Component {
                     />
 
                     {this.state.insertOpened ?
-                        <LocalizationProvider dateAdapter={AdapterDateFns} locale={localeMap[this.props.lang]}>
+                        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
                             <Grid container justify="space-around">
                                 <DatePicker
                                     className={ this.props.classes.editorDatePicker}
@@ -1161,7 +1167,7 @@ class ObjectHistoryData extends Component {
                 </Select>
             </FormControl>
 
-            <LocalizationProvider dateAdapter={AdapterDateFns} locale={localeMap[this.props.lang]}>
+            <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
                 <div className={ classes.toolbarTimeGrid }>
                     <DatePicker
                         className={ classes.toolbarDate }
@@ -1174,6 +1180,7 @@ class ObjectHistoryData extends Component {
                         label={ this.props.t('Start date') }
                         value={ new Date(this.state.start) }
                         onChange={date => this.setStartDate(date)}
+                        renderInput={params => <TextField className={this.props.classes.dateInput} variant="standard" {...params} />}
                     />
                     <TimePicker
                         disabled={ this.state.relativeRange !== 'absolute' }
@@ -1184,6 +1191,7 @@ class ObjectHistoryData extends Component {
                         label={ this.props.t('Start time') }
                         value={ new Date(this.state.start) }
                         onChange={date => this.setStartDate(date)}
+                        renderInput={params => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
                     />
                 </div>
                 <div className={ classes.toolbarTimeGrid }>
@@ -1198,6 +1206,7 @@ class ObjectHistoryData extends Component {
                         label={ this.props.t('End date') }
                         value={ new Date(this.state.end) }
                         onChange={date => this.setEndDate(date)}
+                        renderInput={params => <TextField className={this.props.classes.dateInput} variant="standard" {...params} />}
                     />
                     <TimePicker
                         disabled={ this.state.relativeRange !== 'absolute' }
@@ -1208,6 +1217,7 @@ class ObjectHistoryData extends Component {
                         label={ this.props.t('End time') }
                         value={ new Date(this.state.end) }
                         onChange={date => this.setEndDate(date)}
+                        renderInput={params => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
                     />
                 </div>
             </LocalizationProvider>

@@ -85,11 +85,17 @@ ioBroker GmbH has a valid license for all of used icons.
 The icons may not be reused in other projects without the proper flaticon license or flaticon subscription.
 
 <!--
-	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Breaking changes: no admin@v4(material) interface. Only react interface is possible.
+* (bluefox) Migration from material-ui to mui@v5
+* (bluefox) Many GUI fixes
+* (bluefox) Support of JSON5 for the config and custom files
+* (bluefox) Added run/stop buttons in instance settings dialog
+
 ### 5.4.9 (2022-05-12)
 * (bluefox) Corrected charts
 * (bluefox) Corrected socket command getObjects

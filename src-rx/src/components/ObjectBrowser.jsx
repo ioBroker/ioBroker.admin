@@ -13,7 +13,6 @@ import withStyles from '@mui/styles/withStyles';
 import SVG from 'react-inlinesvg';
 
 import IconButton from '@mui/material/IconButton';
-import withWidth from '../withWidth';
 import CircularProgress from '@mui/material/CircularProgress';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -89,6 +88,7 @@ import Utils from './Utils'; // @iobroker/adapter-react-v5/Components/Utils
 import TabContainer from './TabContainer';
 import TabContent from './TabContent';
 import TabHeader from './TabHeader';
+import withWidth from './withWidth';
 
 const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;
@@ -2008,6 +2008,7 @@ class ObjectBrowser extends Component {
                     <ListItemText primary={this.texts['filter_' + id] || this.props.t('ra_' + id)} />
                     <ListItemSecondaryAction>
                         <FormControl
+                            variant="standard"
                             className={this.props.classes.columnsDialogInputWidth}
                             style={{ marginTop: 0, marginBottom: 0 }}
                             margin="dense"
@@ -2117,6 +2118,7 @@ class ObjectBrowser extends Component {
                                     <ListItemText primary={column.name + ' (' + adapter + ')'} />
                                     <ListItemSecondaryAction>
                                         <FormControl
+                                            variant="standard"
                                             className={this.props.classes.columnsDialogInputWidth}
                                             style={{ marginTop: 0, marginBottom: 0 }}
                                             margin="dense"
@@ -2922,9 +2924,9 @@ class ObjectBrowser extends Component {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="outlined" onClick={() => this.setState({showExportDialog: false}, () => this._exportObjects(true))}>{this.props.t('ra_All objects')}</Button>
+                    <Button color="grey"    variant="outlined" onClick={() => this.setState({showExportDialog: false}, () => this._exportObjects(true))}>{this.props.t('ra_All objects')}</Button>
                     <Button color="primary" variant="contained" autoFocus onClick={() => this.setState({showExportDialog: false}, () => this._exportObjects(false))}>{this.props.t('ra_Only selected')}</Button>
-                    <Button variant="contained" onClick={() => this.setState({showExportDialog: false})} startIcon={<IconClose/>}>{this.props.t('ra_Cancel')}</Button>
+                    <Button color="grey"    variant="contained" onClick={() => this.setState({showExportDialog: false})} startIcon={<IconClose/>}>{this.props.t('ra_Cancel')}</Button>
                 </DialogActions>
             </Dialog>;
         }
@@ -3081,6 +3083,7 @@ class ObjectBrowser extends Component {
                         <IconButton
                             onClick={() => this.refreshComponent()}
                             disabled={this.state.updating}
+                            size="large"
                         >
                             <RefreshIcon />
                         </IconButton>
@@ -3092,6 +3095,7 @@ class ObjectBrowser extends Component {
                         key="expertMode"
                         color={this.state.filter.expertMode ? 'secondary' : 'default'}
                         onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
+                        size="large"
                     >
                         <IconExpert />
                     </IconButton>
@@ -3103,6 +3107,7 @@ class ObjectBrowser extends Component {
                         key="columnSelector"
                         color={this.state.columnsAuto ? 'primary' : 'default'}
                         onClick={() => this.setState({ columnsSelectorShow: true })}
+                        size="large"
                     >
                         <IconColumns />
                     </IconButton>
@@ -3113,6 +3118,7 @@ class ObjectBrowser extends Component {
                     <IconButton
                         key="expandAll"
                         onClick={() => this.onExpandAll()}
+                        size="large"
                     >
                         <IconOpen />
                     </IconButton>
@@ -3122,6 +3128,7 @@ class ObjectBrowser extends Component {
                     <IconButton
                         key="collapseAll"
                         onClick={() => this.onCollapseAll()}
+                        size="large"
                     >
                         <IconClosed />
                     </IconButton>
@@ -3131,6 +3138,7 @@ class ObjectBrowser extends Component {
                         key="expandVisible"
                         color="primary"
                         onClick={() => this.onExpandVisible()}
+                        size="large"
                     >
                         <StyledBadge badgeContent={this.state.depth} color="secondary">
                             <IconOpen />
@@ -3142,6 +3150,7 @@ class ObjectBrowser extends Component {
                         key="collapseVisible"
                         color="primary"
                         onClick={() => this.onCollapseVisible()}
+                        size="large"
                     >
                         <StyledBadge badgeContent={this.state.depth} color="secondary">
                             <IconClosed />
@@ -3151,6 +3160,7 @@ class ObjectBrowser extends Component {
                 {this.props.objectStatesView && <Tooltip title={this.props.t('ra_Toggle the states view')}>
                     <IconButton
                         onClick={() => this.onStatesViewVisible()}
+                        size="large"
                     >
                         <LooksOneIcon color={this.state.statesView ? 'primary' : 'inherit'} />
                     </IconButton>
@@ -3162,6 +3172,7 @@ class ObjectBrowser extends Component {
                             <IconButton
                                 disabled={!allowObjectCreation}
                                 onClick={() => this.setState({ modalNewObj: true })}
+                                size="large"
                             >
                                 <AddIcon />
                             </IconButton>
@@ -3181,6 +3192,7 @@ class ObjectBrowser extends Component {
                             input.addEventListener('change', e => this.handleJsonUpload(e), false);
                             input.click();
                         }}
+                        size="large"
                     >
                         <PublishIcon />
                     </IconButton>
@@ -3190,6 +3202,7 @@ class ObjectBrowser extends Component {
                 <Tooltip title={this.props.t('ra_Save objects tree as JSON file')}>
                     <IconButton
                         onClick={() => this.setState({showExportDialog: this._getSelectedIdsForExport().length})}
+                        size="large"
                     >
                         <PublishIcon style={{ transform: 'rotate(180deg)' }} />
                     </IconButton>
@@ -3218,6 +3231,7 @@ class ObjectBrowser extends Component {
                             this.setState({ toast: this.props.t('ra_please select object') });
                         }
                     }}
+                    size="large"
                 >
                     <BuildIcon />
                 </IconButton>
@@ -3308,7 +3322,7 @@ class ObjectBrowser extends Component {
                     className={Utils.clsx(classes.cellButtonsButton, classes.cellButtonsEmptyButton, classes.cellButtonMinWidth)}
                     onClick={() =>
                         this.setState({ modalEditOfAccess: true, modalEmptyId: id, modalEditOfAccessObjData: item.data })}
-                >---</IconButton> : null}
+                    size="large">---</IconButton> : null}
                 {this.props.onObjectDelete && item.children && item.children.length ? <IconButton
                     className={Utils.clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone)}
                     size="small"
@@ -3330,6 +3344,7 @@ class ObjectBrowser extends Component {
             this.state.filter.expertMode && this.props.objectEditOfAccessControl ? <Tooltip key="acl" title={item.data.aclTooltip}><IconButton
                 className={classes.cellButtonMinWidth}
                 onClick={() => this.setState({ modalEditOfAccess: true, modalEditOfAccessObjData: item.data })}
+                size="large"
             >
                 <div className={classes.aclText}>{isNaN(Number(acl).toString(16)) ? Number(aclSystemConfig).toString(16) : Number(acl).toString(16)}</div>
             </IconButton></Tooltip> : <div key="aclEmpty" className={classes.cellButtonMinWidth} />,
@@ -3760,8 +3775,8 @@ class ObjectBrowser extends Component {
                             />
                             :
                             <TextField
-                                defaultValue={this.customColumnDialog.value}
                                 variant="standard"
+                                defaultValue={this.customColumnDialog.value}
                                 fullWidth
                                 onKeyUp={e => e.keyCode === 13 && this.onColumnsEditCustomDialogClose(true)}
                                 label={this.state.columnsEditCustomDialog.it.name + ' (' + this.state.columnsEditCustomDialog.it.pathText + ')'}
@@ -3789,6 +3804,7 @@ class ObjectBrowser extends Component {
                         {this.props.t('ra_Update')}
                     </Button>
                     <Button
+                        color="grey"
                         variant="contained"
                         onClick={() => this.onColumnsEditCustomDialogClose()}
                         startIcon={<IconClose />}
@@ -4463,6 +4479,7 @@ class ObjectBrowser extends Component {
                 onClick={() => this.clearFilter()}
                 className={classes.buttonClearFilter}
                 title={this.props.t('ra_Clear filter')}
+                size="large"
             >
                 <IconClearFilter />
                 <IconClose className={classes.buttonClearFilterIcon} />

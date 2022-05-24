@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
 
-import withWidth from '../../withWidth';
+import withWidth from '../../components/withWidth';
 import {withStyles} from '@mui/styles';
 
 import Fab from '@mui/material/Fab';

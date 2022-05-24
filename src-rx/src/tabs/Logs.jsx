@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 
-import withWidth from '../withWidth';
+import withWidth from '../components/withWidth';
 import { withStyles } from '@mui/styles';
 
 import Button from '@mui/material/Button';

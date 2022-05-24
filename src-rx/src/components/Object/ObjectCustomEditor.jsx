@@ -1,6 +1,6 @@
 import React, { createRef, Component } from 'react';
 import {withStyles} from '@mui/styles';
-import withWidth from '../../withWidth';
+import withWidth from '../withWidth';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import JSON5 from 'json5';

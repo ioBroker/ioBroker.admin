@@ -7,7 +7,7 @@
  * MIT License
  *
  **/
-import withWidth from '../withWidth';
+import withWidth from './withWidth';
 import { withStyles } from '@mui/styles';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';

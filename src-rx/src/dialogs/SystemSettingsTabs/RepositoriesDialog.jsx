@@ -1,7 +1,7 @@
 // RepositoriesDialog
 import {Component} from 'react';
 import clsx from 'clsx';
-import withWidth from '../../withWidth';
+import withWidth from '../../components/withWidth';
 import {withStyles} from '@mui/styles';
 import PropTypes from 'prop-types';
 import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc';

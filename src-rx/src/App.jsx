@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import withWidth from './withWidth';
+import withWidth from './components/withWidth';
 import { withStyles } from '@mui/styles';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { DndProvider } from 'react-dnd';

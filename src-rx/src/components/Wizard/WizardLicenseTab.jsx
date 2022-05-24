@@ -1,6 +1,6 @@
 import { createRef, Component } from 'react';
 import {withStyles} from '@mui/styles';
-import withWidth from '../../withWidth';
+import withWidth from '../withWidth';
 import PropTypes from 'prop-types';
 import Toolbar from '@mui/material/Toolbar';
 import MenuItem from '@mui/material/MenuItem';

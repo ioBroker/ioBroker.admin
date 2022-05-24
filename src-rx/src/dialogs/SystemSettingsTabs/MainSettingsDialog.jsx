@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { MapContainer as LeafletMap, TileLayer } from 'react-leaflet';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
 
-import withWidth from '../../withWidth';
+import withWidth from '../../components/withWidth';
 import { withStyles } from '@mui/styles';
 import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';

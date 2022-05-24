@@ -1,12 +1,11 @@
 import { createRef, Component } from 'react';
 import PropTypes from 'prop-types';
-import withWidth from '../../withWidth';
+import withWidth from '../withWidth';
 import {withStyles} from '@mui/styles';
 import clsx from 'clsx';
 
-import {TimePicker, DatePicker} from '@mui/x-date-pickers';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider, TimePicker, DatePicker } from '@mui/x-date-pickers';
 import Paper from '@mui/material/Paper';
 import LinearProgress from '@mui/material/LinearProgress';
 import InputLabel from '@mui/material/InputLabel';
@@ -15,6 +14,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Toolbar from '@mui/material/Toolbar';
 import Fab from '@mui/material/Fab';
+import TextField from '@mui/material/TextField';
 
 import ReactEchartsCore from 'echarts-for-react/lib/core';
 
@@ -29,7 +29,6 @@ import {
 } from 'echarts/components';
 import {SVGRenderer} from 'echarts/renderers';
 
-import DateFnsUtils from '@date-io/date-fns';
 import frLocale from 'date-fns/locale/fr';
 import ruLocale from 'date-fns/locale/ru';
 import enLocale from 'date-fns/locale/en-US';
@@ -138,6 +137,7 @@ const styles = theme => ({
         paddingRight: theme.spacing(1),
         border: '1px dotted #AAAAAA',
         borderRadius: theme.spacing(1),
+        display: 'flex'
     },
     buttonIcon: {
         width: 24,
@@ -147,6 +147,13 @@ const styles = theme => ({
         marginRight: theme.spacing(1),
         height: 34,
         width: 34,
+    },
+    dateInput: {
+        width: 140,
+        marginRight: theme.spacing(1)
+    },
+    timeInput: {
+        width: 100,
     }
 });
 
@@ -1126,7 +1133,7 @@ class ObjectChart extends Component {
                     <MenuItem key={ '13' } value={ '12months' }    >{ this.props.t('last 12 months') }</MenuItem>
                 </Select>
             </FormControl>
-            <LocalizationProvider dateAdapter={AdapterDateFns} locale={localeMap[this.props.lang]}>
+            <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
                 <div className={ classes.toolbarTimeGrid }>
                     <DatePicker
                         className={ classes.toolbarDate }
@@ -1139,6 +1146,7 @@ class ObjectChart extends Component {
                         label={ this.props.t('Start date') }
                         value={ new Date(this.state.min) }
                         onChange={date => this.setStartDate(date)}
+                        renderInput={params => <TextField className={this.props.classes.dateInput} variant="standard" {...params} />}
                     />
                     <TimePicker
                         disabled={ this.state.relativeRange !== 'absolute' }
@@ -1149,6 +1157,7 @@ class ObjectChart extends Component {
                         label={ this.props.t('Start time') }
                         value={ new Date(this.state.min) }
                         onChange={date => this.setStartDate(date)}
+                        renderInput={params => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
                     />
                 </div>
                 <div className={ classes.toolbarTimeGrid }>
@@ -1163,6 +1172,7 @@ class ObjectChart extends Component {
                         label={ this.props.t('End date') }
                         value={ new Date(this.state.max) }
                         onChange={date => this.setEndDate(date)}
+                        renderInput={params => <TextField className={this.props.classes.dateInput} variant="standard" {...params} />}
                     />
                     <TimePicker
                         disabled={ this.state.relativeRange !== 'absolute' }
@@ -1173,6 +1183,7 @@ class ObjectChart extends Component {
                         label={ this.props.t('End time') }
                         value={ new Date(this.state.max) }
                         onChange={date => this.setEndDate(date)}
+                        renderInput={params => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
                     />
                 </div>
             </LocalizationProvider>
