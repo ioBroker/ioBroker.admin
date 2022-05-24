@@ -260,7 +260,7 @@ class MainSettingsDialog extends Component {
         // If value is not in known values, show text input
         if (e.allowText && value && !e.values.find(elem => elem.id === value)) {
             return <Grid item sm={6} xs={12} key={i}>
-                <FormControl className={classes.formControl}>
+                <FormControl className={classes.formControl} variant="standard">
                     <InputLabel shrink id={e.id + '-label'}>
                         {this.props.t(e.title)}
                     </InputLabel>
@@ -282,7 +282,7 @@ class MainSettingsDialog extends Component {
         </MenuItem>);
 
         return <Grid item sm={6} xs={12} key={i}>
-            <FormControl className={classes.formControl}>
+            <FormControl className={classes.formControl} variant="standard">
                 <InputLabel shrink id={e.id + '-label'}>
                     {this.props.t(e.title)}
                 </InputLabel>
@@ -325,7 +325,7 @@ class MainSettingsDialog extends Component {
             {this.props.t(elem.name)}
         </MenuItem>);
 
-        return <FormControl className={classes.formControl}>
+        return <FormControl className={classes.formControl} variant="standard">
             <InputLabel shrink id={'country-label'}>
                 {this.props.t('Country:')}
             </InputLabel>
@@ -445,7 +445,7 @@ class MainSettingsDialog extends Component {
                     {this.getCounters()}
                 </Grid>
                 <Grid item md={3} sm={6} xs={12}>
-                    <FormControl className={classes.formControl}>
+                    <FormControl className={classes.formControl} variant="standard">
                         <InputLabel shrink id={'city-label'}>
                             {this.props.t('City:')}
                         </InputLabel>
@@ -461,7 +461,7 @@ class MainSettingsDialog extends Component {
                     </FormControl>
                 </Grid>
                 <Grid item md={3} sm={6} xs={12}>
-                    <FormControl className={classes.formControl}>
+                    <FormControl className={classes.formControl} variant="standard">
                         <InputLabel shrink id="latitude-label">
                             {this.props.t('Latitude:')}
                         </InputLabel>
@@ -477,7 +477,7 @@ class MainSettingsDialog extends Component {
                     </FormControl>
                 </Grid>
                 <Grid item md={3} sm={6} xs={12}>
-                    <FormControl className={classes.formControl}>
+                    <FormControl className={classes.formControl} variant="standard">
                         <InputLabel shrink id="longitude-label">
                             {this.props.t('Longitude:')}
                         </InputLabel>

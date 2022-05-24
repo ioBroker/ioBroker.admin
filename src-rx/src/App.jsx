@@ -1535,7 +1535,7 @@ class App extends Router {
                 {!window.vendorPrefix || window.vendorPrefix === '@@vendorPrefix@@' ? <Loader theme={this.state.themeType} /> : null}
             </ThemeProvider></StyledEngineProvider>;
         } else if (this.state.strictEasyMode || this.state.currentTab.tab === 'easy') {
-            return <StyledEngineProvider injectFirst><ThemeProvider theme={this.state.theme}>
+            return <div>
                 {!this.state.connected && <Connecting />}
                 <Suspense fallback={<Connecting />}>
                     <EasyMode
@@ -1563,7 +1563,7 @@ class App extends Router {
                         }}
                     />
                 </Suspense>
-            </ThemeProvider></StyledEngineProvider>;
+            </div>;
         }
 
         const expertModePermanent = !window.sessionStorage.getItem('App.expertMode') || (window.sessionStorage.getItem('App.expertMode') === 'true') === !!this.state.systemConfig.common.expertMode;
