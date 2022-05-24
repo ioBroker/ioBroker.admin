@@ -1,20 +1,20 @@
 // LicensesDialog
 import {Component} from 'react';
 import clsx from 'clsx';
-import withWidth from '@material-ui/core/withWidth';
-import {withStyles} from '@material-ui/core/styles';
+import withWidth from '../../withWidth';
+import {withStyles} from '@mui/styles';
 import PropTypes from 'prop-types';
 
-import Button from '@material-ui/core/Button';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TextField from '@material-ui/core/TextField';
+import Button from '@mui/material/Button';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TextField from '@mui/material/TextField';
 
-import IconRefresh from '@material-ui/icons/Refresh';
+import IconRefresh from '@mui/icons-material/Refresh';
 
 const styles = theme => ({
     tabPanel: {

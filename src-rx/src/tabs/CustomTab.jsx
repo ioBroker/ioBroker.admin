@@ -1,9 +1,9 @@
 import React from 'react';
-import withWidth from '@material-ui/core/withWidth';
-import {withStyles} from '@material-ui/core/styles';
+import withWidth from '../withWidth';
+import {withStyles} from '@mui/styles';
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import LinearProgress from '@mui/material/LinearProgress';
 
 import Utils from '../Utils';
 

@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
-import {withStyles} from '@material-ui/core/styles';
+import {withStyles} from '@mui/styles';
 import { ChromePicker } from 'react-color';
 
-import IconButton from '@material-ui/core/IconButton';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
+import IconButton from '@mui/material/IconButton';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
 
-import ClearIcon from '@material-ui/icons/Close';
+import ClearIcon from '@mui/icons-material/Close';
 
-import Utils from '@iobroker/adapter-react/Components/Utils';
-import ColorPicker from '@iobroker/adapter-react/Components/ColorPicker';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import ColorPicker from '@iobroker/adapter-react-v5/Components/ColorPicker';
 
 import ConfigGeneric from './ConfigGeneric';
 

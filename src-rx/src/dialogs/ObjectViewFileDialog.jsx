@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import withWidth from "@material-ui/core/withWidth";
+import { withStyles } from '@mui/styles';
+import withWidth from '../withWidth';
 import PropTypes from 'prop-types';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Fab from '@material-ui/core/Fab';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Fab from '@mui/material/Fab';
 
 // Icons
-import CloseIcon from '@material-ui/icons/Close';
-import PlayIcon from '@material-ui/icons/PlayArrow';
-import DownloadIcon from '@material-ui/icons/GetApp';
+import CloseIcon from '@mui/icons-material/Close';
+import PlayIcon from '@mui/icons-material/PlayArrow';
+import DownloadIcon from '@mui/icons-material/GetApp';
 
 import Utils from '../Utils';
 
@@ -32,7 +32,7 @@ const styles = theme => ({
         height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
     },
     error: {
-        color: theme.palette.type === 'dark' ? '#ff7777' : '#c20000'
+        color: theme.palette.mode === 'dark' ? '#ff7777' : '#c20000'
     },
     image: {
         height: '100%',

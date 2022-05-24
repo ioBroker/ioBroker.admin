@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import PropTypes from 'prop-types';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
 import {
     Button,
@@ -13,10 +13,10 @@ import {
     DialogTitle,
     FormControlLabel,
     IconButton,
-} from '@material-ui/core';
+} from '@mui/material';
 
-import CloseIcon from '@material-ui/icons/Close';
-import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
+import CloseIcon from '@mui/icons-material/Close';
+import OpenInBrowserIcon from '@mui/icons-material/OpenInBrowser';
 
 import Command from '../components/Command';
 
@@ -114,7 +114,7 @@ class CommandDialog extends Component {
                         variant="contained"
                         disabled={!this.props.inBackground}
                         onClick={this.props.onClose}
-                        color="default"
+                        color="grey"
                         startIcon={<CloseIcon />}
                     >
                         {this.props.t('Close')}

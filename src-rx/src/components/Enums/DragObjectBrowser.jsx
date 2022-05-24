@@ -6,10 +6,10 @@ import { getEmptyImage } from 'react-dnd-html5-backend';
 
 import ObjectBrowser from '../../components/ObjectBrowser';
 
-import Card from '@material-ui/core/Card';
-import Icon from '@material-ui/core/Icon';
+import Card from '@mui/material/Card';
+import Icon from '@mui/material/Icon';
 
-import ListIcon from '@material-ui/icons/List';
+import ListIcon from '@mui/icons-material/List';
 
 const DragObjectBrowser = props => {
     let browserProps = props;

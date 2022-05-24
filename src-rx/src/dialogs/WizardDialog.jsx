@@ -1,24 +1,24 @@
 import { Component } from 'react';
-import {withStyles} from '@material-ui/core/styles';
-import withWidth from "@material-ui/core/withWidth";
+import {withStyles} from '@mui/styles';
+import withWidth from "../withWidth";
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
 
 import ToggleThemeMenu from '../components/ToggleThemeMenu';
 
 // Icons
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import CheckIcon from '@material-ui/icons/Check';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import CheckIcon from '@mui/icons-material/Check';
 
 import WizardPasswordTab from '../components/Wizard/WizardPasswordTab';
 import WizardLicenseTab from '../components/Wizard/WizardLicenseTab';
@@ -29,7 +29,7 @@ import WizardAuthSSLTab from '../components/Wizard/WizardAuthSSLTab';
 import WizardPortForwarding from '../components/Wizard/WizardPortForwarding';
 import Logo from '../assets/logo.png';
 import LongLogo from '../assets/longLogo.svg';
-import Router from "@iobroker/adapter-react/Components/Router";
+import Router from "@iobroker/adapter-react-v5/Components/Router";
 
 const TOOLBAR_HEIGHT = 64;
 

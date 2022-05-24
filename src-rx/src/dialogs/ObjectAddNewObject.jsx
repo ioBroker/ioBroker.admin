@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
 
-import { FormControl, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
+import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 
-import AddIcon from '@material-ui/icons/AddBox';
+import AddIcon from '@mui/icons-material/AddBox';
 
-import I18n from '@iobroker/adapter-react/i18n';
-import Utils from '../components/Utils'; // @iobroker/adapter-react/i18n
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import Utils from '../components/Utils'; // @iobroker/adapter-react-v5/i18n
 
 import CustomModal from '../components/CustomModal';
 

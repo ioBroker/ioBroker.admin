@@ -1,21 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 import clsx from 'clsx';
 
-import { Avatar, Badge, CardContent, CardMedia, FormControl, FormHelperText, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from '@material-ui/core';
+import { Avatar, Badge, CardContent, CardMedia, FormControl, FormHelperText, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from '@mui/material';
 
-import RefreshIcon from '@material-ui/icons/Refresh';
-import DeleteIcon from '@material-ui/icons/Delete';
-import BuildIcon from '@material-ui/icons/Build';
-import EditIcon from '@material-ui/icons/Edit';
-import CachedIcon from '@material-ui/icons/Cached';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import DeleteIcon from '@mui/icons-material/Delete';
+import BuildIcon from '@mui/icons-material/Build';
+import EditIcon from '@mui/icons-material/Edit';
+import CachedIcon from '@mui/icons-material/Cached';
 
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 import Adapters from '../../tabs/Adapters';
 import CustomModal from '../CustomModal';
-import { amber, blue, grey, red } from '@material-ui/core/colors';
+import { amber, blue, grey, red } from '@mui/material/colors';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -113,7 +113,7 @@ const styles = theme => ({
         fontSize: 16,
         paddingLeft: 8,
         alignSelf: 'center',
-        color: theme.palette.type === 'dark' ? '#ddd' : '#222',
+        color: theme.palette.mode === 'dark' ? '#ddd' : '#222',
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',

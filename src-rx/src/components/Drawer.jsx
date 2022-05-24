@@ -1,33 +1,33 @@
 import React, { Component } from 'react';
-import withWidth from '@material-ui/core/withWidth';
-import { withStyles } from '@material-ui/core/styles';
+import withWidth from '../withWidth';
+import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
-import { Avatar, Drawer as MaterialDrawer } from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
+import { Avatar, Drawer as MaterialDrawer } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
 
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import AppsIcon from '@material-ui/icons/Apps';
-import InfoIcon from '@material-ui/icons/Info';
-import StoreIcon from '@material-ui/icons/Store';
-import SubtitlesIcon from '@material-ui/icons/Subtitles';
-import ViewListIcon from '@material-ui/icons/ViewList';
-import ArtTrackIcon from '@material-ui/icons/ArtTrack';
-import DvrIcon from '@material-ui/icons/Dvr';
-import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
-import SubscriptionsIcon from '@material-ui/icons/Subscriptions';
-import FlashOnIcon from '@material-ui/icons/FlashOn';
-import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
-import StorageIcon from '@material-ui/icons/Storage';
-import FilesIcon from '@material-ui/icons/FileCopy';
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import AppsIcon from '@mui/icons-material/Apps';
+import InfoIcon from '@mui/icons-material/Info';
+import StoreIcon from '@mui/icons-material/Store';
+import SubtitlesIcon from '@mui/icons-material/Subtitles';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ArtTrackIcon from '@mui/icons-material/ArtTrack';
+import DvrIcon from '@mui/icons-material/Dvr';
+import ViewHeadlineIcon from '@mui/icons-material/ViewHeadline';
+import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
+import FlashOnIcon from '@mui/icons-material/FlashOn';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import StorageIcon from '@mui/icons-material/Storage';
+import FilesIcon from '@mui/icons-material/FileCopy';
 
-import LogoutIcon from '@iobroker/adapter-react/icons/IconLogout';
+import LogoutIcon from '@iobroker/adapter-react-v5/icons/IconLogout';
 
-import Icon from '@iobroker/adapter-react/Components/Icon';
-import I18n from '@iobroker/adapter-react/i18n';
+import Icon from '@iobroker/adapter-react-v5/Components/Icon';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 import DragWrapper from './DragWrapper';
 import CustomDragLayer from './CustomDragLayer';
@@ -36,7 +36,7 @@ import CustomPopper from './CustomPopper';
 import CustomTab from '../tabs/CustomTab';
 import DrawerItem from './DrawerItem';
 import Adapters from '../tabs/Adapters';
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
@@ -121,7 +121,7 @@ const styles = theme => ({
     },
     styleVersion: {
         fontSize: 10,
-        color: theme.palette.type === 'dark' ? '#ffffff5e' : '#0000005e',
+        color: theme.palette.mode === 'dark' ? '#ffffff5e' : '#0000005e',
         alignSelf: 'center',
         marginLeft: 5
     },

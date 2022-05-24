@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import {DialogTitle, LinearProgress, makeStyles, ThemeProvider} from '@material-ui/core';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import {DialogTitle, LinearProgress} from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 
-import IconClose from '@material-ui/icons/Close';
-import IconCheck from '@material-ui/icons/Check';
+import IconClose from '@mui/icons-material/Close';
+import IconCheck from '@mui/icons-material/Check';
 
-import I18n from '@iobroker/adapter-react/i18n';
-import theme from '@iobroker/adapter-react/Theme';
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import theme from '@iobroker/adapter-react-v5/Theme';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 let node = null;
 
@@ -106,7 +108,7 @@ const LicenseDialog = ({ url, cb }) => {
                         cb(false);
                     }}
                     startIcon={<IconClose/>}
-                    color="default">
+                    color="grey">
                     {I18n.t('Close')}
                 </Button>
             </DialogActions>

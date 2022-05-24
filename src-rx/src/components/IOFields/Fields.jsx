@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
 
-import ColorPicker from '@iobroker/adapter-react/Components/ColorPicker';
+import ColorPicker from '@iobroker/adapter-react-v5/Components/ColorPicker';
 
 export function IOTextField(props) {
     let IconCustom = props.icon;

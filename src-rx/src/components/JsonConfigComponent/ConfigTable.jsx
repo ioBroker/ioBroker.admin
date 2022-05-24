@@ -1,18 +1,18 @@
 import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
-import { lighten, withStyles } from '@material-ui/core/styles';
+import { /*lighten,*/ withStyles } from '@mui/styles';
 import clsx from 'clsx';
 
-import FormHelperText from '@material-ui/core/FormHelperText';
-import { IconButton, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, TextField, Toolbar, Tooltip, Typography } from '@material-ui/core';
+import FormHelperText from '@mui/material/FormHelperText';
+import { IconButton, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, TextField, Toolbar, Tooltip, Typography } from '@mui/material';
 
-import AddIcon from '@material-ui/icons/Add';
-import DeleteIcon from '@material-ui/icons/Delete';
-import CloseIcon from '@material-ui/icons/Close';
-import UpIcon from '@material-ui/icons/ArrowUpward';
-import DownIcon from '@material-ui/icons/ArrowDownward';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CloseIcon from '@mui/icons-material/Close';
+import UpIcon from '@mui/icons-material/ArrowUpward';
+import DownIcon from '@mui/icons-material/ArrowDownward';
 
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 import ConfigGeneric from './ConfigGeneric';
 import ConfigPanel from './ConfigPanel';
@@ -48,10 +48,10 @@ const styles = theme => ({
         justifyContent: 'space-between'
     },
     highlight:
-        theme.palette.type === 'light'
+        theme.palette.mode === 'light'
             ? {
                 color: theme.palette.secondary.main,
-                backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+                // backgroundColor: lighten(theme.palette.secondary.light, 0.85),
             }
             : {
                 color: theme.palette.text.primary,

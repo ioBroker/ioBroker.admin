@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardMedia, Fab, IconButton, Tooltip, Typography } from "@material-ui/core";
-import { withStyles } from '@material-ui/core/styles';
+import { Card, CardContent, CardMedia, Fab, IconButton, Tooltip, Typography } from "@mui/material";
+import { withStyles } from '@mui/styles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 
-import Rating from '@material-ui/lab/Rating';
+import Rating from '@mui/lab/Rating';
 
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import AddIcon from '@material-ui/icons/Add';
-import AddToPhotosIcon from '@material-ui/icons/AddToPhotos';
-import BuildIcon from '@material-ui/icons/RotateRight';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import HelpIcon from '@material-ui/icons/Help';
-import PublishIcon from '@material-ui/icons/Publish';
-import CloudIcon from '@material-ui/icons/Cloud';
-import CloudOffIcon from '@material-ui/icons/CloudOff';
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
-import RemoveIcon from '@material-ui/icons/Remove';
-import GitHubIcon from '@material-ui/icons/GitHub';
-import { amber } from '@material-ui/core/colors';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import AddIcon from '@mui/icons-material/Add';
+import AddToPhotosIcon from '@mui/icons-material/AddToPhotos';
+import BuildIcon from '@mui/icons-material/RotateRight';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import HelpIcon from '@mui/icons-material/Help';
+import PublishIcon from '@mui/icons-material/Publish';
+import CloudIcon from '@mui/icons-material/Cloud';
+import CloudOffIcon from '@mui/icons-material/CloudOff';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import RemoveIcon from '@mui/icons-material/Remove';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import { amber } from '@mui/material/colors';
 import sentryIcon from '../../assets/sentry.svg';
 import IsVisible from "../IsVisible";
 
@@ -43,7 +43,7 @@ const styles = theme => ({
         }
     },
     imageBlock: {
-        background: theme.palette.type === 'dark' ? '#848484' : '#c0c0c0',
+        background: theme.palette.mode === 'dark' ? '#848484' : '#c0c0c0',
         minHeight: 60,
         display: 'flex',
         padding: '0 10px 0 10px',
@@ -163,13 +163,13 @@ const styles = theme => ({
         verticalAlign: 'middle',
         paddingLeft: 8,
         paddingTop: 16,
-        color: theme.palette.type === 'dark' ? '#333' : '#333'
+        color: theme.palette.mode === 'dark' ? '#333' : '#333'
     },
     adapterWithAgo: {
         width: 'calc(100% - 145px)',
     },
     description: {
-        color: theme.palette.type === 'dark' ? '#222' : 'inherit'
+        color: theme.palette.mode === 'dark' ? '#222' : 'inherit'
     },
 
     cardContent: {

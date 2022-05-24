@@ -2,18 +2,18 @@ import { Component } from 'react';
 
 import PropTypes from 'prop-types';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-import { Fab, Snackbar } from '@material-ui/core';
-import { Grid } from '@material-ui/core';
-import { LinearProgress } from '@material-ui/core';
+import { Fab, Snackbar } from '@mui/material';
+import { Grid } from '@mui/material';
+import { LinearProgress } from '@mui/material';
 
-import { Skeleton } from '@material-ui/lab';
+import { Skeleton } from '@mui/lab';
 
-import AddIcon from '@material-ui/icons/Add';
-import CheckIcon from '@material-ui/icons/Check';
-import CloseIcon from '@material-ui/icons/Close';
-import CreateIcon from '@material-ui/icons/Create';
+import AddIcon from '@mui/icons-material/Add';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import CreateIcon from '@mui/icons-material/Create';
 
 import Utils from '../Utils';
 

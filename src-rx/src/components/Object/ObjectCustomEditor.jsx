@@ -1,24 +1,24 @@
 import React, { createRef, Component } from 'react';
-import {withStyles} from '@material-ui/core/styles';
-import withWidth from '@material-ui/core/withWidth';
+import {withStyles} from '@mui/styles';
+import withWidth from '../../withWidth';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import JSON5 from 'json5';
 
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
-import Paper from  '@material-ui/core/Paper';
-import FormControlLabel from  '@material-ui/core/FormControlLabel';
-import Checkbox from  '@material-ui/core/Checkbox';
+import LinearProgress from '@mui/material/LinearProgress';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import Paper from  '@mui/material/Paper';
+import FormControlLabel from  '@mui/material/FormControlLabel';
+import Checkbox from  '@mui/material/Checkbox';
 
 // Icons
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-import DialogError from '@iobroker/adapter-react/Dialogs/Error';
-import ConfirmDialog from "@iobroker/adapter-react/Dialogs/Confirm";
+import DialogError from '@iobroker/adapter-react-v5/Dialogs/Error';
+import ConfirmDialog from "@iobroker/adapter-react-v5/Dialogs/Confirm";
 
 import JsonConfigComponent from '../JsonConfigComponent';
 import Utils from '../../Utils';

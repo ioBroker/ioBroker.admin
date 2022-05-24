@@ -2,41 +2,41 @@ import { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
-import withWidth from '@material-ui/core/withWidth';
-import { withStyles } from '@material-ui/core/styles';
+import withWidth from '../withWidth';
+import { withStyles } from '@mui/styles';
 
-import IconButton from '@material-ui/core/IconButton';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import TableCell from '@material-ui/core/TableCell';
-import Tooltip from '@material-ui/core/Tooltip';
-import Paper from '@material-ui/core/Paper';
-import { Hidden, InputAdornment, TextField } from '@material-ui/core';
+import IconButton from '@mui/material/IconButton';
+import LinearProgress from '@mui/material/LinearProgress';
+import TableCell from '@mui/material/TableCell';
+import Tooltip from '@mui/material/Tooltip';
+import Paper from '@mui/material/Paper';
+import { Hidden, InputAdornment, TextField } from '@mui/material';
 
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import BugReportIcon from '@material-ui/icons/BugReport';
-import InfoIcon from '@material-ui/icons/Info';
-import WarningIcon from '@material-ui/icons/Warning';
-import ErrorIcon from '@material-ui/icons/Error';
-import DevicesIcon from '@material-ui/icons/Devices';
-import ViewListIcon from '@material-ui/icons/ViewList';
-import ViewModuleIcon from '@material-ui/icons/ViewModule';
-import CloseIcon from '@material-ui/icons/Close';
-import ViewCompactIcon from '@material-ui/icons/ViewCompact';
-import ScheduleIcon from '@material-ui/icons/Schedule';
-import SettingsIcon from '@material-ui/icons/Lens';
-import FolderIcon from '@material-ui/icons/Folder';
-import FolderOpenIcon from '@material-ui/icons/FolderOpen';
-import ListIcon from '@material-ui/icons/List';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import BugReportIcon from '@mui/icons-material/BugReport';
+import InfoIcon from '@mui/icons-material/Info';
+import WarningIcon from '@mui/icons-material/Warning';
+import ErrorIcon from '@mui/icons-material/Error';
+import DevicesIcon from '@mui/icons-material/Devices';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import CloseIcon from '@mui/icons-material/Close';
+import ViewCompactIcon from '@mui/icons-material/ViewCompact';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import SettingsIcon from '@mui/icons-material/Lens';
+import FolderIcon from '@mui/icons-material/Folder';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import ListIcon from '@mui/icons-material/List';
 import {FaFilter as FilterListIcon} from 'react-icons/fa';
 
-import amber from '@material-ui/core/colors/amber';
-import blue from '@material-ui/core/colors/blue';
-import green from '@material-ui/core/colors/green';
-import grey from '@material-ui/core/colors/grey';
-import red from '@material-ui/core/colors/red';
+import amber from '@mui/material/colors/amber';
+import blue from '@mui/material/colors/blue';
+import green from '@mui/material/colors/green';
+import grey from '@mui/material/colors/grey';
+import red from '@mui/material/colors/red';
 
-import Router from '@iobroker/adapter-react/Components/Router';
+import Router from '@iobroker/adapter-react-v5/Components/Router';
 
 import Config from './Config';
 import Utils from '../Utils';
@@ -179,8 +179,8 @@ const styles = theme => ({
     square: {
         width: 24,
         height: 24,
-        filter: theme.palette.type === 'dark' ? 'brightness(0) invert(1)' : 'grayscale(100%)',
-        opacity: theme.palette.type === 'dark' ? 1 : 0.8
+        filter: theme.palette.mode === 'dark' ? 'brightness(0) invert(1)' : 'grayscale(100%)',
+        opacity: theme.palette.mode === 'dark' ? 1 : 0.8
     },
     primary: {
         filter: 'invert(0%) sepia(90%) saturate(300%) hue-rotate(-537deg) brightness(99%) contrast(97%)'

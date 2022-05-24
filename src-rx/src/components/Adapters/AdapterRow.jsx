@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
@@ -14,24 +14,24 @@ import {
     TableRow,
     Tooltip,
     Typography
-} from '@material-ui/core';
-import { Rating } from '@material-ui/lab';
+} from '@mui/material';
+import { Rating } from '@mui/lab';
 
-import AddIcon from '@material-ui/icons/Add';
-import AddToPhotosIcon from '@material-ui/icons/AddToPhotos';
-import BuildIcon from '@material-ui/icons/RotateRight';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import CloudIcon from '@material-ui/icons/Cloud';
-import CloudOffIcon from '@material-ui/icons/CloudOff';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import GitHubIcon from '@material-ui/icons/GitHub';
-import HelpIcon from '@material-ui/icons/Help';
-import PublishIcon from '@material-ui/icons/Publish';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
-import RemoveIcon from '@material-ui/icons/Remove';
+import AddIcon from '@mui/icons-material/Add';
+import AddToPhotosIcon from '@mui/icons-material/AddToPhotos';
+import BuildIcon from '@mui/icons-material/RotateRight';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import CloudIcon from '@mui/icons-material/Cloud';
+import CloudOffIcon from '@mui/icons-material/CloudOff';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import HelpIcon from '@mui/icons-material/Help';
+import PublishIcon from '@mui/icons-material/Publish';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import RemoveIcon from '@mui/icons-material/Remove';
 import sentryIcon from '../../assets/sentry.svg';
 
 import {
@@ -39,7 +39,7 @@ import {
     blue,
     green,
     red
-} from '@material-ui/core/colors';
+} from '@mui/material/colors';
 
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import IsVisible from '../IsVisible';

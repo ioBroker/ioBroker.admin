@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import BuildIcon from '@material-ui/icons/Build';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Grid from '@material-ui/core/Grid';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import BuildIcon from '@mui/icons-material/Build';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Grid from '@mui/material/Grid';
 
-import I18n from '@iobroker/adapter-react/i18n';
-import { DialogTitle, IconButton, makeStyles, ThemeProvider, Typography } from '@material-ui/core';
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import { DialogTitle, IconButton, Typography } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 
-import theme from '@iobroker/adapter-react/Theme';
-import Utils from '@iobroker/adapter-react/Components/Utils';
-import ExpertIcon from '@iobroker/adapter-react/icons/IconExpert';
-import CheckIcon from "@material-ui/icons/Check";
+import theme from '@iobroker/adapter-react-v5/Theme';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import ExpertIcon from '@iobroker/adapter-react-v5/icons/IconExpert';
+import CheckIcon from "@mui/icons-material/Check";
 
 let node = null;
 

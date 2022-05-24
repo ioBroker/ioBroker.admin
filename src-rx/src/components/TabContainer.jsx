@@ -1,12 +1,12 @@
 import { Component } from 'react';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
-import { Grid } from '@material-ui/core';
-import { Paper } from '@material-ui/core';
+import { Grid } from '@mui/material';
+import { Paper } from '@mui/material';
 
 const styles = {
     root: {

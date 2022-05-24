@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-import { Button, TextField } from '@material-ui/core';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import { Button, TextField } from '@mui/material';
 
-import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
+import DialogSelectID from '@iobroker/adapter-react-v5/Dialogs/SelectID';
 
 import ConfigGeneric from './ConfigGeneric';
 

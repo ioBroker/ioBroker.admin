@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-import TextField from '@material-ui/core/TextField';
-import IconButton from '@material-ui/core/IconButton';
+import TextField from '@mui/material/TextField';
+import IconButton from '@mui/material/IconButton';
 
-import copy from '@iobroker/adapter-react/Components/copy-to-clipboard';
-import CopyIcon from '@iobroker/adapter-react/icons/IconCopy';
+import copy from '@iobroker/adapter-react-v5/Components/copy-to-clipboard';
+import CopyIcon from '@iobroker/adapter-react-v5/icons/IconCopy';
 
 import ConfigGeneric from './ConfigGeneric';
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import withWidth from '@material-ui/core/withWidth';
+import { withStyles } from '@mui/styles';
+import withWidth from '../withWidth';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
@@ -11,22 +11,22 @@ import 'ace-builds/src-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-noconflict/theme-chrome';
 import 'ace-builds/src-noconflict/ext-language_tools';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import { IconButton } from '@material-ui/core';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import { IconButton } from '@mui/material';
 
-import NoImage from '@iobroker/adapter-react/assets/no_icon.svg';
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import NoImage from '@iobroker/adapter-react-v5/assets/no_icon.svg';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 import AdminUtils from '../Utils';
 
 // Icons
 import { FaCopy as CopyIcon } from 'react-icons/fa';
-import Brightness5Icon from '@material-ui/icons/Brightness6';
-import CloseIcon from '@material-ui/icons/Close';
-import SaveIcon from '@material-ui/icons/Save';
+import Brightness5Icon from '@mui/icons-material/Brightness6';
+import CloseIcon from '@mui/icons-material/Close';
+import SaveIcon from '@mui/icons-material/Save';
 
 const styles = theme => ({
     dialog: {

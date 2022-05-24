@@ -1,27 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import { Tooltip, AppBar, Avatar, Box, Checkbox, CircularProgress, LinearProgress, makeStyles, Paper, Step, StepLabel, Stepper, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, ThemeProvider, Typography, } from '@material-ui/core';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import { Tooltip, AppBar, Avatar, Box, Checkbox, CircularProgress, LinearProgress, Paper, Step, StepLabel, Stepper, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
-import SearchIcon from '@material-ui/icons/Search';
-import CloseIcon from '@material-ui/icons/Close';
-import LibraryAddIcon from '@material-ui/icons/LibraryAdd';
-import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
-import ReportProblemIcon from '@material-ui/icons/ReportProblem';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
+import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 
-import I18n from '@iobroker/adapter-react/i18n';
-import theme from '@iobroker/adapter-react/Theme';
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import theme from '@iobroker/adapter-react-v5/Theme';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 import Command from '../components/Command';
-import SelectWithIcon from '@iobroker/adapter-react/Components/SelectWithIcon';
+import SelectWithIcon from '@iobroker/adapter-react-v5/Components/SelectWithIcon';
 import { licenseDialogFunc } from './LicenseDialog';
 import { GenerateInputsFunc } from './GenereteInputsModal';
 import { useStateLocal } from '../helpers/hooks/useStateLocal';
@@ -931,7 +933,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                         }
                         stepDown();
                     }}
-                    color="default"
+                    color="grey"
                     startIcon={<NavigateBeforeIcon />}
                 >
                     {I18n.t('Back')}
@@ -958,7 +960,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                     checkInstall();
                                 }
                             }}
-                            color={step === 1 ? 'primary' : 'default'}
+                            color={step === 1 ? 'primary' : 'grey'}
                             startIcon={step === 1 ? <LibraryAddIcon /> : <NavigateNextIcon />}
                         >
                             {I18n.t(step === 1 ? 'Create instances' : 'Use last scan')}
@@ -969,7 +971,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     variant="contained"
                     disabled={disableScanner}
                     onClick={() => onClose()}
-                    color={step === 2 ? 'primary' : 'default'}
+                    color={step === 2 ? 'primary' : 'grey'}
                     startIcon={<CloseIcon />}
                 >
                     {I18n.t(step === 2 ? 'Finish' : 'Close')}

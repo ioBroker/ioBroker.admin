@@ -1,23 +1,25 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import { Avatar, Card, Checkbox, DialogTitle, FormControlLabel, makeStyles, MenuItem, Select, ThemeProvider } from '@material-ui/core';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import { Avatar, Card, Checkbox, DialogTitle, FormControlLabel, MenuItem, Select } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 
-import WarningIcon from '@material-ui/icons/Warning';
-import ScheduleIcon from '@material-ui/icons/Schedule';
-import SettingsIcon from '@material-ui/icons/Lens';
-import IconCheck from '@material-ui/icons/Check';
-import IconClose from '@material-ui/icons/Close';
+import WarningIcon from '@mui/icons-material/Warning';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import SettingsIcon from '@mui/icons-material/Lens';
+import IconCheck from '@mui/icons-material/Check';
+import IconClose from '@mui/icons-material/Close';
 
-import { green, grey, orange, red } from '@material-ui/core/colors';
+import { green, grey, orange, red } from '@mui/material/colors';
 
-import I18n from '@iobroker/adapter-react/i18n';
-import theme from '@iobroker/adapter-react/Theme';
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import theme from '@iobroker/adapter-react-v5/Theme';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 import filterIcon from '../../assets/filter.svg';
 

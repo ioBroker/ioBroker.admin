@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 import clsx from 'clsx';
 
-import Grid from '@material-ui/core/Grid';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Grid from '@mui/material/Grid';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import ConfigGeneric from './ConfigGeneric';
 import ConfigText from './ConfigText';
@@ -104,7 +104,7 @@ const styles = theme => ({
     },
     primary: {
         backgroundColor: theme.palette.primary.main,
-        color: theme.palette.type === 'dark' ? 'inherit' : '#FFF'
+        color: theme.palette.mode === 'dark' ? 'inherit' : '#FFF'
     },
     secondary: {
         backgroundColor: theme.palette.secondary.main,

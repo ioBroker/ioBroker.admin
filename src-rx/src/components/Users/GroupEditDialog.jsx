@@ -1,32 +1,32 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
-import { withStyles } from '@material-ui/core';
+import { withStyles } from '@mui/styles';
 import clsx from 'clsx';
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Grid from '@material-ui/core/Grid';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Grid from '@mui/material/Grid';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 
-import TextFieldsIcon from '@material-ui/icons/TextFields';
-import DescriptionIcon from '@material-ui/icons/Description';
-import LocalOfferIcon from '@material-ui/icons/LocalOffer';
-import PageviewIcon from '@material-ui/icons/Pageview';
-import ColorLensIcon from '@material-ui/icons/ColorLens';
-import ImageIcon from '@material-ui/icons/Image';
-import IconCancel from '@material-ui/icons/Close';
-import IconCheck from '@material-ui/icons/Check';
+import TextFieldsIcon from '@mui/icons-material/TextFields';
+import DescriptionIcon from '@mui/icons-material/Description';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import PageviewIcon from '@mui/icons-material/Pageview';
+import ColorLensIcon from '@mui/icons-material/ColorLens';
+import ImageIcon from '@mui/icons-material/Image';
+import IconCancel from '@mui/icons-material/Close';
+import IconCheck from '@mui/icons-material/Check';
 
 import { IOTextField, IOColorPicker } from '../IOFields/Fields';
 
-import Utils from '@iobroker/adapter-react/Components/Utils';
-import IconPicker from '@iobroker/adapter-react/Components/IconPicker';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import IconPicker from '@iobroker/adapter-react-v5/Components/IconPicker';
 
 import Group1 from '../../assets/groups/group1.svg';
 import Group2 from '../../assets/groups/group2.svg';

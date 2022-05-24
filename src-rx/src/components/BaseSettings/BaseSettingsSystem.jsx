@@ -1,13 +1,13 @@
 import { createRef, Component } from 'react';
-import {withStyles} from '@material-ui/core/styles';
-import withWidth from "@material-ui/core/withWidth";
+import {withStyles} from '@mui/styles';
+import withWidth from '../../withWidth';
 import PropTypes from 'prop-types';
 
-import Grid from '@material-ui/core/Grid';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import TextField from '@material-ui/core/TextField';
-import Paper from  '@material-ui/core/Paper';
+import Grid from '@mui/material/Grid';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import TextField from '@mui/material/TextField';
+import Paper from  '@mui/material/Paper';
 
 const styles = theme => ({
     paper: {

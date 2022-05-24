@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-import { amber, blue, red } from '@material-ui/core/colors';
+import { amber, blue, red } from '@mui/material/colors';
 
-import { Grid, LinearProgress, Paper, Switch, Typography } from '@material-ui/core';
+import { Grid, LinearProgress, Paper, Switch, Typography } from '@mui/material';
 
-import Router from '@iobroker/adapter-react/Components/Router';
+import Router from '@iobroker/adapter-react-v5/Components/Router';
 
 import Utils from '../Utils';
 

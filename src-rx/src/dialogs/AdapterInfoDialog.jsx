@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-import { AppBar } from '@material-ui/core';
-import { Button } from '@material-ui/core';
-import { Grid } from '@material-ui/core';
-import { Toolbar } from '@material-ui/core';
+import { AppBar } from '@mui/material';
+import { Button } from '@mui/material';
+import { Grid } from '@mui/material';
+import { Toolbar } from '@mui/material';
 
-import CloseIcon from '@material-ui/icons/Close';
-import LinkIcon from '@material-ui/icons/Link';
+import CloseIcon from '@mui/icons-material/Close';
+import LinkIcon from '@mui/icons-material/Link';
 
-import Router from '@iobroker/adapter-react/Components/Router';
-import I18n from '@iobroker/adapter-react/i18n';
-import Loader from '@iobroker/adapter-react/Components/Loader';
+import Router from '@iobroker/adapter-react-v5/Components/Router';
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import Loader from '@iobroker/adapter-react-v5/Components/Loader';
 
 import Markdown from '../components/Markdown';
 
@@ -251,7 +251,7 @@ class AdapterInfoDialog extends Component {
                         <Grid item>
                             <Button
                                 variant="contained"
-                                color="default"
+                                color="grey"
                                 onClick={ () => this.closeDialog() }
                                 startIcon={<CloseIcon />}
                             >

@@ -1,9 +1,9 @@
 import { Component } from 'react';
-import {withStyles} from '@material-ui/core/styles';
-import withWidth from '@material-ui/core/withWidth';
+import {withStyles} from '@mui/styles';
+import withWidth from '../../withWidth';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import Paper from  '@material-ui/core/Paper';
+import Paper from  '@mui/material/Paper';
 import AceEditor from 'react-ace';
 // import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/mode-json';

@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import { Button, TextField } from '@material-ui/core';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContentText from '@mui/material/DialogContentText';
+import { Button, TextField } from '@mui/material';
 
-import CloseIcon from '@material-ui/icons/Close';
-import {TimeIcon} from '@material-ui/pickers/_shared/icons/TimeIcon';
-import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import TimeIcon from '@mui/icons-material/AccessTime';
+import CheckIcon from '@mui/icons-material/Check';
 
 import {MOBILE_WIDTH} from '../helpers/MobileDialog';
 
@@ -97,7 +97,7 @@ class SlowConnectionWarningDialog extends Component {
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
-                    color="default"
+                    color="grey"
                     startIcon={<CloseIcon />}
                 >
                     {this.mobile ? null : this.props.t('Cancel')}

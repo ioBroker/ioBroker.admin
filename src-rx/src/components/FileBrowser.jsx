@@ -7,57 +7,57 @@
  * MIT License
  *
  **/
-import withWidth from '@material-ui/core/withWidth';
-import { withStyles } from '@material-ui/core/styles';
+import withWidth from '../withWidth';
+import { withStyles } from '@mui/styles';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Dropzone from 'react-dropzone';
 
-import LinearProgress from '@material-ui/core/LinearProgress';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import Fab from '@material-ui/core/Fab';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import Input from '@material-ui/core/Input';
-import { Hidden, Tooltip } from '@material-ui/core';
+import LinearProgress from '@mui/material/LinearProgress';
+import CircularProgress from '@mui/material/CircularProgress';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import Fab from '@mui/material/Fab';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import Input from '@mui/material/Input';
+import { Hidden, Tooltip } from '@mui/material';
 
-import ErrorDialog from '@iobroker/adapter-react/Dialogs/Error';
-import Utils from '@iobroker/adapter-react/Components/Utils';
-import TextInputDialog from '@iobroker/adapter-react/Dialogs/TextInput';
-import { EXTENSIONS } from '@iobroker/adapter-react/Components/FileViewer';
+import ErrorDialog from '@iobroker/adapter-react-v5/Dialogs/Error';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import TextInputDialog from '@iobroker/adapter-react-v5/Dialogs/TextInput';
+import { EXTENSIONS } from '@iobroker/adapter-react-v5/Components/FileViewer';
 import FileViewer from './FileViewer';
-//import FileViewer from '@iobroker/adapter-react/Components/FileViewer';
+//import FileViewer from '@iobroker/adapter-react-v5/Components/FileViewer';
 
 // Icons
-import RefreshIcon from '@material-ui/icons/Refresh';
-import CloseIcon from '@material-ui/icons/Close';
-import JsonIcon from '@material-ui/icons/Bookmark';
-import CssIcon from '@material-ui/icons/BookmarkBorder';
-import HtmlIcon from '@material-ui/icons/Description';
-import EditIcon from '@material-ui/icons/Edit';
-import JSIcon from '@material-ui/icons/Code';
-import FileIcon from '@material-ui/icons/InsertDriveFile';
-import UploadIcon from '@material-ui/icons/Publish';
-import MusicIcon from '@material-ui/icons/MusicNote';
-import DownloadIcon from '@material-ui/icons/SaveAlt';
-import AddFolderIcon from '@material-ui/icons/CreateNewFolder';
-import EmptyFilterIcon from '@material-ui/icons/FolderOpen';
-import IconList from '@material-ui/icons/List';
-import IconTile from '@material-ui/icons/ViewModule';
-import IconBack from '@material-ui/icons/ArrowBack';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Brightness5Icon from '@material-ui/icons/Brightness6';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import CloseIcon from '@mui/icons-material/Close';
+import JsonIcon from '@mui/icons-material/Bookmark';
+import CssIcon from '@mui/icons-material/BookmarkBorder';
+import HtmlIcon from '@mui/icons-material/Description';
+import EditIcon from '@mui/icons-material/Edit';
+import JSIcon from '@mui/icons-material/Code';
+import FileIcon from '@mui/icons-material/InsertDriveFile';
+import UploadIcon from '@mui/icons-material/Publish';
+import MusicIcon from '@mui/icons-material/MusicNote';
+import DownloadIcon from '@mui/icons-material/SaveAlt';
+import AddFolderIcon from '@mui/icons-material/CreateNewFolder';
+import EmptyFilterIcon from '@mui/icons-material/FolderOpen';
+import IconList from '@mui/icons-material/List';
+import IconTile from '@mui/icons-material/ViewModule';
+import IconBack from '@mui/icons-material/ArrowBack';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Brightness5Icon from '@mui/icons-material/Brightness6';
 
-import ExpertIcon from '@iobroker/adapter-react/icons/IconExpert';
-import NoImage from '@iobroker/adapter-react/assets/no_icon.svg';
-import IconClosed from '@iobroker/adapter-react/icons/IconClosed';
-import IconOpen from '@iobroker/adapter-react/icons/IconOpen';
+import ExpertIcon from '@iobroker/adapter-react-v5/icons/IconExpert';
+import NoImage from '@iobroker/adapter-react-v5/assets/no_icon.svg';
+import IconClosed from '@iobroker/adapter-react-v5/icons/IconClosed';
+import IconOpen from '@iobroker/adapter-react-v5/icons/IconOpen';
 
 const ROW_HEIGHT   = 32;
 const BUTTON_WIDTH = 32;
@@ -134,7 +134,7 @@ const styles = theme => ({
         top: 22,
         left: 18,
         zIndex: 1,
-        color: theme.palette.type === 'dark' ? '#FFF' : '#000',
+        color: theme.palette.mode === 'dark' ? '#FFF' : '#000',
     },
     itemSizeTile: {
         width: '100%',
@@ -286,7 +286,7 @@ const styles = theme => ({
         width: 'calc(100% - 40px)',
         height: 'calc(100% - 40px)',
         position: 'relative',
-        color: theme.palette.type === 'dark' ? '#222' : '#CCC'
+        color: theme.palette.mode === 'dark' ? '#222' : '#CCC'
     },
     uploadCenterIcon: {
         width: '25%',
@@ -336,7 +336,7 @@ const styles = theme => ({
         paddingBottom: 4,
         cursor: 'pointer',
         '&:hover': {
-            background: theme.palette.type === 'dark' ? '#333' : '#CCC',
+            background: theme.palette.mode === 'dark' ? '#333' : '#CCC',
         },
     },
     pathDivBreadcrumbSlash: {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
 import AceEditor from 'react-ace';
 // import 'ace-builds/webpack-resolver';
@@ -10,34 +10,34 @@ import 'ace-builds/src-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-noconflict/theme-chrome';
 import 'ace-builds/src-noconflict/ext-language_tools';
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Fab from '@material-ui/core/Fab';
-import IconButton from '@material-ui/core/IconButton';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import TextField from '@mui/material/TextField';
+import Grid from '@mui/material/Grid';
+import InputAdornment from '@mui/material/InputAdornment';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Fab from '@mui/material/Fab';
+import IconButton from '@mui/material/IconButton';
 
-import IconClose from '@material-ui/icons/Close';
-import IconCheck from '@material-ui/icons/Check';
-import AddIcon from '@material-ui/icons/Add';
+import IconClose from '@mui/icons-material/Close';
+import IconCheck from '@mui/icons-material/Check';
+import AddIcon from '@mui/icons-material/Add';
 import {FaClipboard as IconCopyClipboard} from 'react-icons/fa';
-import IconCopy from '@material-ui/icons/FileCopy';
-import IconFx from '@iobroker/adapter-react/icons/IconFx';
+import IconCopy from '@mui/icons-material/FileCopy';
+import IconFx from '@iobroker/adapter-react-v5/icons/IconFx';
 
-import DialogSelectID from '@iobroker/adapter-react/Dialogs/SelectID';
-import Utils from '@iobroker/adapter-react/Components/Utils';
-import I18n from '@iobroker/adapter-react/i18n';
-import copy from "@iobroker/adapter-react/Components/copy-to-clipboard";
-import { FormControl, InputLabel, MenuItem, Select, Tooltip } from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
+import DialogSelectID from '@iobroker/adapter-react-v5/Dialogs/SelectID';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import copy from "@iobroker/adapter-react-v5/Components/copy-to-clipboard";
+import { FormControl, InputLabel, MenuItem, Select, Tooltip } from '@mui/material';
+import { Autocomplete } from '@mui/lab';
 import UploadImage from '../UploadImage';
 
 const styles = theme => ({

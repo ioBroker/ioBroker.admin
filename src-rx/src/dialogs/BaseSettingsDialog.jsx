@@ -1,19 +1,19 @@
 import React, {Component} from 'react';
-import withWidth from '@material-ui/core/withWidth';
-import {withStyles} from '@material-ui/core/styles';
+import withWidth from '../withWidth';
+import {withStyles} from '@mui/styles';
 import PropTypes from 'prop-types';
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import AppBar from '@material-ui/core/AppBar';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
-import Button from '@material-ui/core/Button';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import AppBar from '@mui/material/AppBar';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import Button from '@mui/material/Button';
+import LinearProgress from '@mui/material/LinearProgress';
 
-import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
+import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 
 import BaseSettingsSystem from '../components/BaseSettings/BaseSettingsSystem';
 import BaseSettingsMultihost from '../components/BaseSettings/BaseSettingsMultihost';
@@ -23,8 +23,8 @@ import BaseSettingsLog from '../components/BaseSettings/BaseSettingsLog';
 import BaseSettingsPlugins from '../components/BaseSettings/BaseSettingsPlugins';
 
 // icons
-import CheckIcon from '@material-ui/icons/Check';
-import CloseIcon from '@material-ui/icons/Close';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 
 const styles = theme => ({
     content: {

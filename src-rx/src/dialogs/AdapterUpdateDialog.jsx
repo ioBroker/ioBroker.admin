@@ -1,30 +1,30 @@
 import React, { Component } from 'react';
 import semver from 'semver';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
 import PropTypes from 'prop-types';
 
-import { Button } from '@material-ui/core';
-import { Dialog } from '@material-ui/core';
-import { DialogActions } from '@material-ui/core';
-import { DialogContent } from '@material-ui/core';
-import { DialogTitle } from '@material-ui/core';
-import { Grid } from '@material-ui/core';
-import { IconButton } from '@material-ui/core';
-import { Typography } from '@material-ui/core';
+import { Button } from '@mui/material';
+import { Dialog } from '@mui/material';
+import { DialogActions } from '@mui/material';
+import { DialogContent } from '@mui/material';
+import { DialogTitle } from '@mui/material';
+import { Grid } from '@mui/material';
+import { IconButton } from '@mui/material';
+import { Typography } from '@mui/material';
 
-import CloseIcon from '@material-ui/icons/Close';
-import CheckIcon from '@material-ui/icons/Check';
-import IconWarning from '@material-ui/icons/Warning';
-import IconError from '@material-ui/icons/Error';
-import IconInfo from '@material-ui/icons/Info';
-import IconWeb from '@material-ui/icons/Public';
+import CloseIcon from '@mui/icons-material/Close';
+import CheckIcon from '@mui/icons-material/Check';
+import IconWarning from '@mui/icons-material/Warning';
+import IconError from '@mui/icons-material/Error';
+import IconInfo from '@mui/icons-material/Info';
+import IconWeb from '@mui/icons-material/Public';
 
 import State from '../components/State';
 import {MOBILE_WIDTH} from '../helpers/MobileDialog';
-import I18n from '@iobroker/adapter-react/i18n';
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 const styles = theme => {
     return ({
@@ -42,7 +42,7 @@ const styles = theme => {
             borderRadius: 3,
             paddingLeft: 10,
             fontWeight: 'bold',
-            color: theme.palette.type === 'dark' ? 'black' : 'white'
+            color: theme.palette.mode === 'dark' ? 'black' : 'white'
         },
         wrapperButton: {
         },
@@ -82,21 +82,21 @@ const styles = theme => {
             borderRadius: 3,
             paddingLeft: 10,
             fontWeight: 'bold',
-            color: theme.palette.type === 'dark' ? 'black' : 'white'
+            color: theme.palette.mode === 'dark' ? 'black' : 'white'
         },
         messageTitle_error: {
             background: '#f5614d',
             borderRadius: 3,
             paddingLeft: 10,
             fontWeight: 'bold',
-            color: theme.palette.type === 'dark' ? 'black' : 'white'
+            color: theme.palette.mode === 'dark' ? 'black' : 'white'
         },
         messageTitle_info: {
             background: '#5abd29',
             borderRadius: 3,
             paddingLeft: 10,
             fontWeight: 'bold',
-            color: theme.palette.type === 'dark' ? 'black' : 'white'
+            color: theme.palette.mode === 'dark' ? 'black' : 'white'
         },
         messageDialogText: {
             fontSize: 18
@@ -505,7 +505,7 @@ class AdapterUpdateDialog extends Component {
                 <Button
                     variant="contained"
                     onClick={() => this.props.onClose()}
-                    color="default"
+                    color="grey"
                     startIcon={<CloseIcon />}
                 >
                     {this.mobile ? null : this.t('Close')}

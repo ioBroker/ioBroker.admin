@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 import ConfigGeneric from './ConfigGeneric';
 
 const styles = theme => ({
     fullWidth: {
         width: '100%',
-        backgroundColor: theme.palette.type === 'dark' ? '#FFF' : '#000',
+        backgroundColor: theme.palette.mode === 'dark' ? '#FFF' : '#000',
         borderStyle: 'hidden',
     },
     primary: {

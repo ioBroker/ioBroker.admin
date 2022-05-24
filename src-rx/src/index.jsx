@@ -1,17 +1,17 @@
 import ReactDOM from 'react-dom';
 import pack from '../package.json';
-import { MuiThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import * as Sentry from '@sentry/browser';
 import * as SentryIntegrations from '@sentry/integrations';
-import DateFnsUtils from '@date-io/date-fns';
 
-import theme from '@iobroker/adapter-react/Theme';
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import theme from '@iobroker/adapter-react-v5/Theme';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 import App from './App';
 
 import './index.css';
 import { ContextWrapperProvider } from './components/ContextWrapper';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
 
 window.adapterName = 'admin';
 
@@ -20,16 +20,17 @@ let themeName = Utils.getThemeName();
 
 function build() {
     return ReactDOM.render(
-        <MuiThemeProvider theme={theme(themeName)}>
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <ContextWrapperProvider>
-                <App onThemeChange={_themeName => {
-                    themeName = _themeName;
-                    build();
-                }} />
-            </ContextWrapperProvider>
-            </MuiPickersUtilsProvider>
-        </MuiThemeProvider>,
+        <StyledEngineProvider injectFirst><ThemeProvider theme={theme(themeName)}>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <ContextWrapperProvider>
+                    <App onThemeChange={_themeName => {
+                        themeName = _themeName;
+                        build();
+                    }} />
+                </ContextWrapperProvider>
+                </LocalizationProvider>
+            </ThemeProvider>
+        </StyledEngineProvider>,
         document.getElementById('root')
     );
 }

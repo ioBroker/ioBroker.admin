@@ -2,8 +2,8 @@
 
 import {Component} from 'react';
 import PropTypes from 'prop-types';
-import withWidth from '@material-ui/core/withWidth';
-import {withStyles} from '@material-ui/core/styles';
+import withWidth from '../../withWidth';
+import {withStyles} from '@mui/styles';
 
 import AceEditor from 'react-ace';
 // import 'ace-builds/webpack-resolver';
@@ -12,9 +12,9 @@ import 'ace-builds/src-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-noconflict/theme-chrome';
 import 'ace-builds/src-noconflict/ext-language_tools';
 
-import {Grid, Paper, Card, Typography, MenuItem, FormControl, Select, InputLabel} from '@material-ui/core';
+import {Grid, Paper, Card, Typography, MenuItem, FormControl, Select, InputLabel} from '@mui/material';
 
-import blueGrey from '@material-ui/core/colors/blueGrey';
+import blueGrey from '@mui/material/colors/blueGrey';
 
 const styles = theme => ({
     tabPanel: {

@@ -1,11 +1,11 @@
 import React from 'react';
-// import Menu from '@material-ui/core/Menu';
-// import MenuItem from '@material-ui/core/MenuItem';
-import { IconButton, Tooltip } from '@material-ui/core';
-import Brightness4Icon from '@material-ui/icons/Brightness4';
-import Brightness5Icon from '@material-ui/icons/Brightness5';
-import Brightness6Icon from '@material-ui/icons/Brightness6';
-import Brightness7Icon from '@material-ui/icons/Brightness7';
+// import Menu from '@mui/material/Menu';
+// import MenuItem from '@mui/material/MenuItem';
+import { IconButton, Tooltip } from '@mui/material';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness5Icon from '@mui/icons-material/Brightness5';
+import Brightness6Icon from '@mui/icons-material/Brightness6';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 
 // const themeNames = ['dark', 'blue', 'colored', 'light'];
 

@@ -2,20 +2,20 @@ import React, { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 
-import { Avatar, Badge, Card, CardContent, CardMedia, Fab, FormControl, FormHelperText, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from '@material-ui/core';
+import { Avatar, Badge, Card, CardContent, CardMedia, Fab, FormControl, FormHelperText, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from '@mui/material';
 
-import { withStyles } from '@material-ui/core/styles';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import CachedIcon from '@material-ui/icons/Cached';
-import BuildIcon from '@material-ui/icons/Build';
+import { withStyles } from '@mui/styles';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import CachedIcon from '@mui/icons-material/Cached';
+import BuildIcon from '@mui/icons-material/Build';
 
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 import Adapters from '../../tabs/Adapters';
-import { amber, blue, grey, red } from '@material-ui/core/colors';
+import { amber, blue, grey, red } from '@mui/material/colors';
 import CustomModal from '../CustomModal';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
@@ -167,7 +167,7 @@ const styles = theme => ({
         verticalAlign: 'middle',
         paddingLeft: 8,
         paddingTop: 16,
-        color: theme.palette.type === 'dark' ? '#333' : '#555'
+        color: theme.palette.mode === 'dark' ? '#333' : '#555'
     },
     cardContent: {
         marginTop: 16,
@@ -177,7 +177,7 @@ const styles = theme => ({
         overflow: 'auto',
         paddingTop: 0,
         backgroundColor: theme.palette.background.paper,
-        color: theme.palette.type === 'dark' ? '#EEE' : '#111',
+        color: theme.palette.mode === 'dark' ? '#EEE' : '#111',
     },
     cardContentH5: {
         height: '100%',

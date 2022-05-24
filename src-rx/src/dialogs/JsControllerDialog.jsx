@@ -3,20 +3,22 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import clsx from 'clsx';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import IconCopy from '@iobroker/adapter-react/icons/IconCopy';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Accordion, AccordionDetails, AccordionSummary, Card, DialogTitle, IconButton, makeStyles, ThemeProvider } from '@material-ui/core';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import IconCopy from '@iobroker/adapter-react-v5/icons/IconCopy';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Accordion, AccordionDetails, AccordionSummary, Card, DialogTitle, IconButton } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 
-import CloseIcon from '@material-ui/icons/Close';
-import DescriptionIcon from '@material-ui/icons/Description';
+import CloseIcon from '@mui/icons-material/Close';
+import DescriptionIcon from '@mui/icons-material/Description';
 
-import I18n from '@iobroker/adapter-react/i18n';
-import theme from '@iobroker/adapter-react/Theme';
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import theme from '@iobroker/adapter-react-v5/Theme';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 let node = null;
 
@@ -53,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 300,
         borderRadius: 3,
         background: '#4dabf5',
-        color: theme.palette.type === 'dark' ? 'black' : 'white'
+        color: theme.palette.mode === 'dark' ? 'black' : 'white'
     },
     h22: {
         padding: 0,
@@ -62,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 300,
         borderRadius: 3,
         background: '#4dabf5',
-        color: theme.palette.type === 'dark' ? 'black' : 'white'
+        color: theme.palette.mode === 'dark' ? 'black' : 'white'
     },
     standardText: {
         fontSize: 15,
@@ -338,7 +340,7 @@ sudo -u iobroker -H npm install iobroker.js-controller`
                         window.open('https://github.com/ioBroker/ioBroker.js-controller/blob/master/CHANGELOG.md', '_blank')
                         onClose();
                     }}
-                    color="default"
+                    color="grey"
                     startIcon={<DescriptionIcon />}
                 >
                     {I18n.t('Show whole changelog')}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 import clsx from 'clsx';
 
 import {
@@ -8,31 +8,31 @@ import {
     Button, CardMedia, FormControl, Grid, Hidden, IconButton,
     InputLabel, MenuItem, Select, Tooltip, Typography,
     FormControlLabel, Checkbox, FormHelperText
-} from '@material-ui/core';
-import { amber, blue, green, grey, red, orange } from '@material-ui/core/colors';
+} from '@mui/material';
+import { amber, blue, green, grey, red, orange } from '@mui/material/colors';
 
-import RefreshIcon from '@material-ui/icons/Refresh';
-import BuildIcon from '@material-ui/icons/Build';
-import InputIcon from '@material-ui/icons/Input';
-import DeleteIcon from '@material-ui/icons/Delete';
-import LowPriorityIcon from '@material-ui/icons/LowPriority';
-import HostIcon from '@material-ui/icons/Storage';
-import MemoryIcon from '@material-ui/icons/Memory';
-import ScheduleIcon from '@material-ui/icons/Schedule';
-import ViewCompactIcon from '@material-ui/icons/ViewCompact';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import BuildIcon from '@mui/icons-material/Build';
+import InputIcon from '@mui/icons-material/Input';
+import DeleteIcon from '@mui/icons-material/Delete';
+import LowPriorityIcon from '@mui/icons-material/LowPriority';
+import HostIcon from '@mui/icons-material/Storage';
+import MemoryIcon from '@mui/icons-material/Memory';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import ViewCompactIcon from '@mui/icons-material/ViewCompact';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import sentry from '../../assets/sentry.svg';
 import noSentry from '../../assets/sentryNo.svg';
-import EditIcon from '@material-ui/icons/Edit';
-import ImportExportIcon from '@material-ui/icons/ImportExport';
-import PauseIcon from '@material-ui/icons/Pause';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import EditIcon from '@mui/icons-material/Edit';
+import ImportExportIcon from '@mui/icons-material/ImportExport';
+import PauseIcon from '@mui/icons-material/Pause';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
-import I18n from '@iobroker/adapter-react/i18n';
-import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
-import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
-import TextWithIcon from '@iobroker/adapter-react/Components/TextWithIcon';
-import SelectWithIcon from '@iobroker/adapter-react/Components/SelectWithIcon';
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import ComplexCron from '@iobroker/adapter-react-v5/Dialogs/ComplexCron';
+import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
+import TextWithIcon from '@iobroker/adapter-react-v5/Components/TextWithIcon';
+import SelectWithIcon from '@iobroker/adapter-react-v5/Components/SelectWithIcon';
 
 import InstanceInfo from './InstanceInfo';
 import State from '../State';
@@ -188,7 +188,7 @@ const styles = theme => ({
         verticalAlign: 'middle',
         paddingLeft: 8,
         paddingTop: 16,
-        color: theme.palette.type === 'dark' ? '#333' : '#555'
+        color: theme.palette.mode === 'dark' ? '#333' : '#555'
     },
     hide: {
         visibility: 'hidden'

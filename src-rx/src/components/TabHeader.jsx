@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 
 const TabHeader = props => {
     return <Grid

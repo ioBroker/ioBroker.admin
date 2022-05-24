@@ -1,26 +1,26 @@
-import withWidth from '@material-ui/core/withWidth';
+import withWidth from '../withWidth';
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Snackbar from '@material-ui/core/Snackbar';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContentText from '@mui/material/DialogContentText';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Snackbar from '@mui/material/Snackbar';
 
 // icons
-import IconCancel from '@material-ui/icons/Close';
-import IconDeleteOne from '@material-ui/icons/Delete';
-import IconDeleteAll from '@material-ui/icons/Delete';
+import IconCancel from '@mui/icons-material/Close';
+import IconDeleteOne from '@mui/icons-material/Delete';
+import IconDeleteAll from '@mui/icons-material/Delete';
 
 import ObjectBrowser from '../components/ObjectBrowser';
 import ObjectCustomDialog from '../dialogs/ObjectCustomDialog';
-import Router from '@iobroker/adapter-react/Components/Router';
+import Router from '@iobroker/adapter-react-v5/Components/Router';
 import ObjectBrowserValue from '../components/Object/ObjectBrowserValue';
 import ObjectBrowserEditObject from '../components/Object/ObjectBrowserEditObject';
 import ObjectBrowserEditRole from '../components/Object/ObjectBrowserEditRole';

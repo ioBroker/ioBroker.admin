@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Checkbox, LinearProgress, Switch } from '@material-ui/core';
+import { Checkbox, LinearProgress, Switch } from '@mui/material';
 
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 import Utils from '../Utils';
 import CustomModal from '../components/CustomModal';
-import SelectWithIcon from '@iobroker/adapter-react/Components/SelectWithIcon';
+import SelectWithIcon from '@iobroker/adapter-react-v5/Components/SelectWithIcon';
 
 const readWriteArray = [
     {

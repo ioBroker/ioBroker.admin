@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 import {
     Grid,
     Tooltip,
     Typography
-} from '@material-ui/core';
+} from '@mui/material';
 const styles = theme => ({
     nowrap:{
         flexFlow: 'nowrap',

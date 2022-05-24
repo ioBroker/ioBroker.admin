@@ -2,20 +2,22 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import clsx from 'clsx';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import { AppBar, Box, makeStyles, Paper, ThemeProvider, Typography } from '@material-ui/core';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import { AppBar, Box, Paper, Typography } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 
-import SettingsIcon from '@material-ui/icons/Settings';
-import CloseIcon from '@material-ui/icons/Close';
+import SettingsIcon from '@mui/icons-material/Settings';
+import CloseIcon from '@mui/icons-material/Close';
 
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
-import theme from '@iobroker/adapter-react/Theme';
+import theme from '@iobroker/adapter-react-v5/Theme';
 import ConfigPanel from '../components/JsonConfigComponent/ConfigPanel';
-import CheckIcon from "@material-ui/icons/Check";
+import CheckIcon from "@mui/icons-material/Check";
 
 let node = null;
 
@@ -351,7 +353,7 @@ const GenerateInputsModal = ({ themeType, themeName, socket, newInstances, onApp
                         onClose();
                         setTimeout(() => onCloseModal(), 0);
                     }}
-                    color="default"
+                    color="grey"
                     startIcon={<CloseIcon />}
                 >
                     {I18n.t('Close')}

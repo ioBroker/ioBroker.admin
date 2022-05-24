@@ -3,22 +3,22 @@ import PropTypes from 'prop-types';
 import semver from 'semver';
 import clsx from 'clsx';
 
-import withWidth from '@material-ui/core/withWidth';
-import { withStyles } from '@material-ui/core/styles';
+import withWidth from '../withWidth';
+import { withStyles } from '@mui/styles';
 
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import { InputAdornment, LinearProgress, TextField } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import { InputAdornment, LinearProgress, TextField } from '@mui/material';
+import { Skeleton } from '@mui/lab';
 
-import RefreshIcon from '@material-ui/icons/Refresh';
-import ViewListIcon from '@material-ui/icons/ViewList';
-import ViewModuleIcon from '@material-ui/icons/ViewModule';
-import CloseIcon from '@material-ui/icons/Close';
-import BugReportIcon from '@material-ui/icons/BugReport';
-import InfoIcon from '@material-ui/icons/Info';
-import WarningIcon from '@material-ui/icons/Warning';
-import ErrorIcon from '@material-ui/icons/Error';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import CloseIcon from '@mui/icons-material/Close';
+import BugReportIcon from '@mui/icons-material/BugReport';
+import InfoIcon from '@mui/icons-material/Info';
+import WarningIcon from '@mui/icons-material/Warning';
+import ErrorIcon from '@mui/icons-material/Error';
 
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';

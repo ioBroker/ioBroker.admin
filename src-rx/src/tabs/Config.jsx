@@ -1,27 +1,27 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 import clsx from 'clsx';
 
-import AppBar from '@material-ui/core/AppBar';
-import Paper from '@material-ui/core/Paper';
-import Fab from '@material-ui/core/Fab';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
-import {IconButton} from '@material-ui/core';
+import AppBar from '@mui/material/AppBar';
+import Paper from '@mui/material/Paper';
+import Fab from '@mui/material/Fab';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
+import {IconButton} from '@mui/material';
 
-import HelpIcon from '@material-ui/icons/Help';
-import PauseIcon from '@material-ui/icons/Pause';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import RefreshIcon from '@material-ui/icons/Refresh';
+import HelpIcon from '@mui/icons-material/Help';
+import PauseIcon from '@mui/icons-material/Pause';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
-import Router from '@iobroker/adapter-react/Components/Router';
-import Icon from '@iobroker/adapter-react/Components/Icon';
-import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
+import Router from '@iobroker/adapter-react-v5/Components/Router';
+import Icon from '@iobroker/adapter-react-v5/Components/Icon';
+import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 
 import JsonConfig from '../components/JsonConfig';
-import {green, red} from "@material-ui/core/colors";
+import {green, red} from "@mui/material/colors";
 
 const styles = theme => ({
     root: {

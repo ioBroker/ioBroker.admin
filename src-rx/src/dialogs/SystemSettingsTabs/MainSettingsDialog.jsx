@@ -4,20 +4,20 @@ import PropTypes from 'prop-types';
 import { MapContainer as LeafletMap, TileLayer } from 'react-leaflet';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
 
-import withWidth from '@material-ui/core/withWidth';
-import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
-import {FormHelperText} from '@material-ui/core';
+import withWidth from '../../withWidth';
+import { withStyles } from '@mui/styles';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import {FormHelperText} from '@mui/material';
 
 import Utils from '../../Utils';
 import countries from '../../assets/json/countries';
 
-import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
+import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 
 const styles = theme => ({
     tabPanel: {

@@ -1,12 +1,12 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Popper from '@material-ui/core/Popper';
-import Typography from '@material-ui/core/Typography';
-import Fade from '@material-ui/core/Fade';
-import Paper from '@material-ui/core/Paper';
-import { IconButton } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
-import I18n from '@iobroker/adapter-react/i18n';
+import { makeStyles } from '@mui/styles';
+import Popper from '@mui/material/Popper';
+import Typography from '@mui/material/Typography';
+import Fade from '@mui/material/Fade';
+import Paper from '@mui/material/Paper';
+import { IconButton } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 const useStyles = makeStyles((theme) => ({
     typography: {

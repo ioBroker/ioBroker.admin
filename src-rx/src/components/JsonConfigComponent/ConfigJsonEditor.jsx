@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import { Button } from '@material-ui/core';
+import FormHelperText from '@mui/material/FormHelperText';
+import FormControl from '@mui/material/FormControl';
+import { Button } from '@mui/material';
 
 import ConfigGeneric from './ConfigGeneric';
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 import CustomModal from '../CustomModal';
 
 import AceEditor from 'react-ace';

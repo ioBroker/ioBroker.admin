@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-import { KeyboardDatePicker } from '@material-ui/pickers';
+import { DatePicker } from '@mui/x-date-pickers';
 
 import ConfigGeneric from './ConfigGeneric';
 
@@ -20,7 +20,7 @@ class ConfigDatePicker extends ConfigGeneric {
     }
 
     renderItem(error, disabled, defaultValue) {
-        return <KeyboardDatePicker
+        return <DatePicker
             fullWidth
             margin="normal"
             format={this.props.systemConfig.dateFormat.toLowerCase().replace('mm','MM')}

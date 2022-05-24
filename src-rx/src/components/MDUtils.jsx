@@ -5,7 +5,7 @@
  *
  **/
 //import React from 'react';
-import copy from '@iobroker/adapter-react/Components/copy-to-clipboard';
+import copy from '@iobroker/adapter-react-v5/Components/copy-to-clipboard';
 
 class MDUtils {
     static text2link(text) {

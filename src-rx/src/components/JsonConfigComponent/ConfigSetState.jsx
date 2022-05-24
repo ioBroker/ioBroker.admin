@@ -1,17 +1,17 @@
 import React from "react";
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 
-import I18n from '@iobroker/adapter-react/i18n';
-import Icon from '@iobroker/adapter-react/Components/Icon';
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import Icon from '@iobroker/adapter-react-v5/Components/Icon';
 
 import ConfigGeneric from './ConfigGeneric';
-import IconWarning from "@material-ui/icons/Warning";
-import IconError from "@material-ui/icons/Error";
-import IconInfo from "@material-ui/icons/Info";
-import ConfirmDialog from "@iobroker/adapter-react/Dialogs/Confirm";
+import IconWarning from "@mui/icons-material/Warning";
+import IconError from "@mui/icons-material/Error";
+import IconInfo from "@mui/icons-material/Info";
+import ConfirmDialog from "@iobroker/adapter-react-v5/Dialogs/Confirm";
 
 const styles = theme => ({
     fullWidth: {

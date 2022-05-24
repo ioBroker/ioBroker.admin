@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import {withStyles} from '@mui/styles';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
@@ -8,13 +8,13 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { usePreview } from 'react-dnd-preview';
 
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Fab from '@material-ui/core/Fab';
+import LinearProgress from '@mui/material/LinearProgress';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Fab from '@mui/material/Fab';
 
-import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import GroupAddIcon from '@material-ui/icons/GroupAdd';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 
 import UserBlock from './UserBlock';
 import GroupBlock from './GroupBlock';
@@ -68,7 +68,7 @@ const styles = theme => ({
         backgroundColor: theme.palette.success.light
     },
     permHeaders: {
-        backgroundColor: theme.palette.type === 'dark' ? theme.palette.background.default : theme.palette.primary.main,
+        backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.default : theme.palette.primary.main,
         padding: 4,
         borderRadius: 2,
         color:'#EEE'
@@ -157,7 +157,7 @@ const styles = theme => ({
         alignItems: 'center',
         '& a': {
             paddingLeft: 3,
-            color: theme.palette.type === 'dark' ? '#EEE' : '#111',
+            color: theme.palette.mode === 'dark' ? '#EEE' : '#111',
         }
     },
     dialogTitle: {

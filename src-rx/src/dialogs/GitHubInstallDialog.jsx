@@ -2,24 +2,25 @@ import React, { useCallback, useState } from 'react';
 
 import PropTypes from 'prop-types';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
-import { Autocomplete } from '@material-ui/lab';
-import { AppBar, Box, Checkbox, FormControlLabel, IconButton, InputAdornment, makeStyles, Tab, Tabs, TextField } from '@material-ui/core';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import { Autocomplete } from '@mui/lab';
+import { AppBar, Box, Checkbox, FormControlLabel, IconButton, InputAdornment, Tab, Tabs, TextField } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 
 import npmIcon from '../assets/npm.png';
 import { FaGithub as GithubIcon } from 'react-icons/fa';
-import UrlIcon from '@material-ui/icons/Language';
-import SmsIcon from '@material-ui/icons/Sms';
-import CloseIcon from '@material-ui/icons/Close';
-import CheckIcon from '@material-ui/icons/Check';
+import UrlIcon from '@mui/icons-material/Language';
+import SmsIcon from '@mui/icons-material/Sms';
+import CloseIcon from '@mui/icons-material/Close';
+import CheckIcon from '@mui/icons-material/Check';
 
-import I18n from '@iobroker/adapter-react/i18n';
-import Icon from '@iobroker/adapter-react/Components/Icon';
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import Icon from '@iobroker/adapter-react-v5/Components/Icon';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -373,7 +374,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                     onClose();
                     closeInit();
                 }}
-                color="default"
+                color="grey"
                 startIcon={<CloseIcon />}
             >
                 {t('Close')}

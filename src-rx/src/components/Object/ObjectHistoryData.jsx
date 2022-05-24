@@ -1,38 +1,38 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import withWidth from '@material-ui/core/withWidth';
-import {withStyles} from '@material-ui/core/styles';
+import withWidth from '../../withWidth';
+import {withStyles} from '@mui/styles';
 import clsx from 'clsx';
 
 import {
     MuiPickersUtilsProvider,
-    KeyboardTimePicker,
-    KeyboardDatePicker,
-} from '@material-ui/pickers';
-import Paper from '@material-ui/core/Paper';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Button from '@material-ui/core/Button';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Grid from '@material-ui/core/Grid';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
-import TextField from '@material-ui/core/TextField';
-import TableBody from '@material-ui/core/TableBody';
-import TableContainer from '@material-ui/core/TableContainer';
+    TimePicker,
+    DatePicker,
+} from '@mui/x-date-pickers';
+import Paper from '@mui/material/Paper';
+import LinearProgress from '@mui/material/LinearProgress';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Grid from '@mui/material/Grid';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import TextField from '@mui/material/TextField';
+import TableBody from '@mui/material/TableBody';
+import TableContainer from '@mui/material/TableContainer';
 
 import DateFnsUtils from '@date-io/date-fns';
 import frLocale from 'date-fns/locale/fr';
@@ -47,15 +47,15 @@ import brLocale from 'date-fns/locale/pt-BR';
 import deLocale from 'date-fns/locale/de';
 import nlLocale from 'date-fns/locale/nl';
 
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 // icons
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import { FaPlusSquare as InsertIcon} from 'react-icons/fa';
 import { FaDownload as ExportIcon} from 'react-icons/fa';
-import IconDelete from '@material-ui/icons/Delete';
-import IconClose from '@material-ui/icons/Close';
+import IconDelete from '@mui/icons-material/Delete';
+import IconClose from '@mui/icons-material/Close';
 
 const localeMap = {
     en: enLocale,
@@ -1027,7 +1027,7 @@ class ObjectHistoryData extends Component {
                     {this.state.insertOpened ?
                         <MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeMap[this.props.lang]}>
                             <Grid container justify="space-around">
-                                <KeyboardDatePicker
+                                <DatePicker
                                     className={ this.props.classes.editorDatePicker}
                                     margin="normal"
                                     label={this.props.t('Date')}
@@ -1045,7 +1045,7 @@ class ObjectHistoryData extends Component {
                                     }}
                                     onChange={e => this.edit.date = e.target.value}
                                 />*/}
-                                <KeyboardTimePicker
+                                <TimePicker
                                     margin="normal"
                                     views={['hours', 'minutes', 'seconds']}
                                     label={this.props.t('Time')}
@@ -1156,7 +1156,7 @@ class ObjectHistoryData extends Component {
 
             <MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeMap[this.props.lang]}>
                 <div className={ classes.toolbarTimeGrid }>
-                    <KeyboardDatePicker
+                    <DatePicker
                         className={ classes.toolbarDate }
                         disabled={ this.state.relativeRange !== 'absolute' }
                         disableToolbar
@@ -1168,7 +1168,7 @@ class ObjectHistoryData extends Component {
                         value={ new Date(this.state.start) }
                         onChange={date => this.setStartDate(date)}
                     />
-                    <KeyboardTimePicker
+                    <TimePicker
                         disabled={ this.state.relativeRange !== 'absolute' }
                         className={ classes.toolbarTime }
                         margin="normal"
@@ -1180,7 +1180,7 @@ class ObjectHistoryData extends Component {
                     />
                 </div>
                 <div className={ classes.toolbarTimeGrid }>
-                    <KeyboardDatePicker
+                    <DatePicker
                         disabled={ this.state.relativeRange !== 'absolute' }
                         className={ classes.toolbarDate }
                         disableToolbar
@@ -1192,7 +1192,7 @@ class ObjectHistoryData extends Component {
                         value={ new Date(this.state.end) }
                         onChange={date => this.setEndDate(date)}
                     />
-                    <KeyboardTimePicker
+                    <TimePicker
                         disabled={ this.state.relativeRange !== 'absolute' }
                         className={ classes.toolbarTime }
                         margin="normal"

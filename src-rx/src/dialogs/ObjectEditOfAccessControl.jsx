@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Checkbox, FormControl, InputLabel, LinearProgress, MenuItem, Select, Switch } from '@material-ui/core';
+import { Checkbox, FormControl, InputLabel, LinearProgress, MenuItem, Select, Switch } from '@mui/material';
 
-import Icon from '@iobroker/adapter-react/Components/Icon';
-import I18n from '@iobroker/adapter-react/i18n';
+import Icon from '@iobroker/adapter-react-v5/Components/Icon';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 import Utils from '../components/Utils';
 import CustomModal from '../components/CustomModal';

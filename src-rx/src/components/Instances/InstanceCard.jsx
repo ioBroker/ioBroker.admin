@@ -1,6 +1,6 @@
 import React, { memo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 import clsx from 'clsx';
 
 import {
@@ -18,30 +18,30 @@ import {
     Select,
     Tooltip,
     Typography
-} from '@material-ui/core';
+} from '@mui/material';
 
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import BuildIcon from '@material-ui/icons/Build';
-import InputIcon from '@material-ui/icons/Input';
-import DeleteIcon from '@material-ui/icons/Delete';
-import LowPriorityIcon from '@material-ui/icons/LowPriority';
-import MemoryIcon from '@material-ui/icons/Memory';
-import ScheduleIcon from '@material-ui/icons/Schedule';
-import ViewCompactIcon from '@material-ui/icons/ViewCompact';
-import EditIcon from '@material-ui/icons/Edit';
-import PauseIcon from '@material-ui/icons/Pause';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import ImportExportIcon from '@material-ui/icons/ImportExport';
-import HostIcon from '@material-ui/icons/Storage';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import BuildIcon from '@mui/icons-material/Build';
+import InputIcon from '@mui/icons-material/Input';
+import DeleteIcon from '@mui/icons-material/Delete';
+import LowPriorityIcon from '@mui/icons-material/LowPriority';
+import MemoryIcon from '@mui/icons-material/Memory';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import ViewCompactIcon from '@mui/icons-material/ViewCompact';
+import EditIcon from '@mui/icons-material/Edit';
+import PauseIcon from '@mui/icons-material/Pause';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import ImportExportIcon from '@mui/icons-material/ImportExport';
+import HostIcon from '@mui/icons-material/Storage';
 
-import { green, red } from '@material-ui/core/colors';
+import { green, red } from '@mui/material/colors';
 
-import ComplexCron from '@iobroker/adapter-react/Dialogs/ComplexCron';
-import I18n from '@iobroker/adapter-react/i18n';
-import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
-import TextWithIcon from '@iobroker/adapter-react/Components/TextWithIcon';
-import SelectWithIcon from '@iobroker/adapter-react/Components/SelectWithIcon';
+import ComplexCron from '@iobroker/adapter-react-v5/Dialogs/ComplexCron';
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
+import TextWithIcon from '@iobroker/adapter-react-v5/Components/TextWithIcon';
+import SelectWithIcon from '@iobroker/adapter-react-v5/Components/SelectWithIcon';
 
 import sentry from '../../assets/sentry.svg';
 import noSentry from '../../assets/sentryNo.svg';
@@ -115,7 +115,7 @@ const styles = theme => ({
 
     collapse: {
         height: '100%',
-        backgroundColor: theme.palette.type === 'dark' ? '#4a4a4a' : '#d4d4d4',
+        backgroundColor: theme.palette.mode === 'dark' ? '#4a4a4a' : '#d4d4d4',
         position: 'absolute',
         width: '100%',
         zIndex: 3,
@@ -191,7 +191,7 @@ const styles = theme => ({
         verticalAlign: 'middle',
         paddingLeft: 8,
         paddingTop: 16,
-        color: theme.palette.type === 'dark' ? '#333' : '#555'
+        color: theme.palette.mode === 'dark' ? '#333' : '#555'
     },
     hide: {
         visibility: 'hidden'
@@ -256,7 +256,7 @@ const styles = theme => ({
         position: 'sticky',
         right: 0,
         top: 0,
-        background: theme.palette.type === 'dark' ? '#4a4a4a' : '#d4d4d4',
+        background: theme.palette.mode === 'dark' ? '#4a4a4a' : '#d4d4d4',
         zIndex: 2
     },
     addCompact: {

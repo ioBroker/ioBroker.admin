@@ -1,31 +1,31 @@
 import { createRef, Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import copy from '@iobroker/adapter-react/Components/copy-to-clipboard';
+import { withStyles } from '@mui/styles';
+import copy from '@iobroker/adapter-react-v5/Components/copy-to-clipboard';
 
-import { Button } from '@material-ui/core';
-import { Card } from '@material-ui/core';
-import { CardActions } from '@material-ui/core';
-import { CardContent } from '@material-ui/core';
-import { CardMedia } from '@material-ui/core';
-import { Collapse } from '@material-ui/core';
-import { Divider } from '@material-ui/core';
-import { Grid } from '@material-ui/core';
-import { IconButton } from '@material-ui/core';
-import { Link } from '@material-ui/core';
-import { Typography } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import { Button } from '@mui/material';
+import { Card } from '@mui/material';
+import { CardActions } from '@mui/material';
+import { CardContent } from '@mui/material';
+import { CardMedia } from '@mui/material';
+import { Collapse } from '@mui/material';
+import { Divider } from '@mui/material';
+import { Grid } from '@mui/material';
+import { IconButton } from '@mui/material';
+import { Link } from '@mui/material';
+import { Typography } from '@mui/material';
+import { Skeleton } from '@mui/lab';
 
-import CheckIcon from '@material-ui/icons/Check';
-import EditIcon from '@material-ui/icons/Create';
-import ErrorIcon from '@material-ui/icons/Error';
-import CloseIcon from '@material-ui/icons/Close';
-import DeleteIcon from '@material-ui/icons/Delete';
-import SaveIcon from '@iobroker/adapter-react/icons/IconCopy';
+import CheckIcon from '@mui/icons-material/Check';
+import EditIcon from '@mui/icons-material/Create';
+import ErrorIcon from '@mui/icons-material/Error';
+import CloseIcon from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@iobroker/adapter-react-v5/icons/IconCopy';
 
-import blue from '@material-ui/core/colors/blue';
-import grey from '@material-ui/core/colors/grey';
-import { red } from '@material-ui/core/colors';
+import blue from '@mui/material/colors/blue';
+import grey from '@mui/material/colors/grey';
+import { red } from '@mui/material/colors';
 
 import CameraIntroDialog from '../dialogs/CameraIntroDialog';
 

@@ -3,7 +3,7 @@ import React, { Component, Fragment, createRef } from 'react';
 import semver from 'semver';
 import PropTypes from "prop-types";
 import clsx from 'clsx';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
 import {
     Grid,
@@ -22,27 +22,27 @@ import {
     InputAdornment,
     ListItemText,
     Hidden
-} from '@material-ui/core';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
+} from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 
-// import CloudOffIcon from '@material-ui/icons/CloudOff';
-import FolderIcon from '@material-ui/icons/Folder';
-import FolderOpenIcon from '@material-ui/icons/FolderOpen';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import ListIcon from '@material-ui/icons/List';
-import ViewListIcon from '@material-ui/icons/ViewList';
-import ViewModuleIcon from '@material-ui/icons/ViewModule';
-import UpdateIcon from '@material-ui/icons/Update';
-import StarIcon from '@material-ui/icons/Star';
-import CloseIcon from '@material-ui/icons/Close';
+// import CloudOffIcon from '@mui/icons-material/CloudOff';
+import FolderIcon from '@mui/icons-material/Folder';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import ListIcon from '@mui/icons-material/List';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import UpdateIcon from '@mui/icons-material/Update';
+import StarIcon from '@mui/icons-material/Star';
+import CloseIcon from '@mui/icons-material/Close';
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 
-import { blue, green } from '@material-ui/core/colors';
+import { blue, green } from '@mui/material/colors';
 
-import Router from '@iobroker/adapter-react/Components/Router';
+import Router from '@iobroker/adapter-react-v5/Components/Router';
 
 import AdapterDeletionDialog from '../dialogs/AdapterDeletionDialog';
 import AdapterInfoDialog from '../dialogs/AdapterInfoDialog';
@@ -177,7 +177,7 @@ const styles = theme => ({
         top: 3,
         left: 3,
         opacity: 0.4,
-        color: theme.palette.type === 'dark' ? '#aad5ff' : '#007fff'
+        color: theme.palette.mode === 'dark' ? '#aad5ff' : '#007fff'
     },
     counters: {
         marginRight: 10,
@@ -192,7 +192,7 @@ const styles = theme => ({
     },
     infoAdapters: {
         fontSize: 10,
-        color: theme.palette.type === 'dark' ? '#9c9c9c' : '#333',
+        color: theme.palette.mode === 'dark' ? '#9c9c9c' : '#333',
         cursor: 'pointer'
     },
     greenText: {
@@ -205,7 +205,7 @@ const styles = theme => ({
         marginRight: theme.spacing(1),
     },
     notStableRepo: {
-        background: theme.palette.type === 'dark' ? '#8a7e00' : '#fdee20',
+        background: theme.palette.mode === 'dark' ? '#8a7e00' : '#fdee20',
         color: '#111',
         fontSize: 14,
         padding: '2px 8px',

@@ -1,22 +1,22 @@
 import { createRef, Component } from 'react';
-import {withStyles} from '@material-ui/core/styles';
-import withWidth from "@material-ui/core/withWidth";
+import {withStyles} from '@mui/styles';
+import withWidth from '../../withWidth';
 import PropTypes from 'prop-types';
 
-import Grid from '@material-ui/core/Grid';
-import Toolbar from '@material-ui/core/Grid';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Button from '@material-ui/core/Button';
-import Paper from  '@material-ui/core/Paper';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import FormGroup from '@material-ui/core/FormGroup';
+import Grid from '@mui/material/Grid';
+import Toolbar from '@mui/material/Grid';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Button from '@mui/material/Button';
+import Paper from  '@mui/material/Paper';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormHelperText from '@mui/material/FormHelperText';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import FormGroup from '@mui/material/FormGroup';
 
-import IconCheck from '@material-ui/icons/Check';
+import IconCheck from '@mui/icons-material/Check';
 
 const TOOLBAR_HEIGHT = 64;
 

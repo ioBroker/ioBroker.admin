@@ -1,7 +1,7 @@
 import { Component } from 'react';
 
 import PropTypes from 'prop-types';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import LinearProgress from '@mui/material/LinearProgress';
 
 import FileBrowser from '../components/FileBrowser';
 

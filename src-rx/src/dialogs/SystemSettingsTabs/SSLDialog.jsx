@@ -2,12 +2,12 @@
 import {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import withWidth from '@material-ui/core/withWidth';
-import {withStyles} from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import FormControl from '@material-ui/core/FormControl';
-import TextField from '@material-ui/core/TextField';
-import Paper from '@material-ui/core/Paper';
+import withWidth from '../../withWidth';
+import {withStyles} from '@mui/styles';
+import Grid from '@mui/material/Grid';
+import FormControl from '@mui/material/FormControl';
+import TextField from '@mui/material/TextField';
+import Paper from '@mui/material/Paper';
 
 const styles = theme => ({
     tabPanel: {
@@ -31,7 +31,7 @@ const styles = theme => ({
         alignItems: 'center',
         '& a': {
             paddingLeft: 3,
-            color: theme.palette.type === 'dark' ? '#EEE' : '#111',
+            color: theme.palette.mode === 'dark' ? '#EEE' : '#111',
 
         }
     },

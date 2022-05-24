@@ -1,28 +1,28 @@
 // RepositoriesDialog
 import {Component} from 'react';
 import clsx from 'clsx';
-import withWidth from '@material-ui/core/withWidth';
-import {withStyles} from '@material-ui/core/styles';
+import withWidth from '../../withWidth';
+import {withStyles} from '@mui/styles';
 import PropTypes from 'prop-types';
 import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc';
 
-import Checkbox from '@material-ui/core/Checkbox';
-import Fab from '@material-ui/core/Fab';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TextField from '@material-ui/core/TextField';
-import Paper from '@material-ui/core/Paper';
-import AddIcon from '@material-ui/icons/Add';
-import DeleteIcon from '@material-ui/icons/Delete';
-import DragHandleIcon from '@material-ui/icons/Menu';
+import Checkbox from '@mui/material/Checkbox';
+import Fab from '@mui/material/Fab';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TextField from '@mui/material/TextField';
+import Paper from '@mui/material/Paper';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DragHandleIcon from '@mui/icons-material/Menu';
 
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 import Utils from '../../Utils';
-import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
+import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 
 const styles = theme => ({
     tabPanel: {

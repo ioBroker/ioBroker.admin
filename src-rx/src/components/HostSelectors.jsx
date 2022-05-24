@@ -2,14 +2,15 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
-import { Tooltip, withStyles } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import { Tooltip } from '@mui/material';
+import { withStyles } from '@mui/styles';
+import Button from '@mui/material/Button';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
-import I18n from '@iobroker/adapter-react/i18n';
-import Icon from '@iobroker/adapter-react/Components/Icon';
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import Icon from '@iobroker/adapter-react-v5/Components/Icon';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 const styles = theme => ({
     img: {

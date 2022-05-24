@@ -1,15 +1,15 @@
 import { createRef, Component } from 'react';
-import {withStyles} from '@material-ui/core/styles';
-import withWidth from "@material-ui/core/withWidth";
+import {withStyles} from '@mui/styles';
+import withWidth from '../../withWidth';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import Toolbar from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
-import Fab from '@material-ui/core/Fab';
+import Grid from '@mui/material/Grid';
+import Toolbar from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import Fab from '@mui/material/Fab';
 
 import 'ol/ol.css';
 import Map from 'ol/Map';
@@ -21,13 +21,13 @@ import {OSM, Vector as VectorSource} from 'ol/source';
 import { Point } from 'ol/geom';
 import { toLonLat, fromLonLat } from 'ol/proj';
 
-import Button from '@material-ui/core/Button';
-import Paper from  '@material-ui/core/Paper';
+import Button from '@mui/material/Button';
+import Paper from  '@mui/material/Paper';
 
 //Icons
 import {FaCrosshairs as GeoIcon} from 'react-icons/all';
 import PinSVG from '../../assets/pin.svg';
-import IconCheck from "@material-ui/icons/Check";
+import IconCheck from "@mui/icons-material/Check";
 
 const TOOLBAR_HEIGHT = 64;
 const SETTINGS_WIDTH = 300;

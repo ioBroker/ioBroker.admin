@@ -1,24 +1,24 @@
 import { createRef, Component } from 'react';
-import {withStyles} from '@material-ui/core/styles';
-import withWidth from '@material-ui/core/withWidth';
+import {withStyles} from '@mui/styles';
+import withWidth from '../../withWidth';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
-import Tooltip from '@material-ui/core/Tooltip';
-import FormControl from '@material-ui/core/FormControl';
-import Paper from  '@material-ui/core/Paper';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Switch from "@material-ui/core/Switch";
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import Tooltip from '@mui/material/Tooltip';
+import FormControl from '@mui/material/FormControl';
+import Paper from  '@mui/material/Paper';
+import FormHelperText from '@mui/material/FormHelperText';
+import Switch from "@mui/material/Switch";
 
-import DialogConfirm from '@iobroker/adapter-react/Dialogs/Confirm';
-import FormGroup from "@material-ui/core/FormGroup";
+import DialogConfirm from '@iobroker/adapter-react-v5/Dialogs/Confirm';
+import FormGroup from "@mui/material/FormGroup";
 
 const styles = theme => ({
     paper: {
@@ -51,7 +51,7 @@ const styles = theme => ({
     warning: {
         padding: 8,
         fontSize: 14,
-        color: theme.palette.type === 'dark' ? '#ffa500' : '#b17200'
+        color: theme.palette.mode === 'dark' ? '#ffa500' : '#b17200'
     }
 });
 

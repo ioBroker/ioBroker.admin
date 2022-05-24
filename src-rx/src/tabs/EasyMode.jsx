@@ -1,11 +1,11 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-import { AppBar, CardMedia, CircularProgress, IconButton, Paper, Toolbar } from '@material-ui/core';
+import { AppBar, CardMedia, CircularProgress, IconButton, Paper, Toolbar } from '@mui/material';
 
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import ToggleThemeMenu from '../components/ToggleThemeMenu';
 import Config from './Config';

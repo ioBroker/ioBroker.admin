@@ -1,43 +1,43 @@
 import React, { Suspense } from 'react';
-import withWidth from '@material-ui/core/withWidth';
-import { withStyles } from '@material-ui/core/styles';
-import { ThemeProvider } from '@material-ui/core/styles';
+import withWidth from './withWidth';
+import { withStyles } from '@mui/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import clsx from 'clsx';
 
-// @material-ui/core
-import AppBar from '@material-ui/core/AppBar';
-import Avatar from '@material-ui/core/Avatar';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
-import Snackbar from '@material-ui/core/Snackbar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import { Hidden, Tooltip } from '@material-ui/core';
-import Badge from '@material-ui/core/Badge';
+// @mui/material
+import AppBar from '@mui/material/AppBar';
+import Avatar from '@mui/material/Avatar';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import Paper from '@mui/material/Paper';
+import Snackbar from '@mui/material/Snackbar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import { Hidden, Tooltip } from '@mui/material';
+import Badge from '@mui/material/Badge';
 
 // @material-ui/icons
-import MenuIcon from '@material-ui/icons/Menu';
-import BuildIcon from '@material-ui/icons/Build';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import PictureInPictureAltIcon from '@material-ui/icons/PictureInPictureAlt';
-import UserIcon from '@material-ui/icons/Person';
+import MenuIcon from '@mui/icons-material/Menu';
+import BuildIcon from '@mui/icons-material/Build';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import PictureInPictureAltIcon from '@mui/icons-material/PictureInPictureAlt';
+import UserIcon from '@mui/icons-material/Person';
 
-import ExpertIcon from '@iobroker/adapter-react/icons/IconExpert';
+import ExpertIcon from '@iobroker/adapter-react-v5/icons/IconExpert';
 
 import { AdminConnection as Connection, PROGRESS } from '@iobroker/socket-client';
-import Loader from '@iobroker/adapter-react/Components/Loader';
-import LoaderPT from '@iobroker/adapter-react/Components/Loaders/PT';
-import LoaderVendor from '@iobroker/adapter-react/Components/Loaders/Vendor';
-import I18n from '@iobroker/adapter-react/i18n';
-import Router from '@iobroker/adapter-react/Components/Router';
+import Loader from '@iobroker/adapter-react-v5/Components/Loader';
+import LoaderPT from '@iobroker/adapter-react-v5/Components/Loaders/PT';
+import LoaderVendor from '@iobroker/adapter-react-v5/Components/Loaders/Vendor';
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import Router from '@iobroker/adapter-react-v5/Components/Router';
 import Utils from './components/Utils';//adapter-react/Components/Utils';
-import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
-import Icon from '@iobroker/adapter-react/Components/Icon';
-import theme from '@iobroker/adapter-react/Theme';
+import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
+import Icon from '@iobroker/adapter-react-v5/Components/Icon';
+import theme from '@iobroker/adapter-react-v5/Theme';
 
 import CommandDialog from './dialogs/CommandDialog';
 import Drawer from './components/Drawer';
@@ -128,12 +128,12 @@ const styles = theme => ({
             duration: theme.transitions.duration.leavingScreen,
         }),
         overflowY: 'auto',
-        marginTop: theme.mixins.toolbar.minHeight,
+        marginTop: theme.mixins.toolbar?.minHeight,
         '@media (min-width:0px) and (orientation: landscape)': {
-            marginTop: theme.mixins.toolbar['@media (min-width:0px) and (orientation: landscape)'].minHeight
+            marginTop: theme.mixins.toolbar['@media (min-width:0px) and (orientation: landscape)']?.minHeight
         },
         '@media (min-width:600px)': {
-            marginTop: theme.mixins.toolbar['@media (min-width:600px)'].minHeight
+            marginTop: theme.mixins.toolbar['@media (min-width:600px)']?.minHeight
         }
     },
     contentMargin: {
@@ -197,7 +197,7 @@ const styles = theme => ({
         animation: '0.2s linear infinite alternate $myEffect2',
     },
     performed: {
-        color: theme.palette.type === 'light' ? '#3bfd44' : '#388e3c',
+        color: theme.palette.mode === 'light' ? '#3bfd44' : '#388e3c',
         animation: '0.2s linear infinite alternate $myEffect2',
     },
     wrapperButtons: {
@@ -239,7 +239,7 @@ const styles = theme => ({
     },
     userBackground: {
         borderRadius: 4,
-        backgroundColor: theme.palette.type === 'dark' ? '#EEE' : '#222',
+        backgroundColor: theme.palette.mode === 'dark' ? '#EEE' : '#222',
         padding: 3,
     },
     styleVersion: {
@@ -272,16 +272,16 @@ class App extends Router {
         // init translations
         (async () => {
             this.translations = {
-                'en': (await import('@iobroker/adapter-react/i18n/en.json')).default,
-                'de': (await import('@iobroker/adapter-react/i18n/de.json')).default,
-                'ru': (await import('@iobroker/adapter-react/i18n/ru.json')).default,
-                'pt': (await import('@iobroker/adapter-react/i18n/pt.json')).default,
-                'nl': (await import('@iobroker/adapter-react/i18n/nl.json')).default,
-                'fr': (await import('@iobroker/adapter-react/i18n/fr.json')).default,
-                'it': (await import('@iobroker/adapter-react/i18n/it.json')).default,
-                'es': (await import('@iobroker/adapter-react/i18n/es.json')).default,
-                'pl': (await import('@iobroker/adapter-react/i18n/pl.json')).default,
-                'zh-cn': (await import('@iobroker/adapter-react/i18n/zh-cn.json')).default,
+                'en': (await import('@iobroker/adapter-react-v5/i18n/en.json')).default,
+                'de': (await import('@iobroker/adapter-react-v5/i18n/de.json')).default,
+                'ru': (await import('@iobroker/adapter-react-v5/i18n/ru.json')).default,
+                'pt': (await import('@iobroker/adapter-react-v5/i18n/pt.json')).default,
+                'nl': (await import('@iobroker/adapter-react-v5/i18n/nl.json')).default,
+                'fr': (await import('@iobroker/adapter-react-v5/i18n/fr.json')).default,
+                'it': (await import('@iobroker/adapter-react-v5/i18n/it.json')).default,
+                'es': (await import('@iobroker/adapter-react-v5/i18n/es.json')).default,
+                'pl': (await import('@iobroker/adapter-react-v5/i18n/pl.json')).default,
+                'zh-cn': (await import('@iobroker/adapter-react-v5/i18n/zh-cn.json')).default,
             };
 
             const translations = {
@@ -1009,7 +1009,7 @@ class App extends Router {
      * @returns {string} Theme type
      */
     getThemeType(theme) {
-        return theme.palette.type;
+        return theme.palette.mode;
     }
 
     /**

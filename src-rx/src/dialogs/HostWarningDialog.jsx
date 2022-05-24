@@ -2,28 +2,30 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import clsx from 'clsx';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import { Accordion, AccordionDetails, AccordionSummary, AppBar, Box, CardMedia, makeStyles, Tab, Tabs, ThemeProvider, Typography } from '@material-ui/core';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import { Accordion, AccordionDetails, AccordionSummary, AppBar, Box, CardMedia, Tab, Tabs, Typography } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 
-import UpdateIcon from '@material-ui/icons/Update';
-import SettingsRemoteIcon from '@material-ui/icons/SettingsRemote';
-import CancelIcon from '@material-ui/icons/Cancel';
-import PermDeviceInformationIcon from '@material-ui/icons/PermDeviceInformation';
-import ImportExportIcon from '@material-ui/icons/ImportExport';
-import WarningIcon from '@material-ui/icons/Warning';
-import CancelPresentationIcon from '@material-ui/icons/CancelPresentation';
-import MemoryIcon from '@material-ui/icons/Memory';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import CheckIcon from '@material-ui/icons/Check';
-import CloseIcon from '@material-ui/icons/Close';
+import UpdateIcon from '@mui/icons-material/Update';
+import SettingsRemoteIcon from '@mui/icons-material/SettingsRemote';
+import CancelIcon from '@mui/icons-material/Cancel';
+import PermDeviceInformationIcon from '@mui/icons-material/PermDeviceInformation';
+import ImportExportIcon from '@mui/icons-material/ImportExport';
+import WarningIcon from '@mui/icons-material/Warning';
+import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
+import MemoryIcon from '@mui/icons-material/Memory';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
-import theme from '@iobroker/adapter-react/Theme';
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import theme from '@iobroker/adapter-react-v5/Theme';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 let node = null;
 
@@ -346,7 +348,7 @@ const HostWarningDialog = ({ message, ackCallback, dateFormat, themeType, themeN
                                     ackCallback(name);
                                     setDisabled([...disabled, name]);
                                 }}
-                                color={Object.keys(message).length !== 1 ? 'primary' : 'default'}
+                                color={Object.keys(message).length !== 1 ? 'primary' : 'grey'}
                                 startIcon={<CheckIcon />}
                             >
                                 {I18n.t('Acknowledge')}

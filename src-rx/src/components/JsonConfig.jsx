@@ -1,18 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 import JSON5 from 'json5';
 
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Tooltip from '@material-ui/core/Tooltip';
-import Fab from '@material-ui/core/Fab';
-import PublishIcon from "@material-ui/icons/Publish";
+import LinearProgress from '@mui/material/LinearProgress';
+import Tooltip from '@mui/material/Tooltip';
+import Fab from '@mui/material/Fab';
+import PublishIcon from "@mui/icons-material/Publish";
 
-import SaveCloseButtons from '@iobroker/adapter-react/Components/SaveCloseButtons';
-import Router from '@iobroker/adapter-react/Components/Router';
-import theme from '@iobroker/adapter-react/Theme';
-import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
-import I18n from '@iobroker/adapter-react/i18n';
+import SaveCloseButtons from '@iobroker/adapter-react-v5/Components/SaveCloseButtons';
+import Router from '@iobroker/adapter-react-v5/Components/Router';
+import theme from '@iobroker/adapter-react-v5/Theme';
+import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 import JsonConfigComponent from './JsonConfigComponent';
 import ConfigCustomEasyAccess from './JsonConfigComponent/ConfigCustomEasyAccess';

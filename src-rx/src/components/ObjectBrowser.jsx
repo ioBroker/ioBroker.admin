@@ -8,84 +8,84 @@
  **/
 import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
-import copy from '@iobroker/adapter-react/Components/copy-to-clipboard';
-import withStyles from '@material-ui/core/styles/withStyles';
+import copy from '@iobroker/adapter-react-v5/Components/copy-to-clipboard';
+import withStyles from '@mui/styles/withStyles';
 import SVG from 'react-inlinesvg';
 
-import IconButton from '@material-ui/core/IconButton';
-import withWidth from '@material-ui/core/withWidth';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import Grid from '@material-ui/core/Grid';
-import Badge from '@material-ui/core/Badge';
-import Tooltip from '@material-ui/core/Tooltip';
-import Snackbar from '@material-ui/core/Snackbar';
-import Checkbox from '@material-ui/core/Checkbox';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import Fab from '@material-ui/core/Fab';
-import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import Slider from '@material-ui/core/Slider';
-import Typography from '@material-ui/core/Typography';
+import IconButton from '@mui/material/IconButton';
+import withWidth from '../withWidth';
+import CircularProgress from '@mui/material/CircularProgress';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
+import Input from '@mui/material/Input';
+import Grid from '@mui/material/Grid';
+import Badge from '@mui/material/Badge';
+import Tooltip from '@mui/material/Tooltip';
+import Snackbar from '@mui/material/Snackbar';
+import Checkbox from '@mui/material/Checkbox';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import Fab from '@mui/material/Fab';
+import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import Slider from '@mui/material/Slider';
+import Typography from '@mui/material/Typography';
 
 // Icons
-import IconEdit from '@material-ui/icons/Edit';
-import IconDelete from '@material-ui/icons/Delete';
-import IconConfig from '@material-ui/icons/Settings';
-import IconSystem from '@material-ui/icons/SettingsApplications';
-import IconPhoto from '@material-ui/icons/Photo';
-import IconGroup from '@material-ui/icons/SupervisedUserCircle';
-import IconSchedule from '@material-ui/icons/CalendarToday';
-import IconUser from '@material-ui/icons/PersonOutlined';
-import IconHost from '@material-ui/icons/Router';
-import IconConnection from '@material-ui/icons/Wifi';
-import IconInfo from '@material-ui/icons/Info';
-import IconMeta from '@material-ui/icons/Description';
-import IconScript from '@material-ui/icons/Code';
-import IconChart from '@material-ui/icons/ShowChart';
-import IconEnum from '@material-ui/icons/ListAlt';
-import IconColumns from '@material-ui/icons/ViewColumn';
-import IconClose from '@material-ui/icons/Close';
-import IconCheck from '@material-ui/icons/Check';
-import BuildIcon from '@material-ui/icons/Build';
-import PublishIcon from '@material-ui/icons/Publish';
-import AddIcon from '@material-ui/icons/Add';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import LooksOneIcon from '@material-ui/icons/LooksOne';
-import PressButtonIcon from '@material-ui/icons/RoomService';
-import IconError from '@material-ui/icons/Error';
-import IconDisconnected from '@material-ui/icons/WifiOff';
+import IconEdit from '@mui/icons-material/Edit';
+import IconDelete from '@mui/icons-material/Delete';
+import IconConfig from '@mui/icons-material/Settings';
+import IconSystem from '@mui/icons-material/SettingsApplications';
+import IconPhoto from '@mui/icons-material/Photo';
+import IconGroup from '@mui/icons-material/SupervisedUserCircle';
+import IconSchedule from '@mui/icons-material/CalendarToday';
+import IconUser from '@mui/icons-material/PersonOutlined';
+import IconHost from '@mui/icons-material/Router';
+import IconConnection from '@mui/icons-material/Wifi';
+import IconInfo from '@mui/icons-material/Info';
+import IconMeta from '@mui/icons-material/Description';
+import IconScript from '@mui/icons-material/Code';
+import IconChart from '@mui/icons-material/ShowChart';
+import IconEnum from '@mui/icons-material/ListAlt';
+import IconColumns from '@mui/icons-material/ViewColumn';
+import IconClose from '@mui/icons-material/Close';
+import IconCheck from '@mui/icons-material/Check';
+import BuildIcon from '@mui/icons-material/Build';
+import PublishIcon from '@mui/icons-material/Publish';
+import AddIcon from '@mui/icons-material/Add';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import LooksOneIcon from '@mui/icons-material/LooksOne';
+import PressButtonIcon from '@mui/icons-material/RoomService';
+import IconError from '@mui/icons-material/Error';
+import IconDisconnected from '@mui/icons-material/WifiOff';
 
-import IconExpert from '@iobroker/adapter-react/icons/IconExpert';
-import IconAdapter from '@iobroker/adapter-react/icons/IconAdapter';
-import IconAlias from '@iobroker/adapter-react/icons/IconAlias';
-import IconChannel from '@iobroker/adapter-react/icons/IconChannel';
-import IconCopy from '@iobroker/adapter-react/icons/IconCopy';
-import IconDevice from '@iobroker/adapter-react/icons/IconDevice';
-import IconDocument from '@iobroker/adapter-react/icons/IconDocument';
-import IconInstance from '@iobroker/adapter-react/icons/IconInstance';
-import IconState from '@iobroker/adapter-react/icons/IconState';
-import IconClosed from '@iobroker/adapter-react/icons/IconClosed';
-import IconOpen from '@iobroker/adapter-react/icons/IconOpen';
-import IconClearFilter from '@iobroker/adapter-react/icons/IconClearFilter';
+import IconExpert from '@iobroker/adapter-react-v5/icons/IconExpert';
+import IconAdapter from '@iobroker/adapter-react-v5/icons/IconAdapter';
+import IconAlias from '@iobroker/adapter-react-v5/icons/IconAlias';
+import IconChannel from '@iobroker/adapter-react-v5/icons/IconChannel';
+import IconCopy from '@iobroker/adapter-react-v5/icons/IconCopy';
+import IconDevice from '@iobroker/adapter-react-v5/icons/IconDevice';
+import IconDocument from '@iobroker/adapter-react-v5/icons/IconDocument';
+import IconInstance from '@iobroker/adapter-react-v5/icons/IconInstance';
+import IconState from '@iobroker/adapter-react-v5/icons/IconState';
+import IconClosed from '@iobroker/adapter-react-v5/icons/IconClosed';
+import IconOpen from '@iobroker/adapter-react-v5/icons/IconOpen';
+import IconClearFilter from '@iobroker/adapter-react-v5/icons/IconClearFilter';
 
 // own
-import Icon from '@iobroker/adapter-react/Components/Icon';
-import Utils from './Utils'; // @iobroker/adapter-react/Components/Utils
+import Icon from '@iobroker/adapter-react-v5/Components/Icon';
+import Utils from './Utils'; // @iobroker/adapter-react-v5/Components/Utils
 import TabContainer from './TabContainer';
 import TabContent from './TabContent';
 import TabHeader from './TabHeader';
@@ -208,14 +208,14 @@ const styles = theme => ({
         userSelect: 'none',
         width: '100%',
         '&:hover': {
-            background: `${theme.palette.type === 'dark' ? theme.palette.primary.dark : theme.palette.primary.light} !important`,
+            background: `${theme.palette.mode === 'dark' ? theme.palette.primary.dark : theme.palette.primary.light} !important`,
             color: Utils.invertColor(theme.palette.primary.main, true),
         },
         whiteSpace: 'nowrap',
         flexWrap: 'nowrap',
     },
     tableRowLines: {
-        borderBottom: `1px solid ${theme.palette.type === 'dark' ? '#8888882e' : '#8888882e'}`,
+        borderBottom: `1px solid ${theme.palette.mode === 'dark' ? '#8888882e' : '#8888882e'}`,
     },
     tableRowNoDragging: {
         cursor: 'pointer',
@@ -325,7 +325,7 @@ const styles = theme => ({
         fontSize: 12,
         opacity: 0.7,
         '&:hover': {
-            color: theme.palette.type === 'dark' ? '#009900' : '#007700',
+            color: theme.palette.mode === 'dark' ? '#009900' : '#007700',
         }
     },
     cellIdAliasReadWriteDiv: {
@@ -449,7 +449,7 @@ const styles = theme => ({
             color: '#008000',
         },
         '100%': {
-            color: theme.palette.type === 'dark' ? '#fff' : '#000',
+            color: theme.palette.mode === 'dark' ? '#fff' : '#000',
         }
     },
     cellValueTextState: {
@@ -655,7 +655,7 @@ const styles = theme => ({
         backgroundColor: theme.palette.background.default
     },
     iconDeviceConnected: {
-        color: theme.palette.type === 'dark' ? COLOR_NAME_CONNECTED_DARK : COLOR_NAME_CONNECTED_LIGHT,
+        color: theme.palette.mode === 'dark' ? COLOR_NAME_CONNECTED_DARK : COLOR_NAME_CONNECTED_LIGHT,
         opacity: 0.8,
         position: 'absolute',
         top: 4,
@@ -663,7 +663,7 @@ const styles = theme => ({
         width: 20,
     },
     iconDeviceDisconnected: {
-        color: theme.palette.type === 'dark' ? COLOR_NAME_DISCONNECTED_DARK : COLOR_NAME_DISCONNECTED_LIGHT,
+        color: theme.palette.mode === 'dark' ? COLOR_NAME_DISCONNECTED_DARK : COLOR_NAME_DISCONNECTED_LIGHT,
         opacity: 0.8,
         position: 'absolute',
         top: 4,
@@ -671,7 +671,7 @@ const styles = theme => ({
         width: 20,
     },
     iconDeviceError: {
-        color: theme.palette.type === 'dark' ? COLOR_NAME_ERROR_DARK : COLOR_NAME_ERROR_LIGHT,
+        color: theme.palette.mode === 'dark' ? COLOR_NAME_ERROR_DARK : COLOR_NAME_ERROR_LIGHT,
         opacity: 0.8,
         position: 'absolute',
         top: 4,

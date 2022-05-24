@@ -1,18 +1,18 @@
 import { createRef, Component } from 'react';
 import PropTypes from 'prop-types';
-import withWidth from '@material-ui/core/withWidth';
-import {withStyles} from '@material-ui/core/styles';
+import withWidth from '../../withWidth';
+import {withStyles} from '@mui/styles';
 import clsx from 'clsx';
 
-import {MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker} from '@material-ui/pickers';
-import Paper from '@material-ui/core/Paper';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import Toolbar from '@material-ui/core/Toolbar';
-import Fab from '@material-ui/core/Fab';
+import {MuiPickersUtilsProvider, TimePicker, DatePicker} from '@mui/x-date-pickers';
+import Paper from '@mui/material/Paper';
+import LinearProgress from '@mui/material/LinearProgress';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Toolbar from '@mui/material/Toolbar';
+import Fab from '@mui/material/Fab';
 
 import ReactEchartsCore from 'echarts-for-react/lib/core';
 
@@ -40,7 +40,7 @@ import brLocale from 'date-fns/locale/pt-BR';
 import deLocale from 'date-fns/locale/de';
 import nlLocale from 'date-fns/locale/nl';
 
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 // icons
 import {FaChartLine as SplitLineIcon} from 'react-icons/fa';
@@ -1124,7 +1124,7 @@ class ObjectChart extends Component {
             </FormControl>
             <MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeMap[this.props.lang]}>
                 <div className={ classes.toolbarTimeGrid }>
-                    <KeyboardDatePicker
+                    <DatePicker
                         className={ classes.toolbarDate }
                         disabled={ this.state.relativeRange !== 'absolute' }
                         disableToolbar
@@ -1136,7 +1136,7 @@ class ObjectChart extends Component {
                         value={ new Date(this.state.min) }
                         onChange={date => this.setStartDate(date)}
                     />
-                    <KeyboardTimePicker
+                    <TimePicker
                         disabled={ this.state.relativeRange !== 'absolute' }
                         className={ classes.toolbarTime }
                         margin="normal"
@@ -1148,7 +1148,7 @@ class ObjectChart extends Component {
                     />
                 </div>
                 <div className={ classes.toolbarTimeGrid }>
-                    <KeyboardDatePicker
+                    <DatePicker
                         disabled={ this.state.relativeRange !== 'absolute' }
                         className={ classes.toolbarDate }
                         disableToolbar
@@ -1160,7 +1160,7 @@ class ObjectChart extends Component {
                         value={ new Date(this.state.max) }
                         onChange={date => this.setEndDate(date)}
                     />
-                    <KeyboardTimePicker
+                    <TimePicker
                         disabled={ this.state.relativeRange !== 'absolute' }
                         className={ classes.toolbarTime }
                         margin="normal"

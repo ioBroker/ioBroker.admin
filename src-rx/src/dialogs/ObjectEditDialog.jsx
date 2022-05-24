@@ -1,18 +1,18 @@
 import { Component } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import withWidth from "@material-ui/core/withWidth";
+import { withStyles } from '@mui/styles';
+import withWidth from '../withWidth';
 import PropTypes from 'prop-types';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import MonacoEditor from 'react-monaco-editor';
 
 // Icons
-import CloseIcon from '@material-ui/icons/Close';
-import CheckIcon from "@material-ui/icons/Check";
+import CloseIcon from '@mui/icons-material/Close';
+import CheckIcon from "@mui/icons-material/Check";
 
 const styles = theme => ({
     dialog: {

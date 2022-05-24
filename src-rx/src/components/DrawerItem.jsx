@@ -1,30 +1,30 @@
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-import Badge from '@material-ui/core/Badge';
-import Grid from '@material-ui/core/Grid';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Tooltip from '@material-ui/core/Tooltip';
+import Badge from '@mui/material/Badge';
+import Grid from '@mui/material/Grid';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Tooltip from '@mui/material/Tooltip';
 
-import amber from '@material-ui/core/colors/amber';
+import amber from '@mui/material/colors/amber';
 
 import Utils from '../Utils';
-import { Checkbox } from '@material-ui/core';
+import { Checkbox } from '@mui/material';
 
 const styles = theme => ({
     selected: {
         background: theme.palette.primary.main,
-        color: theme.palette.type === 'light' ? 'white' : Utils.invertColor(theme.palette.primary.main, true),
+        color: theme.palette.mode === 'light' ? 'white' : Utils.invertColor(theme.palette.primary.main, true),
         '&:hover': {
             color: theme.palette.text.secondary
         }
     },
     selectedIcon: {
-        color: theme.palette.type === 'light' ? 'white' : Utils.invertColor(theme.palette.primary.main, true),
+        color: theme.palette.mode === 'light' ? 'white' : Utils.invertColor(theme.palette.primary.main, true),
         '&:hover': {
             color: theme.palette.text.secondary
         }

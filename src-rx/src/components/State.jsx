@@ -1,17 +1,17 @@
 import { Component } from 'react';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
 import PropTypes from 'prop-types';
 
-import { Grid } from '@material-ui/core';
-import { Typography } from '@material-ui/core';
+import { Grid } from '@mui/material';
+import { Typography } from '@mui/material';
 
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import CancelIcon from '@material-ui/icons/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 
-import green from '@material-ui/core/colors/green';
-import red from '@material-ui/core/colors/red';
+import green from '@mui/material/colors/green';
+import red from '@mui/material/colors/red';
 
 const styles = {
     checkIcon: {

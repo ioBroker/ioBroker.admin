@@ -1,4 +1,5 @@
-import { Button, Menu, MenuItem, makeStyles, Tooltip } from '@material-ui/core';
+import { Button, Menu, MenuItem, Tooltip } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import React, { useState, } from 'react';
 
 import MaterialDynamicIcon from '../helpers/MaterialDynamicIcon';

@@ -1,27 +1,27 @@
 import {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core';
+import { withStyles } from '@mui/styles';
 import clsx from 'clsx';
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 
-import TextFieldsIcon from '@material-ui/icons/TextFields';
-import DescriptionIcon from '@material-ui/icons/Description';
-import LocalOfferIcon from '@material-ui/icons/LocalOffer';
-import PageviewIcon from '@material-ui/icons/Pageview';
-import VpnKeyIcon from '@material-ui/icons/VpnKey';
-import ColorLensIcon from '@material-ui/icons/ColorLens';
-import ImageIcon from '@material-ui/icons/Image';
-import IconCancel from '@material-ui/icons/Close';
-import IconCheck from '@material-ui/icons/Check';
+import TextFieldsIcon from '@mui/icons-material/TextFields';
+import DescriptionIcon from '@mui/icons-material/Description';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import PageviewIcon from '@mui/icons-material/Pageview';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import ColorLensIcon from '@mui/icons-material/ColorLens';
+import ImageIcon from '@mui/icons-material/Image';
+import IconCancel from '@mui/icons-material/Close';
+import IconCheck from '@mui/icons-material/Check';
 
-import Utils from '@iobroker/adapter-react/Components/Utils';
-import IconPicker from '@iobroker/adapter-react/Components/IconPicker';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import IconPicker from '@iobroker/adapter-react-v5/Components/IconPicker';
 
 import {IOTextField, IOColorPicker} from '../IOFields/Fields';
 

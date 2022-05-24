@@ -1,24 +1,24 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Rating from '@material-ui/lab/Rating';
-import { Button, TextField } from '@material-ui/core';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
+import Rating from '@mui/lab/Rating';
+import { Button, TextField } from '@mui/material';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
-import VoteIcon from '@material-ui/icons/HowToVote';
-import CloseIcon from '@material-ui/icons/Close';
+import VoteIcon from '@mui/icons-material/HowToVote';
+import CloseIcon from '@mui/icons-material/Close';
 
 const styles = theme => ({
     rating: {
@@ -301,7 +301,7 @@ class RatingDialog extends Component {
                     autoFocus={!this.props.version}
                     variant="contained"
                     onClick={() => this.props.onClose()}
-                    color="default"
+                    color="grey"
                     startIcon={<CloseIcon />}
                 >
                     {this.props.t('Close')}

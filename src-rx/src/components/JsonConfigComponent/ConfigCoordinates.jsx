@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-import TextField from '@material-ui/core/TextField';
-import Fab from '@material-ui/core/Fab';
+import TextField from '@mui/material/TextField';
+import Fab from '@mui/material/Fab';
 
-import IconGpsFixed from '@material-ui/icons/GpsFixed';
+import IconGpsFixed from '@mui/icons-material/GpsFixed';
 
-import I18n from '@iobroker/adapter-react/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 import ConfigGeneric from './ConfigGeneric';
 

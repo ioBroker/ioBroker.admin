@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
 import ConfigGeneric from './ConfigGeneric';
-import { KeyboardTimePicker } from '@material-ui/pickers';
+import { TimePicker } from '@mui/x-date-pickers';
 
 const styles = theme => ({
     indeterminate: {
@@ -19,7 +19,7 @@ class ConfigTimePicker extends ConfigGeneric {
     }
 
     renderItem(error, disabled, defaultValue) {
-        return <KeyboardTimePicker
+        return <TimePicker
             fullWidth
             margin="normal"
             format="HH:mm:ss"

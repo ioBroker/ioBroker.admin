@@ -1,12 +1,12 @@
 import { useDrop } from 'react-dnd';
 import PropTypes from 'prop-types';
 
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
 
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Utils from "@iobroker/adapter-react/Components/Utils";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Utils from "@iobroker/adapter-react-v5/Components/Utils";
 
 const CategoryLabel = (props) => {
     const [, drop] = useDrop(() => ({
