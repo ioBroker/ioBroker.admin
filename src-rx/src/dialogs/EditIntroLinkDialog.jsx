@@ -211,6 +211,7 @@ class EditIntroLinkDialog extends Component {
                                 <FormControl className={classes.formControl}>
                                     <InputLabel id="select-helper-label">{this.props.t('Link type')}</InputLabel>
                                     <Select
+                                        variant="standard"
                                         labelId="select-helper-label"
                                         value={this.state.camera}
                                         onChange={e => this.setState({ camera: e.target.value })}
@@ -222,6 +223,7 @@ class EditIntroLinkDialog extends Component {
                                 </FormControl>
 
                                 <TextField
+                                    variant="standard"
                                     label={this.props.t('URL')}
                                     value={this.state.link}
                                     className={this.props.classes.editItem}
@@ -235,11 +237,17 @@ class EditIntroLinkDialog extends Component {
                                     }}
                                 />
 
-                                <TextField className={this.props.classes.editItem} label={this.props.t('Name')} value={this.state.name || ''} onChange={e => this.setState({ name: e.target.value })} />
+                                <TextField
+                                    variant="standard"
+                                    className={this.props.classes.editItem}
+                                    label={this.props.t('Name')}
+                                    value={this.state.name || ''}
+                                    onChange={e => this.setState({ name: e.target.value })}
+                                />
 
-                                {this.state.link ? <TextField className={this.props.classes.editItem} label={this.props.t('Link name')} value={this.state.linkName || ''} onChange={e => this.setState({ linkName: e.target.value })} /> : null}
+                                {this.state.link ? <TextField variant="standard" className={this.props.classes.editItem} label={this.props.t('Link name')} value={this.state.linkName || ''} onChange={e => this.setState({ linkName: e.target.value })} /> : null}
 
-                                {this.state.camera === 'custom' || this.state.camera === 'text' ? <TextField className={this.props.classes.editItem} label={this.state.camera === 'custom' ? this.props.t('Camera URL') : this.props.t('Description')} value={this.state.desc || ''} onChange={e => this.setState({ desc: e.target.value })} /> : null}
+                                {this.state.camera === 'custom' || this.state.camera === 'text' ? <TextField variant="standard" className={this.props.classes.editItem} label={this.state.camera === 'custom' ? this.props.t('Camera URL') : this.props.t('Description')} value={this.state.desc || ''} onChange={e => this.setState({ desc: e.target.value })} /> : null}
 
                                 {this.state.camera === 'custom' ? <FormControlLabel className={this.props.classes.editItem}
                                     control={<Checkbox checked={this.state.addTs} onChange={e => this.setState({ addTs: e.target.checked })} />}
@@ -261,7 +269,7 @@ class EditIntroLinkDialog extends Component {
                                 /> : null}
 
                                 <div style={{ width: 50 }} className={this.props.classes.editItem}>
-                                    <TextField fullWidth={true} label={this.props.t('Color')} className={this.props.editColor} type="color" value={this.state.color} onChange={e => this.setState({ color: e.target.value })} />
+                                    <TextField variant="standard" fullWidth={true} label={this.props.t('Color')} className={this.props.editColor} type="color" value={this.state.color} onChange={e => this.setState({ color: e.target.value })} />
                                 </div>
                                 <UploadImage
                                     disabled={false}

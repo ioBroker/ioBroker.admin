@@ -179,6 +179,7 @@ class ACLDialog extends Component {
                             {this.props.t('Owner user')}
                         </InputLabel>
                         <Select
+                            variant="standard"
                             className={classes.formControl}
                             id={'owner'}
                             value={this.props.data.common.defaultNewAcl.owner}
@@ -196,6 +197,7 @@ class ACLDialog extends Component {
                             {this.props.t('Owner group')}
                         </InputLabel>
                         <Select
+                            variant="standard"
                             className={classes.formControl}
                             id={'ownerGroup'}
                             value={this.props.data.common.defaultNewAcl.ownerGroup}

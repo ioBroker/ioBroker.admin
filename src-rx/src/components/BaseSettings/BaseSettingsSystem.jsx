@@ -75,6 +75,7 @@ class BaseSettingsSystem extends Component {
                 <Grid container direction="column">
                     <Grid item>
                         <TextField
+                            variant="standard"
                             label={ this.props.t('Host name') }
                             className={ this.props.classes.controlItem }
                             value={ this.state.hostname || this.props.currentHost.replace('system.host.', '') }
@@ -84,6 +85,7 @@ class BaseSettingsSystem extends Component {
                     </Grid>
                     <Grid item>
                         <TextField
+                            variant="standard"
                             label={ this.props.t('Check disk space interval') }
                             className={ this.props.classes.controlItem }
                             value={ this.state.checkDiskInterval }
@@ -95,6 +97,7 @@ class BaseSettingsSystem extends Component {
                     </Grid>
                     <Grid item>
                         <TextField
+                            variant="standard"
                             label={ this.props.t('Instance statistics update interval') }
                             className={ this.props.classes.controlItem }
                             value={ this.state.statisticsInterval }
@@ -130,6 +133,7 @@ class BaseSettingsSystem extends Component {
                     </Grid>
                     <Grid item>
                         <TextField
+                            variant="standard"
                             label={ this.props.t('Limit RAM size for controller') }
                             className={ this.props.classes.controlItem }
                             value={ this.state.memoryLimitMB }
@@ -142,6 +146,7 @@ class BaseSettingsSystem extends Component {
                         <Grid container direction="row" className={ this.props.classes.controlItem }>
                             <Grid item>
                                 <TextField
+                                    variant="standard"
                                     label={ this.props.t('Show warning im log if RAM less than') }
                                     className={ this.props.classes.RAM }
                                     value={ this.state.memLimitWarn }
@@ -152,6 +157,7 @@ class BaseSettingsSystem extends Component {
                             </Grid>
                             <Grid item>
                                 <TextField
+                                    variant="standard"
                                     label={ this.props.t('Show error in log if RAM less than') }
                                     className={ this.props.classes.RAM }
                                     value={ this.state.memLimitError }

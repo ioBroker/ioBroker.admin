@@ -11,6 +11,7 @@ export function IOTextField(props) {
         {IconCustom ? <IconCustom className={ props.classes.formIcon } /> : null}
         <FormControl className={props.classes.formControl}>
             <TextField
+                variant="standard"
                 label={props.t(props.label)}
                 autoComplete={props.autoComplete}
                 error={!!props.error}

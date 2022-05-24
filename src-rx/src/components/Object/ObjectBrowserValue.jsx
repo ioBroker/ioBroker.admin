@@ -258,6 +258,7 @@ class ObjectBrowserValue extends Component {
             return <FormControl className={ this.props.classes.formControl }>
                 <InputLabel>{ this.props.t('Value') }</InputLabel>
                 <Select
+                    variant="standard"
                     defaultValue={ this.propsValue }
                     onChange={ e => this.value = e.target.value }
                 >
@@ -296,6 +297,7 @@ class ObjectBrowserValue extends Component {
                                 { this.props.expertMode ? <Grid item><FormControl className={ this.props.classes.formControl }>
                                     <InputLabel>{ this.props.t('Value type') }</InputLabel>
                                     <Select
+                                        variant="standard"
                                         value={ this.state.type }
                                         onChange={ e => {
                                             if (e.target.value === 'json') {
@@ -346,6 +348,7 @@ class ObjectBrowserValue extends Component {
                                         :
                                         (this.state.type === 'number' ?
                                                 <TextField
+                                                    variant="standard"
                                                     classes={{ root: this.props.classes.textInput }}
                                                     autoFocus
                                                     inputRef={this.inputRef}
@@ -362,6 +365,7 @@ class ObjectBrowserValue extends Component {
                                                                 this.renderStates()
                                                                 :
                                                                 <TextField
+                                                                    variant="standard"
                                                                     classes={{ root: this.props.classes.textInput }}
                                                                     inputRef={this.inputRef}
                                                                     autoFocus
@@ -390,6 +394,7 @@ class ObjectBrowserValue extends Component {
                                 { this.props.expertMode ? <Grid item><FormControl className={ this.props.classes.quality }>
                                     <InputLabel>{ this.props.t('Quality') }</InputLabel>
                                     <Select
+                                        variant="standard"
                                         defaultValue={ 0 }
                                         onChange={ e => this.q = parseInt(e.target.value, 10) }
                                     >
@@ -416,6 +421,7 @@ class ObjectBrowserValue extends Component {
                                     </Select>
                                 </FormControl>
                                     <TextField
+                                        variant="standard"
                                         title={this.props.t('0 - no expiration')}
                                         classes={{root: this.props.classes.expire}}
                                         label={this.props.t('Expire')}

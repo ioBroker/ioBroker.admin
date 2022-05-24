@@ -262,6 +262,7 @@ class ConfigTable extends ConfigGeneric {
                             />}
                             {headCell.filter ?
                                 <TextField
+                                    variant="standard"
                                     ref={this.filterRefs[headCell.attr]}
                                     onChange={() => this.applyFilter()}
                                     InputProps={{

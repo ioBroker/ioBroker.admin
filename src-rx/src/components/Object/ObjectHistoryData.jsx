@@ -1011,6 +1011,7 @@ class ObjectHistoryData extends Component {
                         />
                         :
                         <TextField
+                            variant="standard"
                             label={this.props.t('Value')}
                             value={this.state.edit.val}
                             onChange={e => this.updateEdit('val', e.target.value)}
@@ -1038,6 +1039,7 @@ class ObjectHistoryData extends Component {
                                         this.updateEdit('date', date)}
                                 />
                                 {/*<TextField
+                                    variant="standard"
                                     label=this.props.t('Date')
                                     defaultValue={ this.edit.date }
                                     InputLabelProps={{
@@ -1057,12 +1059,14 @@ class ObjectHistoryData extends Component {
                                         this.updateEdit('time', time)}
                                 />
                                 {/*<TextField
+                                    variant="standard"
                                     className={ this.props.classes.editorTimePicker}
                                     label={ this.props.t('Value') }
                                     defaultValue={ this.edit.time }
                                     onChange={e => this.edit.time = e.target.value}
                                 />*/}
                                 <TextField
+                                    variant="standard"
                                     classes={{root: this.props.classes.msInput}}
                                     label={ this.props.t('ms') }
                                     type="number"
@@ -1117,6 +1121,7 @@ class ObjectHistoryData extends Component {
             <FormControl className={ classes.selectHistoryControl }>
                 <InputLabel>{ this.props.t('History instance') }</InputLabel>
                 <Select
+                    variant="standard"
                     value={ this.state.historyInstance || ''}
                     onChange={ e => {
                         const historyInstance = e.target.value;
@@ -1133,6 +1138,7 @@ class ObjectHistoryData extends Component {
             <FormControl className={ classes.selectRelativeTime }>
                 <InputLabel>{ this.props.t('Relative') }</InputLabel>
                 <Select
+                    variant="standard"
                     ref={ this.rangeRef }
                     value={ this.state.relativeRange }
                     onChange={ e => this.setRelativeInterval(e.target.value) }

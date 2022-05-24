@@ -95,6 +95,7 @@ class WizardAuthSSLTab extends Component {
                         <FormControl className={this.props.classes.input}>
                             <InputLabel>{this.props.t('Certificates')}</InputLabel>
                             <Select
+                                variant="standard"
                                 value={this.state.secure}
                                 onChange={e => this.setState({secure: e.target.value})}
                             >

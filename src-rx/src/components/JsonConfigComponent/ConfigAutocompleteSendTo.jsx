@@ -115,6 +115,7 @@ class ConfigAutocompleteSendTo extends ConfigGeneric {
 
         if (!options.length) {
             return <TextField
+                variant="standard"
                 fullWidth
                 value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
                 error={!!error}
@@ -154,6 +155,7 @@ class ConfigAutocompleteSendTo extends ConfigGeneric {
                 }}
                 renderInput={(params) =>
                     <TextField
+                        variant="standard"
                         {...params}
                         // inputProps are important and will be given in params
                         // inputProps={{maxLength: this.props.schema.maxLength || this.props.schema.max || undefined}}

@@ -137,6 +137,7 @@ class WizardLicenseTab extends Component {
                     <FormControl className={ this.props.classes.languageSelect }>
                         <InputLabel><IconWorld/>{ this.props.t('Language') }</InputLabel>
                         <Select
+                            variant="standard"
                             value={ I18n.getLanguage() }
                             onChange={e => {
                                 I18n.setLanguage(e.target.value);

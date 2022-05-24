@@ -68,6 +68,7 @@ class WizardPasswordTab extends Component {
                     </Grid>
                     <Grid item>
                         <TextField
+                            variant="standard"
                             inputProps={{
                                 autoComplete: 'new-password',
                                 form: {
@@ -103,6 +104,7 @@ class WizardPasswordTab extends Component {
                     </Grid>
                     <Grid item>
                         <TextField
+                            variant="standard"
                             inputProps={{
                                 autoComplete: 'new-password',
                                 form: {autoComplete: 'off'},

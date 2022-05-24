@@ -59,6 +59,7 @@ class SlowConnectionWarningDialog extends Component {
                     {this.props.t('Seems that you have slow connection. Do you want to increase timeout interval?')}
                 </DialogContentText>
                 <TextField
+                    variant="standard"
                     classes={{root: this.props.classes.input}}
                     label={this.props.t('Read timeout')}
                     value={this.state.readTimeoutSec}

@@ -2538,6 +2538,7 @@ class ObjectBrowser extends Component {
         const hasIcons = !!values.find(item => item.icon);
         return <div style={{ position: 'relative' }}>
             <Select
+                variant="standard"
                 key={name + '_' + this.state.filterKey}
                 ref={this.filterRefs[name]}
                 className={this.props.classes.headerCellInput + ' no-underline'}

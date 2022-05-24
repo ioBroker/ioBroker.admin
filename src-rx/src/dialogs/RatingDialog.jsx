@@ -184,6 +184,7 @@ class RatingDialog extends Component {
                 <FormControl className={this.props.classes.languageFilter}>
                     <InputLabel>{this.props.t('Show comments in language')}</InputLabel>
                     <Select
+                        variant="standard"
                         value={this.state.filterLang}
                         onChange={e => {
                             window.localStorage.setItem('app.commentLang', e.target.value);
@@ -254,6 +255,7 @@ class RatingDialog extends Component {
                 />
                 {this.props.version ? <div style={{width: '100%', textAlign: 'left'}}>
                     <TextField
+                        variant="standard"
                         className={this.props.classes.ratingTextControl}
                         value={this.state.ratingComment}
                         label={this.props.t('Comment to version')}
@@ -265,6 +267,7 @@ class RatingDialog extends Component {
                     <FormControl className={this.props.classes.ratingLanguageControl}>
                         <InputLabel>{this.props.t('Language')}</InputLabel>
                         <Select
+                            variant="standard"
                             value={this.state.ratingLang}
                             onChange={e => this.setState({ratingLang: e.target.value})}
                         >

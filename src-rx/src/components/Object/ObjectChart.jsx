@@ -1090,6 +1090,7 @@ class ObjectChart extends Component {
             {!this.props.historyInstance && <FormControl className={ classes.selectHistoryControl }>
                 <InputLabel>{ this.props.t('History instance') }</InputLabel>
                 <Select
+                    variant="standard"
                     value={ this.state.historyInstance }
                     onChange={ e => {
                         window.localStorage.setItem('App.historyInstance', e.target.value);
@@ -1102,6 +1103,7 @@ class ObjectChart extends Component {
             <FormControl className={ classes.selectRelativeTime }>
                 <InputLabel>{ this.props.t('Relative') }</InputLabel>
                 <Select
+                    variant="standard"
                     ref={ this.rangeRef }
                     value={ this.state.relativeRange }
                     onChange={ e => this.setRelativeInterval(e.target.value) }

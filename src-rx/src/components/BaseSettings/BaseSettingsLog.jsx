@@ -193,6 +193,7 @@ class BaseSettingsLog extends Component {
             <FormControl className={this.props.classes.controlItem}>
                 <InputLabel>{this.props.t('Level')}</InputLabel>
                 <Select
+                    variant="standard"
                     value={this.state.transport[name].level || '_'}
                     renderValue={() => this.state.transport[name].level || this.props.t('default')}
                     onChange={e => {
@@ -267,6 +268,7 @@ class BaseSettingsLog extends Component {
                         <FormControl className={this.props.classes.controlItem}>
                             <InputLabel>{this.props.t('Protocol')}</InputLabel>
                             <Select
+                                variant="standard"
                                 value={this.state.transport[name].protocol}
                                 onChange={e => {
                                     const transport = JSON.parse(JSON.stringify(this.state.transport));
@@ -783,6 +785,7 @@ class BaseSettingsLog extends Component {
                         <FormControl className={this.props.classes.controlItem}>
                             <InputLabel>{this.props.t('Level')}</InputLabel>
                             <Select
+                                variant="standard"
                                 value={this.state.level}
                                 onChange={e => this.setState({ level: e.target.value }, () => this.onChange())}
                             >

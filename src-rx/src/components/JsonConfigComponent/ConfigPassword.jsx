@@ -67,6 +67,7 @@ class ConfigPassword extends ConfigGeneric {
         }
 
         const password = <TextField
+            variant="standard"
             fullWidth
             type={this.state._visible && this.state.value !== PASSWORD_PLACEHOLDER ? 'text' : 'password'}
             value={this.state.value}
@@ -98,6 +99,7 @@ class ConfigPassword extends ConfigGeneric {
 
         if (this.props.schema.repeat) {
             const passwordRepeat = <TextField
+                variant="standard"
                 fullWidth
                 type={this.state._visible && this.state._repeat !== PASSWORD_PLACEHOLDER ? 'text' : 'password'}
                 value={this.state._repeat}

@@ -101,6 +101,7 @@ class CertificatesDialog extends Component {
                 </TableCell>
                 <TableCell className={this.props.classes.nameRow + ' float_cell'}>
                     <TextField
+                        variant="standard"
                         value={e.title}
                         InputLabelProps={{
                             readOnly: false,
@@ -112,6 +113,7 @@ class CertificatesDialog extends Component {
                 </TableCell>
                 <TableCell className="grow_cell float_cell">
                     <TextField
+                        variant="standard"
                         id={'default_' + i}
                         value={e.data}
                         InputLabelProps={{

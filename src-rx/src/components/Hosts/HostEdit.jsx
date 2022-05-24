@@ -191,6 +191,7 @@ class HostEdit extends Component {
                 <div className={classes.commonWrapper}>
                     {typeof json.common.title !== 'undefined' ?
                         <TextField
+                            variant="standard"
                             disabled={disabled}
                             label={t('title')}
                             className={clsx(classes.marginBlock, classes.textField)}
@@ -203,6 +204,7 @@ class HostEdit extends Component {
                     {typeof json.common.color !== 'undefined' ?
                         <div className={classes.flex}>
                             <TextField
+                                variant="standard"
                                 disabled={disabled}
                                 className={clsx(classes.marginBlock, classes.color)}
                                 label={t('Color')}

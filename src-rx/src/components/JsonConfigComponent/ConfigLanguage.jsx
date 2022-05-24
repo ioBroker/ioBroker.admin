@@ -82,6 +82,7 @@ class ConfigLanguage extends ConfigGeneric {
         return <FormControl className={this.props.classes.fullWidth}>
             <InputLabel>{this.getText(this.props.schema.label)}</InputLabel>
             <Select
+                variant="standard"
                 error={!!error}
                 disabled={!!disabled}
                 value={this.state.value || '_'}

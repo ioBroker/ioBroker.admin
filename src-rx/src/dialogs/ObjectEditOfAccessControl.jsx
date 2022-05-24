@@ -365,6 +365,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                     <FormControl fullWidth style={{ marginRight: 10 }}>
                         <InputLabel>{t('Owner user')}</InputLabel>
                         <Select
+                            variant="standard"
                             disabled={progress}
                             value={stateOwnerUser.value}
                             renderValue={value => <span>{stateOwnerUser.icon ? <Icon src={stateOwnerUser.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}{stateOwnerUser.name}</span>}
@@ -384,6 +385,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                     <FormControl fullWidth>
                         <InputLabel>{t('Owner group')}</InputLabel>
                         <Select
+                            variant="standard"
                             disabled={progress}
                             value={stateOwnerGroup.value}
                             renderValue={value => <span>{stateOwnerGroup.icon ? <Icon src={stateOwnerGroup.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}{stateOwnerGroup.name}</span>}

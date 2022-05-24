@@ -53,6 +53,7 @@ class ConfigSelect extends ConfigGeneric {
         return <FormControl className={this.props.classes.fullWidth} id={`jsonSelect_${this.props.schema.attr}_${this.props.index}`}>
             <InputLabel>{this.getText(this.props.schema.label)}</InputLabel>
             <Select
+                variant="standard"
                 error={!!error}
                 disabled={!!disabled}
                 value={this.state.value || '_'}

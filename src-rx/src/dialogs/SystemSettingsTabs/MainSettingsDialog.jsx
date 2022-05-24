@@ -265,6 +265,7 @@ class MainSettingsDialog extends Component {
                         {this.props.t(e.title)}
                     </InputLabel>
                     <TextField
+                        variant="standard"
                         id={e.id}
                         value={value.toString()}
                         InputLabelProps={{readOnly: false, shrink: true}}
@@ -285,6 +286,7 @@ class MainSettingsDialog extends Component {
                     {this.props.t(e.title)}
                 </InputLabel>
                 <Select
+                    variant="standard"
                     className={classes.formControl}
                     id={e.id}
                     value={value === undefined ? false : value}
@@ -327,6 +329,7 @@ class MainSettingsDialog extends Component {
                 {this.props.t('Country:')}
             </InputLabel>
             <Select
+                variant="standard"
                 className={classes.formControl}
                 id={'country'}
                 value={this.props.data.common.country}
@@ -446,6 +449,7 @@ class MainSettingsDialog extends Component {
                             {this.props.t('City:')}
                         </InputLabel>
                         <TextField
+                            variant="standard"
                             id="city"
                             label={this.props.t('City:')}
                             value={this.props.data.common.city}
@@ -463,6 +467,7 @@ class MainSettingsDialog extends Component {
                             {this.props.t('Latitude:')}
                         </InputLabel>
                         <TextField
+                            variant="standard"
                             id="latitude"
                             label={this.props.t('Latitude:')}
                             value={this.props.data.common.latitude || 0}
@@ -480,6 +485,7 @@ class MainSettingsDialog extends Component {
                             {this.props.t('Longitude:')}
                         </InputLabel>
                         <TextField
+                            variant="standard"
                             id="longitude"
                             label={this.props.t('Longitude:')}
                             value={this.props.data.common.longitude || 0}

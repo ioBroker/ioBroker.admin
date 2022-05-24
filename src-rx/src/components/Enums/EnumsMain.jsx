@@ -765,6 +765,7 @@ class EnumsList extends Component {
                     </div>
                         <div className={this.props.classes.topPanel2}>
                             <TextField
+                                variant="standard"
                                 inputRef={this.refFilter}
                                 placeholder={this.props.t('Filter')}
                                 InputLabelProps={{shrink: true}}

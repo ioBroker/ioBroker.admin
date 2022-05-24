@@ -41,6 +41,7 @@ class ConfigTopic extends ConfigGeneric {
 
     renderItem(error, disabled, defaultValue) {
         return <TextField
+            variant="standard"
             fullWidth
             inputProps={{maxLength: this.props.schema.maxLength || this.props.schema.max || undefined}}
             value={this.state.value}
