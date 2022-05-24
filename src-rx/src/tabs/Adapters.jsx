@@ -1507,39 +1507,39 @@ class Adapters extends Component {
             }
             <TabHeader>
                 <Tooltip title={this.t('Change view mode')}>
-                    <IconButton onClick={() => this.changeViewMode()}>
+                    <IconButton size="large" onClick={() => this.changeViewMode()}>
                         {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.t('Check adapter for updates')}>
-                    <IconButton onClick={() => this.updateAll(true, true)}>
+                    <IconButton size="large" onClick={() => this.updateAll(true, true)}>
                         <RefreshIcon />
                     </IconButton>
                 </Tooltip>
                 {this.state.viewMode && !this.state.list && <><Tooltip title={this.t('expand all')}>
-                    <IconButton onClick={() => this.expandAll()}>
+                    <IconButton size="large" onClick={() => this.expandAll()}>
                         <FolderOpenIcon />
                     </IconButton>
                 </Tooltip>
                     <Tooltip title={this.t('collapse all')}>
-                        <IconButton onClick={() => this.collapseAll()}>
+                        <IconButton size="large" onClick={() => this.collapseAll()}>
                             <FolderIcon />
                         </IconButton>
                     </Tooltip>
                 </>}
                 {this.state.viewMode && <Tooltip title={this.t('list')}>
-                    <IconButton onClick={() => this.listTable()}>
+                    <IconButton size="large" onClick={() => this.listTable()}>
                         <ListIcon color={this.state.list ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip>}
 
                 {/*<Tooltip title={this.t('Filter local connection type')}>
-                    <IconButton onClick={() => this.toggleConnectionTypeFilter()}>
+                    <IconButton size="large" onClick={() => this.toggleConnectionTypeFilter()}>
                         <CloudOffIcon color={this.state.filterConnectionType ? 'primary' : 'inherit'} />
                     </IconButton>
                  </Tooltip>*/}
                 {this.state.updateList ?
-                    <IconButton onClick={() => this.changeInstalledList(true)}>
+                    <IconButton size="large" onClick={() => this.changeInstalledList(true)}>
                         <StarIcon color="primary" style={{ opacity: 0.3, color: this.state.installedList === 2 ? 'red' : undefined }} />
                     </IconButton>
                     :
@@ -1548,7 +1548,7 @@ class Adapters extends Component {
                         (this.state.installedList < 2 ?
                             'Showed only installed adapters' :
                             'Showed only installed adapters without instance.'))}>
-                        <IconButton
+                        <IconButton size="large"
                             onClick={() => this.changeInstalledList()}>
                             <StarIcon style={this.state.installedList === 2 ? {color: 'red'} : null}
                                       color={this.state.installedList && this.state.installedList < 2 ? 'primary' : 'inherit'}/>
@@ -1557,13 +1557,13 @@ class Adapters extends Component {
                 }
                 <IsVisible config={this.props.adminGuiConfig} name="admin.adapters.filterUpdates">
                     <Tooltip title={this.t('Filter adapter with updates')}>
-                        <IconButton onClick={() => this.changeUpdateList()}>
+                        <IconButton size="large" onClick={() => this.changeUpdateList()}>
                             <UpdateIcon color={this.state.updateList ? 'primary' : 'inherit'} />
                         </IconButton>
                     </Tooltip>
                 </IsVisible>
                 {updateAllButtonAvailable && <Tooltip title={this.t('Update all adapters')}>
-                    <IconButton onClick={() => this.setState({ showUpdater: true })} classes={{ label: this.props.classes.updateAllButton }}>
+                    <IconButton size="large" onClick={() => this.setState({ showUpdater: true })} classes={{ label: this.props.classes.updateAllButton }}>
                         <UpdateIcon />
                         <UpdateIcon className={this.props.classes.updateAllIcon} />
                     </IconButton>
@@ -1571,7 +1571,7 @@ class Adapters extends Component {
 
                 {this.props.expertMode && this.props.adminGuiConfig.admin.adapters?.gitHubInstall !== false &&
                     <Tooltip title={this.t('Install from custom URL')}>
-                        <IconButton onClick={() => this.setState({ gitHubInstallDialog: true })}>
+                        <IconButton size="large" onClick={() => this.setState({ gitHubInstallDialog: true })}>
                             <GithubIcon />
                         </IconButton>
                     </Tooltip>

@@ -842,7 +842,7 @@ class FileBrowser extends Component {
             {this.state.viewType === TABLE && this.props.allowDownload ? <div className={this.props.classes['itemDownloadButton' + this.state.viewType]} /> : null}
 
             {this.state.viewType === TABLE && this.props.allowDelete && this.state.folders[item.id] && this.state.folders[item.id].length && (this.state.expertMode || item.id.startsWith(USER_DATA) || item.id.startsWith('vis.0/')) ?
-                <IconButton aria-label="delete"
+                <IconButton size="large" aria-label="delete"
                     onClick={e => {
                         e.stopPropagation();
                         if (this.suppressDeleteConfirm > Date.now()) {
@@ -890,7 +890,7 @@ class FileBrowser extends Component {
             access = access.toString(16).padStart(3, '0');
         }
 
-        return <div className={this.props.classes['itemAccess' + this.state.viewType]}> <IconButton
+        return <div className={this.props.classes['itemAccess' + this.state.viewType]}> <IconButton size="large"
             onClick={() => this.setState({ modalEditOfAccess: true })}
             className={this.props.classes['itemAclButton' + this.state.viewType]}>{access || '---'}</IconButton></div>;
     }
@@ -1003,7 +1003,7 @@ class FileBrowser extends Component {
             <Hidden xsDown>{this.formatSize(item.size)}</Hidden>
             <Hidden xsDown>{this.state.viewType === TABLE ? this.formatAcl(item.acl) : null}</Hidden>
             <Hidden xsDown>{this.state.viewType === TABLE && this.props.expertMode && this.getEditFile(ext) ?
-                <IconButton aria-label="delete"
+                <IconButton size="large" aria-label="delete"
                     onClick={(e) => {
                         e.stopPropagation();
                         if (!this.props.onSelect) {
@@ -1022,7 +1022,7 @@ class FileBrowser extends Component {
                 :
                 <div className={this.props.classes['itemDeleteButton' + this.state.viewType]} />}
                 </Hidden>
-            {this.state.viewType === TABLE && this.props.allowDownload ? <IconButton
+            {this.state.viewType === TABLE && this.props.allowDownload ? <IconButton size="large"
                 download
                 href={this.imagePrefix + item.id}
                 className={this.props.classes['itemDownloadButton' + this.state.viewType]}
@@ -1035,7 +1035,7 @@ class FileBrowser extends Component {
                 item.id !== USER_DATA &&
                 (this.state.expertMode || item.id.startsWith(USER_DATA) || item.id.startsWith('vis.0/'))
                 ?
-                <IconButton aria-label="delete"
+                <IconButton size="large" aria-label="delete"
                     onClick={e => {
                         e.stopPropagation();
                         if (this.suppressDeleteConfirm > Date.now()) {
@@ -1134,14 +1134,14 @@ class FileBrowser extends Component {
 
     renderToolbar() {
         return <Toolbar key="toolbar" variant="dense">
-            {this.props.showExpertButton ? <IconButton
+            {this.props.showExpertButton ? <IconButton size="large"
                 edge="start"
                 title={this.props.t('ra_Toggle expert mode')}
                 className={Utils.clsx(this.props.classes.menuButton, this.state.expertMode && this.props.classes.menuButtonExpertActive)}
                 aria-label="expert mode"
                 onClick={() => this.setState({ expertMode: !this.state.expertMode })}
             ><ExpertIcon /></IconButton> : null}
-            {this.props.showViewTypeButton ? <IconButton
+            {this.props.showViewTypeButton ? <IconButton size="large"
                 edge="start"
                 title={this.props.t('ra_Toggle view mode')}
                 className={this.props.classes.menuButton}
@@ -1160,7 +1160,7 @@ class FileBrowser extends Component {
                     });
                 }}
             >{this.state.viewType !== TABLE ? <IconList /> : <IconTile />}</IconButton> : null}
-            <IconButton
+            <IconButton size="large"
                 edge="start"
                 title={this.props.t('ra_Hide empty folders')}
                 className={this.props.classes.menuButton}
@@ -1171,7 +1171,7 @@ class FileBrowser extends Component {
                     this.setState({ filterEmpty: !this.state.filterEmpty });
                 }}
             ><EmptyFilterIcon /></IconButton>
-            <IconButton
+            <IconButton size="large"
                 edge="start"
                 title={this.props.t('ra_Reload files')}
                 className={this.props.classes.menuButton}
@@ -1179,7 +1179,7 @@ class FileBrowser extends Component {
                 aria-label="reload files"
                 onClick={() => this.setState({ folders: {} }, () => this.loadFolders())}
             ><RefreshIcon /></IconButton>
-            {this.props.allowCreateFolder ? <IconButton
+            {this.props.allowCreateFolder ? <IconButton size="large"
                 edge="start"
                 disabled={this.state.expertMode ? !this.state.selected : !this.state.selected.startsWith('vis.0') && !this.state.selected.startsWith(USER_DATA)}
                 title={this.props.t('ra_Create folder')}
@@ -1188,7 +1188,7 @@ class FileBrowser extends Component {
                 aria-label="add folder"
                 onClick={() => this.setState({ addFolder: true })}
             ><AddFolderIcon /></IconButton> : null}
-            {this.props.allowUpload ? <IconButton
+            {this.props.allowUpload ? <IconButton size="large"
                 edge="start"
                 disabled={this.state.expertMode ? !this.state.selected : !this.state.selected.startsWith('vis.0') && !this.state.selected.startsWith(USER_DATA)}
                 title={this.props.t('ra_Upload file')}
@@ -1199,7 +1199,7 @@ class FileBrowser extends Component {
                     this.setState({uploadFile: true})}
             ><UploadIcon /></IconButton> : null}
             <Tooltip title={this.props.t('Background image')}>
-                <IconButton
+                <IconButton size="large"
                     color={'inherit'}
                     edge="start"
                     className={this.props.classes.menuButton}

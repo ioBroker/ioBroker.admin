@@ -565,12 +565,12 @@ const Hosts = ({
         {hostUpdateDialogCb()}
         <TabHeader>
             <Tooltip title={t('Show / hide List')}>
-                <IconButton onClick={() => setViewMode(!viewMode)}>
+                <IconButton size="large" onClick={() => setViewMode(!viewMode)}>
                     {viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
                 </IconButton>
             </Tooltip>
             <Tooltip title={t('Reload')}>
-                <IconButton onClick={() => setRefresh(el => !el)}>
+                <IconButton size="large" onClick={() => setRefresh(el => !el)}>
                     <RefreshIcon />
                 </IconButton>
             </Tooltip>

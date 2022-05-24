@@ -187,7 +187,7 @@ class EditIntroLinkDialog extends Component {
                 <DialogTitle disableTypography={true}>
                     <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
                         {this.props.isNew ? this.props.t('Add new link: ') : this.props.t('Edit link')}
-                        <IconButton className={classes.closeButton} onClick={() => this.props.onClose()}>
+                        <IconButton size="large" className={classes.closeButton} onClick={() => this.props.onClose()}>
                             <CloseIcon />
                         </IconButton>
                     </Typography>

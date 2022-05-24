@@ -126,7 +126,7 @@ class EasyMode extends Component {
                         <div className={classes.headerName}>{t('Easy Admin')}</div>
                     </div>
                     <div className={classes.IconButtons}>
-                        {((strictMode && !getLocation().dialog) || currentInstance?.tab) && <IconButton onClick={() => navigate(currentInstance?.tab ? 'easy' : 'tab-intro')}>
+                        {((strictMode && !getLocation().dialog) || currentInstance?.tab) && <IconButton size="large" onClick={() => navigate(currentInstance?.tab ? 'easy' : 'tab-intro')}>
                             <ArrowBackIcon />
                         </IconButton>}
                         <ToggleThemeMenu t={t} toggleTheme={toggleTheme} themeName={themeName} />

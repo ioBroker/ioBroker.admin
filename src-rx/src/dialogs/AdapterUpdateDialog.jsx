@@ -447,7 +447,7 @@ class AdapterUpdateDialog extends Component {
             <DialogTitle disableTypography={true}>
                 <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
                     {this.t('Update "%s" to v%s', this.props.adapter, version)}
-                    <IconButton className={classes.closeButton} onClick={this.props.onClose}>
+                    <IconButton size="large" className={classes.closeButton} onClick={this.props.onClose}>
                         <CloseIcon />
                     </IconButton>
                 </Typography>

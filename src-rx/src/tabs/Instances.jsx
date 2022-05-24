@@ -1224,19 +1224,19 @@ class Instances extends Component {
         return <TabContainer>
             <TabHeader>
                 <Tooltip title={this.t('Show / hide List')}>
-                    <IconButton onClick={() => this.changeSetStateBool('viewMode')}>
+                    <IconButton size="large" onClick={() => this.changeSetStateBool('viewMode')}>
                         {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
                     </IconButton>
                 </Tooltip>
 
                 {!this.state.viewMode && <Tooltip title={this.t('Category')}>
-                    <IconButton onClick={() => this.changeSetStateBool('viewCategory')}>
+                    <IconButton size="large" onClick={() => this.changeSetStateBool('viewCategory')}>
                         <ListIcon color={this.state.viewCategory ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip>}
 
                 {!this.state.viewMode && this.state.viewCategory && <><Tooltip title={this.t('expand all')}>
-                    <IconButton onClick={() => {
+                    <IconButton size="large" onClick={() => {
                         // all folders
                         let expandedFolder = [];
                         this._cacheList.forEach(({ category }) => !expandedFolder.includes(category) && expandedFolder.push(category));
@@ -1248,7 +1248,7 @@ class Instances extends Component {
                     </IconButton>
                 </Tooltip>
                     <Tooltip title={this.t('collapse all')}>
-                        <IconButton onClick={() => {
+                        <IconButton size="large" onClick={() => {
                             window.localStorage.removeItem('Instances.expandedFolder');
                             this.setState({ expandedFolder: [] })
                         }}>
@@ -1257,12 +1257,12 @@ class Instances extends Component {
                     </Tooltip>
                 </>}
                 <Tooltip title={this.t('Reload')}>
-                    <IconButton onClick={() => this.getData(true)}>
+                    <IconButton size="large" onClick={() => this.getData(true)}>
                         <RefreshIcon />
                     </IconButton>
                 </Tooltip>
                 {this.props.hosts.length > 1 ? <Tooltip title={this.t('Show instances only for current host')}>
-                    <IconButton onClick={() => this.changeSetStateBool('onlyCurrentHost')}>
+                    <IconButton size="large" onClick={() => this.changeSetStateBool('onlyCurrentHost')}>
                         <DevicesIcon color={this.state.onlyCurrentHost ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip> : null}
@@ -1271,13 +1271,13 @@ class Instances extends Component {
                     this.state.playArrow < 2 ?
                         'Showed only running instances' :
                         'Showed only stopped instances')}>
-                    <IconButton onClick={() => this.changeStartedStopped(this.state.playArrow)}>
+                    <IconButton size="large" onClick={() => this.changeStartedStopped(this.state.playArrow)}>
                         <PlayArrowIcon style={this.state.playArrow === 2 ? {color: 'red'} : null}
                                        color={this.state.playArrow && this.state.playArrow < 2 ? 'primary' : 'inherit'} />
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.t('Filter instances')}>
-                    <IconButton onClick={() =>
+                    <IconButton size="large" onClick={() =>
                         instanceFilterDialogCallback(newState => {
                             if (newState) {
                                 this._cacheList = null;

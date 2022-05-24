@@ -68,7 +68,7 @@ const styles = theme => ({
     header: {
         display: 'flex',
         alignItems: 'center',
-        padding: theme.spacing(0.1),
+        padding: theme.spacing(0, 1),
         ...theme.mixins.toolbar,
         justifyContent: 'flex-end',
         position: 'sticky',
@@ -488,7 +488,7 @@ class Drawer extends Component {
                 </a>
                 {!this.props.adminGuiConfig.icon && this.props.versionAdmin && <Typography className={classes.styleVersion}>v{this.props.versionAdmin}</Typography>}
             </div>
-            <IconButton onClick={() => {
+            <IconButton size="large" size="large" onClick={() => {
                 if (this.isSwipeable() || this.props.state === STATES.compact) {
                     this.props.onStateChange(STATES.closed);
                 } else {

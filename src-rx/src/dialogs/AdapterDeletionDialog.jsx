@@ -69,7 +69,7 @@ class AdapterDeletionDialog extends Component {
             <DialogTitle disableTypography={true}>
                 <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
                     {this.t('Please confirm')}
-                    <IconButton className={classes.closeButton} onClick={this.props.onClose}>
+                    <IconButton size="large" className={classes.closeButton} onClick={this.props.onClose}>
                         <CloseIcon />
                     </IconButton>
                 </Typography>

@@ -783,7 +783,7 @@ class EnumsList extends Component {
 
                             />
                             <Tooltip title={this.props.t('Narrow all')} placement="top">
-                                <IconButton
+                                <IconButton size="large"
                                     //size="small"
                                     className={this.props.classes.toolbarButton}
                                     onClick={() => {
@@ -796,7 +796,7 @@ class EnumsList extends Component {
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title={this.props.t('Wide all')} placement="top">
-                                <IconButton
+                                <IconButton size="large"
                                     //size="small"
                                     className={this.props.classes.toolbarButton}
                                     onClick={() => {
@@ -809,7 +809,7 @@ class EnumsList extends Component {
                                 </IconButton>
                             </Tooltip>
                             {showFolderIcons && <Tooltip title={this.props.t('Collapse all')} placement="top">
-                                <IconButton
+                                <IconButton size="large"
                                     //size="small"
                                     className={this.props.classes.toolbarButton}
                                     onClick={() => {
@@ -823,7 +823,7 @@ class EnumsList extends Component {
                                 </IconButton>
                             </Tooltip>}
                             {showFolderIcons && <Tooltip title={this.props.t('Expand all')} placement="top">
-                                <IconButton
+                                <IconButton size="large"
                                     //size="small"
                                     className={this.props.classes.toolbarButton}
                                     onClick={() => {
@@ -836,7 +836,7 @@ class EnumsList extends Component {
                                 </IconButton>
                             </Tooltip>}
                             <Tooltip title={this.props.t('Add group')} placement="top">
-                                <IconButton
+                                <IconButton size="large"
                                     //size="small"
                                     onClick={() => {
                                         if (['functions', 'rooms'].includes(this.state.currentCategory)) {

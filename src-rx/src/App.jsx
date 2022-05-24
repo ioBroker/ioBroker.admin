@@ -1580,7 +1580,7 @@ class App extends Router {
                     )}
                 >
                     <Toolbar>
-                        <IconButton
+                        <IconButton size="large"
                             edge="start"
                             className={clsx(classes.menuButton, !small && this.state.drawerState !== DrawerStates.closed && classes.hide)}
                             onClick={() => this.handleDrawerState(DrawerStates.opened)}
@@ -1590,14 +1590,14 @@ class App extends Router {
                         <div className={classes.wrapperButtons}>
                             <IsVisible name="admin.appBar.discovery" config={this.adminGuiConfig}>
                                 {this.state.discoveryAlive && <Tooltip title={I18n.t('Discovery devices')}>
-                                    <IconButton onClick={() => Router.doNavigate(null, 'discovery')}>
+                                    <IconButton size="large" onClick={() => Router.doNavigate(null, 'discovery')}>
                                         <VisibilityIcon />
                                     </IconButton>
                                 </Tooltip>}
                             </IsVisible>
                             <IsVisible name="admin.appBar.systemSettings" config={this.adminGuiConfig}>
                                 <Tooltip title={I18n.t('System settings')}>
-                                    <IconButton onClick={() => Router.doNavigate(null, 'system')}>
+                                    <IconButton size="large" onClick={() => Router.doNavigate(null, 'system')}>
                                         <BuildIcon />
                                     </IconButton>
                                 </Tooltip>
@@ -1618,7 +1618,7 @@ class App extends Router {
                                         classes={{badge: this.props.classes.expertBadge}}
                                         invisible={expertModePermanent}
                                     >
-                                        <IconButton
+                                        <IconButton size="large"
                                             onClick={() => {
                                                 if (!!this.state.systemConfig.common.expertMode === !this.state.expertMode) {
                                                     window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
@@ -1680,7 +1680,7 @@ class App extends Router {
                                 />
                             </IsVisible>
                             <div className={classes.flexGrow} />
-                            {this.state.cmd && !this.state.cmdDialog && <IconButton onClick={() => this.setState({ cmdDialog: true })}>
+                            {this.state.cmd && !this.state.cmdDialog && <IconButton size="large" onClick={() => this.setState({ cmdDialog: true })}>
                                 <PictureInPictureAltIcon className={this.state.commandError ? classes.errorCmd : this.state.performed ? classes.performed : classes.cmd} />
                             </IconButton>}
                         </div>

@@ -754,7 +754,7 @@ class Markdown extends Component {
             ]}</h1>);
             if (this.state.header.readme) {
                 const link = this.state.header.readme.replace(/blob\/master\/README.md$/, '');
-                data.push(<IconButton key="github" title={I18n.t('Open repository')} onClick={() => Utils.openLink(link)}><IconGithub/></IconButton>);
+                data.push(<IconButton size="large" key="github" title={I18n.t('Open repository')} onClick={() => Utils.openLink(link)}><IconGithub/></IconButton>);
             }
         }
 
@@ -975,7 +975,7 @@ class Markdown extends Component {
             onClose={() => this.setState({tooltip: ''})}
             message={<span id="message-id">{this.state.tooltip}</span>}
             action={[
-                <IconButton
+                <IconButton size="large"
                     key="close"
                     color="inherit"
                     className={this.props.classes.close}

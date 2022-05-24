@@ -191,7 +191,7 @@ class FileViewer extends Component {
             <div className={this.props.classes.dialogTitle}>
                 <DialogTitle id="form-dialog-title">{this.props.t(this.state.editing ? 'Edit' : 'View') + ': ' + this.props.href}</DialogTitle>
                 {EXTENSIONS.images.includes(this.state.ext) && <div>
-                    <IconButton
+                    <IconButton size="large"
                         color={'inherit'}
                         onClick={this.props.setStateBackgroundImage}
                     >

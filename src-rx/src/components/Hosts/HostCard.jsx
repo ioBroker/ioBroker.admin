@@ -640,7 +640,7 @@ const HostCard = ({
             </Typography>
             <div className={classes.marginTop10}>
                 <Typography component={'span'} className={classes.enableButton}>
-                    <IconButton
+                    <IconButton size="large"
                         onClick={() => setEditDialog(true)}
                     >
                         <EditIcon />
@@ -648,7 +648,7 @@ const HostCard = ({
                     {expertMode &&
                         <Tooltip title={t('Host Base Settings')}>
                             <div>
-                                <IconButton disabled={!alive} onClick={setBaseSettingsDialog}>
+                                <IconButton size="large" disabled={!alive} onClick={setBaseSettingsDialog}>
                                     <BuildIcon className={classes.baseSettingsButton} />
                                 </IconButton>
                             </div>
@@ -656,7 +656,7 @@ const HostCard = ({
                     }
                     <Tooltip title={t('Restart host')}>
                         <div>
-                            <IconButton disabled={!alive} onClick={e => {
+                            <IconButton size="large" disabled={!alive} onClick={e => {
                                 e.stopPropagation();
                                 socket.restartController(_id)
                                     .catch(e => window.alert(`Cannot restart: ${e}`));
@@ -667,7 +667,7 @@ const HostCard = ({
                     </Tooltip>
                     {expertMode && logLevelValue &&
                         <Tooltip title={t('loglevel') + ' ' + logLevelValue}>
-                            <IconButton onClick={(event) => {
+                            <IconButton size="large" onClick={(event) => {
                                 setOpenDialogLogLevel(true);
                             }}>
                                 <Avatar className={clsx(classes.smallAvatar, classes[logLevelValue])}>
@@ -677,7 +677,7 @@ const HostCard = ({
                         </Tooltip>
                     }
                     {!alive && !currentHost ? <Tooltip title={t('Remove')}>
-                        <IconButton onClick={executeCommandRemove}>
+                        <IconButton size="large" onClick={executeCommandRemove}>
                             <DeleteIcon />
                         </IconButton>
                     </Tooltip> : <div className={classes.emptyButton} />}

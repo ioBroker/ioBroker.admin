@@ -754,7 +754,7 @@ class Logs extends Component {
         return <Dialog onClose={() => this.closeLogDelete()} open={this.state.logDeleteDialog}>
             <DialogTitle>
                 {this.t('Please confirm')}
-                <IconButton className={classes.closeButton} onClick={() => this.closeLogDelete()}>
+                <IconButton size="large" className={classes.closeButton} onClick={() => this.closeLogDelete()}>
                     <CloseIcon />
                 </IconButton>
             </DialogTitle>
@@ -805,12 +805,12 @@ class Logs extends Component {
         return <TabContainer>
             <TabHeader>
                 <Tooltip title={this.props.t('Refresh log')}>
-                    <IconButton onClick={() => this.readLogs(true)}>
+                    <IconButton size="large" onClick={() => this.readLogs(true)}>
                         <RefreshIcon />
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.props.t('Pause output')}>
-                    <IconButton
+                    <IconButton size="large"
                         className={classes.pauseButton}
                         onClick={() => this.handleLogPause()}
                     >
@@ -818,17 +818,17 @@ class Logs extends Component {
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.props.t('Clear log')}>
-                    <IconButton onClick={() => this.clearLog()}>
+                    <IconButton size="large" onClick={() => this.clearLog()}>
                         <DeleteIcon />
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.props.t('Clear on disk permanent')}>
-                    <IconButton onClick={() => this.openLogDelete()}>
+                    <IconButton size="large" onClick={() => this.openLogDelete()}>
                         <DeleteForeverIcon />
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.props.t('Show/hide PID')}>
-                    <IconButton
+                    <IconButton size="large"
                         onClick={() => this.changePid()}
                         color={!this.state.pid ? 'default' : 'primary'}
                     >
@@ -836,7 +836,7 @@ class Logs extends Component {
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={this.props.t('Show/hide colors')}>
-                    <IconButton
+                    <IconButton size="large"
                         onClick={() => {
                             window.localStorage.setItem('Logs.colors', this.state.colors ? 'false' : 'true');
                             this.setState({colors: !this.state.colors});
@@ -852,7 +852,7 @@ class Logs extends Component {
                         color="error"
                         classes={{ badge: clsx(classes.badge, classes.badgeError) }}
                     >
-                        <IconButton
+                        <IconButton size="large"
                             onClick={() => {
                                 if (this.state.severity === 'error') {
                                     this.setState({ severity: 'debug' });
@@ -871,7 +871,7 @@ class Logs extends Component {
                         color="default"
                         classes={{ badge: clsx(classes.badge, classes.badgeWarn) }}
                     >
-                        <IconButton
+                        <IconButton size="large"
                             onClick={() => {
                                 if (this.state.severity === 'warn') {
                                     this.setState({ severity: 'debug' });

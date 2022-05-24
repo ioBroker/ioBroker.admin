@@ -492,19 +492,19 @@ class IntroCard extends Component {
                     }
                     {
                         this.props.edit && this.props.toggleActivation &&
-                        <IconButton className={this.props.enabled ? classes.enabled : classes.disabled} onClick={() => this.props.toggleActivation()}>
+                        <IconButton size="large" className={this.props.enabled ? classes.enabled : classes.disabled} onClick={() => this.props.toggleActivation()}>
                             <CheckIcon />
                         </IconButton>
                     }
                     {
                         this.props.edit && this.props.onEdit &&
-                        <IconButton className={classes.editButton} onClick={() => this.props.onEdit()}>
+                        <IconButton size="large" className={classes.editButton} onClick={() => this.props.onEdit()}>
                             <EditIcon />
                         </IconButton>
                     }
                     {
                         this.props.edit && this.props.onRemove &&
-                        <IconButton className={classes.deleteButton} onClick={() => this.props.onRemove()}>
+                        <IconButton size="large" className={classes.deleteButton} onClick={() => this.props.onRemove()}>
                             <DeleteIcon />
                         </IconButton>
                     }

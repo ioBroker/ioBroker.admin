@@ -592,7 +592,7 @@ const HostRow = ({
                                 <div onClick={(e) => {
                                     e.stopPropagation();
                                     openHostUpdateDialog()
-                                }} className={classes.buttonUpdate}><IconButton
+                                }} className={classes.buttonUpdate}><IconButton size="large"
                                     className={classes.buttonUpdateIcon}
                                     size="small"
                                 >
@@ -610,7 +610,7 @@ const HostRow = ({
                 </Typography>
                 <div className={classes.marginTop10}>
                     <Typography component={'span'} className={classes.enableButton}>
-                        <IconButton
+                        <IconButton size="large"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 setEditDialog(true);
@@ -622,7 +622,7 @@ const HostRow = ({
                         {expertMode &&
                             <Tooltip title={t('Host Base Settings')}>
                                 <div>
-                                    <IconButton disabled={!alive} onClick={(e) => {
+                                    <IconButton size="large" disabled={!alive} onClick={(e) => {
                                         setBaseSettingsDialog();
                                         e.stopPropagation();
                                     }}>
@@ -633,7 +633,7 @@ const HostRow = ({
                         }
                         <Tooltip title={t('Restart host')}>
                             <div>
-                                <IconButton disabled={!alive} onClick={(e) => {
+                                <IconButton size="large" disabled={!alive} onClick={(e) => {
                                     e.stopPropagation();
                                     socket.restartController(_id)
                                         .catch(e => window.alert(`Cannot restart: ${e}`));
@@ -644,7 +644,7 @@ const HostRow = ({
                         </Tooltip>
                         {expertMode && logLevelValue ?
                             <Tooltip title={t('loglevel') + ' ' + logLevelValue}>
-                                <IconButton onClick={(event) => {
+                                <IconButton size="large" onClick={(event) => {
                                     event.stopPropagation();
                                     setOpenDialogLogLevel(true);
                                 }}>
@@ -656,7 +656,7 @@ const HostRow = ({
                         }
                         <Tooltip title={t('Remove')}>
                             <span>
-                                <IconButton disabled={alive || currentHost} title={alive || currentHost ? t('You cannot delete host, when it is alive') : ''} onClick={(e) => {
+                                <IconButton size="large" disabled={alive || currentHost} title={alive || currentHost ? t('You cannot delete host, when it is alive') : ''} onClick={(e) => {
                                     executeCommandRemove();
                                     e.stopPropagation();
                                 }}>

@@ -1231,11 +1231,11 @@ class ObjectHistoryData extends Component {
             </LocalizationProvider>
             <div className={classes.grow} />
 
-            { this.state.values && this.state.values.length ? <IconButton onClick={ () => this.exportData() } title={this.props.t('Save data as csv')}>
+            { this.state.values && this.state.values.length ? <IconButton size="large" onClick={ () => this.exportData() } title={this.props.t('Save data as csv')}>
                 <ExportIcon />
             </IconButton> : null }
 
-            { this.state.supportedFeatures.includes('insert') && this.props.expertMode ? <IconButton onClick={ () => {
+            { this.state.supportedFeatures.includes('insert') && this.props.expertMode ? <IconButton size="large" onClick={ () => {
                 const time = new Date();
                 //const date = `${time.getFullYear()}.${padding2(time.getMonth() + 1)}.${padding2(time.getDate())}`;
                 //const tm = `${padding2(time.getHours())}:${padding2(time.getMinutes())}:${padding2(time.getSeconds())}.${padding3(time.getMilliseconds())}`;
@@ -1256,7 +1256,7 @@ class ObjectHistoryData extends Component {
             }}>
                 <InsertIcon />
             </IconButton> : null }
-            { this.state.supportedFeatures.includes('update') && this.props.expertMode ? <IconButton disabled={ this.state.selected.length !== 1 }
+            { this.state.supportedFeatures.includes('update') && this.props.expertMode ? <IconButton size="large" disabled={ this.state.selected.length !== 1 }
                 onClick={ () => {
                     const state = JSON.parse(JSON.stringify(this.state.values.find(it => it.ts === this.state.lastSelected)));
                     const time = new Date(state.ts);
@@ -1269,7 +1269,7 @@ class ObjectHistoryData extends Component {
                 }}>
                 <EditIcon />
             </IconButton> : null }
-            { this.state.supportedFeatures.includes('delete') && this.props.expertMode ? <IconButton disabled={ !this.state.selected.length } onClick={() => {
+            { this.state.supportedFeatures.includes('delete') && this.props.expertMode ? <IconButton size="large" disabled={ !this.state.selected.length } onClick={() => {
                 if (this.state.suppressMessage && Date.now() - this.state.suppressMessage < 300000) {
                     this.onDelete();
                 } else {

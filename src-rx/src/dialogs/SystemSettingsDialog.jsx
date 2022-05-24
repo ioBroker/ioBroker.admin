@@ -471,7 +471,7 @@ class SystemSettingsDialog extends Component {
                         >
                             {tabs}
                         </Tabs>
-                        <IconButton
+                        <IconButton size="large"
                             disabled={this.state.saving}
                             edge="start"
                             color="inherit"

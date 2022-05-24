@@ -173,7 +173,7 @@ class UploadImage extends Component {
                             :
                             removeIconFunc && !cropHandler && <div className={classes.buttonRemoveWrapper}>
                                 <Tooltip title={t('Clear')}>
-                                    <IconButton onClick={e => {
+                                    <IconButton size="large" onClick={e => {
                                         removeIconFunc && removeIconFunc();
                                         e.stopPropagation();
                                     }}><IconClose />
@@ -183,7 +183,7 @@ class UploadImage extends Component {
                         }
                         {icon && crop && <div className={classes.buttonCropWrapper}>
                             <Tooltip title={t('Crop')}>
-                                <IconButton onClick={e => {
+                                <IconButton size="large" onClick={e => {
                                     if (!cropHandler) {
                                         this.setState({ cropHandler: true });
                                     } else {

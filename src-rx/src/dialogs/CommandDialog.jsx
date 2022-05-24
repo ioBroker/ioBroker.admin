@@ -65,7 +65,7 @@ class CommandDialog extends Component {
         >
             <DialogTitle>
                 {this.state.progressText || this.props.t('Running command')}
-                <IconButton className={classes.closeButton} onClick={this.props.onClose} disabled={this.props.inBackground}>
+                <IconButton size="large" className={classes.closeButton} onClick={this.props.onClose} disabled={this.props.inBackground}>
                     <CloseIcon />
                 </IconButton>
             </DialogTitle>

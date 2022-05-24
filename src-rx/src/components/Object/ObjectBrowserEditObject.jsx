@@ -544,7 +544,7 @@ class ObjectBrowserEditObject extends Component {
                         value={json.common?.alias?.id || ''}
                         className={this.props.classes.aliasIdEdit}
                         InputProps={{
-                            endAdornment: json.common?.alias?.id ? <InputAdornment position="end"><IconButton
+                            endAdornment: json.common?.alias?.id ? <InputAdornment position="end"><IconButton size="large"
                                 onClick={() => this.setAliasItem(json, 'id', '')}><IconClose/></IconButton></InputAdornment> : null,
                         }}
                         onChange={e => this.setAliasItem(json, 'id', e.target.value)}
@@ -563,7 +563,7 @@ class ObjectBrowserEditObject extends Component {
                         value={json.common?.alias?.id?.read || ''}
                         className={this.props.classes.aliasIdEdit}
                         InputProps={{
-                            endAdornment: json.common?.alias?.id?.read ? <InputAdornment position="end"><IconButton
+                            endAdornment: json.common?.alias?.id?.read ? <InputAdornment position="end"><IconButton size="large"
                                 onClick={() => this.setAliasItem(json, 'id.read', '')}><IconClose/></IconButton></InputAdornment> : null,
                         }}
                         onChange={e => this.setAliasItem(json, 'id.read', e.target.value)}
@@ -582,7 +582,7 @@ class ObjectBrowserEditObject extends Component {
                         value={json.common?.alias?.id?.write || ''}
                         className={this.props.classes.aliasIdEdit}
                         InputProps={{
-                            endAdornment: json.common?.alias?.id?.write ? <InputAdornment position="end"><IconButton
+                            endAdornment: json.common?.alias?.id?.write ? <InputAdornment position="end"><IconButton size="large"
                                 onClick={() => this.setAliasItem(json, 'id.write', '')}><IconClose/></IconButton></InputAdornment> : null,
                         }}
                         onChange={e => this.setAliasItem(json, 'id.write', e.target.value)}
@@ -624,7 +624,7 @@ class ObjectBrowserEditObject extends Component {
                             className={this.props.classes.funcEdit}
                             error={!!this.state.readError}
                             InputProps={{
-                                endAdornment: json.common?.alias?.read ? <InputAdornment position="end"><IconButton onClick={() => this.setAliasItem(json, 'read', '')}><IconClose /></IconButton></InputAdornment> : null,
+                                endAdornment: json.common?.alias?.read ? <InputAdornment position="end"><IconButton size="large" onClick={() => this.setAliasItem(json, 'read', '')}><IconClose /></IconButton></InputAdornment> : null,
                                 startAdornment: <InputAdornment position="start"><IconFx className={this.props.classes.funcIcon}/></InputAdornment>,
                             }}
                             onChange={e => this.setAliasItem(json, 'read', e.target.value)}
@@ -642,7 +642,7 @@ class ObjectBrowserEditObject extends Component {
                             helperText={this.state.writeError || (this.props.t('JS function like') + ' "(val - 21) * 5"')}
                             className={this.props.classes.funcEdit}
                             InputProps={{
-                                endAdornment: json.common?.alias?.write ? <InputAdornment position="end"><IconButton onClick={() => this.setAliasItem(json, 'write', '')}><IconClose /></IconButton></InputAdornment> : null,
+                                endAdornment: json.common?.alias?.write ? <InputAdornment position="end"><IconButton size="large" onClick={() => this.setAliasItem(json, 'write', '')}><IconClose /></IconButton></InputAdornment> : null,
                                 startAdornment: <InputAdornment position="start"><IconFx className={this.props.classes.funcIcon}/></InputAdornment>,
                             }}
                             onChange={e => this.setAliasItem(json, 'write', e.target.value)}
