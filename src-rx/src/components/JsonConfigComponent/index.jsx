@@ -16,41 +16,6 @@ const styles = theme => ({
     }
 });
 
-// Todo: delete it after adapter-react 1.6.9
-I18n.extendTranslations = I18n.extendTranslations || ((words, lang) => {
-    try {
-        if (!lang) {
-            Object.keys(words).forEach(word => {
-                Object.keys(words[word]).forEach(lang => {
-                    if (!I18n.translations[lang]) {
-                        console.warn(`Used unknown language: ${lang}`);
-                    }
-                    if (!I18n.translations[lang][word]) {
-                        I18n.translations[lang][word] = words[word][lang];
-                    } else if (I18n.translations[lang][word] !== words[word][lang]) {
-                        console.warn(`Translation for word "${word}" in "${lang}" was ignored: existing = "${I18n.translations[lang][word]}", new = ${words[word][lang]}`);
-                    }
-                });
-            });
-        } else {
-            if (!I18n.translations[lang]) {
-                console.warn(`Used unknown language: ${lang}`);
-            }
-            I18n.translations[lang] = I18n.translations[lang] || {};
-            Object.keys(words)
-                .forEach(word => {
-                    if (!I18n.translations[lang][word]) {
-                        I18n.translations[lang][word] = words[word];
-                    } else if (I18n.translations[lang][word] !== words[word]) {
-                        console.warn(`Translation for word "${word}" in "${lang}" was ignored: existing = "${I18n.translations[lang][word]}", new = ${words[word]}`);
-                    }
-                });
-        }
-    } catch (e) {
-        console.error(`Cannot apply translations: ${e}`);
-    }
-});
-
 class JsonConfigComponent extends Component {
     constructor(props) {
         super(props);
@@ -65,19 +30,23 @@ class JsonConfigComponent extends Component {
             systemConfig: null,
             alive: false,
             commandRunning: false,
+            schema: JSON.parse(JSON.stringify(this.props.schema))
         };
 
         this.forceUpdateHandlers = {};
 
-        this.schema = JSON.parse(JSON.stringify(this.props.schema));
-        this.buildDependencies(this.schema);
+        this.buildDependencies(this.state.schema);
 
         this.readData();
     }
 
     static getDerivedStateFromProps(props, state) {
-        if (JSON.stringify(props.updateData) !== JSON.stringify(state.updateData)) {
-            return {updateData: props.updateData, originalData: JSON.stringify(props.data)};
+        if (props.updateData !== state.updateData) {
+            return {
+                updateData: props.updateData,
+                originalData: JSON.stringify(props.data),
+                schema: JSON.parse(JSON.stringify(props.schema)),
+            };
         } else {
             return null;
         }
@@ -387,7 +356,7 @@ class JsonConfigComponent extends Component {
         }
 
         return <div className={this.props.classes.root}>
-            {this.renderItem(this.schema)}
+            {this.renderItem(this.state.schema)}
         </div>;
     }
 }

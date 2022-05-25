@@ -604,7 +604,10 @@ const styles = theme => ({
         paddingTop: 4,
         paddingBottom: 4,
         paddingLeft: 4,
-    }
+    },
+    rowGridLine: {
+        marginTop: -2,
+    },
 });
 
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
@@ -924,7 +927,7 @@ const InstanceRow = ({
                     }
                 }}
             />}
-            <Grid container spacing={1} alignItems="center" direction="row" wrap="nowrap">
+            <Grid container spacing={1} alignItems="center" direction="row" wrap="nowrap" className={classes.rowGridLine}>
                 <div className={classes.gridStyle}>
                     <Tooltip title={<span style={{ display: 'flex', flexDirection: 'column' }}>{stateTooltip}</span>}>
                         <div

@@ -2,10 +2,8 @@ import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
 import withWidth from './withWidth';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 
 import AceEditor from 'react-ace';
-// import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-noconflict/theme-chrome';
@@ -20,7 +18,6 @@ import { IconButton } from '@mui/material';
 
 import NoImage from '@iobroker/adapter-react-v5/assets/no_icon.svg';
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
-import AdminUtils from '../Utils';
 
 // Icons
 import { FaCopy as CopyIcon } from 'react-icons/fa';
@@ -69,7 +66,21 @@ function bufferToBase64(buffer) {
     return window.btoa(binary);
 }
 
+/**
+ * @typedef {object} FileViewerProps
+ * @property {string} [key] The key to identify this component.
+ * @property {import('../types').Translator} t Translation function
+ * @property {ioBroker.Languages} [lang] The selected language.
+ * @property {boolean} [expertMode] Is expert mode enabled? (default: false)
+ * @property {() => void} onClose Callback when the viewer is closed.
+ * @property {string} href The URL to the file to be displayed.
+ *
+ * @extends {React.Component<FileViewerProps>}
+ */
 class FileViewer extends Component {
+    /**
+     * @param {Readonly<FileViewerProps>} props
+     */
     constructor(props) {
         super(props);
         const ext = Utils.getFileExtension(this.props.href);
@@ -80,9 +91,13 @@ class FileViewer extends Component {
             ext,
             editing: !!this.props.formatEditFile || false,
             editingValue: null,
-            copyPossible: EXTENSIONS.code.includes(ext) || EXTENSIONS.txt.includes(ext)
+            copyPossible: EXTENSIONS.code.includes(ext) || EXTENSIONS.txt.includes(ext),
+            forceUpdate: Date.now(),
+            changed: false,
         };
+    }
 
+    readFile() {
         if (this.props.href) {
             const parts = this.props.href.split('/');
             parts.splice(0, 2);
@@ -98,7 +113,7 @@ class FileViewer extends Component {
                     const newState = {copyPossible: this.state.copyPossible};
                     // try to detect valid extension
                     if (data.type === 'Buffer') {
-                        const ext = AdminUtils.detectMimeType(bufferToBase64(data.data));
+                        const ext = Utils.detectMimeType(bufferToBase64(data.data));
                         if (ext) {
                             newState.ext = ext;
                             newState.copyPossible = EXTENSIONS.code.includes(ext) || EXTENSIONS.txt.includes(ext);
@@ -120,6 +135,42 @@ class FileViewer extends Component {
                 .catch(e => window.alert('Cannot read file: ' + e));
         }
     }
+
+    componentDidMount() {
+        this.readFile();
+
+        const parts = this.props.href.split('/');
+        parts.splice(0, 2);
+        const adapter = parts[0];
+        const name = parts.splice(1).join('/');
+
+        this.props.supportSubscribes && this.props.socket.subscribeFiles(adapter, name, this.onFileChanged);
+    }
+
+    componentWillUnmount() {
+        this.timeout && clearTimeout(this.timeout);
+        const parts = this.props.href.split('/');
+        parts.splice(0, 2);
+        const adapter = parts[0];
+        const name = parts.splice(1).join('/');
+        this.props.supportSubscribes && this.props.socket.subscribeFiles(adapter, name, this.onFileChanged);
+    }
+
+    onFileChanged = (id, fileName, size) => {
+        if (!this.state.changed) {
+            this.timeout && clearTimeout(this.timeout);
+            this.timeout = setTimeout(() => {
+                this.timeout = null;
+                if (size === null) {
+                    window.alert('Show file was deleted!');
+                } else if (this.state.text !== null || this.state.code !== null) {
+                    this.readFile();
+                } else {
+                    this.setState({ forceUpdate: Date.now() });
+                }
+            }, 300);
+        }
+    };
 
     writeFile64 = () => {
         const parts = this.props.href.split('/');
@@ -152,10 +203,12 @@ class FileViewer extends Component {
             return <img
                 onError={e => {
                     e.target.onerror = null;
-                    e.target.src = NoImage
+                    e.target.src = NoImage;
                 }}
-                className={clsx(this.props.classes.img, this.props.getClassBackgroundImage())}
-                src={this.props.href} alt={this.props.href} />;
+                className={Utils.clsx(this.props.classes.img, this.props.getClassBackgroundImage())}
+                src={this.props.href + '?ts=' + this.state.forceUpdate}
+                alt={this.props.href}
+            />;
         } else if (this.state.code !== null || this.state.text !== null || this.state.editing) {
             return <AceEditor
                 mode={this.getEditFile(this.props.formatEditFile)}
@@ -163,17 +216,17 @@ class FileViewer extends Component {
                 height="100%"
                 theme={this.props.themeName === 'dark' ? 'clouds_midnight' : 'chrome'}
                 value={this.state.editingValue || this.state.code || this.state.text}
-                onChange={newValue => this.setState({ editingValue: newValue })}
+                onChange={newValue => this.setState({ editingValue: newValue, changed: true })}
                 name="UNIQUE_ID_OF_DIV"
                 readOnly={!this.state.editing}
                 fontSize={14}
                 setOptions={{
                     enableBasicAutocompletion: true,
                     enableLiveAutocompletion: true,
-                    enableSnippets: true
+                    enableSnippets: true,
                 }}
                 editorProps={{ $blockScrolling: true }}
-            />
+            />;
         }
     }
 
@@ -181,7 +234,6 @@ class FileViewer extends Component {
         return <Dialog
             classes={{ scrollPaper: this.props.classes.dialog, paper: this.props.classes.paper }}
             scroll="paper"
-            key={this.props.key}
             open={!!this.props.href}
             onClose={() => this.props.onClose()}
             fullWidth={true}
@@ -236,12 +288,14 @@ class FileViewer extends Component {
 }
 
 FileViewer.propTypes = {
-    key: PropTypes.string,
     t: PropTypes.func,
     lang: PropTypes.string,
     expertMode: PropTypes.bool,
     onClose: PropTypes.func,
-    href: PropTypes.string.isRequired
+    href: PropTypes.string.isRequired,
+    supportSubscribes: PropTypes.bool,
 };
 
-export default withWidth()(withStyles(styles)(FileViewer));
+/** @type {typeof FileViewer} */
+const _export = withWidth()(withStyles(styles)(FileViewer));
+export default _export;

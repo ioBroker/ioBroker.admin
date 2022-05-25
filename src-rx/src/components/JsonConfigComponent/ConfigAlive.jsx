@@ -1,3 +1,4 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
@@ -12,7 +13,7 @@ const styles = theme => ({
     },
     notAlive: {
         color: '#a30000'
-    }
+    },
 });
 
 class ConfigAlive extends ConfigGeneric {
