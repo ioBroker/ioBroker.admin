@@ -27,7 +27,7 @@ class ConfigCustom extends Component {
 
     componentDidMount() {
         (async () => {
-            window._customComponent = window.location.protocol + "//" + window.location.host + '/' + this.props.schema.url;
+            window._customComponent = this.props.schema.url.startsWith('http') ? this.props.schema.url : window.location.protocol + "//" + window.location.host + '/' + this.props.schema.url;
             const Comp = await import('CustomComponent/Components');
             this.setState({
                 Component: Comp.default[this.props.schema.name]

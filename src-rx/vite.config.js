@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import svgr from '@honkhonk/vite-plugin-svgr'
 import { viteCommonjs, esbuildCommonjs } from '@originjs/vite-plugin-commonjs';
 import federation from '@originjs/vite-plugin-federation'
+import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import pkg from './package.json'
 
 export default defineConfig(({ mode }) => {
@@ -30,6 +31,18 @@ export default defineConfig(({ mode }) => {
         '@mui/material': {
           singleton: true,
           // requiredVersion: pkg.dependencies['@mui/material'],
+        },
+        '@mui/styles': {
+          singleton: true,
+          // requiredVersion: pkg.dependencies['@mui/material'],
+        },
+        'react-ace': {
+          singleton: true,
+          // requiredVersion: pkg.dependencies['@mui/material'],
+        },
+        'prop-types': {
+          singleton: true,
+          // requiredVersion: pkg.dependencies['@mui/material'],
         }
       }
     })
@@ -42,10 +55,16 @@ export default defineConfig(({ mode }) => {
   },
   optimizeDeps: {
     esbuildOptions: {
+      define: {
+        global: 'globalThis'
+      },
       plugins: [
         // Solves:
         // https://github.com/vitejs/vite/issues/5308
-        esbuildCommonjs(['@iobroker/adapter-react'])
+        esbuildCommonjs(['@iobroker/adapter-react']),
+        NodeGlobalsPolyfillPlugin({
+            buffer: true
+        })
       ],
     },
   },
