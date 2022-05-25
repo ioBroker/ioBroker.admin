@@ -29,7 +29,7 @@ class ConfigCustom extends Component {
         } else if (this.props.schema.url.startsWith('./')) {
             window._customComponent = `${window.location.protocol}//${window.location.host}${this.props.schema.url.replace(/^\./, '')}`;
         } else {
-            window._customComponent = `${window.location.protocol}//${window.location.host}/${this.props.schema.url}`;
+            window._customComponent = `${window.location.protocol}//${window.location.host}/adapter/${this.props.adapterName}/${this.props.schema.url}`;
         }
 
         // custom component always has constant name

@@ -84,7 +84,8 @@ function build() {
 
 function copyFiles() {
     return del([
-        dest + '**/*'
+        dest + '**/*',
+        'admin/custom/**/*',
     ])
         .then(() => Promise.all([
             gulp.src([
@@ -102,6 +103,11 @@ function copyFiles() {
                 .pipe(replace('href="/', 'href="'))
                 .pipe(replace('src="/', 'src="'))
                 .pipe(gulp.dest(dest)),
+
+            // copy custom plugin
+            gulp.src([`${srcRx}node_modules/@iobroker/admin-component-easy-access/admin/**/*`,])
+                .pipe(gulp.dest('admin/')),
+
             gulp.src([
                 `${srcRx}dist/static/js/main.*.chunk.js`,
             ])

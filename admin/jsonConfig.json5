@@ -267,21 +267,11 @@
           "label": "Apply access rights for selected instances"
         },
         "accessAllowedConfigs": {
+          "type": "custom",
           "hidden": "!data.accessLimit",
           "newLine": true,
-          "type": "custom",
-          "component": "configCustomEasyAccess"
-        }
-      }
-    },
-    "demoTab": {
-      "type": "panel",
-      "label": "Plugin",
-      "items": {
-        "button": {
-          "type": "custom",
-          "url": "./adapter/admin/remoteEntry.js",
-          "name": "Button"
+          "url": "custom/customComponents.js",
+          "name": "ConfigCustomEasyAccess"
         }
       }
     }
