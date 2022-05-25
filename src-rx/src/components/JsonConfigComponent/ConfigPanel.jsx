@@ -185,7 +185,7 @@ class ConfigPanel extends ConfigGeneric {
             return null;
         }
 
-        const {disabled, hidden} = this.calculate(schema);
+        const { disabled, hidden } = this.calculate(schema);
 
         const items   = this.props.schema.items;
         const classes = this.props.classes || {};

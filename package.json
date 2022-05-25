@@ -37,7 +37,8 @@
     "passport-local": "^1.0.0",
     "axios": "^0.27.2",
     "semver": "^7.3.7",
-    "ws": "^8.6.0"
+    "ws": "^8.6.0",
+    "mime": "^3.0.0"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^3.5.9",

@@ -2,6 +2,8 @@ import { Component, createRef } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import Dropzone from 'react-dropzone';
+import { Cropper } from 'react-cropper';
+import 'cropperjs/dist/cropper.css';
 
 import { withStyles } from '@mui/styles';
 import { Menu, MenuItem, Tooltip } from '@mui/material';
@@ -10,9 +12,6 @@ import IconButton from '@mui/material/IconButton';
 import IconClose from '@mui/icons-material/Close';
 import CropIcon from '@mui/icons-material/Crop';
 import { FaFileUpload as UploadIcon } from 'react-icons/fa';
-import { Cropper } from 'react-cropper';
-import "cropperjs/dist/cropper.css";
-
 
 const styles = theme => ({
     dropZone: {

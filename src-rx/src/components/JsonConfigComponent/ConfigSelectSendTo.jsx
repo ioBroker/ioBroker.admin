@@ -1,3 +1,4 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
@@ -6,11 +7,10 @@ import MenuItem from '@mui/material/MenuItem';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import ConfigGeneric from './ConfigGeneric';
-import TextField from "@mui/material/TextField";
-import React from "react";
-import {CircularProgress} from "@mui/material";
 
 const styles = theme => ({
     fullWidth: {

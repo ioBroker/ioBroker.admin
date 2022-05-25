@@ -19,7 +19,6 @@
         "@testing-library/jest-dom": "^5.16.4",
         "@testing-library/react": "^13.2.0",
         "@testing-library/user-event": "^14.2.0",
-        "classnames": "^2.3.1",
         "clsx": "^1.1.1",
         "date-fns": "^2.28.0",
         "echarts": "^5.3.2",

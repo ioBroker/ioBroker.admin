@@ -91,10 +91,12 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### **WORK IN PROGRESS**
 * (bluefox) Breaking changes: no admin@v4(material) interface. Only react interface is possible.
+* (bluefox) Breaking changes: older browsers do not supported anymore.
 * (bluefox) Migration from material-ui to mui@v5
 * (bluefox) Many GUI fixes
 * (bluefox) Support of JSON5 for the config and custom files
 * (bluefox) Added run/stop buttons in instance settings dialog
+* (bluefox) Added support for the file change events
 
 ### 5.4.9 (2022-05-12)
 * (bluefox) Corrected charts
