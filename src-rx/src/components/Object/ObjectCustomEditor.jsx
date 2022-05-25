@@ -1,6 +1,5 @@
 import React, { createRef, Component } from 'react';
 import {withStyles} from '@mui/styles';
-import withWidth from '../withWidth';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import JSON5 from 'json5';
@@ -19,6 +18,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import DialogError from '@iobroker/adapter-react-v5/Dialogs/Error';
 import ConfirmDialog from "@iobroker/adapter-react-v5/Dialogs/Confirm";
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 import JsonConfigComponent from '../JsonConfigComponent';
 import Utils from '../../Utils';

@@ -1,4 +1,3 @@
-import withWidth from '../components/withWidth';
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -17,6 +16,8 @@ import Snackbar from '@mui/material/Snackbar';
 import IconCancel from '@mui/icons-material/Close';
 import IconDeleteOne from '@mui/icons-material/Delete';
 import IconDeleteAll from '@mui/icons-material/Delete';
+
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 import ObjectBrowser from '../components/ObjectBrowser';
 import ObjectCustomDialog from '../dialogs/ObjectCustomDialog';

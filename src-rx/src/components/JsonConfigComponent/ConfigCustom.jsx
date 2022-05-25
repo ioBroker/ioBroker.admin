@@ -33,16 +33,19 @@ class ConfigCustom extends Component {
         }
 
         // custom component always has constant name
-        const component = await import('CustomComponent/Components');
-
-        if (!component || !component.default || !component.default[this.props.schema.name]) {
-            const keys = Object.keys(component?.default || {});
-            console.error('URL is empty. Cannot load custom component!');
-            this.setState({ error: `Component ${this.props.schema.name} not found in ${this.props.schema.url}. Found: ${keys.join(', ')}` });
-        } else {
-            this.setState({
-                Component: component.default[this.props.schema.name]
-            });
+        try {
+            const component = await import('CustomComponent/Components');
+            if (!component || !component.default || !component.default[this.props.schema.name]) {
+                const keys = Object.keys(component?.default || {});
+                console.error('URL is empty. Cannot load custom component!');
+                this.setState({ error: `Component ${this.props.schema.name} not found in ${this.props.schema.url}. Found: ${keys.join(', ')}` });
+            } else {
+                this.setState({
+                    Component: component.default[this.props.schema.name]
+                });
+            }
+        } catch (error) {
+            this.setState({ error: `Cannot import from ${this.props.schema.url}: ${error}` });
         }
     }
 

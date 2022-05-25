@@ -1,6 +1,5 @@
 import { Component } from 'react';
-import {withStyles} from '@mui/styles';
-import withWidth from "../components/withWidth";
+import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
@@ -13,6 +12,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
+
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 import ToggleThemeMenu from '../components/ToggleThemeMenu';
 

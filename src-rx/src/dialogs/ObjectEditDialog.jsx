@@ -1,6 +1,5 @@
 import { Component } from 'react';
 import { withStyles } from '@mui/styles';
-import withWidth from '../components/withWidth';
 import PropTypes from 'prop-types';
 
 import Button from '@mui/material/Button';
@@ -13,6 +12,8 @@ import MonacoEditor from 'react-monaco-editor';
 // Icons
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from "@mui/icons-material/Check";
+
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 const styles = theme => ({
     dialog: {

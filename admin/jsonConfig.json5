@@ -273,6 +273,17 @@
           "component": "configCustomEasyAccess"
         }
       }
+    },
+    "demoTab": {
+      "type": "panel",
+      "label": "Plugin",
+      "items": {
+        "button": {
+          "type": "custom",
+          "url": "./adapter/admin/remoteEntry.js",
+          "name": "Button"
+        }
+      }
     }
   }
 }

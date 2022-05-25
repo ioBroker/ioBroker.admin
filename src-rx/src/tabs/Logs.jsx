@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 
-import withWidth from '../components/withWidth';
 import { withStyles } from '@mui/styles';
 
 import Button from '@mui/material/Button';
@@ -46,6 +45,7 @@ import grey from '@mui/material/colors/grey';
 import red from '@mui/material/colors/red';
 
 import Icon from '@iobroker/adapter-react-v5/Components/Icon';
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 import Utils from '../Utils';
 import TabContainer from '../components/TabContainer';

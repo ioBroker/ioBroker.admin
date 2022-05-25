@@ -1,5 +1,4 @@
 import React, { Suspense } from 'react';
-import withWidth from './components/withWidth';
 import { withStyles } from '@mui/styles';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { DndProvider } from 'react-dnd';
@@ -38,6 +37,7 @@ import Utils from './components/Utils';//adapter-react/Components/Utils';
 import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 import Icon from '@iobroker/adapter-react-v5/Components/Icon';
 import theme from '@iobroker/adapter-react-v5/Theme';
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 import CommandDialog from './dialogs/CommandDialog';
 import Drawer from './components/Drawer';

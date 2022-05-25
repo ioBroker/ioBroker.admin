@@ -1,6 +1,5 @@
 import { createRef, Component } from 'react';
 import {withStyles} from '@mui/styles';
-import withWidth from '../withWidth';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
@@ -8,7 +7,9 @@ import Toolbar from '@mui/material/Grid';
 
 import Button from '@mui/material/Button';
 import Paper from  '@mui/material/Paper';
-import IconCheck from "@mui/icons-material/Check";
+import IconCheck from '@mui/icons-material/Check';
+
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 import AdminUtils from '../../Utils';
 

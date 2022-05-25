@@ -1,7 +1,6 @@
 // RepositoriesDialog
 import {Component} from 'react';
 import clsx from 'clsx';
-import withWidth from '../../components/withWidth';
 import {withStyles} from '@mui/styles';
 import PropTypes from 'prop-types';
 import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc';
@@ -21,8 +20,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DragHandleIcon from '@mui/icons-material/Menu';
 
 import I18n from '@iobroker/adapter-react-v5/i18n';
-import Utils from '../../Utils';
 import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import Utils from '../../Utils';
 
 const styles = theme => ({
     tabPanel: {

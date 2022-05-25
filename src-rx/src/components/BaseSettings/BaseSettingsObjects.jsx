@@ -1,7 +1,7 @@
 import { createRef, Component } from 'react';
 import {withStyles} from '@mui/styles';
-import withWidth from '../withWidth';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
 
 import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
@@ -18,7 +18,7 @@ import Paper from  '@mui/material/Paper';
 import Switch from  '@mui/material/Switch';
 
 import DialogConfirm from '@iobroker/adapter-react-v5/Dialogs/Confirm';
-import clsx from 'clsx';
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 const styles = theme => ({
     paper: {

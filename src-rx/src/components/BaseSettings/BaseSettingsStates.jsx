@@ -1,6 +1,6 @@
 import { createRef, Component } from 'react';
 import {withStyles} from '@mui/styles';
-import withWidth from '../withWidth';
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 

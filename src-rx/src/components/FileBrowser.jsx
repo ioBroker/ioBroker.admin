@@ -7,8 +7,8 @@
  * MIT License
  *
  **/
-import { withStyles } from '@mui/styles';
 import React, { Component } from 'react';
+import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import Dropzone from 'react-dropzone';
 
@@ -54,9 +54,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Brightness5Icon from '@mui/icons-material/Brightness6';
 
 import ExpertIcon from '@iobroker/adapter-react-v5/icons/IconExpert';
-import NoImage from '@iobroker/adapter-react-v5/assets/no_icon.svg';
 import IconClosed from '@iobroker/adapter-react-v5/icons/IconClosed';
 import IconOpen from '@iobroker/adapter-react-v5/icons/IconOpen';
+import IconNoIcon from '@iobroker/adapter-react-v5/icons/IconNoIcon';
 
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
@@ -456,6 +456,7 @@ class FileBrowser extends Component {
             queueLength: 0,
             loadAllFolders: false,
             allFoldersLoaded: false,
+            fileErrors: [],
         };
 
         this.imagePrefix = this.props.imagePrefix || './files/';
@@ -1049,11 +1050,20 @@ class FileBrowser extends Component {
             )}
         >
             {EXTENSIONS.images.includes(ext) ?
-                <img
-                    onError={e => { e.target.onerror = null; e.target.src = NoImage }}
-                    className={Utils.clsx(this.props.classes['itemImage' + this.state.viewType], this.getClassBackgroundImage())}
-                    src={this.imagePrefix + item.id} alt={item.name}
-                />
+                this.state.fileErrors.includes(item.id) ?
+                    <IconNoIcon className={Utils.clsx(this.props.classes['itemImage' + this.state.viewType], this.getClassBackgroundImage())}/> :
+                    <img
+                        onError={e => {
+                            e.target.onerror = null;
+                            const fileErrors = [...this.state.fileErrors];
+                            if (!fileErrors.includes(item.id)) {
+                                fileErrors.push(item.id);
+                                this.setState({ fileErrors });
+                            }
+                        }}
+                        className={Utils.clsx(this.props.classes['itemImage' + this.state.viewType], this.getClassBackgroundImage())}
+                        src={this.imagePrefix + item.id} alt={item.name}
+                    />
                 :
                 this.getFileIcon(ext)}
             <div className={this.props.classes['itemName' + this.state.viewType]}>{item.name}</div>
@@ -1653,7 +1663,7 @@ class FileBrowser extends Component {
 
     render() {
         if (!this.props.ready) {
-            return <LinearProgress key={this.props.key ? this.props.key + '_c' : 'c'} />;
+            return <LinearProgress />;
         }
 
         if (this.state.loadAllFolders && !this.foldersLoading) {
