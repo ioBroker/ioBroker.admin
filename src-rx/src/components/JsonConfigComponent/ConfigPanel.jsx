@@ -44,6 +44,7 @@ import ConfigCRON from './ConfigCRON';
 import ConfigAlive from './ConfigAlive';
 import ConfigTextSendTo from './ConfigTextSendTo';
 import ConfigCoordinates from './ConfigCoordinates';
+import ConfigCustom from './ConfigCustom';
 
 const components = {
     alive: ConfigAlive,
@@ -56,6 +57,7 @@ const components = {
     color: ConfigColor,
     coordinates: ConfigCoordinates,
     cron: ConfigCRON,
+    custom: ConfigCustom,
     datePicker: ConfigDatePicker,
     divider: ConfigStaticDivider,
     header: ConfigStaticHeader,
@@ -130,6 +132,11 @@ class ConfigPanel extends ConfigGeneric {
             const type = items[attr].type || 'panel';
             let ItemComponent;
             if (type === 'custom') {
+                // name
+                // url
+                if (items[attr].url) {
+                    ItemComponent = ConfigCustom;
+                } else 
                 if (this.props.customs && this.props.customs[items[attr].component]) {
                     ItemComponent = this.props.customs[items[attr].component];
                 } else {
@@ -164,7 +171,7 @@ class ConfigPanel extends ConfigGeneric {
                 dateFormat={this.props.dateFormat}
                 isFloatComma={this.props.isFloatComma}
                 disabled={disabled}
-
+                
                 registerOnForceUpdate={this.props.registerOnForceUpdate}
                 forceUpdate={this.props.forceUpdate}
 
