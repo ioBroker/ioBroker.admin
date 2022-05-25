@@ -13,14 +13,14 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 
-import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
-
-import ToggleThemeMenu from '../components/ToggleThemeMenu';
-
 // Icons
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import CheckIcon from '@mui/icons-material/Check';
 
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import Router from '@iobroker/adapter-react-v5/Components/Router';
+
+import ToggleThemeMenu from '../components/ToggleThemeMenu';
 import WizardPasswordTab from '../components/Wizard/WizardPasswordTab';
 import WizardLicenseTab from '../components/Wizard/WizardLicenseTab';
 import WizardFinishImage from '../assets/wizard-finish.jpg';
@@ -30,7 +30,6 @@ import WizardAuthSSLTab from '../components/Wizard/WizardAuthSSLTab';
 import WizardPortForwarding from '../components/Wizard/WizardPortForwarding';
 import Logo from '../assets/logo.png';
 import LongLogo from '../assets/longLogo.svg';
-import Router from "@iobroker/adapter-react-v5/Components/Router";
 
 const TOOLBAR_HEIGHT = 64;
 
@@ -51,21 +50,21 @@ const styles = theme => ({
     tabPanel: {
         width: '100%',
         overflow: 'hidden',
-        height: 'calc(100% - ' + 72 + 'px)',
+        height: `calc(100% - 72px)`,
     },
     fullHeightWithoutToolbar: {
-        height: 'calc(100% - ' + TOOLBAR_HEIGHT + 'px)',
+        height: `calc(100% - ${TOOLBAR_HEIGHT}px)`,
         width: '100%',
         overflow: 'auto',
     },
     finishBackground: {
-        backgroundImage: 'url(' + WizardFinishImage + ')',
+        backgroundImage: `url(${WizardFinishImage})`,
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
     },
     welcomeBackground: {
-        backgroundImage: 'url(' + WizardWelcomeImage + ')',
+        backgroundImage: `url(${WizardWelcomeImage})`,
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -128,7 +127,7 @@ class WizardDialog extends Component {
                 this.props.socket.getObject('system.adapter.' + namespace)
                     .then(obj => {
                         this.adminInstance = obj;
-                        this.setState({auth: obj.native.auth, secure: obj.native.secure})
+                        this.setState({ auth: obj.native.auth, secure: obj.native.secure });
                     }));
     }
 
@@ -146,7 +145,7 @@ class WizardDialog extends Component {
                     onClick={ () =>
                         this.props.socket.getCompactSystemConfig(true)
                             .then(obj =>
-                                this.setState( {activeStep: this.state.activeStep + 1 + (obj.common.licenseConfirmed ? 0 : 0) }))
+                                this.setState( { activeStep: this.state.activeStep + 1 + (obj.common.licenseConfirmed ? 0 : 0) }))
                     }>
                     { this.props.t('Start wizard') } <PlayArrowIcon className={ this.props.classes.playIcon }/></Button>
                 <div className={ this.props.classes.grow }/>
@@ -196,7 +195,8 @@ class WizardDialog extends Component {
                         Object.assign(obj.common, settings);
                         return this.props.socket.setSystemConfig(obj);
                     })
-                    .then(() => this.setState({activeStep: this.state.activeStep + 1}))
+                    .then(() =>
+                        this.setState({activeStep: this.state.activeStep + 1}))
             }
         />;
     }
@@ -209,7 +209,7 @@ class WizardDialog extends Component {
             socket={ this.props.socket }
             themeName={ this.props.themeName }
             onDone={settings =>
-                this.setState(settings, () => this.setState({activeStep: this.state.activeStep + 1}))}
+                this.setState(settings, () => this.setState({ activeStep: this.state.activeStep + 1 }))}
         />;
     }
 
@@ -221,7 +221,7 @@ class WizardDialog extends Component {
             auth={this.state.auth}
             secure={this.state.secure}
             onDone={() =>
-                this.setState({activeStep: this.state.activeStep + 1})}
+                this.setState({ activeStep: this.state.activeStep + 1 })}
         />;
     }
 
