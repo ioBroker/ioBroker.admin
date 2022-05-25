@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { MapContainer as LeafletMap, TileLayer } from 'react-leaflet';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
 
-import withWidth from '../../components/withWidth';
 import { withStyles } from '@mui/styles';
 import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
@@ -14,10 +13,11 @@ import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import {FormHelperText} from '@mui/material';
 
+import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+
 import Utils from '../../Utils';
 import countries from '../../assets/json/countries';
-
-import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 
 const styles = theme => ({
     tabPanel: {

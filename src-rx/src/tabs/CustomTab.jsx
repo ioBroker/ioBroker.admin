@@ -1,9 +1,11 @@
 import React from 'react';
-import withWidth from '../components/withWidth';
-import {withStyles} from '@mui/styles';
+import { withStyles } from '@mui/styles';
 import { Component } from 'react';
 import PropTypes from 'prop-types';
+
 import LinearProgress from '@mui/material/LinearProgress';
+
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 import Utils from '../Utils';
 

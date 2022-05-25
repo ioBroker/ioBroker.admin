@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import withWidth from './withWidth';
 import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
@@ -28,6 +27,7 @@ import LogoutIcon from '@iobroker/adapter-react-v5/icons/IconLogout';
 
 import Icon from '@iobroker/adapter-react-v5/Components/Icon';
 import I18n from '@iobroker/adapter-react-v5/i18n';
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 import DragWrapper from './DragWrapper';
 import CustomDragLayer from './CustomDragLayer';

@@ -2,7 +2,6 @@ import { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
-import withWidth from '../components/withWidth';
 import { withStyles } from '@mui/styles';
 
 import IconButton from '@mui/material/IconButton';
@@ -37,6 +36,7 @@ import grey from '@mui/material/colors/grey';
 import red from '@mui/material/colors/red';
 
 import Router from '@iobroker/adapter-react-v5/Components/Router';
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 import Config from './Config';
 import Utils from '../Utils';

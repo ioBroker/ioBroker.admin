@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
-import withWidth from '../components/withWidth';
 import PropTypes from 'prop-types';
 
 import Button from '@mui/material/Button';
@@ -14,6 +13,8 @@ import Fab from '@mui/material/Fab';
 import CloseIcon from '@mui/icons-material/Close';
 import PlayIcon from '@mui/icons-material/PlayArrow';
 import DownloadIcon from '@mui/icons-material/GetApp';
+
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 import Utils from '../components/Utils';
 

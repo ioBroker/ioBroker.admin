@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import withWidth from '../components/withWidth';
 import {withStyles} from '@mui/styles';
 import PropTypes from 'prop-types';
 
@@ -14,6 +13,7 @@ import Button from '@mui/material/Button';
 import LinearProgress from '@mui/material/LinearProgress';
 
 import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 import BaseSettingsSystem from '../components/BaseSettings/BaseSettingsSystem';
 import BaseSettingsMultihost from '../components/BaseSettings/BaseSettingsMultihost';

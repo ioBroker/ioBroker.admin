@@ -1,7 +1,6 @@
 // LicensesDialog
 import {Component} from 'react';
 import clsx from 'clsx';
-import withWidth from '../../components/withWidth';
 import {withStyles} from '@mui/styles';
 import PropTypes from 'prop-types';
 
@@ -15,6 +14,8 @@ import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 
 import IconRefresh from '@mui/icons-material/Refresh';
+
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 const styles = theme => ({
     tabPanel: {

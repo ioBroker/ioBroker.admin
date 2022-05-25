@@ -1,6 +1,5 @@
 import { createRef, Component } from 'react';
 import {withStyles} from '@mui/styles';
-import withWidth from '../withWidth';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import Toolbar from '@mui/material/Grid';
@@ -10,6 +9,8 @@ import Paper from  '@mui/material/Paper';
 import IconCloud from '@mui/icons-material/Public';
 import IconCloudPro from '@mui/icons-material/Language';
 import IconCheck from "@mui/icons-material/Check";
+
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 const TOOLBAR_HEIGHT = 64;
 

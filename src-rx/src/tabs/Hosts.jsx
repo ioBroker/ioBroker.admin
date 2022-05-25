@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import semver from 'semver';
 import clsx from 'clsx';
 
-import withWidth from '../components/withWidth';
 import { withStyles } from '@mui/styles';
 
 import IconButton from '@mui/material/IconButton';
@@ -19,6 +18,8 @@ import BugReportIcon from '@mui/icons-material/BugReport';
 import InfoIcon from '@mui/icons-material/Info';
 import WarningIcon from '@mui/icons-material/Warning';
 import ErrorIcon from '@mui/icons-material/Error';
+
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';

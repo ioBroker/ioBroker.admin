@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import withWidth from '../withWidth';
 import {withStyles} from '@mui/styles';
 import clsx from 'clsx';
 
@@ -48,6 +47,7 @@ import deLocale from 'date-fns/locale/de';
 import nlLocale from 'date-fns/locale/nl';
 
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 // icons
 import DeleteIcon from '@mui/icons-material/Delete';

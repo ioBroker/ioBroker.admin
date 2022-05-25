@@ -1,10 +1,9 @@
 // ACLDialog.js
 
-import React, {Component, Fragment} from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 
-import withWidth from '../../components/withWidth';
-import {withStyles} from '@mui/styles';
+import { withStyles } from '@mui/styles';
 import {Grid, Typography, FormControl, Checkbox} from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -17,6 +16,7 @@ import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 
 import I18n from '@iobroker/adapter-react-v5/i18n';
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 const styles = theme => ({
     tabPanel: {

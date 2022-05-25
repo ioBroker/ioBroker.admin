@@ -1,6 +1,5 @@
 import { createRef, Component } from 'react';
 import { withStyles } from '@mui/styles';
-import withWidth from '../withWidth';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
@@ -29,6 +28,8 @@ import IconFile from '@mui/icons-material/InsertDriveFile';
 import IconSyslog from '@mui/icons-material/Computer';
 import IconStream from '@mui/icons-material/Send';
 import IconSeq from '../../assets/seq.png';
+
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 const styles = theme => ({
     paper: {

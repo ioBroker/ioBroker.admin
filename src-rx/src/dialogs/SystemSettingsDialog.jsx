@@ -1,4 +1,3 @@
-import withWidth from '../components/withWidth';
 import { withStyles } from '@mui/styles';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -17,6 +16,7 @@ import IconButton from '@mui/material/IconButton';
 
 import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 import Router from '@iobroker/adapter-react-v5/Components/Router';
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 import MainSettingsDialog from './SystemSettingsTabs/MainSettingsDialog';
 import RepositoriesDialog from './SystemSettingsTabs/RepositoriesDialog';

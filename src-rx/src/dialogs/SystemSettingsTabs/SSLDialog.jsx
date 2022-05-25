@@ -1,13 +1,14 @@
 // SSLDialog.js
 import {Component} from 'react';
 import PropTypes from 'prop-types';
-
-import withWidth from '../../components/withWidth';
 import {withStyles} from '@mui/styles';
+
 import Grid from '@mui/material/Grid';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
+
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 const styles = theme => ({
     tabPanel: {

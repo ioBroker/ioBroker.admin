@@ -85,11 +85,11 @@ import IconClearFilter from '@iobroker/adapter-react-v5/icons/IconClearFilter';
 
 // own
 import Icon from '@iobroker/adapter-react-v5/Components/Icon';
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 import Utils from './Utils'; // @iobroker/adapter-react-v5/Components/Utils
 import TabContainer from './TabContainer';
 import TabContent from './TabContent';
 import TabHeader from './TabHeader';
-import withWidth from './withWidth';
 
 const ICON_SIZE = 24;
 const ROW_HEIGHT = 32;

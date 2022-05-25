@@ -4,8 +4,7 @@ import clsx from 'clsx';
 import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
 
-import withWidth from '../../components/withWidth';
-import {withStyles} from '@mui/styles';
+import { withStyles } from '@mui/styles';
 
 import Fab from '@mui/material/Fab';
 import Paper from '@mui/material/Paper';
@@ -19,6 +18,8 @@ import TextField from '@mui/material/TextField';
 
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 import Utils from '../../Utils';
 

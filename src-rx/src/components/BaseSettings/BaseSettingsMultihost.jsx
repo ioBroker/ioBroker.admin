@@ -1,13 +1,14 @@
 import { createRef, Component } from 'react';
 import {withStyles} from '@mui/styles';
-import withWidth from '../withWidth';
 import PropTypes from 'prop-types';
+
 import Grid from '@mui/material/Grid';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
-
 import Paper from  '@mui/material/Paper';
+
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 const styles = theme => ({
     paper: {

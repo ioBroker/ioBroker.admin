@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { withStyles } from '@mui/styles';
-import withWidth from './withWidth';
 import PropTypes from 'prop-types';
 
 import AceEditor from 'react-ace';
@@ -16,8 +15,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { IconButton } from '@mui/material';
 
-import NoImage from '@iobroker/adapter-react-v5/assets/no_icon.svg';
+import IconNoIcon from '@iobroker/adapter-react-v5/icons/IconNoIcon';
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 // Icons
 import { FaCopy as CopyIcon } from 'react-icons/fa';
@@ -94,6 +94,7 @@ class FileViewer extends Component {
             copyPossible: EXTENSIONS.code.includes(ext) || EXTENSIONS.txt.includes(ext),
             forceUpdate: Date.now(),
             changed: false,
+            imgError: false,
         };
     }
 
@@ -200,15 +201,19 @@ class FileViewer extends Component {
 
     getContent() {
         if (EXTENSIONS.images.includes(this.state.ext)) {
-            return <img
-                onError={e => {
-                    e.target.onerror = null;
-                    e.target.src = NoImage;
-                }}
-                className={Utils.clsx(this.props.classes.img, this.props.getClassBackgroundImage())}
-                src={this.props.href + '?ts=' + this.state.forceUpdate}
-                alt={this.props.href}
-            />;
+            if (this.state.imgError) {
+                return <IconNoIcon className={Utils.clsx(this.props.classes.img, this.props.getClassBackgroundImage())} />;
+            } else {
+                return <img
+                    onError={e => {
+                        e.target.onerror = null;
+                        this.setState({ imgError: true });
+                    }}
+                    className={Utils.clsx(this.props.classes.img, this.props.getClassBackgroundImage())}
+                    src={this.props.href + '?ts=' + this.state.forceUpdate}
+                    alt={this.props.href}
+                />;
+            }
         } else if (this.state.code !== null || this.state.text !== null || this.state.editing) {
             return <AceEditor
                 mode={this.getEditFile(this.props.formatEditFile)}

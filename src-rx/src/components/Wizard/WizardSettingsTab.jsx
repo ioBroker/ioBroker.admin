@@ -1,6 +1,5 @@
 import { createRef, Component } from 'react';
-import {withStyles} from '@mui/styles';
-import withWidth from '../withWidth';
+import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import Toolbar from '@mui/material/Grid';
@@ -23,6 +22,8 @@ import { toLonLat, fromLonLat } from 'ol/proj';
 
 import Button from '@mui/material/Button';
 import Paper from  '@mui/material/Paper';
+
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 //Icons
 import {FaCrosshairs as GeoIcon} from 'react-icons/all';

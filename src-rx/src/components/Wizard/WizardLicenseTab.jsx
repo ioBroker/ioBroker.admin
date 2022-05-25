@@ -1,6 +1,5 @@
 import { createRef, Component } from 'react';
 import {withStyles} from '@mui/styles';
-import withWidth from '../withWidth';
 import PropTypes from 'prop-types';
 import Toolbar from '@mui/material/Toolbar';
 import MenuItem from '@mui/material/MenuItem';
@@ -23,6 +22,7 @@ import IconCheck from '@mui/icons-material/Check';
 import IconCancel from '@mui/icons-material/Close';
 
 import I18n from '@iobroker/adapter-react-v5/i18n';
+import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 import LicenseTexts from '../LicenseTexts';
 
 const TOOLBAR_HEIGHT = 64;
