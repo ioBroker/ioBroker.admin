@@ -152,7 +152,7 @@
     "leTab": {
       "type": "panel",
       "label": "Let's Encrypt SSL",
-      "disabled": "!data.secure",
+      "hidden": "!data.secure",
       "items": {
         "_image": {
           "type": "staticImage",
@@ -202,7 +202,7 @@
     "loginTab": {
       "type": "panel",
       "label": "Login background",
-      "disabled": "!data.auth",
+      "hidden": "!data.auth",
       "items": {
         "loginBackgroundColor": {
           "type": "color",

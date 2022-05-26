@@ -336,7 +336,7 @@ class ConfigGeneric extends Component {
             defaultValue = schema.defaultFunc ? this.execute(schema.defaultFunc, schema.default, this.props.data) : schema.default;
         }
 
-        return {error, disabled, hidden, defaultValue};
+        return { error, disabled, hidden, defaultValue };
     }
 
     onError(attr, error) {
