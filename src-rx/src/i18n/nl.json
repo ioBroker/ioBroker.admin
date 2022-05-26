@@ -1496,5 +1496,10 @@
   "Runs as web-extension": "Draait als webextensie",
   "No restart": "Geen herstart",
   "End date": "Einddatum",
-  "End time": "Tijd"
+  "End time": "Tijd",
+  "Administrator name": "Naam beheerder",
+  "Administrator name cannot be changed": "De naam van de beheerder kan niet worden gewijzigd",
+  "You can filter entries by entering here some text": "U kunt items filteren door hier wat tekst in te voeren",
+  "Show/hide filter input": "Filterinvoer weergeven/verbergen",
+  "Cannot add items with set filter": "Kan geen items toevoegen met ingestelde filter"
 }

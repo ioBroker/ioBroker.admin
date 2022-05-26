@@ -1496,5 +1496,10 @@
   "Runs as web-extension": "Runs as web-extension",
   "No restart": "No restart",
   "End date": "End date",
-  "End time": "Time"
+  "End time": "Time",
+  "Administrator name": "Administrator name",
+  "Administrator name cannot be changed": "Administrator name cannot be changed",
+  "You can filter entries by entering here some text": "You can filter entries by entering here some text",
+  "Show/hide filter input": "Show/hide filter input",
+  "Cannot add items with set filter": "Cannot add items with set filter"
 }

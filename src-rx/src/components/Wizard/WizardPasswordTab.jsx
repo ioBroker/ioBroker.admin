@@ -70,6 +70,17 @@ class WizardPasswordTab extends Component {
                     <Grid item>
                         <TextField
                             variant="standard"
+                            disabled
+                            className={ this.props.classes.input }
+                            label={this.props.t('Administrator name')}
+                            value="admin"
+                            InputProps={{ readOnly: true }}
+                            helperText={ this.props.t('Administrator name cannot be changed') }
+                        />
+                    </Grid>
+                    <Grid item>
+                        <TextField
+                            variant="standard"
                             inputProps={{
                                 autoComplete: 'new-password',
                                 form: {

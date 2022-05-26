@@ -1496,5 +1496,10 @@
   "Runs as web-extension": "作为网络扩展运行",
   "No restart": "不重启",
   "End date": "结束日期",
-  "End time": "时间"
+  "End time": "时间",
+  "Administrator name": "管理员姓名",
+  "Administrator name cannot be changed": "管理员名称不能更改",
+  "You can filter entries by entering here some text": "您可以通过在此处输入一些文本来过滤条目",
+  "Show/hide filter input": "显示/隐藏过滤器输入",
+  "Cannot add items with set filter": "无法使用设置过滤器添加项目"
 }

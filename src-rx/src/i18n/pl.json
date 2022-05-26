@@ -1496,5 +1496,10 @@
   "Runs as web-extension": "Działa jako rozszerzenie internetowe",
   "No restart": "Brak restartu",
   "End date": "Data końcowa",
-  "End time": "Czas"
+  "End time": "Czas",
+  "Administrator name": "Imię i nazwisko administratora",
+  "Administrator name cannot be changed": "Nie można zmienić nazwy administratora",
+  "You can filter entries by entering here some text": "Możesz filtrować wpisy, wpisując tutaj jakiś tekst",
+  "Show/hide filter input": "Pokaż/ukryj wejście filtra",
+  "Cannot add items with set filter": "Nie można dodać elementów z ustawionym filtrem"
 }
