@@ -128,12 +128,16 @@ class BaseSettingsDialog extends Component {
         // merge with some new settings, that may be not yet supported by Admin
         const newSettings = Object.assign({}, this.originalSettings, settings);
 
-        this.setState({saving: true}, () => {
+        this.setState({ saving: true }, () => {
             this.props.socket.writeBaseSettings(host || this.state.currentHost, newSettings)
                 .then(() => {
                     this.originalSettings = JSON.parse(JSON.stringify(settings));
                     // ask about restart
-                    this.setState({hasChanges: [], showRestart: true, saving: false});
+                    this.setState({ hasChanges: [], showRestart: true, saving: false });
+                })
+                .catch(error => {
+                    window.alert('Cannot save settings: ' + error);
+                    this.setState({ saving: false });
                 });
         });
     }
