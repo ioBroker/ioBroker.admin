@@ -1250,8 +1250,10 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
 
     // try to replace number with "common.states"
     if (states && states[v] !== undefined) {
-        valText.s = v;
-        v = states[v];
+        if (v !== states[v]) {
+            valText.s = v;
+            v = states[v];
+        }
     }
 
     let valFull;

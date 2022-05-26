@@ -1479,10 +1479,20 @@ class Utils {
                 }
             } else if (Array.isArray(states)) {
                 const result = {};
-                states.forEach((value, key) => result[key] = value);
+                if (obj.common.type === 'number') {
+                    states.forEach((value, key) => result[key] = value);
+                } else
+                if (obj.common.type === 'string') {
+                    states.forEach(value => result[value] = value);
+                } else if (obj.common.type === 'boolean') {
+                    result['false'] = states[0];
+                    result['true'] = states[1];
+                }
+
                 return result;
             }
         }
+
         return states;
     }
 

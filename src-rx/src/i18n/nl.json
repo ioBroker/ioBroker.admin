@@ -397,7 +397,7 @@
   "No %s instance found": "Geen %s exemplaar gevonden",
   "No data": "Geen gegevens",
   "No states selected!": "Geen gegevens geselecteerd!",
-  "No version of %s": "Geen versie van %s",
+  "No version of %s": "De nieuwste beschikbare versie van \"%s\" is vereist, maar er is niets geïnstalleerd. Installeer eerst \"%s\" en probeer het opnieuw.",
   "Node.js": "Node.js",
   "Norfolk Island": "Norfolk Island",
   "Northern Mariana Islands": "noordelijke Mariana eilanden",
