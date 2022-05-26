@@ -40,6 +40,12 @@ const styles = theme => ({
         width: '100%',
         overflow: 'hidden',
         height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
+    },
+    tabSelected: {
+        color: theme.palette.mode === 'dark' ? theme.palette.secondary.contrastText : '#FFFFFF !important',
+    },
+    tabsIndicator: {
+        backgroundColor: theme.palette.secondary.main,
     }
 });
 
@@ -181,7 +187,7 @@ class ObjectCustomDialog extends MobileDialog {
         const varType = this.props.objects[this.props.objectIDs[0]]?.common?.type;
 
         return <Dialog
-            classes={{scrollPaper: this.props.classes.dialog, paper: this.props.classes.paper}}
+            classes={{ scrollPaper: this.props.classes.dialog, paper: this.props.classes.paper }}
             scroll="paper"
             open={true}
             onClose={() => this.props.onClose()}
@@ -197,14 +203,36 @@ class ObjectCustomDialog extends MobileDialog {
             }</DialogTitle>
             <DialogContent className={this.props.classes.content}>
                 <AppBar position="static">
-                    <Tabs value={this.state.currentTab} onChange={(event, newTab) => {
-                        Router.doNavigate(null, null, null, newTab === 1 ? 'table' : (newTab === 2 ? 'chart' : 'config'));
-                        this.setState({ currentTab: newTab });
-                        window.localStorage.setItem('App.objectCustomTab', newTab);
-                    }}>
-                        <Tab disabled={this.state.progressRunning} label={this.props.t('Custom settings')} id={'custom-settings-tab'} aria-controls={'simple-tabpanel-0'} />
-                        {this.props.objectIDs.length === 1 && this.chartAvailable ? <Tab disabled={this.state.progressRunning} label={this.props.t('History data')} id={'history-data-tab'} aria-controls={'simple-tabpanel-1'} /> : null}
-                        {(varType === 'number' || varType === 'boolean') && this.props.objectIDs.length === 1 && this.chartAvailable ? <Tab disabled={this.state.progressRunning} label={this.props.t('Chart')} id={'chart-tab'} aria-controls={'simple-tabpanel-2'} /> : null}
+                    <Tabs
+                        value={this.state.currentTab}
+                        onChange={(event, newTab) => {
+                            Router.doNavigate(null, null, null, newTab === 1 ? 'table' : (newTab === 2 ? 'chart' : 'config'));
+                            this.setState({ currentTab: newTab });
+                            window.localStorage.setItem('App.objectCustomTab', newTab);
+                        }}
+                        classes={{ indicator: this.props.classes.tabsIndicator }}
+                    >
+                        <Tab
+                            disabled={this.state.progressRunning}
+                            label={this.props.t('Custom settings')}
+                            id={'custom-settings-tab'}
+                            aria-controls={'simple-tabpanel-0'}
+                            classes={{ selected: this.props.classes.tabSelected }}
+                        />
+                        {this.props.objectIDs.length === 1 && this.chartAvailable ? <Tab
+                            disabled={this.state.progressRunning}
+                            label={this.props.t('History data')}
+                            id={'history-data-tab'}
+                            aria-controls={'simple-tabpanel-1'}
+                            classes={{ selected: this.props.classes.tabSelected }}
+                        /> : null}
+                        {(varType === 'number' || varType === 'boolean') && this.props.objectIDs.length === 1 && this.chartAvailable ? <Tab
+                            disabled={this.state.progressRunning}
+                            label={this.props.t('Chart')}
+                            id={'chart-tab'}
+                            aria-controls={'simple-tabpanel-2'}
+                            classes={{ selected: this.props.classes.tabSelected }}
+                        /> : null}
                     </Tabs>
                 </AppBar>
                 {this.state.currentTab === 0 ? <div className={this.props.classes.tabPanel}>{this.renderCustomEditor()}</div> : null}

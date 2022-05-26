@@ -496,6 +496,9 @@ const styles = theme => ({
     cellButtonsButtonWithCustoms: {
         color: theme.palette.secondary.main,
     },
+    cellButtonsButtonWithoutCustoms: {
+        opacity: 0.2,
+    },
     cellButtonsValueButton: {
         position: 'absolute',
         display: 'inline-block',
@@ -777,7 +780,7 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
             if (data.fID === undefined) {
                 data.fID = data.id.toLowerCase();
             }
-            filteredOut = data.fID.indexOf(context.id) === -1;
+            filteredOut = !data.fID.includes(context.id);
         }
         if (!filteredOut && context.name) {
             if (common) {
@@ -3374,7 +3377,7 @@ class ObjectBrowser extends Component {
                 <IconDelete className={classes.cellButtonsButtonIcon} />
             </IconButton> : null,
             this.props.objectCustomDialog && this.info.hasSomeCustoms && item.data.obj.type === 'state' && item.data.obj.common?.type !== 'file' ? <IconButton
-                className={Utils.clsx(classes.cellButtonsButton, item.data.hasCustoms && classes.cellButtonsButtonWithCustoms)}
+                className={Utils.clsx(classes.cellButtonsButton, item.data.hasCustoms ? classes.cellButtonsButtonWithCustoms : classes.cellButtonsButtonWithoutCustoms)}
                 key="custom"
                 size="small"
                 aria-label="config"
