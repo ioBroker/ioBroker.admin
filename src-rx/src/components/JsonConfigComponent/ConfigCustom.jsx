@@ -97,13 +97,14 @@ class ConfigCustom extends Component {
 }
 
 ConfigCustom.propTypes = {
-    socket: PropTypes.object.isRequired,
+    socket: PropTypes.object,
     themeType: PropTypes.string,
     themeName: PropTypes.string,
     style: PropTypes.object,
     className: PropTypes.string,
+    attr: PropTypes.string,
     data: PropTypes.object.isRequired,
-    schema: PropTypes.object,
+    schema: PropTypes.object.isRequired,
     onError: PropTypes.func,
     onChange: PropTypes.func,
 };

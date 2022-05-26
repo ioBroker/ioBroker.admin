@@ -1686,7 +1686,7 @@ export {__federation_method_ensure, __federation_method_getRemote , __federation
                         }
                     }
                 });
-                if (requiresRuntime || true) {
+                if (requiresRuntime) {
                     magicString.prepend(`import {__federation_method_ensure, __federation_method_getRemote , __federation_method_wrapDefault , __federation_method_unwrapDefault} from '__federation__';\n\n`);
                 }
                 return {
