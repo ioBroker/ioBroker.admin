@@ -267,11 +267,12 @@
           "label": "Apply access rights for selected instances"
         },
         "accessAllowedConfigs": {
+          "i18n": true,
           "type": "custom",
           "hidden": "!data.accessLimit",
           "newLine": true,
           "url": "custom/customComponents.js",
-          "name": "ConfigCustomEasyAccess"
+          "name": "EasyConfig/Components/ConfigCustomEasyAccess"
         }
       }
     }

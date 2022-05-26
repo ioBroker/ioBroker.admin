@@ -15,8 +15,7 @@ import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 import I18n from '@iobroker/adapter-react-v5/i18n';
 
 import JsonConfigComponent from './JsonConfigComponent';
-import ConfigCustomEasyAccess from './JsonConfigComponent/ConfigCustomEasyAccess';
-import ConfigGeneric from './JsonConfigComponent/ConfigGeneric';
+import ConfigGeneric from '@iobroker/adapter-react-v5/Components/JsonConfigComponent/ConfigGeneric';
 import Utils from './Utils';
 
 const styles = {
@@ -326,8 +325,6 @@ class JsonConfig extends Router {
                 updateData={this.state.updateData}
                 onError={error => this.setState({ error })}
                 onChange={(data, changed) => this.setState({ data, changed })}
-
-                customs={{configCustomEasyAccess: ConfigCustomEasyAccess}}
             />
             <SaveCloseButtons
                 isIFrame={false}

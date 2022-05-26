@@ -3,12 +3,14 @@ import PropTypes from 'prop-types';
 
 import LinearProgress from '@mui/material/LinearProgress';
 import Grid from '@mui/material/Grid';
+import i18n from '@iobroker/adapter-react-v5/i18n';
 
 class ConfigCustom extends Component {
     constructor(props) {
         super(props);
         // schema.url - location of Widget
         // schema.name - Component name
+        // schema.i18n - i18n
 
         this.state = {
             Component: null,
@@ -23,8 +25,8 @@ class ConfigCustom extends Component {
             this.setState({ error: 'URL is empty. Cannot load custom component!' });
             return;
         }
-        let url;
 
+        let url;
         if (this.props.schema.url.startsWith('http:') || this.props.schema.url.startsWith('https:')) {
             url = this.props.schema.url;
         } else if (this.props.schema.url.startsWith('./')) {
@@ -33,23 +35,41 @@ class ConfigCustom extends Component {
             url = `${window.location.protocol}//${window.location.host}/adapter/${this.props.adapterName}/${this.props.schema.url}`;
         }
 
-        // custom component always has constant name
-        try {
-            const component = await window.importFederation(
-                this.props.schema.name.split('/')[0],
-                {url, format: 'esm', from: 'vite'},
-                this.props.schema.name.split('/')[1]
-            );
-            const componentName = this.props.schema.name.split('/').pop();
+        if (this.props.schema.i18n === true) {
+            // load i18n from files
+            const pos = url.lastIndexOf('/');
+            let i18nURL;
+            if (pos !== -1) {
+                i18nURL = url.substring(0, pos);
+            } else {
+                i18nURL = url;
+            }
+            const lang = i18n.getLanguage();
+            const file = `${i18nURL}/i18n/${lang}.json`;
 
-            if (!component || !component || !component[componentName]) {
+            await fetch(file)
+                .then(data => data.json())
+                .then(json => i18n.extendTranslations(json, lang))
+                .catch(error => console.log(`Cannot load i18n "${file}": ${error}`));
+        } else if (this.props.schema.i18n && typeof this.props.schema.i18n === 'object') {
+            try {
+                i18n.extendTranslations(this.props.schema.i18n);
+            } catch (error) {
+                console.error(`Cannot import i18n: ${error}`);
+            }
+        }
+
+        try {
+            const [uniqueName, fileToLoad, ...componentName] = this.props.schema.name.split('/');
+            console.log(uniqueName, fileToLoad, componentName.join('/'));
+            const component = await window.importFederation(uniqueName, {url, format: 'esm', from: 'vite'}, fileToLoad);
+
+            if (!component || !component || !component[componentName.join('/')]) {
                 const keys = Object.keys(component || {});
                 console.error('URL is empty. Cannot load custom component!');
                 this.setState({ error: `Component ${this.props.schema.name} not found in ${this.props.schema.url}. Found: ${keys.join(', ')}` });
             } else {
-                this.setState({
-                    Component: component[componentName]
-                });
+                this.setState({ Component: component[componentName.join('/')] });
             }
         } catch (error) {
             this.setState({ error: `Cannot import from ${this.props.schema.url}: ${error}` });

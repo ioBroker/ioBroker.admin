@@ -37,11 +37,11 @@ class ConfigCustomEasyAccess extends ConfigGeneric {
         size: "small"
       }, /* @__PURE__ */ React.createElement(TableHead, null, /* @__PURE__ */ React.createElement(TableRow, null, /* @__PURE__ */ React.createElement(TableCell, {
         className: this.props.classes.header
-      }, i18n.t("Instance")), /* @__PURE__ */ React.createElement(TableCell, {
+      }, i18n.t("custom_easy_Instance")), /* @__PURE__ */ React.createElement(TableCell, {
         className: this.props.classes.header
-      }, i18n.t("Config")), /* @__PURE__ */ React.createElement(TableCell, {
+      }, i18n.t("custom_easy_Config")), /* @__PURE__ */ React.createElement(TableCell, {
         className: this.props.classes.header
-      }, i18n.t("Tab")))), /* @__PURE__ */ React.createElement(TableBody, null, this.state.instances.map((row) => /* @__PURE__ */ React.createElement(TableRow, {
+      }, i18n.t("custom_easy_Tab")))), /* @__PURE__ */ React.createElement(TableBody, null, this.state.instances.map((row) => /* @__PURE__ */ React.createElement(TableRow, {
         key: row.id
       }, /* @__PURE__ */ React.createElement(TableCell, {
         component: "th",
@@ -90,4 +90,4 @@ ConfigCustomEasyAccess.propTypes = {
 var ConfigCustomEasyAccess$1 = withStyles(styles)(ConfigCustomEasyAccess);
 
 export { ConfigCustomEasyAccess$1 as C };
-//# sourceMappingURL=ConfigCustomEasyAccess.0ab5e2fd.js.map
+//# sourceMappingURL=ConfigCustomEasyAccess.0038c4d1.js.map

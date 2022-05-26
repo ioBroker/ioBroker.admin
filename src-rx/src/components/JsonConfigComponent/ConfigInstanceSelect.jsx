@@ -1,3 +1,4 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
@@ -13,7 +14,7 @@ import ConfigGeneric from './ConfigGeneric';
 const styles = theme => ({
     fullWidth: {
         width: '100%'
-    }
+    },
 });
 
 class ConfigInstanceSelect extends ConfigGeneric {
