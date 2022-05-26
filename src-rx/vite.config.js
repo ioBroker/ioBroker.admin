@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from '@honkhonk/vite-plugin-svgr'
 import { viteCommonjs, esbuildCommonjs } from '@originjs/vite-plugin-commonjs';
-import federation from '@originjs/vite-plugin-federation'
+import federation from './federation/index.js'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import pkg from './package.json'
 
@@ -10,12 +10,13 @@ export default defineConfig(({ mode }) => {
   return {
   plugins: [react(), svgr(), viteCommonjs(),
     federation({
-      remotes: {
-        CustomComponent: {
-          external: 'Promise.resolve(window._customComponent)',
-          externalType: 'promise'
-        }
-      },
+      // remotes: {
+      //   CustomComponent: {
+      //     external: 'Promise.resolve(\'\')',
+      //     externalType: 'promise'
+      //   }
+      // },
+      dynamicRemotes: true,
       shared: {
         '@iobroker/adapter-react-v5': {
           singleton: true,

@@ -23,25 +23,32 @@ class ConfigCustom extends Component {
             this.setState({ error: 'URL is empty. Cannot load custom component!' });
             return;
         }
+        let url;
 
         if (this.props.schema.url.startsWith('http:') || this.props.schema.url.startsWith('https:')) {
-            window._customComponent = this.props.schema.url;
+            url = this.props.schema.url;
         } else if (this.props.schema.url.startsWith('./')) {
-            window._customComponent = `${window.location.protocol}//${window.location.host}${this.props.schema.url.replace(/^\./, '')}`;
+            url = `${window.location.protocol}//${window.location.host}${this.props.schema.url.replace(/^\./, '')}`;
         } else {
-            window._customComponent = `${window.location.protocol}//${window.location.host}/${this.props.schema.url}`;
+            url = `${window.location.protocol}//${window.location.host}/${this.props.schema.url}`;
         }
 
         // custom component always has constant name
         try {
-            const component = await import('CustomComponent/Components');
-            if (!component || !component.default || !component.default[this.props.schema.name]) {
-                const keys = Object.keys(component?.default || {});
+            const component = await window.importFederation(
+                this.props.schema.name.split('/')[0],
+                {url, format: 'esm', from: 'vite'},
+                this.props.schema.name.split('/')[1]
+            );
+            const componentName = this.props.schema.name.split('/').pop();
+
+            if (!component || !component || !component[componentName]) {
+                const keys = Object.keys(component || {});
                 console.error('URL is empty. Cannot load custom component!');
                 this.setState({ error: `Component ${this.props.schema.name} not found in ${this.props.schema.url}. Found: ${keys.join(', ')}` });
             } else {
                 this.setState({
-                    Component: component.default[this.props.schema.name]
+                    Component: component[componentName]
                 });
             }
         } catch (error) {
