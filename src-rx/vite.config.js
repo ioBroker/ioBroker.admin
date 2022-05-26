@@ -7,7 +7,10 @@ import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfil
 
 export default defineConfig(({ mode }) => {
     return {
-        plugins: [react(), svgr(), viteCommonjs(),
+        plugins: [
+            react(),
+            svgr(),
+            viteCommonjs(),
             federation({
                 // remotes: {
                 //   CustomComponent: {
@@ -51,7 +54,7 @@ export default defineConfig(({ mode }) => {
             proxy: {
                 '/files': 'http://localhost:8081',
                 '/adapter': 'http://localhost:8081',
-            },
+            }
         },
         optimizeDeps: {
             esbuildOptions: {
@@ -65,8 +68,8 @@ export default defineConfig(({ mode }) => {
                     NodeGlobalsPolyfillPlugin({
                         buffer: true
                     })
-                ],
-            },
-        },
+                ]
+            }
+        }
     }
 });
