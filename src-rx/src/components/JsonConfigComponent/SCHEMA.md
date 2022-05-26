@@ -172,7 +172,12 @@ Possible types:
   - `certType` - on of: `public`, `private`, `chained`
 
 - `custom`
-  - `component` - Component name that will be provided via props, like componentInstancesEditor
+  - `name` - Component name that will be provided via props, like ComponentInstancesEditor
+  - `url` - Location of component
+      - `custom/customComponents.js`: in this case the files will be loaded from `/adapter/ADAPTER_NAME/custom/customComponents.js`
+      - `https://URL/myComponent`: direct from URL
+      - `./adapter/ADAPTER_NAME/custom/customComponent.js`: in this case the files will be loaded from `/adapter/ADAPTER_NAME/custom/customComponents.js`
+  - `i18n` - true if `i18n/xx.json` files are located in the same directory as component, or translation object `{"text1": {"en": Text1"}}`
 
 - `divider` - horizontal line
   - `height` - optional height

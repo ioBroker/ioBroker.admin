@@ -1,0 +1,1 @@
+{"version":3,"file":"__federation_expose_Components.js","sources":["../../src/components.jsx"],"sourcesContent":["import ConfigCustomEasyAccess from './ConfigCustomEasyAccess';\r\n\r\nexport default { ConfigCustomEasyAccess };"],"names":[],"mappings":";;AAEA,iBAAe,EAAE,sBAAuB,EAAA;;;;"}

@@ -1,6 +1,6 @@
 import React$1 from './__federation_shared_react.js';
 import { r as reactDom } from './__federation_shared_react-dom.js';
-import { C as ConfigCustomEasyAccess } from './ConfigCustomEasyAccess.0ab5e2fd.js';
+import { C as ConfigCustomEasyAccess } from './ConfigCustomEasyAccess.0038c4d1.js';
 
 const p = function polyfill() {
     const relList = document.createElement('link').relList;
@@ -59,4 +59,4 @@ function App() {
 }
 
 client.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React$1.createElement(React$1.StrictMode, null, /* @__PURE__ */ React$1.createElement(App, null)));
-//# sourceMappingURL=index.ead8203e.js.map
+//# sourceMappingURL=index.88494662.js.map
