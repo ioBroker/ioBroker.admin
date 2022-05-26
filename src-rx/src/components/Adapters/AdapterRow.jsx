@@ -13,9 +13,9 @@ import {
     TableCell,
     TableRow,
     Tooltip,
-    Typography
+    Typography,
+    Rating,
 } from '@mui/material';
-import { Rating } from '@mui/lab';
 
 import AddIcon from '@mui/icons-material/Add';
 import AddToPhotosIcon from '@mui/icons-material/AddToPhotos';
