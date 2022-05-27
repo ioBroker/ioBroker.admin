@@ -397,7 +397,7 @@
   "No %s instance found": "No %s instance found",
   "No data": "No data",
   "No states selected!": "No states selected!",
-  "No version of %s": "No version of %s",
+  "No version of %s": "Latest available version of \"%s\" is required, but nothing installed. Please install first \"%s\" and then retry.",
   "Node.js": "Node.js",
   "Norfolk Island": "Norfolk Island",
   "Northern Mariana Islands": "Northern Mariana Islands",
@@ -1496,5 +1496,10 @@
   "Runs as web-extension": "Runs as web-extension",
   "No restart": "No restart",
   "End date": "End date",
-  "End time": "Time"
+  "End time": "Time",
+  "Administrator name": "Administrator name",
+  "Administrator name cannot be changed": "Administrator name cannot be changed",
+  "You can filter entries by entering here some text": "You can filter entries by entering here some text",
+  "Show/hide filter input": "Show/hide filter input",
+  "Cannot add items with set filter": "Cannot add items with set filter"
 }

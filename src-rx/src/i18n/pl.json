@@ -397,7 +397,7 @@
   "No %s instance found": "Nie znaleziono instancji %s",
   "No data": "Brak danych",
   "No states selected!": "Nie wybrano stanów!",
-  "No version of %s": "Brak wersji %s",
+  "No version of %s": "Wymagana jest najnowsza dostępna wersja „%s”, ale nic nie zostało zainstalowane. Zainstaluj najpierw „%s”, a następnie spróbuj ponownie.",
   "Node.js": "Node.js",
   "Norfolk Island": "Wyspa Norfolk",
   "Northern Mariana Islands": "Mariany Północne",
@@ -1496,5 +1496,10 @@
   "Runs as web-extension": "Działa jako rozszerzenie internetowe",
   "No restart": "Brak restartu",
   "End date": "Data końcowa",
-  "End time": "Czas"
+  "End time": "Czas",
+  "Administrator name": "Imię i nazwisko administratora",
+  "Administrator name cannot be changed": "Nie można zmienić nazwy administratora",
+  "You can filter entries by entering here some text": "Możesz filtrować wpisy, wpisując tutaj jakiś tekst",
+  "Show/hide filter input": "Pokaż/ukryj wejście filtra",
+  "Cannot add items with set filter": "Nie można dodać elementów z ustawionym filtrem"
 }

@@ -496,6 +496,9 @@ const styles = theme => ({
     cellButtonsButtonWithCustoms: {
         color: theme.palette.secondary.main,
     },
+    cellButtonsButtonWithoutCustoms: {
+        opacity: 0.2,
+    },
     cellButtonsValueButton: {
         position: 'absolute',
         display: 'inline-block',
@@ -777,7 +780,7 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
             if (data.fID === undefined) {
                 data.fID = data.id.toLowerCase();
             }
-            filteredOut = data.fID.indexOf(context.id) === -1;
+            filteredOut = !data.fID.includes(context.id);
         }
         if (!filteredOut && context.name) {
             if (common) {
@@ -817,7 +820,9 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
             }
         }
     }
+
     data.visible = !filteredOut;
+
     data.hasVisibleChildren = false;
     if (item.children && _depth < 20) {
         item.children.forEach(_item => {
@@ -828,8 +833,8 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
         });
     }
 
-    //const visible = data.visible || data.hasVisibleChildren;
-    data.sumVisibility = data.visible || data.hasVisibleChildren || data.hasVisibleParent;
+    // const visible = data.visible || data.hasVisibleChildren;
+    data.sumVisibility = data.visible || data.hasVisibleChildren;// || data.hasVisibleParent;
     if (counter && data.sumVisibility) {
         counter.count++;
     }
@@ -1247,8 +1252,10 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
 
     // try to replace number with "common.states"
     if (states && states[v] !== undefined) {
-        valText.s = v;
-        v = states[v];
+        if (v !== states[v]) {
+            valText.s = v;
+            v = states[v];
+        }
     }
 
     let valFull;
@@ -1858,6 +1865,9 @@ class ObjectBrowser extends Component {
      * Called when component is unmounted.
      */
     componentWillUnmount() {
+        this.filterTimer && clearTimeout(this.filterTimer);
+        this.filterTimer = null;
+
         if (this.props.objectsWorker) {
             this.props.objectsWorker.unregisterHandler(this.onObjectChange, true);
         } else {
@@ -2509,7 +2519,7 @@ class ObjectBrowser extends Component {
                 id={name}
                 placeholder={this.texts['filter_' + name]}
                 defaultValue={this.state.filter[name]}
-                onChange={e => {
+                onChange={() => {
                     this.filterTimer && clearTimeout(this.filterTimer);
                     this.filterTimer = setTimeout(() => this.onFilter(), 400);
                 }}
@@ -2546,7 +2556,7 @@ class ObjectBrowser extends Component {
                 key={name + '_' + this.state.filterKey}
                 ref={this.filterRefs[name]}
                 className={this.props.classes.headerCellInput + ' no-underline'}
-                onChange={e => {
+                onChange={() => {
                     this.filterTimer && clearTimeout(this.filterTimer);
                     this.filterTimer = setTimeout(() => this.onFilter(), 400);
                 }}
@@ -3374,7 +3384,7 @@ class ObjectBrowser extends Component {
                 <IconDelete className={classes.cellButtonsButtonIcon} />
             </IconButton> : null,
             this.props.objectCustomDialog && this.info.hasSomeCustoms && item.data.obj.type === 'state' && item.data.obj.common?.type !== 'file' ? <IconButton
-                className={Utils.clsx(classes.cellButtonsButton, item.data.hasCustoms && classes.cellButtonsButtonWithCustoms)}
+                className={Utils.clsx(classes.cellButtonsButton, item.data.hasCustoms ? classes.cellButtonsButtonWithCustoms : classes.cellButtonsButtonWithoutCustoms)}
                 key="custom"
                 size="small"
                 aria-label="config"
@@ -4276,7 +4286,6 @@ class ObjectBrowser extends Component {
         root.data.id && items.push(leaf);
 
         isExpanded = isExpanded === undefined ? binarySearch(this.state.expanded, root.data.id) : isExpanded;
-
         if (!root.data.id || isExpanded) {
             if (!this.state.foldersFirst) {
                 root.children && items.push(root.children.map(item => {
@@ -4723,6 +4732,7 @@ class ObjectBrowser extends Component {
 
         // apply filter if changed
         const jsonFilter = JSON.stringify(this.state.filter);
+
         if (this.lastAppliedFilter !== jsonFilter && this.objects && this.root) {
             const counter = { count: 0 };
 

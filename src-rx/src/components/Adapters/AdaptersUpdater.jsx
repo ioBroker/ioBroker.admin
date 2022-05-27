@@ -24,7 +24,7 @@ const styles = theme => ({
         background: theme.palette.background
     },
     toVersion: {
-        color: '#008100',
+        color: theme.palette.mode === 'dark' ? '#00dc00' : '#008100',
         fontWeight: 'bold',
     },
     updateDone: {
@@ -46,9 +46,11 @@ class AdaptersUpdater extends Component {
         super(props);
 
         this.updateAvailable = this.detectUpdates();
+        this.initialVersions = {};
+        this.updateAvailable.forEach(adapter => this.initialVersions[adapter] = this.props.installed[adapter].version);
 
         this.state = {
-            current: this.props.current
+            current: this.props.current,
         };
 
         this.currentRef = React.createRef();
@@ -146,7 +148,7 @@ class AdaptersUpdater extends Component {
                 <ListItemText
                     primary={adapter}
                     title={this.getNews(adapter).map(item => item.version + ': ' + item.news).join('\n')}
-                    secondary={<span>{this.props.installed[adapter].version} → <span className={this.props.classes.toVersion}>{this.props.repository[adapter].version}</span></span>}
+                    secondary={<span>{this.initialVersions[adapter]} → <span className={this.props.classes.toVersion}>{this.props.repository[adapter].version}</span></span>}
                 />
                 {!this.props.finished && !this.props.inProcess && <ListItemSecondaryAction>
                     <Checkbox

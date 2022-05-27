@@ -397,7 +397,7 @@
   "No %s instance found": "Не найден %s экземпляр",
   "No data": "Нет данных",
   "No states selected!": "Нечего настраивать!",
-  "No version of %s": "Нет информации о версии для %s",
+  "No version of %s": "Требуется последняя доступная версия \"%s\", но ничего не установлено. Сначала установите \"%s\", а затем повторите попытку.",
   "Node.js": "Node.js",
   "Norfolk Island": "Остров Норфолк",
   "Northern Mariana Islands": "Северные Марианские острова",
@@ -1496,5 +1496,10 @@
   "Runs as web-extension": "Работает как веб-расширение",
   "No restart": "Нет перезагрузки",
   "End date": "Дата окончания",
-  "End time": "Время"
+  "End time": "Время",
+  "Administrator name": "Имя администратора",
+  "Administrator name cannot be changed": "Имя администратора не может быть изменено",
+  "You can filter entries by entering here some text": "Вы можете отфильтровать записи, введя здесь текст",
+  "Show/hide filter input": "Показать/скрыть ввод фильтра",
+  "Cannot add items with set filter": "Невозможно добавить элементы с установленным фильтром"
 }

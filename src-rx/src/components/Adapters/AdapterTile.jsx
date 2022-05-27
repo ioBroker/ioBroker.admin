@@ -4,7 +4,7 @@ import { withStyles } from '@mui/styles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 
-import Rating from '@mui/lab/Rating';
+import Rating from '@mui/material/Rating';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -21,8 +21,9 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import RemoveIcon from '@mui/icons-material/Remove';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { amber } from '@mui/material/colors';
+
 import sentryIcon from '../../assets/sentry.svg';
-import IsVisible from "../IsVisible";
+import IsVisible from '../IsVisible';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';

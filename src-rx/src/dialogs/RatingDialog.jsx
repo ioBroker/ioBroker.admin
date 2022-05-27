@@ -6,7 +6,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
-import Rating from '@mui/lab/Rating';
+import Rating from '@mui/material/Rating';
 import { Button, TextField } from '@mui/material';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';

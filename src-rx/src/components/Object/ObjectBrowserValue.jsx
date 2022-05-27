@@ -26,6 +26,7 @@ import Hidden from '@mui/material/Hidden';
 import Fab from '@mui/material/Fab';
 import Typography from '@mui/material/Typography';
 import Switch from '@mui/material/Switch';
+import Autocomplete from '@mui/material/Autocomplete';
 
 import ChartIcon from '@mui/icons-material/ShowChart';
 import IconCancel from '@mui/icons-material/Close';
@@ -175,26 +176,28 @@ class ObjectBrowserValue extends Component {
 
     onUpdate(e) {
         e && e.stopPropagation();
+        let value = this.value;
         if (this.state.type === 'states') {
             let type = this.props.type || typeof this.props.value;
+            value = typeof value === 'object' ? value.value : value;
 
             if (type === 'number') {
-                if (typeof this.value === 'string') {
-                    this.value = parseFloat(this.value.replace(',', '.')) || 0;
+                if (typeof value === 'string') {
+                    value = parseFloat(value.replace(',', '.')) || 0;
                 }
             } else if (type === 'boolean') {
-                this.value = this.value === true || this.value === 'true' || this.value === '1' || this.value === 'ON' || this.value === 'on';
+                value = value === true || value === 'true' || value === '1' || value === 'ON' || value === 'on';
             }
         } else
         if (this.state.type === 'number') {
-            if (typeof this.value === 'string') {
-                this.value = parseFloat(this.value.replace(',', '.')) || 0;
+            if (typeof value === 'string') {
+                value = parseFloat(value.replace(',', '.')) || 0;
             }
         } else if (this.state.type === 'boolean') {
-            this.value = this.value === true || this.value === 'true' || this.value === '1' || this.value === 'ON' || this.value === 'on';
+            value = value === true || value === 'true' || value === '1' || value === 'ON' || value === 'on';
         }
 
-        this.props.onClose({val: this.value, ack: this.ack, q: this.q, expire: parseInt(this.expire, 10) || undefined});
+        this.props.onClose({val: value, ack: this.ack, q: this.q, expire: parseInt(this.expire, 10) || undefined});
     }
 
     renderChart() {
@@ -255,16 +258,38 @@ class ObjectBrowserValue extends Component {
         if (!this.props.states) {
             return null;
         } else {
-            return <FormControl variant="standard" className={ this.props.classes.formControl }>
-                <InputLabel>{ this.props.t('Value') }</InputLabel>
-                <Select
-                    variant="standard"
-                    defaultValue={ this.propsValue }
-                    onChange={ e => this.value = e.target.value }
-                >
-                    {Object.keys(this.props.states).map((key, i) => <MenuItem key={i} value={key}>{this.props.states[key]}</MenuItem>)}
-                </Select>
-            </FormControl>;
+            if (this.props.type === 'number' && this.props.object.common.max !== undefined && this.props.object.common.min !== undefined) {
+                const options = Object.keys(this.props.states).map(key => ({label: this.props.states[key], value: key}));
+
+                return <Autocomplete
+                    className={ this.props.classes.formControl }
+                    disablePortal
+                    defaultValue={ this.props.states[this.propsValue] !== undefined ? this.props.states[this.propsValue] : this.propsValue}
+                    options={options}
+                    noOptionsText=""
+                    freeSolo
+                    getOptionLabel={option => option.label || (option !== undefined && option !== null ? option.toString() : '')}
+                    onChange={(e, value) => this.value = value}
+                    onInputChange={(e, value) => this.value = value}
+                    onKeyUp={e => e.keyCode === 13 && this.onUpdate(e)}
+                    renderInput={params => <TextField
+                        {...params}
+                        label={this.props.t('Value')}
+                        variant="standard"
+                    />}
+                />
+            } else {
+                return <FormControl variant="standard" className={ this.props.classes.formControl }>
+                    <InputLabel>{ this.props.t('Value') }</InputLabel>
+                    <Select
+                        variant="standard"
+                        defaultValue={ this.propsValue }
+                        onChange={ e => this.value = e.target.value }
+                    >
+                        {Object.keys(this.props.states).map((key, i) => <MenuItem key={i} value={key}>{this.props.states[key]}</MenuItem>)}
+                    </Select>
+                </FormControl>;
+            }
         }
     }
 

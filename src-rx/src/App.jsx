@@ -299,7 +299,6 @@ class App extends Router {
             // merge together
             Object.keys(translations).forEach(lang => this.translations[lang] = Object.assign(this.translations[lang], translations[lang]));
 
-            console.log(this.translations);
             // init translations
             I18n.setTranslations(this.translations);
         })();

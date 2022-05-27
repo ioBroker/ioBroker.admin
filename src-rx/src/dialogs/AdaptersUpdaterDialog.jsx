@@ -35,7 +35,8 @@ const styles = theme => {
             flexWrap: 'wrap',
             position: 'sticky',
             bottom: -10,
-            background: theme.name === "blue" ? '#3e454a' : theme.name === "dark" ? '#3b3b3b' : 'white'
+            paddingLeft: theme.spacing(1),
+            background: theme.name === 'blue' ? '#5d6467' : (theme.name === 'dark' ? '#5b5b5b' : '#FFF'),
         },
         container:{
             overflow: 'hidden',

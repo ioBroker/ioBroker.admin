@@ -146,6 +146,10 @@ const styles = theme => ({
     },
     rowSelected: {
         background: theme.palette.secondary.main,
+        color: theme.palette.secondary.contrastText,
+        '& td': {
+            color: theme.palette.secondary.contrastText,
+        }
     },
     rowFocused: {
         position: 'absolute',
@@ -177,7 +181,7 @@ const styles = theme => ({
         }
     },
     cellAckTrue: {
-        color: '#66ff7f',
+        color: theme.palette.mode === 'dark' ? '#66ff7f' : '#04a821',
     },
     cellAckFalse: {
         color: '#FF6666',
@@ -649,12 +653,14 @@ class ObjectHistoryData extends Component {
                 if (val === undefined) {
                     val = '_'
                 }
+                const selectedClass = this.state.selected.includes(ts);
 
                 rows.push(<TableRow
                     className={ clsx(
                         classes.row, classes.updatedRow,
                         interpolated && classes.rowInterpolated,
-                        this.state.selected.includes(ts) && classes.rowSelected) }
+                        selectedClass && classes.rowSelected
+                    ) }
                     key={ ts + (state.val || '') }
                 >
                     <TableCell onClick={ e => !interpolated && this.onToggleSelect(e, ts, 'ts') }>
