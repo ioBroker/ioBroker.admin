@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import svgr from '@honkhonk/vite-plugin-svgr';
 import { viteCommonjs, esbuildCommonjs } from '@originjs/vite-plugin-commonjs';
-import federation from './federation/index.js';
+import federation from '@dilesoft/vite-plugin-federation-dynamic';
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 
 export default defineConfig(({ mode }) => {
