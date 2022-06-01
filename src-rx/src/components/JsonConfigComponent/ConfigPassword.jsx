@@ -81,7 +81,7 @@ class ConfigPassword extends ConfigGeneric {
                 maxLength: this.props.schema.maxLength || this.props.schema.max || undefined
             }}
             helperText={this.state._notEqual ? I18n.t('Passwords are not equal!') : this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
-            InputProps={{endAdornment: this.state.value && this.state.value !== PASSWORD_PLACEHOLDER ? <InputAdornment position='end'>
+            InputProps={{endAdornment: this.state.value && this.state.value !== PASSWORD_PLACEHOLDER && this.props.schema.visible ? <InputAdornment position='end'>
                     <IconButton size="large"
                         tabIndex={-1}
                         onClick={e => {
