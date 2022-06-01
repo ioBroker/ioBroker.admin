@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import LinearProgress from '@mui/material/LinearProgress';
 import Grid from '@mui/material/Grid';
+
 import i18n from '@iobroker/adapter-react-v5/i18n';
 
 class ConfigCustom extends Component {
@@ -82,7 +83,7 @@ class ConfigCustom extends Component {
         // render temporary placeholder
         if (!Component) {
             if (this.state.error) {
-                return ;
+                return;
             } else {
                 const schema = this.props.schema || {};
 
