@@ -130,20 +130,16 @@ class CustomTab extends Component {
             return <LinearProgress />;
         }
 
-        if (window.location.port === '3000') {
-            return 'Test it in not development mode!';
-        } else {
-            return <iframe
-                ref={el => this.refIframe = el}
-                title={ this.props.tab }
-                className={ this.props.classes.root }
-                src={ this.state.href }
-                onError={ e => {
-                    e.target.onerror = null;
-                    this.setState({href: this.state.href.replace('tab_m.html', 'tab.html') });
-                }}
-            />;
-        }
+        return <iframe
+            ref={el => this.refIframe = el}
+            title={ this.props.tab }
+            className={ this.props.classes.root }
+            src={ this.state.href }
+            onError={ e => {
+                e.target.onerror = null;
+                this.setState({href: this.state.href.replace('tab_m.html', 'tab.html') });
+            }}
+        />;
     }
 }
 

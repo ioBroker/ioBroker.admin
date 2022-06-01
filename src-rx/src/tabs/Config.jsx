@@ -279,91 +279,87 @@ class Config extends Component {
     render() {
         const { classes } = this.props;
 
-        if (!this.props.jsonConfig && window.location.port === '3000') {
-            return 'Test it in not development mode!';
-        } else {
-            return <Paper className={classes.root}>
-                <AppBar color="default" position="static">
-                    <Toolbar variant="dense">
-                        <Typography variant="h6" color="inherit">
-                            {this.props.jsonConfig ? <Icon src={this.props.icon} className={this.props.classes.instanceIcon} />
-                                : null}
-                            {`${this.props.t('Instance settings')}: ${this.props.adapter}.${this.props.instance}`}
-                            {this.props.version ? <span className={clsx(
-                                this.props.classes.version,
-                                this.state.alive && this.state.connectedToHost && this.props.classes.versionAliveConnected,
-                                this.state.alive && !this.state.connectedToHost && this.props.classes.versionAliveNotConnected,
-                            )}>v{this.props.version}</span> : null}
-                            <Tooltip title={this.props.t('Start/stop')}>
+        return <Paper className={classes.root}>
+            <AppBar color="default" position="static">
+                <Toolbar variant="dense">
+                    <Typography variant="h6" color="inherit">
+                        {this.props.jsonConfig ? <Icon src={this.props.icon} className={this.props.classes.instanceIcon} />
+                            : null}
+                        {`${this.props.t('Instance settings')}: ${this.props.adapter}.${this.props.instance}`}
+                        {this.props.version ? <span className={clsx(
+                            this.props.classes.version,
+                            this.state.alive && this.state.connectedToHost && this.props.classes.versionAliveConnected,
+                            this.state.alive && !this.state.connectedToHost && this.props.classes.versionAliveNotConnected,
+                        )}>v{this.props.version}</span> : null}
+                        <Tooltip title={this.props.t('Start/stop')}>
+                            <span>
+                                <IconButton
+                                    size="small"
+                                    onClick={event => {
+                                        event.stopPropagation();
+                                        event.preventDefault();
+                                        if (this.state.running && this.props.adapter + '.' + this.props.instance === this.props.adminInstance) {
+                                            this.setState({ showStopAdminDialog: true });
+                                        } else {
+                                            this.extendObject(`system.adapter.${this.props.adapter}.${this.props.instance}`, { common: { enabled: !this.state.running } });
+                                        }
+                                    }}
+                                    onFocus={event => event.stopPropagation()}
+                                    className={clsx(classes.buttonControl, this.state.canStart ?
+                                        (this.state.running ? classes.enabled : classes.disabled) : classes.hide)}
+                                >
+                                    {this.state.running ? <PauseIcon /> : <PlayArrowIcon />}
+                                </IconButton>
+                            </span>
+                        </Tooltip>
+                        <Tooltip title={this.props.t('Restart')}>
+                            <span>
+                                <IconButton
+                                    size="small"
+                                    onClick={event => {
+                                        event.stopPropagation();
+                                        this.extendObject(`system.adapter.${this.props.adapter}.${this.props.instance}`, {});
+                                    }}
+                                    onFocus={event => event.stopPropagation()}
+                                    className={clsx(classes.buttonControl, !this.state.canStart && classes.hide)}
+                                    disabled={!this.state.running}
+                                >
+                                    <RefreshIcon />
+                                </IconButton>
+                            </span>
+                        </Tooltip>
+                        {/*<IsVisible config={item} name="allowInstanceLink">
+                            <Tooltip title={this.props.t('Instance link %s', this.props.instanceItem?.id)}>
                                 <span>
                                     <IconButton
                                         size="small"
+                                        className={clsx(classes.buttonControl, (!this.props.instanceItem?.links || !this.props.instanceItem?.links[0]) && classes.hide)}
+                                        disabled={!this.state.running}
                                         onClick={event => {
                                             event.stopPropagation();
-                                            event.preventDefault();
-                                            if (this.state.running && this.props.adapter + '.' + this.props.instance === this.props.adminInstance) {
-                                                this.setState({ showStopAdminDialog: true });
+                                            if (this.props.instanceItem?.links.length === 1) {
+                                                // replace IPv6 Address with [ipv6]:port
+                                                let url = this.props.instanceItem?.links[0].link;
+                                                url = url.replace(/\/\/([0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*)(:\d+)?\//i, '//[$1]$2/');
+                                                window.open(url, this.props.instanceItem?.id);
                                             } else {
-                                                this.extendObject(`system.adapter.${this.props.adapter}.${this.props.instance}`, { common: { enabled: !this.state.running } });
+                                                setShowLinks(true);
                                             }
                                         }}
                                         onFocus={event => event.stopPropagation()}
-                                        className={clsx(classes.buttonControl, this.state.canStart ?
-                                            (this.state.running ? classes.enabled : classes.disabled) : classes.hide)}
                                     >
-                                        {this.state.running ? <PauseIcon /> : <PlayArrowIcon />}
+                                        <InputIcon />
                                     </IconButton>
-                                </span>
+                                </div>
                             </Tooltip>
-                            <Tooltip title={this.props.t('Restart')}>
-                                <span>
-                                    <IconButton
-                                        size="small"
-                                        onClick={event => {
-                                            event.stopPropagation();
-                                            this.extendObject(`system.adapter.${this.props.adapter}.${this.props.instance}`, {});
-                                        }}
-                                        onFocus={event => event.stopPropagation()}
-                                        className={clsx(classes.buttonControl, !this.state.canStart && classes.hide)}
-                                        disabled={!this.state.running}
-                                    >
-                                        <RefreshIcon />
-                                    </IconButton>
-                                </span>
-                            </Tooltip>
-                            {/*<IsVisible config={item} name="allowInstanceLink">
-                                <Tooltip title={this.props.t('Instance link %s', this.props.instanceItem?.id)}>
-                                    <span>
-                                        <IconButton
-                                            size="small"
-                                            className={clsx(classes.buttonControl, (!this.props.instanceItem?.links || !this.props.instanceItem?.links[0]) && classes.hide)}
-                                            disabled={!this.state.running}
-                                            onClick={event => {
-                                                event.stopPropagation();
-                                                if (this.props.instanceItem?.links.length === 1) {
-                                                    // replace IPv6 Address with [ipv6]:port
-                                                    let url = this.props.instanceItem?.links[0].link;
-                                                    url = url.replace(/\/\/([0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*:[0-9a-f]*)(:\d+)?\//i, '//[$1]$2/');
-                                                    window.open(url, this.props.instanceItem?.id);
-                                                } else {
-                                                    setShowLinks(true);
-                                                }
-                                            }}
-                                            onFocus={event => event.stopPropagation()}
-                                        >
-                                            <InputIcon />
-                                        </IconButton>
-                                    </div>
-                                </Tooltip>
-                            </IsVisible>*/}
-                        </Typography>
-                        {this.renderHelpButton()}
-                    </Toolbar>
-                </AppBar>
-                {this.getConfigurator()}
-                {this.returnStopAdminDialog()}
-            </Paper>;
-        }
+                        </IsVisible>*/}
+                    </Typography>
+                    {this.renderHelpButton()}
+                </Toolbar>
+            </AppBar>
+            {this.getConfigurator()}
+            {this.returnStopAdminDialog()}
+        </Paper>;
     }
 }
 

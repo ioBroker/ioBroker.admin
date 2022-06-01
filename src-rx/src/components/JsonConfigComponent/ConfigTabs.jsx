@@ -30,23 +30,8 @@ class ConfigTabs extends ConfigGeneric {
         }
         this.state = {
             tab,
-            hidden: [],
         };
     }
-
-    onHiddenChanged = (name, isHidden) => {
-        const pos = this.state.hidden.indexOf(name);
-        if (isHidden && pos === -1) {
-            const hidden = [...this.state.hidden];
-            hidden.push(name);
-            this.setState({ hidden });
-        } else
-        if (!isHidden && pos !== -1) {
-            const hidden = [...this.state.hidden];
-            hidden.splice(pos, 1);
-            this.setState({ hidden });
-        }
-    };
 
     render() {
         const items = this.props.schema.items;
@@ -56,7 +41,7 @@ class ConfigTabs extends ConfigGeneric {
                 window.localStorage.setItem((this.props.dialogName || 'App') + '.' + this.props.adapterName, tab);
                 this.setState({tab});
             }}>
-                {Object.keys(items).filter(name => !this.state.hidden.includes(name)).map(name => {
+                {Object.keys(items).map(name => {
                     let disabled;
                     if (this.props.custom) {
                         const hidden = this.executeCustom(items[name].hidden, this.props.data, this.props.customObj, this.props.instanceObj);
@@ -95,7 +80,6 @@ class ConfigTabs extends ConfigGeneric {
                 onError={this.props.onError}
                 onChange={this.props.onChange}
                 multiEdit={this.props.multiEdit}
-                onHidden={this.onHiddenChanged}
 
                 forceUpdate={this.props.forceUpdate}
                 registerOnForceUpdate={this.props.registerOnForceUpdate}
