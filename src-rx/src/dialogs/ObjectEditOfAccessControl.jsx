@@ -280,7 +280,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
             }
 
             if (differentOwner) {
-                stateOwnerUser.value !== 'different' && setStateOwnerUser({ name: different, value: 'different' });
+                (!stateOwnerUser || stateOwnerUser.value !== 'different') && setStateOwnerUser({ name: different, value: 'different' });
                 if (!ownerUsers.find(item => item.value === 'different')) {
                     setOwnerUsers(el => ([{
                         name: different,
@@ -300,7 +300,7 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
             setOwnerUsers(el => el.filter(({ value }) => value !== 'different'));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [applyToChildren, /*stateOwnerUser, stateOwnerGroup,*/ differentOwner, differentGroup]);
+    }, [applyToChildren, differentOwner, differentGroup]);
 
     if (!ids.length) {
         return <LinearProgress />;
@@ -318,8 +318,8 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                     if (!applyToChildren) {
                         let newAcl = JSON.parse(JSON.stringify(objects[selected].acl || {}));
                         newAcl.object = valueObjectAccessControl;
-                        newAcl.owner = stateOwnerUser.value;
-                        newAcl.ownerGroup = stateOwnerGroup.value;
+                        newAcl.owner = stateOwnerUser ? stateOwnerUser.value : 'system.user.admin';
+                        newAcl.ownerGroup = stateOwnerGroup ? stateOwnerGroup.value : 'system.group.administrator';
 
                         if (objects[selected].type === 'state') {
                             newAcl.state = valueStateAccessControl;
@@ -338,10 +338,10 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                             const obj = objects[key];
                             let newAcl = JSON.parse(JSON.stringify(obj.acl || {}));
                             newAcl.object = newValueAccessControl(obj.acl.object, valueObjectAccessControl, _maskState);
-                            if (stateOwnerUser.value !== 'different') {
+                            if (stateOwnerUser && stateOwnerUser.value !== 'different') {
                                 newAcl.owner = stateOwnerUser.value;
                             }
-                            if (stateOwnerGroup.value !== 'different') {
+                            if (stateOwnerGroup && stateOwnerGroup.value !== 'different') {
                                 newAcl.ownerGroup = stateOwnerGroup.value;
                             }
                             if (obj.type === 'state') {
@@ -367,9 +367,9 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                         <Select
                             variant="standard"
                             disabled={progress}
-                            value={stateOwnerUser.value}
-                            renderValue={value => <span>{stateOwnerUser.icon ? <Icon src={stateOwnerUser.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}{stateOwnerUser.name}</span>}
-                            style={stateOwnerUser.value === 'different' ? { opacity: 0.5 } : { color: stateOwnerUser.color || undefined, backgroundColor: Utils.getInvertedColor(stateOwnerUser.color, themeType) }}
+                            value={stateOwnerUser ? stateOwnerUser.value : ''}
+                            renderValue={value => <span>{stateOwnerUser?.icon ? <Icon src={stateOwnerUser.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}{stateOwnerUser ? stateOwnerUser.name : ''}</span>}
+                            style={stateOwnerUser?.value === 'different' ? { opacity: 0.5 } : { color: stateOwnerUser?.color || undefined, backgroundColor: Utils.getInvertedColor(stateOwnerUser?.color, themeType) }}
                             onChange={el => {
                                 const userItem = ownerUsers.find(item => item.value === el.target.value);
                                 setStateOwnerUser(userItem);
@@ -387,9 +387,9 @@ const ObjectEditOfAccessControl = ({ onClose, onApply, open, selected, extendObj
                         <Select
                             variant="standard"
                             disabled={progress}
-                            value={stateOwnerGroup.value}
-                            renderValue={value => <span>{stateOwnerGroup.icon ? <Icon src={stateOwnerGroup.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}{stateOwnerGroup.name}</span>}
-                            style={stateOwnerGroup.value === 'different' ? { opacity: 0.5 } : { color: stateOwnerGroup.color || undefined, backgroundColor: Utils.getInvertedColor(stateOwnerGroup.color, themeType) }}
+                            value={stateOwnerGroup ? stateOwnerGroup.value : ''}
+                            renderValue={value => <span>{stateOwnerGroup?.icon ? <Icon src={stateOwnerGroup.icon} style={{ width: 16, height: 16, marginRight: 8 }} /> : null}{stateOwnerGroup ? stateOwnerGroup.name : ''}</span>}
+                            style={stateOwnerGroup?.value === 'different' ? { opacity: 0.5 } : { color: stateOwnerGroup?.color || undefined, backgroundColor: Utils.getInvertedColor(stateOwnerGroup?.color, themeType) }}
                             onChange={el => {
                                 const groupItem = ownerGroups.find(item => item.value === el.target.value);
                                 setStateOwnerGroup(groupItem);
