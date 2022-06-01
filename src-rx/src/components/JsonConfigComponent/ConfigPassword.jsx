@@ -50,7 +50,7 @@ class ConfigPassword extends ConfigGeneric {
         if (repeatPassword === undefined) {
             repeatPassword = this.state._repeat;
         }
-        const _notEqual = this.props.schema.repeat && repeatPassword !== password;
+        const _notEqual = !!this.props.schema.repeat && repeatPassword !== password;
         this.setState({value: password, _repeat: repeatPassword, _notEqual}, () => {
             if (_notEqual) {
                 this.onError(this.props.attr, I18n.t('Passwords are not equal!'));
