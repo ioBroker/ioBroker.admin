@@ -411,6 +411,19 @@ const styles = theme => ({
             display: 'block'
         }
     },
+    cellValueWritable: {
+        '&:after': {
+            content: '"*"',
+            color: theme.palette.mode === 'dark' ? 'white' : 'black',
+            position: 'absolute',
+            zIndex: 1,
+            top: -6,
+            left: 0,
+            fontSize: 9,
+            width: 4,
+            height: 4,
+        }
+    },
     cellValueFile: {
         color: '#2837b9'
     },
@@ -3471,15 +3484,16 @@ class ObjectBrowser extends Component {
      * @returns {JSX.Element | null}
      */
     renderColumnValue(id, item, classes) {
-        if (!item.data.obj || !this.states) {
+        const obj = item.data.obj;
+        if (!obj || !this.states) {
             return null;
         }
 
-        if (item.data.obj.common?.type === 'file') {
+        if (obj.common?.type === 'file') {
             return <div className={Utils.clsx(classes.cellValueText, classes.cellValueFile)}>[file]</div>;
         } else
         if (!this.states[id]) {
-            if (item.data.obj.type === 'state') {
+            if (obj.type === 'state') {
                 !this.recordStates.includes(id) && this.recordStates.push(id);
                 this.states[id] = { val: null };
                 this.subscribe(id);
@@ -3492,7 +3506,7 @@ class ObjectBrowser extends Component {
         const state = this.states[id];
         let info = item.data.state;
         if (!info) {
-            info = item.data.state = item.data.state || formatValue(id, state, item.data.obj, this.texts, this.props.dateFormat, this.props.isFloatComma);
+            info = item.data.state = item.data.state || formatValue(id, state, obj, this.texts, this.props.dateFormat, this.props.isFloatComma);
 
             info.valFull = info.valFull.map(item => {
                 if (item.t === this.texts.quality && state.q) {
@@ -3536,7 +3550,7 @@ class ObjectBrowser extends Component {
             classes={{ tooltip: this.props.classes.cellValueTooltip, popper: this.props.classes.cellValueTooltipBox }}
             onOpen={() => this.readHistory(id)}
         >
-            <div style={info.style} className={classes.cellValueText} >
+            <div style={info.style} className={Utils.clsx(classes.cellValueText, obj.common && (obj.common.write !== false) && classes.cellValueWritable)} >
                 {val}
             </div>
         </Tooltip>;
