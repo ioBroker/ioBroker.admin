@@ -265,7 +265,7 @@ class ConfigTable extends ConfigGeneric {
             <TableRow>
                 {schema.items.map(headCell => (
                     <TableCell
-                        style={{ width: typeof headCell.width === 'string' && headCell.width.endsWith('%') ? 'auto' : headCell.width }}
+                        style={{ width: typeof headCell.width === 'string' && headCell.width.endsWith('%') ? headCell.width : headCell.width }}
                         key={headCell.attr}
                         align="left"
                         sortDirection={orderBy === headCell.attr ? order : false}
@@ -461,7 +461,6 @@ class ConfigTable extends ConfigGeneric {
                                 key={idx}
                             >
                                 {schema.items.map(headCell => {
-                                    console.log(`KEy: ${headCell.attr + idx} = ${value[idx][headCell.attr]}`)
                                     return <TableCell key={headCell.attr + '_' + idx} align="left">
                                         {this.itemTable(headCell.attr, value[idx], idx)}
                                     </TableCell>;
@@ -471,7 +470,7 @@ class ConfigTable extends ConfigGeneric {
                                         <IconButton size="small" onClick={() => this.onMoveUp(idx)}>
                                             <UpIcon />
                                         </IconButton>
-                                    </Tooltip> : <div className={classes.buttonEmpty}/> ) : null}
+                                    </Tooltip> : <div className={classes.buttonEmpty}/>) : null}
                                     {!doAnyFilterSet && !this.state.orderBy ? (i < visibleValue.length - 1 ? <Tooltip title={I18n.t('Move down')}>
                                         <IconButton size="small" onClick={() => this.onMoveDown(idx)}>
                                             <DownIcon />
