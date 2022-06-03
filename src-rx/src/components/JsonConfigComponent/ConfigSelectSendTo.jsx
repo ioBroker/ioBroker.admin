@@ -79,21 +79,22 @@ class ConfigSelectSendTo extends ConfigGeneric {
             }
 
             this.props.socket.sendTo(this.props.adapterName + '.' + this.props.instance, this.props.schema.command || 'send', data)
-                .then(list => {
-                    this.setState({list, context: this.getContext()});
-                });
+                .then(list =>
+                    this.setState({list, context: this.getContext()}));
         } else {
             const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-            this.setState({value});
+            this.setState({ value });
         }
     }
 
     getContext() {
         const context = {};
+
         if (Array.isArray(this.props.schema.alsoDependsOn)) {
             this.props.schema.alsoDependsOn.forEach(attr =>
                 context[attr] = ConfigGeneric.getValue(this.props.data, attr));
         }
+
         return JSON.stringify(context);
     }
 
@@ -101,22 +102,22 @@ class ConfigSelectSendTo extends ConfigGeneric {
         if (this.props.alive) {
             const context = this.getContext();
             if (context !== this.state.context) {
-                setTimeout(() => {
-                    this.askInstance();
-                }, 300);
+                setTimeout(() => this.askInstance(), 300);
             }
         }
+
+        const value = this.state.value === null || this.state.value === undefined ? ConfigGeneric.getValue(this.props.data, this.props.attr) : this.state.value;
 
         if (!this.props.alive) {
             return <TextField
                 variant="standard"
                 fullWidth
-                value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
+                value={value}
                 error={!!error}
                 disabled={!!disabled}
                 onChange={e => {
                     const value = e.target.value;
-                    this.setState({value}, () =>
+                    this.setState({ value }, () =>
                         this.onChange(this.props.attr, (value || '').trim()));
                 }}
                 placeholder={this.getText(this.props.schema.placeholder)}
@@ -127,8 +128,6 @@ class ConfigSelectSendTo extends ConfigGeneric {
         if (!this.state.list) {
             return <CircularProgress size="small"/>;
         } else {
-            const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-
             const selectOptions = (this.state.list || []).filter(item => {
                 if (!item.hidden) {
                     return true;
