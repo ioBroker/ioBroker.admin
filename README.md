@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.0.0 (2022-06-03)
 * (bluefox) Breaking changes: no admin@v4(material) interface. Only react interface is possible.
 * (bluefox) Breaking changes: older browsers do not supported anymore.
 * (bluefox) Migration from material-ui to mui@v5
@@ -111,10 +111,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 5.4.6 (2022-05-09)
 * (bluefox) Corrected readLogs command
 * (bluefox) Corrected file deletion
-
-### 5.4.3 (2022-05-06)
-* (bluefox) Used common sockets (could be buggy)
-* (bluefox) Added chips to JSON config
 
 ## License
 The MIT License (MIT)

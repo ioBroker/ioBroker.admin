@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "5.4.9",
+    "version": "6.0.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.0.0": {
+        "en": "Breaking changes: no admin@v4(material) interface. Only react interface is possible.\nBreaking changes: older browsers do not supported anymore.\nMigration from material-ui to mui@v5\nMany GUI fixes\nSupport of JSON5 for the config and custom files\nAdded run/stop buttons in instance settings dialog\nAdded support for the file change events",
+        "de": "Breaking changes: keine admin@v4(material)-Schnittstelle. Nur Schnittstelle reagieren ist möglich.\nBreaking changes: ältere Browser werden nicht mehr unterstützt.\nMigration von material-ui zu mui@v5\nViele GUI-Korrekturen\nUnterstützung von JSON5 für die Konfigurations- und benutzerdefinierten Dateien\nRun/Stop-Schaltflächen im Instanzeinstellungsdialog hinzugefügt\nUnterstützung für die Dateiänderungsereignisse hinzugefügt",
+        "ru": "Критические изменения: нет интерфейса admin@v4(material). Возможен только реактивный интерфейс.\nКритические изменения: старые браузеры больше не поддерживаются.\nМиграция с material-ui на mui@v5\nМножество исправлений графического интерфейса\nПоддержка JSON5 для конфигурационных и пользовательских файлов\nДобавлены кнопки запуска/остановки в диалоговом окне настроек инстанса.\nДобавлена поддержка событий изменения файла",
+        "pt": "Mudanças importantes: sem interface admin@v4(material). Apenas interface de reação é possível.\nMudanças de última hora: navegadores mais antigos não são mais suportados.\nMigração de material-ui para mui@v5\nMuitas correções de GUI\nSuporte de JSON5 para a configuração e arquivos personalizados\nAdicionados botões de execução/parada na caixa de diálogo de configurações de instância\nAdicionado suporte para os eventos de alteração de arquivo",
+        "nl": "Brekende veranderingen: geen admin@v4(materiaal) interface. Alleen reageren interface is mogelijk.\nBaanbrekende wijzigingen: oudere browsers worden niet meer ondersteund.\nMigratie van material-ui naar mui@v5\nVeel GUI-fixes\nOndersteuning van JSON5 voor de configuratie- en aangepaste bestanden\nRun/stop-knoppen toegevoegd in het dialoogvenster met instantie-instellingen\nOndersteuning toegevoegd voor de bestandswijzigingsgebeurtenissen",
+        "fr": "Modifications avec rupture : pas d'interface admin@v4 (matériel). Seule l'interface de réaction est possible.\nModifications avec rupture : les anciens navigateurs ne sont plus pris en charge.\nMigration de material-ui vers mui@v5\nDe nombreux correctifs d'interface graphique\nPrise en charge de JSON5 pour les fichiers de configuration et personnalisés\nAjout de boutons exécuter/arrêter dans la boîte de dialogue des paramètres d'instance\nAjout de la prise en charge des événements de changement de fichier",
+        "it": "Modifiche di rilievo: nessuna interfaccia admin@v4(material). È possibile solo l'interfaccia di reazione.\nModifiche di rilievo: i browser meno recenti non sono più supportati.\nMigrazione da material-ui a mui@v5\nMolte correzioni della GUI\nSupporto di JSON5 per i file di configurazione e personalizzati\nAggiunti pulsanti di esecuzione/arresto nella finestra di dialogo delle impostazioni dell'istanza\nAggiunto supporto per gli eventi di modifica dei file",
+        "es": "Cambios importantes: sin interfaz admin@v4(material). Solo es posible la interfaz de reacción.\nCambios importantes: los navegadores antiguos ya no son compatibles.\nMigración de material-ui a mui@v5\nMuchas correcciones de GUI\nSoporte de JSON5 para la configuración y archivos personalizados.\nSe agregaron botones ejecutar/detener en el cuadro de diálogo de configuración de la instancia\nSe agregó soporte para los eventos de cambio de archivo.",
+        "pl": "Zmiany przełomowe: brak interfejsu admin@v4(material). Możliwy jest tylko interfejs React.\nPrzełomowe zmiany: starsze przeglądarki nie są już obsługiwane.\nMigracja z material-ui do mui@v5\nWiele poprawek GUI\nObsługa JSON5 dla plików konfiguracyjnych i niestandardowych\nDodano przyciski uruchamiania/zatrzymywania w oknie ustawień instancji\nDodano obsługę zdarzeń zmiany pliku",
+        "zh-cn": "重大更改：没有 admin@v4(material) 界面。只有反应接口是可能的。\n重大更改：不再支持旧版浏览器。\n从 material-ui 迁移到 mui@v5\n许多 GUI 修复\n配置和自定义文件支持 JSON5\n在实例设置对话框中添加了运行/停止按钮\n添加了对文件更改事件的支持"
+      },
       "5.4.9": {
         "en": "Corrected charts\nCorrected socket command getObjects",
         "de": "Korrigierte Diagramme\nSocket-Befehl getObjects korrigiert",
@@ -89,18 +101,6 @@
         "es": "Enchufes comunes usados (podrían tener errores)\nChips agregados a la configuración JSON",
         "pl": "Używane wspólne gniazda (mogą być wadliwe)\nDodano chipy do konfiguracji JSON",
         "zh-cn": "使用过的普通插座（可能有问题）\n将芯片添加到 JSON 配置"
-      },
-      "5.3.8": {
-        "en": "Changed the datapoint history list\nAdded support of swagger adapter",
-        "de": "Die Datenpunktverlaufsliste wurde geändert\nUnterstützung für Swagger-Adapter hinzugefügt",
-        "ru": "Изменен список истории точек данных\nДобавлена поддержка адаптера swagger.",
-        "pt": "Alterou a lista de histórico de pontos de dados\nAdicionado suporte de adaptador swagger",
-        "nl": "De geschiedenislijst van datapunten gewijzigd\nOndersteuning van swagger-adapter toegevoegd",
-        "fr": "Modification de la liste d'historique des points de données\nAjout de la prise en charge de l'adaptateur swagger",
-        "it": "Modificato l'elenco della cronologia dei punti dati\nAggiunto il supporto dell'adattatore spavaldo",
-        "es": "Cambió la lista de historial de puntos de datos\nSoporte agregado del adaptador swagger",
-        "pl": "Zmieniono listę historii punktów danych\nDodano obsługę adaptera swagger",
-        "zh-cn": "更改了数据点历史列表\n增加了对 swagger 适配器的支持"
       }
     },
     "desc": {

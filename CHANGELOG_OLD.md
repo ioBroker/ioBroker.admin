@@ -1,5 +1,12 @@
 ## 5.3.7 (2022-04-10)
 * (bluefox) Changed the charts rendering
+## 5.4.3 (2022-05-06)
+* (bluefox) Used common sockets (could be buggy)
+* (bluefox) Added chips to JSON config
+
+## 5.3.7 (2022-04-10)
+* (bluefox) Changed the charts rendering
+
 ## 5.3.8 (2022-04-14)
 * (Apollon77) Changed the datapoint history list
 * (bluefox) Added support of swagger adapter
