@@ -1,5 +1,5 @@
 // CertificatesDialog.js
-import {Component} from 'react';
+import { Component } from 'react';
 import clsx from 'clsx';
 import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
@@ -107,7 +107,7 @@ class CertificatesDialog extends Component {
                         InputLabelProps={{shrink: true}}
                         InputProps={{readOnly: false}}
                         className={this.props.classes.input + ' xs-centered'}
-                        onChange={evt => this.onChangeText(evt, e.title, 'title')}
+                        onChange={evt => this.onChangeText(evt.target.value, e.title, 'title')}
                     />
                 </TableCell>
                 <TableCell className="grow_cell float_cell">
@@ -118,7 +118,13 @@ class CertificatesDialog extends Component {
                         InputLabelProps={{ shrink: true }}
                         InputProps={{ readOnly: false }}
                         className={this.props.classes.input + ' xs-centered'}
-                        onChange={evt => this.onChangeText(evt, e.title, 'data')}
+                        onChange={evt => {
+                            let value = evt.target.value.replace(/\r/g, '').replace(/\n/g, '');
+                            let parts = value.split('-----');
+                            parts[2] = parts[2].replace(/\s/g, '');
+                            value = `-----${parts[1]}-----\r\n${parts[2]}\r\n-----${parts[3]}-----`;
+                            this.onChangeText(value, e.title, 'data');
+                        }}
                     />
                 </TableCell>
                 <TableCell className={this.props.classes.littleRow + ' float_cell'}>
@@ -135,13 +141,13 @@ class CertificatesDialog extends Component {
         })
         return <div className={classes.tabPanel}>
             <Dropzone noClick>
-                {({getRootProps, getInputProps, acceptedFiles, fileRejections}) => (
+                {({ getRootProps, getInputProps, acceptedFiles, fileRejections }) => (
                     <div {...getRootProps({
                         className: this.state.chClass ? 'drop-container drop-dop' : 'drop-container',
-                        onDragEnter: evt => this.setState({chClass: true}),
-                        onDragLeave: evt => this.setState({chClass: false}),
+                        onDragEnter: evt => this.setState({ chClass: true }),
+                        onDragLeave: evt => this.setState({ chClass: false }),
                         onDrop: evt => {
-                            if (fileRejections.length > 0) {
+                            if (fileRejections.length) {
                                 let msg = [];
                                 // eslint-disable-next-line array-callback-return
                                 fileRejections.map((e => {
@@ -154,7 +160,7 @@ class CertificatesDialog extends Component {
                                 alert(msg.join(', '));
                             }
 
-                            if (acceptedFiles.length > 0) {
+                            if (acceptedFiles.length) {
                                 // eslint-disable-next-line array-callback-return
                                 acceptedFiles.map(file => {
                                     const reader = new FileReader();
@@ -162,11 +168,11 @@ class CertificatesDialog extends Component {
                                         this.onAdd(file.name, e.target.result);
                                     reader.readAsText(file);
                                 })
-
-                            } else if (fileRejections.length === 0) {
+                            } else if (!fileRejections.length) {
                                 alert(this.props.t('No files exists'));
                             }
-                            this.setState({chClass: false});
+
+                            this.setState({ chClass: false });
                         }
                     })}>
                         <input {...getInputProps()} />
@@ -209,8 +215,7 @@ class CertificatesDialog extends Component {
         </div>;
     }
 
-    onChangeText = (evt, id, name) => {
-        const value = evt.target.value;
+    onChangeText = (value, id, name) => {
         let newData = JSON.parse(JSON.stringify(this.props.data))
         let array = this.certToArray(newData.native.certificates);
         array.find(element => element.title === id)[name] = value;
@@ -240,8 +245,8 @@ class CertificatesDialog extends Component {
         }
 
         array.push({
-            title: title ? title : '__',
-            data:  data  ? data  : ''
+            title: title || '__',
+            data:  data || ''
         });
         newData.native.certificates = this.arrayToCert(array);
         this.props.onChange(newData);
