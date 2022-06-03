@@ -176,6 +176,7 @@ class ObjectBrowserValue extends Component {
 
     onUpdate(e) {
         e && e.stopPropagation();
+        e && e.preventDefault();
         let value = this.value;
         if (this.state.type === 'states') {
             let type = this.props.type || typeof this.props.value;
