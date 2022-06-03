@@ -136,7 +136,7 @@ class ConfigPanel extends ConfigGeneric {
                 // url
                 if (items[attr].url) {
                     ItemComponent = ConfigCustom;
-                } else 
+                } else
                 if (this.props.customs && this.props.customs[items[attr].component]) {
                     ItemComponent = this.props.customs[items[attr].component];
                 } else {
@@ -152,6 +152,8 @@ class ConfigPanel extends ConfigGeneric {
             return <ItemComponent
                 key={attr + '_' + this.props.index}
                 index={this.props.index}
+                arrayIndex={this.props.arrayIndex}
+                globalData={this.props.globalData}
                 onCommandRunning={this.props.onCommandRunning}
                 commandRunning={this.props.commandRunning}
                 className={classes.panel}
@@ -171,7 +173,7 @@ class ConfigPanel extends ConfigGeneric {
                 dateFormat={this.props.dateFormat}
                 isFloatComma={this.props.isFloatComma}
                 disabled={disabled}
-                
+
                 registerOnForceUpdate={this.props.registerOnForceUpdate}
                 forceUpdate={this.props.forceUpdate}
 
@@ -289,7 +291,7 @@ class ConfigPanel extends ConfigGeneric {
                     return <>
                         <div style={{flexBasis: '100%', height: 0}} />
                         {item}
-                    </>
+                    </>;
                 } else {
                     return item;
                 }
@@ -321,6 +323,9 @@ ConfigPanel.propTypes = {
     isFloatComma: PropTypes.bool,
     multiEdit: PropTypes.bool,
     isParentTab: PropTypes.bool,
+
+    arrayIndex: PropTypes.number,
+    globalData: PropTypes.object,
 
     customObj: PropTypes.object,
     instanceObj: PropTypes.object,

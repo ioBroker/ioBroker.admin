@@ -32,9 +32,9 @@ class ConfigGeneric extends Component {
 
         if (this.props.schema) {
             if (this.props.custom) {
-                this.defaultValue = this.props.schema.defaultFunc ? this.executeCustom(this.props.schema.defaultFunc, this.props.schema.default, this.props.data, this.props.instanceObj) : this.props.schema.default;
+                this.defaultValue = this.props.schema.defaultFunc ? this.executeCustom(this.props.schema.defaultFunc, this.props.schema.default, this.props.data, this.props.instanceObj, this.props.arrayIndex, this.props.globalData) : this.props.schema.default;
             } else {
-                this.defaultValue = this.props.schema.defaultFunc ? this.execute(this.props.schema.defaultFunc, this.props.schema.default, this.props.data) : this.props.schema.default;
+                this.defaultValue = this.props.schema.defaultFunc ? this.execute(this.props.schema.defaultFunc, this.props.schema.default, this.props.data, this.props.arrayIndex, this.props.globalData) : this.props.schema.default;
             }
         }
 
@@ -182,7 +182,7 @@ class ConfigGeneric extends Component {
         const data = JSON.parse(JSON.stringify(this.props.data));
         ConfigGeneric.setValue(data, attr, newValue);
 
-        if (this.props.schema.confirm && this.execute(this.props.schema.confirm.condition, false, data)) {
+        if (this.props.schema.confirm && this.execute(this.props.schema.confirm.condition, false, data, this.props.arrayIndex, this.props.globalData)) {
             return this.setState({
                 confirmDialog: true,
                 confirmNewValue: newValue,
@@ -197,7 +197,7 @@ class ConfigGeneric extends Component {
                     if (dep.confirm) {
                         const val = ConfigGeneric.getValue(data, dep.attr);
 
-                        if (this.execute(dep.confirm.condition, false, data)) {
+                        if (this.execute(dep.confirm.condition, false, data, this.props.arrayIndex, this.props.globalData)) {
                             return this.setState({
                                 confirmDialog: true,
                                 confirmNewValue: newValue,
@@ -219,9 +219,9 @@ class ConfigGeneric extends Component {
                         const val = ConfigGeneric.getValue(data, dep.attr);
 
                         const newValue = this.props.custom ?
-                            this.executeCustom(dep.onChange.calculateFunc, data, this.props.customObj, this.props.instanceObj)
+                            this.executeCustom(dep.onChange.calculateFunc, data, this.props.customObj, this.props.instanceObj, this.props.arrayIndex, this.props.globalData)
                             :
-                            this.execute(dep.onChange.calculateFunc, val, data);
+                            this.execute(dep.onChange.calculateFunc, val, data, this.props.arrayIndex, this.props.globalData);
 
                         if (newValue !== val) {
                             ConfigGeneric.setValue(data, dep.attr, newValue);
@@ -256,9 +256,9 @@ class ConfigGeneric extends Component {
                 const val = ConfigGeneric.getValue(data, this.props.attr);
 
                 const newValue = this.props.custom ?
-                    this.executeCustom(this.props.schema.onChange.calculateFunc, data, this.props.customObj, this.props.instanceObj)
+                    this.executeCustom(this.props.schema.onChange.calculateFunc, data, this.props.customObj, this.props.instanceObj, this.props.arrayIndex, this.props.globalData)
                     :
-                    this.execute(this.props.schema.onChange.calculateFunc, val, data);
+                    this.execute(this.props.schema.onChange.calculateFunc, val, data, this.props.arrayIndex, this.props.globalData);
                 if (newValue !== val) {
                     ConfigGeneric.setValue(data, this.props.attr, newValue);
                 }
@@ -276,7 +276,7 @@ class ConfigGeneric extends Component {
         }
     }
 
-    execute(func, defaultValue, data) {
+    execute(func, defaultValue, data, arrayIndex, globalData) {
         if (func && typeof func === 'object') {
             func = func.func;
         }
@@ -286,8 +286,8 @@ class ConfigGeneric extends Component {
         } else {
             try {
                 // eslint-disable-next-line no-new-func
-                const f = new Function('data', 'originalData', '_system', '_alive', '_common', '_socket', '_instance', func.includes('return') ? func : 'return ' + func);
-                const result = f(data || this.props.data, this.props.originalData, this.props.systemConfig, this.props.alive, this.props.common, this.props.socket, this.props.instance);
+                const f = new Function('data', 'originalData', '_system', '_alive', '_common', '_socket', '_instance', 'arrayIndex', 'globalData', func.includes('return') ? func : 'return ' + func);
+                const result = f(data || this.props.data, this.props.originalData, this.props.systemConfig, this.props.alive, this.props.common, this.props.socket, this.props.instance, arrayIndex, globalData);
                 // console.log(result);
                 return result;
             } catch (e) {
@@ -297,7 +297,7 @@ class ConfigGeneric extends Component {
         }
     }
 
-    executeCustom(func, data, customObj, instanceObj) {
+    executeCustom(func, data, customObj, instanceObj, arrayIndex, globalData) {
         if (func && typeof func === 'object') {
             func = func.func;
         }
@@ -307,8 +307,8 @@ class ConfigGeneric extends Component {
         } else {
             try {
                 // eslint-disable-next-line no-new-func
-                const f = new Function('data', 'originalData', '_system', 'instanceObj', 'customObj', '_socket', func.includes('return') ? func : 'return ' + func);
-                const result = f(data || this.props.data, this.props.originalData, this.props.systemConfig, instanceObj, customObj, this.props.socket);
+                const f = new Function('data', 'originalData', '_system', 'instanceObj', 'customObj', '_socket', 'arrayIndex', 'globalData', func.includes('return') ? func : 'return ' + func);
+                const result = f(data || this.props.data, this.props.originalData, this.props.systemConfig, instanceObj, customObj, this.props.socket, arrayIndex, globalData);
                 console.log(result);
                 return result;
             } catch (e) {
@@ -325,15 +325,15 @@ class ConfigGeneric extends Component {
         let defaultValue;
 
         if (this.props.custom) {
-            error        = schema.validator   ? !this.executeCustom(schema.validator,  this.props.data, this.props.customObj, this.props.instanceObj) : false;
-            disabled     = schema.disabled    ? this.executeCustom(schema.disabled,    this.props.data, this.props.customObj, this.props.instanceObj) : false;
-            hidden       = schema.hidden      ? this.executeCustom(schema.hidden,      this.props.data, this.props.customObj, this.props.instanceObj) : false;
-            defaultValue = schema.defaultFunc ? this.executeCustom(schema.defaultFunc, this.props.data, this.props.customObj, this.props.instanceObj) : schema.default;
+            error        = schema.validator   ? !this.executeCustom(schema.validator,  this.props.data, this.props.customObj, this.props.instanceObj, this.props.arrayIndex, this.props.globalData) : false;
+            disabled     = schema.disabled    ? this.executeCustom(schema.disabled,    this.props.data, this.props.customObj, this.props.instanceObj, this.props.arrayIndex, this.props.globalData) : false;
+            hidden       = schema.hidden      ? this.executeCustom(schema.hidden,      this.props.data, this.props.customObj, this.props.instanceObj, this.props.arrayIndex, this.props.globalData) : false;
+            defaultValue = schema.defaultFunc ? this.executeCustom(schema.defaultFunc, this.props.data, this.props.customObj, this.props.instanceObj, this.props.arrayIndex, this.props.globalData) : schema.default;
         } else {
-            error        = schema.validator   ? !this.execute(schema.validator,  false)   : false;
-            disabled     = schema.disabled    ? this.execute(schema.disabled,    false)   : false;
-            hidden       = schema.hidden      ? this.execute(schema.hidden,      false)   : false;
-            defaultValue = schema.defaultFunc ? this.execute(schema.defaultFunc, schema.default, this.props.data) : schema.default;
+            error        = schema.validator   ? !this.execute(schema.validator,  false, this.props.data, this.props.arrayIndex, this.props.globalData)   : false;
+            disabled     = schema.disabled    ? this.execute(schema.disabled,    false, this.props.data, this.props.arrayIndex, this.props.globalData)   : false;
+            hidden       = schema.hidden      ? this.execute(schema.hidden,      false, this.props.data, this.props.arrayIndex, this.props.globalData)   : false;
+            defaultValue = schema.defaultFunc ? this.execute(schema.defaultFunc, schema.default, this.props.data, this.props.arrayIndex, this.props.globalData) : schema.default;
         }
 
         return { error, disabled, hidden, defaultValue };
@@ -404,7 +404,7 @@ class ConfigGeneric extends Component {
             return null;
         }
 
-        const {error, disabled, hidden, defaultValue} = this.calculate(schema);
+        const { error, disabled, hidden, defaultValue } = this.calculate(schema);
 
         if (hidden) {
             // Remove all errors if element is hidden

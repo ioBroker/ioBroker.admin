@@ -471,30 +471,34 @@ const isValid = func(data, systemConfig.common, instanceAlive, adapter.common, t
 If alive status changes, so all fields must be updated, validated, disabled, hidden anew.
 
 Following variables are available in JS function in adapter settings:
-- data - native settings for this instance
+- data - native settings for this instance or current line in the table (to access all settings use globalData)
 - _system - system configuration
 - _alive - is instance is alive
 - _common - common settings for this instance
 - _socket - socket
 - _instance - instance number
+- arrayIndex - used only in table and represent current line in array
+- globalData - used only in table and all settings and not only one table line
 
 ### Custom settings dialog
 JS functions is:
 ```
 const myValidator = "customObj.common.type === 'boolean' && data.options.myType == 2";
 
-const func = new Function('data', 'originalData', '_system', 'instanceObj', 'customObj', '_socket', myValidator.includes('return') ? myValidator : 'return ' + myValidator); // e.g. "_alive === true"
+const func = new Function('data', 'originalData', '_system', 'instanceObj', 'customObj', '_socket', arrayIndex, myValidator.includes('return') ? myValidator : 'return ' + myValidator); // e.g. "_alive === true"
 
 const isValid = func(data || this.props.data, this.props.originalData, this.props.systemConfig, instanceObj, customObj, this.props.socket);
 ```
 
 Following variables are available in JS function in custom settings:
-- data - current custom settings
+- data - current custom settings or current line in the table (to access all settings use globalData)
 - originalData - Unchanged data
 - _system - system configuration
 - instanceObj - adapter instance object
 - customObj - current object itself
 - _socket - socket
+- arrayIndex - used only in table and represent current line in array
+- globalData - used only in table and all settings and not only one table line
 
 ## Custom component
 ```

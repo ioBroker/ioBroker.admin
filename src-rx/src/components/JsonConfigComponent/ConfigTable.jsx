@@ -176,20 +176,22 @@ class ConfigTable extends ConfigGeneric {
     itemTable(attrItem, data, idx) {
         const { value, systemConfig } = this.state;
         const { schema } = this.props;
-        const schemaFind = schema.items.find(el => el.attr === attrItem);
+        const schemaForAttribute = schema.items.find(el => el.attr === attrItem);
 
-        if (!schemaFind) {
+        if (!schemaForAttribute) {
             return null;
         }
 
         const schemaItem = {
             items: {
-                [attrItem]: schemaFind
+                [attrItem]: schemaForAttribute
             }
         };
 
         return <ConfigPanel
             index={idx + this.state.iteration}
+            arrayIndex={idx}
+            globalData={this.props.data}
             socket={this.props.socket}
             adapterName={this.props.adapterName}
             instance={this.props.instance}
@@ -284,19 +286,17 @@ class ConfigTable extends ConfigGeneric {
                                     onChange={() => this.applyFilter()}
                                     title={I18n.t('You can filter entries by entering here some text')}
                                     InputProps={{
-                                        endAdornment: (
-                                            this.filterRefs[headCell.attr]?.current?.children[0]?.children[0]?.value && <InputAdornment position="end">
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => {
-                                                        this.filterRefs[headCell.attr].current.children[0].children[0].value = '';
-                                                        this.applyFilter();
-                                                    }}
-                                                >
-                                                    <CloseIcon />
-                                                </IconButton>
-                                            </InputAdornment>
-                                        ),
+                                        endAdornment: this.filterRefs[headCell.attr]?.current?.children[0]?.children[0]?.value && <InputAdornment position="end">
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => {
+                                                    this.filterRefs[headCell.attr].current.children[0].children[0].value = '';
+                                                    this.applyFilter();
+                                                }}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </InputAdornment>,
                                     }}
                                     fullWidth
                                     placeholder={this.getText(headCell.title)}
@@ -373,7 +373,18 @@ class ConfigTable extends ConfigGeneric {
         const visibleValue = JSON.parse(JSON.stringify(this.state.visibleValue));
 
         const newItem = schema.items.reduce((accumulator, currentValue) => {
-            accumulator[currentValue.attr] = currentValue.default === undefined ? null : currentValue.default;
+            let defaultValue;
+            if (currentValue.defaultFunc) {
+                if (this.props.custom) {
+                    defaultValue = currentValue.defaultFunc ? this.executeCustom(currentValue.defaultFunc, this.props.schema.default, this.props.data, this.props.instanceObj, newValue.length, this.props.data) : this.props.schema.default;
+                } else {
+                    defaultValue = currentValue.defaultFunc ? this.execute(currentValue.defaultFunc, this.props.schema.default, this.props.data, newValue.length, this.props.data) : this.props.schema.default;
+                }
+            } else {
+                defaultValue = currentValue.default === undefined ? null : currentValue.default;
+            }
+
+            accumulator[currentValue.attr] = defaultValue;
             return accumulator;
         }, {});
 

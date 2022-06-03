@@ -42,9 +42,9 @@ class ConfigSelect extends ConfigGeneric {
             if (!item.hidden) {
                 return true;
             } else if (this.props.custom) {
-                return !this.executeCustom(item.hidden, this.props.data, this.props.customObj, this.props.instanceObj);
+                return !this.executeCustom(item.hidden, this.props.data, this.props.customObj, this.props.instanceObj, this.props.arrayIndex, this.props.globalData);
             } else {
-                return !this.execute(item.hidden, this.props.schema.default, this.props.data);
+                return !this.execute(item.hidden, this.props.schema.default, this.props.data, this.props.arrayIndex, this.props.globalData);
             }
         });
 

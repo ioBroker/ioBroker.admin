@@ -16,7 +16,7 @@ class ConfigText extends ConfigGeneric {
     componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-        this.setState({value});
+        this.setState({ value });
     }
 
     static getDerivedStateFromProps(props, state) {
