@@ -25,8 +25,7 @@ function npmInstall() {
 
         // System call used for update of js-controller itself,
         // because during installation npm packet will be deleted too, but some files must be loaded even during the install process.
-        const exec = require('child_process').exec;
-        const child = exec(cmd, {cwd});
+        const child = cp.exec(cmd, { cwd });
 
         child.stderr.pipe(process.stderr);
         child.stdout.pipe(process.stdout);
@@ -67,17 +66,36 @@ function build() {
         if (!fs.existsSync(script)) {
             script = __dirname + '/node_modules/vite/bin/vite.js';
         }
+
         if (!fs.existsSync(script)) {
             console.error('Cannot find execution file: ' + script);
             reject('Cannot find execution file: ' + script);
         } else {
-            const child = cp.fork(script, ['build'], options);
+            const cmd = 'node --max-old-space-size=8192 node_modules/vite/bin/vite.js build';
+            const child = cp.exec(cmd, { cwd: src });
+
+            child.stderr.pipe(process.stderr);
+            child.stdout.pipe(process.stdout);
+
+            child.on('exit', (code /* , signal */) => {
+                // code 1 is strange error that cannot be explained. Everything is installed but error :(
+                if (code && code !== 1) {
+                    reject('Cannot install: ' + code);
+                } else {
+                    console.log(`"${cmd} in ${src} finished.`);
+                    // command succeeded
+                    resolve();
+                }
+            });
+            // const child = cp.fork(script, ['--max-old-space-size=8192', 'build'], options);
+            /*
             child.stdout.on('data', data => console.log(data.toString()));
             child.stderr.on('data', data => console.log(data.toString()));
             child.on('close', code => {
                 console.log(`child process exited with code ${code}`);
                 code ? reject('Exit code: ' + code) : resolve();
             });
+            */
         }
     });
 }
@@ -109,10 +127,10 @@ function copyFiles() {
                 .pipe(gulp.dest('admin/')),
 
             gulp.src([
-                `${srcRx}dist/static/js/main.*.chunk.js`,
+                `${srcRx}dist/assets/*.js`,
             ])
-                .pipe(replace('s.p+"static/media/copy-content', '"./static/media/copy-content'))
-                .pipe(gulp.dest(dest + 'static/js/')),
+                .pipe(replace('"/assets', '"./assets'))
+                .pipe(gulp.dest(dest + 'assets/')),
         ]));
 }
 

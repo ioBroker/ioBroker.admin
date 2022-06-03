@@ -6,6 +6,7 @@ import clsx from 'clsx';
 import { Avatar, Drawer as MaterialDrawer } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
+import Typography from '@mui/material/Typography';
 
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -36,7 +37,6 @@ import CustomPopper from './CustomPopper';
 import CustomTab from '../tabs/CustomTab';
 import DrawerItem from './DrawerItem';
 import Adapters from '../tabs/Adapters';
-import Typography from "@mui/material/Typography";
 
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
@@ -263,7 +263,8 @@ class Drawer extends Component {
 
     onNotificationsHandler = () => {
         return this.props.hostsWorker.getNotifications()
-            .then(notifications => this.calculateWarning(notifications));
+            .then(notifications => this.calculateWarning(notifications))
+            .catch(error => window.alert('Cannot get notifications: ' + error));
     };
 
     onErrorsUpdates = logErrors => {
