@@ -107,6 +107,7 @@ class EasyMode extends Component {
             configStored,
             getLocation,
         } = this.props;
+
         const { configs, strictMode } = this.state;
         if (!configs) {
             return <CircularProgress />;
@@ -129,7 +130,7 @@ class EasyMode extends Component {
                         {((strictMode && !getLocation().dialog) || currentInstance?.tab) && <IconButton size="large" onClick={() => navigate(currentInstance?.tab ? 'easy' : 'tab-intro')}>
                             <ArrowBackIcon />
                         </IconButton>}
-                        <ToggleThemeMenu t={t} toggleTheme={toggleTheme} themeName={themeName} />
+                        <ToggleThemeMenu t={t} toggleTheme={toggleTheme} themeName={themeName} size="large"/>
                     </div>
                 </Toolbar>
             </AppBar>

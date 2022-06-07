@@ -6,7 +6,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { Tooltip, AppBar, Avatar, Box, Checkbox, CircularProgress, LinearProgress, Paper, Step, StepLabel, Stepper, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, } from '@mui/material';
-import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -362,34 +362,42 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
     const [discoveryData, setDiscoveryData] = useState({});
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(async () => {
-        const resultList = await socket.sendTo('system.adapter.discovery.0', 'listMethods', null);
-        let listChecked = {};
-        let lastSelection = window.localStorage.getItem('App.discoveryLastSelection') || null;
-        if (lastSelection) {
-            try {
-                lastSelection = JSON.parse(lastSelection);
-            } catch (e) {
-                lastSelection = null;
+    useEffect(() => {
+        async function fetchData() {
+            const resultList = await socket.sendTo('system.adapter.discovery.0', 'listMethods', null);
+            let listChecked = {};
+            let lastSelection = window.localStorage.getItem('App.discoveryLastSelection') || null;
+            if (lastSelection) {
+                try {
+                    lastSelection = JSON.parse(lastSelection);
+                } catch (e) {
+                    lastSelection = null;
+                }
             }
+
+            Object.keys(resultList).forEach(key => {
+                if (lastSelection) {
+                    listChecked[key] = lastSelection[key];
+                } else {
+                    listChecked[key] = key !== 'serial';
+                }
+            });
+
+            setCheckboxChecked(listChecked);
+            setListMethods(resultList);
         }
 
-        Object.keys(resultList).forEach(key => {
-            if (lastSelection) {
-                listChecked[key] = lastSelection[key];
-            } else {
-                listChecked[key] = key !== 'serial';
-            }
-        });
-
-        setCheckboxChecked(listChecked);
-        setListMethods(resultList);
+        fetchData();
     }, [socket]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(async () => {
-        const dataDiscovery = await socket.getObject('system.discovery');
-        dataDiscovery !== undefined && setDiscoveryData(dataDiscovery);
+    useEffect(() => {
+        async function readOldData() {
+            const dataDiscovery = await socket.getObject('system.discovery');
+            dataDiscovery !== undefined && setDiscoveryData(dataDiscovery);
+        }
+
+        readOldData();
     }, [socket]);
 
     const [aliveHosts, setAliveHosts] = useState({});
@@ -512,7 +520,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
         if (obj && obj.comment && obj.comment.license && obj.comment.license !== 'MIT') {
             license = false;
             if (!obj.common.licenseUrl) {
-                obj.common.licenseUrl = 'https://raw.githubusercontent.com/ioBroker/ioBroker.' + obj.common.name + '/master/LICENSE'
+                obj.common.licenseUrl = `https://raw.githubusercontent.com/ioBroker/ioBroker.${obj.common.name}/master/LICENSE`
             }
             if (typeof obj.common.licenseUrl === 'object') {
                 obj.common.licenseUrl = obj.common.licenseUrl[I18n.getLanguage()] || obj.common.licenseUrl.en;
@@ -528,7 +536,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                 const index = selected.indexOf(obj._id) + 1;
                 setInstallStatus(status => Object.assign({ ...status }, { [index]: 'error' }));
 
-                setLogs((logsEl) => Object.assign({ ...logsEl }, { [selected[index - 1]]: [I18n.t('Error: license not accepted')] }));
+                setLogs(logsEl => Object.assign({ ...logsEl }, { [selected[index - 1]]: [I18n.t('Error: license not accepted')] }));
 
                 if (selected.length > index) {
                     setTimeout(() =>
@@ -609,9 +617,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                     onClose();
                 }
             }}
-            open={true}
-            disableBackdropClick
-            disableEscapeKeyDown
+            open
             classes={{ paper: classes.paper }}
         >
             <h2 className={classes.heading}>
@@ -951,20 +957,22 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                 </Button>}
                 {step !== 2 && step !== 4 &&
                     <Tooltip title={step === 0 ? I18n.t('Skip discovery process and go to install with last scan results') : ''}>
-                        <Button
-                            variant="contained"
-                            disabled={!discoveryData || !discoveryData?.native?.lastScan || step === 2 || disableScanner || (step === 1 && !selected.length)}
-                            onClick={() => {
-                                stepUp();
-                                if (step === 1) {
-                                    checkInstall();
-                                }
-                            }}
-                            color={step === 1 ? 'primary' : 'grey'}
-                            startIcon={step === 1 ? <LibraryAddIcon /> : <NavigateNextIcon />}
-                        >
-                            {I18n.t(step === 1 ? 'Create instances' : 'Use last scan')}
-                        </Button>
+                        <span style={{ marginLeft: 8 }}>
+                            <Button
+                                variant="contained"
+                                disabled={!discoveryData || !discoveryData?.native?.lastScan || step === 2 || disableScanner || (step === 1 && !selected.length)}
+                                onClick={() => {
+                                    stepUp();
+                                    if (step === 1) {
+                                        checkInstall();
+                                    }
+                                }}
+                                color={step === 1 ? 'primary' : 'grey'}
+                                startIcon={step === 1 ? <LibraryAddIcon /> : <NavigateNextIcon />}
+                            >
+                                {I18n.t(step === 1 ? 'Create instances' : 'Use last scan')}
+                            </Button>
+                        </span>
                     </Tooltip>
                 }
                 <Button
@@ -978,7 +986,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                 </Button>
             </DialogActions>
         </Dialog>
-    </ThemeProvider >;
+    </ThemeProvider>;
 }
 
 export default DiscoveryDialog;
