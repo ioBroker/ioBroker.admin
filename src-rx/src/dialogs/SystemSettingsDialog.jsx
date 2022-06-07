@@ -58,6 +58,9 @@ const styles = theme => ({
     },
     content: {
         padding: '0 !important'
+    },
+    selected: {
+        color: theme.palette.mode === 'dark' ? '#FFF !important' : '#222 !important',
     }
 });
 
@@ -432,6 +435,7 @@ class SystemSettingsDialog extends Component {
                 key={tab.title}
                 label={this.props.t(tab.title)}
                 value={tab.name}
+                classes={{ selected: this.props.classes.selected }}
             />);
 
         return <Dialog
@@ -462,10 +466,9 @@ class SystemSettingsDialog extends Component {
                         </Typography>}
                         <Tabs
                             className={this.props.classes.tab}
-                            indicatorColor="primary"
+                            indicatorColor="secondary"
                             value={this.props.currentTab.id || 'tabConfig'}
-                            onChange={(event, newTab) =>
-                                this.onTabChanged(event, newTab)}
+                            onChange={(event, newTab) => this.onTabChanged(event, newTab)}
                             variant="scrollable"
                             scrollButtons="auto"
                         >
