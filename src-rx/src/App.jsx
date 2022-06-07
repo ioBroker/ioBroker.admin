@@ -301,6 +301,7 @@ class App extends Router {
 
             // init translations
             I18n.setTranslations(this.translations);
+            this.setState({ languagesInited: true });
         })();
         I18n.setLanguage((navigator.language || navigator.userLanguage || 'en').substring(0, 2).toLowerCase());
 
@@ -310,7 +311,7 @@ class App extends Router {
         this.expireInSec = null;
         this.expireInSecInterval = null;
         this.expireText = I18n.t('Session expire in %s', '%s');
-        this.adminGuiConfig = {admin: {menu: {}, settings: {}, adapters: {}, login: {}}};
+        this.adminGuiConfig = { admin: {menu: {}, settings: {}, adapters: {}, login: {}} };
 
         if (!query.login) {
             let drawerState = window.localStorage.getItem('App.drawerState');
@@ -405,10 +406,11 @@ class App extends Router {
             const theme = this.createTheme();
             this.state = {
                 login: true,
+                languagesInited: false,
                 theme,
                 themeName: this.getThemeName(theme),
                 themeType: this.getThemeType(theme)
-            }
+            };
         }
     }
 
@@ -1520,6 +1522,14 @@ class App extends Router {
                 <div style={{color: '#F88', fontSize: 14, marginTop: 20}}>{message}</div>
                 <pre style={{color: '#F88', fontSize: 12, fontFamily: 'monospace', textAlign: 'left', marginTop: 20, padding: 20}}>{(stack || '').split('\n').join((line, i) => <div key={i}>{line}<br/></div>)}</pre>
             </div>;
+        }
+
+        if (!this.state.languagesInited) {
+            return <StyledEngineProvider injectFirst><ThemeProvider theme={this.state.theme}>
+                {window.vendorPrefix === 'PT' ? <LoaderPT theme={this.state.themeType}/> :null}
+                {window.vendorPrefix && window.vendorPrefix !== 'PT' && window.vendorPrefix !== '@@vendorPrefix@@' ? <LoaderVendor theme={this.state.themeType}/> :null}
+                {!window.vendorPrefix || window.vendorPrefix === '@@vendorPrefix@@' ? <Loader theme={this.state.themeType} /> : null}
+            </ThemeProvider></StyledEngineProvider>;
         }
 
         if (this.state.login) {

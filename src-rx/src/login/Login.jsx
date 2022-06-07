@@ -98,7 +98,7 @@ class Login extends Component {
             debugger;
             window.location = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
         }
-        const style = window.loginBackgroundColor ? {background: '#00000000'} : {};
+        const style = window.loginBackgroundColor && window.loginBackgroundColor !== 'inherit' ? { background: '#00000000' } : {};
 
         return <Paper component="main" className={classes.root} style={style}>
             <Paper className={classes.paper}>

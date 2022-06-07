@@ -1284,9 +1284,6 @@ class Adapters extends Component {
 
                         const _daysAgo10 = daysAgo % 100 <= 10 || daysAgo % 100 >= 20 ? daysAgo % 10 : 5;
 
-                        if (value === 'habpanel') {
-                            debugger;
-                        }
                         this.cache.adapters[value] = {
                             title,
                             desc: adapter.desc ? adapter.desc[this.props.lang] || adapter.desc['en'] || adapter.desc : '',
