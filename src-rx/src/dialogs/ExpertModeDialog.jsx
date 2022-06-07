@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
+
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -150,7 +151,9 @@ export const expertModeDialogFunc = (boolSettings, themeType, func, buttonIcon) 
         node.id = 'renderModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
+    const root = createRoot(node);
+
+    return root.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
     <ExpertModeDialog themeType={themeType} buttonIcon={buttonIcon} boolSettings={boolSettings} func={func} />
-    </ThemeProvider></StyledEngineProvider>, node);
+    </ThemeProvider></StyledEngineProvider>);
 }

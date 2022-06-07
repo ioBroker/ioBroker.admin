@@ -58,7 +58,6 @@ class ConfigAutocomplete extends ConfigGeneric {
             freeSolo={!!this.props.schema.freeSolo}
             value={item}
             // autoComplete
-            //getOptionSelected={(option, value) => option.value === value.value}
             onInputChange={e => {
                 if (e) {
                     const val = e.target.value;

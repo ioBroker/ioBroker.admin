@@ -128,7 +128,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
             .sort()
             .flat()
             .map(el => {
-                const adapter = repository[el]
+                const adapter = repository[el];
                 if (!adapter?.controller) {
                     const parts = (adapter.extIcon || adapter.meta || adapter.readme || '').toString().split('/');
                     return {
@@ -149,6 +149,8 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
         setAutocompleteValue(null);
         setUrl('');
     };
+
+    const _list = currentTab !== 'URL' ? list() : null;
 
     return <Dialog
         onClose={onClose}
@@ -191,15 +193,14 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                         <Autocomplete
                             fullWidth
                             value={autocompleteValue}
-                            getOptionSelected={(option, value) => option.name === value.name}
-                            onChange={(_, e) => setAutocompleteValue(e)}
-                            options={list()}
+                            onChange={(_, newValue) => setAutocompleteValue(newValue)}
+                            options={_list}
                             getOptionLabel={option => option.name}
                             renderInput={params => {
                                 const _params = {...params};
                                 _params.InputProps = _params.InputProps || {};
                                 _params.InputProps.startAdornment = <InputAdornment position="start">
-                                    <Icon src={autocompleteValue && autocompleteValue.icon} className={classes.listIcon}/>
+                                    <Icon src={autocompleteValue?.icon || ''} className={classes.listIcon}/>
                                 </InputAdornment>;
 
                                 return <TextField
@@ -208,16 +209,10 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                                     label={I18n.t('Select adapter')}
                                 />;
                             }}
-                            renderTags={options => options.map(option =>
-                                <>
-                                    <Icon src={options.icon} className={classes.listIconWithMargin}/>
-                                    {option.name}
-                                </>)
-                            }
-                            renderOption={option => <>
-                                <Icon src={option.icon}  className={classes.listIconWithMargin}/>
+                            renderOption={(props, option) => <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                                <Icon src={option.icon || ''}  className={classes.listIconWithMargin}/>
                                 {option.name}
-                            </>}
+                            </Box>}
                         />
                     </div>
                     <div style={{
@@ -247,21 +242,20 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                         <Autocomplete
                             fullWidth
                             value={autocompleteValue}
-                            getOptionSelected={(option, value) => option.name === value.name}
                             getOptionDisabled={option => option.nogit}
-                            renderOption={option => <div>
-                                <Icon src={option.icon}  className={classes.listIcon}/>
+                            renderOption={(props, option) => <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                                <Icon src={option.icon || ''}  className={classes.listIconWithMargin}/>
                                 {option.name}
                                 {option.nogit && <div className={classes.errorTextNoGit}>{I18n.t('This adapter cannot be installed from git as must be built before installation.')}</div>}
-                            </div>}
-                            onChange={(_, e) => setAutocompleteValue(e)}
-                            options={list()}
+                            </Box>}
+                            onChange={(_, newValue) => setAutocompleteValue(newValue)}
+                            options={_list}
                             getOptionLabel={option => option.name}
                             renderInput={params => {
                                 const _params = {...params};
                                 _params.InputProps = _params.InputProps || {};
                                 _params.InputProps.startAdornment = <InputAdornment position="start">
-                                    <Icon src={autocompleteValue && autocompleteValue.icon} className={classes.listIconWithMargin}/>
+                                    <Icon src={autocompleteValue?.icon || ''} className={classes.listIconWithMargin}/>
                                 </InputAdornment>;
 
                                 return <TextField
@@ -270,12 +264,6 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                                     label={I18n.t('Select adapter')}
                                 />;
                             }}
-                            renderTags={options => options.map(option =>
-                                <>
-                                    <Icon src={options.icon} className={classes.listIconWithMargin}/>
-                                    {option.name}
-                                </>)
-                            }
                         />
                     </div>
                     <div style={{

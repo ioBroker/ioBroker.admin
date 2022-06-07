@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -336,7 +336,9 @@ export const instanceFilterDialogCallback = (cb, filterMode, filterStatus, getMo
         node.id = 'renderModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
-    <InstanceFilterDialog cb={cb} getModeIcon={getModeIcon} filterMode={filterMode} filterStatus={filterStatus} />
-    </ThemeProvider></StyledEngineProvider>, node);
+    const root = createRoot(node);
+
+    return root.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
+        <InstanceFilterDialog cb={cb} getModeIcon={getModeIcon} filterMode={filterMode} filterStatus={filterStatus} />
+    </ThemeProvider></StyledEngineProvider>);
 }

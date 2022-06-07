@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import clsx from 'clsx';
 
 import Button from '@mui/material/Button';
@@ -392,7 +392,9 @@ export const hostWarningDialogFunc = (message, dateFormat, themeType, themeName,
         node.id = 'renderModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
+    const root = createRoot(node);
+
+    return root.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
     <HostWarningDialog instances={instances} message={message} themeName={themeName} themeType={themeType} dateFormat={dateFormat} ackCallback={ackCallback} />
-    </ThemeProvider></StyledEngineProvider>, node);
+    </ThemeProvider></StyledEngineProvider>);
 }

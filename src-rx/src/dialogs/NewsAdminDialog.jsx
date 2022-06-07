@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import semver from 'semver';
 
 import Button from '@mui/material/Button';
@@ -360,7 +360,9 @@ export const newsAdminDialogFunc = (newsArr, current, themeName, themeType, call
         node.id = 'renderModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
+    const root = createRoot(node);
+
+    return root.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
     <NewsAdminDialog newsArr={newsArr} themeName={themeName} themeType={themeType} current={current} callback={callback} />
-    </ThemeProvider></StyledEngineProvider>, node);
+    </ThemeProvider></StyledEngineProvider>);
 }

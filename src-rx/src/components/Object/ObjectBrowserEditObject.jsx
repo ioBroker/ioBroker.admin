@@ -473,10 +473,9 @@ class ObjectBrowserEditObject extends Component {
                                 fullWidth
                                 disabled={disabled}
                                 value={json.common.role}
-                                getOptionSelected={(option, value) => option.name === value.name}
                                 onChange={(_, e) => this.setCommonItem(json, 'role', e)}
                                 options={roleArray}
-                                renderInput={(params) => <TextField variant="standard" {...params} label={t('Role')} />}
+                                renderInput={params => <TextField variant="standard" {...params} label={t('Role')} />}
                             />
                             {this.buttonRemoveKey('role', () => this.removeCommonItem(json, 'role'))}
                         </div> :

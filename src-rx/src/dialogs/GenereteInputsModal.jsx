@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import clsx from 'clsx';
 
 import Button from '@mui/material/Button';
@@ -369,7 +369,9 @@ export const GenerateInputsFunc = (themeType, themeName, socket, newInstances, o
         node.id = 'renderDiscoveryModal';
         document.body.appendChild(node);
     }
-    return ReactDOM.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
+    const root = createRoot(node);
+
+    return root.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
     <GenerateInputsModal onCloseModal={onCloseModal} newInstances={newInstances} onApplyModal={onApplyModal} themeName={themeName} themeType={themeType} socket={socket} />
-    </ThemeProvider></StyledEngineProvider>, node);
+    </ThemeProvider></StyledEngineProvider>);
 }
