@@ -35,7 +35,7 @@ import IconFx from '@iobroker/adapter-react-v5/icons/IconFx';
 import DialogSelectID from '@iobroker/adapter-react-v5/Dialogs/SelectID';
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 import I18n from '@iobroker/adapter-react-v5/i18n';
-import copy from "@iobroker/adapter-react-v5/Components/copy-to-clipboard";
+import copy from '@iobroker/adapter-react-v5/Components/copy-to-clipboard';
 import { FormControl, InputLabel, MenuItem, Select, Tooltip, Autocomplete } from '@mui/material';
 import UploadImage from '../UploadImage';
 

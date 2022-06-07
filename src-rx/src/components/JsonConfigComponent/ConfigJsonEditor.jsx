@@ -57,7 +57,7 @@ class ConfigJsonEditor extends ConfigGeneric {
                     size="small"
                     variant="outlined"
                     onClick={() => this.setState({ showSelectId: true })}
-                >{I18n.t('Json editor')}</Button>
+                >{I18n.t('ra_JSON editor')}</Button>
             </div>
             {showSelectId ? <CustomModal
                 title={this.getText(schema.label)}

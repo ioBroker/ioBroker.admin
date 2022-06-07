@@ -18,7 +18,7 @@ import { makeStyles } from '@mui/styles';
 import theme from '@iobroker/adapter-react-v5/Theme';
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 import ExpertIcon from '@iobroker/adapter-react-v5/icons/IconExpert';
-import CheckIcon from "@mui/icons-material/Check";
+import CheckIcon from '@mui/icons-material/Check';
 
 let node = null;
 

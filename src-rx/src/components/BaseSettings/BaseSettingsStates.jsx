@@ -15,10 +15,10 @@ import Tooltip from '@mui/material/Tooltip';
 import FormControl from '@mui/material/FormControl';
 import Paper from  '@mui/material/Paper';
 import FormHelperText from '@mui/material/FormHelperText';
-import Switch from "@mui/material/Switch";
+import Switch from '@mui/material/Switch';
 
 import DialogConfirm from '@iobroker/adapter-react-v5/Dialogs/Confirm';
-import FormGroup from "@mui/material/FormGroup";
+import FormGroup from '@mui/material/FormGroup';
 
 const styles = theme => ({
     paper: {

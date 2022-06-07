@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
 import ConfigGeneric from './ConfigGeneric';
-import {TextField} from "@mui/material";
+import { TextField } from '@mui/material';
 
 const styles = theme => ({
     fullWidth: {

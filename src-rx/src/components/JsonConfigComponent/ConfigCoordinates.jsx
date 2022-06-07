@@ -30,10 +30,10 @@ class ConfigCoordinates extends ConfigGeneric {
         return this.props.socket.getSystemConfig()
             .then(obj => {
                 if (obj && obj.common && (obj.common.longitude || obj.common.latitude)) {
-                    window.alert(I18n.t('Used system settings'));
-                    this.setState({value: obj.common.latitude + (this.props.schema.divider || ',') + obj.common.longitude});
+                    window.alert(I18n.t('ra_Used system settings'));
+                    this.setState({ value: obj.common.latitude + (this.props.schema.divider || ',') + obj.common.longitude });
                 } else {
-                    window.alert(I18n.t('Cannot determine position: System settings are empty and GPS detection is disabled in browser'));
+                    window.alert(I18n.t('ra_Cannot determine position: System settings are empty and GPS detection is disabled in browser'));
                 }
             });
     }

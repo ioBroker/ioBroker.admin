@@ -43,7 +43,7 @@ class ConfigCheckbox extends ConfigGeneric {
             label={this.getText(this.props.schema.label)}
         />
         <FormHelperText className={this.props.classes.error}>{
-            error ? (this.props.schema.validatorErrorText ? I18n.t(this.props.schema.validatorErrorText) : I18n.t('Error')) :
+            error ? (this.props.schema.validatorErrorText ? I18n.t(this.props.schema.validatorErrorText) : I18n.t('ra_Error')) :
                 null}</FormHelperText>
         {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
         </FormControl>

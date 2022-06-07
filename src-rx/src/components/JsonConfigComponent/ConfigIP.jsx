@@ -36,10 +36,10 @@ class ConfigIP extends ConfigGeneric {
                 }
                 ips.forEach(item => {
                     if (item.address === '0.0.0.0') {
-                        item.name = '[IPv4] 0.0.0.0 - ' + I18n.t('Listen on all IPs');
+                        item.name = '[IPv4] 0.0.0.0 - ' + I18n.t('ra_Listen on all IPs');
                     } else
                     if (item.address === '::') {
-                        item.name = '[IPv6] :: - ' + I18n.t('Listen on all IPs');
+                        item.name = '[IPv6] :: - ' + I18n.t('ra_Listen on all IPs');
                     }
                 });
                 this.setState({ips});

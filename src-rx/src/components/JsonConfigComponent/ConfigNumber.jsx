@@ -86,10 +86,10 @@ class ConfigNumber extends ConfigGeneric {
         } else {
             if (!error && this.state._value !== null && this.state._value !== undefined) {
                 if (this.props.schema.min !== undefined && this.state._value < this.props.schema.min) {
-                    error = I18n.t('Too small');
+                    error = I18n.t('ra_Too small');
                 }
                 if (this.props.schema.max !== undefined && this.state._value > this.props.schema.max) {
-                    error = I18n.t('Too big');
+                    error = I18n.t('ra_Too big');
                 }
             }
 
@@ -118,16 +118,16 @@ class ConfigNumber extends ConfigGeneric {
                     const _value = e.target.value;
                     if (isFinite(_value)) {
                         if (this.props.schema.min !== undefined && parseFloat(_value) < this.props.schema.min) {
-                            this.onError(this.props.attr, I18n.t('Too small'));
+                            this.onError(this.props.attr, I18n.t('ra_Too small'));
                         } else if (this.props.schema.max !== undefined && parseFloat(_value) > this.props.schema.max) {
-                            this.onError(this.props.attr, I18n.t('Too big'));
+                            this.onError(this.props.attr, I18n.t('ra_Too big'));
                         } else if (_value === '-' || isNaN(parseFloat(_value))) {
-                            this.onError(this.props.attr, I18n.t('Not a number'));
+                            this.onError(this.props.attr, I18n.t('ra_Not a number'));
                         } else {
                             this.onError(this.props.attr); // clear error
                         }
                     } else if (_value !== '') {
-                        this.onError(this.props.attr, I18n.t('Not a number'));
+                        this.onError(this.props.attr, I18n.t('ra_Not a number'));
                     } else {
                         this.onError(this.props.attr); // clear error
                     }

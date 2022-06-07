@@ -1,7 +1,7 @@
 /* eslint-disable array-callback-return */
 import React, { Component, Fragment, createRef } from 'react';
 import semver from 'semver';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { withStyles } from '@mui/styles';
 
@@ -176,8 +176,8 @@ const styles = theme => ({
     },
     updateAllIcon: {
         position: 'absolute',
-        top: 3,
-        left: 3,
+        top: 8,
+        left: 8,
         opacity: 0.4,
         color: theme.palette.mode === 'dark' ? '#aad5ff' : '#007fff'
     },

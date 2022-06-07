@@ -26,8 +26,8 @@ import CloseIcon from '@mui/icons-material/Close';
 // icons
 import IntroCard from '../components/IntroCard';
 import UploadImage from '../components/UploadImage';
-import AddIcon from "@mui/icons-material/Add";
-import CheckIcon from "@mui/icons-material/Check";
+import AddIcon from '@mui/icons-material/Add';
+import CheckIcon from '@mui/icons-material/Check';
 
 
 const styles = theme => ({

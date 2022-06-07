@@ -27,7 +27,7 @@ import SettingsIcon from '@mui/icons-material/Lens';
 import FolderIcon from '@mui/icons-material/Folder';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import ListIcon from '@mui/icons-material/List';
-import {FaFilter as FilterListIcon} from 'react-icons/fa';
+import { FaFilter as FilterListIcon } from 'react-icons/fa';
 
 import amber from '@mui/material/colors/amber';
 import blue from '@mui/material/colors/blue';

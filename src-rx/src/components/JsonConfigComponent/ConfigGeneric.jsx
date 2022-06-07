@@ -13,9 +13,9 @@ import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 
 class ConfigGeneric extends Component {
     static DIFFERENT_VALUE = '__different__';
-    static DIFFERENT_LABEL  = I18n.t('__different__');
+    static DIFFERENT_LABEL  = I18n.t('ra___different__');
     static NONE_VALUE = '';
-    static NONE_LABEL  = I18n.t('none');
+    static NONE_LABEL  = I18n.t('ra_none');
     static AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
     constructor(props) {
@@ -154,10 +154,10 @@ class ConfigGeneric extends Component {
         }
 
         return <ConfirmDialog
-            title={ this.getText(confirm.title) || I18n.t('Please confirm') }
+            title={ this.getText(confirm.title) || I18n.t('ra_Please confirm') }
             text={ this.getText(confirm.text) }
-            ok={ this.getText(confirm.ok) || I18n.t('Ok') }
-            cancel={ this.getText(confirm.cancel) || I18n.t('Cancel') }
+            ok={ this.getText(confirm.ok) || I18n.t('ra_Ok') }
+            cancel={ this.getText(confirm.cancel) || I18n.t('ra_Cancel') }
             icon={icon}
             onClose={isOk =>
                 this.setState({ confirmDialog: false}, () => {

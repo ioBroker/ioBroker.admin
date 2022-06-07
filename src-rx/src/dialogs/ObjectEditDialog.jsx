@@ -11,7 +11,7 @@ import MonacoEditor from 'react-monaco-editor';
 
 // Icons
 import CloseIcon from '@mui/icons-material/Close';
-import CheckIcon from "@mui/icons-material/Check";
+import CheckIcon from '@mui/icons-material/Check';
 
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 

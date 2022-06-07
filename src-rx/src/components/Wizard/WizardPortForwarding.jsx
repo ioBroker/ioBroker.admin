@@ -8,7 +8,7 @@ import Paper from  '@mui/material/Paper';
 
 import IconCloud from '@mui/icons-material/Public';
 import IconCloudPro from '@mui/icons-material/Language';
-import IconCheck from "@mui/icons-material/Check";
+import IconCheck from '@mui/icons-material/Check';
 
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 

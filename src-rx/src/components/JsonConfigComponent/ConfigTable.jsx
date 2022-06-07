@@ -284,7 +284,7 @@ class ConfigTable extends ConfigGeneric {
                                     variant="standard"
                                     ref={this.filterRefs[headCell.attr]}
                                     onChange={() => this.applyFilter()}
-                                    title={I18n.t('You can filter entries by entering here some text')}
+                                    title={I18n.t('ra_You can filter entries by entering here some text')}
                                     InputProps={{
                                         endAdornment: this.filterRefs[headCell.attr]?.current?.children[0]?.children[0]?.value && <InputAdornment position="end">
                                             <IconButton
@@ -303,7 +303,7 @@ class ConfigTable extends ConfigGeneric {
                                 />
                                 : <span className={this.props.classes.headerText}>{this.getText(headCell.title)}</span>}
                             { headCell.filter ? <IconButton
-                                title={I18n.t('Show/hide filter input')}
+                                title={I18n.t('ra_Show/hide filter input')}
                                 size="small"
                                 onClick={() => {
                                     const filterOn = [...this.state.filterOn];
@@ -454,7 +454,7 @@ class ConfigTable extends ConfigGeneric {
                         {this.getText(schema.label)}
                     </Typography>
                 </Toolbar> : null}
-                {!schema.noDelete ? <Tooltip title={doAnyFilterSet ? I18n.t('Cannot add items with set filter') : I18n.t('Add row')}>
+                {!schema.noDelete ? <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')}>
                     <span>
                         <IconButton disabled={!!doAnyFilterSet} onClick={this.onAdd}>
                             <AddIcon />
@@ -477,17 +477,17 @@ class ConfigTable extends ConfigGeneric {
                                     </TableCell>;
                                 })}
                                 {!schema.noDelete && <TableCell align="left" className={classes.buttonCell}>
-                                    {!doAnyFilterSet && !this.state.orderBy ? (i ? <Tooltip title={I18n.t('Move up')}>
+                                    {!doAnyFilterSet && !this.state.orderBy ? (i ? <Tooltip title={I18n.t('ra_Move up')}>
                                         <IconButton size="small" onClick={() => this.onMoveUp(idx)}>
                                             <UpIcon />
                                         </IconButton>
                                     </Tooltip> : <div className={classes.buttonEmpty}/>) : null}
-                                    {!doAnyFilterSet && !this.state.orderBy ? (i < visibleValue.length - 1 ? <Tooltip title={I18n.t('Move down')}>
+                                    {!doAnyFilterSet && !this.state.orderBy ? (i < visibleValue.length - 1 ? <Tooltip title={I18n.t('ra_Move down')}>
                                         <IconButton size="small" onClick={() => this.onMoveDown(idx)}>
                                             <DownIcon />
                                         </IconButton>
                                     </Tooltip> : <div className={classes.buttonEmpty}/> ) : null}
-                                    <Tooltip title={I18n.t('Delete current row')}>
+                                    <Tooltip title={I18n.t('ra_Delete current row')}>
                                         <IconButton size="small" onClick={this.onDelete(idx)}>
                                             <DeleteIcon />
                                         </IconButton>
@@ -499,7 +499,7 @@ class ConfigTable extends ConfigGeneric {
                 {!visibleValue.length && value.length ?
                     <div className={classes.filteredOut}>
                         <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-                            {I18n.t('All items are filtered out')}
+                            {I18n.t('ra_All items are filtered out')}
                             <IconButton
                                 size="small"
                                 onClick={e => this.applyFilter(true)}

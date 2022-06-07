@@ -64,14 +64,14 @@ class ConfigCRON extends ConfigGeneric {
                 >...</Button>
             </div>
             {showDialog ? <DialogCron
-                title={I18n.t('Define schedule')}
+                title={I18n.t('ra_Define schedule')}
                 simple={schema.simple}
                 complex={schema.complex}
                 cron={value}
                 language={I18n.getLanguage()}
                 onClose={() => this.setState({ showDialog: false })}
-                cancel={I18n.t('Cancel')}
-                ok={I18n.t('Ok')}
+                cancel={I18n.t('ra_Cancel')}
+                ok={I18n.t('ra_Ok')}
                 onOk={value =>
                     this.setState({ showDialog: false, value }, () =>
                         this.onChange(attr, value))}

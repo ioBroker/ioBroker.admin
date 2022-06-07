@@ -17,7 +17,7 @@ import Checkbox from  '@mui/material/Checkbox';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import DialogError from '@iobroker/adapter-react-v5/Dialogs/Error';
-import ConfirmDialog from "@iobroker/adapter-react-v5/Dialogs/Confirm";
+import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 import JsonConfigComponent from '../JsonConfigComponent';

@@ -79,7 +79,7 @@ class ConfigSendto extends ConfigGeneric {
                         }
                         this.setState({_error: error});
                     } else {
-                        this.setState({_error: response.error ? I18n.t(response.error) : I18n.t('Error')});
+                        this.setState({_error: response.error ? I18n.t(response.error) : I18n.t('ra_Error')});
                     }
                 } else {
                     if (response?.result && this.props.schema.result && this.props.schema.result[response.result]) {
@@ -92,7 +92,7 @@ class ConfigSendto extends ConfigGeneric {
                         if (response?.result) {
                             window.alert(typeof response.result === 'object' ? JSON.stringify(response.result) : response.result);
                         } else {
-                            window.alert(I18n.t('Ok'));
+                            window.alert(I18n.t('ra_Ok'));
                         }
                     }
                 }
@@ -101,7 +101,7 @@ class ConfigSendto extends ConfigGeneric {
                 if (this.props.schema.error && this.props.schema.error[e.toString()]) {
                     this.setState({_error: this.getText(this.props.schema.error[e.toString()])});
                 } else {
-                    this.setState({_error: I18n.t(e.toString()) || I18n.t('Error')});
+                    this.setState({_error: I18n.t(e.toString()) || I18n.t('ra_Error')});
                 }
             })
             .then(() => this.props.onCommandRunning(false))
@@ -122,10 +122,10 @@ class ConfigSendto extends ConfigGeneric {
         }
 
         return <ConfirmDialog
-            title={ this.getText(confirm.title) || I18n.t('Please confirm') }
+            title={ this.getText(confirm.title) || I18n.t('ra_Please confirm') }
             text={ this.getText(confirm.text) }
-            ok={ this.getText(confirm.ok) || I18n.t('Ok') }
-            cancel={ this.getText(confirm.cancel) || I18n.t('Cancel') }
+            ok={ this.getText(confirm.ok) || I18n.t('ra_Ok') }
+            cancel={ this.getText(confirm.cancel) || I18n.t('ra_Cancel') }
             icon={icon}
             onClose={isOk =>
                 this.setState({ confirmDialog: false}, () =>

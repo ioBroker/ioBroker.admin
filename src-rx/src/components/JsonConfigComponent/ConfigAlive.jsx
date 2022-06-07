@@ -57,9 +57,9 @@ class ConfigAlive extends ConfigGeneric {
         const instance = this.state.instance.replace(/^system.adapter./, '');
         return <div className={Utils.clsx(this.props.classes.root, !this.state.alive && this.props.classes.notAlive)}>
             {this.state.alive ?
-                this.props.schema.textAlive !== undefined ? (this.props.schema.textAlive ? I18n.t(this.props.schema.textAlive, instance) : '') : I18n.t('Instance %s is alive', instance)
+                this.props.schema.textAlive !== undefined ? (this.props.schema.textAlive ? I18n.t(this.props.schema.textAlive, instance) : '') : I18n.t('ra_Instance %s is alive', instance)
                 :
-                this.props.schema.textNotAlive !== undefined ? (this.props.schema.textNotAlive ? I18n.t(this.props.schema.textNotAlive, instance) : '') : I18n.t('Instance %s is not alive', instance)
+                this.props.schema.textNotAlive !== undefined ? (this.props.schema.textNotAlive ? I18n.t(this.props.schema.textNotAlive, instance) : '') : I18n.t('ra_Instance %s is not alive', instance)
             }
         </div>;
     }

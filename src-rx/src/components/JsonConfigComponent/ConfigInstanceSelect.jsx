@@ -43,7 +43,7 @@ class ConfigInstanceSelect extends ConfigGeneric {
 
                 selectOptions.unshift({ label: ConfigGeneric.NONE_LABEL, value: ConfigGeneric.NONE_VALUE });
                 if (this.props.schema.all) {
-                    selectOptions.unshift({ label: I18n.t('all'), value: '*' });
+                    selectOptions.unshift({ label: I18n.t('sch_all'), value: '*' });
                 }
 
                 this.setState({ value: value || '', selectOptions });

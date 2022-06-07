@@ -6,7 +6,7 @@ import JSON5 from 'json5';
 import LinearProgress from '@mui/material/LinearProgress';
 import Tooltip from '@mui/material/Tooltip';
 import Fab from '@mui/material/Fab';
-import PublishIcon from "@mui/icons-material/Publish";
+import PublishIcon from '@mui/icons-material/Publish';
 
 import SaveCloseButtons from '@iobroker/adapter-react-v5/Components/SaveCloseButtons';
 import Router from '@iobroker/adapter-react-v5/Components/Router';

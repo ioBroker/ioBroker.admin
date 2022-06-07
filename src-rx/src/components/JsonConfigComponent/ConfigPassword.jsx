@@ -53,7 +53,7 @@ class ConfigPassword extends ConfigGeneric {
         const _notEqual = !!this.props.schema.repeat && repeatPassword !== password;
         this.setState({value: password, _repeat: repeatPassword, _notEqual}, () => {
             if (_notEqual) {
-                this.onError(this.props.attr, I18n.t('Passwords are not equal!'));
+                this.onError(this.props.attr, I18n.t('ra_Passwords are not equal!'));
             } else {
                 this.onError(this.props.attr); // clear error
                 this.onChange(this.props.attr, password);
@@ -80,7 +80,7 @@ class ConfigPassword extends ConfigGeneric {
                 form: {autoComplete: 'off'},
                 maxLength: this.props.schema.maxLength || this.props.schema.max || undefined
             }}
-            helperText={this.state._notEqual ? I18n.t('Passwords are not equal!') : this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
+            helperText={this.state._notEqual ? I18n.t('ra_Passwords are not equal!') : this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
             InputProps={{endAdornment: this.state.value && this.state.value !== PASSWORD_PLACEHOLDER && this.props.schema.visible ? <InputAdornment position='end'>
                     <IconButton size="large"
                         tabIndex={-1}
@@ -106,13 +106,13 @@ class ConfigPassword extends ConfigGeneric {
                 error={!!error || this.state._notEqual}
                 disabled={!!disabled}
                 onChange={e => this.onChangePassword(undefined, e.target.value)}
-                label={`${this.getText(this.props.schema.label)} (${I18n.t('repeat')})`}
+                label={`${this.getText(this.props.schema.label)} (${I18n.t('ra_repeat')})`}
                 inputProps={{
                     autoComplete: 'new-password',
                     form: {autoComplete: 'off'},
                     maxLength: this.props.schema.maxLength || this.props.schema.max || undefined
                 }}
-                helperText={this.state._notEqual ? I18n.t('Passwords are not equal!') : this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
+                helperText={this.state._notEqual ? I18n.t('ra_Passwords are not equal!') : this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
                 InputProps={{endAdornment: this.state._repeat && this.state._repeat !== PASSWORD_PLACEHOLDER ? <InputAdornment position='end'>
                         <IconButton size="large"
                             tabIndex={-1}

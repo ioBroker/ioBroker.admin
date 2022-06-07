@@ -28,7 +28,7 @@ import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 //Icons
 import {FaCrosshairs as GeoIcon} from 'react-icons/all';
 import PinSVG from '../../assets/pin.svg';
-import IconCheck from "@mui/icons-material/Check";
+import IconCheck from '@mui/icons-material/Check';
 
 const TOOLBAR_HEIGHT = 64;
 const SETTINGS_WIDTH = 300;

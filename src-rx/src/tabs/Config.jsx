@@ -21,7 +21,7 @@ import Icon from '@iobroker/adapter-react-v5/Components/Icon';
 import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 
 import JsonConfig from '../components/JsonConfig';
-import {green, red} from "@mui/material/colors";
+import { green, red } from '@mui/material/colors';
 
 const styles = theme => ({
     root: {
