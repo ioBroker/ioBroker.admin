@@ -12,14 +12,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import i18n from '@iobroker/adapter-react-v5/i18n';
 
 const styles = theme => ({
-    modalWrapper: {
-        position: 'relative',
-        '[class*="MuiPaper-root MuiDialog-paper MuiPaper-elevation24 MuiDialog-paperScrollPaper MuiDialog-paperWidthXl MuiPaper-elevation24 MuiPaper-rounded"]': {
-            backgroundColor: '#f6f6f6'
-        }
-    },
     modalDialog: {
-        minWidth: 400
+        minWidth: 400,
+        maxWidth: 800,
     },
     overflowHidden: {
         display: 'flex',
@@ -52,7 +47,6 @@ const CustomModal = ({ title, fullWidth, help, maxWidth, progress, icon, applyDi
         disableEscapeKeyDown={false}
         onClose={onClose}
         classes={{ paper: classes.modalDialog, /*paper: classes.background*/ }}
-        className={classes.modalWrapper}
     >
         {title && <DialogTitle>{icon ? <Icon className={classes.titleIcon}/> : null}{title}</DialogTitle>}
         <DialogContent className={clsx(overflowHidden ? classes.overflowHidden : null, classes.content)}>

@@ -121,8 +121,8 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
             .then(() => onApply());
     }
 
-    return <CustomModal
-        open={open}
+    return open ? <CustomModal
+        open
         fullWidth
         maxWidth="lg"
         titleButtonApply="add"
@@ -184,7 +184,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
                 }}
             />
         </div>
-    </CustomModal>;
+    </CustomModal> : null;
 }
 
 export default ObjectAddNewObject;

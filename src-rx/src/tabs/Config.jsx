@@ -52,7 +52,7 @@ const styles = theme => ({
         marginRight: 10,
     },
     versionAliveConnected: {
-        color: '#23a623'
+        color: theme.palette.mode === 'dark' ? '#23a623' : '#60ff60',
     },
     versionAliveNotConnected: {
         color: '#a67223'
