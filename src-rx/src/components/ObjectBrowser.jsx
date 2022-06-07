@@ -1486,7 +1486,7 @@ const SCREEN_WIDTHS = {
     ///////////////
     // extra-large: 1920px
     xl: {
-        idWidth: 650, fields: ['name', 'type', 'role', 'room', 'func', 'val', 'buttons', 'changedFrom', 'qualityCode', 'timestamp', 'lastChange'],
+        idWidth: 550, fields: ['name', 'type', 'role', 'room', 'func', 'val', 'buttons', 'changedFrom', 'qualityCode', 'timestamp', 'lastChange'],
         widths: {
             name: 400,
             type: 80,
