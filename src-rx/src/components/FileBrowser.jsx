@@ -287,7 +287,10 @@ const styles = theme => ({
         width: 'calc(100% - 40px)',
         height: 'calc(100% - 40px)',
         position: 'relative',
-        color: theme.palette.mode === 'dark' ? '#222' : '#CCC'
+        color: theme.palette.mode === 'dark' ? '#222' : '#CCC',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     uploadCenterIcon: {
         width: '25%',
@@ -304,12 +307,7 @@ const styles = theme => ({
         right: 30,
     },
     uploadCenterTextAndIcon: {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        height: '30%',
-        width: '50%',
-        margin: '-15% 0 0 -25%',
+
     },
     menuButtonExpertActive: {
         color: '#c00000',
@@ -708,8 +706,9 @@ class FileBrowser extends Component {
 
                     if (!_checkEmpty) {
                         return Promise.all(_folders.filter(item => item.folder).map(item =>
-                            this.browseFolder(item.id, _newFolders, true).catch(error => { })))
-                            .then(() => _newFolders)
+                            this.browseFolder(item.id, _newFolders, true)
+                                .catch(error => { })))
+                        .then(() => _newFolders);
                     } else {
                         return _newFolders;
                     }
@@ -1388,6 +1387,7 @@ class FileBrowser extends Component {
                     onDragLeave={() => this.setState({ uploadFile: true })}
                     onDrop={acceptedFiles => {
                         let count = acceptedFiles.length;
+
                         acceptedFiles.forEach(file => {
                             const reader = new FileReader();
 
@@ -1403,25 +1403,34 @@ class FileBrowser extends Component {
                                 this.uploadFile(id, reader.result)
                                     .then(() => {
                                         if (!--count) {
-                                            const folders = {};
-                                            Object.keys(this.state.folders).forEach(name => {
-                                                if (name !== parentFolder && !name.startsWith(parentFolder + '/')) {
-                                                    folders[name] = this.state.folders[name];
+                                            this.setState({ uploadFile: false }, () => {
+                                                if (this.supportSubscribes) {
+                                                    // open current folder
+                                                    const expanded = [...this.state.expanded];
+                                                    if (!expanded.includes(parentFolder)) {
+                                                        expanded.push(parentFolder);
+                                                        expanded.sort();
+                                                        window.localStorage.setItem('files.expanded', JSON.stringify(expanded));
+                                                    }
+                                                    this.setState({ expanded }, () =>
+                                                        this.select(id));
+                                                } else {
+                                                    setTimeout(() =>
+                                                        this.browseFolder(parentFolder, true)
+                                                            .then(folders => {
+                                                                // open current folder
+                                                                const expanded = [...this.state.expanded];
+                                                                if (!expanded.includes(parentFolder)) {
+                                                                    expanded.push(parentFolder);
+                                                                    expanded.sort();
+                                                                    window.localStorage.setItem('files.expanded', JSON.stringify(expanded));
+                                                                }
+                                                                this.setState({ folders, expanded }, () =>
+                                                                    this.select(id));
+                                                            })
+                                                    , 500);
                                                 }
                                             });
-                                            this.setState({ uploadFile: false, folders }, () =>
-                                                this.browseFolders([...this.state.expanded], folders)
-                                                    .then(folders => {
-                                                        // open current folder
-                                                        const expanded = [...this.state.expanded];
-                                                        if (!expanded.includes(parentFolder)) {
-                                                            expanded.push(parentFolder);
-                                                            expanded.sort();
-                                                            window.localStorage.setItem('files.expanded', JSON.stringify(expanded));
-                                                        }
-                                                        this.setState({ folders, expanded }, () =>
-                                                            this.select(id))
-                                                    }));
                                         }
                                     });
                             };
@@ -1498,23 +1507,32 @@ class FileBrowser extends Component {
         this.setState({ deleteItem: '' }, () =>
             this.deleteRecursive(deleteItem)
                 .then(() => {
+                    const newState = {};
                     const pos = this.state.expanded.indexOf(deleteItem);
                     if (pos !== -1) {
                         const expanded = [...this.state.expanded];
                         expanded.splice(pos, 1);
                         window.localStorage.setItem('files.expanded', JSON.stringify(expanded));
-                        this.setState({ expanded });
+                        newState.expanded = expanded;
                     }
-                    /*let parentFolder = this.findFirstFolder(deleteItem);
-                    const folders = {};
-                    Object.keys(this.state.folders).forEach(name => {
-                        if (name !== parentFolder && !name.startsWith(parentFolder + '/')) {
-                            folders[name] = this.state.folders[name];
-                        }
-                    });
-                    this.setState({ folders }, () =>
-                        this.browseFolders([...this.state.expanded], folders)
-                            .then(folders => this.setState({ folders })));*/
+
+                    if (!this.supportSubscribes) {
+                        let parentFolder = this.findFirstFolder(deleteItem);
+                        const folders = {};
+                        Object.keys(this.state.folders).forEach(name => {
+                            if (name !== parentFolder && !name.startsWith(parentFolder + '/')) {
+                                folders[name] = this.state.folders[name];
+                            }
+                        });
+                        newState.folders = folders;
+
+                        this.setState(newState, () =>
+                            setTimeout(() => this.browseFolders([...this.state.expanded], folders)
+                                .then(folders => this.setState({ folders })), 200));
+
+                    } else {
+                        this.setState(newState);
+                    }
                 })
         );
     }
