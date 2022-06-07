@@ -36,6 +36,9 @@ const styles = theme => ({
         height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
         overflow: 'auto',
     },
+    selected: {
+        color: theme.palette.mode === 'dark' ? '#FFF !important' : '#222 !important',
+    }
 });
 
 class BaseSettingsDialog extends Component {
@@ -240,16 +243,17 @@ class BaseSettingsDialog extends Component {
                 <AppBar position="static">
                     <Tabs
                         value={this.state.currentTab}
-                        onChange={(event, newTab) => this.setState({currentTab: newTab})}
+                        onChange={(event, newTab) => this.setState({ currentTab: newTab })}
                         aria-label="system tabs"
+                        indicatorColor="secondary"
                     >
-                        <Tab label={this.props.t('System')} id={'system-tab'} aria-controls={'simple-tabpanel-0'}/>
-                        <Tab label={this.props.t('Multi-host')} id={'multihost-tab'}
+                        <Tab label={this.props.t('System')} id={'system-tab'} aria-controls={'simple-tabpanel-0'} classes={{ selected: this.props.classes.selected }}/>
+                        <Tab label={this.props.t('Multi-host')} id={'multihost-tab'}  classes={{ selected: this.props.classes.selected }}
                              aria-controls={'simple-tabpanel-1'}/>
-                        <Tab label={this.props.t('Objects')} id={'objects-tab'} aria-controls={'simple-tabpanel-3'}/>
-                        <Tab label={this.props.t('States')} id={'states-tab'} aria-controls={'simple-tabpanel-4'}/>
-                        <Tab label={this.props.t('Log')} id={'log-tab'} aria-controls={'simple-tabpanel-5'}/>
-                        <Tab label={this.props.t('Plugins')} id={'plugins-tab'} aria-controls={'simple-tabpanel-6'}/>
+                        <Tab label={this.props.t('Objects')} id={'objects-tab'} aria-controls={'simple-tabpanel-3'}  classes={{ selected: this.props.classes.selected }}/>
+                        <Tab label={this.props.t('States')} id={'states-tab'} aria-controls={'simple-tabpanel-4'}  classes={{ selected: this.props.classes.selected }}/>
+                        <Tab label={this.props.t('Log')} id={'log-tab'} aria-controls={'simple-tabpanel-5'}  classes={{ selected: this.props.classes.selected }}/>
+                        <Tab label={this.props.t('Plugins')} id={'plugins-tab'} aria-controls={'simple-tabpanel-6'}  classes={{ selected: this.props.classes.selected }}/>
                     </Tabs>
                 </AppBar>
                 {this.state.loading ? <LinearProgress/> : null}
