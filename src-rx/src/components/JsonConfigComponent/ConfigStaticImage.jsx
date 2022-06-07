@@ -14,7 +14,11 @@ const styles = theme => ({
 class ConfigStaticImage extends ConfigGeneric {
     renderItem() {
         let src = this.props.schema.src;
-        if (src && !src.startsWith('.') && !src.startsWith('http')) {
+        if (src && !src.startsWith('.') &&
+            !src.startsWith('http') &&
+            !src.startsWith(`adapter/${this.props.adapterName}/`) &&
+            !src.startsWith(`./adapter/${this.props.adapterName}/`)
+        ) {
             src = `adapter/${this.props.adapterName}/${src}`;
         }
 
