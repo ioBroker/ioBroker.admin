@@ -68,7 +68,7 @@ const DrawerItem = props => {
     }
 
     return <div style={Object.assign({ display: 'flex' }, style || {})}>
-        {!!editList && <Checkbox checked={visible} onChange={editListFunc} />}
+        {!!editList && <Checkbox checked={visible} onClick={editListFunc} />}
         <ListItemButton
             className={clsx({ [classes.selected]: selected }, compact && classes.compactBadge)}
             onClick={onClick}

@@ -1603,6 +1603,7 @@ class App extends Router {
                             </IsVisible>
                             <IsVisible name="admin.appBar.toggleTheme" config={this.adminGuiConfig}>
                                 <ToggleThemeMenu
+                                    size="large"
                                     toggleTheme={this.toggleTheme}
                                     themeName={this.state.themeName}
                                     t={I18n.t} />
