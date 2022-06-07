@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Many GUI fixes done
+
 ### 6.0.0 (2022-06-03)
 * (bluefox) Breaking changes: no admin@v4(material) interface. Only react interface is possible.
 * (bluefox) Breaking changes: older browsers do not supported anymore.
