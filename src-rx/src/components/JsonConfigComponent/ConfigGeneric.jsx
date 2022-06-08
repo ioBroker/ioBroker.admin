@@ -268,7 +268,7 @@ class ConfigGeneric extends Component {
                 this.props.onChange(attr, newValue);
 
                 changed && changed.length && changed.forEach((_attr,  i) =>
-                    setTimeout(() => this.props.onChange(_attr, data[_attr]), i * 50));
+                    setTimeout(() => this.props.onChange(_attr, ConfigGeneric.getValue(data, attr)), i * 50));
             } else {
                 this.props.onChange(data, undefined, () =>
                     changed.length && this.props.forceUpdate(changed, data));

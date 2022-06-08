@@ -21,6 +21,7 @@ import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 import JsonConfigComponent from '../JsonConfigComponent';
+import ConfigGeneric from '../JsonConfigComponent/ConfigGeneric';
 import Utils from '../../Utils';
 
 const styles = theme => ({
@@ -497,15 +498,15 @@ class ObjectCustomEditor extends Component {
                                 console.log(attr + ' => ' + value);
                                 const newValues = JSON.parse(JSON.stringify(this.state.newValues));
                                 newValues[instance] = newValues[instance] || {};
-                                if (this.commonConfig[instance][attr] === value) {
-                                    delete newValues[instance][attr];
+                                if (JSON.stringify(ConfigGeneric.getValue(this.commonConfig[instance], attr)) === JSON.stringify(value)) {
+                                    ConfigGeneric.setValue(newValues[instance], attr, null);
                                     if (!Object.keys(newValues[instance]).length) {
                                         delete newValues[instance];
                                     }
                                 } else {
-                                    newValues[instance][attr] = value;
+                                    ConfigGeneric.setValue(newValues[instance], attr, value);
                                 }
-                                this.setState({newValues, hasChanges: this.isChanged(newValues)}, () =>
+                                this.setState({ newValues, hasChanges: this.isChanged(newValues) }, () =>
                                     this.props.onChange && this.props.onChange(this.state.hasChanges));
                             }}
                         /> : null}
@@ -653,7 +654,7 @@ class ObjectCustomEditor extends Component {
 
                             Object.keys(newValues).forEach(attr => {
                                 // if not different
-                                if (!Array.isArray(newValues[attr])) {
+                                if (!Array.isArray(newValues[attr]) || (newValues[attr][0] && typeof newValues[attr][0] === 'object')) {
                                     obj.common.custom[instance][attr] = newValues[attr];
                                 }
                             });
