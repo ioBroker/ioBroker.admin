@@ -610,15 +610,65 @@ class Adapters extends Component {
                 return -1;
             } else if (a !== 'general' && b === 'general') {
                 return 1;
-            } else if (a > b) {
+            } else if (categories[a].translation > categories[b].translation) {
                 return 1;
-            } else if (a < b) {
+            } else if (categories[a].translation < categories[b].translation) {
                 return -1;
             } else {
                 return 0;
             }
         }).forEach(value =>
             categoriesSorted.push(categories[value]));
+
+        const _titles = {};
+
+        Object.keys(categories).forEach(type =>
+            categories[type].adapters.sort((a, b) => {
+                if (installed[a] && installed[b]) {
+                    if (!_titles[a]) {
+                        let title = repository[a].titleLang || repository[a].title;
+                        if (typeof title === 'object') {
+                            title = title[this.props.lang] || title.en;
+                        }
+                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                        _titles[a] = title.toLowerCase();
+                    }
+                    if (!_titles[b]) {
+                        let title = repository[b].titleLang || repository[b].title;
+                        if (typeof title === 'object') {
+                            title = title[this.props.lang] || title.en;
+                        }
+                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                        _titles[b] = title.toLowerCase();
+                    }
+
+                    return _titles[a] > _titles[b] ? 1 : (_titles[a] < _titles[b] ? -1 : 0);
+                } else if (installed[a]) {
+                    return -1;
+                } else if (installed[b]) {
+                    return 1;
+                } else {
+                    // sort by real language name and not by adapter name
+                    if (!_titles[a]) {
+                        let title = repository[a].titleLang || repository[a].title;
+                        if (typeof title === 'object') {
+                            title = title[this.props.lang] || title.en;
+                        }
+                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                        _titles[a] = title.toLowerCase();
+                    }
+                    if (!_titles[b]) {
+                        let title = repository[b].titleLang || repository[b].title;
+                        if (typeof title === 'object') {
+                            title = title[this.props.lang] || title.en;
+                        }
+                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                        _titles[b] = title.toLowerCase();
+                    }
+
+                    return _titles[a] > _titles[b] ? 1 : (_titles[a] < _titles[b] ? -1 : 0);
+                }
+            }));
 
         let installedList = false;
         try {
@@ -715,7 +765,8 @@ class Adapters extends Component {
                     // BF (2022.02.09)  TODO: Remove all "rebuild" stuff later (when js-controller 4.x will be mainstream)
                     // this.rebuildSupported = false;// rebuild || false; Rebuild is no more supported from js-controller 4.0
                     this.calculateInfo(instances, ratings, hostData);
-                });
+                })
+                .catch(error => window.alert('Cannot get adapters info: ' + error));
         } else {
             return Promise.resolve();
         }
@@ -883,7 +934,6 @@ class Adapters extends Component {
                         const name = !checkVersion ? dependency : keys ? keys[0] : null;
 
                         if (result && name) {
-
                             const installed = this.state.installed[name];
 
                             try {
@@ -1291,7 +1341,7 @@ class Adapters extends Component {
                         if (typeof title === 'object') {
                             title = title[this.props.lang] || title.en;
                         }
-                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '')
+                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
 
                         const _daysAgo10 = daysAgo % 100 <= 10 || daysAgo % 100 >= 20 ? daysAgo % 10 : 5;
 
@@ -1321,6 +1371,8 @@ class Adapters extends Component {
         const adapters = this.cache.adapters;
         const installed = this.state.installed;
 
+        const _titles = {};
+
         this.cache.listOfVisibleAdapter.sort((a, b) => {
             if (sortPopularFirst) {
                 return repo[b].stat - repo[a].stat;
@@ -1332,23 +1384,71 @@ class Adapters extends Component {
                     return 1;
                 }
                 if (adapters[a].daysAgo === adapters[b].daysAgo) {
-                    return a > b ? 1 : (a < b ? -1 : 0);
+                    if (!_titles[a]) {
+                        let title = adapters[a].titleLang || adapters[a].title;
+                        if (typeof title === 'object') {
+                            title = title[this.props.lang] || title.en;
+                        }
+                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                        _titles[a] = title.toLowerCase();
+                    }
+                    if (!_titles[b]) {
+                        let title = adapters[b].titleLang || adapters[b].title;
+                        if (typeof title === 'object') {
+                            title = title[this.props.lang] || title.en;
+                        }
+                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                        _titles[a] = title.toLowerCase();
+                    }
+
+                    return _titles[a] > _titles[b] ? 1 : (_titles[a] < _titles[b] ? -1 : 0);
                 } else {
                     return adapters[a].daysAgo - adapters[b].daysAgo;
                 }
             } else {
                 if (installed[a] && installed[b]) {
-                    return a > b ? 1 : (a < b ? -1 : 0);
+                    if (!_titles[a]) {
+                        let title = adapters[a].titleLang || adapters[a].title;
+                        if (typeof title === 'object') {
+                            title = title[this.props.lang] || title.en;
+                        }
+                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                        _titles[a] = title.toLowerCase();
+                    }
+                    if (!_titles[b]) {
+                        let title = adapters[b].titleLang || adapters[b].title;
+                        if (typeof title === 'object') {
+                            title = title[this.props.lang] || title.en;
+                        }
+                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                        _titles[b] = title.toLowerCase();
+                    }
+
+                    return _titles[a] > _titles[b] ? 1 : (_titles[a] < _titles[b] ? -1 : 0);
                 } else if (installed[a]) {
                     return -1;
                 } else if (installed[b]) {
                     return 1;
                 } else {
                     // sort by real language name and not by adapter name
-                    const aName = (adapters[a].title || a).toLowerCase();
-                    const bName = (adapters[b].title || b).toLowerCase();
+                    if (!_titles[a]) {
+                        let title = adapters[a].titleLang || adapters[a].title;
+                        if (typeof title === 'object') {
+                            title = title[this.props.lang] || title.en;
+                        }
+                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                        _titles[a] = title.toLowerCase();
+                    }
+                    if (!_titles[b]) {
+                        let title = adapters[b].titleLang || adapters[b].title;
+                        if (typeof title === 'object') {
+                            title = title[this.props.lang] || title.en;
+                        }
+                        title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                        _titles[b] = title.toLowerCase();
+                    }
 
-                    return aName > bName ? 1 : (aName < bName ? -1 : 0);
+                    return _titles[a] > _titles[b] ? 1 : (_titles[a] < _titles[b] ? -1 : 0);
                 }
             }
         });
