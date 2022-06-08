@@ -481,7 +481,7 @@ class Drawer extends Component {
                         :
                         <Avatar
                             onClick={() => handleNavigation('easy')}
-                            className={clsx((this.props.themeName === 'colored' || this.props.themeName === 'blue') && classes.logoWhite, classes.logoSize)}
+                            className={classes.logoSize}
                             alt="ioBroker"
                             src="img/no-image.png"
                         />

@@ -50,16 +50,15 @@ class AdapterDeletionDialog extends Component {
                 deleteCustomSupported && this.props.socket.getObject('system.adapter.' + this.props.adapter)
                     .then(obj => {
                         if (obj && obj.common) {
-                            obj.common.supportCustoms && this.setState({deleteCustomSupported: obj.common.supportCustoms})
+                            obj.common.supportCustoms && this.setState({ deleteCustomSupported: obj.common.supportCustoms })
                         } else {
-                            this.setState({deleteCustomSupported: true});
+                            this.setState({ deleteCustomSupported: true });
                         }
                     });
             });
     }
 
     render() {
-
         const { classes } = this.props;
 
         return <Dialog
