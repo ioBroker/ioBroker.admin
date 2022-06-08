@@ -211,6 +211,7 @@ class ObjectCustomDialog extends MobileDialog {
                             window.localStorage.setItem('App.objectCustomTab', newTab);
                         }}
                         classes={{ indicator: this.props.classes.tabsIndicator }}
+                        indicatorColor="secondary"
                     >
                         <Tab
                             disabled={this.state.progressRunning}

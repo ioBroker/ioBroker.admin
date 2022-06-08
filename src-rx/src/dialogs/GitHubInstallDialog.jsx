@@ -87,7 +87,10 @@ const useStyles = makeStyles(theme => ({
         width: 24,
         height: 24,
         marginRight: 8,
-    }
+    },
+    tabSelected: {
+        color: theme.palette.mode === 'dark' ? theme.palette.secondary.contrastText : '#FFFFFF !important',
+    },
 }));
 
 // some older browsers do not have flat
@@ -167,10 +170,32 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                             setCurrentTab(newTab);
                         }}
                         variant="fullWidth"
+                        indicatorColor="secondary"
                     >
-                        <Tab label={t('From npm')} wrapped icon={<img src={npmIcon} alt="npm" width={24} height={24} />} {...a11yProps(0)} value="npm" />
-                        <Tab label={t('From github')} wrapped icon={<GithubIcon style={{ width: 24, height: 24 }} width={24} height={24} />} {...a11yProps(0)} value="GitHub" />
-                        <Tab label={t('Custom')} wrapped icon={<UrlIcon width={24} height={24} />} {...a11yProps(1)} value="URL" />
+                        <Tab
+                            label={t('From npm')}
+                            wrapped
+                            classes={{ selected: classes.tabSelected }}
+                            icon={<img src={npmIcon} alt="npm" width={24} height={24} />}
+                            {...a11yProps(0)}
+                            value="npm"
+                        />
+                        <Tab
+                            label={t('From github')}
+                            wrapped
+                            classes={{ selected: classes.tabSelected }}
+                            icon={<GithubIcon style={{ width: 24, height: 24 }} width={24} height={24} />}
+                            {...a11yProps(0)}
+                            value="GitHub"
+                        />
+                        <Tab
+                            label={t('Custom')}
+                            wrapped
+                            classes={{ selected: classes.tabSelected }}
+                            icon={<UrlIcon width={24} height={24} />}
+                            {...a11yProps(1)}
+                            value="URL"
+                        />
                     </Tabs>
                 </AppBar>
                 <div className={classes.title}>{t('Install or update the adapter from %s', currentTab || 'npm')}

@@ -37,10 +37,12 @@ class ConfigTabs extends ConfigGeneric {
         const items = this.props.schema.items;
 
         return <div className={this.props.classes.tabs}>
-            <Tabs value={this.state.tab} onChange={(e, tab) => {
-                window.localStorage.setItem((this.props.dialogName || 'App') + '.' + this.props.adapterName, tab);
-                this.setState({tab});
-            }}>
+            <Tabs
+                value={this.state.tab}
+                onChange={(e, tab) => {
+                    window.localStorage.setItem((this.props.dialogName || 'App') + '.' + this.props.adapterName, tab);
+                    this.setState({tab});
+                }}>
                 {Object.keys(items).map(name => {
                     let disabled;
                     if (this.props.custom) {
