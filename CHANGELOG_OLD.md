@@ -1,5 +1,11 @@
 ## 5.3.7 (2022-04-10)
 * (bluefox) Changed the charts rendering
+## 5.4.7 (2022-05-09)
+* (bluefox) Reload GUI if new admin version detected
+
+## 5.3.7 (2022-04-10)
+* (bluefox) Changed the charts rendering
+
 ## 5.4.6 (2022-05-09)
 * (bluefox) Corrected readLogs command
 * (bluefox) Corrected file deletion
