@@ -23,7 +23,20 @@ class ConfigCertificateSelect extends ConfigGeneric {
         let selectOptions = await this.props.socket.getCertificates();
 
         selectOptions = selectOptions
-            .filter(el => this.props.attr.toLowerCase().endsWith(el.type))
+            .filter(el => {
+                const name = this.props.attr.toLowerCase();
+
+                if (name.includes(el.type)) {
+                    return true;
+                } else if (el.type === 'public' && name.includes('key')) {
+                    return true;
+                } else if (el.type === 'private' && name.includes('cert')) {
+                    return true;
+                } else if (el.type === 'chained' && (name.includes('chain') || name.includes('ca'))) {
+                    return true;
+                }
+                return false;
+            })
             .map(el => ({label: el.name, value: el.name}));
 
         selectOptions.unshift({label: ConfigGeneric.NONE_LABEL, value: ConfigGeneric.NONE_VALUE});
