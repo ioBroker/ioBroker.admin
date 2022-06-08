@@ -102,7 +102,10 @@ class ConfigNumber extends ConfigGeneric {
 
             const isNumber = this.state._value !== null &&
                 this.state._value !== undefined &&
-                (typeof this.state._value === 'number' || this.state._value.trim() === parseFloat(this.state._value).toString());
+                (typeof this.state._value === 'number' ||
+                    (typeof this.state._value === 'string' &&
+                     this.state._value.trim() === parseFloat(this.state._value).toString())
+                );
 
             return <FormControl variant="standard" className={this.props.classes.control}>
                 <TextField
