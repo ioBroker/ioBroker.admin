@@ -138,53 +138,37 @@ const getHostDescriptionAll = (id, t, classes, hostsData) => {
     if (!hostData) {
         return [<Skeleton />];
     }
+
     if (typeof hostData === 'string') {
         return hostData;
     }
+
     return [
         <ul className={classes.ul}>
             {
-                hostData && typeof hostData === 'object' && Object.keys(hostData).map(value =>
+                hostData && typeof hostData === 'object' ? Object.keys(hostData).map(value =>
                     <li key={value}>
-                        {hostData && typeof hostData === 'object' ?
-                            <span className={classes.black}>
-                                <span className={classes.bold}>{t(value)}: </span>
-                                {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
-                            </span>
-                            :
-                            <Skeleton />
-                        }
-                    </li>)
+                        <span className={classes.black}>
+                            <span className={classes.bold}>{t(value)}: </span>
+                            {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
+                        </span>
+                    </li>) : <Skeleton />
             }
         </ul>,
         <div className={classes.wrapperInfo}>
             <div className={classes.marginRight}>
-                {hostData && typeof hostData === 'object' && Object.keys(hostData).map((value, idx) => idx < 5 &&
-                    <div
-                        className={classes.wrapperBlockItem} key={value}>
-                        {hostData && typeof hostData === 'object' ?
-                            <>
-                                <span className={clsx(classes.bold, classes.nowrap)}>{t(value)}: </span>
-                                {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
-                            </>
-                            :
-                            <Skeleton />
-                        }
-                    </div>)}
+                {hostData && typeof hostData === 'object' ? Object.keys(hostData).map((value, idx) => idx < 5 &&
+                    <div className={classes.wrapperBlockItem} key={value}>
+                        <span className={clsx(classes.bold, classes.nowrap)}>{t(value)}: </span>
+                        {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
+                    </div>) : <Skeleton />}
             </div>
             <div className={classes.marginRight}>
-                {hostData && typeof hostData === 'object' && Object.keys(hostData).map((value, idx) => idx > 4 && idx < 10 &&
-                    <div
-                        className={classes.wrapperBlockItem} key={value}>
-                        {hostData && typeof hostData === 'object' ?
-                            <>
-                                <span className={clsx(classes.bold, classes.nowrap)}>{t(value)}: </span>
-                                {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
-                            </>
-                            :
-                            <Skeleton />
-                        }
-                    </div>)}
+                {hostData && typeof hostData === 'object' ? Object.keys(hostData).map((value, idx) => idx > 4 && idx < 10 &&
+                    <div className={classes.wrapperBlockItem} key={value}>
+                        <span className={clsx(classes.bold, classes.nowrap)}>{t(value)}: </span>
+                        {(formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')}
+                    </div>) : <Skeleton />}
             </div>
             <div className={classes.marginRight}>
                 {hostData && typeof hostData === 'object' && Object.keys(hostData).map((value, idx) => idx > 10 &&
@@ -376,6 +360,8 @@ const Hosts = ({
             os={platform}
             openHostUpdateDialog={() => openHostUpdateDialog(name)}
             description={getHostDescriptionAll(_id, t, classes, hostsData)[0]}
+            hostData={hostsData[_id]}
+            formatInfo={formatInfo}
             available={repository['js-controller']?.version || '-'}
             executeCommandRemove={() => executeCommand(`host remove ${name}`)}
             dialogUpgrade={() => JsControllerDialogFunc(socket, _id)}
@@ -412,6 +398,8 @@ const Hosts = ({
             dialogUpgrade={() => JsControllerDialogFunc(socket, _id)}
             currentHost={currentHost === _id}
             description={getHostDescriptionAll(_id, t, classes, hostsData)[1]}
+            hostData={hostsData[_id]}
+            formatInfo={formatInfo}
             available={repository['js-controller']?.version || '-'}
             installed={installedVersion}
             events={'- / -'}

@@ -16,6 +16,7 @@ import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 import Adapters from '../../tabs/Adapters';
 import CustomModal from '../CustomModal';
 import { amber, blue, grey, red } from '@mui/material/colors';
+import CopyIcon from "@iobroker/adapter-react-v5/icons/IconCopy";
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -186,6 +187,7 @@ const styles = theme => ({
         justifyContent: 'center',
         display: 'flex',
         height: '100%',
+        position: 'relative',
         // alignItems: 'center'
     },
     cursorNoDrop: {
@@ -316,31 +318,33 @@ const StyledBadge = withStyles((theme) => ({
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
 
 const HostRow = ({
-    name,
-    classes,
-    image,
-    hidden,
-    alive,
-    color,
-    //title,
-    available,
-    installed,
-    events,
-    t,
-    description,
-    _id,
-    socket,
-    setEditDialog,
-    currentHost,
     //dialogUpgrade,
+    //title,
+    _id,
+    alive,
+    available,
+    classes,
+    color,
+    currentHost,
+    description,
+    events,
     executeCommandRemove,
-    systemConfig,
     expertMode,
-    setBaseSettingsDialog,
+    getLogLevelIcon,
+    formatInfo,
+    hidden,
     hostsWorker,
-    showAdaptersWarning,
+    hostData,
+    image,
+    installed,
+    name,
     openHostUpdateDialog,
-    getLogLevelIcon
+    setBaseSettingsDialog,
+    setEditDialog,
+    showAdaptersWarning,
+    socket,
+    systemConfig,
+    t,
 }) => {
     const [openCollapse, setCollapse] = useState(false);
     const [focused, setFocused] = useState(false);
@@ -496,6 +500,22 @@ const HostRow = ({
 
     const upgradeAvailable = (currentHost || alive) && Adapters.updateAvailable(installed, available);
 
+    const onCopy = () => {
+        let text = [];
+        refCpu.current && text.push(`CPU: ${refCpu.current.innerHTML}`);
+        refMem.current && text.push(`RAM: ${refMem.current.innerHTML}`);
+        refUptime.current && text.push(`${t('Uptime')}: ${refUptime.current.innerHTML}`);
+        text.push(`${t('Available')}: ${available}`);
+        text.push(`${t('Installed')}: ${installed}`);
+        refEvents.current && text.push(t('Events') + ': ' + refEvents.current.innerHTML);
+
+        hostData && typeof hostData === 'object' && Object.keys(hostData).map(value =>
+            text.push(t(value) + ': ' + (formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')));
+
+        Utils.copyToClipboard(text.join('\n'));
+        window.alert(t('Copied'));
+    };
+
     let showModal = false;
     let titleModal;
     if (openDialogLogLevel) {
@@ -544,10 +564,9 @@ const HostRow = ({
         onMouseOut={openDialogLogLevel ? null : () => setFocused(false)}
         onMouseOver={openDialogLogLevel ? null : () => setFocused(true)}
         onMouseMove={openDialogLogLevel ? null : () => setFocused(true)}
-        onClick={openDialogLogLevel ? null : () => setCollapse((bool) => !bool)}
         key={_id} className={clsx(classes.root, hidden ? classes.hidden : '')}>
         {customModal}
-        <div className={clsx(classes.wrapperFlex, !alive && classes.cursorNoDrop)}>
+        <div className={clsx(classes.wrapperFlex, !alive && classes.cursorNoDrop)} onClick={openDialogLogLevel ? null : () => setCollapse((bool) => !bool)}>
             <div className={classes.wrapperColor}>
                 <div className={clsx(classes.onOff, alive ? classes.green : classes.red)} />
                 {alive && <div className={classes.dotLine} />}
@@ -643,7 +662,7 @@ const HostRow = ({
                             </div>
                         </Tooltip>
                         {expertMode && logLevelValue ?
-                            <Tooltip title={t('loglevel') + ' ' + logLevelValue}>
+                            <Tooltip title={`${t('loglevel')} ${logLevelValue}`}>
                                 <IconButton size="large" onClick={(event) => {
                                     event.stopPropagation();
                                     setOpenDialogLogLevel(true);
@@ -669,10 +688,14 @@ const HostRow = ({
             </CardContent>
         </div>
         {(openCollapse || focused) && typeof description === 'object' &&
-            <div
-                className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : classes.collapseOn)}>
+            <div className={clsx(classes.collapse, !openCollapse ? classes.collapseOff : classes.collapseOn)} onClick={e => e.stopPropagation()}>
                 <CardContent className={classes.cardContentInfo}>
                     {description}
+                    <Tooltip title={t('Copy')}>
+                        <IconButton size="large" onClick={() => onCopy()} style={{position: 'absolute', top: 8, right: 8 }}>
+                            <CopyIcon />
+                        </IconButton>
+                    </Tooltip>
                 </CardContent>
                 <div className={classes.footerBlock}>
                 </div>

@@ -11,12 +11,14 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CachedIcon from '@mui/icons-material/Cached';
 import BuildIcon from '@mui/icons-material/Build';
+import CopyIcon from '@iobroker/adapter-react-v5/icons/IconCopy';
 
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 import Adapters from '../../tabs/Adapters';
 import { amber, blue, grey, red } from '@mui/material/colors';
 import CustomModal from '../CustomModal';
+import {Skeleton} from "@mui/lab";
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -336,33 +338,35 @@ let diskWarningCache = 1;
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
 
 const HostCard = ({
-    name,
-    classes,
-    image,
-    hidden,
-    connectedToHost,
-    alive,
-    connected,
-    color,
-    title,
-    available,
-    installed,
-    events,
-    t,
-    description,
-    _id,
-    socket,
-    setEditDialog,
-    executeCommandRemove,
-    currentHost,
     //dialogUpgrade,
-    systemConfig,
-    setBaseSettingsDialog,
+    _id,
+    alive,
+    available,
+    classes,
+    color,
+    connected,
+    connectedToHost,
+    currentHost,
+    description,
+    events,
+    executeCommandRemove,
     expertMode,
+    getLogLevelIcon,
+    formatInfo,
+    hidden,
+    hostData,
     hostsWorker,
-    showAdaptersWarning,
+    image,
+    installed,
+    name,
     openHostUpdateDialog,
-    getLogLevelIcon
+    setBaseSettingsDialog,
+    setEditDialog,
+    showAdaptersWarning,
+    socket,
+    systemConfig,
+    t,
+    // title,
 }) => {
     const [openCollapse, setCollapse] = useState(false);
     const refEvents = useRef();
@@ -515,6 +519,22 @@ const HostCard = ({
 
     const upgradeAvailable = (currentHost || alive) && Adapters.updateAvailable(installed, available);
 
+    const onCopy = () => {
+        let text = [];
+        refCpu.current && text.push(`CPU: ${refCpu.current.innerHTML}`);
+        refMem.current && text.push(`RAM: ${refMem.current.innerHTML}`);
+        refUptime.current && text.push(`${t('Uptime')}: ${refUptime.current.innerHTML}`);
+        text.push(`${t('Available')}: ${available}`);
+        text.push(`${t('Installed')}: ${installed}`);
+        refEvents.current && text.push(t('Events') + ': ' + refEvents.current.innerHTML);
+
+        hostData && typeof hostData === 'object' && Object.keys(hostData).map(value =>
+            text.push(t(value) + ': ' + (formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')));
+
+        Utils.copyToClipboard(text.join('\n'));
+        window.alert(t('Copied'));
+    };
+
     let showModal = false;
     let titleModal;
     if (openDialogLogLevel) {
@@ -537,7 +557,7 @@ const HostCard = ({
                 setOpenDialogLogLevel(false);
             }
         }}>
-        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined" >
+        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined" style={{ marginTop: 8 }}>
             <InputLabel>{t('log level')}</InputLabel>
             <Select
                 variant="standard"
@@ -620,7 +640,6 @@ const HostCard = ({
             <Typography variant="body2" color="textSecondary" component="div" className={classes.wrapperAvailable}>
                 {t('Available')}: <div className={clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)} >
                     {upgradeAvailable ?
-
                         <Tooltip title={t('Update')}>
                             <div onClick={openHostUpdateDialog} className={classes.buttonUpdate}><IconButton
                                 className={classes.buttonUpdateIcon}
@@ -666,10 +685,8 @@ const HostCard = ({
                         </div>
                     </Tooltip>
                     {expertMode && logLevelValue &&
-                        <Tooltip title={t('loglevel') + ' ' + logLevelValue}>
-                            <IconButton size="large" onClick={(event) => {
-                                setOpenDialogLogLevel(true);
-                            }}>
+                        <Tooltip title={`${t('loglevel')} ${logLevelValue}`}>
+                            <IconButton size="large" onClick={() => setOpenDialogLogLevel(true)}>
                                 <Avatar className={clsx(classes.smallAvatar, classes[logLevelValue])}>
                                     {getLogLevelIcon(logLevelValue)}
                                 </Avatar>
@@ -681,6 +698,12 @@ const HostCard = ({
                             <DeleteIcon />
                         </IconButton>
                     </Tooltip> : <div className={classes.emptyButton} />}
+
+                    <Tooltip title={t('Copy')}>
+                        <IconButton size="large" onClick={() => onCopy()}>
+                            <CopyIcon />
+                        </IconButton>
+                    </Tooltip>
                 </Typography>
             </div>
         </CardContent>
