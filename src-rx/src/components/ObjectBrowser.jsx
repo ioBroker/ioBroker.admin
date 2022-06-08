@@ -787,6 +787,7 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
                 data.id.startsWith('system.') ||
                 data.id.startsWith('enum.') ||
                 data.id.startsWith('_design/') ||
+                data.id.endsWith('.admin') ||
                 (common && common.expert);
         }
         if (!filteredOut && context.id) {
