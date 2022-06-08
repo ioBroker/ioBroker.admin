@@ -1,12 +1,16 @@
 import * as React from 'react';
 
 export function useStateLocal(defaultValue, key) {
-    const [state, setState] = React.useState(
-        window.localStorage.getItem(key) ?
-            JSON.parse(window.localStorage.getItem(key))
-            :
-            defaultValue
-    );
+    const data = window.localStorage.getItem(key);
+    if (data) {
+        try {
+            defaultValue = JSON.parse(data);
+        } catch (error) {
+
+        }
+    }
+
+    const [state, setState] = React.useState(defaultValue);
 
     const eventsToInstall = newValue => {
         window.localStorage.setItem(key, JSON.stringify(newValue));

@@ -153,9 +153,13 @@ class HostEdit extends Component {
     }
 
     onUpdate() {
-        const obj = JSON.parse(this.state.text);
-        obj._id = this.props.obj._id; // do not allow change of id
-        this.props.onClose(obj);
+        try {
+            const obj = JSON.parse(this.state.text);
+            obj._id = this.props.obj._id; // do not allow change of id
+            this.props.onClose(obj);
+        } catch (error) {
+            // ignore
+        }
     }
     setCommonItem(json, name, value) {
         json.common[name] = value;

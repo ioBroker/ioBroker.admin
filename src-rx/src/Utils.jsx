@@ -484,7 +484,7 @@ class Utils {
                 for (let i = 0; i < m.length; i++) {
                     const pos = text.indexOf(m[i]);
                     if (pos) {
-                        result.push({text: text.substring(0, pos), style: JSON.parse(JSON.stringify(style))});
+                        result.push({ text: text.substring(0, pos), style: JSON.parse(JSON.stringify(style)) });
                     }
                     const code = parseInt(m[i].substring(2), 10);
                     if (STYLES[code]) {
@@ -503,7 +503,7 @@ class Utils {
                     text = text.substring(m[i].length + pos);
                 }
                 if (text) {
-                    result.push({text, style: JSON.parse(JSON.stringify(style))});
+                    result.push({ text, style: JSON.parse(JSON.stringify(style)) });
                 }
 
                 return {original, parts: result};

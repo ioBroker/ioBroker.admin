@@ -55,6 +55,7 @@ export default defineConfig(({ mode }) => {
                 '/files': 'http://localhost:8081',
                 '/adapter': 'http://localhost:8081',
                 '/session': 'http://localhost:8081',
+                '/log': 'http://localhost:8081',
             }
         },
         build: {

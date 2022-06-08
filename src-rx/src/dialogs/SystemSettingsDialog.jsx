@@ -280,7 +280,7 @@ class SystemSettingsDialog extends Component {
                         window.location.reload(false);
                     }
                 })
-                .then(() => this.setState({saving: false}))
+                .then(() => this.setState({ saving: false }))
                 .catch(e =>
                     window.alert(`Cannot save system configuration: ${e}`))
         );

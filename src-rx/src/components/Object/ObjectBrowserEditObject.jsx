@@ -285,26 +285,30 @@ class ObjectBrowserEditObject extends Component {
     }
 
     onUpdate() {
-        const obj = JSON.parse(this.state.text);
-        obj._id = this.props.obj._id; // do not allow change of id
+        try {
+            const obj = JSON.parse(this.state.text);
+            obj._id = this.props.obj._id; // do not allow change of id
 
-        // check aliases
-        if (obj.common?.alias) {
-            if (!obj.common.alias.id) {
-                delete obj.common.alias.id;
+            // check aliases
+            if (obj.common?.alias) {
+                if (!obj.common.alias.id) {
+                    delete obj.common.alias.id;
+                }
+                if ((!obj.common.alias.read && obj.common.alias.read !== undefined) || obj.common.alias.read === 'val') {
+                    delete obj.common.alias.read;
+                }
+                if ((!obj.common.alias.write && obj.common.alias.write !== undefined) || obj.common.alias.write === 'val') {
+                    delete obj.common.alias.write;
+                }
+                if (!obj.common.alias.id && !obj.common.alias.read && !obj.common.alias.write) {
+                    delete obj.common.alias;
+                }
             }
-            if ((!obj.common.alias.read && obj.common.alias.read !== undefined) || obj.common.alias.read === 'val') {
-                delete obj.common.alias.read;
-            }
-            if ((!obj.common.alias.write && obj.common.alias.write !== undefined) || obj.common.alias.write === 'val') {
-                delete obj.common.alias.write;
-            }
-            if (!obj.common.alias.id && !obj.common.alias.read && !obj.common.alias.write) {
-                delete obj.common.alias;
-            }
+
+            this.props.onClose(obj);
+        } catch (error) {
+            console.log.error('Cannot parse: ' + this.state.text);
         }
-
-        this.props.onClose(obj);
     }
 
     renderTabs() {
@@ -323,16 +327,19 @@ class ObjectBrowserEditObject extends Component {
             return null;
         }
 
-        const json = JSON.parse(this.state.text);
+        let id = '';
+        try {
+            const json = JSON.parse(this.state.text);
 
-        let id;
-
-        if (this.state.selectId) {
-            id = json.common?.alias?.id || '';
-        } else if (this.state.selectRead) {
-            id = json.common?.alias?.id?.read || '';
-        } else if (this.state.selectWrite) {
-            id = json.common?.alias?.id?.write || '';
+            if (this.state.selectId) {
+                id = json.common?.alias?.id || '';
+            } else if (this.state.selectRead) {
+                id = json.common?.alias?.id?.read || '';
+            } else if (this.state.selectWrite) {
+                id = json.common?.alias?.id?.write || '';
+            }
+        } catch (error) {
+            console.error('Cannot parse ' + this.state.text);
         }
 
         return <DialogSelectID

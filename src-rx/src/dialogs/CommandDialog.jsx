@@ -37,7 +37,6 @@ const styles = theme => ({
 
 class CommandDialog extends Component {
     constructor(props) {
-
         super(props);
 
         this.state = {
@@ -46,7 +45,7 @@ class CommandDialog extends Component {
             max: null,
             value: null,
             progressText: '',
-            closeOnReady: JSON.parse(window.localStorage.getItem('CommandDialog.closeOnReady')) || false,
+            closeOnReady: window.localStorage.getItem('CommandDialog.closeOnReady') === 'true',
             checked: true
         };
 
@@ -93,9 +92,9 @@ class CommandDialog extends Component {
                         <Checkbox
                             disabled={this.props.inBackground}
                             checked={this.state.closeOnReady}
-                            onChange={(e) => {
+                            onChange={e => {
                                 this.setState({ closeOnReady: e.target.checked });
-                                window.localStorage.setItem('CommandDialog.closeOnReady', e.target.checked);
+                                window.localStorage.setItem('CommandDialog.closeOnReady', e.target.checked ? 'true' : 'false');
                             }} />}
                     label={this.props.t('close on ready')}
                 />

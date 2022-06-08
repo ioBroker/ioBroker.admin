@@ -312,7 +312,7 @@ class Logs extends Component {
             estimatedSize: true,
             pause: 0,
             pauseCount: 0,
-            pid: JSON.parse(window.localStorage.getItem('Logs.pid')) || false,
+            pid: window.localStorage.getItem('Logs.pid') === 'true',
             colors: window.localStorage.getItem('Logs.colors') === 'true',
             adapters: {},
             sources: {},
@@ -775,8 +775,8 @@ class Logs extends Component {
     }
 
     changePid() {
-        let pid = !this.state.pid;
-        window.localStorage.setItem('Logs.pid', JSON.stringify(pid));
+        const pid = !this.state.pid;
+        window.localStorage.setItem('Logs.pid', pid ? 'true' : 'false');
         this.setState({ pid });
     }
 
@@ -784,6 +784,7 @@ class Logs extends Component {
         if (!this.state.logs) {
             return <LinearProgress />;
         }
+
         const { classes } = this.props;
 
         if (this.state.logFiles === null && !this.readLogsInProcess) {

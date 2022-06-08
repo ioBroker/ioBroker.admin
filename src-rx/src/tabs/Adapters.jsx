@@ -516,7 +516,13 @@ class Adapters extends Component {
 
         const categories = {};
         const categoriesSorted = [];
-        const categoriesExpanded = JSON.parse(window.localStorage.getItem('Adapters.expandedCategories')) || {};
+        let categoriesExpanded = {};
+        try {
+            categoriesExpanded = JSON.parse(window.localStorage.getItem('Adapters.expandedCategories')) || {};
+        } catch (error) {
+            // ignore
+        }
+
 
         Object.keys(installed).forEach(value => {
             const adapter = installed[value];
@@ -614,10 +620,15 @@ class Adapters extends Component {
         }).forEach(value =>
             categoriesSorted.push(categories[value]));
 
-        const list            = JSON.parse(window.localStorage.getItem('Adapters.list'));
-        const viewMode        = JSON.parse(window.localStorage.getItem('Adapters.viewMode'));
-        const updateList      = JSON.parse(window.localStorage.getItem('Adapters.updateList'));
-        const installedList   = JSON.parse(window.localStorage.getItem('Adapters.installedList'));
+        let installedList = false;
+        try {
+            installedList = JSON.parse(window.localStorage.getItem('Adapters.installedList'));
+        } catch (error) {
+
+        }
+        const list            = window.localStorage.getItem('Adapters.list') === 'true';
+        const viewMode        = window.localStorage.getItem('Adapters.viewMode') === 'true';
+        const updateList      = window.localStorage.getItem('Adapters.updateList') === 'true';
         const categoriesTiles = window.localStorage.getItem('Adapters.categoriesTiles') || 'All';
         const filterTiles     = window.localStorage.getItem('Adapters.filterTiles') || 'A-Z';
         this.allAdapters      = Object.keys(repository).length - 1;
@@ -1025,21 +1036,21 @@ class Adapters extends Component {
         if (list) {
             this.expandAll();
         }
-        window.localStorage.setItem('Adapters.list', JSON.stringify(list));
+        window.localStorage.setItem('Adapters.list', list ? 'true' : 'false');
         this.setState({ list });
     }
 
     changeViewMode() {
         this.cache.listOfVisibleAdapter = null;
         let viewMode = !this.state.viewMode;
-        window.localStorage.setItem('Adapters.viewMode', JSON.stringify(viewMode));
+        window.localStorage.setItem('Adapters.viewMode', viewMode ? 'true' : 'false');
         this.setState({ viewMode });
     }
 
     changeUpdateList() {
         this.cache.listOfVisibleAdapter = null;
         let updateList = !this.state.updateList;
-        window.localStorage.setItem('Adapters.updateList', JSON.stringify(updateList));
+        window.localStorage.setItem('Adapters.updateList', updateList ? 'true' : 'false');
         this.setState({ updateList });
     }
 

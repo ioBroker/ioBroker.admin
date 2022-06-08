@@ -472,11 +472,19 @@ class Instances extends Component {
             .then(e => !!e.config?.system?.compact)
             .catch(e => window.alert(`Cannot read compact mode by host "${this.props.currentHost}": ${e}`));
 
-        const onlyCurrentHost = JSON.parse(window.localStorage.getItem('Instances.onlyCurrentHost'));
-        const playArrow = JSON.parse(window.localStorage.getItem('Instances.playArrow'));
-        const viewMode = JSON.parse(window.localStorage.getItem('Instances.viewMode'));
-        const viewCategory = JSON.parse(window.localStorage.getItem('Instances.viewCategory'));
-        let filterCompactGroup = JSON.parse(window.localStorage.getItem('Instances.filterCompactGroup'));
+        let playArrow = false;
+        let filterCompactGroup = 'All';
+        try {
+            playArrow = JSON.parse(window.localStorage.getItem('Instances.playArrow'));
+            filterCompactGroup = JSON.parse(window.localStorage.getItem('Instances.filterCompactGroup'));
+        } catch (error) {
+            // ignore
+        }
+
+        const onlyCurrentHost = window.localStorage.getItem('Instances.onlyCurrentHost') === 'true';
+        const viewMode = window.localStorage.getItem('Instances.viewMode') === 'true';
+        const viewCategory = window.localStorage.getItem('Instances.viewCategory')  === 'true';
+
         if (!filterCompactGroup && filterCompactGroup !== 0) {
             filterCompactGroup = 'All';
         }
@@ -927,13 +935,14 @@ class Instances extends Component {
             filterStatus: null,
             filterText: ''
         };
+
         window.localStorage.removeItem('instances.filter');
         window.localStorage.removeItem(`Instances.playArrow`);
         window.localStorage.removeItem('Instances.onlyCurrentHost');
-        window.localStorage.removeItem('Instances.playArrow');
         window.localStorage.removeItem('Instances.filterCompactGroup');
         window.localStorage.removeItem('Instances.filterMode');
         window.localStorage.removeItem('Instances.filterStatus');
+
         this._cacheList = null;
         this.setState(state, () => {
             if (this.inputRef.current) {
@@ -1129,22 +1138,22 @@ class Instances extends Component {
 
     changeSetStateBool = value =>
         this.setState(state => {
-            window.localStorage.setItem(`Instances.${value}`, JSON.stringify(!state[value]));
+            window.localStorage.setItem(`Instances.${value}`, state[value] ? 'false' : 'true');
             return ({ [value]: !state[value] });
         });
 
-    changeSetState = (name,value) =>
+    changeSetState = (name, value) =>
         this.setState(state => {
             window.localStorage.setItem(`Instances.${name}`, value);
             return ({ [name]: value });
         });
 
-    changeStartedStopped = value => {
+    changeStartedStopped = () => {
         this._cacheList = null;
         this.setState(state => {
-            const newValue = !state.playArrow ? 1 : state.playArrow < 2 ? 2 : false;
-            window.localStorage.setItem(`Instances.playArrow`, JSON.stringify(newValue));
-            return {playArrow: newValue};
+            const playArrow = !state.playArrow ? 1 : state.playArrow < 2 ? 2 : false;
+            window.localStorage.setItem(`Instances.playArrow`, JSON.stringify(playArrow));
+            return { playArrow };
         });
     };
 

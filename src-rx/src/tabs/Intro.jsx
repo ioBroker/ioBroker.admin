@@ -595,6 +595,7 @@ class Intro extends Component {
         let systemConfig;
 
         return this.props.socket.getCurrentInstance()
+            .catch(e => 'admin.0')
             .then(adminInstance => {
                 this.adminInstance = adminInstance;
                 return this.props.socket.getSystemConfig(update);
@@ -618,7 +619,8 @@ class Intro extends Component {
                 return this.getHostsData(hosts);
             })
             .then(hostsData =>
-                this.setState({ hostsData }));
+                this.setState({ hostsData }))
+            .catch(error => window.alert('Cannot get data: ' + error));
     }
 
     render() {

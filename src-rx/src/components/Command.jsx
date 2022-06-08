@@ -61,8 +61,12 @@ class Command extends Component {
             console.log('STARTED: ' + this.props.cmd);
             this.executeCommand();
         }
-        const closeOnReady = JSON.parse(window.localStorage.getItem('CommandDialog.closeOnReady')) || false;
-        this.setState({ closeOnReady });
+        try {
+            const closeOnReady = JSON.parse(window.localStorage.getItem('CommandDialog.closeOnReady')) || false;
+            this.setState({ closeOnReady });
+        } catch (error) {
+            this.setState({ closeOnReady: false });
+        }
     }
 
     componentDidUpdate() {

@@ -1612,7 +1612,13 @@ class ObjectBrowser extends Component {
             foldersFirst = props.foldersFirst === undefined ? true : props.foldersFirst;
         }
 
-        const statesView = this.props.objectStatesView ? JSON.parse(window.localStorage.getItem((props.dialogName || 'App') + '.objectStatesView')) || false : false;
+        let statesView = false;
+        try {
+            statesView = this.props.objectStatesView ? JSON.parse(window.localStorage.getItem((props.dialogName || 'App') + '.objectStatesView')) || false : false;
+        } catch (error) {
+            // ignore
+        }
+
         this.state = {
             loaded: false,
             foldersFirst,
