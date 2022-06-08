@@ -20,6 +20,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 import Utils from '../../Utils';
 
@@ -92,10 +93,27 @@ class CertificatesDialog extends Component {
         return result;
     }
 
+    static detectType(name) {
+        name = name.toLowerCase();
+
+        if (name.includes('public') || name.includes('cert')) {
+            return 'public';
+        } else if (name.includes('priv') || name.includes('key')) {
+            return 'private';
+        } else if (name.includes('chain') || name.includes('ca')) {
+            return 'chained';
+        } else {
+            return '';
+        }
+    }
+
     render() {
-        const {classes} = this.props;
+        const { classes } = this.props;
         const arr = this.certToArray(this.props.data.native.certificates);
+
         const rows = arr.map((e, i) => {
+            const type = CertificatesDialog.detectType(e.title);
+
             return <TableRow key={i} className="float_row">
                 <TableCell className={this.props.classes.littleRow + ' float_cell'}>
                     {i + 1}
@@ -108,6 +126,8 @@ class CertificatesDialog extends Component {
                         InputProps={{readOnly: false}}
                         className={this.props.classes.input + ' xs-centered'}
                         onChange={evt => this.onChangeText(evt.target.value, e.title, 'title')}
+                        error={!type}
+                        helperText={type || I18n.t('Unknown type: use in name "private", "public" or "chained" to define the certificate type') }
                     />
                 </TableCell>
                 <TableCell className="grow_cell float_cell">

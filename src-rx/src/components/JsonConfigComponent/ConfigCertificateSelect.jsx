@@ -28,13 +28,14 @@ class ConfigCertificateSelect extends ConfigGeneric {
 
                 if (name.includes(el.type)) {
                     return true;
-                } else if (el.type === 'public' && name.includes('key')) {
+                } else if (el.type === 'public' && name.includes('cert')) {
                     return true;
-                } else if (el.type === 'private' && name.includes('cert')) {
+                } else if (el.type === 'private' && (name.includes('priv') || name.includes('key'))) {
                     return true;
                 } else if (el.type === 'chained' && (name.includes('chain') || name.includes('ca'))) {
                     return true;
                 }
+
                 return false;
             })
             .map(el => ({label: el.name, value: el.name}));
