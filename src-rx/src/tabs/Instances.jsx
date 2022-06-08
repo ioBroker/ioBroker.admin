@@ -807,7 +807,7 @@ class Instances extends Component {
             this.props.socket.getObject('system.adapter.' + instance.id)
                 .then(obj => {
                     if (obj.common.restartSchedule) {
-                        delete obj.common.restartSchedule;
+                        obj.common.restartSchedule = '';
                         return this.props.socket.setObject(obj._id, obj);
                     }
                 });
