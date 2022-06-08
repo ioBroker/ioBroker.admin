@@ -117,6 +117,7 @@ class ObjectBrowserValue extends Component {
 
         this.value = this.props.value;
         this.propsValue = this.value;
+
         if (this.propsValue === null) {
             this.propsValue = 'null';
         } else if (this.propsValue === undefined) {
@@ -140,6 +141,8 @@ class ObjectBrowserValue extends Component {
 
                 }
             }
+        } else if (type === 'number') {
+            this.value = parseFloat(this.propsValue) || 0;
         }
 
         this.state = {
@@ -177,25 +180,37 @@ class ObjectBrowserValue extends Component {
     onUpdate(e) {
         e && e.stopPropagation();
         e && e.preventDefault();
+
         let value = this.value;
         if (this.state.type === 'states') {
-            let type = this.props.type || typeof this.props.value;
-            value = typeof value === 'object' ? value.value : value;
+            if (value === 'null') {
+                value = null;
+            } else {
+                let type = this.props.type || typeof this.props.value;
+                value = typeof value === 'object' ? value.value : value;
 
-            if (type === 'number') {
-                if (typeof value === 'string') {
-                    value = parseFloat(value.replace(',', '.')) || 0;
+                if (type === 'number') {
+                    if (typeof value === 'string') {
+                        value = parseFloat(value.replace(',', '.')) || 0;
+                    }
+                } else if (type === 'boolean') {
+                    value = value === true || value === 'true' || value === '1' || value === 'ON' || value === 'on';
                 }
-            } else if (type === 'boolean') {
-                value = value === true || value === 'true' || value === '1' || value === 'ON' || value === 'on';
             }
         } else
         if (this.state.type === 'number') {
+            if (value === 'null') {
+                value = null;
+            } else
             if (typeof value === 'string') {
                 value = parseFloat(value.replace(',', '.')) || 0;
             }
         } else if (this.state.type === 'boolean') {
-            value = value === true || value === 'true' || value === '1' || value === 'ON' || value === 'on';
+            if (value === 'null') {
+                value = null;
+            } else {
+                value = value === true || value === 'true' || value === '1' || value === 'ON' || value === 'on';
+            }
         }
 
         this.props.onClose({val: value, ack: this.ack, q: this.q, expire: parseInt(this.expire, 10) || undefined});
@@ -316,7 +331,7 @@ class ObjectBrowserValue extends Component {
                 }}><ChartIcon /></Fab> : null}
             </DialogTitle>
             <DialogContent>
-                <form className={ this.props.classes.dialogForm } noValidate autoComplete="off">
+                <form className={ this.props.classes.dialogForm } noValidate autoComplete="off" onSubmit={() => false}>
                     <Grid container direction="row" spacing={2}>
                         <Grid item xs={this.state.chart && this.state.chartEnabled ? 6 : 12}>
                             <Grid container direction="column" spacing={2}>
@@ -381,7 +396,9 @@ class ObjectBrowserValue extends Component {
                                                     helperText={ this.props.t('Press ENTER to write the value, when focused') }
                                                     label={ this.props.t('Value') }
                                                     defaultValue={ parseFloat(this.propsValue) || 0 }
-                                                    onKeyUp={ e => e.keyCode === 13 && this.onUpdate(e) }
+                                                    onKeyUp={ e => {
+                                                        e.keyCode === 13 && this.onUpdate(e);
+                                                    } }
                                                     onChange={ e => this.value = e.target.value }/>
                                                 :
                                                 (this.state.type === 'json' ?
@@ -399,7 +416,7 @@ class ObjectBrowserValue extends Component {
                                                                     label={ this.props.t('Value') }
                                                                     fullWidth={ true }
                                                                     multiline
-                                                                    onKeyUp={e => e.ctrlKey && e.keyCode === 13 && this.onUpdate(e) }
+                                                                    onKeyDown={e => e.ctrlKey && e.keyCode === 13 && this.onUpdate(e) }
                                                                     defaultValue={ this.propsValue.toString() }
                                                                     onChange={ e => this.value = e.target.value }/>
                                                         )
