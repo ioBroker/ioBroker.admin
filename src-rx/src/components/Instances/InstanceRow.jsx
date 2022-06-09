@@ -978,7 +978,10 @@ const InstanceRow = ({
                                         disabled={!instance.config}
                                         size="small"
                                         className={clsx(classes.button, !instance.config && classes.hiddenOpacity)}
-                                        onClick={() => openConfig(id)}
+                                        onClick={event => {
+                                            event.stopPropagation();
+                                            openConfig(id);
+                                        }}
                                     >
                                         <BuildIcon />
                                     </IconButton>
@@ -992,8 +995,8 @@ const InstanceRow = ({
                         <IconButton
                             size="small"
                             onClick={event => {
-                                extendObject('system.adapter.' + instance.id, {});
                                 event.stopPropagation();
+                                extendObject('system.adapter.' + instance.id, {});
                             }}
                             onFocus={event => event.stopPropagation()}
                             className={clsx(classes.button, !instance.canStart && classes.hide)}
@@ -1041,8 +1044,8 @@ const InstanceRow = ({
                                 size="small"
                                 className={clsx(classes.button, !visibleEdit && classes.hiddenOpacity)}
                                 onClick={event => {
-                                    setOpenDialogText(true);
                                     event.stopPropagation();
+                                    setOpenDialogText(true);
                                 }}
                             >
                                 <EditIcon />
@@ -1149,9 +1152,9 @@ const InstanceRow = ({
                                 <IconButton
                                     size="small"
                                     className={classes.button}
-                                    onClick={(event) => {
-                                        setOpenDialogLogLevel(true);
+                                    onClick={event => {
                                         event.stopPropagation();
+                                        setOpenDialogLogLevel(true);
                                     }}
                                 >
                                     <EditIcon />
@@ -1186,9 +1189,9 @@ const InstanceRow = ({
                                 <IconButton
                                     size="small"
                                     className={classes.button}
-                                    onClick={(event) => {
-                                        setOpenDialogSchedule(true);
+                                    onClick={event => {
                                         event.stopPropagation();
+                                        setOpenDialogSchedule(true);
                                     }}
                                 >
                                     <EditIcon />
@@ -1208,8 +1211,8 @@ const InstanceRow = ({
                                         size="small"
                                         className={classes.button}
                                         onClick={(event) => {
-                                            setOpenDialogCron(true);
                                             event.stopPropagation();
+                                            setOpenDialogCron(true);
                                         }}
                                     >
                                         <EditIcon />
@@ -1230,8 +1233,8 @@ const InstanceRow = ({
                                         size="small"
                                         className={classes.button}
                                         onClick={e => {
-                                            setOpenDialogMemoryLimit(true);
                                             e.stopPropagation();
+                                            setOpenDialogMemoryLimit(true);
                                         }}
                                     >
                                         <EditIcon />
@@ -1249,8 +1252,8 @@ const InstanceRow = ({
                                         size="small"
                                         className={classes.button}
                                         onClick={e => {
-                                            setOpenDialogCompact(true);
                                             e.stopPropagation();
+                                            setOpenDialogCompact(true);
                                         }}
                                     >
                                         <EditIcon />
@@ -1267,8 +1270,8 @@ const InstanceRow = ({
                                     size="small"
                                     className={classes.button}
                                     onClick={e => {
-                                        setOpenDialogTier(true);
                                         e.stopPropagation();
+                                        setOpenDialogTier(true);
                                     }}
                                 >
                                     <EditIcon />
@@ -1284,8 +1287,8 @@ const InstanceRow = ({
                                     size="small"
                                     className={classes.button}
                                     onClick={event => {
-                                        setOpenDialogText(true);
                                         event.stopPropagation();
+                                        setOpenDialogText(true);
                                     }}
                                 >
                                     <EditIcon />
@@ -1301,8 +1304,8 @@ const InstanceRow = ({
                                     size="small"
                                     className={classes.button}
                                     onClick={event => {
-                                        setOpenDialogHost(true);
                                         event.stopPropagation();
+                                        setOpenDialogHost(true);
                                     }}
                                 >
                                     <EditIcon />
@@ -1318,7 +1321,10 @@ const InstanceRow = ({
                                 <IconButton
                                     size="small"
                                     className={classes.button}
-                                    onClick={() => openConfig(id)}
+                                    onClick={event => {
+                                        event.stopPropagation();
+                                        openConfig(id);
+                                    }}
                                 >
                                     <BuildIcon />
                                 </IconButton>
@@ -1331,8 +1337,8 @@ const InstanceRow = ({
                                 size="small"
                                 className={classes.button}
                                 onClick={event => {
-                                    setOpenDialogDelete(true);
                                     event.stopPropagation();
+                                    setOpenDialogDelete(true);
                                 }}
                             >
                                 <DeleteIcon />
