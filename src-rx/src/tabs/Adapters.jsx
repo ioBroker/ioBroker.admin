@@ -176,8 +176,8 @@ const styles = theme => ({
     },
     updateAllIcon: {
         position: 'absolute',
-        top: 8,
-        left: 8,
+        top: 15,
+        left: 15,
         opacity: 0.4,
         color: theme.palette.mode === 'dark' ? '#aad5ff' : '#007fff'
     },
