@@ -73,6 +73,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
     } else {
         types.push(TYPES.folder);
         initialType = 'folder';
+
         if (expertMode && (selected.startsWith('mqtt.') || selected.startsWith('javascript.'))) {
             types.push(TYPES.state);
             types.push(TYPES.channel);
@@ -80,9 +81,14 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
         }
     }
 
-    const [name, setName] = useState(names[initialType]);
+    const storedType = window.localStorage.getItem('App.lastObjectType');
+    if (storedType && types.find(item => item.value === storedType)) {
+        initialType = storedType;
+    }
+
     const [type, setType] = useState(initialType);
-    const [stateType, setStateType] = useState('string');
+    const [name, setName] = useState(names[initialType]);
+    const [stateType, setStateType] = useState(window.localStorage.getItem('App.lastStateType') || 'string');
     const [unique, setUnique] = useState(!objects[buildId(names.state)]);
 
     function buildId(name) {
@@ -107,6 +113,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
                 write: true,
                 def: stateDefValues[stateType]
             };
+            newObj.native = {};
         } else if (type !== 'folder') {
             newObj.common = {
                 ...newObj.common,
@@ -130,10 +137,10 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
         onClose={onClose}
         onApply={() => onLocalApply()}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{
-                margin: 10,
-                fontSize: 20
-            }}><AddIcon/> {I18n.t('Add new object:')} <span style={{fontStyle: 'italic'}}>{selected}.{name}</span></div>
+            <div style={{ margin: 10, fontSize: 20 }}><AddIcon/>
+                {I18n.t('Add new object:')}
+                <span style={{ fontStyle: 'italic' }}>{selected}.{name}</span>
+            </div>
             <TextField
                 variant="standard"
                 label={I18n.t('Parent')}
@@ -141,27 +148,35 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
                 disabled
                 value={selected}
             />
-            <FormControl variant="standard" style={{ marginTop: 10, marginBottom: 10 }}>
+            <FormControl variant="standard" style={{ marginTop: 10, marginBottom: 16 }}>
                 <InputLabel>{I18n.t('Type')}</InputLabel>
                 <Select
                     variant="standard"
                     value={type}
                     onChange={(el) => {
+                        window.localStorage.setItem('App.lastObjectType', el.target.value);
+
                         if (name === names[type]) {
                             setName(names[el.target.value]);
                             setUnique(objects[buildId(names[el.target.value])]);
                         }
+
                         setType(el.target.value);
                     }}
                 >
                     {types.map(el => <MenuItem key={el.value} value={el.value}>{I18n.t(el.name)}</MenuItem>)}
                 </Select>
-            </FormControl>            {type === 'state' && <FormControl >
-                <InputLabel>{I18n.t('State type')}</InputLabel>
+            </FormControl>
+            {type === 'state' && <FormControl style={{ marginTop: 10, marginBottom: 16 }}>
+                <InputLabel style={{ left: -14 }}>{I18n.t('State type')}</InputLabel>
                 <Select
+                    style={{ marginTop: 6 }}
                     variant="standard"
                     value={stateType}
-                    onChange={el => setStateType(el.target.value)}
+                    onChange={el => {
+                        window.localStorage.setItem('App.lastStateType', el.target.value);
+                        setStateType(el.target.value);
+                    }}
                 >
                     {stateTypeArray.map(el => <MenuItem key={el} value={el}>{el}</MenuItem>)}
                 </Select>

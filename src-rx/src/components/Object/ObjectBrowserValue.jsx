@@ -17,6 +17,7 @@ import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -31,6 +32,8 @@ import Autocomplete from '@mui/material/Autocomplete';
 import ChartIcon from '@mui/icons-material/ShowChart';
 import IconCancel from '@mui/icons-material/Close';
 import IconCheck from '@mui/icons-material/Check';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 
 import ObjectChart from './ObjectChart';
 
@@ -52,10 +55,12 @@ const styles = theme => ({
         width: 80
     },
     jsonError: {
-        border: '1px solid red'
+        border: '1px solid red',
+        minHeight: 200,
     },
     jsonNoError: {
-        border: '1px solid #00000000'
+        border: '1px solid #00000000',
+        minHeight: 200,
     },
     wrapperButton: {
     },
@@ -155,6 +160,7 @@ class ObjectBrowserValue extends Component {
             type,
             chart: false,
             chartEnabled: window.localStorage.getItem('App.chartSetValue') !== 'false',
+            fullScreen: window.localStorage.getItem('App.fullScreen') === 'true',
         };
 
         this.ack    = false;
@@ -253,7 +259,7 @@ class ObjectBrowserValue extends Component {
             className={this.state.jsonError ? this.props.classes.jsonError : this.props.classes.jsonNoError}
             mode="json"
             width="100%"
-            height="200px"
+            height="100%"
             showPrintMargin={true}
             showGutter={true}
             highlightActiveLine={true}
@@ -319,7 +325,8 @@ class ObjectBrowserValue extends Component {
         return <Dialog
             open={ true }
             maxWidth={ this.state.type === 'number' || this.state.type === 'boolean' || this.state.type === 'states' ? (this.state.chart && this.state.chartEnabled ? 'lg' : null) : 'md'}
-            fullWidth={ (this.state.type !== 'number' && this.state.type !== 'boolean' && this.state.type !== 'states') || (this.state.chart && this.state.chartEnabled)}
+            fullWidth={ (this.state.type === 'json' && this.state.fullScreen) || (this.state.type !== 'number' && this.state.type !== 'boolean' && this.state.type !== 'states') || (this.state.chart && this.state.chartEnabled)}
+            fullScreen={ this.state.type === 'json' && this.state.fullScreen }
             onClose={ () => this.props.onClose() }
             aria-labelledby="edit-value-dialog-title"
             aria-describedby="edit-value-dialog-description"
@@ -338,33 +345,45 @@ class ObjectBrowserValue extends Component {
                 }}><ChartIcon /></Fab> : null }
             </DialogTitle>
             <DialogContent>
-                <form className={ this.props.classes.dialogForm } noValidate autoComplete="off" onSubmit={() => false}>
-                    <Grid container direction="row" spacing={2}>
-                        <Grid item xs={this.state.chart && this.state.chartEnabled ? 6 : 12}>
-                            <Grid container direction="column" spacing={2} style={{ marginTop: 0 }}>
-                                { this.props.expertMode ? <Grid item><FormControl className={ this.props.classes.formControl }>
-                                    <InputLabel>{ this.props.t('Value type') }</InputLabel>
-                                    <Select
-                                        variant="standard"
-                                        value={ this.state.type }
-                                        onChange={ e => {
-                                            if (e.target.value === 'json') {
-                                                this.value = (this.value || '').toString();
-                                                this.checkJsonError();
-                                            }
-
-                                            this.setState({ type: e.target.value })
-                                        }}
-                                    >
-                                        <MenuItem value="string">String</MenuItem>
-                                        <MenuItem value="number">Number</MenuItem>
-                                        <MenuItem value="boolean">Boolean</MenuItem>
-                                        <MenuItem value="json">JSON</MenuItem>
-                                        {this.props.states ? <MenuItem value="states">States</MenuItem> : null}
-                                    </Select>
-                                </FormControl></Grid> : null }
-
+                <form className={ this.props.classes.dialogForm } noValidate autoComplete="off" onSubmit={() => false} style={{height: '100%'}}>
+                    <Grid container direction="row" spacing={2} style={{height: '100%'}}>
+                        <Grid item xs={this.state.chart && this.state.chartEnabled ? 6 : 12} style={{ height: '100%' }}>
+                            <Grid container direction="column" spacing={2} style={{ marginTop: 0, height: '100%' }}>
                                 <Grid item>
+                                    <Grid container direction="row" spacing={2} style={{ marginTop: 0 }}>
+                                        { this.props.expertMode ? <Grid item><FormControl className={ this.props.classes.formControl }>
+                                            <InputLabel>{ this.props.t('Value type') }</InputLabel>
+                                            <Select
+                                                variant="standard"
+                                                value={ this.state.type }
+                                                onChange={ e => {
+                                                    if (e.target.value === 'json') {
+                                                        this.value = (this.value || '').toString();
+                                                        this.checkJsonError();
+                                                    }
+
+                                                    this.setState({ type: e.target.value })
+                                                }}
+                                            >
+                                                <MenuItem value="string">String</MenuItem>
+                                                <MenuItem value="number">Number</MenuItem>
+                                                <MenuItem value="boolean">Boolean</MenuItem>
+                                                <MenuItem value="json">JSON</MenuItem>
+                                                {this.props.states ? <MenuItem value="states">States</MenuItem> : null}
+                                            </Select>
+                                        </FormControl></Grid> : null }
+                                        { this.state.type === 'json' ? <Grid item flex={1}></Grid> : null}
+                                        { this.state.type === 'json' ? <Grid item>
+                                            <IconButton onClick={() => {
+                                                window.localStorage.setItem('App.fullScreen', this.state.fullScreen ? 'false' : 'true');
+                                                this.setState({fullScreen: !this.state.fullScreen})
+                                            }}>{
+                                                this.state.fullScreen ? <FullscreenExitIcon/> : <FullscreenIcon/>
+                                            }
+                                            </IconButton></Grid> : null}
+                                    </Grid>
+                                </Grid>
+                                <Grid item flex={this.state.type === 'json' && this.state.fullScreen ? 1 : undefined}>
                                     { this.state.type === 'boolean' ?
                                         /*<FormControl component="fieldset" className={ this.props.classes.formControl }>
                                             <FormControlLabel
@@ -430,7 +449,7 @@ class ObjectBrowserValue extends Component {
                                                 )
                                         )
                                     }
-                                </Grid>
+                                </Grid >
                                 <Grid item>
                                     <FormControlLabel
                                         className={ this.props.classes.formControl }
@@ -484,7 +503,7 @@ class ObjectBrowserValue extends Component {
                                 </Grid> : null }
                             </Grid>
                         </Grid>
-                        {this.state.chart && this.state.chartEnabled ? <Hidden only={['sm', 'xs']}><Grid item xs={6} style={{minHeight: 300}}>
+                        {this.state.chart && this.state.chartEnabled && this.state.type !== 'json' ? <Hidden only={['sm', 'xs']}><Grid item xs={6} style={{minHeight: 300}}>
                             {this.renderChart()}
                         </Grid></Hidden>: null}
                     </Grid>

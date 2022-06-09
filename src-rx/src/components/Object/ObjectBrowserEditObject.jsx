@@ -28,7 +28,7 @@ import IconButton from '@mui/material/IconButton';
 import IconClose from '@mui/icons-material/Close';
 import IconCheck from '@mui/icons-material/Check';
 import AddIcon from '@mui/icons-material/Add';
-import {FaClipboard as IconCopyClipboard} from 'react-icons/fa';
+import { FaClipboard as IconCopyClipboard } from 'react-icons/fa';
 import IconCopy from '@mui/icons-material/FileCopy';
 import IconFx from '@iobroker/adapter-react-v5/icons/IconFx';
 
