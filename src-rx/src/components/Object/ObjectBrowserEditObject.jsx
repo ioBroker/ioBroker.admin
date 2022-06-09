@@ -533,13 +533,16 @@ class ObjectBrowserEditObject extends Component {
             return <Grid container direction="column" className={this.props.classes.marginTop}>
                 <Grid item>
                     <FormControlLabel
-                        control={<Checkbox checked={typeof json.common?.alias?.id === 'object'} onChange={() => {
-                            if (typeof json.common?.alias?.id === 'object') {
-                                this.setAliasItem(json, 'id', json.common?.alias?.id?.read || '');
-                            } else {
-                                this.setAliasItem(json, 'id.read', json.common?.alias?.id || '');
-                            }
-                        }} />}
+                        control={<Checkbox
+                            checked={typeof json.common?.alias?.id === 'object'}
+                            onChange={() => {
+                                if (typeof json.common?.alias?.id === 'object') {
+                                    this.setAliasItem(json, 'id', json.common?.alias?.id?.read || '');
+                                } else {
+                                    this.setAliasItem(json, 'id.read', json.common?.alias?.id || '');
+                                }
+                            }} />
+                        }
                         label={this.props.t('Different IDs for read and write')}
                     />
                 </Grid>
