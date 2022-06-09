@@ -152,6 +152,7 @@ const styles = theme => ({
 class AdapterRow extends Component {
     renderVersion() {
         const {
+            name,
             classes,
             enabledCount,
             installedCount,
@@ -166,13 +167,12 @@ class AdapterRow extends Component {
             alignItems="center"
             spacing={1}
         >
-
             <Grid item>
                 {installedVersion +
                     (installedCount ? ` (${installedCount}${installedCount !== enabledCount ? '~' : ''})` : '')
                 }
             </Grid>
-            {installedFrom &&
+            {installedFrom && !installedFrom.startsWith(`iobroker.${name}@`) &&
                 <Grid item container>
                     <Tooltip title={t('Non-NPM-Version: ') + installedFrom}>
                         <GitHubIcon

@@ -65,7 +65,7 @@ import IsVisible from '../components/IsVisible';
 const WIDTHS = {
     emptyBlock: 50,
     name: 300,
-    connectionType: 65,
+    connectionType: 85,
     installed: 120,
     available: 120,
     update: 40,
@@ -100,6 +100,17 @@ const styles = theme => ({
             textOverflow: 'ellipsis',
             paddingTop: 2,
             paddingBottom: 2,
+            paddingRight: 4,
+            paddingLeft: 4,
+        },
+        '& th': {
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            paddingTop: 2,
+            paddingBottom: 2,
+            paddingRight: 4,
+            paddingLeft: 4,
         }
     },
     hidden: {

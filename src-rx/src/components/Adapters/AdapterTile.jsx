@@ -461,15 +461,16 @@ const AdapterTile = ({
                 </IsVisible>
                 {installedVersion && <Typography component={'span'} className={classes.cardContentFlexBetween}>
                     <div>{t('Installed version')}:</div>
-                    <div className={classes.cardContentFlex}>{installedFrom &&
-                    <Tooltip title={t('Non-NPM-Version: ') + installedFrom}>
-                        <GitHubIcon
-                            fontSize="small"
-                            className={classes.versionWarn}
-                        />
-                    </Tooltip>
-                }{installedVersion}</div>
-                </Typography>}
+                    <div className={classes.cardContentFlex}>{installedFrom && !installedFrom.startsWith(`iobroker.${name}@`) &&
+                        <Tooltip title={t('Non-NPM-Version: ') + installedFrom}>
+                            <GitHubIcon
+                                fontSize="small"
+                                className={classes.versionWarn}
+                            />
+                        </Tooltip>
+                    }{installedVersion}
+                    </div>
+                    </Typography>}
             </div>
         </CardContent>
     </Card>;

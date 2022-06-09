@@ -24,7 +24,7 @@ const styles = theme => ({
         marginRight: 5,
     },
     content: {
-        fontSize: 16
+        fontSize: 16,
     },
 });
 
@@ -49,7 +49,7 @@ const CustomModal = ({ title, fullWidth, help, maxWidth, progress, icon, applyDi
         classes={{ paper: classes.modalDialog, /*paper: classes.background*/ }}
     >
         {title && <DialogTitle>{icon ? <Icon className={classes.titleIcon}/> : null}{title}</DialogTitle>}
-        <DialogContent className={clsx(overflowHidden ? classes.overflowHidden : null, classes.content)}>
+        <DialogContent className={clsx(overflowHidden ? classes.overflowHidden : null, classes.content)} style={{ paddingTop: 8 }}>
             {textInput && <TextField
                 // className={className}
                 autoComplete="off"

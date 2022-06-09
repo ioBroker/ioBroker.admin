@@ -756,7 +756,7 @@ const InstanceRow = ({
                 setOpenDialogHost(false);
             }
         }}>
-        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined" >
+        {openDialogLogLevel && <FormControl className={classes.formControl} variant="outlined">
             <InputLabel>{t('log level')}</InputLabel>
             <Select
                 variant="standard"
