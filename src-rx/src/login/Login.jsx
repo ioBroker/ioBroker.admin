@@ -89,7 +89,7 @@ class Login extends Component {
 
     render() {
         const classes = this.props.classes;
-        const action = `${window.location.port === '3000' ? `${window.location.protocol}//${window.location.hostname}:8081` : ''}/login?${window.location.port === '3000' ? 'dev&' : ''}href=${window.location.hash}`;
+        const action = `${window.location.port === '3000' ? `${window.location.protocol}//${window.location.hostname}:8081/` : ''}login?${window.location.port === '3000' ? 'dev&' : ''}href=${window.location.hash}`;
 
         const link  = window.loginLink  && window.loginLink  !== '@@loginLink@@'  ? window.loginLink  : 'https://www.iobroker.net/';
         const motto = window.loginMotto && window.loginMotto !== '@@loginMotto@@' ? window.loginMotto : ('Discover awesome. ');
@@ -170,7 +170,7 @@ class Login extends Component {
                             />}
                             label={this.props.t('Stay signed in')}
                         />
-                        <input id="origin" type="hidden" name="origin" value={window.location.search.replace('&error', '')} />
+                        <input id="origin" type="hidden" name="origin" value={window.location.pathname + window.location.search.replace('&error', '')} />
                         {<Button
                             type="submit"
                             disabled={this.state.inProcess}

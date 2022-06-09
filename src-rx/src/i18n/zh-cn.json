@@ -1490,5 +1490,6 @@
   "End time": "时间",
   "Administrator name": "管理员姓名",
   "Administrator name cannot be changed": "管理员名称不能更改",
-  "Unknown type: use in name \"private\", \"public\" or \"chained\" to define the certificate type": "未知类型：在名称中使用“private”、“public”或“chained”来定义证书类型"
+  "Unknown type: use in name \"private\", \"public\" or \"chained\" to define the certificate type": "未知类型：在名称中使用“private”、“public”或“chained”来定义证书类型",
+  "read only": "只读"
 }

@@ -1347,9 +1347,9 @@ class App extends Router {
 
     logout() {
         if (window.location.port === '3000') {
-            window.location = window.location.protocol + '//' + window.location.hostname + ':8081/logout?dev';
+            window.location = `${window.location.protocol}//${window.location.hostname}:8081/logout?dev`;
         } else {
-            window.location = '/logout';
+            window.location = `./logout?origin=${window.location.pathname}`;
         }
     }
 

@@ -1490,5 +1490,6 @@
   "End time": "Время",
   "Administrator name": "Имя администратора",
   "Administrator name cannot be changed": "Имя администратора не может быть изменено",
-  "Unknown type: use in name \"private\", \"public\" or \"chained\" to define the certificate type": "Неизвестный тип: используйте в имени «private», «public» или «chained» для определения типа сертификата."
+  "Unknown type: use in name \"private\", \"public\" or \"chained\" to define the certificate type": "Неизвестный тип: используйте в имени «private», «public» или «chained» для определения типа сертификата.",
+  "read only": "только чтение"
 }

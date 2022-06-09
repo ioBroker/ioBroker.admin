@@ -3,7 +3,7 @@
  */
 
 /**
- * Copyright 2020-2021, bluefox <dogafox@gmail.com>
+ * Copyright 2020-2022, bluefox <dogafox@gmail.com>
  *
  * MIT License
  *
@@ -119,6 +119,13 @@ class Connection {
 
         /** @type {Record<string, Promise<any>>} */
         this._promises = {};
+
+        this.log.error = text => this.log(text, 'error');
+        this.log.warn = text => this.log(text, 'warn');
+        this.log.info = text => this.log(text, 'info');
+        this.log.debug = text => this.log(text, 'debug');
+        this.log.silly = text => this.log(text, 'silly');
+
         this.startSocket();
     }
 
@@ -127,7 +134,7 @@ class Connection {
      * @returns {boolean} True if running in a web adapter or in a socketio adapter.
      */
     static isWeb() {
-        return window.adapterName === 'material' || window.socketUrl !== undefined;
+        return window.adapterName === 'material' || window.adapterName === 'vis' || window.socketUrl !== undefined;
     }
 
     /**
@@ -177,8 +184,13 @@ class Connection {
                 host = parts[1];
             }
         }
-
-        const url = `${protocol}://${host}:${port}`;
+        // get current path
+        let path = window.location.pathname;
+        const pos = path.lastIndexOf('/');
+        if (pos !== -1) {
+            path = path.substring(0, pos + 1);
+        }
+        const url = port ? `${protocol}://${host}:${port}${path}` : `${protocol}://${host}${path}`;
 
         this._socket = window.io.connect(
             url,
@@ -860,10 +872,6 @@ class Connection {
      * @returns {Promise<ioBroker.Object[]>}
      */
     getAdapterInstances(adapter, update) {
-        if (Connection.isWeb()) {
-            return Promise.reject('Allowed only in admin');
-        }
-
         if (typeof adapter === 'boolean') {
             update = adapter;
             adapter = '';
@@ -882,8 +890,8 @@ class Connection {
             let timeout = setTimeout(() => {
                 timeout = null;
                 this.getObjectView(
-                    `system.adapter.${adapter}.`,
-                    `system.adapter.${adapter}.\u9999`,
+                    `system.adapter.${adapter ? adapter + '.' : ''}`,
+                    `system.adapter.${adapter ? adapter + '.' : ''}\u9999`,
                     'instance'
                 )
                     .then(items => resolve(Object.keys(items).map(id => fixAdminUI(items[id]))))
@@ -1354,6 +1362,13 @@ class Connection {
                 err ? reject(err) : resolve(files)));
     }
 
+    /**
+     * Read a file of an adapter.
+     * @param {string} adapter The adapter name.
+     * @param {string} fileName The file name.
+     * @param {boolean} base64 If it must be a base64 format
+     * @returns {Promise<string>}
+     */
     readFile(adapter, fileName, base64) {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
@@ -1362,7 +1377,7 @@ class Connection {
             if (!base64) {
                 this._socket.emit('readFile', adapter, fileName, (err, data, type) => {
                     //@ts-ignore
-                    err ? reject(err) : resolve(data, type);
+                    err ? reject(err) : resolve({data, type});
                 });
             } else {
                 this._socket.emit('readFile64', adapter, fileName, base64, (err, data) =>
@@ -1399,33 +1414,46 @@ class Connection {
     }
 
     /**
+     * Rename a file or folder of an adapter.
+     *
+     * All files in folder will be renamed too.
+     * @param {string} adapter The adapter name.
+     * @param {string} oldName The file name of the file to be renamed.
+     * @param {string} newName The new file name.
+     * @returns {Promise<void>}
+     */
+    rename(adapter, oldName, newName) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('rename', adapter, oldName, newName, err =>
+                err ? reject(err) : resolve()));
+    }
+
+    /**
      * Delete a file of an adapter.
      * @param {string} adapter The adapter name.
      * @param {string} fileName The file name.
      * @returns {Promise<void>}
      */
     deleteFile(adapter, fileName) {
-        if (Connection.isWeb()) {
-            return Promise.reject('Allowed only in admin');
-        }
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
         return new Promise((resolve, reject) =>
-            this._socket.emit('deleteFile', adapter, fileName, err =>
+            this._socket.emit('unlink', adapter, fileName, err =>
                 err ? reject(err) : resolve()));
     }
 
     /**
      * Delete a folder of an adapter.
+     * All files in folder will be deleted.
      * @param {string} adapter The adapter name.
      * @param {string} folderName The folder name.
      * @returns {Promise<void>}
      */
     deleteFolder(adapter, folderName) {
-        if (Connection.isWeb()) {
-            return Promise.reject('Allowed only in admin');
-        }
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
@@ -1507,9 +1535,6 @@ class Connection {
      * @returns {Promise<ioBroker.Object[]>}
      */
     getGroups(update) {
-        if (Connection.isWeb()) {
-            return Promise.reject('Allowed only in admin');
-        }
         if (!update && this._promises.groups) {
             return this._promises.groups;
         }
@@ -2151,7 +2176,11 @@ class Connection {
      * Gets the version.
      * @returns {Promise<{version: string; serverName: string}>}
      */
-    getVersion() {
+    getVersion(update) {
+        if (update && this._promises.version) {
+            this._promises.version = null;
+        }
+
         this._promises.version = this._promises.version || new Promise((resolve, reject) =>
             this._socket.emit('getVersion', (err, version, serverName) => {
                 // support of old socket.io
@@ -2321,6 +2350,7 @@ class Connection {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
+
         return new Promise(resolve =>
             this._socket.emit('authEnabled', (isSecure, user) =>
                 resolve(user)));
@@ -2334,22 +2364,19 @@ class Connection {
         return new Promise((resolve, reject) => {
             const controller = new AbortController();
 
-            let timeout;
-            if (window.location.port !== '3000') {
-                timeout = setTimeout(() => {
-                    if (timeout) {
-                        timeout = null;
-                        controller.abort();
-                        reject('getCurrentSession timeout');
-                    }
-                }, cmdTimeout || 5000);
-            }
+            let timeout = setTimeout(() => {
+                if (timeout) {
+                    timeout = null;
+                    controller.abort();
+                    reject('getCurrentSession timeout');
+                }
+            }, cmdTimeout || 5000);
 
             return fetch('./session', { signal: controller.signal })
                 .then(res => res.json())
                 .then(json => {
-                    if (timeout || window.location.port === '3000') {
-                        timeout && clearTimeout(timeout);
+                    if (timeout) {
+                        clearTimeout(timeout);
                         timeout = null;
                         resolve(json);
                     }
@@ -2584,6 +2611,30 @@ class Connection {
             .then(obj => obj?.native?.uuid);
 
         return this._promises.uuid;
+    }
+
+    /**
+     * Send log to ioBroker log
+     * @param {string} [text] Log text
+     * @param {string} [level] `info`, `debug`, `warn`, `error` or `silly`
+     * @returns {void}
+     */
+    log(text, level) {
+        text && this._socket.emit('log', text, level || 'debug');
+    }
+
+    /**
+     * Logout current user
+     * @returns {Promise<null>}
+     */
+    logout() {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        return new Promise((resolve, reject) =>
+            this._socket.emit('logout', err =>
+                err ? reject(err) : resolve(null)));
     }
 }
 

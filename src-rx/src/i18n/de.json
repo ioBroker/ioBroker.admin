@@ -1490,5 +1490,6 @@
   "End time": "Zeit",
   "Administrator name": "Administratorname",
   "Administrator name cannot be changed": "Administratorname kann nicht geändert werden",
-  "Unknown type: use in name \"private\", \"public\" or \"chained\" to define the certificate type": "Unbekannter Typ: Bitte im Namen „private“, „public“ oder „chained“ verwenden, um den Zertifikatstyp zu definieren"
+  "Unknown type: use in name \"private\", \"public\" or \"chained\" to define the certificate type": "Unbekannter Typ: Bitte im Namen „private“, „public“ oder „chained“ verwenden, um den Zertifikatstyp zu definieren",
+  "read only": "schreibgeschützt"
 }

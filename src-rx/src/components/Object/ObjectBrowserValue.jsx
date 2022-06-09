@@ -59,6 +59,12 @@ const styles = theme => ({
     },
     wrapperButton: {
     },
+    readOnly: {
+        backgroundColor: '#b74848',
+    },
+    readOnlyText: {
+        color: '#b74848',
+    },
     '@media screen and (max-width: 465px)': {
         wrapperButton: {
             '& *': {
@@ -320,21 +326,22 @@ class ObjectBrowserValue extends Component {
         >
             <DialogTitle id="edit-value-dialog-title">
                 { this.props.t('Write value') }
+                { this.props.object.common?.write === false ? <span className={this.props.classes.readOnlyText}>({this.props.t('read only')})</span> : null }
                 {/*this.state.chart ? <div style={{flexGrow: 1}}/> : null*/}
-                {this.state.chart ? <Fab
+                { this.state.chart ? <Fab
                     style={{float: 'right'}}
                     size="small"
                     color={this.state.chartEnabled ? 'primary' : 'default'}
                     onClick={() => {
                     window.localStorage.setItem('App.chartSetValue', this.state.chartEnabled ? 'false' : 'true');
                     this.setState({chartEnabled: !this.state.chartEnabled});
-                }}><ChartIcon /></Fab> : null}
+                }}><ChartIcon /></Fab> : null }
             </DialogTitle>
             <DialogContent>
                 <form className={ this.props.classes.dialogForm } noValidate autoComplete="off" onSubmit={() => false}>
                     <Grid container direction="row" spacing={2}>
                         <Grid item xs={this.state.chart && this.state.chartEnabled ? 6 : 12}>
-                            <Grid container direction="column" spacing={2}>
+                            <Grid container direction="column" spacing={2} style={{ marginTop: 0 }}>
                                 { this.props.expertMode ? <Grid item><FormControl className={ this.props.classes.formControl }>
                                     <InputLabel>{ this.props.t('Value type') }</InputLabel>
                                     <Select
@@ -484,7 +491,13 @@ class ObjectBrowserValue extends Component {
                 </form>
             </DialogContent>
             <DialogActions className={this.props.classes.wrapperButton}>
-                <Button variant="contained" onClick={ e => this.onUpdate(e) } color="primary" startIcon={<IconCheck />}>{ this.props.t('Set value') }</Button>
+                <Button
+                    variant="contained"
+                    onClick={ e => this.onUpdate(e) }
+                    color="primary"
+                    startIcon={<IconCheck />}
+                    className={this.props.object.common?.write === false ? this.props.classes.readOnly : ''}
+                >{ this.props.t('Set value') }</Button>
                 <Button variant="contained" onClick={ () => this.props.onClose() } color="grey" startIcon={<IconCancel />}>{ this.props.t('Cancel') }</Button>
             </DialogActions>
         </Dialog>;
