@@ -77,6 +77,7 @@ import IconChannel from '@iobroker/adapter-react-v5/icons/IconChannel';
 import IconCopy from '@iobroker/adapter-react-v5/icons/IconCopy';
 import IconDevice from '@iobroker/adapter-react-v5/icons/IconDevice';
 import IconDocument from '@iobroker/adapter-react-v5/icons/IconDocument';
+import IconDocumentReadOnly from '@iobroker/adapter-react-v5/icons/IconDocumentReadOnly';
 import IconInstance from '@iobroker/adapter-react-v5/icons/IconInstance';
 import IconState from '@iobroker/adapter-react-v5/icons/IconState';
 import IconClosed from '@iobroker/adapter-react-v5/icons/IconClosed';
@@ -409,19 +410,6 @@ const styles = theme => ({
         },
         '&:hover .copyButton': {
             display: 'block'
-        }
-    },
-    cellValueWritable: {
-        '&:after': {
-            content: '"*"',
-            color: theme.palette.mode === 'dark' ? 'white' : 'black',
-            position: 'absolute',
-            zIndex: 1,
-            top: -6,
-            left: 0,
-            fontSize: 9,
-            width: 4,
-            height: 4,
         }
     },
     cellValueFile: {
@@ -3557,7 +3545,7 @@ class ObjectBrowser extends Component {
             classes={{ tooltip: this.props.classes.cellValueTooltip, popper: this.props.classes.cellValueTooltipBox }}
             onOpen={() => this.readHistory(id)}
         >
-            <div style={info.style} className={Utils.clsx(classes.cellValueText, obj.common && (obj.common.write !== false) && classes.cellValueWritable)} >
+            <div style={info.style} className={classes.cellValueText} >
                 {val}
             </div>
         </Tooltip>;
@@ -3970,7 +3958,11 @@ class ObjectBrowser extends Component {
                 onClick={() => this.toggleExpanded(id)}
             />;
         } else {
-            iconFolder = <IconDocument className={classes.cellIdIconDocument} />;
+            if (obj.common && (obj.common.write === false) && obj.type === 'state') {
+                iconFolder = <IconDocumentReadOnly className={classes.cellIdIconDocument} />;
+            } else {
+                iconFolder = <IconDocument className={classes.cellIdIconDocument} />;
+            }
         }
 
         let iconItem = null;
