@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.0.2",
+    "version": "6.0.3",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.0.3": {
+        "en": "Many GUI fixes done",
+        "de": "Viele GUI Korrekturen erledigt",
+        "ru": "Многие исправления GUI сделаны",
+        "pt": "Muitas correções GUI feitas",
+        "nl": "Veel GUI reparaties gedaan",
+        "fr": "Beaucoup de corrections GUI faites",
+        "it": "Molte correzioni di GUI effettuate",
+        "es": "Muchas correcciones GUI hechas",
+        "pl": "Wiele rozwiązań GUI",
+        "zh-cn": "许多古伊克人做的文章"
+      },
       "6.0.2": {
         "en": "Many GUI fixes done",
         "de": "Viele GUI Korrekturen erledigt",
@@ -89,18 +101,6 @@
         "es": "Vuelva a cargar la GUI si se detecta una nueva versión de administrador",
         "pl": "Przeładuj GUI, jeśli wykryta zostanie nowa wersja administratora",
         "zh-cn": "如果检测到新的管理员版本，则重新加载 GUI"
-      },
-      "5.4.6": {
-        "en": "Corrected readLogs command\nCorrected file deletion",
-        "de": "readLogs-Befehl korrigiert\nKorrigierte Dateilöschung",
-        "ru": "Исправлена команда readLogs\nИсправлено удаление файла",
-        "pt": "Comando readLogs corrigido\nExclusão de arquivo corrigida",
-        "nl": "Gecorrigeerde readLogs-opdracht\nGecorrigeerde bestandsverwijdering",
-        "fr": "Commande readLogs corrigée\nSuppression de fichier corrigée",
-        "it": "Corretto il comando readLogs\nEliminazione file corretta",
-        "es": "Comando readLogs corregido\nEliminación de archivos corregidos",
-        "pl": "Poprawiono polecenie readLogs\nPoprawione usuwanie plików",
-        "zh-cn": "更正了 readLogs 命令\n更正文件删除"
       }
     },
     "desc": {

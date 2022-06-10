@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.0.3 (2022-06-10)
 * (bluefox) Many GUI fixes done
 
 ### 6.0.2 (2022-06-08)
@@ -110,9 +110,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 5.4.9 (2022-05-12)
 * (bluefox) Corrected charts
 * (bluefox) Corrected socket command getObjects
-
-### 5.4.8 (2022-05-09)
-* (bluefox) Corrected some errors in Object Browser
 
 ## License
 The MIT License (MIT)
