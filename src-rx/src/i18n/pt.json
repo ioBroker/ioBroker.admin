@@ -1492,5 +1492,6 @@
   "Administrator name cannot be changed": "O nome do administrador não pode ser alterado",
   "Unknown type: use in name \"private\", \"public\" or \"chained\" to define the certificate type": "Tipo desconhecido: use no nome \"private\", \"public\" ou \"chained\" para definir o tipo de certificado",
   "read only": "somente leitura",
-  "Different IDs for read and write": "IDs diferentes para leitura e gravação"
+  "Different IDs for read and write": "IDs diferentes para leitura e gravação",
+  "Some updates available": "Algumas atualizações disponíveis"
 }

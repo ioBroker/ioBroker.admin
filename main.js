@@ -16,6 +16,7 @@
 const semver      = require('semver');
 const axios       = require('axios');
 const fs          = require('fs');
+const cp          = require('child_process');
 
 const utils       = require('@iobroker/adapter-core'); // Get common adapter utils
 const tools 	  = require(utils.controllerDir + '/lib/tools.js');
@@ -27,6 +28,9 @@ const Web         = require('./lib/web');
 
 const ONE_HOUR_MS = 3600000;
 const ERROR_PERMISSION = 'permissionError';
+
+const CURRENT_MAX_MAJOR_NODEJS = 16;
+const CURRENT_MAX_MAJOR_NPM = 8;
 
 let uuid          = '';
 let socket        = null;
@@ -549,6 +553,9 @@ function updateNews() {
     adapter.timerNews && clearTimeout(adapter.timerNews);
     adapter.timerNews = null;
 
+    checkNodeJsVersion()
+        .catch(e => adapter.log.warn('Cannot check node.js versions: ' + e));
+
     let oldEtag;
     let newNews;
     let oldNews;
@@ -680,6 +687,270 @@ function validateUserData0() {
             }
         }
     })
+}
+
+function getNpmVersion() {
+    return new Promise((resolve, reject) => {
+        const child = cp.exec('npm --version --location=global');
+
+        const chunks = [];
+        child.stdout.on('data', data => chunks.push(data.toString()));
+
+        child.on('exit', (code /* , signal */) => {
+            // try to analyse answer
+            const lines = chunks.join('').split('\n');
+            // npm WARN config global `--global`, `--local` are deprecated. Use `--location=global` instead.
+            // 6.14.16
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].trim().match(/^\d+\.\d+\.\d+/)) {
+                    return resolve(lines[i].trim());
+                }
+            }
+            reject('Cannot find npm version');
+        });
+    });
+}
+
+async function checkNodeJsVersion() {
+    if (adapter.supportsFeature('CONTROLLER_NODE_VERSION_CHECK')) {
+        return;
+    }
+    // allow only one admin instance to check the versions for every host
+    if (adapter.instance !== 0) {
+        const objs = await adapter.getObjectViewAsync('system', 'instance', {startkey: 'system.adapter.admin.', endkey: 'system.adapter.admin.\u9999'});
+        let min = null;
+        // find the lowest active instance on the same host
+        for (let i = 0; i < objs.rows.length; i++) {
+            const obj = objs.rows[i].value;
+            if (obj.common.enabled && obj.common.host === adapter.common.host) {
+                const instance = parseInt(objs.rows[i].id.split('.').pop());
+                if (min === null || min < instance) {
+                    min = instance;
+                }
+            }
+        }
+        if (adapter.instance !== min) {
+            return;
+        }
+    }
+
+    const response = await axios('https://nodejs.org/download/release/index.json');
+    const result = {
+        nodeNewest: '',
+        nodeNewestNext: '',
+        npmNewest: '',
+        npmNewestNext: '',
+        npmCurrent: '',
+        nodeCurrent: process.version,
+    };
+
+    try {
+        result.npmCurrent = await getNpmVersion();
+    } catch (error) {
+        adapter.log.warn('Cannot get current npm version: ' + error);
+    }
+
+    // https://nodejs.org/download/release/index.json
+    // detect new version of the same major version and new major version (that is allowed by ioBroker)
+    try {
+        // find newest suggested version
+        const nodeNewestNext = response.data.find(item => item.version.startsWith(`v${CURRENT_MAX_MAJOR_NODEJS}.`));
+        const nodeCurrentMajor = process.version.split('.')[0];
+        const nodeNewest = response.data.find(item => item.version.startsWith(nodeCurrentMajor + '.'));
+        if (nodeNewestNext) {
+            result.nodeNewestNext = nodeNewestNext.version;
+        }
+        if (nodeNewest) {
+            result.nodeNewest = nodeNewest.version;
+        }
+
+        // find newest suggested version
+        const npmNewestNext = response.data.find(item => item.npm.startsWith(CURRENT_MAX_MAJOR_NPM + '.'));
+        const npmCurrentMajor = result.npmCurrent.split('.')[0];
+        const npmNewest = response.data.find(item => item.npm.startsWith(npmCurrentMajor + '.'));
+        if (npmNewestNext) {
+            result.npmNewestNext = npmNewestNext.npm;
+        }
+        if (npmNewest) {
+            result.npmNewest = npmNewest.npm;
+        }
+
+        const prefix = 'system.host.' + adapter.common.host + '.versions';
+
+        await adapter.setForeignObjectNotExistsAsync(prefix, {
+            type: 'channel',
+            common: {
+                name: {
+                    "en": "Node.js/Npm versions",
+                    "de": "Node.js/Npm Versionen",
+                    "ru": "Node.js/Npm версии",
+                    "pt": "Versões Node.js/Npm",
+                    "nl": "Node.js/Npm versions",
+                    "fr": "Node.js/Npm versions",
+                    "it": "Node.js/Npm versioni",
+                    "es": "Node.js/Npm versiones",
+                    "pl": "Wersja node.js/Npm",
+                    "zh-cn": "页: 1"
+                }
+            }
+        });
+        const states = [
+            {
+                "_id": "nodeCurrent",
+                "type": "state",
+                "common": {
+                    "role": "state",
+                    "name": {
+                        "en": "Current node.js version",
+                        "de": "Aktuelle node.js Version",
+                        "ru": "Текущая версия node.js",
+                        "pt": "Versão atual do node.js",
+                        "nl": "Current Node",
+                        "fr": "Version actuelle node.js",
+                        "it": "Versione attuale node.js",
+                        "es": "Versión actual node.js",
+                        "pl": "Aktualna wersja.js",
+                        "zh-cn": "目前没有。"
+                    },
+                    "type": "string",
+                    "read": true,
+                    "write": false,
+                    "def": ""
+                },
+                "native": {}
+            },
+            {
+                "_id": "nodeNewest",
+                "type": "state",
+                "common": {
+                    "role": "state",
+                    "name": {
+                        "en": "Newest node.js version",
+                        "de": "Neueste node.js Version",
+                        "ru": "Новейшая версия node.js",
+                        "pt": "Mais recente versão node.js",
+                        "nl": "Nieuwste node",
+                        "fr": "Nouvelle version node.js",
+                        "it": "Nuova versione node.js",
+                        "es": "Versión más reciente node.js",
+                        "pl": "Najnowsza wersja węzła.js",
+                        "zh-cn": "最新版本"
+                    },
+                    "type": "string",
+                    "read": true,
+                    "write": false,
+                    "def": ""
+                },
+                "native": {}
+            },
+            {
+                "_id": "nodeNewestNext",
+                "type": "state",
+                "common": {
+                    "role": "state",
+                    "name": {
+                        "en": "Newest next major node.js version",
+                        "de": "Neueste nächste große node.js Version",
+                        "ru": "Новейшая следующая версия node.js",
+                        "pt": "Mais nova versão principal node.js",
+                        "nl": "Nieuwste volgende grote node",
+                        "fr": "Nouvelle prochaine version node.js",
+                        "it": "Nuova versione principale node.js",
+                        "es": "Versión más reciente node.js",
+                        "pl": "Najnowsza wersja węzła.js",
+                        "zh-cn": "今后最新的重要内容。"
+                    },
+                    "type": "string",
+                    "read": true,
+                    "write": false,
+                    "def": ""
+                },
+                "native": {}
+            },
+            {
+                "_id": "npmCurrent",
+                "type": "state",
+                "common": {
+                    "role": "state",
+                    "name": {
+                        "en": "Current npm version",
+                        "de": "Aktuelle Version",
+                        "ru": "Текущая версия npm",
+                        "pt": "Versão actual npm",
+                        "nl": "Current Npm versie",
+                        "fr": "Version actuelle npm",
+                        "it": "Versione npm attuale",
+                        "es": "Versión actual npm",
+                        "pl": "Aktualna wersja",
+                        "zh-cn": "目前的印本"
+                    },
+                    "type": "string",
+                    "read": true,
+                    "write": false,
+                    "def": ""
+                },
+                "native": {}
+            },
+            {
+                "_id": "npmNewest",
+                "type": "state",
+                "common": {
+                    "role": "state",
+                    "name": {
+                        "en": "Newest npm version",
+                        "de": "Neueste Version",
+                        "ru": "Новейшая версия npm",
+                        "pt": "Versão mais recente npm",
+                        "nl": "Newest Npm versie",
+                        "fr": "Nouvelle version npm",
+                        "it": "Nuova versione npm",
+                        "es": "Versión más reciente npm",
+                        "pl": "Wersja nowa",
+                        "zh-cn": "最新版本"
+                    },
+                    "type": "string",
+                    "read": true,
+                    "write": false,
+                    "def": ""
+                },
+                "native": {}
+            },
+            {
+                "_id": "npmNewestNext",
+                "type": "state",
+                "common": {
+                    "role": "state",
+                    "name": {
+                        "en": "Newest next major NPM version",
+                        "de": "Neueste nächste große NPM-Version",
+                        "ru": "Новейшая следующая крупная версия NPM",
+                        "pt": "Mais nova versão principal do NPM",
+                        "nl": "NPM",
+                        "fr": "La version la plus récente",
+                        "it": "Nuova versione NPM",
+                        "es": "Versión NPM más reciente",
+                        "pl": "Nowa wersja NPM",
+                        "zh-cn": "下一次主要国家预防计划"
+                    },
+                    "type": "string",
+                    "read": true,
+                    "write": false,
+                    "def": ""
+                },
+                "native": {}
+            }
+        ];
+
+        for (let i = 0; i < states.length; i++) {
+            await adapter.setForeignObjectNotExistsAsync(prefix + '.' + states[i]._id, states[i]);
+        }
+        const keys = Object.keys(result);
+        for (let k = 0; k < keys.length; k++) {
+            await adapter.setForeignStateAsync(prefix + '.' + keys[k], result[keys[k]].replace(/^v/, ''), true);
+        }
+    } catch (error) {
+        adapter.log.warn('Cannot check node.js/npm version');
+    }
 }
 
 function getData(adapter, callback) {

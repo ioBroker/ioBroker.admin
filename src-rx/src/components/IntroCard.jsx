@@ -467,8 +467,8 @@ class IntroCard extends Component {
                             <Card className={classes.cardInfo}>
                                 <div className={classes.cardInfoHead}>
                                     <Typography gutterBottom variant="h5" component="h5">
-                                        Info
-                            </Typography>
+                                        {this.props.t('Info')}
+                                    </Typography>
                                     <div>
                                         <IconButton size="small" onClick={() => {
                                             copy(this.props.getHostDescriptionAll()[1], {

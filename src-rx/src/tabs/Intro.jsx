@@ -1,13 +1,11 @@
 import { Component } from 'react';
 
 import PropTypes from 'prop-types';
+import semver from 'semver';
 
 import { withStyles } from '@mui/styles';
 
-import { Fab, Snackbar } from '@mui/material';
-import { Grid } from '@mui/material';
-import { LinearProgress } from '@mui/material';
-
+import { Fab, Snackbar, Tooltip, Grid, LinearProgress } from '@mui/material';
 import { Skeleton } from '@mui/lab';
 
 import AddIcon from '@mui/icons-material/Add';
@@ -15,12 +13,12 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import CreateIcon from '@mui/icons-material/Create';
 
-import Utils from '../Utils';
+import UtilsCommon from '@iobroker/adapter-react-v5/Components/Utils';
 
+import Utils from '../Utils';
 import IntroCard from '../components/IntroCard';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
-
 import EditIntroLinkDialog from '../dialogs/EditIntroLinkDialog';
 
 const styles = theme => ({
@@ -61,7 +59,18 @@ const styles = theme => ({
     },
     hostOffline: {
         color: '#bb0000'
-    }
+    },
+    updateExists: {
+        color: '#c28700',
+        marginRight: 4,
+    },
+    updateNo: {
+        color: '#00b204',
+        marginRight: 4,
+    },
+    nodeUpdate: {
+        opacity: 0.6,
+    },
 });
 
 const formatInfo = {
@@ -370,23 +379,30 @@ class Intro extends Component {
                     if (alive && alive.val) {
                         return this.props.socket.getHostInfo(obj._id, false, 10000);
                     } else {
-                        return {alive: false};
+                        return { alive: false };
                     }
                 })
                 .catch(error => {
                     console.error(error);
                     return error;
                 })
+                .then(data => {
+                    return this.props.socket.getForeignStates(obj._id + '.versions.*')
+                        .then(states => {
+                            Object.keys(states).forEach(id =>
+                                data['_' + id.split('.').pop()] = states[id].val);
+                            return data;
+                        });
+                })
                 .then(data =>
                     ({ id: obj._id, data })));
 
-        return new Promise(resolve =>
-            Promise.all(promises)
-                .then(results => {
-                    const hostsData = {};
-                    results.forEach(res => hostsData[res.id] = res.data);
-                    resolve(hostsData);
-                }));
+        return Promise.all(promises)
+            .then(results => {
+                const hostsData = {};
+                results.forEach(res => hostsData[res.id] = res.data);
+                return hostsData;
+            });
     }
 
     getInstances(update, hosts, systemConfig) {
@@ -551,20 +567,72 @@ class Intro extends Component {
             return <div className={this.props.classes.hostOffline}>{this.props.t('Offline')}</div>;
         }
 
-        return <ul>{
-            ['Platform', 'RAM', 'Node.js', 'NPM'].map(value =>
-                <li key={value}>
-                    { hostData && typeof hostData === 'object' ?
+        let nodeUpdate = '';
+        let npmUpdate = '';
+        if (hostData) {
+            if (semver.gt(hostData['_nodeNewest'], hostData['Node.js'].replace(/^v/, ''))) {
+                nodeUpdate = hostData['_nodeNewest'];
+            }
+            if (hostData['_nodeNewest'] !== hostData['_nodeNewestNext'] &&
+                semver.gt(hostData['_nodeNewestNext'], hostData['Node.js'].replace(/^v/, '')) &&
+                semver.gt(hostData['_nodeNewestNext'], hostData['_nodeNewest'])
+            ) {
+                nodeUpdate += (nodeUpdate ? ' / ' : '') + hostData['_nodeNewestNext'];
+            }
+            if (nodeUpdate) {
+                nodeUpdate = <Tooltip title={this.props.t('Some updates available')}><span className={this.props.classes.nodeUpdate}>({nodeUpdate})</span></Tooltip>;
+            }
+
+            if (semver.gt(hostData['_npmNewest'], hostData['NPM'])) {
+                npmUpdate = hostData['_npmNewest'];
+            }
+            if (hostData['_npmNewest'] !== hostData['_npmNewestNext'] &&
+                semver.gt(hostData['_npmNewestNext'], hostData['NPM']) &&
+                semver.gt(hostData['_npmNewestNext'], hostData['_npmNewest'])
+            ) {
+                npmUpdate += (npmUpdate ? ' / ' : '') + hostData['_npmNewestNext'];
+            }
+            if (npmUpdate) {
+                npmUpdate = <Tooltip title={this.props.t('Some updates available')}><span className={this.props.classes.nodeUpdate}>({npmUpdate})</span></Tooltip>;
+            }
+        }
+
+        return hostData && typeof hostData === 'object' ?
+                <ul style={{ textTransform: 'none'}}>
+                    <li>
                         <span>
-                            <span className={classes.bold}>{this.t(value)}: </span>
-                            {(formatInfo[value] ? formatInfo[value](hostData[value]) : hostData[value] || '--')}
+                            <span className={classes.bold}>{this.t('Platform')}: </span>
+                            {hostData['Platform'] || '--'}
                         </span>
-                        :
-                        <Skeleton />
-                    }
-                </li>
-            )}
-        </ul>;
+                    </li>
+                    <li>
+                        <span>
+                            <span className={classes.bold}>{this.t('RAM')}: </span>
+                            {formatInfo['RAM'](hostData['RAM'])}
+                        </span>
+                    </li>
+                    <li>
+                        <span>
+                            <span className={classes.bold}>{this.t('Node.js')}: </span>
+                            <span className={UtilsCommon.clsx(nodeUpdate ? this.props.classes.updateExists : this.props.classes.updateNo)}>{hostData['Node.js'] || '--'}</span>
+                            {nodeUpdate}
+                        </span>
+                    </li>
+                    <li>
+                        <span>
+                            <span className={classes.bold}>{this.t('NPM')}: </span>
+                            <span className={UtilsCommon.clsx(npmUpdate ? this.props.classes.updateExists : this.props.classes.updateNo)}>{hostData['NPM'] || '--'}</span>
+                            {npmUpdate}
+                        </span>
+                    </li>
+                </ul>
+            :
+                <ul>
+                    <Skeleton />
+                    <Skeleton />
+                    <Skeleton />
+                    <Skeleton />
+                </ul>;
     }
 
     getHostDescriptionAll(id) {
@@ -572,18 +640,20 @@ class Intro extends Component {
         const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
 
         return [
-            <ul>
+            <ul style={{ textTransform: 'none'}}>
                 {
-                    hostData && typeof hostData === 'object' && Object.keys(hostData).map(value => <li key={value}>
-                        {hostData && typeof hostData === 'object' ?
-                            <span>
-                                <span className={classes.bold}>{this.t(value)}: </span>
-                                {(formatInfo[value] ? formatInfo[value](hostData[value], this.t) : hostData[value] || '--')}
-                            </span>
-                            :
-                            <Skeleton />
-                        }
-                    </li>)
+                    hostData && typeof hostData === 'object' && Object.keys(hostData)
+                        .filter(id => !id.startsWith('_'))
+                        .map(value => <li key={value}>
+                            {hostData && typeof hostData === 'object' ?
+                                <span>
+                                    <span className={classes.bold}>{this.t(value)}: </span>
+                                    {(formatInfo[value] ? formatInfo[value](hostData[value], this.t) : hostData[value] || '--')}
+                                </span>
+                                :
+                                <Skeleton />
+                            }
+                        </li>)
                 }
             </ul>,
             hostData && typeof hostData === 'object' && Object.keys(hostData).reduce((acom, item) => acom + `${this.t(item)}:${(formatInfo[item] ? formatInfo[item](hostData[item], this.t) : hostData[item] || '--')}\n`)

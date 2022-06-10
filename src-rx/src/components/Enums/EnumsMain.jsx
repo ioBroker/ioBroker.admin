@@ -75,8 +75,8 @@ const styles = theme => ({
         width: 200
     },
     toolbarButton: {
-        //marginRight: theme.spacing(1),
-        display: 'inline',
+        // marginRight: theme.spacing(1),
+        // display: 'inline',
     },
     filter: {
         width: '100%',
@@ -702,20 +702,21 @@ class EnumsList extends Component {
                 <Grid container spacing={2} className={this.props.classes.mainGridCont}>
                     <Grid item xs={12} md={6} className={clsx(this.props.classes.childGridCont, this.state.innerWidth > 600 && this.props.classes.childGridContWide)}>
                     <div className={this.props.classes.topPanel}>
-                        <IconButton
-                            size="small"
-                            className={this.props.classes.toolbarButton}
-                            onClick={() =>
-                                this.state.enumsTree.children.enum.children['favorites'] ?
-                                    this.showEnumEditDialog(this.getEnumTemplate('enum'), true)
-                                    :
-                                    this.setState({categoryPopoverOpen: true})
-                            }
-                        >
-                            <Tooltip title={this.props.t('Add enum')} placement="top">
+                        <Tooltip title={this.props.t('Add enum')} placement="top">
+                            <IconButton
+                                id="categoryPopoverButton"
+                                size="small"
+                                className={this.props.classes.toolbarButton}
+                                onClick={() =>
+                                    this.state.enumsTree.children.enum.children['favorites'] ?
+                                        this.showEnumEditDialog(this.getEnumTemplate('enum'), true)
+                                        :
+                                        this.setState({categoryPopoverOpen: true})
+                                }
+                            >
                                 <AddIcon/>
-                            </Tooltip>
-                        </IconButton>
+                            </IconButton>
+                        </Tooltip>
                         <Popover
                             open={this.state.categoryPopoverOpen}
                             onClose={() => this.setState({categoryPopoverOpen: false})}
