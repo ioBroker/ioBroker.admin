@@ -913,7 +913,6 @@
   "Logs": "Log",
   "Files": "Bestanden",
   "Edit object:": "Object bewerken:",
-  "Add attribute %s": "Attribuut %s toevoegen",
   "Remove attribute %s": "Attribuut %s verwijderen",
   "Write": "Schrijven",
   "Sorry, you cannot use ioBroker.": "Sorry, u kunt ioBroker niet gebruiken.",

@@ -913,7 +913,6 @@
   "Logs": "Logs",
   "Files": "Files",
   "Edit object:": "Edit object:",
-  "Add attribute %s": "Add attribute %s",
   "Remove attribute %s": "Remove attribute %s",
   "Write": "Write",
   "Sorry, you cannot use ioBroker.": "Sorry, you cannot use ioBroker.",
