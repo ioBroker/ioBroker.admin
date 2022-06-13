@@ -860,10 +860,9 @@ const InstanceRow = ({
 
     const stateTooltip = [
         item.stoppedWhenWebExtension !== undefined ? <State key={1} state={true} >{t('Runs as web-extension')}</State> : '',
-        instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined ? <State key={1} state={item.connectedToHost} >{t('Connected to host')}</State> : '',
-        instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined ? <State key={1} state={item.connectedToHost} >{t('Connected to host')}</State> : '',
-        instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined ? <State key={2} state={item.alive} >{t('Heartbeat')}</State> : '',
-        item.connected !== null && item.stoppedWhenWebExtension === undefined ? <State key={3} state={!!item.connected}>
+        instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined ? <State key={2} state={item.connectedToHost} >{t('Connected to host')}</State> : '',
+        instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined ? <State key={3} state={item.alive} >{t('Heartbeat')}</State> : '',
+        item.connected !== null && item.stoppedWhenWebExtension === undefined ? <State key={4} state={!!item.connected}>
             {typeof item.connected === 'string' ? t('Connected:') + ' ' + (item.connected || '-') : t('Connected to device or service')}
         </State> : ''
     ];
