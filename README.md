@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.0.4 (2022-06-13)
 * (bluefox) implemented the resize of columns in some tables
 
 ### 6.0.3 (2022-06-10)
@@ -109,10 +109,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (bluefox) Support of JSON5 for the config and custom files
 * (bluefox) Added run/stop buttons in instance settings dialog
 * (bluefox) Added support for the file change events
-
-### 5.4.9 (2022-05-12)
-* (bluefox) Corrected charts
-* (bluefox) Corrected socket command getObjects
 
 ## License
 The MIT License (MIT)

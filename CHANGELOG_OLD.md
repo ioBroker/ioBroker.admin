@@ -1,5 +1,12 @@
 ## 5.3.7 (2022-04-10)
 * (bluefox) Changed the charts rendering
+## 5.4.9 (2022-05-12)
+* (bluefox) Corrected charts
+* (bluefox) Corrected socket command getObjects
+
+## 5.3.7 (2022-04-10)
+* (bluefox) Changed the charts rendering
+
 ## 5.4.8 (2022-05-09)
 * (bluefox) Corrected some errors in Object Browser
 

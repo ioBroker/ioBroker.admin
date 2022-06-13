@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.0.3",
+    "version": "6.0.4",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.0.4": {
+        "en": "implemented the resize of columns in some tables",
+        "de": "die größe der spalten in einigen tabellen implementiert",
+        "ru": "реализован размер колонн в некоторых таблицах",
+        "pt": "implementou o tamanho das colunas em algumas tabelas",
+        "nl": "het reservoir van kolommen in sommige tafels",
+        "fr": "mis en œuvre la redimension des colonnes dans certaines tables",
+        "it": "implementato il ridimensionamento delle colonne in alcune tabelle",
+        "es": "implementó el tamaño de las columnas en algunos cuadros",
+        "pl": "zastosował resize kolumn w niektórych tablicach",
+        "zh-cn": "某些表格中的栏目转化"
+      },
       "6.0.3": {
         "en": "Many GUI fixes done",
         "de": "Viele GUI Korrekturen erledigt",
@@ -89,18 +101,6 @@
         "es": "Se corrigieron algunos errores en el Explorador de objetos.",
         "pl": "Poprawiono niektóre błędy w przeglądarce obiektów",
         "zh-cn": "更正了对象浏览器中的一些错误"
-      },
-      "5.4.7": {
-        "en": "Reload GUI if new admin version detected",
-        "de": "GUI neu laden, wenn neue Admin-Version erkannt wird",
-        "ru": "Перезагрузите графический интерфейс, если обнаружена новая версия администратора",
-        "pt": "Recarregue a GUI se uma nova versão do administrador for detectada",
-        "nl": "Herlaad GUI als er een nieuwe beheerdersversie is gedetecteerd",
-        "fr": "Recharger l'interface graphique si une nouvelle version d'administrateur est détectée",
-        "it": "Ricarica la GUI se viene rilevata una nuova versione dell'amministratore",
-        "es": "Vuelva a cargar la GUI si se detecta una nueva versión de administrador",
-        "pl": "Przeładuj GUI, jeśli wykryta zostanie nowa wersja administratora",
-        "zh-cn": "如果检测到新的管理员版本，则重新加载 GUI"
       }
     },
     "desc": {
