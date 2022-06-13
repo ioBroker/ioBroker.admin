@@ -475,7 +475,7 @@ class FileBrowser extends Component {
 
     static getDerivedStateFromProps(props, state) {
         if (props.expertMode !== undefined && props.expertMode !== state.expertMode) {
-            return { expertMode: props.expertMode, loadAllFolders: !state.allFoldersLoaded && props.expertMode };
+            return { expertMode: props.expertMode, loadAllFolders: true };
         } else {
             return null;
         }
@@ -898,7 +898,7 @@ class FileBrowser extends Component {
             </Hidden>
             {this.state.viewType === TABLE && this.props.allowDownload ? <div className={this.props.classes['itemDownloadButton' + this.state.viewType]} /> : null}
 
-            {this.state.viewType === TABLE && this.props.allowDelete && this.state.folders[item.id] && this.state.folders[item.id].length && (this.state.expertMode || item.id.startsWith(USER_DATA) || item.id.startsWith('vis.0/')) ?
+            {this.state.viewType === TABLE && this.props.allowDelete && this.state.folders[item.id] && this.state.folders[item.id].length ?
                 <IconButton
                     size="large"
                     aria-label="delete"
@@ -1107,8 +1107,7 @@ class FileBrowser extends Component {
             {this.state.viewType === TABLE &&
                 this.props.allowDelete &&
                 item.id !== 'vis.0/' &&
-                item.id !== USER_DATA &&
-                (this.state.expertMode || item.id.startsWith(USER_DATA) || item.id.startsWith('vis.0/'))
+                item.id !== USER_DATA
                 ?
                 <IconButton
                     size="large"
@@ -1237,7 +1236,7 @@ class FileBrowser extends Component {
             ><RefreshIcon /></IconButton>
             {this.props.allowCreateFolder ? <IconButton
                 edge="start"
-                disabled={this.state.expertMode ? !this.state.selected : !this.state.selected.startsWith('vis.0') && !this.state.selected.startsWith(USER_DATA)}
+                disabled={!this.state.selected || !this.state.folders[this.state.selected]}
                 title={this.props.t('ra_Create folder')}
                 className={this.props.classes.menuButton}
                 color={'inherit'}
@@ -1247,7 +1246,7 @@ class FileBrowser extends Component {
             ><AddFolderIcon /></IconButton> : null}
             {this.props.allowUpload ? <IconButton
                 edge="start"
-                disabled={this.state.expertMode ? !this.state.selected : !this.state.selected.startsWith('vis.0') && !this.state.selected.startsWith(USER_DATA)}
+                disabled={!this.state.selected || !this.state.folders[this.state.selected]}
                 title={this.props.t('ra_Upload file')}
                 className={this.props.classes.menuButton}
                 color={'inherit'}
