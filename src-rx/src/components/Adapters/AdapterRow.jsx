@@ -48,7 +48,8 @@ import IsVisible from '../IsVisible';
 const styles = theme => ({
     smallAvatar: {
         width: theme.spacing(4),
-        height: theme.spacing(4)
+        height: theme.spacing(4),
+        marginLeft: 4,
     },
     paddingNone: {
         padding: '0 !important'

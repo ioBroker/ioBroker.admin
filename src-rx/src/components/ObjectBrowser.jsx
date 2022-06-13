@@ -180,6 +180,7 @@ const styles = theme => ({
         paddingLeft: theme.spacing(1),
         height: 38,
         whiteSpace: 'nowrap',
+        userSelect: 'none',
     },
     buttonClearFilter: {
         position: 'relative',
@@ -684,6 +685,39 @@ const styles = theme => ({
         right: 50,
         width: 20,
     },
+    resizeHandle: {
+        display: 'block',
+        position: 'absolute',
+        cursor: 'col-resize',
+        width: 7,
+        top: 2,
+        bottom: 2,
+        zIndex: 1,
+    },
+    resizeHandleRight: {
+        right: 3,
+        borderRight: '2px dotted #888',
+        '&:hover': {
+            borderColor: '#ccc',
+            borderRightStyle: 'solid',
+        }
+        , '&.active': {
+            borderColor: '#517ea5',
+            borderRightStyle: 'solid',
+        },
+    },
+    resizeHandleLeft: {
+        left: -4,
+        borderLeft: '2px dotted #888',
+        '&:hover': {
+            borderColor: '#ccc',
+            borderLeftStyle: 'solid',
+        }
+        , '&.active': {
+            borderColor: '#517ea5',
+            borderLeftStyle: 'solid',
+        },
+    }
 });
 
 function generateFile(filename, obj) {
@@ -1689,6 +1723,28 @@ class ObjectBrowser extends Component {
         };
 
         this.levelPadding = props.levelPadding || ITEM_LEVEL;
+
+        let resizerCurrentWidths = window.localStorage.getItem(`${this.props.dialogName || 'App'}.table`);
+        if (resizerCurrentWidths) {
+            try {
+                resizerCurrentWidths = JSON.parse(resizerCurrentWidths);
+                this.storedWidths = JSON.parse(JSON.stringify(SCREEN_WIDTHS[this.props.width]));
+                Object.keys(resizerCurrentWidths)
+                    .forEach(id => {
+                        if (id === 'id') {
+                            SCREEN_WIDTHS[this.props.width].idWidth = resizerCurrentWidths.id;
+                        } else if (id === 'nameHeader') {
+                            SCREEN_WIDTHS[this.props.width].widths['name'] = resizerCurrentWidths[id];
+                        } else if (SCREEN_WIDTHS[this.props.width].widths[id] !== undefined) {
+                            SCREEN_WIDTHS[this.props.width].widths[id] = resizerCurrentWidths[id];
+                        }
+                    });
+
+                this.customWidth = true;
+            } catch (e) {
+                // ignore
+            }
+        }
 
         this.calculateColumnsVisibility();
     }
@@ -4369,6 +4425,7 @@ class ObjectBrowser extends Component {
             this.columnsVisibility = {
                 id:          SCREEN_WIDTHS[this.props.width].idWidth,
                 name:        this.visibleCols.includes('name')        ? WIDTHS.name         || 0 : 0,
+                nameHeader:  this.visibleCols.includes('name')        ? WIDTHS.name         || 0 : 0,
                 type:        this.visibleCols.includes('type')        ? WIDTHS.type         || 0 : 0,
                 role:        this.visibleCols.includes('role')        ? WIDTHS.role         || 0 : 0,
                 room:        this.visibleCols.includes('room')        ? WIDTHS.room         || 0 : 0,
@@ -4381,7 +4438,7 @@ class ObjectBrowser extends Component {
                 buttons:     this.visibleCols.includes('buttons')     ? WIDTHS.buttons      || 0 : 0,
             };
 
-            if (this.columnsVisibility.name) {
+            if (this.columnsVisibility.name && !this.customWidth) {
                 let widthSum = this.columnsVisibility.id; // id is always visible
                 if (this.state.statesView) {
                     widthSum += this.columnsVisibility.changedFrom;
@@ -4398,7 +4455,7 @@ class ObjectBrowser extends Component {
                 widthSum += this.columnsVisibility.buttons;
                 this.columnsVisibility.name = `calc(100% - ${widthSum + 5}px)`;
                 this.columnsVisibility.nameHeader = `calc(100% - ${widthSum + 5 + this.state.scrollBarWidth}px)`;
-            } else {
+            } else if (!this.customWidth) {
                 // Calculate the with of ID
                 let widthSum = 0; // id is always visible
                 if (this.state.statesView) {
@@ -4490,6 +4547,113 @@ class ObjectBrowser extends Component {
         }
     }
 
+    resizerMouseMove = e => {
+        if (this.resizerActiveDiv) {
+            let width;
+            let widthNext;
+            if (this.resizeLeft) {
+                width     = this.resizerOldWidth     - e.clientX + this.resizerPosition;
+                widthNext = this.resizerOldWidthNext + e.clientX - this.resizerPosition;
+            } else {
+                width     = this.resizerOldWidth     + e.clientX - this.resizerPosition;
+                widthNext = this.resizerOldWidthNext - e.clientX + this.resizerPosition;
+            }
+
+            if ((!this.resizerMin     || width     > this.resizerMin) &&
+                (!this.resizerNextMin || widthNext > this.resizerNextMin)) {
+                this.resizerCurrentWidths[this.resizerActiveName] = width;
+                this.resizerCurrentWidths[this.resizerNextName] = widthNext;
+
+                this.resizerActiveDiv.style.width = width     + 'px';
+                this.resizerNextDiv.style.width   = widthNext + 'px';
+
+                this.columnsVisibility[this.resizerActiveName] = width;
+                this.columnsVisibility[this.resizerNextName] = widthNext;
+                if (this.resizerNextName === 'nameHeader') {
+                    this.columnsVisibility['name']    = widthNext - this.state.scrollBarWidth;
+                    this.resizerCurrentWidths['name'] = widthNext - this.state.scrollBarWidth;
+                } else
+                if (this.resizerActiveName === 'nameHeader') {
+                    this.columnsVisibility['name']    = width - this.state.scrollBarWidth;
+                    this.resizerCurrentWidths['name'] = width - this.state.scrollBarWidth;
+                }
+                this.customWidth = true;
+                this.resizeTimeout && clearTimeout(this.resizeTimeout);
+                this.resizeTimeout = setTimeout(() => {
+                    this.resizeTimeout = null;
+                    this.forceUpdate();
+                }, 200);
+            }
+        }
+    }
+
+    resizerMouseUp = () => {
+        window.localStorage.setItem(`${this.props.dialogName || 'App'}.table`, JSON.stringify(this.resizerCurrentWidths));
+        this.resizerActiveName = null;
+        this.resizerNextName   = null;
+        this.resizerActiveDiv  = null;
+        this.resizerNextDiv    = null;
+        window.removeEventListener('mousemove', this.resizerMouseMove);
+        window.removeEventListener('mouseup',   this.resizerMouseUp);
+    }
+
+    resizerMouseDown = e => {
+        if (this.resizerActiveIndex === null || this.resizerActiveIndex === undefined) {
+            if (!this.storedWidths) {
+                this.storedWidths = JSON.parse(JSON.stringify(SCREEN_WIDTHS[this.props.width]));
+            }
+
+            this.resizerCurrentWidths = this.resizerCurrentWidths || {};
+            this.resizerActiveDiv  = e.target.parentNode;
+            this.resizerActiveName = this.resizerActiveDiv.dataset.name;
+
+            let i = 0;
+            if (e.target.dataset.left === 'true') {
+                this.resizeLeft = true;
+                this.resizerNextDiv = this.resizerActiveDiv.previousElementSibling;
+                let handle = this.resizerNextDiv.querySelector('.' + this.props.classes.resizeHandle);
+                while (this.resizerNextDiv && !handle && i < 10) {
+                    this.resizerNextDiv = this.resizerNextDiv.previousElementSibling;
+                    handle = this.resizerNextDiv.querySelector('.' + this.props.classes.resizeHandle);
+                    i++;
+                }
+                if (handle && handle.dataset.left !== 'true') {
+                    this.resizerNextDiv = this.resizerNextDiv.nextElementSibling;
+                }
+            } else {
+                this.resizeLeft = false;
+                this.resizerNextDiv = this.resizerActiveDiv.nextElementSibling;
+                /*while (this.resizerNextDiv && !this.resizerNextDiv.querySelector('.' + this.props.classes.resizeHandle) && i < 10) {
+                    this.resizerNextDiv = this.resizerNextDiv.nextElementSibling;
+                    i++;
+                }*/
+            }
+            this.resizerNextName   = this.resizerNextDiv.dataset.name;
+
+            this.resizerMin        = parseInt(this.resizerActiveDiv.dataset.min, 10) || 0;
+            this.resizerNextMin    = parseInt(this.resizerNextDiv.dataset.min, 10) || 0;
+
+            this.resizerPosition   = e.clientX;
+
+            this.resizerCurrentWidths[this.resizerActiveName] = this.resizerActiveDiv.offsetWidth;
+            this.resizerCurrentWidths[this.resizerNextName]   = this.resizerNextDiv.offsetWidth;
+
+            this.resizerOldWidth     = this.resizerCurrentWidths[this.resizerActiveName];
+            this.resizerOldWidthNext = this.resizerCurrentWidths[this.resizerNextName];
+
+            window.addEventListener('mousemove', this.resizerMouseMove);
+            window.addEventListener('mouseup',   this.resizerMouseUp);
+        }
+    };
+
+    resizerReset = () => {
+        this.customWidth = false;
+        SCREEN_WIDTHS[this.props.width] = JSON.parse(JSON.stringify(this.storedWidths));
+        this.calculateColumnsVisibility();
+        window.localStorage.removeItem(`${this.props.dialogName || 'App'}.table`);
+        this.forceUpdate();
+    };
+
     /**
      * @private
      * @returns {JSX.Element}
@@ -4511,22 +4675,22 @@ class ObjectBrowser extends Component {
         }
 
         return <div className={classes.headerRow} >
-            <div className={classes.headerCell} style={{ width: this.columnsVisibility.id }}>{this.getFilterInput('id')}</div>
-            {this.columnsVisibility.name ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.nameHeader }}>{this.getFilterInput('name')}</div> : null}
+            <div className={classes.headerCell} style={{ width: this.columnsVisibility.id, position: 'relative' }}  data-min={240} data-name="id">{this.getFilterInput('id')}<div className={this.props.classes.resizeHandle + ' ' + this.props.classes.resizeHandleRight} onMouseDown={this.resizerMouseDown} onDoubleClick={this.resizerReset} title={this.props.t('ra_Double click to reset table layout')} /></div>
+            {this.columnsVisibility.name ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.nameHeader }} data-min={100} data-name="nameHeader">{this.getFilterInput('name')}</div> : null}
             {!this.state.statesView && <>
-                {this.columnsVisibility.type ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.type }}>{this.getFilterSelectType()}</div> : null}
-                {this.columnsVisibility.role ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.role }}>{this.getFilterSelectRole()}</div> : null}
-                {this.columnsVisibility.room ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.room }}>{this.getFilterSelectRoom()}</div> : null}
-                {this.columnsVisibility.func ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.func }}>{this.getFilterSelectFunction()}</div> : null}
+                {this.columnsVisibility.type ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.type }} data-min={100} data-name="type">{this.getFilterSelectType()}</div> : null}
+                {this.columnsVisibility.role ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.role }} data-min={100} data-name="role">{this.getFilterSelectRole()}</div> : null}
+                {this.columnsVisibility.room ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.room }} data-min={100} data-name="room">{this.getFilterSelectRoom()}</div> : null}
+                {this.columnsVisibility.func ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.func }} data-min={100} data-name="func">{this.getFilterSelectFunction()}</div> : null}
             </>}
             {this.state.statesView && <>
-                <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.changedFrom }}>{this.props.t('ra_Changed from')}</div>
-                <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.qualityCode }}>{this.props.t('ra_Quality code')}</div>
-                <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.timestamp }}>{this.props.t('ra_Timestamp')}</div>
-                <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.lastChange }}>{this.props.t('ra_Last change')}</div>
+                <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.changedFrom }} data-min={100} data-name="changedFrom">{this.props.t('ra_Changed from')}</div>
+                <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.qualityCode }} data-min={100} data-name="qualityCode">{this.props.t('ra_Quality code')}</div>
+                <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.timestamp }}   data-min={100} data-name="timestamp">{this.props.t('ra_Timestamp')}</div>
+                <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.lastChange }}  data-min={100} data-name="lastChange">{this.props.t('ra_Last change')}</div>
             </>}
-            {this.adapterColumns.map(item => <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility[item.id] }} title={item.adapter} key={item.id}>{item.name}</div>)}
-            {this.columnsVisibility.val ? <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.val }}>{this.props.t('ra_Value')}{filterClearInValue}</div> : null}
+            {this.adapterColumns.map(item =>  <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility[item.id] }} title={item.adapter} key={item.id} data-min={100} data-name={item.id}>{item.name}</div>)}
+            {this.columnsVisibility.val     ? <div className={Utils.clsx(classes.headerCell, classes.headerCellValue)} style={{ width: this.columnsVisibility.val, position: 'relative' }} data-min={120} data-name="val"><div className={this.props.classes.resizeHandle + ' ' + this.props.classes.resizeHandleLeft} data-left="true" onMouseDown={this.resizerMouseDown} onDoubleClick={this.resizerReset} title={this.props.t('ra_Double click to reset table layout')} />{this.props.t('ra_Value')}{filterClearInValue}</div> : null}
             {this.columnsVisibility.buttons ? <div className={classes.headerCell} style={{ width: this.columnsVisibility.buttons }}> {this.getFilterSelectCustoms()}</div> : null}
         </div>;
     }

@@ -43,6 +43,7 @@ import nlLocale from 'date-fns/locale/nl';
 
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
+import TableResize from '@iobroker/adapter-react-v5/Components/TableResize';
 
 // icons
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -52,7 +53,6 @@ import { FaDownload as ExportIcon} from 'react-icons/fa';
 import IconDelete from '@mui/icons-material/Delete';
 import IconClose from '@mui/icons-material/Close';
 
-import TableResize from '../TableResize';
 
 const localeMap = {
     en: enLocale,
@@ -871,7 +871,7 @@ class ObjectHistoryData extends Component {
                     className={classes.table}
                     initialWidths={initialWidths}
                     minWidths={minWidths}
-                    dblTitle={this.props.t('Double click to reset table layout')}
+                    dblTitle={this.props.t('ra_Double click to reset table layout')}
                 >
                     <TableHead>
                         <TableRow>
