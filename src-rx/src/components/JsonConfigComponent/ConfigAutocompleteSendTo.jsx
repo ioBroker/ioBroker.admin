@@ -4,6 +4,8 @@ import { withStyles } from '@mui/styles';
 
 import { Autocomplete, TextField } from '@mui/material';
 
+import I18n from '@iobroker/adapter-react-v5/i18n';
+
 import ConfigGeneric from './ConfigGeneric';
 
 const styles = theme => ({
@@ -50,7 +52,7 @@ class ConfigAutocompleteSendTo extends ConfigGeneric {
 
                     // if __different
                     if (Array.isArray(value)) {
-                        selectOptions.unshift({label: ConfigGeneric.DIFFERENT_LABEL, value: ConfigGeneric.DIFFERENT_VALUE});
+                        selectOptions.unshift({label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE});
                         this.setState({value: ConfigGeneric.DIFFERENT_VALUE, selectOptions, context: this.getContext()});
                     } else {
                         this.setState({value, selectOptions, context: this.getContext()});
@@ -59,7 +61,7 @@ class ConfigAutocompleteSendTo extends ConfigGeneric {
         } else {
             // if __different
             if (Array.isArray(value)) {
-                selectOptions.unshift({label: ConfigGeneric.DIFFERENT_LABEL, value: ConfigGeneric.DIFFERENT_VALUE});
+                selectOptions.unshift({label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE});
                 this.setState({value: ConfigGeneric.DIFFERENT_VALUE, selectOptions});
             } else {
                 this.setState({value, selectOptions});
@@ -97,7 +99,7 @@ class ConfigAutocompleteSendTo extends ConfigGeneric {
                 .filter(val => !options.find(it => it.value === val))
                 .forEach(item => options.push({label: item.toString(), value: item}));
 
-            item = {label: ConfigGeneric.DIFFERENT_LABEL, value: ConfigGeneric.DIFFERENT_VALUE};
+            item = {label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE};
             options.unshift(item);
         } else {
             item = this.state.value !== null && this.state.value !== undefined &&

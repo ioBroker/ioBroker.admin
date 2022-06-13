@@ -40,7 +40,7 @@ class ConfigCertificateSelect extends ConfigGeneric {
             })
             .map(el => ({label: el.name, value: el.name}));
 
-        selectOptions.unshift({label: ConfigGeneric.NONE_LABEL, value: ConfigGeneric.NONE_VALUE});
+        selectOptions.unshift({label: I18n.t(ConfigGeneric.NONE_LABEL), value: ConfigGeneric.NONE_VALUE});
 
         this.setState({value, selectOptions});
     }

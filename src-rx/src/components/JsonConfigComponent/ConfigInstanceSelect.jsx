@@ -28,7 +28,7 @@ class ConfigInstanceSelect extends ConfigGeneric {
         }
 
         this.props.socket.getAdapterInstances(adapter)
-            .then(instances => {
+            .then(async instances => {
                 let selectOptions;
                 if (this.props.schema.adapter === '_dataSources') {
                     // get only "data-sources", like history, sql, influx
@@ -41,13 +41,59 @@ class ConfigInstanceSelect extends ConfigGeneric {
                     label: `${instance.common.name} [${instance._id.replace(/^system\.adapter\./, '')}]`
                 }));
 
-                selectOptions.unshift({ label: ConfigGeneric.NONE_LABEL, value: ConfigGeneric.NONE_VALUE });
+                selectOptions.unshift({ label: I18n.t(ConfigGeneric.NONE_LABEL), value: ConfigGeneric.NONE_VALUE });
                 if (this.props.schema.all) {
                     selectOptions.unshift({ label: I18n.t('sch_all'), value: '*' });
                 }
 
                 this.setState({ value: value || '', selectOptions });
+
+                await this.props.socket.subscribeObject(`system.adapter.${adapter ? adapter + '.' : ''}*`, this.onInstancesUpdate);
             });
+    }
+
+    componentWillUnmount() {
+        this.props.socket.unsubscribeObject('system.adapter.*', this.onInstancesUpdate)
+            .then(() => {});
+        super.componentWillUnmount();
+    }
+
+    onInstancesUpdate = (id, obj) => {
+        if (!id.match(/^system\.adapter\.[-_a-z\d]+\.\d+$/)) {
+            return;
+        }
+        const _id = this.props.schema.long ? id : (this.props.schema.short ? id.split('.').pop() : id.replace(/^system\.adapter\./, ''));
+        const index = this.state.selectOptions.findIndex(item => item.value === _id);
+        if (!obj) {
+            // deleted
+            if (index !== -1) {
+                const selectOptions = JSON.parse(JSON.stringify(this.state.selectOptions));
+
+                const newState = {};
+                if (this.state.value === selectOptions[index].value) {
+                    newState.value = ConfigGeneric.NONE_VALUE;
+                }
+                selectOptions.splice(index, 1);
+                newState.selectOptions = selectOptions;
+
+                this.setState(newState);
+            }
+        } else {
+            if (this.props.schema.adapter === '_dataSources' && (!obj.common || !obj.common.getHistory)) {
+                return;
+            }
+
+            if (index === -1) {
+                const selectOptions = JSON.parse(JSON.stringify(this.state.selectOptions));
+                selectOptions.push({
+                    value: this.props.schema.long ? obj._id :
+                        (this.props.schema.short ? obj._id.split('.').pop() : obj._id.replace(/^system\.adapter\./, '')),
+                    label: `${obj.common.name} [${obj._id.replace(/^system\.adapter\./, '')}]`
+                });
+                selectOptions.sort((a, b) => a.label > b.label ? 1 : (a.label < b.label ? -1 : 0));
+                this.setState({ selectOptions });
+            }
+        }
     }
 
     renderItem(error, disabled, defaultValue) {

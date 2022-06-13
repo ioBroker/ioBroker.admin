@@ -4,6 +4,8 @@ import { withStyles } from '@mui/styles';
 
 import { Autocomplete, TextField } from '@mui/material';
 
+import I18n from '@iobroker/adapter-react-v5/i18n';
+
 import ConfigGeneric from './ConfigGeneric';
 
 const styles = theme => ({
@@ -21,7 +23,7 @@ class ConfigAutocomplete extends ConfigGeneric {
 
         // if __different
         if (Array.isArray(value)) {
-            selectOptions.unshift({label: ConfigGeneric.DIFFERENT_LABEL, value: ConfigGeneric.DIFFERENT_VALUE});
+            selectOptions.unshift({label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE});
             this.setState({value: ConfigGeneric.DIFFERENT_VALUE, selectOptions});
         } else {
             this.setState({value, selectOptions});
@@ -34,14 +36,14 @@ class ConfigAutocomplete extends ConfigGeneric {
         }
         let item;
         let options = JSON.parse(JSON.stringify(this.state.selectOptions));
-        let isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_LABEL;
+        let isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_VALUE;
 
         if (isIndeterminate) {
             [...this.state.value]
                 .filter(val => !options.find(it => it.value === val))
                 .forEach(item => options.push({label: item.toString(), value: item}));
 
-            item = {label: ConfigGeneric.DIFFERENT_LABEL, value: ConfigGeneric.DIFFERENT_VALUE};
+            item = {label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE};
             options.unshift(item);
         } else {
             // eslint-disable-next-line

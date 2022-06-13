@@ -58,11 +58,11 @@ class ConfigNumber extends ConfigGeneric {
     }
 
     renderItem(error, disabled, defaultValue) {
-        let isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_LABEL;
+        let isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_VALUE;
 
         if (isIndeterminate) {
             const arr = [...this.state.value].map(item => ({label: item.toString(), value: item}));
-            arr.unshift({label: ConfigGeneric.DIFFERENT_LABEL, value: ConfigGeneric.DIFFERENT_VALUE});
+            arr.unshift({label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE});
 
             return <Autocomplete
                 className={this.props.classes.indeterminate}

@@ -8,6 +8,8 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
+import I18n from '@iobroker/adapter-react-v5/i18n';
+
 import ConfigGeneric from './ConfigGeneric';
 
 const styles = theme => ({
@@ -26,7 +28,7 @@ class ConfigSelect extends ConfigGeneric {
         // if __different
         if (Array.isArray(value)) {
             this.initialValue = [...value];
-            selectOptions.unshift({label: ConfigGeneric.DIFFERENT_LABEL, value: ConfigGeneric.DIFFERENT_VALUE});
+            selectOptions.unshift({label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE});
             this.setState({value: ConfigGeneric.DIFFERENT_VALUE, selectOptions});
         } else {
             this.setState({value, selectOptions});

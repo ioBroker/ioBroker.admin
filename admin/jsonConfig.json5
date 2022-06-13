@@ -146,6 +146,11 @@
           "sm": 12,
           "md": 4,
           "lg": 2
+        },
+        "myInstance": {
+          "type": 'instance',
+          "adapter": '_dataSources',
+          "sm": 12
         }
       }
     },

@@ -13,9 +13,9 @@ import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 
 class ConfigGeneric extends Component {
     static DIFFERENT_VALUE = '__different__';
-    static DIFFERENT_LABEL  = I18n.t('ra___different__');
+    static DIFFERENT_LABEL  = 'ra___different__';
     static NONE_VALUE = '';
-    static NONE_LABEL  = I18n.t('ra_none');
+    static NONE_LABEL  = 'ra_none';
     static AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
     constructor(props) {
