@@ -570,10 +570,13 @@ class Intro extends Component {
         let nodeUpdate = '';
         let npmUpdate = '';
         if (hostData) {
-            if (semver.gt(hostData['_nodeNewest'], hostData['Node.js'].replace(/^v/, ''))) {
+            if (hostData['_nodeNewest'] && hostData['Node.js'] && semver.gt(hostData['_nodeNewest'], hostData['Node.js'].replace(/^v/, ''))) {
                 nodeUpdate = hostData['_nodeNewest'];
             }
             if (hostData['_nodeNewest'] !== hostData['_nodeNewestNext'] &&
+                hostData['_nodeNewestNext'] &&
+                hostData['Node.js'] &&
+                hostData['_nodeNewest'] &&
                 semver.gt(hostData['_nodeNewestNext'], hostData['Node.js'].replace(/^v/, '')) &&
                 semver.gt(hostData['_nodeNewestNext'], hostData['_nodeNewest'])
             ) {
@@ -583,10 +586,13 @@ class Intro extends Component {
                 nodeUpdate = <Tooltip title={this.props.t('Some updates available')}><span className={this.props.classes.nodeUpdate}>({nodeUpdate})</span></Tooltip>;
             }
 
-            if (semver.gt(hostData['_npmNewest'], hostData['NPM'])) {
+            if (hostData['_npmNewest'] && hostData['NPM'] && semver.gt(hostData['_npmNewest'], hostData['NPM'])) {
                 npmUpdate = hostData['_npmNewest'];
             }
             if (hostData['_npmNewest'] !== hostData['_npmNewestNext'] &&
+                hostData['_npmNewestNext'] &&
+                hostData['NPM'] &&
+                hostData['_npmNewest'] &&
                 semver.gt(hostData['_npmNewestNext'], hostData['NPM']) &&
                 semver.gt(hostData['_npmNewestNext'], hostData['_npmNewest'])
             ) {
