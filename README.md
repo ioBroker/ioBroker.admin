@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) implemented the resize of columns in some tables
+
 ### 6.0.3 (2022-06-10)
 * (bluefox) Many GUI fixes done
 
