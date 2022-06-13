@@ -2758,8 +2758,10 @@ class ObjectBrowser extends Component {
      * @private
      */
     onCollapseAll() {
-        window.localStorage.setItem((this.props.dialogName || 'App') + '.objectExpanded', JSON.stringify([]));
-        this.setState({ expanded: [], depth: 0 });
+        window.localStorage.setItem(`${this.props.dialogName || 'App'}.objectExpanded`, JSON.stringify([]));
+        window.localStorage.setItem(`${this.props.dialogName || 'App'}.objectSelected`, '[]');
+        this.setState({ expanded: [], depth: 0, selected: [] }, () =>
+            this.onAfterSelect());
     }
 
     /**
