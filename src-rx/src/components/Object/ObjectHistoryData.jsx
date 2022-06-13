@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {withStyles} from '@mui/styles';
+import { withStyles } from '@mui/styles';
 import clsx from 'clsx';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import {
-    LocalizationProvider,
-    TimePicker,
-    DatePicker,
-} from '@mui/x-date-pickers';
+import { LocalizationProvider, TimePicker, DatePicker } from '@mui/x-date-pickers';
 import Paper from '@mui/material/Paper';
 import LinearProgress from '@mui/material/LinearProgress';
 import InputLabel from '@mui/material/InputLabel';
@@ -26,7 +22,6 @@ import Button from '@mui/material/Button';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
-import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
@@ -56,6 +51,8 @@ import { FaPlusSquare as InsertIcon} from 'react-icons/fa';
 import { FaDownload as ExportIcon} from 'react-icons/fa';
 import IconDelete from '@mui/icons-material/Delete';
 import IconClose from '@mui/icons-material/Close';
+
+import TableResize from '../TableResize';
 
 const localeMap = {
     en: enLocale,
@@ -105,12 +102,16 @@ const styles = theme => ({
         height: '100%'
     },
     table: {
-        tableLayout: 'fixed',
+        //tableLayout: 'fixed',
         minWidth: 960,
+        width: '100%',
         '& td:nth-of-type(5)': {
             overflow: 'hidden',
             whiteSpace: 'nowrap'
-        }
+        },
+        '& tr:nth-child(even)': {
+            backgroundColor: theme.palette.mode === 'dark' ? '#383838' : '#b2b2b2',
+        },
     },
     row: {
         userSelect: 'none',
@@ -213,16 +214,16 @@ const styles = theme => ({
 
     },
     colAck: {
-        width: 50,
+        // width: 50,
     },
     colFrom: {
-        width: 150,
+        // width: 150,
     },
     colLastChange: {
-        width: 200,
+        // width: 200,
     },
     colTs: {
-        width: 200,
+        // width: 200,
     },
     dateInput: {
         width: 140,
@@ -448,6 +449,7 @@ class ObjectHistoryData extends Component {
         }
 
         this.setState({ loading: true });
+
         return this.props.socket.getHistory(this.props.obj._id, {
             instance:  this.state.historyInstance,
             start,
@@ -458,77 +460,78 @@ class ObjectHistoryData extends Component {
             addID:     false,
             aggregate: 'none',
             returnNewestEntries: true,
-        }).then(values => {
-            // merge range and chart
-            let chart       = [];
-            let range       = this.rangeValues;
-            let lcVisible   = false;
-            let qVisible    = false;
-            let ackVisible  = false;
-            let fromVisible = false;
-            let cVisible    = false;
+        })
+            .then(values => {
+                // merge range and chart
+                let chart       = [];
+                let range       = this.rangeValues;
+                let lcVisible   = false;
+                let qVisible    = false;
+                let ackVisible  = false;
+                let fromVisible = false;
+                let cVisible    = false;
 
-            // get the very first item
-            if (range && range.length && (!values || !values.length || range[0].ts < values[0].ts)) {
-                chart.push(range[0]);
-                chart.push({ts: range[0].ts + 1, e: true});
-                console.log(`add ${new Date(range[0].ts).toISOString()}: ${range[0].val}`);
-                if (!qVisible && range[0].q !== undefined) {
-                    qVisible = true;
-                }
-                if (!ackVisible && range[0].ack !== undefined) {
-                    ackVisible = true;
-                }
-                if (!fromVisible && range[0].from) {
-                    fromVisible = true;
-                }
-                if (!cVisible && range[0].c) {
-                    cVisible = true;
-                }
-            }
-
-            if (values && values.length) {
-                for (let t = 0; t < values.length; t++) {
-                    // if range and details are not equal
-                    if (values[t] && (!chart.length || chart[chart.length - 1].ts < values[t].ts)) {
-                        chart.push(values[t]);
-                        if (values[t].from) {
-                            if (values[t].from.startsWith('system.adapter.')) {
-                                values[t].from = values[t].from.substring(15);
-                            } else if (values[t].from.startsWith('system.host.')) {
-                                values[t].from = values[t].from.substring(7);
-                            }
-                        }
-                        if (!lcVisible && values[t].lc) {
-                            lcVisible = true;
-                        }
-                        if (!qVisible && values[t].q !== undefined) {
-                            qVisible = true;
-                        }
-                        if (!ackVisible && values[t].ack !== undefined) {
-                            ackVisible = true;
-                        }
-                        if (!fromVisible && values[t].from) {
-                            fromVisible = true;
-                        }
-                        if (!cVisible && values[t].c) {
-                            cVisible = true;
-                        }
-                        console.log(`add value ${new Date(values[t].ts).toISOString()}: ${values[t].val}`)
-                    } else if (chart[chart.length - 1].ts === values[t].ts && chart[chart.length - 1].val !== values[t].ts) {
-                        console.error('Strange data!');
+                // get the very first item
+                if (range && range.length && (!values || !values.length || range[0].ts < values[0].ts)) {
+                    chart.push(range[0]);
+                    chart.push({ts: range[0].ts + 1, e: true});
+                    console.log(`add ${new Date(range[0].ts).toISOString()}: ${range[0].val}`);
+                    if (!qVisible && range[0].q !== undefined) {
+                        qVisible = true;
+                    }
+                    if (!ackVisible && range[0].ack !== undefined) {
+                        ackVisible = true;
+                    }
+                    if (!fromVisible && range[0].from) {
+                        fromVisible = true;
+                    }
+                    if (!cVisible && range[0].c) {
+                        cVisible = true;
                     }
                 }
-            } else {
-                chart.push({noDataForPeriod: true});
-            }
 
-            if (!chart.length) {
-                chart.push({noData: true});
-            }
+                if (values && values.length) {
+                    for (let t = 0; t < values.length; t++) {
+                        // if range and details are not equal
+                        if (values[t] && (!chart.length || chart[chart.length - 1].ts < values[t].ts)) {
+                            chart.push(values[t]);
+                            if (values[t].from) {
+                                if (values[t].from.startsWith('system.adapter.')) {
+                                    values[t].from = values[t].from.substring(15);
+                                } else if (values[t].from.startsWith('system.host.')) {
+                                    values[t].from = values[t].from.substring(7);
+                                }
+                            }
+                            if (!lcVisible && values[t].lc) {
+                                lcVisible = true;
+                            }
+                            if (!qVisible && values[t].q !== undefined) {
+                                qVisible = true;
+                            }
+                            if (!ackVisible && values[t].ack !== undefined) {
+                                ackVisible = true;
+                            }
+                            if (!fromVisible && values[t].from) {
+                                fromVisible = true;
+                            }
+                            if (!cVisible && values[t].c) {
+                                cVisible = true;
+                            }
+                            console.log(`add value ${new Date(values[t].ts).toISOString()}: ${values[t].val}`)
+                        } else if (chart[chart.length - 1].ts === values[t].ts && chart[chart.length - 1].val !== values[t].ts) {
+                            console.error('Strange data!');
+                        }
+                    }
+                } else {
+                    chart.push({ noDataForPeriod: true });
+                }
 
-            this.setState( {loading: false, values: chart, lcVisible, fromVisible, qVisible, ackVisible, cVisible});
-        });
+                if (!chart.length) {
+                    chart.push({ noData: true });
+                }
+
+                this.setState( { loading: false, values: chart, lcVisible, fromVisible, qVisible, ackVisible, cVisible });
+            });
     }
 
     readHistoryRange() {
@@ -847,30 +850,50 @@ class ObjectHistoryData extends Component {
         if (this.state.values) {
             const { classes } = this.props;
 
+            const initialWidths = [200, 'auto'];
+            const minWidths = [190, 100];
+            if (this.state.ackVisible) {
+                initialWidths.push(50);
+                minWidths.push(50);
+            }
+            if (this.state.fromVisible) {
+                initialWidths.push(150);
+                minWidths.push(150);
+            }
+            if (this.state.lcVisible) {
+                initialWidths.push(200);
+                minWidths.push(190);
+            }
+
             return <TableContainer className={ classes.container }>
-                <Table stickyHeader size="small" className={ classes.table }>
+                <TableResize
+                    stickyHeader
+                    className={classes.table}
+                    initialWidths={initialWidths}
+                    minWidths={minWidths}
+                    dblTitle={this.props.t('Double click to reset table layout')}
+                >
                     <TableHead>
                         <TableRow>
-                            <TableCell className={ classes.colTs }>
+                            <TableCell className={ classes.colTs } >
                                 { this.props.t('Timestamp') }
                             </TableCell>
                             <TableCell className={ classes.colValue }>
                                 { this.props.t('Value') }
                             </TableCell>
-                            {this.state.ackVisible ? <TableCell className={ classes.colAck }>
+                            {this.state.ackVisible  ? <TableCell className={ classes.colAck }>
                                 { this.props.t('Ack') }
                             </TableCell> : null}
                             {this.state.fromVisible ? <TableCell className={ classes.colFrom }>
                                 { this.props.t('From') }
                             </TableCell> : null}
-
-                            {this.state.lcVisible ? <TableCell className={ classes.colLastChange }>
+                            {this.state.lcVisible   ? <TableCell className={ classes.colLastChange }>
                                 { this.props.t('Last change') }
                             </TableCell> : null}
                         </TableRow>
                     </TableHead>
                     <TableBody>{ this.getTableRows(classes) }</TableBody>
-                </Table>
+                </TableResize>
             </TableContainer>;
         } else {
             return <LinearProgress/>;
@@ -1247,13 +1270,13 @@ class ObjectHistoryData extends Component {
                 //const tm = `${padding2(time.getHours())}:${padding2(time.getMinutes())}:${padding2(time.getSeconds())}.${padding3(time.getMilliseconds())}`;
 
                 const edit = {
-                    ack:   this.state.values[this.state.values.length - 1].ack,
-                    val:   this.state.values[this.state.values.length - 1].val,
-                    ts:    time,
-                    date:  new Date(time),
-                    ms:    0,
-                    time:  new Date(time),
-                    q:     0
+                    ack:  this.state.values[this.state.values.length - 1].ack,
+                    val:  this.state.values[this.state.values.length - 1].val,
+                    ts:   time,
+                    date: new Date(time),
+                    ms:   0,
+                    time: new Date(time),
+                    q:    0
                 };
 
                 this.setState( {
@@ -1284,7 +1307,6 @@ class ObjectHistoryData extends Component {
             }} >
                 <DeleteIcon />
             </IconButton> : null }
-
         </Toolbar>;
     }
 
