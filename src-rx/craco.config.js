@@ -1,7 +1,7 @@
 const CracoEsbuildPlugin = require('craco-esbuild');
-const { ProvidePlugin, IgnorePlugin } = require('webpack');
-const { ModuleFederationPlugin } = require('webpack').container;
-const deps = require('./package.json').dependencies;
+const { ProvidePlugin/*, IgnorePlugin */} = require('webpack');
+// const { ModuleFederationPlugin } = require('webpack').container;
+// const deps = require('./package.json').dependencies;
 const cracoModuleFederation = require('craco-module-federation');
 
 console.log('craco');
@@ -12,6 +12,9 @@ module.exports = {
         // options: { useNamedChunkIds:true } //THIS LINE IS OPTIONAL
     }],
     webpack: {
+        output: {
+            publicPath: './',
+        },
         plugins: [
             // new HtmlWebpackPlugin(),
             new ProvidePlugin({
