@@ -18,6 +18,7 @@ import I18n from '@iobroker/adapter-react-v5/i18n';
 import theme from '@iobroker/adapter-react-v5/Theme';
 import ConfigPanel from '../components/JsonConfigComponent/ConfigPanel';
 import CheckIcon from '@mui/icons-material/Check';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 let node = null;
 

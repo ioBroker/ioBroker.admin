@@ -11,7 +11,7 @@ import I18n from '@iobroker/adapter-react-v5/i18n';
 import CustomModal from '../CustomModal';
 
 import AceEditor from 'react-ace';
-// import 'ace-builds/webpack-resolver';
+import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-noconflict/theme-chrome';

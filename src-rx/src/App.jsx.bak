@@ -270,36 +270,37 @@ class App extends Router {
             }
         };
         // init translations
-        this.translations = {
-            'en': import('@iobroker/adapter-react-v5/i18n/en'),
-            'de': import('@iobroker/adapter-react-v5/i18n/de'),
-            'ru': import('@iobroker/adapter-react-v5/i18n/ru'),
-            'pt': import('@iobroker/adapter-react-v5/i18n/pt'),
-            'nl': import('@iobroker/adapter-react-v5/i18n/nl'),
-            'fr': import('@iobroker/adapter-react-v5/i18n/fr'),
-            'it': import('@iobroker/adapter-react-v5/i18n/it'),
-            'es': import('@iobroker/adapter-react-v5/i18n/es'),
-            'pl': import('@iobroker/adapter-react-v5/i18n/pl'),
-            'zh-cn': import('@iobroker/adapter-react-v5/i18n/zh-cn'),
-        };
+            this.translations = {
+                'en': require('@iobroker/adapter-react-v5/i18n/en.json'),
+                'de': require('@iobroker/adapter-react-v5/i18n/de.json'),
+                'ru': require('@iobroker/adapter-react-v5/i18n/ru.json'),
+                'pt': require('@iobroker/adapter-react-v5/i18n/pt.json'),
+                'nl': require('@iobroker/adapter-react-v5/i18n/nl.json'),
+                'fr': require('@iobroker/adapter-react-v5/i18n/fr.json'),
+                'it': require('@iobroker/adapter-react-v5/i18n/it.json'),
+                'es': require('@iobroker/adapter-react-v5/i18n/es.json'),
+                'pl': require('@iobroker/adapter-react-v5/i18n/pl.json'),
+                'zh-cn': require('@iobroker/adapter-react-v5/i18n/zh-cn.json'),
+            };
 
-        const translations = {
-            'en': import('./i18n/en'),
-            'de': import('./i18n/de'),
-            'ru': import('./i18n/ru'),
-            'pt': import('./i18n/pt'),
-            'nl': import('./i18n/nl'),
-            'fr': import('./i18n/fr'),
-            'it': import('./i18n/it'),
-            'es': import('./i18n/es'),
-            'pl': import('./i18n/pl'),
-            'zh-cn': import('./i18n/zh-cn'),
-        };
-        // merge together
-        Object.keys(translations).forEach(lang => this.translations[lang] = Object.assign(this.translations[lang], translations[lang]));
+            const translations = {
+                'en': require('./i18n/en.json'),
+                'de': require('./i18n/de.json'),
+                'ru': require('./i18n/ru.json'),
+                'pt': require('./i18n/pt.json'),
+                'nl': require('./i18n/nl.json'),
+                'fr': require('./i18n/fr.json'),
+                'it': require('./i18n/it.json'),
+                'es': require('./i18n/es.json'),
+                'pl': require('./i18n/pl.json'),
+                'zh-cn': require('./i18n/zh-cn.json'),
+            };
+            // merge together
+            Object.keys(translations).forEach(lang => this.translations[lang] = Object.assign(this.translations[lang], translations[lang]));
 
-        // init translations
-        I18n.setTranslations(this.translations);
+            // init translations
+            I18n.setTranslations(this.translations);
+            this.state.languagesInited = true;
         I18n.setLanguage((navigator.language || navigator.userLanguage || 'en').substring(0, 2).toLowerCase());
 
         this.refConfigIframe = null;
@@ -403,6 +404,7 @@ class App extends Router {
             const theme = this.createTheme();
             this.state = {
                 login: true,
+                languagesInited: false,
                 theme,
                 themeName: this.getThemeName(theme),
                 themeType: this.getThemeType(theme)
@@ -1518,6 +1520,14 @@ class App extends Router {
                 <div style={{color: '#F88', fontSize: 14, marginTop: 20}}>{message}</div>
                 <pre style={{color: '#F88', fontSize: 12, fontFamily: 'monospace', textAlign: 'left', marginTop: 20, padding: 20}}>{(stack || '').split('\n').join((line, i) => <div key={i}>{line}<br/></div>)}</pre>
             </div>;
+        }
+
+        if (!this.state.languagesInited) {
+            return <StyledEngineProvider injectFirst><ThemeProvider theme={this.state.theme}>
+                {window.vendorPrefix === 'PT' ? <LoaderPT theme={this.state.themeType}/> :null}
+                {window.vendorPrefix && window.vendorPrefix !== 'PT' && window.vendorPrefix !== '@@vendorPrefix@@' ? <LoaderVendor theme={this.state.themeType}/> :null}
+                {!window.vendorPrefix || window.vendorPrefix === '@@vendorPrefix@@' ? <Loader theme={this.state.themeType} /> : null}
+            </ThemeProvider></StyledEngineProvider>;
         }
 
         if (this.state.login) {

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import {withStyles} from '@mui/styles';
 
 import AceEditor from 'react-ace';
-// import 'ace-builds/webpack-resolver';
+import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-noconflict/theme-chrome';
@@ -332,8 +332,9 @@ class ObjectBrowserEditObject extends Component {
         }
 
         let id = '';
+        let json;
         try {
-            const json = JSON.parse(this.state.text);
+            json = JSON.parse(this.state.text);
 
             if (this.state.selectId) {
                 id = json.common?.alias?.id || '';

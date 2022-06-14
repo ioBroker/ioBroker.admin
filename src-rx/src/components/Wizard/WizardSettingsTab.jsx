@@ -26,7 +26,7 @@ import Paper from  '@mui/material/Paper';
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 
 //Icons
-import {FaCrosshairs as GeoIcon} from 'react-icons/all';
+import {FaCrosshairs as GeoIcon} from 'react-icons/fa';
 import PinSVG from '../../assets/pin.svg';
 import IconCheck from '@mui/icons-material/Check';
 
