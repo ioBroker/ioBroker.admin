@@ -17,6 +17,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { Hidden, Tooltip } from '@mui/material';
 import Badge from '@mui/material/Badge';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 // @material-ui/icons
 import MenuIcon from '@mui/icons-material/Menu';
@@ -24,6 +26,8 @@ import BuildIcon from '@mui/icons-material/Build';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import PictureInPictureAltIcon from '@mui/icons-material/PictureInPictureAlt';
 import UserIcon from '@mui/icons-material/Person';
+import SyncIcon from '@mui/icons-material/CloudSync';
+import SyncIconDisabled from '@mui/icons-material/SyncDisabled';
 
 import ExpertIcon from '@iobroker/adapter-react-v5/icons/IconExpert';
 
@@ -311,7 +315,7 @@ class App extends Router {
         this.adminGuiConfig = { admin: {menu: {}, settings: {}, adapters: {}, login: {}} };
 
         if (!query.login) {
-            let drawerState = window.localStorage.getItem('App.drawerState');
+            let drawerState = (window._localStorage || window.localStorage).getItem('App.drawerState');
             if (drawerState) {
                 drawerState = parseInt(drawerState, 10);
             } else {
@@ -439,6 +443,117 @@ class App extends Router {
         }
     }
 
+    localStorageGetItem = name => {
+        return this.guiSettings.native[name];
+    };
+
+    localStorageSetItem = (name, value) => {
+        if (value === null) {
+            value = 'null';
+        } else
+        if (value === undefined) {
+            return this.localStorageRemoveItem(name);
+        }
+        this.guiSettings.native[name] = value.toString();
+        this.localStorageSave();
+    };
+
+    localStorageRemoveItem = name => {
+        if (this.guiSettings.native.hasOwnProperty(name)) {
+            delete this.guiSettings.native[name];
+            this.localStorageSave();
+        }
+    };
+
+    localStorageSave() {
+        this.localStorageTimer && clearTimeout(this.localStorageTimer);
+        this.localStorageTimer = setTimeout(async () => {
+            this.localStorageTimer = null;
+            await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, this.guiSettings);
+        }, 200);
+    }
+
+    getGUISettings() {
+        return this.socket.getState(`system.adapter.${this.adminInstance}.guiSettings`)
+            .catch(e => ({val: false}))
+            .then(state => {
+                if (state && state.val) {
+                    return this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`)
+                        .then(obj => {
+                            this.guiSettings = obj || {type: 'state', common: {type: 'boolean', read: true, write: false, role: 'state'}};
+                            this.guiSettings.native = this.guiSettings.native || {};
+                            window._localStorage = {
+                                getItem:    this.localStorageGetItem,
+                                setItem:    this.localStorageSetItem,
+                                removeItem: this.localStorageRemoveItem,
+                            };
+
+                            // this is only settings, that initialized before connection established
+                            let drawerState = this.guiSettings.native['App.drawerState'];
+                            if (drawerState) {
+                                drawerState = parseInt(drawerState, 10);
+                            } else {
+                                drawerState = this.props.width === 'xs' ? DrawerStates.closed : DrawerStates.opened;
+                            }
+
+                            this.setState({ guiSettings: true, drawerState }, () => {
+                                if (Utils.getThemeName() !== this.state.theme.name) {
+                                    this.toggleTheme(Utils.getThemeName());
+                                }
+                            });
+                        });
+                } else if (this.state.guiSettings) {
+                    window._localStorage = null;
+
+                    this.setState({ guiSettings: false });
+                }
+            });
+    }
+
+    enableGuiSettings(enabled, ownSettings) {
+        if (enabled && !this.guiSettings) {
+            return this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`)
+                .then(async obj => {
+                    await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, { val: true, ack: true });
+
+                    this.guiSettings = obj || {type: 'state', common: {type: 'boolean', read: true, write: false, role: 'state'}};
+
+                    if (ownSettings || !this.guiSettings.native || !Object.keys(this.guiSettings.native).length) {
+                        this.guiSettings.native = {};
+                        const keys = Object.keys(window.localStorage);
+                        keys.forEach(name => {
+                            if (name !== 'getItem' && name !== 'setItem' && name !== 'removeItem' && name !== 'clear' && name !== 'key' && name !== 'length') {
+                                this.guiSettings.native[name] = window.localStorage.getItem(name);
+                            }
+                        });
+                        await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, this.guiSettings);
+                    } else {
+                        window.location.reload();
+                    }
+
+                    await this.getGUISettings();
+                });
+        } else if (!enabled && this.guiSettings) {
+            window._localStorage = null;
+
+            // clear localStorage
+            const keys = Object.keys(window.localStorage);
+            let i = keys.length;
+
+            while (i--) {
+                window.localStorage.removeItem(keys[i]);
+            }
+
+            Object.keys(this.guiSettings.native).forEach(name => window.localStorage.setItem(name, this.guiSettings.native[name]));
+
+            this.guiSettings = null;
+
+            return this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, { val: false, ack: true })
+                .catch(e => window.alert('Cannot disable settings'))
+                .then(() => this.setState({ guiSettings: false }));
+        }
+    }
+
     componentDidMount() {
         if (!this.state.login) {
             window.addEventListener('hashchange', this.onHashChanged, false);
@@ -461,12 +576,15 @@ class App extends Router {
                         });
                     } else if (progress === PROGRESS.READY) {
                         // BF: (2022.05.09) here must be this.socket.getVersion(true), but I have no Idea, why it does not work :(
-                        this.socket._socket.emit('getVersion', (err, version) => {
+                        this.socket._socket.emit('getVersion', async (err, version) => {
                             console.log(`Stored version: ${this.state.versionAdmin}, new version: ${version}`);
                             if (this.state.versionAdmin && this.state.versionAdmin !== version) {
                                 window.alert('New adapter version detected. Reloading...')
                                 setTimeout(() => window.location.reload(), 500)
                             }
+
+                            // read settings anew
+                            await this.getGUISettings();
 
                             const newState = {
                                 connected: true,
@@ -510,6 +628,8 @@ class App extends Router {
                             return this.socket.getIsEasyModeStrict();
                         })
                         .then(async isStrict => {
+                            await this.getGUISettings();
+
                             if (isStrict) {
                                 return this.socket.getEasyMode()
                                     .then(config => {
@@ -617,6 +737,25 @@ class App extends Router {
         }
     }
 
+    componentWillUnmount() {
+        window.removeEventListener('hashchange', this.onHashChanged, false);
+        this.socket && this.socket.unsubscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
+
+        this.adaptersWorker && this.adaptersWorker.unregisterRepositoryHandler(this.repoChangeHandler);
+        this.adaptersWorker && this.adaptersWorker.unregisterHandler(this.adaptersChangeHandler);
+
+        this.pingAuth && clearTimeout(this.pingAuth);
+        this.pingAuth = null;
+        this.expireInSecInterval && clearInterval(this.expireInSecInterval);
+        this.expireInSecInterval = null;
+        this.unsubscribeOnHostsStatus();
+
+        // restore localstorage
+        if (this._localStorage) {
+            window._localStorage = null;
+        }
+    }
+
     repoChangeHandler = () => {
         this.readRepoAndInstalledInfo(this.state.currentHost, null, true)
             .then(() => console.log('Repo updated!'));
@@ -658,7 +797,7 @@ class App extends Router {
         newState.hosts = await this.socket.getCompactHosts();
 
         if (!this.state.currentHost) {
-            const currentHost = window.localStorage.getItem('App.currentHost');
+            const currentHost = (window._localStorage || window.localStorage).getItem('App.currentHost');
 
             const itemHost = newState.hosts.find(host => host._id === currentHost);
 
@@ -924,20 +1063,6 @@ class App extends Router {
     unsubscribeOnHostsStatus() {
         this.state.hosts && this.socket && this.state.hosts.forEach(item =>
             this.socket.unsubscribeState(item._id + '.alive', this.onHostStatusChanged));
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener('hashchange', this.onHashChanged, false);
-        this.socket && this.socket.unsubscribeState('system.adapter.discovery.0.alive', this.onDiscoveryAlive);
-
-        this.adaptersWorker && this.adaptersWorker.unregisterRepositoryHandler(this.repoChangeHandler);
-        this.adaptersWorker && this.adaptersWorker.unregisterHandler(this.adaptersChangeHandler);
-
-        this.pingAuth && clearTimeout(this.pingAuth);
-        this.pingAuth = null;
-        this.expireInSecInterval && clearInterval(this.expireInSecInterval);
-        this.expireInSecInterval = null;
-        this.unsubscribeOnHostsStatus();
     }
 
     /**
@@ -1335,7 +1460,7 @@ class App extends Router {
     }
 
     handleDrawerState(state) {
-        window.localStorage.setItem('App.drawerState', state);
+        (window._localStorage || window.localStorage).setItem('App.drawerState', state);
         this.setState({
             drawerState: state
         });
@@ -1649,6 +1774,15 @@ class App extends Router {
                                     </Badge>
                                 </Tooltip>
                             </IsVisible>
+                            {this.state.expertMode ? <Tooltip title={I18n.t('Synchronize admin settings between all opened browser windows')}>
+                                <IconButton
+                                    size="large"
+                                    onClick={e => this.state.guiSettings ? this.enableGuiSettings(false) : this.setState({ showGuiSettings: e.target })}
+                                    style={{ color: this.state.guiSettings ? this.state.theme.palette.expert : undefined }}
+                                >
+                                    { this.state.guiSettings ? <SyncIcon /> : <SyncIconDisabled /> }
+                                </IconButton>
+                            </Tooltip> : null }
                             <IsVisible name="admin.appBar.hostSelector" config={this.adminGuiConfig}>
                                 <HostSelectors
                                     expertMode={this.state.expertMode}
@@ -1661,7 +1795,7 @@ class App extends Router {
                                             currentHost: host
                                         }, () => {
                                             this.logsWorkerChanged(host);
-                                            window.localStorage.setItem('App.currentHost', host);
+                                            (window._localStorage || window.localStorage).setItem('App.currentHost', host);
 
                                             this.readRepoAndInstalledInfo(host, this.state.hosts)
                                                 .then(() =>
@@ -1780,6 +1914,16 @@ class App extends Router {
             {this.renderWizardDialog()}
             {this.renderSlowConnectionWarning()}
             {!this.state.connected && <Connecting />}
+            {this.state.showGuiSettings ? <Menu anchorEl={this.state.showGuiSettings} open={true}>
+                <MenuItem onClick={() => {
+                    this.setState({ showGuiSettings: null });
+                    this.enableGuiSettings(true)
+                }}>{I18n.t('Use settings of other browsers')}</MenuItem>
+                <MenuItem onClick={() => {
+                    this.setState({ showGuiSettings: null });
+                    this.enableGuiSettings(true, true);
+                }}>{I18n.t('Use settings of this browser')}</MenuItem>
+            </Menu> : null}
         </ThemeProvider></StyledEngineProvider>;
     }
 }

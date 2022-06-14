@@ -51,7 +51,7 @@ class Objects extends Component {
 
         this.dialogName = 'AdminObjects';
 
-        this.filters = window.localStorage.getItem(`${this.dialogName || 'App'}.filters`) || '{}';
+        this.filters = (window._localStorage || window.localStorage).getItem(`${this.dialogName || 'App'}.filters`) || '{}';
 
         try {
             this.filters = JSON.parse(this.filters);
@@ -59,7 +59,7 @@ class Objects extends Component {
             this.filters = {};
         }
 
-        let selected = window.localStorage.getItem(`${this.dialogName || 'App'}.selected`) || '';
+        let selected = (window._localStorage || window.localStorage).getItem(`${this.dialogName || 'App'}.selected`) || '';
 
         this.state = {
             selected: this.props.selected === undefined ? selected : '',
@@ -189,10 +189,10 @@ class Objects extends Component {
                     this.setState({ deleteObjectShow: { id, hasChildren, exists } })}
                 onFilterChanged={filterConfig => {
                     this.filters = filterConfig;
-                    window.localStorage.setItem(`${this.dialogName || 'App'}.filters`, JSON.stringify(filterConfig));
+                    (window._localStorage || window.localStorage).setItem(`${this.dialogName || 'App'}.filters`, JSON.stringify(filterConfig));
                 }}
                 onSelect={selected =>
-                    window.localStorage.setItem(`${this.dialogName || 'App'}.selected`, selected[0] || '')}
+                    (window._localStorage || window.localStorage).setItem(`${this.dialogName || 'App'}.selected`, selected[0] || '')}
                 objectEditBoolean
                 objectAddBoolean
                 objectStatesView

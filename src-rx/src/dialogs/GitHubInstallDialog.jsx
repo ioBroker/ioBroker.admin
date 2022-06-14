@@ -120,9 +120,9 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
 
     const classes = useStyles();
     const [autocompleteValue, setAutocompleteValue] = useState(null);
-    const [debug, setDebug] = useState(window.localStorage.getItem('App.gitDebug') === 'true');
+    const [debug, setDebug] = useState((window._localStorage || window.localStorage).getItem('App.gitDebug') === 'true');
     const [url, setUrl] = useState('');
-    const [currentTab, setCurrentTab] = useState(window.localStorage.getItem('App.gitTab') || 'npm');
+    const [currentTab, setCurrentTab] = useState((window._localStorage || window.localStorage).getItem('App.gitTab') || 'npm');
 
     // eslint-disable-next-line array-callback-return
     const list = useCallback(() =>
@@ -166,7 +166,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                     <Tabs
                         value={currentTab}
                         onChange={(e, newTab) => {
-                            window.localStorage.setItem('App.gitTab', newTab);
+                            (window._localStorage || window.localStorage).setItem('App.gitTab', newTab);
                             setCurrentTab(newTab);
                         }}
                         variant="fullWidth"
@@ -207,7 +207,7 @@ const GitHubInstallDialog = ({ categories, repository, onClose, open, installFro
                                 <Checkbox
                                     checked={debug}
                                     onChange={e => {
-                                        window.localStorage.setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
+                                        (window._localStorage || window.localStorage).setItem('App.gitDebug', e.target.checked ? 'true' : 'false');
                                         setDebug(e.target.checked);
                                     }} />}
                             label={t('Debug outputs')}

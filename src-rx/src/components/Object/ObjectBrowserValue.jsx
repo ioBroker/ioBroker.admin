@@ -159,8 +159,8 @@ class ObjectBrowserValue extends Component {
         this.state = {
             type,
             chart: false,
-            chartEnabled: window.localStorage.getItem('App.chartSetValue') !== 'false',
-            fullScreen: window.localStorage.getItem('App.fullScreen') === 'true',
+            chartEnabled: (window._localStorage || window.localStorage).getItem('App.chartSetValue') !== 'false',
+            fullScreen: (window._localStorage || window.localStorage).getItem('App.fullScreen') === 'true',
         };
 
         this.ack    = false;
@@ -340,7 +340,7 @@ class ObjectBrowserValue extends Component {
                     size="small"
                     color={this.state.chartEnabled ? 'primary' : 'default'}
                     onClick={() => {
-                    window.localStorage.setItem('App.chartSetValue', this.state.chartEnabled ? 'false' : 'true');
+                    (window._localStorage || window.localStorage).setItem('App.chartSetValue', this.state.chartEnabled ? 'false' : 'true');
                     this.setState({chartEnabled: !this.state.chartEnabled});
                 }}><ChartIcon /></Fab> : null }
             </DialogTitle>
@@ -375,7 +375,7 @@ class ObjectBrowserValue extends Component {
                                         { this.state.type === 'json' ? <Grid item flex={1}></Grid> : null}
                                         { this.state.type === 'json' ? <Grid item>
                                             <IconButton onClick={() => {
-                                                window.localStorage.setItem('App.fullScreen', this.state.fullScreen ? 'false' : 'true');
+                                                (window._localStorage || window.localStorage).setItem('App.fullScreen', this.state.fullScreen ? 'false' : 'true');
                                                 this.setState({fullScreen: !this.state.fullScreen})
                                             }}>{
                                                 this.state.fullScreen ? <FullscreenExitIcon/> : <FullscreenIcon/>

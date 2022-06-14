@@ -258,7 +258,7 @@ class Adapters extends Component {
             dialog: null,
             dialogProp: null,
             filterConnectionType: false,
-            search: window.localStorage.getItem('Adapter.search') || '',
+            search: (window._localStorage || window.localStorage).getItem('Adapter.search') || '',
             list: false,
             viewMode: false,
             updateList: false,
@@ -529,7 +529,7 @@ class Adapters extends Component {
         const categoriesSorted = [];
         let categoriesExpanded = {};
         try {
-            categoriesExpanded = JSON.parse(window.localStorage.getItem('Adapters.expandedCategories')) || {};
+            categoriesExpanded = JSON.parse((window._localStorage || window.localStorage).getItem('Adapters.expandedCategories')) || {};
         } catch (error) {
             // ignore
         }
@@ -683,15 +683,15 @@ class Adapters extends Component {
 
         let installedList = false;
         try {
-            installedList = JSON.parse(window.localStorage.getItem('Adapters.installedList'));
+            installedList = JSON.parse((window._localStorage || window.localStorage).getItem('Adapters.installedList'));
         } catch (error) {
 
         }
-        const list            = window.localStorage.getItem('Adapters.list') === 'true';
-        const viewMode        = window.localStorage.getItem('Adapters.viewMode') === 'true';
-        const updateList      = window.localStorage.getItem('Adapters.updateList') === 'true';
-        const categoriesTiles = window.localStorage.getItem('Adapters.categoriesTiles') || 'All';
-        const filterTiles     = window.localStorage.getItem('Adapters.filterTiles') || 'A-Z';
+        const list            = (window._localStorage || window.localStorage).getItem('Adapters.list') === 'true';
+        const viewMode        = (window._localStorage || window.localStorage).getItem('Adapters.viewMode') === 'true';
+        const updateList      = (window._localStorage || window.localStorage).getItem('Adapters.updateList') === 'true';
+        const categoriesTiles = (window._localStorage || window.localStorage).getItem('Adapters.categoriesTiles') || 'All';
+        const filterTiles     = (window._localStorage || window.localStorage).getItem('Adapters.filterTiles') || 'A-Z';
         this.allAdapters      = Object.keys(repository).length - 1;
 
         this.cache.listOfVisibleAdapter = null;
@@ -846,7 +846,7 @@ class Adapters extends Component {
             const categoriesExpanded = oldState.categoriesExpanded;
             categoriesExpanded[category] = !categoriesExpanded[category];
 
-            window.localStorage.setItem('Adapters.expandedCategories', JSON.stringify(categoriesExpanded));
+            (window._localStorage || window.localStorage).setItem('Adapters.expandedCategories', JSON.stringify(categoriesExpanded));
 
             return { categoriesExpanded };
         });
@@ -1061,7 +1061,7 @@ class Adapters extends Component {
         this.typingTimer && clearTimeout(this.typingTimer);
 
         this.typingTimer = setTimeout(value => {
-            window.localStorage.setItem('Adapter.search', value || '');
+            (window._localStorage || window.localStorage).setItem('Adapter.search', value || '');
             this.typingTimer = null;
             this.filterAdapters(value);
         }, 300, event.target.value);
@@ -1078,7 +1078,7 @@ class Adapters extends Component {
 
             categories.forEach(category => categoriesExpanded[category.name] = true);
 
-            window.localStorage.setItem('Adapters.expandedCategories', JSON.stringify(categoriesExpanded));
+            (window._localStorage || window.localStorage).setItem('Adapters.expandedCategories', JSON.stringify(categoriesExpanded));
 
             return { categoriesExpanded };
         });
@@ -1087,7 +1087,7 @@ class Adapters extends Component {
     collapseAll() {
         const categoriesExpanded = {};
 
-        window.localStorage.setItem('Adapters.expandedCategories', JSON.stringify(categoriesExpanded));
+        (window._localStorage || window.localStorage).setItem('Adapters.expandedCategories', JSON.stringify(categoriesExpanded));
 
         this.setState({ categoriesExpanded });
     }
@@ -1097,21 +1097,21 @@ class Adapters extends Component {
         if (list) {
             this.expandAll();
         }
-        window.localStorage.setItem('Adapters.list', list ? 'true' : 'false');
+        (window._localStorage || window.localStorage).setItem('Adapters.list', list ? 'true' : 'false');
         this.setState({ list });
     }
 
     changeViewMode() {
         this.cache.listOfVisibleAdapter = null;
         let viewMode = !this.state.viewMode;
-        window.localStorage.setItem('Adapters.viewMode', viewMode ? 'true' : 'false');
+        (window._localStorage || window.localStorage).setItem('Adapters.viewMode', viewMode ? 'true' : 'false');
         this.setState({ viewMode });
     }
 
     changeUpdateList() {
         this.cache.listOfVisibleAdapter = null;
         let updateList = !this.state.updateList;
-        window.localStorage.setItem('Adapters.updateList', updateList ? 'true' : 'false');
+        (window._localStorage || window.localStorage).setItem('Adapters.updateList', updateList ? 'true' : 'false');
         this.setState({ updateList });
     }
 
@@ -1121,19 +1121,19 @@ class Adapters extends Component {
         if (!installedList && onlyInstalled) {
             installedList = 1;
         }
-        window.localStorage.setItem('Adapters.installedList', JSON.stringify(installedList));
+        (window._localStorage || window.localStorage).setItem('Adapters.installedList', JSON.stringify(installedList));
         this.setState({ installedList });
     }
 
     changeFilterTiles(filterTiles) {
         this.cache.listOfVisibleAdapter = null;
-        window.localStorage.setItem('Adapters.filterTiles', filterTiles);
+        (window._localStorage || window.localStorage).setItem('Adapters.filterTiles', filterTiles);
         this.setState({ filterTiles });
     }
 
     changeCategoriesTiles(categoriesTiles) {
         this.cache.listOfVisibleAdapter = null;
-        window.localStorage.setItem('Adapters.categoriesTiles', categoriesTiles);
+        (window._localStorage || window.localStorage).setItem('Adapters.categoriesTiles', categoriesTiles);
         this.setState({ categoriesTiles });
     }
 
@@ -1235,9 +1235,9 @@ class Adapters extends Component {
         }
     }
     clearAllFilters() {
-        window.localStorage.removeItem('Adapter.search');
-        window.localStorage.removeItem('Adapters.installedList');
-        window.localStorage.removeItem('Adapters.updateList');
+        (window._localStorage || window.localStorage).removeItem('Adapter.search');
+        (window._localStorage || window.localStorage).removeItem('Adapters.installedList');
+        (window._localStorage || window.localStorage).removeItem('Adapters.updateList');
         if (this.inputRef.current) {
             this.inputRef.current.value = '';
         }
@@ -1715,7 +1715,7 @@ class Adapters extends Component {
                                 <IconButton
                                     size="small"
                                     onClick={() => {
-                                        window.localStorage.removeItem('Adapter.search');
+                                        (window._localStorage || window.localStorage).removeItem('Adapter.search');
                                         this.inputRef.current.value = '';
                                         this.setState({ search: '' }, () => this.filterAdapters());
                                     }}

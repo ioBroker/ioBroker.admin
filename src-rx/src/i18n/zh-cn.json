@@ -1492,5 +1492,8 @@
   "Unknown type: use in name \"private\", \"public\" or \"chained\" to define the certificate type": "未知类型：在名称中使用“private”、“public”或“chained”来定义证书类型",
   "read only": "只读",
   "Different IDs for read and write": "读写不同的ID",
-  "Some updates available": "一些可用的更新"
+  "Some updates available": "一些可用的更新",
+  "Use settings of other browsers": "使用其他浏览器的设置",
+  "Use settings of this browser": "使用此浏览器的设置",
+  "Synchronize admin settings between all opened browser windows": "在所有打开的浏览器窗口之间同步管理设置"
 }

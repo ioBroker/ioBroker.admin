@@ -121,7 +121,7 @@ class HostEdit extends Component {
             text: JSON.stringify(this.props.obj, null, 2),
             error: false,
             changed: false,
-            tab: window.localStorage.getItem((this.props.dialogName || 'App') + '.editTab') || 'object',
+            tab: (window._localStorage || window.localStorage).getItem((this.props.dialogName || 'App') + '.editTab') || 'object',
         };
 
         this.originalObj = JSON.stringify(this.props.obj, null, 2);

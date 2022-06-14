@@ -36,14 +36,14 @@ class SlowConnectionWarningDialog extends Component {
     }
 
     static getReadTimeoutMs() {
-        return parseInt(window.localStorage.getItem('App.readTimeoutMs'), 10) || 15000;
+        return parseInt((window._localStorage || window.localStorage).getItem('App.readTimeoutMs'), 10) || 15000;
     }
 
     static saveReadTimeoutMs(readTimeoutMs) {
         if (readTimeoutMs) {
-            return window.localStorage.setItem('App.readTimeoutMs', readTimeoutMs.toString());
+            return (window._localStorage || window.localStorage).setItem('App.readTimeoutMs', readTimeoutMs.toString());
         } else {
-            return window.localStorage.removeItem('App.readTimeoutMs');
+            return (window._localStorage || window.localStorage).removeItem('App.readTimeoutMs');
         }
     }
 

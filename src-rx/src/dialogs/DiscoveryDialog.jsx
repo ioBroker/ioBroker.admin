@@ -366,7 +366,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
         async function fetchData() {
             const resultList = await socket.sendTo('system.adapter.discovery.0', 'listMethods', null);
             let listChecked = {};
-            let lastSelection = window.localStorage.getItem('App.discoveryLastSelection') || null;
+            let lastSelection = (window._localStorage || window.localStorage).getItem('App.discoveryLastSelection') || null;
             if (lastSelection) {
                 try {
                     lastSelection = JSON.parse(lastSelection);
@@ -665,7 +665,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                 onChange={(_, value) => {
                                     const newCheckboxChecked = JSON.parse(JSON.stringify(checkboxChecked));
                                     newCheckboxChecked[key] = value;
-                                    window.localStorage.setItem('App.discoveryLastSelection', JSON.stringify(newCheckboxChecked));
+                                    (window._localStorage || window.localStorage).setItem('App.discoveryLastSelection', JSON.stringify(newCheckboxChecked));
                                     setCheckboxChecked(newCheckboxChecked)
                                 }}
                             />{key}</div>)}</>

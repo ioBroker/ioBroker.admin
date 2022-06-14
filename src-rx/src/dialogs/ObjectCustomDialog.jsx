@@ -59,7 +59,7 @@ class ObjectCustomDialog extends MobileDialog {
     constructor(props) {
         super(props);
 
-        let currentTab = parseInt(window.localStorage.getItem('App.objectCustomTab') || 0, 10);
+        let currentTab = parseInt((window._localStorage || window.localStorage).getItem('App.objectCustomTab') || 0, 10);
         this.chartAvailable = this.isChartAvailable();
 
         if (this.chartAvailable) {
@@ -208,7 +208,7 @@ class ObjectCustomDialog extends MobileDialog {
                         onChange={(event, newTab) => {
                             Router.doNavigate(null, null, null, newTab === 1 ? 'table' : (newTab === 2 ? 'chart' : 'config'));
                             this.setState({ currentTab: newTab });
-                            window.localStorage.setItem('App.objectCustomTab', newTab);
+                            (window._localStorage || window.localStorage).setItem('App.objectCustomTab', newTab);
                         }}
                         classes={{ indicator: this.props.classes.tabsIndicator }}
                         indicatorColor="secondary"

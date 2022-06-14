@@ -81,14 +81,14 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
         }
     }
 
-    const storedType = window.localStorage.getItem('App.lastObjectType');
+    const storedType = (window._localStorage || window.localStorage).getItem('App.lastObjectType');
     if (storedType && types.find(item => item.value === storedType)) {
         initialType = storedType;
     }
 
     const [type, setType] = useState(initialType);
     const [name, setName] = useState(names[initialType]);
-    const [stateType, setStateType] = useState(window.localStorage.getItem('App.lastStateType') || 'string');
+    const [stateType, setStateType] = useState((window._localStorage || window.localStorage).getItem('App.lastStateType') || 'string');
     const [unique, setUnique] = useState(!objects[buildId(names.state)]);
 
     function buildId(name) {
@@ -154,7 +154,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
                     variant="standard"
                     value={type}
                     onChange={(el) => {
-                        window.localStorage.setItem('App.lastObjectType', el.target.value);
+                        (window._localStorage || window.localStorage).setItem('App.lastObjectType', el.target.value);
 
                         if (name === names[type]) {
                             setName(names[el.target.value]);
@@ -174,7 +174,7 @@ const ObjectAddNewObject = ({ onClose, onApply, open, selected, setObject, objec
                     variant="standard"
                     value={stateType}
                     onChange={el => {
-                        window.localStorage.setItem('App.lastStateType', el.target.value);
+                        (window._localStorage || window.localStorage).setItem('App.lastStateType', el.target.value);
                         setStateType(el.target.value);
                     }}
                 >

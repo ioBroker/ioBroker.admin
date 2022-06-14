@@ -177,9 +177,9 @@ class ObjectChart extends Component {
         } else {
             this.end = this.props.end;
         }
-        let relativeRange = window.localStorage.getItem('App.relativeRange') || '30';
-        let min           = parseInt(window.localStorage.getItem('App.absoluteStart'), 10) || 0;
-        let max           = parseInt(window.localStorage.getItem('App.absoluteEnd'), 10)   || 0;
+        let relativeRange = (window._localStorage || window.localStorage).getItem('App.relativeRange') || '30';
+        let min           = parseInt((window._localStorage || window.localStorage).getItem('App.absoluteStart'), 10) || 0;
+        let max           = parseInt((window._localStorage || window.localStorage).getItem('App.absoluteEnd'), 10)   || 0;
 
         if ((!min || !max) && (!relativeRange || relativeRange === 'absolute')) {
             relativeRange = '30';
@@ -197,7 +197,7 @@ class ObjectChart extends Component {
             chartHeight: 300,
             chartWidth: 500,
             relativeRange,
-            splitLine: window.localStorage.getItem('App.splitLine') === 'true',
+            splitLine: (window._localStorage || window.localStorage).getItem('App.splitLine') === 'true',
             dateFormat: 'dd.MM.yyyy',
             min,
             max,
@@ -296,7 +296,7 @@ class ObjectChart extends Component {
 
                             // find current history
                             // first read from localstorage
-                            let historyInstance = window.localStorage.getItem('App.historyInstance') || '';
+                            let historyInstance = (window._localStorage || window.localStorage).getItem('App.historyInstance') || '';
                             if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
                                 // try default history
                                 historyInstance = defaultHistory;
@@ -815,7 +815,7 @@ class ObjectChart extends Component {
 
     setRelativeInterval(mins, dontSave, cb) {
         if (!dontSave) {
-            window.localStorage.setItem('App.relativeRange', mins);
+            (window._localStorage || window.localStorage).setItem('App.relativeRange', mins);
             this.setState({ relativeRange: mins });
         }
         if (mins === 'absolute') {
@@ -824,8 +824,8 @@ class ObjectChart extends Component {
             this.updateChart(this.chart.min, this.chart.max, true, cb);
             return;
         } else {
-            window.localStorage.removeItem('App.absoluteStart');
-            window.localStorage.removeItem('App.absoluteEnd');
+            (window._localStorage || window.localStorage).removeItem('App.absoluteStart');
+            (window._localStorage || window.localStorage).removeItem('App.absoluteEnd');
         }
 
         const now = new Date();
@@ -1049,9 +1049,9 @@ class ObjectChart extends Component {
             clearTimeout(this.timeTimer);
             this.timeTimer = null;
         }
-        window.localStorage.setItem('App.relativeRange', 'absolute');
-        window.localStorage.setItem('App.absoluteStart', min);
-        window.localStorage.setItem('App.absoluteEnd', this.state.max);
+        (window._localStorage || window.localStorage).setItem('App.relativeRange', 'absolute');
+        (window._localStorage || window.localStorage).setItem('App.absoluteStart', min);
+        (window._localStorage || window.localStorage).setItem('App.absoluteEnd', this.state.max);
 
         this.chart.min = min;
 
@@ -1061,9 +1061,9 @@ class ObjectChart extends Component {
 
     setEndDate(max) {
         max = max.getTime();
-        window.localStorage.setItem('App.relativeRange', 'absolute');
-        window.localStorage.setItem('App.absoluteStart', this.state.min);
-        window.localStorage.setItem('App.absoluteEnd', max);
+        (window._localStorage || window.localStorage).setItem('App.relativeRange', 'absolute');
+        (window._localStorage || window.localStorage).setItem('App.absoluteStart', this.state.min);
+        (window._localStorage || window.localStorage).setItem('App.absoluteEnd', max);
         if (this.timeTimer) {
             clearTimeout(this.timeTimer);
             this.timeTimer = null;
@@ -1104,7 +1104,7 @@ class ObjectChart extends Component {
                     variant="standard"
                     value={ this.state.historyInstance }
                     onChange={ e => {
-                        window.localStorage.setItem('App.historyInstance', e.target.value);
+                        (window._localStorage || window.localStorage).setItem('App.historyInstance', e.target.value);
                         this.setState({ historyInstance: e.target.value });
                     }}
                 >
@@ -1204,7 +1204,7 @@ class ObjectChart extends Component {
                 color={ this.state.splitLine ? 'primary' : 'inherit' }
                 aria-label="show lines"
                 onClick={() => {
-                    window.localStorage.setItem('App.splitLine', this.state.splitLine ? 'false' : 'true');
+                    (window._localStorage || window.localStorage).setItem('App.splitLine', this.state.splitLine ? 'false' : 'true');
                     this.setState({splitLine: !this.state.splitLine});
                 }}
                 className={ classes.splitLineButton }

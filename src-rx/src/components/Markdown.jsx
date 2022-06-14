@@ -401,7 +401,7 @@ class Markdown extends Component {
             notFound: false,
             affiliate: null,
             adapterNews: null,
-            hideContent: window.localStorage ? window.localStorage.getItem('Docs.hideContent') === 'true' : false,
+            hideContent: window.localStorage ? (window._localStorage || window.localStorage).getItem('Docs.hideContent') === 'true' : false,
         };
 
         if (!title) {
@@ -843,7 +843,7 @@ class Markdown extends Component {
 
     onToggleContentButton() {
         this.setState({hideContent: !this.state.hideContent});
-        window.localStorage && window.localStorage.setItem('Docs.hideContent', this.state.hideContent ? 'false' : 'true');
+        window.localStorage && (window._localStorage || window.localStorage).setItem('Docs.hideContent', this.state.hideContent ? 'false' : 'true');
     }
 
     renderContentCloseButton() {
