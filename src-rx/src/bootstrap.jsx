@@ -5,7 +5,8 @@ import * as Sentry from '@sentry/browser';
 import * as SentryIntegrations from '@sentry/integrations';
 
 import theme from '@iobroker/adapter-react-v5/Theme';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+// import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import {Utils} from '@iobroker/adapter-react-v5';
 import App from './App';
 
 import './index.css';
