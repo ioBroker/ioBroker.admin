@@ -271,29 +271,29 @@ class App extends Router {
         };
         // init translations
         this.translations = {
-            'en': import('@iobroker/adapter-react-v5/i18n/en'),
-            'de': import('@iobroker/adapter-react-v5/i18n/de'),
-            'ru': import('@iobroker/adapter-react-v5/i18n/ru'),
-            'pt': import('@iobroker/adapter-react-v5/i18n/pt'),
-            'nl': import('@iobroker/adapter-react-v5/i18n/nl'),
-            'fr': import('@iobroker/adapter-react-v5/i18n/fr'),
-            'it': import('@iobroker/adapter-react-v5/i18n/it'),
-            'es': import('@iobroker/adapter-react-v5/i18n/es'),
-            'pl': import('@iobroker/adapter-react-v5/i18n/pl'),
-            'zh-cn': import('@iobroker/adapter-react-v5/i18n/zh-cn'),
+            'en': require('@iobroker/adapter-react-v5/i18n/en'),
+            'de': require('@iobroker/adapter-react-v5/i18n/de'),
+            'ru': require('@iobroker/adapter-react-v5/i18n/ru'),
+            'pt': require('@iobroker/adapter-react-v5/i18n/pt'),
+            'nl': require('@iobroker/adapter-react-v5/i18n/nl'),
+            'fr': require('@iobroker/adapter-react-v5/i18n/fr'),
+            'it': require('@iobroker/adapter-react-v5/i18n/it'),
+            'es': require('@iobroker/adapter-react-v5/i18n/es'),
+            'pl': require('@iobroker/adapter-react-v5/i18n/pl'),
+            'zh-cn': require('@iobroker/adapter-react-v5/i18n/zh-cn'),
         };
 
         const translations = {
-            'en': import('./i18n/en'),
-            'de': import('./i18n/de'),
-            'ru': import('./i18n/ru'),
-            'pt': import('./i18n/pt'),
-            'nl': import('./i18n/nl'),
-            'fr': import('./i18n/fr'),
-            'it': import('./i18n/it'),
-            'es': import('./i18n/es'),
-            'pl': import('./i18n/pl'),
-            'zh-cn': import('./i18n/zh-cn'),
+            'en': require('./i18n/en'),
+            'de': require('./i18n/de'),
+            'ru': require('./i18n/ru'),
+            'pt': require('./i18n/pt'),
+            'nl': require('./i18n/nl'),
+            'fr': require('./i18n/fr'),
+            'it': require('./i18n/it'),
+            'es': require('./i18n/es'),
+            'pl': require('./i18n/pl'),
+            'zh-cn': require('./i18n/zh-cn'),
         };
         // merge together
         Object.keys(translations).forEach(lang => this.translations[lang] = Object.assign(this.translations[lang], translations[lang]));
