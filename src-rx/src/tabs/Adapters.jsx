@@ -1155,9 +1155,6 @@ class Adapters extends Component {
                 }
                 title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
                 const desc = adapter.desc ? adapter.desc[this.props.lang] || adapter.desc.en || adapter.desc : '';
-                if (name === 'vis') {
-                    console.log('Desc: ' + desc + ', ' + name);
-                }
 
                 if (name.includes(search)) {
                     filteredList.push(name);
