@@ -1492,5 +1492,8 @@
   "Unknown type: use in name \"private\", \"public\" or \"chained\" to define the certificate type": "Onbekend type: gebruik in naam \"private\", \"public\" of \"chained\" om het type certificaat te definiëren",
   "read only": "alleen lezen",
   "Different IDs for read and write": "Verschillende ID's voor lezen en schrijven",
-  "Some updates available": "Enkele updates beschikbaar"
+  "Some updates available": "Enkele updates beschikbaar",
+  "Use settings of other browsers": "Instellingen van andere browsers gebruiken",
+  "Use settings of this browser": "Gebruik instellingen van deze browser",
+  "Synchronize admin settings between all opened browser windows": "Synchroniseer beheerdersinstellingen tussen alle geopende browservensters"
 }

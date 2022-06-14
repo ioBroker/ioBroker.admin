@@ -62,16 +62,16 @@ function build() {
 
         console.log(options.cwd);
 
-        let script = src + 'node_modules/vite/bin/vite.js';
+        let script = src + 'node_modules/@craco/craco/bin/craco.js';
         if (!fs.existsSync(script)) {
-            script = __dirname + '/node_modules/vite/bin/vite.js';
+            script = __dirname + '/node_modules/@craco/craco/bin/craco.js';
         }
 
         if (!fs.existsSync(script)) {
             console.error('Cannot find execution file: ' + script);
             reject('Cannot find execution file: ' + script);
         } else {
-            const cmd = 'node --max-old-space-size=8192 node_modules/vite/bin/vite.js build';
+            const cmd = `node --max-old-space-size=8192 ${script} build`;
             const child = cp.exec(cmd, { cwd: src });
 
             child.stderr.pipe(process.stderr);
@@ -107,16 +107,16 @@ function copyFiles() {
     ])
         .then(() => Promise.all([
             gulp.src([
-                srcRx + 'dist/**/*',
-                `!${srcRx}dist/index.html`,
-                `!${srcRx}dist/static/js/main.*.chunk.js`,
-                `!${srcRx}dist/i18n/**/*`,
-                `!${srcRx}dist/i18n`
+                srcRx + 'build/**/*',
+                `!${srcRx}build/index.html`,
+                `!${srcRx}build/static/js/*.js`,
+                `!${srcRx}build/i18n/**/*`,
+                `!${srcRx}build/i18n`
             ])
                 .pipe(gulp.dest(dest)),
 
             gulp.src([
-                `${srcRx}dist/index.html`,
+                `${srcRx}build/index.html`,
             ])
                 .pipe(replace('href="/', 'href="'))
                 .pipe(replace('src="/', 'src="'))
@@ -127,10 +127,10 @@ function copyFiles() {
                 .pipe(gulp.dest('admin/')),
 
             gulp.src([
-                `${srcRx}dist/assets/*.js`,
+                `${srcRx}build/static/js/*.js`,
             ])
-                .pipe(replace('"/assets', '"./assets'))
-                .pipe(gulp.dest(dest + 'assets/')),
+                .pipe(replace('s.p+"static/media', '"./static/media'))
+                .pipe(gulp.dest(dest + 'static/js/')),
         ]));
 }
 
@@ -276,10 +276,10 @@ gulp.task('react-1-clean', () => {
         // 'src/node_modules/**/*',
         dest + '**/*',
         dest + '*',
-        srcRx + 'dist/**/*'
+        srcRx + 'build/**/*'
     ]).then(del([
         // 'src/node_modules',
-        'src/dist',
+        'src/build',
         dest
     ]));
 });

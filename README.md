@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Added the experimental synchronize function (in expertMode)
+
 ### 6.0.4 (2022-06-13)
 * (bluefox) implemented the resize of columns in some tables
 

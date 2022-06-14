@@ -66,9 +66,9 @@ class AdaptersUpdaterDialog extends Component {
             current: '',
             updated: [],
             stoppedOnError: false,
-            debug: window.localStorage.getItem('AdaptersUpdaterDialog.debug') === 'true',
-            stopOnError: window.localStorage.getItem('AdaptersUpdaterDialog.stopOnError') !== 'false',
-            closeOnFinished: window.localStorage.getItem('AdaptersUpdaterDialog.closeOnFinished') === 'true',
+            debug: (window._localStorage || window.localStorage).getItem('AdaptersUpdaterDialog.debug') === 'true',
+            stopOnError: (window._localStorage || window.localStorage).getItem('AdaptersUpdaterDialog.stopOnError') !== 'false',
+            closeOnFinished: (window._localStorage || window.localStorage).getItem('AdaptersUpdaterDialog.closeOnFinished') === 'true',
         };
 
         this.updateAvailable = [];
@@ -195,7 +195,7 @@ class AdaptersUpdaterDialog extends Component {
                             disabled={this.state.finished}
                             checked={this.state.stopOnError}
                             onChange={() => {
-                                window.localStorage.setItem('AdaptersUpdaterDialog.stopOnError', this.state.stopOnError ? 'false' : 'true');
+                                (window._localStorage || window.localStorage).setItem('AdaptersUpdaterDialog.stopOnError', this.state.stopOnError ? 'false' : 'true');
                                 this.setState({ stopOnError: !this.state.stopOnError });
                             }}
                         />}
@@ -206,7 +206,7 @@ class AdaptersUpdaterDialog extends Component {
                             disabled={this.state.finished}
                             checked={this.state.closeOnFinished}
                             onChange={() => {
-                                window.localStorage.setItem('AdaptersUpdaterDialog.closeOnFinished', this.state.closeOnFinished ? 'false' : 'true');
+                                (window._localStorage || window.localStorage).setItem('AdaptersUpdaterDialog.closeOnFinished', this.state.closeOnFinished ? 'false' : 'true');
                                 this.setState({ closeOnFinished: !this.state.closeOnFinished });
                             }} />}
                         label={this.props.t('Close on finished')}
@@ -216,7 +216,7 @@ class AdaptersUpdaterDialog extends Component {
                             disabled={this.state.finished || this.state.inProcess}
                             checked={this.state.debug}
                             onChange={() => {
-                                window.localStorage.setItem('AdaptersUpdaterDialog.debug', this.state.debug ? 'false' : 'true');
+                                (window._localStorage || window.localStorage).setItem('AdaptersUpdaterDialog.debug', this.state.debug ? 'false' : 'true');
                                 this.setState({ debug: !this.state.debug });
                             }} />}
                         label={this.props.t('Debug info')}

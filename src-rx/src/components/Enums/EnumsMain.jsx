@@ -181,13 +181,13 @@ class EnumsList extends Component {
 
         let enumsClosed = {};
         try {
-            enumsClosed = window.localStorage.getItem('enumsClosed') ? JSON.parse(window.localStorage.getItem('enumsClosed')) : {};
+            enumsClosed = (window._localStorage || window.localStorage).getItem('enumsClosed') ? JSON.parse((window._localStorage || window.localStorage).getItem('enumsClosed')) : {};
         } catch (e) {
 
         }
         let enumsCollapsed = [];
         try {
-            enumsCollapsed = window.localStorage.getItem('enumsCollapsed') ? JSON.parse(window.localStorage.getItem('enumsCollapsed')) : [];
+            enumsCollapsed = (window._localStorage || window.localStorage).getItem('enumsCollapsed') ? JSON.parse((window._localStorage || window.localStorage).getItem('enumsCollapsed')) : [];
         } catch (e) {
 
         }
@@ -196,7 +196,7 @@ class EnumsList extends Component {
             enums: null,
             enumsTree: null,
             selectedTab: null,
-            currentCategory: window.localStorage.getItem('enumCurrentCategory') || '',
+            currentCategory: (window._localStorage || window.localStorage).getItem('enumCurrentCategory') || '',
             search: '',
             enumEditDialog: null,
             enumTemplateDialog: null,
@@ -401,7 +401,7 @@ class EnumsList extends Component {
     setCurrentCategory = (currentCategory, cb) => {
         if (currentCategory !== this.state.currentCategory) {
             this.setState({currentCategory}, () => cb && cb());
-            window.localStorage.setItem('enumCurrentCategory', currentCategory);
+            (window._localStorage || window.localStorage).setItem('enumCurrentCategory', currentCategory);
         } else {
             cb && cb();
         }
@@ -534,7 +534,7 @@ class EnumsList extends Component {
                         enumsCollapsed.splice(pos, 1);
                     }
                     this.setState({enumsCollapsed});
-                    window.localStorage.setItem('enumsCollapsed', JSON.stringify(enumsCollapsed));
+                    (window._localStorage || window.localStorage).setItem('enumsCollapsed', JSON.stringify(enumsCollapsed));
                 }}
 
                 t={this.props.t}
@@ -642,7 +642,7 @@ class EnumsList extends Component {
         let enumsClosed = JSON.parse(JSON.stringify(this.state.enumsClosed));
         enumsClosed[enumId] = !enumsClosed[enumId];
         this.setState({enumsClosed});
-        window.localStorage.setItem('enumsClosed', JSON.stringify(enumsClosed));
+        (window._localStorage || window.localStorage).setItem('enumsClosed', JSON.stringify(enumsClosed));
     }
 
     changeEnumFormData = newItem => {
@@ -790,7 +790,7 @@ class EnumsList extends Component {
                                     onClick={() => {
                                         let enumsCollapsed = Object.keys(this.state.enums);
                                         this.setState({enumsCollapsed});
-                                        window.localStorage.setItem('enumsCollapsed', JSON.stringify(enumsCollapsed));
+                                        (window._localStorage || window.localStorage).setItem('enumsCollapsed', JSON.stringify(enumsCollapsed));
                                     }}
                                 >
                                     <UpIcon/>
@@ -803,7 +803,7 @@ class EnumsList extends Component {
                                     onClick={() => {
                                         let enumsCollapsed = [];
                                         this.setState({enumsCollapsed});
-                                        window.localStorage.setItem('enumsCollapsed', JSON.stringify(enumsCollapsed));
+                                        (window._localStorage || window.localStorage).setItem('enumsCollapsed', JSON.stringify(enumsCollapsed));
                                     }}
                                 >
                                     <DownIcon/>
@@ -817,7 +817,7 @@ class EnumsList extends Component {
                                         let enumsClosed = {};
                                         Object.keys(this.state.enums).forEach(id => enumsClosed[id] = true);
                                         this.setState({enumsClosed});
-                                        window.localStorage.setItem('enumsClosed', JSON.stringify(enumsClosed));
+                                        (window._localStorage || window.localStorage).setItem('enumsClosed', JSON.stringify(enumsClosed));
                                     }}
                                 >
                                         <IconCollapsed/>
@@ -830,7 +830,7 @@ class EnumsList extends Component {
                                     onClick={() => {
                                         let enumsClosed = {};
                                         this.setState({enumsClosed});
-                                        window.localStorage.setItem('enumsClosed', JSON.stringify(enumsClosed));
+                                        (window._localStorage || window.localStorage).setItem('enumsClosed', JSON.stringify(enumsClosed));
                                     }}
                                 >
                                     <IconExpanded/>

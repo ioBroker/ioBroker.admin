@@ -299,9 +299,9 @@ class Logs extends Component {
         super(props);
 
         this.state = {
-            source: window.localStorage.getItem('Log.source') || '1',
-            severity: window.localStorage.getItem('Log.severity') || 'debug',
-            message: window.localStorage.getItem('Log.message') || '',
+            source: (window._localStorage || window.localStorage).getItem('Log.source') || '1',
+            severity: (window._localStorage || window.localStorage).getItem('Log.severity') || 'debug',
+            message: (window._localStorage || window.localStorage).getItem('Log.message') || '',
             logDeleteDialog: false,
             logDownloadDialog: null,
             logFiles: [],
@@ -312,8 +312,8 @@ class Logs extends Component {
             estimatedSize: true,
             pause: 0,
             pauseCount: 0,
-            pid: window.localStorage.getItem('Logs.pid') === 'true',
-            colors: window.localStorage.getItem('Logs.colors') === 'true',
+            pid: (window._localStorage || window.localStorage).getItem('Logs.pid') === 'true',
+            colors: (window._localStorage || window.localStorage).getItem('Logs.colors') === 'true',
             adapters: {},
             sources: {},
             currentHost: this.props.currentHost,
@@ -554,17 +554,17 @@ class Logs extends Component {
     }
 
     handleMessageChange(event) {
-        window.localStorage.setItem('Log.message', event.target.value);
+        (window._localStorage || window.localStorage).setItem('Log.message', event.target.value);
         this.setState({ message: event.target.value });
     }
 
     handleSourceChange(event) {
-        window.localStorage.setItem('Log.source', event.target.value);
+        (window._localStorage || window.localStorage).setItem('Log.source', event.target.value);
         this.setState({ source: event.target.value });
     }
 
     handleSeverityChange(event) {
-        window.localStorage.setItem('Log.severity', event.target.value);
+        (window._localStorage || window.localStorage).setItem('Log.severity', event.target.value);
         this.setState({ severity: event.target.value });
     }
 
@@ -776,7 +776,7 @@ class Logs extends Component {
 
     changePid() {
         const pid = !this.state.pid;
-        window.localStorage.setItem('Logs.pid', pid ? 'true' : 'false');
+        (window._localStorage || window.localStorage).setItem('Logs.pid', pid ? 'true' : 'false');
         this.setState({ pid });
     }
 
@@ -839,7 +839,7 @@ class Logs extends Component {
                 <Tooltip title={this.props.t('Show/hide colors')}>
                     <IconButton size="large"
                         onClick={() => {
-                            window.localStorage.setItem('Logs.colors', this.state.colors ? 'false' : 'true');
+                            (window._localStorage || window.localStorage).setItem('Logs.colors', this.state.colors ? 'false' : 'true');
                             this.setState({colors: !this.state.colors});
                         }}
                         color={!this.state.colors ? 'default' : 'primary'}
@@ -967,7 +967,7 @@ class Logs extends Component {
                                                     this.state.message ? <IconButton
                                                         size="small"
                                                         onClick={e => {
-                                                            window.localStorage.removeItem('Log.message');
+                                                            (window._localStorage || window.localStorage).removeItem('Log.message');
                                                             this.setState({ message: '' });
                                                         }}>
                                                         <ClearIcon />

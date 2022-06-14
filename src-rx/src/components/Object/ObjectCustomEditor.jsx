@@ -102,7 +102,7 @@ class ObjectCustomEditor extends Component {
     constructor(props) {
         super(props);
 
-        let expanded = window.localStorage.getItem('App.customsExpanded') || '[]';
+        let expanded = (window._localStorage || window.localStorage).getItem('App.customsExpanded') || '[]';
         try {
             expanded = JSON.parse(expanded);
         } catch (e) {
@@ -123,7 +123,7 @@ class ObjectCustomEditor extends Component {
         };
 
         this.scrollDone   = false;
-        this.lastExpanded = window.localStorage.getItem('App.customsLastExpanded') || '';
+        this.lastExpanded = (window._localStorage || window.localStorage).getItem('App.customsLastExpanded') || '';
         this.scrollDivRef = createRef();
 
         this.changedItems = [];
@@ -436,8 +436,8 @@ class ObjectCustomEditor extends Component {
                 } else {
                     expanded.splice(pos, 1);
                 }
-                window.localStorage.setItem('App.customsExpanded', JSON.stringify(expanded));
-                pos === -1 && window.localStorage.setItem('App.customsLastExpanded', instance);
+                (window._localStorage || window.localStorage).setItem('App.customsExpanded', JSON.stringify(expanded));
+                pos === -1 && (window._localStorage || window.localStorage).setItem('App.customsLastExpanded', instance);
                 this.setState({expanded});
             }}
         >

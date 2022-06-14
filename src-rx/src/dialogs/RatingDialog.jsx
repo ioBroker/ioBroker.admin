@@ -121,7 +121,7 @@ class RatingDialog extends Component {
             ratingComment: '',
             votings: null,
             ratingLang: this.props.lang,
-            filterLang: window.localStorage.getItem('app.commentLang') || this.props.lang,
+            filterLang: (window._localStorage || window.localStorage).getItem('app.commentLang') || this.props.lang,
             commentsByLanguage: {},
         };
     }
@@ -187,7 +187,7 @@ class RatingDialog extends Component {
                         variant="standard"
                         value={this.state.filterLang}
                         onChange={e => {
-                            window.localStorage.setItem('app.commentLang', e.target.value);
+                            (window._localStorage || window.localStorage).setItem('app.commentLang', e.target.value);
                             this.setState({filterLang: e.target.value})
                         }}
                     >

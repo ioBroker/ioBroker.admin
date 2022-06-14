@@ -196,9 +196,9 @@ class Instances extends Component {
         super(props);
 
         let expandedFolder = [];
-        if (window.localStorage.getItem('Instances.expandedFolder')) {
+        if ((window._localStorage || window.localStorage).getItem('Instances.expandedFolder')) {
             try {
-                expandedFolder = JSON.parse(window.localStorage.getItem('Instances.expandedFolder'))
+                expandedFolder = JSON.parse((window._localStorage || window.localStorage).getItem('Instances.expandedFolder'))
             } catch (e) {
 
             }
@@ -221,7 +221,7 @@ class Instances extends Component {
             mem: null,
             percent: null,
             memFree: null,
-            filterText: window.localStorage.getItem('instances.filter') || '',
+            filterText: (window._localStorage || window.localStorage).getItem('instances.filter') || '',
             compact: false,
             maxCompactGroupNumber: 1,
             filterCompactGroup: 'All',
@@ -232,14 +232,14 @@ class Instances extends Component {
             expandedFolder,
 
             //filter
-            filterMode: window.localStorage.getItem('Instances.filterMode') ?
-                window.localStorage.getItem('Instances.filterMode') === 'null' ?
+            filterMode: (window._localStorage || window.localStorage).getItem('Instances.filterMode') ?
+                (window._localStorage || window.localStorage).getItem('Instances.filterMode') === 'null' ?
                     null :
-                    window.localStorage.getItem('Instances.filterMode') : null,
-            filterStatus: window.localStorage.getItem('Instances.filterStatus') ?
-            window.localStorage.getItem('Instances.filterStatus') === 'null' ?
+                    (window._localStorage || window.localStorage).getItem('Instances.filterMode') : null,
+            filterStatus: (window._localStorage || window.localStorage).getItem('Instances.filterStatus') ?
+            (window._localStorage || window.localStorage).getItem('Instances.filterStatus') === 'null' ?
                 null :
-                window.localStorage.getItem('Instances.filterStatus') : null,
+                (window._localStorage || window.localStorage).getItem('Instances.filterStatus') : null,
         };
 
         this.columns = {
@@ -475,15 +475,15 @@ class Instances extends Component {
         let playArrow = false;
         let filterCompactGroup = 'All';
         try {
-            playArrow = JSON.parse(window.localStorage.getItem('Instances.playArrow'));
-            filterCompactGroup = JSON.parse(window.localStorage.getItem('Instances.filterCompactGroup'));
+            playArrow = JSON.parse((window._localStorage || window.localStorage).getItem('Instances.playArrow'));
+            filterCompactGroup = JSON.parse((window._localStorage || window.localStorage).getItem('Instances.filterCompactGroup'));
         } catch (error) {
             // ignore
         }
 
-        const onlyCurrentHost = window.localStorage.getItem('Instances.onlyCurrentHost') === 'true';
-        const viewMode = window.localStorage.getItem('Instances.viewMode') === 'true';
-        const viewCategory = window.localStorage.getItem('Instances.viewCategory')  === 'true';
+        const onlyCurrentHost = (window._localStorage || window.localStorage).getItem('Instances.onlyCurrentHost') === 'true';
+        const viewMode = (window._localStorage || window.localStorage).getItem('Instances.viewMode') === 'true';
+        const viewCategory = (window._localStorage || window.localStorage).getItem('Instances.viewCategory')  === 'true';
 
         if (!filterCompactGroup && filterCompactGroup !== 0) {
             filterCompactGroup = 'All';
@@ -567,7 +567,7 @@ class Instances extends Component {
     }
 
     extendObject = (id, data) => {
-        this.props.socket.extendObject(id, data)
+        return this.props.socket.extendObject(id, data)
             .catch(error => window.alert(error));
     }
 
@@ -766,8 +766,11 @@ class Instances extends Component {
         return null;
     }
 
-    setSentry = instance =>
-        this.extendObject('system.adapter.' + instance.id, { common: { disableDataReporting: !!this.isSentry(instance.obj) } });
+    setSentry = instance => {
+        const disableDataReporting = !!this.isSentry(instance.obj)
+        this.extendObject('system.adapter.' + instance.id, { common: { disableDataReporting } })
+            .then(() => this.props.socket.setState(`system.adapter.${instance.id}.plugins.sentry.enabled`, {val: !disableDataReporting, ack: true}));
+    };
 
     setTier = (instance, value) =>
         this.extendObject('system.adapter.' + instance.id, { common: { tier: value } });
@@ -936,12 +939,12 @@ class Instances extends Component {
             filterText: ''
         };
 
-        window.localStorage.removeItem('instances.filter');
-        window.localStorage.removeItem(`Instances.playArrow`);
-        window.localStorage.removeItem('Instances.onlyCurrentHost');
-        window.localStorage.removeItem('Instances.filterCompactGroup');
-        window.localStorage.removeItem('Instances.filterMode');
-        window.localStorage.removeItem('Instances.filterStatus');
+        (window._localStorage || window.localStorage).removeItem('instances.filter');
+        (window._localStorage || window.localStorage).removeItem(`Instances.playArrow`);
+        (window._localStorage || window.localStorage).removeItem('Instances.onlyCurrentHost');
+        (window._localStorage || window.localStorage).removeItem('Instances.filterCompactGroup');
+        (window._localStorage || window.localStorage).removeItem('Instances.filterMode');
+        (window._localStorage || window.localStorage).removeItem('Instances.filterStatus');
 
         this._cacheList = null;
         this.setState(state, () => {
@@ -1088,7 +1091,7 @@ class Instances extends Component {
                                 expandedFolder.splice(pos, 1);
                             }
                         }
-                        window.localStorage.setItem('Instances.expandedFolder', JSON.stringify(expandedFolder));
+                        (window._localStorage || window.localStorage).setItem('Instances.expandedFolder', JSON.stringify(expandedFolder));
                         this.setState({expandedFolder});
                     }}
                 >
@@ -1138,13 +1141,13 @@ class Instances extends Component {
 
     changeSetStateBool = value =>
         this.setState(state => {
-            window.localStorage.setItem(`Instances.${value}`, state[value] ? 'false' : 'true');
+            (window._localStorage || window.localStorage).setItem(`Instances.${value}`, state[value] ? 'false' : 'true');
             return ({ [value]: !state[value] });
         });
 
     changeSetState = (name, value) =>
         this.setState(state => {
-            window.localStorage.setItem(`Instances.${name}`, value);
+            (window._localStorage || window.localStorage).setItem(`Instances.${name}`, value);
             return ({ [name]: value });
         });
 
@@ -1152,14 +1155,14 @@ class Instances extends Component {
         this._cacheList = null;
         this.setState(state => {
             const playArrow = !state.playArrow ? 1 : state.playArrow < 2 ? 2 : false;
-            window.localStorage.setItem(`Instances.playArrow`, JSON.stringify(playArrow));
+            (window._localStorage || window.localStorage).setItem(`Instances.playArrow`, JSON.stringify(playArrow));
             return { playArrow };
         });
     };
 
     changeCompactGroup = filterCompactGroup => {
         this._cacheList = null;
-        window.localStorage.setItem(`Instances.filterCompactGroup`, JSON.stringify(filterCompactGroup));
+        (window._localStorage || window.localStorage).setItem(`Instances.filterCompactGroup`, JSON.stringify(filterCompactGroup));
         this.setState({ filterCompactGroup });
     };
 
@@ -1170,7 +1173,7 @@ class Instances extends Component {
             this.typingTimer = null;
             this._cacheList = null;
             this.setState({ filterText: value });
-            window.localStorage.setItem('instances.filter', value);
+            (window._localStorage || window.localStorage).setItem('instances.filter', value);
         }, 300, event.target.value);
     }
 
@@ -1250,7 +1253,7 @@ class Instances extends Component {
                         let expandedFolder = [];
                         this._cacheList.forEach(({ category }) => !expandedFolder.includes(category) && expandedFolder.push(category));
                         expandedFolder.sort();
-                        window.localStorage.setItem('Instances.expandedFolder', JSON.stringify(expandedFolder));
+                        (window._localStorage || window.localStorage).setItem('Instances.expandedFolder', JSON.stringify(expandedFolder));
                         this.setState({ expandedFolder })
                     }}>
                         <FolderOpenIcon />
@@ -1258,7 +1261,7 @@ class Instances extends Component {
                 </Tooltip>
                     <Tooltip title={this.t('collapse all')}>
                         <IconButton size="large" onClick={() => {
-                            window.localStorage.removeItem('Instances.expandedFolder');
+                            (window._localStorage || window.localStorage).removeItem('Instances.expandedFolder');
                             this.setState({ expandedFolder: [] })
                         }}>
                             <FolderIcon />
@@ -1342,7 +1345,7 @@ class Instances extends Component {
                                         this.inputRef.current.value = '';
                                         this._cacheList = null;
                                         this.setState({ filterText: '' });
-                                        window.localStorage.setItem('instances.filter', '');
+                                        (window._localStorage || window.localStorage).setItem('instances.filter', '');
                                     }}
                                 >
                                     <CloseIcon />

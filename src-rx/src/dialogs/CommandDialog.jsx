@@ -45,7 +45,7 @@ class CommandDialog extends Component {
             max: null,
             value: null,
             progressText: '',
-            closeOnReady: window.localStorage.getItem('CommandDialog.closeOnReady') === 'true',
+            closeOnReady: (window._localStorage || window.localStorage).getItem('CommandDialog.closeOnReady') === 'true',
             checked: true
         };
 
@@ -94,7 +94,7 @@ class CommandDialog extends Component {
                             checked={this.state.closeOnReady}
                             onChange={e => {
                                 this.setState({ closeOnReady: e.target.checked });
-                                window.localStorage.setItem('CommandDialog.closeOnReady', e.target.checked ? 'true' : 'false');
+                                (window._localStorage || window.localStorage).setItem('CommandDialog.closeOnReady', e.target.checked ? 'true' : 'false');
                             }} />}
                     label={this.props.t('close on ready')}
                 />

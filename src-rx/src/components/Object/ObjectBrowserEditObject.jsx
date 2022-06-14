@@ -172,7 +172,7 @@ class ObjectBrowserEditObject extends Component {
         super(props);
 
         const withAlias = this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state';
-        let tab = window.localStorage.getItem((this.props.dialogName || 'App') + '.editTab') || 'object';
+        let tab = (window._localStorage || window.localStorage).getItem((this.props.dialogName || 'App') + '.editTab') || 'object';
 
         // select another tab if alias not present
         if (tab === 'alias' && !withAlias) {
@@ -316,7 +316,7 @@ class ObjectBrowserEditObject extends Component {
 
     renderTabs() {
         return <Tabs className={this.props.classes.tabsPadding} value={this.state.tab} onChange={(e, tab) => {
-            window.localStorage.setItem((this.props.dialogName || 'App') + '.editTab', tab);
+            (window._localStorage || window.localStorage).setItem((this.props.dialogName || 'App') + '.editTab', tab);
             this.setState({tab});
         }}>
             <Tab value="common" label={this.props.t('Common')}/>
@@ -618,7 +618,7 @@ class ObjectBrowserEditObject extends Component {
                         <UploadImage
                             disabled={disabled}
                             maxSize={10 * 1024}
-                            icon={json.common.icon}
+                            icon={json.type === 'instance' || json.type === 'adapter' ? `./adapter/${json.common.name}/${json.common.icon}` : json.common.icon}
                             removeIconFunc={() => this.setCommonItem(json, 'icon', '')}
                             onChange={(base64) => this.setCommonItem(json, 'icon', base64)}
                             t={t}

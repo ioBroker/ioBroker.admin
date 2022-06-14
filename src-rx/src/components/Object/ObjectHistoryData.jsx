@@ -238,12 +238,12 @@ class ObjectHistoryData extends Component {
     constructor(props) {
         super(props);
 
-        let relativeRange      = window.localStorage.getItem('App.relativeRange') || 'absolute';
-        let start              = parseInt(window.localStorage.getItem('App.absoluteStart'), 10) || 0;
-        let end                = parseInt(window.localStorage.getItem('App.absoluteEnd'), 10)   || 0;
-        let selected           = window.localStorage.getItem('App.historySelected') || '';
-        let lastSelected       = parseInt(window.localStorage.getItem('App.historyLastSelected'), 10) || null;
-        let lastSelectedColumn = window.localStorage.getItem('App.historyLastSelectedColumn') || null;
+        let relativeRange      = (window._localStorage || window.localStorage).getItem('App.relativeRange') || 'absolute';
+        let start              = parseInt((window._localStorage || window.localStorage).getItem('App.absoluteStart'), 10) || 0;
+        let end                = parseInt((window._localStorage || window.localStorage).getItem('App.absoluteEnd'), 10)   || 0;
+        let selected           = (window._localStorage || window.localStorage).getItem('App.historySelected') || '';
+        let lastSelected       = parseInt((window._localStorage || window.localStorage).getItem('App.historyLastSelected'), 10) || null;
+        let lastSelectedColumn = (window._localStorage || window.localStorage).getItem('App.historyLastSelectedColumn') || null;
 
         if ((!start || !end) && (!relativeRange || relativeRange === 'absolute')) {
             relativeRange = '30';
@@ -366,7 +366,7 @@ class ObjectHistoryData extends Component {
 
                 // find current history
                 // first read from localstorage
-                let historyInstance = window.localStorage.getItem('App.historyInstance') || '';
+                let historyInstance = (window._localStorage || window.localStorage).getItem('App.historyInstance') || '';
                 if (!historyInstance || !list.find(it => it.id === historyInstance && it.alive)) {
                     // try default history
                     historyInstance = defaultHistory;
@@ -607,9 +607,9 @@ class ObjectHistoryData extends Component {
             selected = [ts];
         }
 
-        window.localStorage.setItem('App.historyLastSelected', ts.toString());
-        window.localStorage.setItem('App.historyLastSelectedColumn', column);
-        window.localStorage.setItem('App.historySelected', JSON.stringify(selected));
+        (window._localStorage || window.localStorage).setItem('App.historyLastSelected', ts.toString());
+        (window._localStorage || window.localStorage).setItem('App.historyLastSelectedColumn', column);
+        (window._localStorage || window.localStorage).setItem('App.historySelected', JSON.stringify(selected));
         this.setState({selected, lastSelected: ts, lastSelectedColumn: column});
     }
 
@@ -764,7 +764,7 @@ class ObjectHistoryData extends Component {
 
     setRelativeInterval(mins, dontSave) {
         if (!dontSave) {
-            window.localStorage.setItem('App.relativeRange', mins);
+            (window._localStorage || window.localStorage).setItem('App.relativeRange', mins);
             this.setState({ relativeRange: mins });
         }
         if (mins === 'absolute') {
@@ -772,8 +772,8 @@ class ObjectHistoryData extends Component {
             this.timeTimer = null;
             return;
         } else {
-            window.localStorage.removeItem('App.absoluteStart');
-            window.localStorage.removeItem('App.absolute');
+            (window._localStorage || window.localStorage).removeItem('App.absoluteStart');
+            (window._localStorage || window.localStorage).removeItem('App.absolute');
         }
 
         const now = new Date();
@@ -1141,17 +1141,17 @@ class ObjectHistoryData extends Component {
             clearTimeout(this.timeTimer);
             this.timeTimer = null;
         }
-        window.localStorage.setItem('App.relativeRange', 'absolute');
-        window.localStorage.setItem('App.absoluteStart', start);
-        window.localStorage.setItem('App.absoluteEnd', this.state.end);
+        (window._localStorage || window.localStorage).setItem('App.relativeRange', 'absolute');
+        (window._localStorage || window.localStorage).setItem('App.absoluteStart', start);
+        (window._localStorage || window.localStorage).setItem('App.absoluteEnd', this.state.end);
         this.setState({ start, relativeRange: 'absolute' }, () => this.readHistory());
     }
 
     setEndDate(end) {
         end = end.getTime();
-        window.localStorage.setItem('App.relativeRange', 'absolute');
-        window.localStorage.setItem('App.absoluteStart', this.state.start);
-        window.localStorage.setItem('App.absoluteEnd', end);
+        (window._localStorage || window.localStorage).setItem('App.relativeRange', 'absolute');
+        (window._localStorage || window.localStorage).setItem('App.absoluteStart', this.state.start);
+        (window._localStorage || window.localStorage).setItem('App.absoluteEnd', end);
         if (this.timeTimer) {
             clearTimeout(this.timeTimer);
             this.timeTimer = null;
@@ -1169,7 +1169,7 @@ class ObjectHistoryData extends Component {
                     value={ this.state.historyInstance || ''}
                     onChange={ e => {
                         const historyInstance = e.target.value;
-                        window.localStorage.setItem('App.historyInstance', historyInstance);
+                        (window._localStorage || window.localStorage).setItem('App.historyInstance', historyInstance);
                         this.readSupportedFeatures(historyInstance)
                             .then(supportedFeatures =>
                                 this.setState({ historyInstance, supportedFeatures }, () =>

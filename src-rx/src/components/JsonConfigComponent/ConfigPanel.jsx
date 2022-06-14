@@ -117,7 +117,7 @@ class ConfigPanel extends ConfigGeneric {
     componentDidMount() {
         super.componentDidMount();
         if (this.props.schema && this.props.schema.collapsable) {
-            this.setState({expanded: window.localStorage.getItem(this.props.adapterName + '.' + this.props.attr) === 'true'});
+            this.setState({expanded: (window._localStorage || window.localStorage).getItem(this.props.adapterName + '.' + this.props.attr) === 'true'});
         }
     }
 
@@ -247,7 +247,7 @@ class ConfigPanel extends ConfigGeneric {
                     className={classes.fullWidth}
                     expanded={!!this.state.expanded}
                     onChange={() => {
-                        window.localStorage.setItem(this.props.adapterName + '.' + this.props.attr, this.state.expanded ? 'false' : 'true');
+                        (window._localStorage || window.localStorage).setItem(this.props.adapterName + '.' + this.props.attr, this.state.expanded ? 'false' : 'true');
                         this.setState({expanded: !this.state.expanded});
                     }}
                 >

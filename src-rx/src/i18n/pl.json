@@ -1492,5 +1492,8 @@
   "Unknown type: use in name \"private\", \"public\" or \"chained\" to define the certificate type": "Nieznany typ: użyj w nazwie „private”, „public” lub „chained”, aby zdefiniować typ certyfikatu",
   "read only": "tylko czytać",
   "Different IDs for read and write": "Różne identyfikatory do odczytu i zapisu",
-  "Some updates available": "Dostępne są pewne aktualizacje"
+  "Some updates available": "Dostępne są pewne aktualizacje",
+  "Use settings of other browsers": "Użyj ustawień innych przeglądarek",
+  "Use settings of this browser": "Użyj ustawień tej przeglądarki",
+  "Synchronize admin settings between all opened browser windows": "Synchronizuj ustawienia administratora między wszystkimi otwartymi oknami przeglądarki"
 }

@@ -1131,8 +1131,8 @@ class Utils {
             return window.vendorPrefix;
         }
 
-        return themeName ? themeName : window.localStorage && window.localStorage.getItem('App.themeName') ?
-            window.localStorage.getItem('App.themeName') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'colored';
+        return themeName ? themeName : (window._localStorage || window.localStorage).getItem('App.themeName') ?
+            (window._localStorage || window.localStorage).getItem('App.themeName') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'colored';
     }
 
     /**
@@ -1145,7 +1145,7 @@ class Utils {
             return 'light';
         }
 
-        themeName = themeName || (window.localStorage && window.localStorage.getItem('App.themeName'));
+        themeName = themeName || (window.localStorage && (window._localStorage || window.localStorage).getItem('App.themeName'));
         return themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light';
     }
 
@@ -1157,8 +1157,8 @@ class Utils {
         if (window.vendorPrefix && window.vendorPrefix !== '@@vendorPrefix@@') {
             return; // ignore
         }
-        window.localStorage.setItem('App.themeName', themeName);
-        window.localStorage.setItem('App.theme', themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light');
+        (window._localStorage || window.localStorage).setItem('App.themeName', themeName);
+        (window._localStorage || window.localStorage).setItem('App.theme', themeName === 'dark' || themeName === 'blue' ? 'dark' : 'light');
     }
 
     /**
@@ -1170,7 +1170,7 @@ class Utils {
         if (window.vendorPrefix && window.vendorPrefix !== '@@vendorPrefix@@') {
             return window.vendorPrefix;
         }
-        themeName = themeName || (window.localStorage && window.localStorage.getItem('App.themeName'));
+        themeName = themeName || (window.localStorage && (window._localStorage || window.localStorage).getItem('App.themeName'));
 
         // dark => blue => colored => light => dark
         const themes = Utils.getThemeNames();

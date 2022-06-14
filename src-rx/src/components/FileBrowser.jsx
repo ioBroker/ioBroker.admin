@@ -412,7 +412,7 @@ class FileBrowser extends Component {
      */
     constructor(props) {
         super(props);
-        let expanded = window.localStorage.getItem('files.expanded') || '[]';
+        let expanded = (window._localStorage || window.localStorage).getItem('files.expanded') || '[]';
 
         try {
             expanded = JSON.parse(expanded);
@@ -422,24 +422,24 @@ class FileBrowser extends Component {
 
         let viewType;
         if (this.props.showViewTypeButton) {
-            viewType = window.localStorage.getItem('files.viewType') || TABLE;
+            viewType = (window._localStorage || window.localStorage).getItem('files.viewType') || TABLE;
         } else {
             viewType = TABLE;
         }
 
-        let selected = this.props.selected || window.localStorage.getItem('files.selected') || USER_DATA;
+        let selected = this.props.selected || (window._localStorage || window.localStorage).getItem('files.selected') || USER_DATA;
         let currentDir = '';
         if (isFile(selected)) {
             currentDir = getParentDir(selected);
         } else {
             currentDir = selected;
         }
-        let backgroundImage = window.localStorage.getItem('files.backgroundImage') || null;
+        let backgroundImage = (window._localStorage || window.localStorage).getItem('files.backgroundImage') || null;
 
         this.state = {
             viewType,
             folders: {},
-            filterEmpty: window.localStorage.getItem('files.empty') !== 'false',
+            filterEmpty: (window._localStorage || window.localStorage).getItem('files.empty') !== 'false',
             expanded,
             currentDir,
             expertMode: this.props.expertMode,
@@ -764,7 +764,7 @@ class FileBrowser extends Component {
             expanded.push(item.id);
             expanded.sort();
 
-            window.localStorage.setItem('files.expanded', JSON.stringify(expanded));
+            (window._localStorage || window.localStorage).setItem('files.expanded', JSON.stringify(expanded));
 
             if (!item.temp) {
                 return this.browseFolder(item.id)
@@ -775,7 +775,7 @@ class FileBrowser extends Component {
             }
         } else {
             expanded.splice(pos, 1);
-            window.localStorage.setItem('files.expanded', JSON.stringify(expanded));
+            (window._localStorage || window.localStorage).setItem('files.expanded', JSON.stringify(expanded));
             this.setState({ expanded });
         }
     }
@@ -809,7 +809,7 @@ class FileBrowser extends Component {
             folder = '';
         }
 
-        window.localStorage.setItem('files.currentDir', folder);
+        (window._localStorage || window.localStorage).setItem('files.currentDir', folder);
 
         if (folder && !this.state.folders[folder]) {
             return this.browseFolder(folder)
@@ -840,7 +840,7 @@ class FileBrowser extends Component {
         }
         e && e.stopPropagation();
         this.lastSelect = Date.now();
-        window.localStorage.setItem('files.selected', id);
+        (window._localStorage || window.localStorage).setItem('files.selected', id);
         this.setState({ selected: id, path: id, pathFocus: false }, () => {
             if (this.props.onSelect) {
                 const ext = Utils.getFileExtension(id);
@@ -1003,10 +1003,10 @@ class FileBrowser extends Component {
         let array = ['light', 'dark', 'colored', 'delete'];
         this.setState(({ backgroundImage }) => {
             if (array.indexOf(backgroundImage) !== -1 && array.length - 1 !== array.indexOf(backgroundImage)) {
-                window.localStorage.setItem('files.backgroundImage', array[array.indexOf(backgroundImage) + 1]);
+                (window._localStorage || window.localStorage).setItem('files.backgroundImage', array[array.indexOf(backgroundImage) + 1]);
                 return { backgroundImage: array[array.indexOf(backgroundImage) + 1] }
             } else {
-                window.localStorage.setItem('files.backgroundImage', array[0]);
+                (window._localStorage || window.localStorage).setItem('files.backgroundImage', array[0]);
                 return { backgroundImage: array[0] }
             }
         })
@@ -1200,7 +1200,7 @@ class FileBrowser extends Component {
                 aria-label="view mode"
                 onClick={() => {
                     const viewType = this.state.viewType === TABLE ? TILE : TABLE;
-                    window.localStorage.setItem('files.viewType', viewType);
+                    (window._localStorage || window.localStorage).setItem('files.viewType', viewType);
                     let currentDir = this.state.selected;
                     if (isFile(currentDir)) {
                         currentDir = getParentDir(currentDir)
@@ -1220,7 +1220,7 @@ class FileBrowser extends Component {
                 color={this.state.filterEmpty ? 'secondary' : 'inherit'}
                 aria-label="filter empty"
                 onClick={() => {
-                    window.localStorage.setItem('file.empty', !this.state.filterEmpty);
+                    (window._localStorage || window.localStorage).setItem('file.empty', !this.state.filterEmpty);
                     this.setState({ filterEmpty: !this.state.filterEmpty });
                 }}
                 size="large"
@@ -1321,7 +1321,7 @@ class FileBrowser extends Component {
                             expanded.push(parentFolder);
                             expanded.sort();
                         }
-                        window.localStorage.setItem('files.expanded', JSON.stringify(expanded));
+                        (window._localStorage || window.localStorage).setItem('files.expanded', JSON.stringify(expanded));
                         this.setState({ addFolder: false, folders, expanded }, () =>
                             this.select(id));
                     } else {
@@ -1409,7 +1409,7 @@ class FileBrowser extends Component {
                                                     if (!expanded.includes(parentFolder)) {
                                                         expanded.push(parentFolder);
                                                         expanded.sort();
-                                                        window.localStorage.setItem('files.expanded', JSON.stringify(expanded));
+                                                        (window._localStorage || window.localStorage).setItem('files.expanded', JSON.stringify(expanded));
                                                     }
                                                     this.setState({ expanded }, () =>
                                                         this.select(id));
@@ -1422,7 +1422,7 @@ class FileBrowser extends Component {
                                                                 if (!expanded.includes(parentFolder)) {
                                                                     expanded.push(parentFolder);
                                                                     expanded.sort();
-                                                                    window.localStorage.setItem('files.expanded', JSON.stringify(expanded));
+                                                                    (window._localStorage || window.localStorage).setItem('files.expanded', JSON.stringify(expanded));
                                                                 }
                                                                 this.setState({ folders, expanded }, () =>
                                                                     this.select(id));
@@ -1511,7 +1511,7 @@ class FileBrowser extends Component {
                     if (pos !== -1) {
                         const expanded = [...this.state.expanded];
                         expanded.splice(pos, 1);
-                        window.localStorage.setItem('files.expanded', JSON.stringify(expanded));
+                        (window._localStorage || window.localStorage).setItem('files.expanded', JSON.stringify(expanded));
                         newState.expanded = expanded;
                     }
 
