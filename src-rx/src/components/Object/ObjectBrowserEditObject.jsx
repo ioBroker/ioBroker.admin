@@ -618,7 +618,7 @@ class ObjectBrowserEditObject extends Component {
                         <UploadImage
                             disabled={disabled}
                             maxSize={10 * 1024}
-                            icon={json.common.icon}
+                            icon={json.type === 'instance' || json.type === 'adapter' ? `./adapter/${json.common.name}/${json.common.icon}` : json.common.icon}
                             removeIconFunc={() => this.setCommonItem(json, 'icon', '')}
                             onChange={(base64) => this.setCommonItem(json, 'icon', base64)}
                             t={t}

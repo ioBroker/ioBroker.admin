@@ -219,6 +219,9 @@ const styles = theme => ({
     },
     tableRowLines: {
         borderBottom: `1px solid ${theme.palette.mode === 'dark' ? '#8888882e' : '#8888882e'}`,
+        '& > div': {
+            borderRight: `1px solid ${theme.palette.mode === 'dark' ? '#8888882e' : '#8888882e'}`,
+        }
     },
     tableRowNoDragging: {
         cursor: 'pointer',

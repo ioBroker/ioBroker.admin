@@ -546,7 +546,7 @@ UploadImage.defaultProps = {
     maxSize: 10 * 1024,
     icon: null,
     removeIconFunc: null,
-    accept: 'image/*',
+    accept: { 'image/*': [] },
     error: false,
     onChange: base64 => console.log(base64),
     t: el => el,
@@ -560,7 +560,7 @@ UploadImage.propTypes = {
     crop: PropTypes.bool,
     error: PropTypes.bool,
     onChange: PropTypes.func,
-    accept: PropTypes.string,
+    accept: PropTypes.object,
     t: PropTypes.func,
 };
 

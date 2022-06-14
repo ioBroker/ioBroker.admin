@@ -567,7 +567,7 @@ class Instances extends Component {
     }
 
     extendObject = (id, data) => {
-        this.props.socket.extendObject(id, data)
+        return this.props.socket.extendObject(id, data)
             .catch(error => window.alert(error));
     }
 
@@ -766,8 +766,11 @@ class Instances extends Component {
         return null;
     }
 
-    setSentry = instance =>
-        this.extendObject('system.adapter.' + instance.id, { common: { disableDataReporting: !!this.isSentry(instance.obj) } });
+    setSentry = instance => {
+        const disableDataReporting = !!this.isSentry(instance.obj)
+        this.extendObject('system.adapter.' + instance.id, { common: { disableDataReporting } })
+            .then(() => this.props.socket.setState(`system.adapter.${instance.id}.plugins.sentry.enabled`, {val: !disableDataReporting, ack: true}));
+    };
 
     setTier = (instance, value) =>
         this.extendObject('system.adapter.' + instance.id, { common: { tier: value } });
