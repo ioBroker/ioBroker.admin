@@ -124,10 +124,11 @@ function startAdapter(options) {
         }
 
         if (obj.command === 'autocomplete') {
-            if (obj.callback) {
-                adapter.sendTo(obj.from, obj.command, [{value: 1, label: 'first'}, {value: 2, label: 'second'}], obj.callback);
-            }
-            return;
+            return obj.callback && adapter.sendTo(obj.from, obj.command, [{value: 1, label: 'first'}, {value: 2, label: 'second'}], obj.callback);
+        } else
+        if (obj.command === 'fill') {
+            console.log('FILL: ' + JSON.stringify(obj.message));
+            return obj.callback && adapter.sendTo(obj.from, obj.command, 'history.0', obj.callback);
         }
 
         socket && socket.sendCommand(obj);

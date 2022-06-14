@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 
 import IconInfo from '@mui/icons-material/Info';
 import IconWarning from '@mui/icons-material/Warning';
@@ -60,11 +61,60 @@ class ConfigGeneric extends Component {
                     }
                 }, 100);
             }
+        } else if (this.props.schema.defaultSendTo) {
+            this.sendTo();
+        }
+    }
+
+    sendTo() {
+        if (this.props.alive) {
+            this.defaultSendToDone = true;
+            let data = this.props.schema.data;
+            if (data === undefined && this.props.schema.jsonData) {
+                data = this.getPattern(this.props.schema.jsonData);
+                try {
+                    data = JSON.parse(data);
+                } catch (e) {
+                    console.error('Cannot parse json data: ' + data);
+                }
+            } else {
+                data = {
+                    attr: this.props.attr,
+                    value: ConfigGeneric.getValue(this.props.data, this.props.attr),
+                };
+            }
+
+            if (data === undefined) {
+                data = null;
+            }
+
+            this.props.socket.sendTo(this.props.adapterName + '.' + this.props.instance, this.props.schema.defaultSendTo, data)
+                .then(value => {
+                    if (value !== null && value !== undefined) {
+                        if (this.props.custom) {
+                            this.props.onChange(this.props.attr, value, () =>
+                                this.props.forceUpdate([this.props.attr], this.props.data));
+                            //this.onChange(this.props.attr, this.defaultValue);
+                        } else {
+                            ConfigGeneric.setValue(this.props.data, this.props.attr, value);
+                            this.props.onChange(this.props.data, undefined, () =>
+                                this.props.forceUpdate([this.props.attr], this.props.data));
+                        }
+                    }
+                });
+        } else {
+            this.defaultSendToDone = false;
+            // show error, that instance does not started
+            this.onError(this.props.attr, I18n.t('ra_Instance %s is not alive', this.props.instance));
         }
     }
 
     componentWillUnmount() {
-        this.props.registerOnForceUpdate && this.props.registerOnForceUpdate(this.props.attr);
+        this.props.registerOnForceUpdate && this.props.registerOnForceUpdate(this.props.attr)
+        if (this.sendToTimeout) {
+            clearTimeout(this.sendToTimeout);
+            this.sendToTimeout = null;
+        }
     }
 
     onUpdate = data => {
@@ -404,6 +454,10 @@ class ConfigGeneric extends Component {
             return null;
         }
 
+        if (this.props.alive && this.defaultSendToDone === false) {
+            this.sendToTimeout = setTimeout(() => {this.sendToTimeout = null; this.sendTo();}, 200);
+        }
+
         const { error, disabled, hidden, defaultValue } = this.calculate(schema);
 
         if (hidden) {
@@ -457,6 +511,8 @@ class ConfigGeneric extends Component {
                 }
             }
 
+            const renderedItem = this.renderItem(error, disabled || this.props.commandRunning || this.props.disabled, defaultValue);
+
             const item = <Grid
                 item
                 title={this.getText(schema.tooltip)}
@@ -466,11 +522,21 @@ class ConfigGeneric extends Component {
                 sm={schema.sm || undefined}
                 style={Object.assign({}, {
                     marginBottom: 0,
-                    //marginRight: 8,
+                    // marginRight: 8,
                     textAlign: 'left',
                     width: schema.type === 'divider' || schema.type === 'header' ? schema.width || '100%' : undefined
                 }, schema.style, this.props.themeType === 'dark' ? schema.darkStyle : {})}>
-                {this.renderItem(error, disabled || this.props.commandRunning || this.props.disabled, defaultValue)}
+                { this.props.schema.defaultSendTo && this.props.schema.button ? <Grid container style={{ width: '100%' }}>
+                        <Grid item flex={1}>{renderedItem}</Grid>
+                        <Grid item><Button
+                            variant="outlined"
+                            onClick={() => this.sendTo()}
+                            title={this.props.schema.buttonTooltip ? this.getText(this.props.schema.buttonTooltip, this.props.schema.buttonTooltipNoTranslation) : I18n.t('ra_Request data by instance')}
+                        >{this.getText(this.props.schema.button)}</Button></Grid>
+                    </Grid>
+                    :
+                    renderedItem
+                }
             </Grid>;
 
             if (schema.newLine) {

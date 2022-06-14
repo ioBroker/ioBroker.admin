@@ -8,12 +8,11 @@ import I18n from '@iobroker/adapter-react-v5/i18n';
 import Icon from '@iobroker/adapter-react-v5/Components/Icon';
 import DialogError from '@iobroker/adapter-react-v5/Dialogs/Error';
 import DialogMessage from '@iobroker/adapter-react-v5/Dialogs/Message';
-
+import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 import ConfigGeneric from './ConfigGeneric';
 import IconWarning from '@mui/icons-material/Warning';
 import IconError from '@mui/icons-material/Error';
 import IconInfo from '@mui/icons-material/Info';
-import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 
 const styles = theme => ({
     fullWidth: {

@@ -285,7 +285,14 @@ All types could have:
 - `validatorNoSaveOnError` - disable save button if error   
 - `tooltip` - optional tooltip
 - `default` - default value
-- `defaultFunc` - JS function to calculate default value  
+- `defaultFunc` - JS function to calculate default value
+- `defaultSendTo` - command to request initial value from running instance, example: `"myInstance": {"type": "text", "defaultSendTo": "fill"}`
+  - `data` - static data
+  - `jsonData` - static data
+  - if no `data` and `jsonData` defined, following info will be sent `{"attr": "<attribute name>", "value": "<current value>"}`
+  - `button` - button label to re-trigger request from instance
+  - `buttonTooltip` - Button tooltip (default: `Request data by instance`)
+  - `buttonTooltipNoTranslation` - Do not translate button tooltip
 - `placeholder` - placeholder (for text control)
 - `noTranslation` - do not translate selects or other options (not for help, label or placeholder)  
 - `onChange` - Structure in form `{"alsoDependsOn": ["attr1", "attr2], "calculateFunc": "attr1 + attr2", "ignoreOwnChanges": true}`
