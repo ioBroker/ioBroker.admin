@@ -124,11 +124,11 @@ class AdaptersUpdater extends Component {
     }
 
     renderOneAdapter(adapter) {
-        const image = this.props.installed[adapter].localIcon;
         const checked = this.props.selected.includes(adapter);
         if ((this.props.finished || this.props.inProcess) && !checked) {
             return null;
         }
+        const image = '.' + this.props.installed[adapter].localIcon;
 
         return <React.Fragment key={adapter}>
             <ListItem

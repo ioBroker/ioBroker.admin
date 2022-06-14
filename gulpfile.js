@@ -109,7 +109,7 @@ function copyFiles() {
             gulp.src([
                 srcRx + 'build/**/*',
                 `!${srcRx}build/index.html`,
-                `!${srcRx}build/static/js/main.*.chunk.js`,
+                `!${srcRx}build/static/js/*.js`,
                 `!${srcRx}build/i18n/**/*`,
                 `!${srcRx}build/i18n`
             ])

@@ -1149,8 +1149,15 @@ class Adapters extends Component {
                     return;
                 }
 
-                const title = ((adapter.title || '').toString() || '').replace('ioBroker Visualisation - ', '');
+                let title = adapter.titleLang || adapter.title;
+                if (typeof title === 'object') {
+                    title = title[this.props.lang] || title.en;
+                }
+                title = ((title || '').toString() || '').replace('ioBroker Visualisation - ', '');
                 const desc = adapter.desc ? adapter.desc[this.props.lang] || adapter.desc.en || adapter.desc : '';
+                if (name === 'vis') {
+                    console.log('Desc: ' + desc + ', ' + name);
+                }
 
                 if (name.includes(search)) {
                     filteredList.push(name);
@@ -1324,7 +1331,7 @@ class Adapters extends Component {
             .forEach(category => category.adapters.forEach(value => {
                 const adapter = this.state.repository[value];
 
-                if (value === 'vis-materialdesign') {
+                if (value === 'admin') {
                     console.log('[ADAPTERS] ' + value);
                 }
 
@@ -1359,7 +1366,7 @@ class Adapters extends Component {
                         this.cache.adapters[value] = {
                             title,
                             desc: adapter.desc ? adapter.desc[this.props.lang] || adapter.desc['en'] || adapter.desc : '',
-                            image: installed ? installed.localIcon : adapter.extIcon,
+                            image: installed ? '.' + installed.localIcon : adapter.extIcon,
                             connectionType: adapter.connectionType ? adapter.connectionType : '-',
                             updateAvailable: this.state.updateAvailable.includes(value),
                             rightDependencies: this.rightDependencies(value),
