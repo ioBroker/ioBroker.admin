@@ -34,7 +34,7 @@ const getOrLoadRemote = (remote, shareScope, remoteFallbackUrl = undefined) =>
                     return reject('Cannot load ' + remote);
                 }
                 // resolve promise so marking remote as loaded
-                resolve();
+                resolve(window[remote]);
             };
 
             if (existingRemote) {
@@ -61,13 +61,12 @@ const getOrLoadRemote = (remote, shareScope, remoteFallbackUrl = undefined) =>
             }
         } else {
             // remote already instantiated, resolve
-            resolve();
+            resolve(window[remote]);
         }
     });
 
 const loadComponent = (remote, sharedScope, module, url) => async () => {
-    await getOrLoadRemote(remote, sharedScope, url);
-    const container = window[remote];
+    const container = await getOrLoadRemote(remote, sharedScope, url);
     const factory = await container.get(module);
     const Module = factory();
     return Module;

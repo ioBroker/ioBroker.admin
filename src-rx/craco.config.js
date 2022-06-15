@@ -9,6 +9,14 @@ module.exports = {
         { plugin: CracoEsbuildPlugin },
         { plugin: cracoModuleFederation }
     ],
+    devServer: {
+        proxy: {
+            '/files': 'http://localhost:8081',
+            '/adapter': 'http://localhost:8081',
+            '/session': 'http://localhost:8081',
+            '/log': 'http://localhost:8081',
+        }
+    },
     webpack: {
         output: {
             publicPath: './',

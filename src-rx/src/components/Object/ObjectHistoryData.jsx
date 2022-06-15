@@ -715,24 +715,26 @@ class ObjectHistoryData extends Component {
         } else if (mins === 'week') {
             now.setHours(0);
             now.setMinutes(0);
-            now.setFullYear(now.getFullYear() - 1);
+            now.setSeconds(0);
+            now.setMilliseconds(0);
             // find week start
-            if (now.getDay()) { // if not sunday
-                now.setDate(now.getDate() - now.getDay() - 1);
-            } else {
-                now.setDate(now.getDate() - 6);
+            const day = now.getDay() || 7;
+            if (day !== 1) {
+                now.setHours(-24 * (day - 1));
             }
-
+            start = now.getTime();
         } else if (mins === '2weeks') {
             now.setHours(0);
             now.setMinutes(0);
-            now.setFullYear(now.getFullYear() - 1);
+            now.setSeconds(0);
+            now.setMilliseconds(0);
             // find week start
-            if (now.getDay()) { // if not sunday
-                now.setDate(now.getDate() - now.getDay() - 8);
-            } else {
-                now.setDate(now.getDate() - 13);
+            const day = now.getDay() || 7;
+            if (day !== 1) {
+                now.setHours(-24 * (day - 1));
             }
+            now.setHours(-24 * 7); // second week
+            start = now.getTime();
         } else if (mins === 'month') {
             now.setHours(0);
             now.setMinutes(0);
