@@ -81,8 +81,14 @@ function SocketClient () {
         sessionID = Date.now();
         try {
             if (url === '/') {
+                let parts = window.location.pathname.split('/');
+                // remove filename
+                if (window.location.pathname.endsWith('.html') || window.location.pathname.endsWith('.htm')) {
+                    parts.pop();
+                }
+
                 // eslint-disable-next-line no-undef
-                url = window.location.protocol + '//' + window.location.host  + '/';
+                url = window.location.protocol + '//' + window.location.host  + '/' + parts.join('/');
             }
 
             let u = url.replace(/^http/, 'ws').split('?')[0] + '?sid=' + sessionID;
@@ -356,6 +362,7 @@ function SocketClient () {
         callbacks = [];
 
         this._reconnect();
+        return this;
     };
 
     this.destroy = function () {
