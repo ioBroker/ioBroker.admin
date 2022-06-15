@@ -11,26 +11,32 @@ const getOrLoadRemote = (remote, shareScope, remoteFallbackUrl = undefined) =>
     // check if remote exists on window
         if (!window[remote]) {
             // search dom to see if remote tag exists, but might still be loading (async)
-            const existingRemote = document.querySelector(`[data-webpack="${remote}"]`);
-            // when remote is loaded..
+            const existingRemote = document.querySelector(`script[data-webpack="${remote}"]`);
+            // when remote is loaded.
             const onload = async () => {
                 // check if it was initialized
-                if (!window[remote].__initialized) {
-                    // if share scope doesnt exist (like in webpack 4) then expect shareScope to be a manual object
-                    if (typeof __webpack_share_scopes__ === 'undefined') {
-                        // use default share scope object passed in manually
-                        await window[remote].init(shareScope.default);
-                    } else {
-                        // otherwise, init share scope as usual
-                        // eslint-disable-next-line
-                        await window[remote].init(__webpack_share_scopes__[shareScope]);
+                if (window[remote]) {
+                    if (!window[remote].__initialized) {
+                        // if share scope doesn't exist (like in webpack 4) then expect shareScope to be a manual object
+                        if (typeof __webpack_share_scopes__ === 'undefined') {
+                            // use default share scope object passed in manually
+                            await window[remote].init(shareScope.default);
+                        } else {
+                            // otherwise, init share scope as usual
+                            // eslint-disable-next-line
+                            await window[remote].init(__webpack_share_scopes__[shareScope]);
+                        }
+                        // mark remote as initialized
+                        window[remote].__initialized = true;
                     }
-                    // mark remote as initialized
-                    window[remote].__initialized = true;
+                } else {
+                    console.error('Cannot load ' + remote);
+                    return reject('Cannot load ' + remote);
                 }
                 // resolve promise so marking remote as loaded
                 resolve();
             };
+
             if (existingRemote) {
                 // if existing remote but not loaded, hook into its onload and wait for it to be ready
                 existingRemote.onload = onload;
