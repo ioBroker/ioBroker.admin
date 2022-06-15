@@ -242,6 +242,9 @@ const styles = theme => ({
         marginTop: 3,
         filter: 'invert(0%) sepia(90%) saturate(1267%) hue-rotate(-260deg) brightness(99%) contrast(97%)'
     },
+    tooltip: {
+        pointerEvents: 'none',
+    },
 });
 const AdapterTile = ({
     name,

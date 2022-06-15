@@ -888,7 +888,7 @@ class ObjectHistoryData extends Component {
                                 { this.props.t('From') }
                             </TableCell> : null}
                             {this.state.lcVisible   ? <TableCell className={ classes.colLastChange }>
-                                { this.props.t('Last change') }
+                                { this.props.t('lc') }
                             </TableCell> : null}
                         </TableRow>
                     </TableHead>

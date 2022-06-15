@@ -147,7 +147,10 @@ const styles = theme => ({
     nameCell: {
         paddingTop: '0 !important',
         paddingBottom: '0 !important',
-    }
+    },
+    tooltip: {
+        pointerEvents: 'none',
+    },
 });
 
 class AdapterRow extends Component {
@@ -305,7 +308,7 @@ class AdapterRow extends Component {
                         )}
                         </div>}
                         {sentry && <div className={classes.marginLeft5}>
-                            <Tooltip title="sentry">
+                            <Tooltip title="sentry" classes={{ popper: classes.tooltip }}>
                                 <CardMedia
                                     className={classes.sentry}
                                     component="img"

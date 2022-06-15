@@ -623,7 +623,7 @@
   "With": "с",
   "Without": "без",
   "Yemen": "Йемен",
-  "You are going to add new instance: ": "Вы добавите новый экземпляр:",
+  "You are going to add new instance:": "Вы добавите новый экземпляр:",
   "You can check changelog here": "Список изменений можно посмотреть <a href=\"https://github.com/ioBroker/ioBroker.js-controller/blob/master/CHANGELOG.md\" target=\"_blank\">здесь</a>",
   "You can drag&drop the devices, channels and states to enums": "Вы можете перетаскивать устройства, каналы и состояния к категориям",
   "You can drag&drop users to groups": "Вы можете перетаскивать пользователей в группы",

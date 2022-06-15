@@ -316,6 +316,9 @@ const styles = theme => ({
             background: 'repeating-linear-gradient(135deg, #333, #333 10px, #888 10px, #888 20px)',
         }
     },
+    tooltip: {
+        pointerEvents: 'none',
+    },
     /*instanceStateAliveAndConnected2: {
         backgroundColor: 'rgb(0 255 0 / 14%)'
     }*/
