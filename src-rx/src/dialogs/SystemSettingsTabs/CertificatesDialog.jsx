@@ -140,7 +140,7 @@ class CertificatesDialog extends Component {
                         className={this.props.classes.input + ' xs-centered'}
                         onChange={evt => {
                             let value = evt.target.value.replace(/\r/g, '').replace(/\n/g, '');
-                            if (!value.startsWith('--')) {
+                            if (value.startsWith('--')) {
                                 let parts = value.split('-----');
                                 parts[2] = parts[2].replace(/\s/g, '');
                                 value = `-----${parts[1]}-----\r\n${parts[2]}\r\n-----${parts[3]}-----`;
