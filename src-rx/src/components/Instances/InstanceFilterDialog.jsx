@@ -205,7 +205,7 @@ const statusArray = {
     ok: { text: 'enabled and OK', _class: 'statusIcon_green', status: 'green' }
 };
 
-const InstanceFilterDialog = ({ cb, filterMode, filterStatus }) => {
+const InstanceFilterDialog = ({ cb, filterMode, filterStatus, theme }) => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
 
@@ -220,7 +220,7 @@ const InstanceFilterDialog = ({ cb, filterMode, filterStatus }) => {
         }
     }
 
-    return <ThemeProvider theme={theme(Utils.getThemeName())}>
+    return <ThemeProvider theme={theme}>
         <Dialog
             onClose={onClose}
             open={open}
@@ -330,7 +330,7 @@ const InstanceFilterDialog = ({ cb, filterMode, filterStatus }) => {
     </ThemeProvider>;
 }
 
-export const instanceFilterDialogCallback = (cb, filterMode, filterStatus, getModeIcon) => {
+export const instanceFilterDialogCallback = (cb, filterMode, filterStatus, getModeIcon, theme) => {
     if (!node) {
         node = document.createElement('div');
         node.id = 'renderModal';
@@ -338,7 +338,9 @@ export const instanceFilterDialogCallback = (cb, filterMode, filterStatus, getMo
     }
     const root = createRoot(node);
 
-    return root.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
-        <InstanceFilterDialog cb={cb} getModeIcon={getModeIcon} filterMode={filterMode} filterStatus={filterStatus} />
-    </ThemeProvider></StyledEngineProvider>);
+    return root.render(<StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+            <InstanceFilterDialog cb={cb} getModeIcon={getModeIcon} filterMode={filterMode} theme={theme} filterStatus={filterStatus} />
+        </ThemeProvider>
+    </StyledEngineProvider>);
 }

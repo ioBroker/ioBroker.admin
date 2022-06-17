@@ -29,7 +29,7 @@ import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 let node = null;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
     root: {
         backgroundColor: theme.palette.background.paper,
         width: '100%',
@@ -234,7 +234,7 @@ const TabPanel = ({ children, value, index, classNameBox, ...other }) => {
     </div>;
 }
 
-const HostWarningDialog = ({ message, ackCallback, dateFormat, themeType, themeName, instances }) => {
+const HostWarningDialog = ({ message, ackCallback, dateFormat, themeType, instances, theme }) => {
     const classes = useStyles();
 
     const [open, setOpen] = useState(true);
@@ -262,7 +262,7 @@ const HostWarningDialog = ({ message, ackCallback, dateFormat, themeType, themeN
 
     const black = themeType === 'dark';
 
-    return <ThemeProvider theme={theme(themeName)}>
+    return <ThemeProvider theme={theme}>
         <Dialog
             onClose={onClose}
             open={open}
@@ -386,7 +386,7 @@ const HostWarningDialog = ({ message, ackCallback, dateFormat, themeType, themeN
     </ThemeProvider >;
 }
 
-export const hostWarningDialogFunc = (message, dateFormat, themeType, themeName, instances, ackCallback) => {
+export const hostWarningDialogFunc = (message, dateFormat, themeType, themeName, instances, theme, ackCallback) => {
     if (!node) {
         node = document.createElement('div');
         node.id = 'renderModal';
@@ -394,7 +394,17 @@ export const hostWarningDialogFunc = (message, dateFormat, themeType, themeName,
     }
     const root = createRoot(node);
 
-    return root.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
-    <HostWarningDialog instances={instances} message={message} themeName={themeName} themeType={themeType} dateFormat={dateFormat} ackCallback={ackCallback} />
-    </ThemeProvider></StyledEngineProvider>);
+    return root.render(<StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+            <HostWarningDialog
+                instances={instances}
+                message={message}
+                themeName={themeName}
+                theme={theme}
+                themeType={themeType}
+                dateFormat={dateFormat}
+                ackCallback={ackCallback}
+            />
+        </ThemeProvider>
+    </StyledEngineProvider>);
 }

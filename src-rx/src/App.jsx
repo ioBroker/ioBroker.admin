@@ -891,6 +891,7 @@ class App extends Router {
         return <DiscoveryDialog
             themeType={this.state.themeType}
             themeName={this.state.themeName}
+            theme={this.state.theme}
             socket={this.socket}
             dateFormat={this.state.systemConfig.common.dateFormat}
             currentHost={this.state.currentHost}
@@ -936,6 +937,7 @@ class App extends Router {
                         this.state.themeType,
                         this.state.themeName,
                         instances,
+                        this.state.theme,
                         name => socket.clearNotifications(host, name)
                     );
                 });
@@ -974,7 +976,7 @@ class App extends Router {
                                     });
 
                                     if (checkNews && checkNews.length) {
-                                        newsAdminDialogFunc(checkNews, lastNewsId?.val, this.state.themeName, this.state.themeType, id =>
+                                        newsAdminDialogFunc(checkNews, lastNewsId?.val, this.state.themeName, this.state.themeType, this.state.theme, id =>
                                             this.socket.setState(`admin.${instance}.info.newsLastId`, { val: id, ack: true }));
                                     }
                                 })));
@@ -1346,6 +1348,7 @@ class App extends Router {
                         hostsWorker={this.hostsWorker}
 
                         themeName={this.state.themeName}
+                        theme={this.state.theme}
                         expertMode={this.state.expertMode}
                         t={I18n.t}
                         navigate={Router.doNavigate}
@@ -1753,7 +1756,7 @@ class App extends Router {
                                                         this.setState({ expertMode: !this.state.expertMode });
                                                         this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
                                                     } else {
-                                                        expertModeDialogFunc(this.state.expertMode, this.state.themeType, () => {
+                                                        expertModeDialogFunc(this.state.expertMode, this.state.themeType, this.state.theme, () => {
                                                             window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
                                                             this.setState({ expertMode: !this.state.expertMode });
                                                             this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');

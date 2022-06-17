@@ -277,7 +277,7 @@
           "hidden": "!data.accessLimit",
           "newLine": true,
           "url": "custom/customComponents.js",
-          "name": "ConfigCustomEasyAccessSet/Components/ConfigCustomEasyAccess"
+          "name": "AdminComponentEasyAccessSet/Components/ConfigCustomEasyAccess"
         }
       }
     }

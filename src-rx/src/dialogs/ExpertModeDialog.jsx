@@ -15,16 +15,15 @@ import { DialogTitle, IconButton, Typography } from '@mui/material';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 
-import theme from '@iobroker/adapter-react-v5/Theme';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 import ExpertIcon from '@iobroker/adapter-react-v5/icons/IconExpert';
 import CheckIcon from '@mui/icons-material/Check';
 
 let node = null;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
     root: {
         backgroundColor: theme.palette.background.paper,
+        conso: console.log('Create ' + theme.palette.mode),
         width: '100%',
         height: 'auto',
         display: 'flex',
@@ -145,15 +144,18 @@ const ExpertModeDialog = ({ boolSettings, func, buttonIcon, themeType }) => {
         </Dialog>;
 }
 
-export const expertModeDialogFunc = (boolSettings, themeType, func, buttonIcon) => {
+export const expertModeDialogFunc = (boolSettings, themeType, theme, func, buttonIcon) => {
     if (!node) {
         node = document.createElement('div');
         node.id = 'renderModal';
         document.body.appendChild(node);
     }
     const root = createRoot(node);
+    console.log('Create expert')
 
-    return root.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
-    <ExpertModeDialog themeType={themeType} buttonIcon={buttonIcon} boolSettings={boolSettings} func={func} />
-    </ThemeProvider></StyledEngineProvider>);
+    return root.render(<StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+            <ExpertModeDialog themeType={themeType} buttonIcon={buttonIcon} boolSettings={boolSettings} func={func} />
+        </ThemeProvider>
+    </StyledEngineProvider>);
 }

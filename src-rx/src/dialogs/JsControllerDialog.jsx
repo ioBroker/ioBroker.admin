@@ -17,12 +17,11 @@ import CloseIcon from '@mui/icons-material/Close';
 import DescriptionIcon from '@mui/icons-material/Description';
 
 import I18n from '@iobroker/adapter-react-v5/i18n';
-import theme from '@iobroker/adapter-react-v5/Theme';
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 let node = null;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
     root: {
         // backgroundColor: theme.palette.background.paper,
         width: '100%',
@@ -119,7 +118,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const JsControllerDialog = ({ socket, hostId }) => {
+const JsControllerDialog = ({ socket, hostId, theme }) => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
     const [location, setLocation] = useState('');
@@ -177,7 +176,7 @@ const JsControllerDialog = ({ socket, hostId }) => {
             console.error('Async: Could not copy text: ', err);
         });
     }
-    return <ThemeProvider theme={theme(Utils.getThemeName())}>
+    return <ThemeProvider theme={theme}>
         <Dialog
             onClose={onClose}
             open={open}
@@ -358,7 +357,7 @@ sudo -u iobroker -H npm install iobroker.js-controller`
     </ThemeProvider>;
 }
 
-export const JsControllerDialogFunc = (socket, hostId) => {
+export const jsControllerDialogFunc = (socket, hostId, theme) => {
     if (!node) {
         node = document.createElement('div');
         node.id = 'renderModal';
@@ -366,7 +365,9 @@ export const JsControllerDialogFunc = (socket, hostId) => {
     }
     const root = createRoot(node);
 
-    return root.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
-    <JsControllerDialog hostId={hostId} socket={socket} />
-    </ThemeProvider></StyledEngineProvider>);
+    return root.render(<StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+            <JsControllerDialog hostId={hostId} socket={socket} theme={theme}/>
+        </ThemeProvider>
+    </StyledEngineProvider>);
 }

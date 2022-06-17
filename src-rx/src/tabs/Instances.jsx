@@ -1297,8 +1297,8 @@ class Instances extends Component {
                                 this.changeSetState('filterMode', newState.filterMode);
                                 this.changeSetState('filterStatus', newState.filterStatus);
                             }
-                        }, this.state.filterMode, this.state.filterStatus, this.getModeIcon)}>
-                        <FilterListIcon style={{width: 16, height: 16}} className={this.state.filterMode || this.state.filterStatus ? classes.filterActive : ''}/>
+                        }, this.state.filterMode, this.state.filterStatus, this.getModeIcon, this.props.theme)}>
+                        <FilterListIcon style={{ width: 16, height: 16 }} className={this.state.filterMode || this.state.filterStatus ? classes.filterActive : ''}/>
                     </IconButton>
                 </Tooltip>
                 {/*this.props.expertMode && <Tooltip title="sentry">

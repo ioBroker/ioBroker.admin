@@ -18,7 +18,6 @@ import I18n from '@iobroker/adapter-react-v5/i18n';
 import theme from '@iobroker/adapter-react-v5/Theme';
 import ConfigPanel from '../components/JsonConfigComponent/ConfigPanel';
 import CheckIcon from '@mui/icons-material/Check';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 let node = null;
 
@@ -214,7 +213,7 @@ const generateObj = (obj, path, value) => {
     });
     return obj;
 }
-const GenerateInputsModal = ({ themeType, themeName, socket, newInstances, onApplyModal, onCloseModal }) => {
+const GenerateInputsModal = ({ themeType, themeName, socket, newInstances, onApplyModal, onCloseModal, theme }) => {
     const classes = useStyles();
 
     const [open, setOpen] = useState(true);
@@ -281,7 +280,7 @@ const GenerateInputsModal = ({ themeType, themeName, socket, newInstances, onApp
         }
     }, [newInstances]);
 
-    return <ThemeProvider theme={theme(themeName)}>
+    return <ThemeProvider theme={theme}>
         <Dialog
             onClose={onClose}
             open={open}
@@ -364,7 +363,7 @@ const GenerateInputsModal = ({ themeType, themeName, socket, newInstances, onApp
     </ThemeProvider >;
 }
 
-export const GenerateInputsFunc = (themeType, themeName, socket, newInstances, onCloseModal, onApplyModal) => {
+export const generateInputsFunc = (themeType, themeName, socket, newInstances, theme, onCloseModal, onApplyModal) => {
     if (!node) {
         node = document.createElement('div');
         node.id = 'renderDiscoveryModal';
@@ -372,7 +371,9 @@ export const GenerateInputsFunc = (themeType, themeName, socket, newInstances, o
     }
     const root = createRoot(node);
 
-    return root.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
-    <GenerateInputsModal onCloseModal={onCloseModal} newInstances={newInstances} onApplyModal={onApplyModal} themeName={themeName} themeType={themeType} socket={socket} />
-    </ThemeProvider></StyledEngineProvider>);
+    return root.render(<StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+            <GenerateInputsModal onCloseModal={onCloseModal} newInstances={newInstances} onApplyModal={onApplyModal} themeName={themeName} themeType={themeType} theme={theme} socket={socket} />
+        </ThemeProvider>
+    </StyledEngineProvider>);
 }

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import semver from 'semver';
 import clsx from 'clsx';
@@ -24,11 +24,10 @@ import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
-import { useStateLocal } from '../helpers/hooks/useStateLocal';
 import HostCard from '../components/Hosts/HostCard';
 import HostRow from '../components/Hosts/HostRow';
 import HostEdit from '../components/Hosts/HostEdit';
-import { JsControllerDialogFunc } from '../dialogs/JsControllerDialog';
+import { jsControllerDialogFunc } from '../dialogs/JsControllerDialog';
 import Utils from '../Utils';
 import BaseSettingsDialog from '../dialogs/BaseSettingsDialog';
 import SlowConnectionWarningDialog from '../dialogs/SlowConnectionWarningDialog';
@@ -188,8 +187,7 @@ const getHostDescriptionAll = (id, t, classes, hostsData) => {
     ];
 }
 
-
-const getLogLevelIcon = (level) => {
+const getLogLevelIcon = level => {
     if (level === 'debug') {
         return <BugReportIcon />;
     } else if (level === 'info') {
@@ -200,50 +198,45 @@ const getLogLevelIcon = (level) => {
         return <ErrorIcon />;
     }
     return null;
-}
+};
+
 // every tab should get their data itself from server
-const Hosts = ({
-    classes,
-    disabled,
-    socket,
-    currentHost,
-    expertMode,
-    executeCommand,
-    systemConfig,
-    navigate,
-    themeName,
-    lang,
-    hostsWorker,
-    showAdaptersWarning,
-    ...props
-}) => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const t = (word, arg1) => {
+class Hosts extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            viewMode: (window._localStorage || window.localStorage).getItem('Hosts.viewMode') === 'true',
+            alive: {},
+            hosts: [],
+            repository: {},
+            hostsData: {},
+            filterText: (window._localStorage || window.localStorage).getItem('Hosts.filterText') || '',
+            showSlowConnectionWarning: false,
+            readTimeoutMs: SlowConnectionWarningDialog.getReadTimeoutMs(),
+            hostUpdate: false,
+            hostUpdateDialog: null,
+            editDialog: { index: 0, dialogName: '' },
+            baseSettingsDialog: { index: 0, dialogName: '' },
+        };
+    }
+    // cache translations
+    t = (word, arg1) => {
         if (arg1 !== undefined && !wordCache[`${word} ${arg1}`]) {
-            wordCache[`${word} ${arg1}`] = props.t(word, arg1);
+            wordCache[`${word} ${arg1}`] = this.props.t(word, arg1);
         } else if (!wordCache[word]) {
-            wordCache[word] = props.t(word);
+            wordCache[word] = this.props.t(word);
         }
         return arg1 !== undefined ? wordCache[`${word} ${arg1}`] : wordCache[word];
-    }
+    };
 
-    const [hosts, setHosts] = useState([]);
-    const [alive, setAlive] = useState({});
-    const [repository, setRepository] = useState({});
-    const [hostsData, setHostsData] = useState({});
-    const [refresh, setRefresh] = useState(false);
-    const [viewMode, setViewMode] = useStateLocal(false, 'Hosts.viewMode');
-    const [filterText, setFilterText] = useStateLocal('', 'Hosts.filterText');
-    const [showSlowConnectionWarning, setShowSlowConnectionWarning] = useState(false);
-    const [readTimeoutMs, setReadTimeoutMs] = useState(SlowConnectionWarningDialog.getReadTimeoutMs());
-
-    const getHostsData = (hosts, _alive) => {
+    getHostsData = (hosts, _alive) => {
         const promises = hosts.map(obj => {
             if (_alive[obj._id]) {
-                return socket.getHostInfo(obj._id, null, readTimeoutMs)
+                return this.props.socket.getHostInfo(obj._id, null, this.state.readTimeoutMs)
                     .catch(error => {
                         console.error('Cannot get getHostInfo:' + error);
-                        error.toString().includes('timeout') && setShowSlowConnectionWarning(true);
+                        error.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
                         return error;
                     })
                     .then(data =>
@@ -262,247 +255,186 @@ const Hosts = ({
                 }));
     };
 
-    const updateHosts = (hostId, state) => {
-        setHosts(prevHostsArray => {
-            const newHosts = JSON.parse(JSON.stringify(prevHostsArray));
-            if (Array.isArray(hostId)) {
-                hostId.forEach(event => {
-                    const elementFind = prevHostsArray.find(host => host._id === event.id);
-                    if (elementFind) {
-                        const index = prevHostsArray.indexOf(elementFind);
-                        if (event.obj) {
-                            newHosts[index] = event.obj;
-                        } else {
-                            newHosts.splice(index, 1);
-                        }
-                    } else {
-                        newHosts.push(event.obj);
-                    }
-                });
-            } else {
-                const elementFind = prevHostsArray.find(({ _id }) => _id === hostId);
-                if (elementFind) {
-                    const index = prevHostsArray.indexOf(elementFind);
-                    if (state) {
-                        newHosts[index] = state;
-                    } else {
-                        newHosts.splice(index, 1);
-                    }
-                } else {
-                    newHosts.push(state);
-                }
-            }
+    readInfo = () => {
+        return this.props.socket.getHosts(true, false, this.state.readTimeoutMs)
+            .then(hosts => this.props.socket.getRepository(this.props.currentHost, { update: false }, false, this.state.readTimeoutMs)
+                .then(async repository => {
+                    const alive = JSON.parse(JSON.stringify(this.state.alive));
 
-            filterText && newHosts.length <= 2 && setFilterText('');
-
-            return newHosts;
-        });
-    }
-
-    const readInfo = () => {
-        return socket.getHosts(true, false, readTimeoutMs)
-            .then(hostsArray => socket.getRepository(currentHost, { update: false }, false, readTimeoutMs)
-                .then(async repositoryProm => {
-                    const _alive = JSON.parse(JSON.stringify(alive));
-
-                    for (let h = 0; h < hostsArray.length; h++) {
-                        let aliveValue = await socket.getState(`${hostsArray[h]._id}.alive`);
-                        _alive[hostsArray[h]._id] = !aliveValue ? false : !!aliveValue.val;
+                    for (let h = 0; h < hosts.length; h++) {
+                        let aliveValue = await this.props.socket.getState(`${hosts[h]._id}.alive`);
+                        alive[hosts[h]._id] = !aliveValue ? false : !!aliveValue.val;
                     }
 
-                    setAlive(_alive);
-
-                    setRepository(repositoryProm);
-                    setHosts(hostsArray);
-                    filterText && hostsArray.length <= 2 && setFilterText('');
-                    const hostDataObj = await getHostsData(hostsArray, _alive);
-                    setHostsData(hostDataObj);
-
-                    // simulation
-                    // setTimeout(() => setShowSlowConnectionWarning(true), 5000);
+                    const hostsData = await this.getHostsData(hosts, alive);
+                    const newState = { alive, hosts, hostsData, repository };
+                    if (this.state.filterText && hosts.length <= 2) {
+                        newState.filterText = '';
+                    }
+                    this.setState(newState);
                 })
                 .catch(e => {
                     window.alert('Cannot getRepository: ' + e);
-                    e.toString().includes('timeout') && setShowSlowConnectionWarning(true);
+                    e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
                 }));
     };
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(() => {
-        readInfo()
-            .then(() =>
-                hostsWorker.registerHandler(updateHosts));
-
-        return () => hostsWorker.unregisterHandler(updateHosts);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [refresh]);
-
-    const getAllArrayHosts = useMemo(() => hosts.map(({
-        _id,
-        common: { name, icon, color, title, installedVersion },
-        native: { os: { platform } },
-    }, idx
-    ) => ({
-        renderCard: viewMode ? <HostCard
-            systemConfig={systemConfig}
-            key={_id}
-            setEditDialog={() => setEditDialog({ index: idx, dialogName: name })}
-            setBaseSettingsDialog={() => setBaseSettingsDialog({ index: idx, dialogName: name })}
-            hostsWorker={hostsWorker}
-            expertMode={expertMode}
-            socket={socket}
-            name={name}
-            getLogLevelIcon={getLogLevelIcon}
-            alive={alive[_id]}
-            color={color}
-            image={icon}
-            title={title}
-            os={platform}
-            openHostUpdateDialog={() => openHostUpdateDialog(name)}
-            description={getHostDescriptionAll(_id, t, classes, hostsData)[0]}
-            hostData={hostsData[_id]}
-            formatInfo={formatInfo}
-            available={repository['js-controller']?.version || '-'}
-            executeCommandRemove={() => executeCommand(`host remove ${name}`)}
-            dialogUpgrade={() => JsControllerDialogFunc(socket, _id)}
-            currentHost={currentHost === _id}
-            installed={installedVersion}
-            events={'- / -'}
-            t={t}
-            _id={_id}
-            showAdaptersWarning={showAdaptersWarning}
-        /> : null,
-        renderRow: !viewMode ? <HostRow
-            systemConfig={systemConfig}
-            key={_id}
-            setEditDialog={() => setEditDialog({
-                index: idx,
-                dialogName: name
-            })}
-            setBaseSettingsDialog={() => setBaseSettingsDialog({
-                index: idx,
-                dialogName: name
-            })}
-            hostsWorker={hostsWorker}
-            expertMode={expertMode}
-            socket={socket}
-            name={name}
-            alive={alive[_id]}
-            color={color}
-            image={icon}
-            title={title}
-            os={platform}
-            getLogLevelIcon={getLogLevelIcon}
-            openHostUpdateDialog={() => openHostUpdateDialog(name)}
-            executeCommandRemove={() => executeCommand(`host remove ${name}`)}
-            dialogUpgrade={() => JsControllerDialogFunc(socket, _id)}
-            currentHost={currentHost === _id}
-            description={getHostDescriptionAll(_id, t, classes, hostsData)[1]}
-            hostData={hostsData[_id]}
-            formatInfo={formatInfo}
-            available={repository['js-controller']?.version || '-'}
-            installed={installedVersion}
-            events={'- / -'}
-            t={t}
-            _id={_id}
-            showAdaptersWarning={showAdaptersWarning}
-        /> : null,
-        name
-    })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    ), [hosts, alive, repository, hostsData, classes, expertMode, viewMode]);
-
-    const [editDialog, setEditDialog] = useState({ index: 0, dialogName: '' });
-
-    const [baseSettingsDialog, setBaseSettingsDialog] = useState({ index: 0, dialogName: '' });
-
-    const getPanels = useCallback(() => {
-        const items = getAllArrayHosts.filter(el => filterText ? el.name.toLowerCase().includes(filterText.toLowerCase()) : true).map(el => viewMode ? el.renderCard : el.renderRow);
-        return items.length ? items : t('All items are filtered out');
-    }, [getAllArrayHosts, t, filterText, viewMode,]);
-
-    const baseSettingsSettingsDialog = () => {
-        if (!baseSettingsDialog.dialogName) {
-            return null;
+    updateHosts = (hostId, state) => {
+        const hosts = JSON.parse(JSON.stringify(this.state.hosts));
+        if (Array.isArray(hostId)) {
+            hostId.forEach(event => {
+                const elementFind = hosts.find(host => host._id === event.id);
+                if (elementFind) {
+                    const index = hosts.indexOf(elementFind);
+                    if (event.obj) {
+                        hosts[index] = event.obj;
+                    } else {
+                        hosts.splice(index, 1);
+                    }
+                } else {
+                    hosts.push(event.obj);
+                }
+            });
+        } else {
+            const elementFind = hosts.find(({ _id }) => _id === hostId);
+            if (elementFind) {
+                const index = hosts.indexOf(elementFind);
+                if (state) {
+                    hosts[index] = state;
+                } else {
+                    hosts.splice(index, 1);
+                }
+            } else {
+                hosts.push(state);
+            }
         }
-        return <BaseSettingsDialog
-            currentHost={baseSettingsDialog.dialogName}
-            hosts={hosts}
-            themeName={themeName}
-            currentHostName={baseSettingsDialog.dialogName}
-            key="base"
-            onClose={() => setBaseSettingsDialog({
-                index: 0,
-                dialogName: ''
-            })}
-            lang={lang}
-            // showAlert={(message, type) => this.showAlert(message, type)}
-            socket={socket}
-            // currentTab={currentTab}
-            t={t}
-        />
+
+        const newState = { hosts };
+
+        if (this.state.filterText && hosts.length <= 2) {
+            newState.filterText = '';
+        }
+
+        this.setState(newState);
     };
 
-    const renderEditObjectDialog = () => {
-        if (!editDialog.dialogName) {
+    updateHostsAlive = events => {
+        let alive = JSON.parse(JSON.stringify(this.state.alive));
+        let changed = false;
+
+        events.forEach(event => {
+            if (event.type === 'delete') {
+                if (alive[event.id] !== undefined) {
+                    delete alive[event.id];
+                    changed = true;
+                }
+            } else if ((!!alive[event.id]) !== (!!event.alive)) {
+                alive[event.id] = event.alive;
+                changed = true;
+            }
+        });
+
+        changed && this.setState({ alive });
+    };
+
+    componentDidMount() {
+        this.readInfo()
+            .then(() => {
+                this.props.hostsWorker.registerHandler(this.updateHosts);
+                this.props.hostsWorker.registerAliveHandler(this.updateHostsAlive);
+            });
+    }
+
+    componentWillUnmount() {
+        this.props.hostsWorker.unregisterHandler(this.updateHosts);
+        this.props.hostsWorker.unregisterHandler(this.updateHostsAlive);
+    }
+
+    getPanels() {
+        const items = this.renderHosts()
+            .filter(el => this.state.filterText ? el.name.toLowerCase().includes(this.state.filterText.toLowerCase()) : true)
+            .map(el => this.state.viewMode ? el.renderCard : el.renderRow);
+
+        return items.length ? items : this.t('All items are filtered out');
+    }
+
+    baseSettingsSettingsDialog() {
+        if (!this.state.baseSettingsDialog.dialogName) {
             return null;
         }
+
+        return <BaseSettingsDialog
+            currentHost={this.state.baseSettingsDialog.dialogName}
+            hosts={this.state.hosts}
+            themeName={this.props.themeName}
+            currentHostName={this.state.baseSettingsDialog.dialogName}
+            key="base"
+            onClose={() => this.setState({baseSettingsDialog: {
+                index: 0,
+                dialogName: ''
+            }})}
+            lang={this.props.lang}
+            // showAlert={(message, type) => this.showAlert(message, type)}
+            socket={this.props.socket}
+            // currentTab={currentTab}
+            t={this.t}
+        />
+    }
+
+    renderEditObjectDialog = () => {
+        if (!this.state.editDialog.dialogName) {
+            return null;
+        }
+
         return <HostEdit
-            obj={hosts[editDialog.index]}
-            socket={socket}
-            dialogName={editDialog.dialogName}
-            t={t}
-            expertMode={expertMode}
+            obj={this.state.hosts[this.state.editDialog.index]}
+            socket={this.props.socket}
+            dialogName={this.state.editDialog.dialogName}
+            t={this.t}
+            expertMode={this.props.expertMode}
             onClose={obj => {
-                setEditDialog({
+                this.setState({ editDialog: {
                     index: 0,
                     dialogName: ''
-                })
+                }});
                 if (obj) {
-                    socket.setObject(obj._id, obj)
-                        .then(_ => setRefresh((el) => !el))
+                    this.props.socket.setObject(obj._id, obj)
+                        .then(_ => this.forceUpdate())
                         .catch(e => alert('Cannot write object: ' + e));
                 }
             }}
-        />
+        />;
     };
 
-    const renderSlowConnectionWarning = () => {
-        if (!showSlowConnectionWarning) {
+    renderSlowConnectionWarning = () => {
+        if (!this.state.showSlowConnectionWarning) {
             return null;
         } else {
             return <SlowConnectionWarningDialog
-                readTimeoutMs={readTimeoutMs}
-                t={t}
-                onClose={async _readTimeoutMs => {
-                    setShowSlowConnectionWarning(false);
-                    if (_readTimeoutMs) {
-                        setReadTimeoutMs(_readTimeoutMs);
-                        await readInfo();
+                readTimeoutMs={this.state.readTimeoutMs}
+                t={this.t}
+                onClose={async readTimeoutMs => {
+                    this.setState({ showSlowConnectionWarning: false });
+                    if (readTimeoutMs) {
+                        this.setState({ readTimeoutMs });
+                        await this.readInfo();
                     }
                 }}
             />;
         }
-    }
+    };
 
-    const [hostUpdateDialog, setHostUpdateDialog] = useState(false);
-    const [hostUpdate, setHostUpdate] = useState(null);
+    closeHostUpdateDialog = cb => {
+        this.setState({ hostUpdateDialog: false, hostUpdate: null}, cb);
+    };
 
-    const closeHostUpdateDialog = (cb) => {
-        setHostUpdateDialog(false);
-        setHostUpdate(null);
-        cb && cb();
-    }
+    openHostUpdateDialog = (hostName, cb) => {
+        this.setState({ hostUpdateDialog: true, hostUpdate: hostName}, cb);
+    };
 
-    const openHostUpdateDialog = (hostName, cb) => {
-        setHostUpdateDialog(true);
-        setHostUpdate(hostName);
-        cb && cb();
-    }
-
-    const getNews = (value, all = false) => {
-        const adapter = repository['js-controller'];
-        const installed = hosts.find(el => el.common.name === hostUpdate).common.installedVersion;
+    getNews = (value, all = false) => {
+        const adapter = this.state.repository['js-controller'];
+        const installed = this.state.hosts.find(el => el.common.name === this.state.hostUpdate).common.installedVersion;
         const news = [];
 
         if (installed && adapter && adapter.news) {
@@ -511,7 +443,7 @@ const Hosts = ({
                     if (semver.gt(version, installed) || all) {
                         news.push({
                             version: version,
-                            news: adapter.news[version][lang] || adapter.news[version].en
+                            news: adapter.news[version][this.props.lang] || adapter.news[version].en
                         });
                     }
                 } catch (e) {
@@ -522,91 +454,182 @@ const Hosts = ({
         }
 
         return news;
-    }
-    const hostUpdateDialogCb = () => {
-        if (!hostUpdateDialog) {
+    };
+
+    hostUpdateDialogCb = () => {
+        if (!this.state.hostUpdateDialog) {
             return null;
         } else {
             return <AdapterUpdateDialog
-                open={hostUpdateDialog}
-                adapter={hostUpdate}
-                adapterObject={repository['js-controller']}
-                t={props.t}
-                textUpdate={t('Show instructions')}
+                open={true}
+                adapter={this.state.hostUpdate}
+                adapterObject={this.state.repository['js-controller']}
+                t={this.t}
+                textUpdate={this.t('Show instructions')}
                 rightDependencies
-                news={getNews()}
+                news={this.getNews()}
                 onUpdate={() =>
-                    closeHostUpdateDialog(() =>
-                        JsControllerDialogFunc(socket, hostUpdate))}
-                onClose={() => closeHostUpdateDialog()}
-            />
+                    this.closeHostUpdateDialog(() =>
+                        jsControllerDialogFunc(this.props.socket, this.state.hostUpdate, this.props.theme))}
+                onClose={() => this.closeHostUpdateDialog()}
+            />;
         }
+    };
+
+    renderHosts() {
+        return this.state.hosts.map(({
+            _id,
+            common: { name, icon, color, title, installedVersion },
+            native: { os: { platform } },
+        }, idx) => ({
+            renderCard: this.state.viewMode ? <HostCard
+                systemConfig={this.props.systemConfig}
+                key={_id}
+                setEditDialog={() => this.setState({editDialog: { index: idx, dialogName: name }})}
+                setBaseSettingsDialog={() => this.setBaseSettingsDialog({ index: idx, dialogName: name })}
+                hostsWorker={this.props.hostsWorker}
+                expertMode={this.props.expertMode}
+                socket={this.props.socket}
+                name={name}
+                getLogLevelIcon={getLogLevelIcon}
+                alive={this.state.alive[_id]}
+                color={color}
+                image={icon}
+                title={title}
+                os={platform}
+                openHostUpdateDialog={() => this.openHostUpdateDialog(name)}
+                description={getHostDescriptionAll(_id, this.t, this.props.classes, this.state.hostsData)[0]}
+                hostData={this.state.hostsData[_id]}
+                formatInfo={formatInfo}
+                available={this.state.repository['js-controller']?.version || '-'}
+                executeCommandRemove={() => this.props.executeCommand(`host remove ${name}`)}
+                dialogUpgrade={() => jsControllerDialogFunc(this.props.socket, _id, this.props.theme)}
+                currentHost={this.props.currentHost === _id}
+                installed={installedVersion}
+                events={'- / -'}
+                t={this.t}
+                _id={_id}
+                showAdaptersWarning={this.props.showAdaptersWarning}
+            /> : null,
+            renderRow: !this.state.viewMode ? <HostRow
+                systemConfig={this.props.systemConfig}
+                key={_id}
+                setEditDialog={() => this.setState({editDialog: {
+                    index: idx,
+                    dialogName: name
+                }})}
+                setBaseSettingsDialog={() =>  this.setState({baseSettingsDialog: {
+                    index: idx,
+                    dialogName: name
+                }})}
+                hostsWorker={this.props.hostsWorker}
+                expertMode={this.props.expertMode}
+                socket={this.props.socket}
+                name={name}
+                alive={this.state.alive[_id]}
+                color={color}
+                image={icon}
+                title={title}
+                os={platform}
+                getLogLevelIcon={getLogLevelIcon}
+                openHostUpdateDialog={() => this.openHostUpdateDialog(name)}
+                executeCommandRemove={() => this.props.executeCommand(`host remove ${name}`)}
+                dialogUpgrade={() => jsControllerDialogFunc(this.props.socket, _id, this.props.theme)}
+                currentHost={this.props.currentHost === _id}
+                description={getHostDescriptionAll(_id, this.t, this.props.classes, this.state.hostsData)[1]}
+                hostData={this.state.hostsData[_id]}
+                formatInfo={formatInfo}
+                available={this.state.repository['js-controller']?.version || '-'}
+                installed={installedVersion}
+                events={'- / -'}
+                t={this.t}
+                _id={_id}
+                showAdaptersWarning={this.props.showAdaptersWarning}
+            /> : null,
+            name
+        }));
     }
 
-    if (!hosts.length) {
-        return <LinearProgress />;
-    }
+    render() {
+        const {
+            classes,
+            expertMode,
+        } = this.props;
 
-    return <TabContainer>
-        {renderEditObjectDialog()}
-        {baseSettingsSettingsDialog()}
-        {renderSlowConnectionWarning()}
-        {hostUpdateDialogCb()}
-        <TabHeader>
-            <Tooltip title={t('Show / hide List')}>
-                <IconButton size="large" onClick={() => setViewMode(!viewMode)}>
-                    {viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
-                </IconButton>
-            </Tooltip>
-            <Tooltip title={t('Reload')}>
-                <IconButton size="large" onClick={() => setRefresh(el => !el)}>
-                    <RefreshIcon />
-                </IconButton>
-            </Tooltip>
-            <div className={classes.grow} />
-            {hosts.length > 2 ? <TextField
-                variant="standard"
-                label={t('Filter')}
-                style={{ margin: '5px 0' }}
-                value={filterText}
-                onChange={event => setFilterText(event.target.value)}
-                InputProps={{
-                    endAdornment: (
-                        filterText ? <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => setFilterText('')}
-                            >
-                                <CloseIcon />
-                            </IconButton>
-                        </InputAdornment> : null
-                    ),
-                }}
-            /> : null}
-            <div className={classes.grow} />
-        </TabHeader>
-        <TabContent overflow="auto">
-            <div className={viewMode ? classes.cards : ''}>
-                {!viewMode &&
-                    <div className={classes.tabHeaderWrapper}>
-                        <div className={classes.tabHeaderFirstItem}>
-                            {t('Name:')}
-                        </div>
-                        <div className={classes.tabFlex}>
-                            {/*<div className={clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Title:')}</div>*/}
-                            <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>CPU</div>
-                            <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>RAM</div>
-                            <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>{t('Uptime')}</div>
-                            <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{t('Available')}</div>
-                            <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{t('Installed')}</div>
-                            <div className={clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Events')}</div>
-                            <div className={clsx(classes.tabHeaderItemButton, expertMode && classes.widthButtons)} />
-                        </div>
-                    </div>}
-                {getPanels()}
-            </div>
-        </TabContent>
-    </TabContainer>;
+        if (!this.state.hosts.length) {
+            return <LinearProgress />;
+        }
+
+        return <TabContainer>
+            {this.renderEditObjectDialog()}
+            {this.baseSettingsSettingsDialog()}
+            {this.renderSlowConnectionWarning()}
+            {this.hostUpdateDialogCb()}
+            <TabHeader>
+                <Tooltip title={this.t('Show / hide List')}>
+                    <IconButton size="large" onClick={() => {
+                        (window._localStorage || window.localStorage).setItem('Hosts.viewMode', this.state.viewMode ? 'false' : 'true');
+                        this.setState({viewMode: !this.state.viewMode});
+                    }}>
+                        {this.state.viewMode ? <ViewModuleIcon /> : <ViewListIcon />}
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title={this.t('Reload')}>
+                    <IconButton size="large" onClick={() => this.forceUpdate()}>
+                        <RefreshIcon />
+                    </IconButton>
+                </Tooltip>
+                <div className={classes.grow} />
+                {this.state.hosts.length > 2 ? <TextField
+                    variant="standard"
+                    label={this.t('Filter')}
+                    style={{ margin: '5px 0' }}
+                    value={this.state.filterText}
+                    onChange={event => {
+                        (window._localStorage || window.localStorage).setItem('Hosts.viewMode', event.target.value);
+                        this.setState({filterText: event.target.value});
+                    }}
+                    InputProps={{
+                        endAdornment: (
+                            this.state.filterText ? <InputAdornment position="end">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => {
+                                        (window._localStorage || window.localStorage).setItem('Hosts.viewMode', '');
+                                        this.setState({filterText: ''})
+                                    }}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </InputAdornment> : null
+                        ),
+                    }}
+                /> : null}
+                <div className={classes.grow} />
+            </TabHeader>
+            <TabContent overflow="auto">
+                <div className={this.state.viewMode ? classes.cards : ''}>
+                    {!this.state.viewMode &&
+                        <div className={classes.tabHeaderWrapper}>
+                            <div className={classes.tabHeaderFirstItem}>
+                                {this.t('Name:')}
+                            </div>
+                            <div className={classes.tabFlex}>
+                                {/*<div className={clsx(classes.tabHeaderItem, classes.hidden600)}>{t('Title:')}</div>*/}
+                                <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>CPU</div>
+                                <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>RAM</div>
+                                <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>{this.t('Uptime')}</div>
+                                <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{this.t('Available')}</div>
+                                <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{this.t('Installed')}</div>
+                                <div className={clsx(classes.tabHeaderItem, classes.hidden600)}>{this.t('Events')}</div>
+                                <div className={clsx(classes.tabHeaderItemButton, expertMode && classes.widthButtons)} />
+                            </div>
+                        </div>}
+                    {this.getPanels()}
+                </div>
+            </TabContent>
+        </TabContainer>;
+    }
 }
 
 Hosts.propTypes = {
@@ -614,8 +637,10 @@ Hosts.propTypes = {
     expertMode: PropTypes.bool,
     socket: PropTypes.object,
     systemConfig: PropTypes.object,
+    executeCommand: PropTypes.func,
     hostsWorker: PropTypes.object,
     showAdaptersWarning: PropTypes.func,
+    theme: PropTypes.object,
 };
 
 export default withWidth()(withStyles(styles)(Hosts));

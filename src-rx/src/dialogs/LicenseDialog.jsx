@@ -13,7 +13,6 @@ import IconClose from '@mui/icons-material/Close';
 import IconCheck from '@mui/icons-material/Check';
 
 import I18n from '@iobroker/adapter-react-v5/i18n';
-import theme from '@iobroker/adapter-react-v5/Theme';
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 let node = null;
@@ -39,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
         padding: 10,
     }
 }));
-const LicenseDialog = ({ url, cb }) => {
+const LicenseDialog = ({ url, cb, theme }) => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
     const [text, setText] = useState('');
@@ -66,7 +65,7 @@ const LicenseDialog = ({ url, cb }) => {
         node = null;
     };
 
-    return <ThemeProvider theme={theme(Utils.getThemeName())}>
+    return <ThemeProvider theme={theme}>
         <Dialog
             onClose={onClose}
             open={open}
@@ -116,7 +115,7 @@ const LicenseDialog = ({ url, cb }) => {
     </ThemeProvider>;
 }
 
-export const licenseDialogFunc = (license, cb, url) => {
+export const licenseDialogFunc = (license, theme, cb, url) => {
     if (license) {
         return cb(true);
     }
@@ -127,7 +126,9 @@ export const licenseDialogFunc = (license, cb, url) => {
     }
     const root = createRoot(node);
 
-    return root.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
-    <LicenseDialog url={url} cb={cb} />
-    </ThemeProvider></StyledEngineProvider>);
+    return root.render(<StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+            <LicenseDialog url={url} cb={cb} theme={theme}/>
+        </ThemeProvider>
+    </StyledEngineProvider>);
 }

@@ -17,12 +17,11 @@ import CheckIcon from '@mui/icons-material/Check';
 import WorldIcon from '@mui/icons-material/Public';
 
 import I18n from '@iobroker/adapter-react-v5/i18n';
-import theme from '@iobroker/adapter-react-v5/Theme';
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 let node = null;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
     root: {
         backgroundColor: theme.palette.background.paper,
         width: '100%',
@@ -108,7 +107,7 @@ const Status = ({ name, ...props }) => {
     }
 }
 
-const NewsAdminDialog = ({ newsArr, current, callback, themeType, themeName }) => {
+const NewsAdminDialog = ({ newsArr, current, callback, themeType, theme  }) => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
     const [id, setId] = useState(current);
@@ -161,7 +160,7 @@ const NewsAdminDialog = ({ newsArr, current, callback, themeType, themeName }) =
     if (linkTitle && typeof linkTitle === 'object') {
         linkTitle = linkTitle[lang] || linkTitle.en;
     }
-    return <ThemeProvider theme={theme(themeName)}>
+    return <ThemeProvider theme={theme}>
         <Dialog
             onClose={onClose}
             open={open}
@@ -354,7 +353,7 @@ export const checkMessages = function (messages, lastMessageId, context) {
     return messagesToShow;
 }
 
-export const newsAdminDialogFunc = (newsArr, current, themeName, themeType, callback) => {
+export const newsAdminDialogFunc = (newsArr, current, themeName, themeType, theme, callback) => {
     if (!node) {
         node = document.createElement('div');
         node.id = 'renderModal';
@@ -362,7 +361,9 @@ export const newsAdminDialogFunc = (newsArr, current, themeName, themeType, call
     }
     const root = createRoot(node);
 
-    return root.render(<StyledEngineProvider injectFirst><ThemeProvider theme={theme(Utils.getThemeName())}>
-    <NewsAdminDialog newsArr={newsArr} themeName={themeName} themeType={themeType} current={current} callback={callback} />
-    </ThemeProvider></StyledEngineProvider>);
+    return root.render(<StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+            <NewsAdminDialog newsArr={newsArr} themeName={themeName} themeType={themeType} current={current} callback={callback} theme={theme}/>
+        </ThemeProvider>
+    </StyledEngineProvider>);
 }

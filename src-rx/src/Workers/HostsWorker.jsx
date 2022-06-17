@@ -10,12 +10,16 @@ class HostsWorker {
         socket.registerConnectionHandler(this.connectionHandler);
 
         this.connected = this.socket.isConnected();
+        console.log('Connected: ' + this.connected);
         this.objects = {};
         this.aliveStates = {};
+        if (this.connected) {
+            this.connectionHandler(true);
+        }
     }
 
     objectChangeHandler = (id, obj) => {
-        // if instance
+        // if host
         if (id.startsWith('system.host.')) {
             let type;
             let oldObj;
@@ -46,6 +50,7 @@ class HostsWorker {
                     return;
                 }
             }
+
             this.handlers.forEach(cb => cb([{id, obj, type, oldObj}]));
         }
     }

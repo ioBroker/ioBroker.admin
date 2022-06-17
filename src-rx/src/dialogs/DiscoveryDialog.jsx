@@ -19,16 +19,15 @@ import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 
 import I18n from '@iobroker/adapter-react-v5/i18n';
-import theme from '@iobroker/adapter-react-v5/Theme';
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 import Command from '../components/Command';
 import SelectWithIcon from '@iobroker/adapter-react-v5/Components/SelectWithIcon';
 import { licenseDialogFunc } from './LicenseDialog';
-import { GenerateInputsFunc } from './GenereteInputsModal';
+import { generateInputsFunc } from './GenereteInputsModal';
 import { useStateLocal } from '../helpers/hooks/useStateLocal';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
     root: {
         // backgroundColor: theme.palette.background.paper,
         width: '100%',
@@ -352,7 +351,7 @@ const buildComment = (comment, t) => {
     return text;
 }
 
-const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost, defaultLogLevel, repository, hosts, onClose }) => {
+const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost, defaultLogLevel, repository, hosts, onClose, theme }) => {
     const classes = useStyles();
 
     const [step, setStep] = useState(0);
@@ -530,7 +529,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
             }
         }
 
-        licenseDialogFunc(license, result => {
+        licenseDialogFunc(license, theme, result => {
             if (!result) {
                 // license not accepted, go to the next instance
                 const index = selected.indexOf(obj._id) + 1;
@@ -551,7 +550,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                 }
             } else
                 if (obj.comment?.inputs) {
-                    GenerateInputsFunc(themeType, themeName, socket, obj, () => {
+                    generateInputsFunc(themeType, themeName, socket, obj, theme, () => {
                         const index = selected.indexOf(obj._id) + 1;
                         setInstallStatus(status => Object.assign({ ...status }, { [index]: 'error' }));
 
@@ -610,7 +609,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
     const [finishInstall, setFinishInstall] = useState(false);
     const [selectLogsIndex, setSelectLogsIndex] = useState(1);
 
-    return <ThemeProvider theme={theme(themeName)}>
+    return <ThemeProvider theme={theme}>
         <Dialog
             onClose={(event, reason) => {
                 if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
