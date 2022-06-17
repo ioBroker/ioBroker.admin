@@ -50,17 +50,6 @@ class TableResize extends Component {
         this.resizerActiveIndex = null;
         this.resizerActiveDiv = null;
         this.resizerCurrentWidths = [];
-        const widthsStored = (window._localStorage || window.localStorage).getItem(`App.${this.props.name || 'history'}.table`);
-        this.widthFilled = false;
-
-        if (widthsStored) {
-            try {
-                this.resizerCurrentWidths = JSON.parse(widthsStored);
-                this.widthFilled = true;
-            } catch (e) {
-                // ignore
-            }
-        }
     }
 
     componentDidMount() {
@@ -75,9 +64,38 @@ class TableResize extends Component {
         if (this.resizerRefTable.current && !this.resizerRefTable.current._installed) {
             this.resizerRefTable.current._installed = true;
             const ths = this.resizerRefTable.current.querySelectorAll('th');
-            if (this.widthFilled && this.resizerCurrentWidths.length !== ths.length) {
-                this.resizerCurrentWidths = [];
-                this.widthFilled = false;
+
+            const widthsStored = (window._localStorage || window.localStorage).getItem(`App.${this.props.name || 'history'}.table`);
+            this.widthFilled = false;
+
+            if (widthsStored) {
+                try {
+                    this.resizerCurrentWidths = JSON.parse(widthsStored);
+                    this.widthFilled = true;
+                } catch (e) {
+                    // ignore
+                }
+            }
+            if (this.widthFilled) {
+                if (this.resizerCurrentWidths.length !== ths.length) {
+                    this.resizerCurrentWidths = [];
+                    this.widthFilled = false;
+                } else {
+                    const tableWidth = this.resizerRefTable.current.offsetWidth;
+                    let storedWidth = 0;
+                    for (let w = 0; w < this.resizerCurrentWidths.length; w++) {
+                        if (isFinite(this.resizerCurrentWidths[w])) {
+                            storedWidth += this.resizerCurrentWidths[w];
+                        } else {
+                            storedWidth = null;
+                            break;
+                        }
+                    }
+                    if (storedWidth !== null && Math.abs(storedWidth - tableWidth) > 20) {
+                        this.resizerCurrentWidths = [];
+                        this.widthFilled = false;
+                    }
+                }
             }
 
             for (let i = 0; i < ths.length; i++) {

@@ -43,7 +43,8 @@ import nlLocale from 'date-fns/locale/nl';
 
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
-import TableResize from '@iobroker/adapter-react-v5/Components/TableResize';
+// import TableResize from '@iobroker/adapter-react-v5/Components/TableResize';
+import TableResize from '../TableResize';
 
 // icons
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -150,6 +151,7 @@ const styles = theme => ({
         color: theme.palette.secondary.contrastText,
         '& td': {
             color: theme.palette.secondary.contrastText,
+            background: theme.palette.secondary.main,
         }
     },
     rowFocused: {
