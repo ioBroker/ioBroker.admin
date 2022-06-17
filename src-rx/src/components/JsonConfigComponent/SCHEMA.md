@@ -485,7 +485,7 @@ Following variables are available in JS function in adapter settings:
 - _socket - socket
 - _instance - instance number
 - arrayIndex - used only in table and represent current line in array
-- globalData - used only in table and all settings and not only one table line
+- globalData - used only in table for all settings and not only one table line
 
 ### Custom settings dialog
 JS functions is:
@@ -505,7 +505,7 @@ Following variables are available in JS function in custom settings:
 - customObj - current object itself
 - _socket - socket
 - arrayIndex - used only in table and represent current line in array
-- globalData - used only in table and all settings and not only one table line
+- globalData - used only in table for all settings and not only one table line
 
 ## Custom component
 ```

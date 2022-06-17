@@ -636,6 +636,7 @@ const InstanceRow = ({
     idx,
     instance,
     key,
+    lang,
     openConfig,
     setCompact,
     setCompactGroup,
@@ -1089,7 +1090,7 @@ const InstanceRow = ({
                     </InstanceInfo>
                 </Grid>
                 {hosts.length > 1 || (hosts.length && hosts[0].common?.name !== instance.host) ? <Grid item className={clsx(classes.hidden1230)}>
-                    {<TextWithIcon value={instance.host} list={hosts} removePrefix="system.host." themeType={themeType} />}
+                    {<TextWithIcon value={instance.host} list={hosts} removePrefix="system.host." themeType={themeType} t={t} lang={lang}/>}
                 </Grid> : null}
             </Grid>
             <div className={classes.hidden570}>
@@ -1299,7 +1300,7 @@ const InstanceRow = ({
                         </div>
                         {hosts.length > 1 || (hosts.length && hosts[0].common?.name !== instance.host) ? <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={<HostIcon className={classes.marginRight} />} tooltip={t('Host for this instance')}>
-                                {<TextWithIcon value={instance.host} list={hosts} removePrefix="system.host." themeType={themeType} />}
+                                {<TextWithIcon value={instance.host} list={hosts} removePrefix="system.host." themeType={themeType} t={t} lang={lang}/>}
                             </InstanceInfo>
                             <Tooltip title={t('Edit')} classes={{ popper: classes.tooltip }}>
                                 <IconButton

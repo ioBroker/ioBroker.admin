@@ -277,6 +277,8 @@ class Adapters extends Component {
             showSlowConnectionWarning: false,
             adapterToUpdate: '',
             adapterInstallVersion: '',
+            currentHost: this.props.currentHost,
+            forceUpdateAdapters: this.props.forceUpdateAdapters,
         };
 
         this.rebuildSupported = false;
@@ -335,9 +337,9 @@ class Adapters extends Component {
         }
     }
 
-    updateAll(update, bigUpdate) {
-        return this.getAdapters(update, bigUpdate)
-            .then(() => this.getAdaptersInfo(update));
+    updateAll(update, bigUpdate, indicateUpdate) {
+        return this.getAdapters(update, bigUpdate, indicateUpdate)
+            .then(() => this.getAdaptersInfo(update, indicateUpdate));
     }
 
     componentDidUpdate() {
@@ -456,14 +458,14 @@ class Adapters extends Component {
         }, () => cb && cb());
     }
 
-    getAdapters = (update, bigUpdate) => {
+    getAdapters = (update, bigUpdate, indicateUpdate) => {
         console.log('[ADAPTERS] getAdapters');
         let adapters;
         let installed;
-        const currentHost = this.props.currentHost;
+        const currentHost = this.state.currentHost;
 
         return new Promise(resolve => {
-            if (!this.state.update && update) {
+            if (!this.state.update && (update || indicateUpdate)) {
                 this.setState({ update: true }, () => resolve());
             } else {
                 resolve();
@@ -482,7 +484,7 @@ class Adapters extends Component {
             })
             .then(_installed => {
                 installed = _installed;
-                return this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: bigUpdate }, update, this.state.readTimeoutMs)
+                return this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: (bigUpdate || indicateUpdate) }, update, this.state.readTimeoutMs)
                     .catch(e => {
                         window.alert('Cannot getRepository: ' + e);
                         e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
@@ -718,8 +720,8 @@ class Adapters extends Component {
         });
     }
 
-    getAdaptersInfo = update => {
-        if (!this.props.currentHost) {
+    getAdaptersInfo = (update, indicateUpdate) => {
+        if (!this.state.currentHost) {
             return;
         }
 
@@ -727,14 +729,13 @@ class Adapters extends Component {
         if (Date.now() - this.state.lastUpdate > 1000) {
             console.log('[ADAPTERS] getAdaptersInfo');
 
-            const currentHost = this.props.currentHost;
+            const currentHost = this.state.currentHost;
 
             let hostData;
-//            let rebuild;
             let ratings;
 
             return new Promise(resolve => {
-                if (!this.state.update) {
+                if (!this.state.update || indicateUpdate) {
                     this.setState({ update: true }, () => resolve());
                 } else {
                     resolve();
@@ -788,7 +789,7 @@ class Adapters extends Component {
             this.setState({
                 addInstanceDialog: true,
                 addInstanceAdapter: adapter,
-                addInstanceHost: this.props.currentHost.replace(/^system\.host\./, '')
+                addInstanceHost: this.state.currentHost.replace(/^system\.host\./, '')
             });
         } else {
             if (instance && !customUrl) {
@@ -798,7 +799,7 @@ class Adapters extends Component {
                     return this.setState({ addInstanceError: true });
                 }
             }
-            const host = (this.state.addInstanceHost || this.props.currentHost).replace(/^system\.host\./, '');
+            const host = (this.state.addInstanceHost || this.state.currentHost).replace(/^system\.host\./, '');
             this.props.executeCommand(`${customUrl ? 'url' : 'add'} ${adapter} ${instance ? instance + ' ' : ''}--host ${host} ${debug ? '--debug' : ''}`, true);
         }
     }
@@ -1548,7 +1549,7 @@ class Adapters extends Component {
             return <AdaptersUpdaterDialog
                 onSetCommandRunning={commandRunning => this.props.onSetCommandRunning(commandRunning)}
                 t={this.props.t}
-                currentHost={this.props.currentHost}
+                currentHost={this.state.currentHost}
                 lang={this.props.lang}
                 installed={this.state.installed}
                 repository={this.state.repository}
@@ -1597,7 +1598,7 @@ class Adapters extends Component {
         if (!this.state.init) {
             return <LinearProgress />;
         }
-        console.log('[ADAPTERS] Render');
+
         if (this.state.dialog === 'readme' && this.state.dialogProp) {
             const adapter = this.state.repository[this.state.dialogProp] || null;
 
@@ -1624,6 +1625,16 @@ class Adapters extends Component {
         // it is not possible to update admin in bulk
         if (updateAllButtonAvailable && this.state.updateAvailable.length === 2 && this.state.updateAvailable.includes('admin')) {
             updateAllButtonAvailable = false;
+        }
+
+        if (this.props.currentHost !== this.state.currentHost || this.props.forceUpdateAdapters !== this.state.forceUpdateAdapters) {
+            this.hostsTimer = this.hostsTimer || setTimeout(() => {
+                this.hostsTimer = null;
+                this.setState({
+                    currentHost: this.props.currentHost,
+                    forceUpdateAdapters: this.props.forceUpdateAdapters,
+                }, async () => await this.updateAll(false, false, true));
+            }, 200);
         }
 
         return <TabContainer>

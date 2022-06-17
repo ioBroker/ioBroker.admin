@@ -1192,7 +1192,8 @@ class App extends Router {
 
                 return <Suspense fallback={<Connecting />}>
                     <Adapters
-                        key={`adapters_${this.state.currentHost}_${this.state.forceUpdateAdapters}`}
+                        key={`adapters`}
+                        forceUpdateAdapters={this.state.forceUpdateAdapters}
                         theme={this.state.theme}
                         themeName={this.state.themeName}
                         adaptersWorker={this.adaptersWorker}

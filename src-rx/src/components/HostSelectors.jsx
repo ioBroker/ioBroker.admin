@@ -64,6 +64,9 @@ const styles = theme => ({
             marginRight: 0,
         }
     },
+    tooltip: {
+        pointerEvents: 'none',
+    },
 });
 
 class HostSelectors extends Component {
@@ -80,7 +83,7 @@ class HostSelectors extends Component {
     componentDidMount() {
         this.props.socket.getCompactHosts()
             .then(hosts => {
-                this.setState({hosts}, async () => {
+                this.setState({ hosts }, async () => {
                     // request for all host the alive status
                     const alive = {}
                     for (let h = 0; h < hosts.length; h++) {
@@ -122,19 +125,39 @@ class HostSelectors extends Component {
             }
         });
 
-        changed && this.setState({alive});
+        if (changed) {
+            this.setState({ alive }, () => {
+                if (!alive[this.props.currentHost]) {
+                    const aliveHost = Object.keys(alive).find(id => alive[id]);
+                    if (aliveHost) {
+                        const obj = this.state.hosts.find(obj => obj._id === aliveHost);
+                        if (obj) {
+                            this.props.setCurrentHost(obj.common?.name || aliveHost.replace('system.host.', ''), aliveHost);
+                        } else {
+                            this.props.setCurrentHost(aliveHost.replace('system.host.', ''), aliveHost);
+                        }
+                    }
+                }
+            });
+        }
     };
 
     onHostsObjectChange = events => {
         const hosts = JSON.parse(JSON.stringify(this.state.hosts));
+        const alive = JSON.parse(JSON.stringify(this.state.alive));
         let changed = false;
-        events.forEach(event => {
+
+        Promise.all(events.map(async event => {
             const host = hosts.find(it => it._id === event.id);
+
             if (event.type === 'delete' || !event.obj) {
                 if (host) {
                     const pos = hosts.indexOf(host);
-                    hosts.splice(pos);
-                    changed = true;
+                    if (pos !== -1) {
+                        delete alive[host];
+                        hosts.splice(pos);
+                        changed = true;
+                    }
                 }
             } else {
                 if (host) {
@@ -160,10 +183,28 @@ class HostSelectors extends Component {
                             icon: event.obj.common?.icon   || '',
                         }
                     });
+                    const state = await this.props.socket.getState(event.id + '.alive');
+                    alive[event.id] = state ? state.val : false;
                 }
             }
-        });
-        changed && this.setState({hosts});
+        }))
+            .then(() => {
+                if (changed) {
+                    this.setState({ hosts, alive }, () => {
+                        if (!alive[this.props.currentHost]) {
+                            const aliveHost = Object.keys(alive).find(id => alive[id]);
+                            if (aliveHost) {
+                                const obj = this.state.hosts.find(obj => obj._id === aliveHost);
+                                if (obj) {
+                                    this.props.setCurrentHost(obj.common?.name || aliveHost.replace('system.host.', ''), aliveHost);
+                                } else {
+                                    this.props.setCurrentHost(aliveHost.replace('system.host.', ''), aliveHost);
+                                }
+                            }
+                        }
+                    });
+                }
+            });
     };
 
     render() {
@@ -176,8 +217,8 @@ class HostSelectors extends Component {
         }
 
         return <div>
-            <Tooltip title={this.props.tooltip || I18n.t('Change current host')}>
-                <div>
+            <Tooltip title={this.props.tooltip || I18n.t('Change current host')} classes={{ popper: this.props.classes.tooltip }}>
+                <span>
                     <Button
                         color="grey"
                         className={this.props.classes.button}
@@ -204,7 +245,7 @@ class HostSelectors extends Component {
                             <div className={this.props.classes.name}>{selectedHostObj?.common?.name}</div>
                         </div>
                     </Button>
-                </div>
+                </span>
             </Tooltip>
             <Menu
                 anchorEl={this.state.anchorEl}

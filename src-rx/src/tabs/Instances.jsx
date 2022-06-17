@@ -228,6 +228,7 @@ class Instances extends Component {
             sentry: false,
             deleting: null,
             deleteCustomSupported: false,
+            currentHost: this.props.currentHost,
 
             expandedFolder,
 
@@ -278,13 +279,17 @@ class Instances extends Component {
     }
 
     async componentDidMount() {
+        this.props.instancesWorker.registerHandler(this.getInstances);
+        await this.updateData();
+        const deleteCustomSupported = await this.props.socket.checkFeatureSupported('DEL_INSTANCE_CUSTOM');
+        deleteCustomSupported && this.setState({deleteCustomSupported});
+    }
+
+    async updateData() {
         await this.getParamsLocalAndPanel();
-        await this.props.instancesWorker.registerHandler(this.getInstances);
         await this.getData();
         await this.getHostsData();
         await this.getInstances();
-        const deleteCustomSupported = await this.props.socket.checkFeatureSupported('DEL_INSTANCE_CUSTOM');
-        deleteCustomSupported && this.setState({deleteCustomSupported});
     }
 
     async componentWillUnmount() {
@@ -323,7 +328,7 @@ class Instances extends Component {
 
         instances = Object.values(instancesWorker);
 
-        let memRssId = `${this.props.currentHost}.memRss`;
+        let memRssId = `${this.state.currentHost}.memRss`;
         this.states[memRssId] = this.states[memRssId] || (await this.props.socket.getState(memRssId));
 
         const host = this.states[memRssId];
@@ -468,9 +473,9 @@ class Instances extends Component {
     }
 
     getParamsLocalAndPanel = async () => {
-        const compact = await this.props.socket.readBaseSettings(this.props.currentHost)
+        const compact = await this.props.socket.readBaseSettings(this.state.currentHost)
             .then(e => !!e.config?.system?.compact)
-            .catch(e => window.alert(`Cannot read compact mode by host "${this.props.currentHost}": ${e}`));
+            .catch(e => window.alert(`Cannot read compact mode by host "${this.state.currentHost}": ${e}`));
 
         let playArrow = false;
         let filterCompactGroup = 'All';
@@ -843,7 +848,7 @@ class Instances extends Component {
     }
 
     cacheInstances() {
-        const currentHostNoPrefix = this.props.currentHost.replace(/^system.host./, '');
+        const currentHostNoPrefix = this.state.currentHost.replace(/^system.host./, '');
 
         this._cacheList = Object.keys(this.state.instances).map(id => {
             const instance        = this.state.instances[id];
@@ -995,6 +1000,7 @@ class Instances extends Component {
                         setSentry={this.setSentry}
                         setTier={this.setTier}
                         t={this.t}
+                        lang={this.props.lang}
                         themeType={this.props.themeType}
                         item={item}
                     />
@@ -1035,6 +1041,7 @@ class Instances extends Component {
                         setSentry={this.setSentry}
                         setTier={this.setTier}
                         t={this.t}
+                        lang={this.props.lang}
                         themeType={this.props.themeType}
                         item={item}
                     />
@@ -1107,7 +1114,7 @@ class Instances extends Component {
     }
 
     async getHostsData() {
-        this.props.socket.getHostInfo(this.props.currentHost, false, 10000)
+        this.props.socket.getHostInfo(this.state.currentHost, false, 10000)
             .catch(error => {
                 if (!error.toString().includes('May not read')) {
                     window.alert('Cannot read host information: ' + error);
@@ -1120,14 +1127,16 @@ class Instances extends Component {
             });
 
         let memState;
-        let memAvailable = await this.props.socket.getState(`${this.props.currentHost}.memAvailable`)
-        let freemem = await this.props.socket.getState(`${this.props.currentHost}.freemem`)
-        let object = await this.props.socket.getObject(`${this.props.currentHost}`)
+        let memAvailable = await this.props.socket.getState(`${this.state.currentHost}.memAvailable`);
+        let freemem = await this.props.socket.getState(`${this.state.currentHost}.freemem`);
+        let object = await this.props.socket.getObject(`${this.state.currentHost}`);
+
         if (memAvailable) {
             memState = memAvailable;
         } else if (freemem) {
             memState = freemem;
         }
+
         if (memState) {
             const totalmem = (object?.native.hardware.totalmem / (1024 * 1024));
             const percent = Math.round((memState.val / totalmem) * 100);
@@ -1142,13 +1151,13 @@ class Instances extends Component {
     changeSetStateBool = value =>
         this.setState(state => {
             (window._localStorage || window.localStorage).setItem(`Instances.${value}`, state[value] ? 'false' : 'true');
-            return ({ [value]: !state[value] });
+            return { [value]: !state[value] };
         });
 
     changeSetState = (name, value) =>
         this.setState(state => {
             (window._localStorage || window.localStorage).setItem(`Instances.${name}`, value);
-            return ({ [name]: value });
+            return { [name]: value };
         });
 
     changeStartedStopped = () => {
@@ -1181,7 +1190,17 @@ class Instances extends Component {
         if (!this.state.instances) {
             return <LinearProgress />;
         }
+
         const { classes } = this.props;
+
+        if (this.props.currentHost !== this.state.currentHost) {
+            this.hostsTimer = this.hostsTimer || setTimeout(() => {
+                this.hostsTimer = null;
+                this.setState({
+                    currentHost: this.props.currentHost
+                }, async () => await this.updateData());
+            }, 200);
+        }
 
         if (this.state.dialog === 'config' && this.state.dialogProp) {
             const instance = this.state.instances[this.state.dialogProp] || null;
@@ -1380,6 +1399,7 @@ Instances.propTypes = {
     protocol: PropTypes.string,
     adminInstance: PropTypes.string,
     repository: PropTypes.object,
+    currentHost: PropTypes.string,
 
     socket: PropTypes.object,
     themeName: PropTypes.string,

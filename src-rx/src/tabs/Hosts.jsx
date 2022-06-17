@@ -230,6 +230,20 @@ class Hosts extends Component {
         return arg1 !== undefined ? wordCache[`${word} ${arg1}`] : wordCache[word];
     };
 
+
+    componentDidMount() {
+        this.readInfo()
+            .then(() => {
+                this.props.hostsWorker.registerHandler(this.updateHosts);
+                this.props.hostsWorker.registerAliveHandler(this.updateHostsAlive);
+            });
+    }
+
+    componentWillUnmount() {
+        this.props.hostsWorker.unregisterHandler(this.updateHosts);
+        this.props.hostsWorker.unregisterHandler(this.updateHostsAlive);
+    }
+
     getHostsData = (hosts, _alive) => {
         const promises = hosts.map(obj => {
             if (_alive[obj._id]) {
@@ -279,43 +293,41 @@ class Hosts extends Component {
                 }));
     };
 
-    updateHosts = (hostId, state) => {
+    updateHosts = (hostId, obj) => {
         const hosts = JSON.parse(JSON.stringify(this.state.hosts));
-        if (Array.isArray(hostId)) {
-            hostId.forEach(event => {
-                const elementFind = hosts.find(host => host._id === event.id);
-                if (elementFind) {
-                    const index = hosts.indexOf(elementFind);
-                    if (event.obj) {
-                        hosts[index] = event.obj;
-                    } else {
-                        hosts.splice(index, 1);
-                    }
-                } else {
-                    hosts.push(event.obj);
-                }
-            });
-        } else {
-            const elementFind = hosts.find(({ _id }) => _id === hostId);
+        const alive = JSON.parse(JSON.stringify(this.state.alive));
+
+        if (!Array.isArray(hostId)) {
+            hostId = { id: hostId, obj, type: obj ? 'changed' : 'delete' };
+        }
+
+        Promise.all(hostId.map(async event => {
+            const elementFind = hosts.find(host => host._id === event.id);
             if (elementFind) {
                 const index = hosts.indexOf(elementFind);
-                if (state) {
-                    hosts[index] = state;
+                if (event.obj) {
+                    // updated
+                    hosts[index] = event.obj;
                 } else {
+                    // deleted
                     hosts.splice(index, 1);
                 }
             } else {
-                hosts.push(state);
+                const state = await this.props.socket.getState(event.id + '.alive');
+                alive[event.id] = state ? state.val : false;
+                // new
+                hosts.push(event.obj);
             }
-        }
+        }))
+            .then(() => {
+                const newState = { hosts, alive };
 
-        const newState = { hosts };
+                if (this.state.filterText && hosts.length <= 2) {
+                    newState.filterText = '';
+                }
 
-        if (this.state.filterText && hosts.length <= 2) {
-            newState.filterText = '';
-        }
-
-        this.setState(newState);
+                this.setState(newState);
+            });
     };
 
     updateHostsAlive = events => {
@@ -336,19 +348,6 @@ class Hosts extends Component {
 
         changed && this.setState({ alive });
     };
-
-    componentDidMount() {
-        this.readInfo()
-            .then(() => {
-                this.props.hostsWorker.registerHandler(this.updateHosts);
-                this.props.hostsWorker.registerAliveHandler(this.updateHostsAlive);
-            });
-    }
-
-    componentWillUnmount() {
-        this.props.hostsWorker.unregisterHandler(this.updateHosts);
-        this.props.hostsWorker.unregisterHandler(this.updateHostsAlive);
-    }
 
     getPanels() {
         const items = this.renderHosts()
