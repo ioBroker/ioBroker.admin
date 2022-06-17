@@ -15,6 +15,7 @@ const styles = theme => ({
     },
     control: {
       flexDirection: 'row',
+        width: '100%'
     },
     textWithArrows: {
         width: 'calc(100% - 12px)',
@@ -109,41 +110,41 @@ class ConfigNumber extends ConfigGeneric {
 
             return <FormControl variant="standard" className={this.props.classes.control}>
                 <TextField
-                variant="standard"
-                type={type}
-                fullWidth
-                inputProps={{ min: this.props.schema.min, max: this.props.schema.max, step: this.props.schema.step }}
-                value={this.state._value === null || this.state._value === undefined ? '' : this.state._value}
-                error={!!error}
-                disabled={!!disabled}
-                className={Utils.clsx(type === 'text' && isNumber && this.props.classes.textWithArrows)}
-                onChange={e => {
-                    const _value = e.target.value;
-                    if (isFinite(_value)) {
-                        if (this.props.schema.min !== undefined && parseFloat(_value) < this.props.schema.min) {
-                            this.onError(this.props.attr, I18n.t('ra_Too small'));
-                        } else if (this.props.schema.max !== undefined && parseFloat(_value) > this.props.schema.max) {
-                            this.onError(this.props.attr, I18n.t('ra_Too big'));
-                        } else if (_value === '-' || isNaN(parseFloat(_value))) {
+                    variant="standard"
+                    type={type}
+                    fullWidth
+                    inputProps={{ min: this.props.schema.min, max: this.props.schema.max, step: this.props.schema.step }}
+                    value={this.state._value === null || this.state._value === undefined ? '' : this.state._value}
+                    error={!!error}
+                    disabled={!!disabled}
+                    className={Utils.clsx(type === 'text' && isNumber && this.props.classes.textWithArrows)}
+                    onChange={e => {
+                        const _value = e.target.value;
+                        if (isFinite(_value)) {
+                            if (this.props.schema.min !== undefined && parseFloat(_value) < this.props.schema.min) {
+                                this.onError(this.props.attr, I18n.t('ra_Too small'));
+                            } else if (this.props.schema.max !== undefined && parseFloat(_value) > this.props.schema.max) {
+                                this.onError(this.props.attr, I18n.t('ra_Too big'));
+                            } else if (_value === '-' || isNaN(parseFloat(_value))) {
+                                this.onError(this.props.attr, I18n.t('ra_Not a number'));
+                            } else {
+                                this.onError(this.props.attr); // clear error
+                            }
+                        } else if (_value !== '') {
                             this.onError(this.props.attr, I18n.t('ra_Not a number'));
                         } else {
                             this.onError(this.props.attr); // clear error
                         }
-                    } else if (_value !== '') {
-                        this.onError(this.props.attr, I18n.t('ra_Not a number'));
-                    } else {
-                        this.onError(this.props.attr); // clear error
-                    }
 
-                    this.setState({ _value }, () => {
-                        if (_value.trim() === parseFloat(_value).toString()) {
-                            this.onChange(this.props.attr, parseFloat(_value) || 0);
-                        }
-                    });
-                }}
-                placeholder={this.getText(this.props.schema.placeholder)}
-                label={this.getText(this.props.schema.label)}
-                helperText={error && typeof error === 'string' ? error : this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
+                        this.setState({ _value }, () => {
+                            if (_value.trim() === parseFloat(_value).toString()) {
+                                this.onChange(this.props.attr, parseFloat(_value) || 0);
+                            }
+                        });
+                    }}
+                    placeholder={this.getText(this.props.schema.placeholder)}
+                    label={this.getText(this.props.schema.label)}
+                    helperText={error && typeof error === 'string' ? error : this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
                 />
                 {type === 'text' && isNumber ? <div className={this.props.classes.arrows}>
                     <div
