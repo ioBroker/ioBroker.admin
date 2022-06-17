@@ -717,12 +717,12 @@ class ObjectHistoryData extends Component {
             now.setHours(0);
             now.setMinutes(0);
             now.setSeconds(0);
-
+            now.setMilliseconds(0);
+            // find week start
             const day = now.getDay() || 7;
             if (day !== 1) {
                 now.setHours(-24 * (day - 1));
             }
-
             start = now.getTime();
         } else if (mins === '2weeks') {
             now.setHours(0);
@@ -734,7 +734,6 @@ class ObjectHistoryData extends Component {
             if (day !== 1) {
               now.setHours(-24 * (day - 1));
             }
-
             start = now.getTime();
         } else if (mins === 'month') {
             now.setHours(0);
@@ -900,7 +899,7 @@ class ObjectHistoryData extends Component {
                                 { this.props.t('From') }
                             </TableCell> : null}
                             {this.state.lcVisible   ? <TableCell className={ classes.colLastChange }>
-                                { this.props.t('Last change') }
+                                { this.props.t('lc') }
                             </TableCell> : null}
                         </TableRow>
                     </TableHead>

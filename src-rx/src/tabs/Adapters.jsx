@@ -798,7 +798,8 @@ class Adapters extends Component {
                     return this.setState({ addInstanceError: true });
                 }
             }
-            this.props.executeCommand(`${customUrl ? 'url' : 'add'} ${adapter} ${instance ? instance + ' ' : ''}--host ${this.props.currentHost.replace(/^system\.host\./, '')} ${debug ? '--debug' : ''}`, true);
+            const host = (this.state.addInstanceHost || this.props.currentHost).replace(/^system\.host\./, '');
+            this.props.executeCommand(`${customUrl ? 'url' : 'add'} ${adapter} ${instance ? instance + ' ' : ''}--host ${host} ${debug ? '--debug' : ''}`, true);
         }
     }
 

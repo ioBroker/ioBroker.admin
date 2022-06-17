@@ -608,6 +608,9 @@ const styles = theme => ({
     rowGridLine: {
         marginTop: -2,
     },
+    tooltip: {
+        pointerEvents: 'none',
+    },
 });
 
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
@@ -928,7 +931,7 @@ const InstanceRow = ({
             />}
             <Grid container spacing={1} alignItems="center" direction="row" wrap="nowrap" className={classes.rowGridLine}>
                 <div className={classes.gridStyle}>
-                    <Tooltip title={<span style={{ display: 'flex', flexDirection: 'column' }}>{stateTooltip}</span>}>
+                    <Tooltip title={<span style={{ display: 'flex', flexDirection: 'column' }} classes={{ popper: classes.tooltip }}>{stateTooltip}</span>}>
                         <div
                             className={clsx(
                                 classes.smallAvatar,
@@ -947,7 +950,7 @@ const InstanceRow = ({
                     />
                     <div className={classes.instanceId}>{instance.id}</div>
                 </div>
-                <Tooltip title={t('Start/stop')}>
+                <Tooltip title={t('Start/stop')} classes={{ popper: classes.tooltip }}>
                     <div>
                         <IconButton
                             size="small"
@@ -971,7 +974,7 @@ const InstanceRow = ({
                 <IsVisible config={item} name="allowInstanceSettings">
                     <Hidden xsDown>
                         <div>
-                            <Tooltip title={instance.config ? t('Settings') : ''}>
+                            <Tooltip title={instance.config ? t('Settings') : ''} classes={{ popper: classes.tooltip }}>
                                 <div>
                                     <IconButton
                                         disabled={!instance.config}
@@ -989,7 +992,7 @@ const InstanceRow = ({
                         </div>
                     </Hidden>
                 </IsVisible>
-                <Tooltip title={t('Restart')}>
+                <Tooltip title={t('Restart')} classes={{ popper: classes.tooltip }}>
                     <div>
                         <IconButton
                             size="small"
@@ -1006,7 +1009,7 @@ const InstanceRow = ({
                     </div>
                 </Tooltip>
                 <IsVisible config={item} name="allowInstanceLink">
-                    <Tooltip title={t('Instance link %s', instance.id)}>
+                    <Tooltip title={t('Instance link %s', instance.id)} classes={{ popper: classes.tooltip }}>
                         <div>
                             <IconButton
                                 size="small"
@@ -1038,7 +1041,7 @@ const InstanceRow = ({
                         onMouseLeave={() => handlerEdit(false)}
                         className={classes.secondaryHeadingDiv}>
                         <div className={classes.secondaryHeadingDivDiv}>{item.name}</div>
-                        <Tooltip title={t('Edit')}>
+                        <Tooltip title={t('Edit')} classes={{ popper: classes.tooltip }}>
                             <IconButton
                                 size="small"
                                 className={clsx(classes.button, !visibleEdit && classes.hiddenOpacity)}
@@ -1059,11 +1062,11 @@ const InstanceRow = ({
                             tooltip={t('events')}
                         >
                             <div className={classes.displayFlex}>
-                                <Tooltip title={t('input events')}>
+                                <Tooltip title={t('input events')} classes={{ popper: classes.tooltip }}>
                                     <div className={classes.marginRight}>⇥{item.inputOutput.stateInput}</div>
                                 </Tooltip>
                                     /
-                                <Tooltip title={t('output events')}>
+                                <Tooltip title={t('output events')} classes={{ popper: classes.tooltip }}>
                                     <div className={classes.marginLeft}>↦{item.inputOutput.stateOutput}</div>
                                 </Tooltip>
                             </div>
@@ -1071,7 +1074,7 @@ const InstanceRow = ({
                     </div>
                 }
                 {expertMode &&
-                    <Tooltip title={item.logLevelObject === item.logLevel ? `${t('loglevel')} ${item.logLevel}` : `${t('saved:')} ${item.logLevelObject} / ${t('actual:')} ${item.logLevel}`}>
+                    <Tooltip title={item.logLevelObject === item.logLevel ? `${t('loglevel')} ${item.logLevel}` : `${t('saved:')} ${item.logLevelObject} / ${t('actual:')} ${item.logLevel}`} classes={{ popper: classes.tooltip }}>
                         <Avatar className={clsx(classes.smallAvatar, classes.hidden380, classes[item.logLevel])}>
                             {item.loglevelIcon}
                         </Avatar>
@@ -1090,7 +1093,7 @@ const InstanceRow = ({
                 </Grid> : null}
             </Grid>
             <div className={classes.hidden570}>
-                <Tooltip title="sentry">
+                <Tooltip title="sentry" classes={{ popper: classes.tooltip }}>
                     <IconButton
                         size="small"
                         className={clsx(classes.button, expertMode && item.checkSentry ? null : classes.hide)}
@@ -1109,7 +1112,7 @@ const InstanceRow = ({
             </div>
             {item.supportCompact ?
                 <div className={classes.hidden570}>
-                    <Tooltip title={t('compact groups')}>
+                    <Tooltip title={t('compact groups')} classes={{ popper: classes.tooltip }}>
                         <IconButton
                             size="small"
                             className={clsx(classes.button, expertMode && item.checkCompact ? null : classes.hide)}
@@ -1147,7 +1150,7 @@ const InstanceRow = ({
                             <InstanceInfo icon={item.loglevelIcon} tooltip={item.logLevelObject === item.logLevel ? `${t('loglevel')} ${item.logLevel}` : `${t('saved:')} ${item.logLevelObject} / ${t('actual:')} ${item.logLevel}`}>
                                 {item.logLevelObject === item.logLevel ? item.logLevel : `${item.logLevelObject} / ${item.logLevel}`}
                             </InstanceInfo>
-                            <Tooltip title={t('Edit')}>
+                            <Tooltip title={t('Edit')} classes={{ popper: classes.tooltip }}>
                                 <IconButton
                                     size="small"
                                     className={classes.button}
@@ -1164,11 +1167,11 @@ const InstanceRow = ({
                             <div className={classes.visible1250}>
                                 <InstanceInfo icon={<ImportExportIcon />} tooltip={t('events')}>
                                     <div className={classes.displayFlex}>
-                                        <Tooltip title={t('input events')}>
+                                        <Tooltip title={t('input events')} classes={{ popper: classes.tooltip }}>
                                             <div className={classes.marginRight}>⇥{item.inputOutput.stateInput}</div>
                                         </Tooltip>
                                     /
-                                        <Tooltip title={t('output events')}>
+                                        <Tooltip title={t('output events')} classes={{ popper: classes.tooltip }}>
                                             <div className={classes.marginLeft}>↦{item.inputOutput.stateOutput}</div>
                                         </Tooltip>
                                     </div>
@@ -1184,7 +1187,7 @@ const InstanceRow = ({
                             <InstanceInfo icon={<ScheduleIcon />} tooltip={t('schedule_group')}>
                                 {getSchedule(id) || '-'}
                             </InstanceInfo>
-                            <Tooltip title={t('Edit')}>
+                            <Tooltip title={t('Edit')} classes={{ popper: classes.tooltip }}>
                                 <IconButton
                                     size="small"
                                     className={classes.button}
@@ -1205,7 +1208,7 @@ const InstanceRow = ({
                                 >
                                     {getRestartSchedule(id) || '-'}
                                 </InstanceInfo>
-                                <Tooltip title={t('Edit')}>
+                                <Tooltip title={t('Edit')} classes={{ popper: classes.tooltip }}>
                                     <IconButton
                                         size="small"
                                         className={classes.button}
@@ -1227,7 +1230,7 @@ const InstanceRow = ({
                                 >
                                     {(item.memoryLimitMB ? item.memoryLimitMB : '-.--') + ' MB'}
                                 </InstanceInfo>
-                                <Tooltip title={t('Edit')}>
+                                <Tooltip title={t('Edit')} classes={{ popper: classes.tooltip }}>
                                     <IconButton
                                         size="small"
                                         className={classes.button}
@@ -1246,7 +1249,7 @@ const InstanceRow = ({
                                 <InstanceInfo icon={<ViewCompactIcon className={classes.marginRight} color="inherit" />} tooltip={t('compact groups')}>
                                     {item.compactGroup === 1 ? 'default' : item.compactGroup === '0' ? "controller" : !item.compactGroup ? 'default' : item.compactGroup || 'default'}
                                 </InstanceInfo>
-                                <Tooltip title={t('Edit')}>
+                                <Tooltip title={t('Edit')} classes={{ popper: classes.tooltip }}>
                                     <IconButton
                                         size="small"
                                         className={classes.button}
@@ -1264,7 +1267,7 @@ const InstanceRow = ({
                             <InstanceInfo icon={<LowPriorityIcon className={classes.marginRight} color="inherit" />} tooltip={t('Start order (tier)')}>
                                 {instance.adapter === 'admin' ? t('Always first') : t(arrayTier.find(el => el.value === item.tier)?.desc || arrayTier[2])}
                             </InstanceInfo>
-                            {instance.adapter !== 'admin' ? <Tooltip title={t('Edit start order (tier)')}>
+                            {instance.adapter !== 'admin' ? <Tooltip title={t('Edit start order (tier)')} classes={{ popper: classes.tooltip }}>
                                 <IconButton
                                     size="small"
                                     className={classes.button}
@@ -1281,7 +1284,7 @@ const InstanceRow = ({
                             <InstanceInfo >
                                 {item.name}
                             </InstanceInfo>
-                            <Tooltip title={t('Edit')}>
+                            <Tooltip title={t('Edit')} classes={{ popper: classes.tooltip }}>
                                 <IconButton
                                     size="small"
                                     className={classes.button}
@@ -1298,7 +1301,7 @@ const InstanceRow = ({
                             <InstanceInfo icon={<HostIcon className={classes.marginRight} />} tooltip={t('Host for this instance')}>
                                 {<TextWithIcon value={instance.host} list={hosts} removePrefix="system.host." themeType={themeType} />}
                             </InstanceInfo>
-                            <Tooltip title={t('Edit')}>
+                            <Tooltip title={t('Edit')} classes={{ popper: classes.tooltip }}>
                                 <IconButton
                                     size="small"
                                     className={classes.button}
@@ -1316,7 +1319,7 @@ const InstanceRow = ({
                 <div className={classes.displayFlex}>
                     <IsVisible config={item} name="allowInstanceDelete">
                         <Hidden smUp>
-                            <Tooltip title={t('Settings')}>
+                            <Tooltip title={t('Settings')} classes={{ popper: classes.tooltip }}>
                                 <IconButton
                                     size="small"
                                     className={classes.button}
@@ -1331,7 +1334,7 @@ const InstanceRow = ({
                         </Hidden>
                     </IsVisible>
                     <IsVisible config={item} name="allowInstanceDelete">
-                        <Tooltip title={t('Delete')}>
+                        <Tooltip title={t('Delete')} classes={{ popper: classes.tooltip }}>
                             <IconButton
                                 size="small"
                                 className={classes.button}
@@ -1345,7 +1348,7 @@ const InstanceRow = ({
                         </Tooltip>
                     </IsVisible>
                     <div className={classes.visible570}>
-                        <Tooltip title="sentry">
+                        <Tooltip title="sentry" classes={{ popper: classes.tooltip }}>
                             <IconButton
                                 size="small"
                                 className={clsx(classes.button, expertMode && item.checkSentry ? null : classes.hide)}
@@ -1364,7 +1367,7 @@ const InstanceRow = ({
                     </div>
                     {item.supportCompact ?
                         <div className={classes.visible570}>
-                            <Tooltip title={t('compact groups')}>
+                            <Tooltip title={t('compact groups')} classes={{ popper: classes.tooltip }}>
                                 <IconButton
                                     size="small"
                                     className={clsx(classes.button, expertMode && item.checkCompact ? null : classes.hide)}
