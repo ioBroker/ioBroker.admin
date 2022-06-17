@@ -333,15 +333,6 @@ class Logs extends Component {
         this.words = {};
     }
 
-    static getDerivedStateFromProps(props, state) {
-        if (props.currentHost !== state.currentHost) {
-            //this.ignoreNextLogs = true;
-            return{currentHost: props.currentHost, logs: [], logFiles: null};
-        } else {
-            return null;
-        }
-    }
-
     readLogs(force, logFiles, cb) {
         if (this.props.logsWorker && this.state.hosts) {
             this.props.logsWorker.getLogs(force)
@@ -733,7 +724,6 @@ class Logs extends Component {
                     </TableCell>
                 </TableRow>
             );
-
         }
 
         if (!this.lastRowRender || Date.now() - this.lastRowRender > 1000) {
@@ -793,8 +783,19 @@ class Logs extends Component {
                 this.readLogFiles()
                     .then(logFiles => {
                         this.readLogsInProcess = false;
-                        this.setState({logFiles});
+                        this.setState({ logFiles });
                     }), 100);
+        }
+
+        if (this.props.currentHost !== this.state.currentHost) {
+            this.hostsTimer = this.hostsTimer || setTimeout(() => {
+                this.hostsTimer = null;
+                this.setState({
+                    currentHost: this.props.currentHost,
+                    logs: [],
+                    logFiles: null,
+                }, () => this.readLogs(true));
+            }, 200);
         }
 
         const sources = Object.keys(this.state.sources).sort();
