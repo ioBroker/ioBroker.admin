@@ -711,6 +711,7 @@ class ObjectHistoryData extends Component {
         if (mins === 'day') {
             now.setHours(0);
             now.setMinutes(0);
+            now.setSeconds(0);
             start = now.getTime();
         } else if (mins === 'week') {
             now.setHours(0);
@@ -727,28 +728,30 @@ class ObjectHistoryData extends Component {
             now.setHours(0);
             now.setMinutes(0);
             now.setSeconds(0);
-            now.setMilliseconds(0);
-            // find week start
+            now.setDate(now.getDate() - 7); // 1 week earlier
+
             const day = now.getDay() || 7;
             if (day !== 1) {
-                now.setHours(-24 * (day - 1));
+              now.setHours(-24 * (day - 1));
             }
-            now.setHours(-24 * 7); // second week
             start = now.getTime();
         } else if (mins === 'month') {
             now.setHours(0);
             now.setMinutes(0);
+            now.setSeconds(0);
             now.setDate(1);
             start = now.getTime();
         } else if (mins === 'year') {
             now.setHours(0);
             now.setMinutes(0);
+            now.setSeconds(0);
             now.setDate(1);
             now.setMonth(0);
             start = now.getTime();
-        }  else if (mins === '12months') {
+        } else if (mins === '12months') {
             now.setHours(0);
             now.setMinutes(0);
+            now.setSeconds(0);
             now.setFullYear(now.getFullYear() - 1);
             start = now.getTime();
         } else {
@@ -801,42 +804,48 @@ class ObjectHistoryData extends Component {
         if (mins === 'day') {
             now.setHours(0);
             now.setMinutes(0);
+            now.setSeconds(0);
             start = now.getTime();
         } else if (mins === 'week') {
             now.setHours(0);
             now.setMinutes(0);
-            now.setFullYear(now.getFullYear() - 1);
-            // find week start
-            if (now.getDay()) { // if not sunday
-                now.setDate(now.getDate() - now.getDay() - 1);
-            } else {
-                now.setDate(now.getDate() - 6);
+            now.setSeconds(0);
+
+            const day = now.getDay() || 7;
+            if (day !== 1) {
+                now.setHours(-24 * (day - 1));
             }
 
+            start = now.getTime();
         } else if (mins === '2weeks') {
             now.setHours(0);
             now.setMinutes(0);
-            now.setFullYear(now.getFullYear() - 1);
-            // find week start
-            if (now.getDay()) { // if not sunday
-                now.setDate(now.getDate() - now.getDay() - 8);
-            } else {
-                now.setDate(now.getDate() - 13);
+            now.setSeconds(0);
+            now.setDate(now.getDate() - 7); // 1 week earlier
+
+            const day = now.getDay() || 7;
+            if (day !== 1) {
+              now.setHours(-24 * (day - 1));
             }
+
+            start = now.getTime();
         } else if (mins === 'month') {
             now.setHours(0);
             now.setMinutes(0);
+            now.setSeconds(0);
             now.setDate(1);
             start = now.getTime();
         } else if (mins === 'year') {
             now.setHours(0);
             now.setMinutes(0);
+            now.setSeconds(0);
             now.setDate(1);
             now.setMonth(0);
             start = now.getTime();
-        }  else if (mins === '12months') {
+        } else if (mins === '12months') {
             now.setHours(0);
             now.setMinutes(0);
+            now.setSeconds(0);
             now.setFullYear(now.getFullYear() - 1);
             start = now.getTime();
         } else {
