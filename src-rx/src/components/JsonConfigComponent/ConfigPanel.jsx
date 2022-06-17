@@ -11,40 +11,41 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import ConfigGeneric from './ConfigGeneric';
-import ConfigText from './ConfigText';
-import ConfigCheckbox from './ConfigCheckbox';
-import ConfigStaticImage from './ConfigStaticImage';
-import ConfigNumber from './ConfigNumber';
-import ConfigColor from './ConfigColor';
-import ConfigIP from './ConfigIP';
-import ConfigSelect from './ConfigSelect';
-import ConfigUser from './ConfigUser';
-import ConfigStaticText from './ConfigStaticText';
-import ConfigPattern from './ConfigPattern';
-import ConfigCertificateSelect from './ConfigCertificateSelect';
-import ConfigImageUpload from './ConfigImageUpload';
-import ConfigInstanceSelect from './ConfigInstanceSelect';
-import ConfigTable from './ConfigTable';
-import ConfigSendto from './ConfigSendto';
-import ConfigObjectId from './ConfigObjectId';
-import ConfigLanguage from './ConfigLanguage';
-import ConfigChip from './ConfigChip';
-import ConfigPassword from './ConfigPassword';
-import ConfigStaticHeader from './ConfigStaticHeader';
-import ConfigStaticDivider from './ConfigStaticDivider';
-import ConfigSetState from './ConfigSetState';
-import ConfigJsonEditor from './ConfigJsonEditor';
-import ConfigSelectSendTo from './ConfigSelectSendTo';
-import ConfigTopic from './ConfigTopic';
+import ConfigAlive from './ConfigAlive';
 import ConfigAutocomplete from './ConfigAutocomplete';
 import ConfigAutocompleteSendTo from './ConfigAutocompleteSendTo';
-import ConfigTimePicker from './ConfigTimePicker';
-import ConfigDatePicker from './ConfigDatePicker';
 import ConfigCRON from './ConfigCRON';
-import ConfigAlive from './ConfigAlive';
-import ConfigTextSendTo from './ConfigTextSendTo';
+import ConfigCertificateSelect from './ConfigCertificateSelect';
+import ConfigCheckbox from './ConfigCheckbox';
+import ConfigChip from './ConfigChip';
+import ConfigColor from './ConfigColor';
 import ConfigCoordinates from './ConfigCoordinates';
 import ConfigCustom from './ConfigCustom';
+import ConfigDatePicker from './ConfigDatePicker';
+import ConfigFileSelector from './ConfigFileSelector';
+import ConfigIP from './ConfigIP';
+import ConfigImageUpload from './ConfigImageUpload';
+import ConfigInstanceSelect from './ConfigInstanceSelect';
+import ConfigJsonEditor from './ConfigJsonEditor';
+import ConfigLanguage from './ConfigLanguage';
+import ConfigNumber from './ConfigNumber';
+import ConfigObjectId from './ConfigObjectId';
+import ConfigPassword from './ConfigPassword';
+import ConfigPattern from './ConfigPattern';
+import ConfigSelect from './ConfigSelect';
+import ConfigSelectSendTo from './ConfigSelectSendTo';
+import ConfigSendto from './ConfigSendto';
+import ConfigSetState from './ConfigSetState';
+import ConfigStaticDivider from './ConfigStaticDivider';
+import ConfigStaticHeader from './ConfigStaticHeader';
+import ConfigStaticImage from './ConfigStaticImage';
+import ConfigStaticText from './ConfigStaticText';
+import ConfigTable from './ConfigTable';
+import ConfigText from './ConfigText';
+import ConfigTextSendTo from './ConfigTextSendTo';
+import ConfigTimePicker from './ConfigTimePicker';
+import ConfigTopic from './ConfigTopic';
+import ConfigUser from './ConfigUser';
 
 const components = {
     alive: ConfigAlive,
@@ -52,14 +53,15 @@ const components = {
     autocompleteSendTo: ConfigAutocompleteSendTo,
     certificate: ConfigCertificateSelect,
     checkbox: ConfigCheckbox,
-    chips: ConfigChip,
     chip: ConfigChip, // deprecated. Use "chips"
+    chips: ConfigChip,
     color: ConfigColor,
     coordinates: ConfigCoordinates,
     cron: ConfigCRON,
     custom: ConfigCustom,
     datePicker: ConfigDatePicker,
     divider: ConfigStaticDivider,
+    fileSelector: ConfigFileSelector,
     header: ConfigStaticHeader,
     image: ConfigImageUpload,
     instance: ConfigInstanceSelect,
@@ -73,7 +75,6 @@ const components = {
     select: ConfigSelect,
     selectSendTo: ConfigSelectSendTo,
     sendTo: ConfigSendto,
-    sendto: ConfigSendto,
     setState: ConfigSetState,
     staticImage: ConfigStaticImage,
     staticLink: ConfigStaticText,

@@ -320,7 +320,6 @@ const cropperStyles = `
 }
 `;
 
-
 const styles = theme => ({
     dropZone: {
         width: '100%',
