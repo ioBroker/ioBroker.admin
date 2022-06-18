@@ -122,11 +122,31 @@ function startAdapter(options) {
         if (!obj || !obj.message) {
             return false;
         }
-
+        if (obj.command === 'checkFiles') {
+            if (typeof obj.message === 'string') {
+                try {
+                    return obj.callback && adapter.sendTo(obj.from, obj.command, {result: fs.existsSync(obj.message)}, obj.callback);
+                } catch (e) {
+                    return obj.callback && adapter.sendTo(obj.from, obj.command, {error: e.message}, obj.callback);
+                }
+            } else if (Array.isArray(obj.message)) {
+                const result = {};
+                for (let f = 0; f < obj.message.length; f++) {
+                    try {
+                        result[obj.message[f]] = fs.existsSync(obj.message[f]);
+                    } catch (e) {
+                        result[obj.message[f]] = e.message;
+                    }
+                }
+                return obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
+            }
+        } else
         if (obj.command === 'autocomplete') {
+            // jsut for test
             return obj.callback && adapter.sendTo(obj.from, obj.command, [{value: 1, label: 'first'}, {value: 2, label: 'second'}], obj.callback);
         } else
         if (obj.command === 'fill') {
+            // jsut for test
             console.log('FILL: ' + JSON.stringify(obj.message));
             return obj.callback && adapter.sendTo(obj.from, obj.command, 'history.0', obj.callback);
         }

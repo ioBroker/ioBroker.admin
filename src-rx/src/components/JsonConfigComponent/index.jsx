@@ -285,6 +285,7 @@ class JsonConfigComponent extends Component {
                 dateFormat={this.props.dateFormat}
                 isFloatComma={this.props.isFloatComma}
                 multiEdit={this.props.multiEdit}
+                imagePrefix={this.props.imagePrefix}
 
                 custom={this.props.custom}
                 customObj={this.props.customObj}
@@ -317,6 +318,7 @@ class JsonConfigComponent extends Component {
                 dateFormat={this.props.dateFormat}
                 isFloatComma={this.props.isFloatComma}
                 multiEdit={this.props.multiEdit}
+                imagePrefix={this.props.imagePrefix}
 
                 forceUpdate={this.forceUpdate}
                 registerOnForceUpdate={this.registerOnForceUpdate}
@@ -375,6 +377,7 @@ JsonConfigComponent.propTypes = {
     instanceObj: PropTypes.object,
     dateFormat: PropTypes.string,
     isFloatComma: PropTypes.bool,
+    imagePrefix: PropTypes.string,
 
     themeType: PropTypes.string,
     themeName: PropTypes.string,

@@ -174,6 +174,7 @@ class ConfigPanel extends ConfigGeneric {
                 dateFormat={this.props.dateFormat}
                 isFloatComma={this.props.isFloatComma}
                 disabled={disabled}
+                imagePrefix={this.props.imagePrefix}
 
                 registerOnForceUpdate={this.props.registerOnForceUpdate}
                 forceUpdate={this.props.forceUpdate}
@@ -324,6 +325,7 @@ ConfigPanel.propTypes = {
     isFloatComma: PropTypes.bool,
     multiEdit: PropTypes.bool,
     isParentTab: PropTypes.bool,
+    imagePrefix: PropTypes.string,
 
     arrayIndex: PropTypes.number,
     globalData: PropTypes.object,

@@ -10,11 +10,16 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
 
 import IconRefresh from '@mui/icons-material/Refresh';
 import IconUpload from '@mui/icons-material/UploadFile';
 import IconDelete from '@mui/icons-material/Delete';
 import IconPlay from '@mui/icons-material/PlayArrow';
+import IconAudio from '@mui/icons-material/MusicNote';
+import IconVideo from '@mui/icons-material/Videocam';
+import IconText from '@mui/icons-material/Article';
+import IconCode from '@mui/icons-material/Code';
 import { FaFileUpload as UploadIcon } from 'react-icons/fa';
 
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
@@ -104,14 +109,22 @@ const styles = theme => ({
     selectedImage: {
         height: 40,
         width: 40,
-        display: 'inline-block'
+        display: 'inline-block',
+        marginRight: 8,
     }
 });
+
+const IMAGE_EXT = ['jpg', 'jpeg', 'svg', 'png', 'webp'];
+const AUDIO_EXT = ['mp3', 'ogg', 'wav', 'aac'];
+const VIDEO_EXT = ['avi', 'mp4', 'mov'];
+const DOC_EXT = ['txt', 'log', 'html', 'htm'];
+const JS_EXT = ['json', 'js', 'ts'];
 
 class ConfigFileSelector extends ConfigGeneric {
     constructor(props) {
         super(props);
         this.dropzoneRef = React.createRef();
+        this.imagePrefix = this.props.imagePrefix === undefined ? '../../files' : this.props.imagePrefix;
     }
 
     componentDidMount() {
@@ -236,22 +249,6 @@ class ConfigFileSelector extends ConfigGeneric {
         return this.props.socket.readFile(this.objectID, this.state.value, true);
     }
 
-    checkImage() {
-        if (this.state.value && (
-            this.state.value.toLowerCase().endsWith('.png') ||
-            this.state.value.toLowerCase().endsWith('.jpg') ||
-            this.state.value.toLowerCase().endsWith('.svg')
-            )
-        ) {
-            this.loadFile()
-                .then(data => {
-                    this.setState({selectedImage: `data:${data.mimeType};base64,${data.file}`});
-                });
-        } else if (this.state.selectedImage) {
-            this.setState({ selectedImage: null });
-        }
-    }
-
     renderDeleteDialog() {
         if (!this.state.deleteFile) {
             return null;
@@ -300,6 +297,28 @@ class ConfigFileSelector extends ConfigGeneric {
             });
     }
 
+    getIcon(item) {
+        if (!item || !item.extension) {
+            return null;
+        }
+        if (IMAGE_EXT.includes(item.extension)) {
+            return <div className={this.props.classes.selectedImage} style={{
+                backgroundImage: 'url(' + this.imagePrefix + '/' + this.objectID + '/' + item.value + ')',
+                backgroundSize: 'contain',
+                backgroundRepeat: 'no-repeat',
+            }} />;
+        } else if (AUDIO_EXT.includes(item.extension)) {
+            return <IconAudio />;
+        } else if (DOC_EXT.includes(item.extension)) {
+            return <IconText />;
+        } else if (VIDEO_EXT.includes(item.extension)) {
+            return <IconVideo />;
+        } else if (JS_EXT.includes(item.extension)) {
+            return <IconCode />;
+        }
+        return null;
+    }
+
     renderItem(error, disabled, defaultValue) {
         if (!this.state.files) {
             return null;
@@ -325,6 +344,7 @@ class ConfigFileSelector extends ConfigGeneric {
             .map(file => ({
                 value: file.name,
                 label: !this.props.schema.withFolder && folders.length === 1 ? `${file.name.substring(folders[0].length)}` : `${file.name}` + (this.props.schema.noSize ? '' : `(${file.size})`),
+                extension: file.name.toLowerCase().split('.').pop(),
             }));
 
         if (!this.props.schema.noNone) {
@@ -348,11 +368,6 @@ class ConfigFileSelector extends ConfigGeneric {
             buttons++;
         }
 
-        // show image button
-        if (this.state.selectedImage) {
-            buttons++;
-        }
-
         const element = <div className={this.props.classes.fullWidth}>
             <FormControl variant="standard" style={{width: `calc(100% - ${buttons * 42}px)`}}>
                 <InputLabel>{this.getText(this.props.schema.label)}</InputLabel>
@@ -361,31 +376,29 @@ class ConfigFileSelector extends ConfigGeneric {
                     error={!!error}
                     disabled={!!disabled}
                     value={this.state.value || '_'}
-                    renderValue={val => item?.label || ''}
+                    renderValue={val => {
+                        return <>{this.getIcon(item)}<span>{item?.label || ''}</span></>
+                    }}
                     onChange={e => {
-                        this.setState({value: e.target.value === '_' ? '' : e.target.value}, () => {
-                            this.checkImage();
-                            this.onChange(this.props.attr, this.state.value);
-                        });
+                        this.setState({value: e.target.value === '_' ? '' : e.target.value}, () =>
+                            this.onChange(this.props.attr, this.state.value));
                     }}
                 >
-                    {selectOptions.map(item =>
-                        <MenuItem key={item.value} value={item.value}>
+                    {selectOptions.map(item => {
+                        return <MenuItem key={item.value} value={item.value}>
+                            <ListItemIcon>{this.getIcon(item)}</ListItemIcon>
                             <ListItemText>{item.label}</ListItemText>
-                            {this.props.schema.delete && item.value ? <IconButton className={this.props.classes.deleteButton} size="small" onClick={() => this.setState({ deleteFile: item.value })}><IconDelete /></IconButton> : null}
-                            </MenuItem>)
-                    }
+                            {this.props.schema.delete && item.value ?
+                                <IconButton className={this.props.classes.deleteButton} size="small"
+                                            onClick={() => this.setState({deleteFile: item.value})}><IconDelete/></IconButton> : null}
+                        </MenuItem>;
+                    })}
                 </Select>
                 {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
             </FormControl>
             { this.props.schema.refresh && <IconButton onClick={() => this.updateFiles()}><IconRefresh /></IconButton> }
             { this.props.schema.upload && <IconButton onClick={() => this.dropzoneRef.current?.open()}><IconUpload /></IconButton> }
             { play && <IconButton style={{ color: '#00FF00' }} onClick={() => this.play()}><IconPlay /></IconButton> }
-            { this.state.selectedImage ? <div className={this.props.classes.selectedImage} style={{
-                backgroundImage: 'url(' + this.state.selectedImage + ')',
-                backgroundSize: 'contain',
-                backgroundRepeat: 'no-repeat',
-            }} /> : null }
         </div>;
 
         if (!this.props.schema.upload) {
@@ -476,6 +489,7 @@ ConfigFileSelector.propTypes = {
     schema: PropTypes.object,
     onError: PropTypes.func,
     onChange: PropTypes.func,
+    imagePrefix: PropTypes.func,
 };
 
 export default withStyles(styles)(ConfigFileSelector);

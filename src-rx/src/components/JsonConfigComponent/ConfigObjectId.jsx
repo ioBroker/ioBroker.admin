@@ -66,7 +66,7 @@ class ConfigObjectId extends ConfigGeneric {
                 >...</Button>
             </div>
             {showSelectId ? <DialogSelectID
-                imagePrefix="../.."
+                imagePrefix={this.props.imagePrefix === undefined ? '../..' : this.props.imagePrefix}
                 dateFormat={this.props.dateFormat}
                 isFloatComma={this.props.isFloatComma}
                 dialogName={'admin.' + this.props.adapterName}
@@ -95,6 +95,7 @@ ConfigObjectId.propTypes = {
     onChange: PropTypes.func,
     dateFormat: PropTypes.string,
     isFloatComma: PropTypes.bool,
+    imagePrefix: PropTypes.string,
 };
 
 export default withStyles(styles)(ConfigObjectId);

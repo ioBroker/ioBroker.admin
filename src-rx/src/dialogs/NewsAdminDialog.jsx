@@ -107,122 +107,6 @@ const Status = ({ name, ...props }) => {
     }
 }
 
-const NewsAdminDialog = ({ newsArr, current, callback, themeType, theme  }) => {
-    const classes = useStyles();
-    const [open, setOpen] = useState(true);
-    const [id, setId] = useState(current);
-    const [last, setLast] = useState(false);
-    const [indexArr, setIndexArr] = useState(0);
-
-    useEffect(() => {
-        const item = newsArr.find(el => el.id === id);
-        if (item) {
-            const index = newsArr.indexOf(item);
-            if (index + 1 < newsArr.length) {
-                const newId = newsArr[index + 1].id;
-                if (newId) {
-                    setId(newId);
-                    setIndexArr(index + 1);
-                }
-            } else {
-                setOpen(false);
-                try {
-                    node && window.document.body.removeChild(node);
-                } catch (e) {
-                    // ignore
-                }
-                node = null;
-            }
-        } else {
-            setId(newsArr[0].id);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [last]);
-
-    const onClose = () => {
-        // setOpen(false);
-        setLast(!last)
-        callback(id);
-    };
-
-    const lang = I18n.getLanguage();
-    let text = newsArr[indexArr].content;
-    if (typeof text === 'object') {
-        text = (text[lang] || text.en).replace(/='([^']*)'/g, '="$1"');
-    }
-    let title = newsArr[indexArr].title;
-    if (typeof title === 'object') {
-        title = title[lang] || title.en;
-    }
-
-    const link = newsArr[indexArr].link;
-    let linkTitle = newsArr[indexArr].linktTitle;
-    if (linkTitle && typeof linkTitle === 'object') {
-        linkTitle = linkTitle[lang] || linkTitle.en;
-    }
-    return <ThemeProvider theme={theme}>
-        <Dialog
-            onClose={onClose}
-            open={open}
-            classes={{ paper: classes.paper }}
-        >
-            <div className={classes.blockInfo}>
-                {new Date(newsArr[indexArr].created).toLocaleDateString(lang)}
-                <Status className={classes.img} name={newsArr[indexArr].class} />
-            </div>
-            <DialogTitle>{I18n.t('You have unread news!')}</DialogTitle>
-            <DialogTitle>{title}</DialogTitle>
-            <DialogContent className={classes.overflowHidden} dividers>
-                <div className={classes.root}>
-                    <div className={classes.pre}>
-                        {newsArr[indexArr]?.img &&
-                            <CardMedia className={classes.img2} component="img" image={newsArr[indexArr].img} />}
-                        <Typography
-                            style={themeType === 'dark' ? { color: 'black' } : null}
-                            variant="body2"
-                            component="p">
-                            {Utils.renderTextWithA(text)}
-                        </Typography>
-                        {newsArr[indexArr]?.link &&
-                            <Button
-                                variant="contained"
-                                className={classes.link}
-                                onClick={() => window.open(newsArr[indexArr].link, '_blank')}
-                                color="primary"
-                            >
-                                {newsArr[indexArr].linkTitle ? newsArr[indexArr].linkTitle[lang] ? newsArr[indexArr].linkTitle[lang] : newsArr[indexArr].linkTitle : I18n.t('Link')}
-                            </Button>}
-                    </div>
-                </div>
-            </DialogContent>
-            <DialogActions>
-                {
-                    link ? <Button
-                        variant="contained"
-                        onClick={() => {
-                            const frame = window.open(link, '_blank');
-                            frame && frame.focus();
-                        }}
-                        color="secondary"
-                        startIcon={<WorldIcon/>}
-                    >
-                        {linkTitle || I18n.t('Show more info')}
-                    </Button> : null
-                }
-                <Button
-                    variant="contained"
-                    autoFocus
-                    onClick={onClose}
-                    color="primary"
-                    startIcon={<CheckIcon/>}
-                >
-                    {I18n.t('Acknowledge')}
-                </Button>
-            </DialogActions>
-        </Dialog>
-    </ThemeProvider>;
-}
-
 function checkActive(adapterName, instances) {
     return !!Object.keys(instances).filter(id => id.startsWith('adapter.system.' + adapterName + '.')).find(id => instances[id].enabled);
 }
@@ -353,6 +237,122 @@ export const checkMessages = function (messages, lastMessageId, context) {
     return messagesToShow;
 }
 
+const NewsAdminDialog = ({ newsArr, current, callback, themeType, theme  }) => {
+    const classes = useStyles();
+    const [open, setOpen] = useState(true);
+    const [id, setId] = useState(current);
+    const [last, setLast] = useState(false);
+    const [indexArr, setIndexArr] = useState(0);
+
+    useEffect(() => {
+        const item = newsArr.find(el => el.id === id);
+        if (item) {
+            const index = newsArr.indexOf(item);
+            if (index + 1 < newsArr.length) {
+                const newId = newsArr[index + 1].id;
+                if (newId) {
+                    setId(newId);
+                    setIndexArr(index + 1);
+                }
+            } else {
+                setOpen(false);
+                try {
+                    node && window.document.body.removeChild(node);
+                } catch (e) {
+                    // ignore
+                }
+                node = null;
+            }
+        } else {
+            setId(newsArr[0].id);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [last]);
+
+    const onClose = () => {
+        // setOpen(false);
+        setLast(!last)
+        callback(id);
+    };
+
+    const lang = I18n.getLanguage();
+    let text = newsArr[indexArr].content;
+    if (typeof text === 'object') {
+        text = (text[lang] || text.en).replace(/='([^']*)'/g, '="$1"');
+    }
+    let title = newsArr[indexArr].title;
+    if (typeof title === 'object') {
+        title = title[lang] || title.en;
+    }
+
+    const link = newsArr[indexArr].link;
+    let linkTitle = newsArr[indexArr].linktTitle;
+    if (linkTitle && typeof linkTitle === 'object') {
+        linkTitle = linkTitle[lang] || linkTitle.en;
+    }
+    return <ThemeProvider theme={theme}>
+        <Dialog
+            onClose={onClose}
+            open={open}
+            classes={{ paper: classes.paper }}
+        >
+            <div className={classes.blockInfo}>
+                {new Date(newsArr[indexArr].created).toLocaleDateString(lang)}
+                <Status className={classes.img} name={newsArr[indexArr].class} />
+            </div>
+            <DialogTitle>{I18n.t('You have unread news!')}</DialogTitle>
+            <DialogTitle>{title}</DialogTitle>
+            <DialogContent className={classes.overflowHidden} dividers>
+                <div className={classes.root}>
+                    <div className={classes.pre}>
+                        {newsArr[indexArr]?.img &&
+                            <CardMedia className={classes.img2} component="img" image={newsArr[indexArr].img} />}
+                        <Typography
+                            style={themeType === 'dark' ? { color: 'black' } : null}
+                            variant="body2"
+                            component="p">
+                            {Utils.renderTextWithA(text)}
+                        </Typography>
+                        {newsArr[indexArr]?.link &&
+                            <Button
+                                variant="contained"
+                                className={classes.link}
+                                onClick={() => window.open(newsArr[indexArr].link, '_blank')}
+                                color="primary"
+                            >
+                                {newsArr[indexArr].linkTitle ? newsArr[indexArr].linkTitle[lang] ? newsArr[indexArr].linkTitle[lang] : newsArr[indexArr].linkTitle : I18n.t('Link')}
+                            </Button>}
+                    </div>
+                </div>
+            </DialogContent>
+            <DialogActions>
+                {
+                    link ? <Button
+                        variant="contained"
+                        onClick={() => {
+                            const frame = window.open(link, '_blank');
+                            frame && frame.focus();
+                        }}
+                        color="secondary"
+                        startIcon={<WorldIcon/>}
+                    >
+                        {linkTitle || I18n.t('Show more info')}
+                    </Button> : null
+                }
+                <Button
+                    variant="contained"
+                    autoFocus
+                    onClick={onClose}
+                    color="primary"
+                    startIcon={<CheckIcon/>}
+                >
+                    {I18n.t('Acknowledge')}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    </ThemeProvider>;
+}
+
 export const newsAdminDialogFunc = (newsArr, current, themeName, themeType, theme, callback) => {
     if (!node) {
         node = document.createElement('div');
@@ -363,7 +363,14 @@ export const newsAdminDialogFunc = (newsArr, current, themeName, themeType, them
 
     return root.render(<StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
-            <NewsAdminDialog newsArr={newsArr} themeName={themeName} themeType={themeType} current={current} callback={callback} theme={theme}/>
+            <NewsAdminDialog
+                newsArr={newsArr}
+                themeName={themeName}
+                themeType={themeType}
+                current={current}
+                callback={callback}
+                theme={theme}
+            />
         </ThemeProvider>
     </StyledEngineProvider>);
 }

@@ -7,19 +7,6 @@
       "type": "panel",
       "label": "Main settings",
       "items": {
-        "file": {
-          "lg": 5,
-          "type": "fileSelector",
-          "objectID": "vis.%INSTANCE%",
-          "pattern": "main/*.png",
-          "refresh": true,
-          "label": "Select file",
-          "withFolder": false,
-          "upload": 'main',
-          "help": "Some help",
-          "delete": true,
-          "noNone": false
-        },
         "bind": {
           "newLine": true,
           "type": "ip",
