@@ -197,7 +197,7 @@ Possible types:
     - `upload` - path, where the uploaded files will be stored. Like `folderName`. If not defined, no upload field will be show. To upload in root set this field to `/`.  
     - `refresh` - Show refresh button near the select.  
     - `maxSize` - max file size (default 2MB)  
-    - `withFolder` - show folder name even if all files in all folder  
+    - `withFolder` - show folder name even if all files in same folder  
     - `delete` - Allow deletion of files
     - `noNone` - Do not show `none` option
     - `noSize` - Do not show size of files
