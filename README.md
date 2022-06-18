@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.0.5 (2022-06-18)
 * (bluefox) Added file selector for JSON-Config
 * (bluefox) Added the experimental synchronize function (in expertMode)
 * (bluefox) Many GUI fixes done
@@ -105,15 +105,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.0.1 (2022-06-07)
 * (bluefox) Many GUI fixes done
-
-### 6.0.0 (2022-06-03)
-* (bluefox) Breaking changes: no admin@v4(material) interface. Only react interface is possible.
-* (bluefox) Breaking changes: older browsers do not supported anymore.
-* (bluefox) Migration from material-ui to mui@v5
-* (bluefox) Many GUI fixes
-* (bluefox) Support of JSON5 for the config and custom files
-* (bluefox) Added run/stop buttons in instance settings dialog
-* (bluefox) Added support for the file change events
 
 ## License
 The MIT License (MIT)
