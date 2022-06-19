@@ -50,6 +50,9 @@ class InstancesWorker {
                 }
             }
 
+            this.promise = null;
+            this.socket.getAdapterInstancesResetCache('');
+
             this.handlers.forEach(cb => cb([{ id, obj, type, oldObj }]));
         }
     };

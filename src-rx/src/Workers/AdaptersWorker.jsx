@@ -19,6 +19,7 @@ class AdaptersWorker {
         if (id.match(/^system\.adapter\.[^.]+$/)) {
             let type;
             let oldObj;
+
             if (obj) {
                 if (obj.type !== 'adapter') {
                     return;
@@ -49,6 +50,10 @@ class AdaptersWorker {
                     return;
                 }
             }
+
+            this.socket.getAdaptersResetCache();
+            this.socket.getInstalledResetCache();
+            this.promise = null;
 
             this.handlers.forEach(cb => cb([{ id, obj, type, oldObj }]));
         }

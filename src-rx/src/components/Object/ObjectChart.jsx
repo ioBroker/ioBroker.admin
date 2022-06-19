@@ -287,7 +287,7 @@ class ObjectChart extends Component {
                     return this.props.socket.getCompactSystemConfig();
                 })
                 .then(config => {
-                    return !this.props.showJumpToEchart ? Promise.resolve([]) : this.props.socket.getAdapterInstances('echarts')
+                    return !this.props.showJumpToEchart ? Promise.resolve([]) : this.props.socket.getAdapterInstances('echarts', true)
                         .then(instances => {
                             // collect all echarts instances
                             const echartsJump = !!instances.find(item => item._id.startsWith('system.adapter.echarts.'));

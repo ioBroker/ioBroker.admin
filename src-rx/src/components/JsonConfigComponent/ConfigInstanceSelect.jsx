@@ -27,7 +27,7 @@ class ConfigInstanceSelect extends ConfigGeneric {
             adapter = undefined;
         }
 
-        this.props.socket.getAdapterInstances(adapter)
+        this.props.socket.getAdapterInstances(adapter, true)
             .then(async instances => {
                 let selectOptions;
                 if (this.props.schema.adapter === '_dataSources') {

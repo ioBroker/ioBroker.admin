@@ -144,10 +144,10 @@ class SystemSettingsDialog extends Component {
             })
             .then(groups => {
                 newState.groups = groups;
-                return this.props.socket.getAdapterInstances();
+                return this.props.socket.getAdapterInstances(true);
             })
-            .then(groups => {
-                newState.histories = Object.values(groups)
+            .then(instances => {
+                newState.histories = Object.values(instances)
                     .filter(instance => instance.common.getHistory)
                     .map(instance => {
                         let id = instance._id.split('.');

@@ -2437,6 +2437,12 @@ class Connection {
         return this._promises.compactAdapters;
     }
 
+    getAdaptersResetCache(adapter) {
+        adapter = adapter || '';
+        this._promises.compactAdapters = null;
+        this._promises['adapter_' + adapter] = null;
+    }
+
     // returns very optimized information for adapters to minimize connection load
     getCompactInstances(update) {
         if (Connection.isWeb()) {
@@ -2454,6 +2460,12 @@ class Connection {
                 err ? reject(err) : resolve(instances)));
 
         return this._promises.compactInstances;
+    }
+
+    getAdapternInstancesResetCache(adapter) {
+        adapter = adapter || '';
+        this._promises.compactInstances = null;
+        this._promises['instances_' + adapter] = null;
     }
 
     // returns very optimized information for adapters to minimize connection load
@@ -2503,6 +2515,15 @@ class Connection {
         return this._promises.installedCompact[host];
     }
 
+    getInstalledResetCache(host) {
+        if (this._promises.installedCompact) {
+            this._promises.installedCompact[host] = null;
+        }
+        if (this._promises.installed) {
+            this._promises.installed[host] = null;
+        }
+    }
+
     // returns very optimized information for adapters to minimize connection load
     getCompactSystemConfig(update) {
         if (!update && this._promises.systemConfigCommon) {
@@ -2531,6 +2552,7 @@ class Connection {
         if (Connection.isWeb()) {
             return Promise.reject('Allowed only in admin');
         }
+
         if (!update && this._promises.repoCompact) {
             return this._promises.repoCompact;
         }
@@ -2567,6 +2589,11 @@ class Connection {
         });
 
         return this._promises.repoCompact;
+    }
+
+    getInstalledResetCache(host) {
+        this._promises.repoCompact = null;
+        this._promises.repo = null;
     }
 
     /**
