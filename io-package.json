@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.0.5",
+    "version": "6.0.6",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.0.6": {
+        "en": "Added file selector with select dialog",
+        "de": "Dateiauswahl mit Auswahldialog hinzugefügt",
+        "ru": "Добавлена подборка файлов с помощью выбранного диалога",
+        "pt": "Seletor de arquivo adicionado com caixa de diálogo selecionada",
+        "nl": "Geadviseerd bestandselselselectie",
+        "fr": "Ajout du sélecteur de fichier avec la boîte de dialogue",
+        "it": "Aggiunto selettore di file con selezionare la finestra di dialogo",
+        "es": "Seleccionedor de archivo añadido con diálogo selecto",
+        "pl": "Wybrane pliki z wybranym dialogiem",
+        "zh-cn": "增聘档案员"
+      },
       "6.0.5": {
         "en": "Added file selector for JSON-Config\nAdded the experimental synchronize function (in expertMode)\nMany GUI fixes done",
         "de": "Dateiauswahl für JSON-Config hinzugefügt\nHinzugefügt die experimentelle Synchronisierungsfunktion (in expertMode)\nViele GUI Korrekturen erledigt",
@@ -89,18 +101,6 @@
         "es": "Cambios importantes: sin interfaz admin@v4(material). Solo es posible la interfaz de reacción.\nCambios importantes: los navegadores antiguos ya no son compatibles.\nMigración de material-ui a mui@v5\nMuchas correcciones de GUI\nSoporte de JSON5 para la configuración y archivos personalizados.\nSe agregaron botones ejecutar/detener en el cuadro de diálogo de configuración de la instancia\nSe agregó soporte para los eventos de cambio de archivo.",
         "pl": "Zmiany przełomowe: brak interfejsu admin@v4(material). Możliwy jest tylko interfejs React.\nPrzełomowe zmiany: starsze przeglądarki nie są już obsługiwane.\nMigracja z material-ui do mui@v5\nWiele poprawek GUI\nObsługa JSON5 dla plików konfiguracyjnych i niestandardowych\nDodano przyciski uruchamiania/zatrzymywania w oknie ustawień instancji\nDodano obsługę zdarzeń zmiany pliku",
         "zh-cn": "重大更改：没有 admin@v4(material) 界面。只有反应接口是可能的。\n重大更改：不再支持旧版浏览器。\n从 material-ui 迁移到 mui@v5\n许多 GUI 修复\n配置和自定义文件支持 JSON5\n在实例设置对话框中添加了运行/停止按钮\n添加了对文件更改事件的支持"
-      },
-      "5.4.9": {
-        "en": "Corrected charts\nCorrected socket command getObjects",
-        "de": "Korrigierte Diagramme\nSocket-Befehl getObjects korrigiert",
-        "ru": "Исправленные графики\nИсправлена команда сокета getObjects",
-        "pt": "Gráficos corrigidos\nComando de socket corrigido getObjects",
-        "nl": "Gecorrigeerde grafieken\nGecorrigeerd socket-commando getObjects",
-        "fr": "Graphiques corrigés\nCommande de socket corrigée getObjects",
-        "it": "Grafici corretti\nCorretto il comando socket getObjects",
-        "es": "Gráficos corregidos\nComando de socket corregido getObjects",
-        "pl": "Poprawione wykresy\nPoprawiono polecenie gniazda getObjects",
-        "zh-cn": "修正图表\n更正了套接字命令 getObjects"
       }
     },
     "desc": {
