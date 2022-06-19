@@ -456,7 +456,7 @@ class ConfigTable extends ConfigGeneric {
                 </Toolbar> : null}
                 {!schema.noDelete ? <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')}>
                     <span>
-                        <IconButton disabled={!!doAnyFilterSet} onClick={this.onAdd}>
+                        <IconButton disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter} onClick={this.onAdd}>
                             <AddIcon />
                         </IconButton>
                     </span>

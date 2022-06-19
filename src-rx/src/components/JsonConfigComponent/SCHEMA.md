@@ -162,6 +162,7 @@ Possible types:
     - `noDelete` - boolean if delete or add disabled, If noDelete is false, add, delete and move up/down should work
     - `objKeyName` - (legacy setting, don't use!) - name of the key in `{"192.168.1.1": {delay: 1000, enabled: true}, "192.168.1.2": {delay: 2000, enabled: false}}`
     - `objValueName` - (legacy setting, don't use!) - name of the value in `{"192.168.1.1": "value1", "192.168.1.2": "value2"}`
+    - `allowAddByFilter` - if add allowed even if filter is set
 
   - `json` - json editor
 
