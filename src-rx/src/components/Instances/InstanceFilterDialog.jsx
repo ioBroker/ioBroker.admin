@@ -18,8 +18,6 @@ import IconClose from '@mui/icons-material/Close';
 import { green, grey, orange, red } from '@mui/material/colors';
 
 import I18n from '@iobroker/adapter-react-v5/i18n';
-import theme from '@iobroker/adapter-react-v5/Theme';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 import filterIcon from '../../assets/filter.svg';
 

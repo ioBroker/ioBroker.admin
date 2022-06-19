@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Added file selector with select dialog
+
 ### 6.0.5 (2022-06-18)
 * (bluefox) Added file selector for JSON-Config
 * (bluefox) Added the experimental synchronize function (in expertMode)

@@ -22,6 +22,7 @@ import ConfigColor from './ConfigColor';
 import ConfigCoordinates from './ConfigCoordinates';
 import ConfigCustom from './ConfigCustom';
 import ConfigDatePicker from './ConfigDatePicker';
+import ConfigFile from './ConfigFile';
 import ConfigFileSelector from './ConfigFileSelector';
 import ConfigIP from './ConfigIP';
 import ConfigImageUpload from './ConfigImageUpload';
@@ -61,6 +62,7 @@ const components = {
     custom: ConfigCustom,
     datePicker: ConfigDatePicker,
     divider: ConfigStaticDivider,
+    file: ConfigFile,
     fileSelector: ConfigFileSelector,
     header: ConfigStaticHeader,
     image: ConfigImageUpload,

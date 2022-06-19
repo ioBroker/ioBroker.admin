@@ -9,7 +9,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
 import ConfigGeneric from './ConfigGeneric';
-import i18n from '@iobroker/adapter-react-v5/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 const styles = theme => ({
     fullWidth: {
@@ -41,7 +41,7 @@ class ConfigCertificateSelect extends ConfigGeneric {
             })
             .map(el => ({label: el.name, value: el.name}));
 
-        selectOptions.unshift({label: i18n.t(ConfigGeneric.NONE_LABEL), value: ConfigGeneric.NONE_VALUE});
+        selectOptions.unshift({label: I18n.t(ConfigGeneric.NONE_LABEL), value: ConfigGeneric.NONE_VALUE});
 
         this.setState({value, selectOptions});
     }

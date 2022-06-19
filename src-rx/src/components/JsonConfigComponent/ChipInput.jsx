@@ -260,19 +260,19 @@ class ChipInput extends React.Component {
         if (this.props.onBlur) {
             this.props.onBlur(event);
         }
-        this.setState({isFocused: false});
+        this.setState({ isFocused: false });
         if (this.state.focusedChip) {
-            this.setState({focusedChip: null});
+            this.setState({ focusedChip: null });
         }
         const value = event.target.value;
         let addChipOptions;
         switch (this.props.blurBehavior) {
             case 'add-or-clear':
-                addChipOptions = {clearInputOnFail: true};
+                addChipOptions = { clearInputOnFail: true };
             // falls through
             case 'add':
                 if (this.props.delayBeforeAdd) {
-                    // Lets assume that we only want to add the existing content as chip, when
+                    // Let's assume that we only want to add the existing content as chip, when
                     // another event has not added a chip within 200ms .
                     // e.g. onSelection Callback in Autocomplete case
                     const numChipsBefore = (this.props.value || this.state.chips).length;
@@ -287,23 +287,26 @@ class ChipInput extends React.Component {
                 } else {
                     this.handleAddChip(value, addChipOptions);
                 }
-                break
+                break;
 
             case 'clear':
                 this.clearInput();
-                break
+                break;
+
+            default:
+                break;
         }
     }
 
     handleInputFocus = event => {
-        this.setState({isFocused: true});
+        this.setState({ isFocused: true });
         if (this.props.onFocus) {
             this.props.onFocus(event);
         }
     }
 
     handleKeyDown = event => {
-        const {focusedChip} = this.state;
+        const { focusedChip } = this.state;
         this._keyPressed = false;
         this._preventChipCreation = false;
 
@@ -317,7 +320,7 @@ class ChipInput extends React.Component {
             }
         }
         const chips = this.props.value || this.state.chips;
-        if (this.props.newChipKeyCodes.indexOf(event.keyCode) >= 0 || this.props.newChipKeys.indexOf(event.key) >= 0) {
+        if (this.props.newChipKeyCodes.includes(event.keyCode) || this.props.newChipKeys.includes(event.key)) {
             const result = this.handleAddChip(event.target.value);
             if (result !== false) {
                 event.preventDefault();
@@ -330,7 +333,7 @@ class ChipInput extends React.Component {
                 if (event.target.value === '') {
                     if (focusedChip) {
                         this.handleDeleteChip(chips[focusedChip], focusedChip);
-                        if (focusedChip > 0) {
+                        if (focusedChip) {
                             this.setState({focusedChip: focusedChip - 1});
                         }
                     } else {
@@ -342,26 +345,26 @@ class ChipInput extends React.Component {
                 if (event.target.value === '' && focusedChip) {
                     this.handleDeleteChip(chips[focusedChip], focusedChip);
                     if (focusedChip <= chips.length - 1) {
-                        this.setState({focusedChip});
+                        this.setState({ focusedChip });
                     }
                 }
                 break;
             case keyCodes.LEFT_ARROW:
                 if (focusedChip == null && event.target.value === '' && chips.length) {
-                    this.setState({focusedChip: chips.length - 1});
+                    this.setState({ focusedChip: chips.length - 1 });
                 } else if (focusedChip != null && focusedChip > 0) {
-                    this.setState({focusedChip: focusedChip - 1});
+                    this.setState({ focusedChip: focusedChip - 1 });
                 }
                 break;
             case keyCodes.RIGHT_ARROW:
                 if (focusedChip != null && focusedChip < chips.length - 1) {
-                    this.setState({focusedChip: focusedChip + 1});
+                    this.setState({ focusedChip: focusedChip + 1 });
                 } else {
-                    this.setState({focusedChip: null});
+                    this.setState({ focusedChip: null });
                 }
                 break;
             default:
-                this.setState({focusedChip: null});
+                this.setState({ focusedChip: null });
                 break;
         }
     }
@@ -415,12 +418,12 @@ class ChipInput extends React.Component {
         if (this.props.dataSourceConfig) {
             if (typeof chip === 'string') {
                 chip = {
-                    [this.props.dataSourceConfig.text]: chip,
+                    [this.props.dataSourceConfig.text]:  chip,
                     [this.props.dataSourceConfig.value]: chip
                 };
             }
 
-            if (this.props.allowDuplicates || !chips.some((c) => c[this.props.dataSourceConfig.value] === chip[this.props.dataSourceConfig.value])) {
+            if (this.props.allowDuplicates || !chips.some(c => c[this.props.dataSourceConfig.value] === chip[this.props.dataSourceConfig.value])) {
                 if (this.props.value && this.props.onAdd) {
                     this.props.onAdd(chip);
                 } else {
@@ -433,9 +436,9 @@ class ChipInput extends React.Component {
         if (chip.trim().length > 0) {
             if (this.props.allowDuplicates || !chips.includes(chip)) {
                 if (this.props.value && this.props.onAdd) {
-                    this.props.onAdd(chip)
+                    this.props.onAdd(chip);
                 } else {
-                    this.updateChips([...this.state.chips, chip])
+                    this.updateChips([...this.state.chips, chip]);
                 }
             }
             return true;
@@ -454,7 +457,7 @@ class ChipInput extends React.Component {
                 } else if (this.state.focusedChip > i) {
                     focusedChip = this.state.focusedChip - 1;
                 }
-                this.updateChips(chips, {focusedChip});
+                this.updateChips(chips, { focusedChip });
             }
         } else if (this.props.onDelete) {
             this.props.onDelete(chip, i);
@@ -462,7 +465,7 @@ class ChipInput extends React.Component {
     }
 
     updateChips(chips, additionalUpdates = {}) {
-        this.setState({chips, chipsUpdated: true, ...additionalUpdates});
+        this.setState({ chips, chipsUpdated: true, ...additionalUpdates });
         if (this.props.onChange) {
             this.props.onChange(chips);
         }
@@ -487,9 +490,7 @@ class ChipInput extends React.Component {
      */
     setActualInputRef = ref => {
         this.actualInput = ref;
-        if (this.props.inputRef) {
-            this.props.inputRef(ref);
-        }
+        this.props.inputRef && this.props.inputRef(ref);
     }
 
     render() {
@@ -544,13 +545,13 @@ class ChipInput extends React.Component {
         const chips = value || this.state.chips;
         const actualInputValue = inputValue != null ? inputValue : this.state.inputValue;
 
-        const hasInput = (this.props.value || actualInputValue).length > 0 || actualInputValue.length > 0;
+        const hasInput = (this.props.value || actualInputValue).length || actualInputValue.length;
         const shrinkFloatingLabel = InputLabelProps.shrink != null
             ? InputLabelProps.shrink
-            : (label != null && (hasInput || this.state.isFocused || chips.length > 0));
+            : (label != null && (hasInput || this.state.isFocused || chips.length));
 
         const chipComponents = chips.map((chip, i) => {
-            const value = dataSourceConfig ? chip[dataSourceConfig.value] : chip
+            const value = dataSourceConfig ? chip[dataSourceConfig.value] : chip;
             return chipRenderer(
                 {
                     value,
@@ -564,7 +565,7 @@ class ChipInput extends React.Component {
                     className: classes.chip
                 },
                 i
-            )
+            );
         });
 
         const InputMore = {}
@@ -733,15 +734,15 @@ ChipInput.defaultProps = {
 export default withStyles(styles, {name: 'WAMuiChipInput'})(ChipInput);
 
 export const defaultChipRenderer = ({
-                                        value,
-                                        text,
-                                        isFocused,
-                                        isDisabled,
-                                        isReadOnly,
-                                        handleClick,
-                                        handleDelete,
-                                        className
-                                    }, key) =>
+    value,
+    text,
+    isFocused,
+    isDisabled,
+    isReadOnly,
+    handleClick,
+    handleDelete,
+    className
+}, key) =>
     <Chip
         key={key}
         className={className}
