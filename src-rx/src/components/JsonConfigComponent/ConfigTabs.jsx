@@ -62,9 +62,11 @@ class ConfigTabs extends ConfigGeneric {
                 })}
             </Tabs>
             {<ConfigPanel
+                isParentTab={true}
                 key={this.state.tab}
                 index={1001}
-                isParentTab={true}
+                arrayIndex={this.props.arrayIndex}
+                globalData={this.props.globalData}
                 onCommandRunning={this.props.onCommandRunning}
                 commandRunning={this.props.commandRunning}
                 className={this.props.classes.panel}
@@ -82,8 +84,12 @@ class ConfigTabs extends ConfigGeneric {
                 onError={this.props.onError}
                 onChange={this.props.onChange}
                 multiEdit={this.props.multiEdit}
+                dateFormat={this.props.dateFormat}
+                isFloatComma={this.props.isFloatComma}
+                // disabled={disabled}
                 imagePrefix={this.props.imagePrefix}
 
+                changeLanguage={this.props.changeLanguage}
                 forceUpdate={this.props.forceUpdate}
                 registerOnForceUpdate={this.props.registerOnForceUpdate}
 
@@ -124,6 +130,7 @@ ConfigTabs.propTypes = {
 
     registerOnForceUpdate: PropTypes.func.isRequired,
     forceUpdate: PropTypes.func.isRequired,
+    changeLanguage: PropTypes.func,
     systemConfig: PropTypes.object,
     alive: PropTypes.bool,
     common: PropTypes.object,

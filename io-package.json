@@ -225,7 +225,8 @@
     "loginBackgroundColor": "",
     "loginBackgroundImage": false,
     "loginHideLogo": false,
-    "loginMotto": ""
+    "loginMotto": "",
+    "language": ""
   },
   "objects": [],
   "instanceObjects": [

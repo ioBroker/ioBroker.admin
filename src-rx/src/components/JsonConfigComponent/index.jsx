@@ -291,7 +291,8 @@ class JsonConfigComponent extends Component {
                 customObj={this.props.customObj}
                 instanceObj={this.props.instanceObj}
 
-                forceUpdate={this.forceUpdate}
+                changeLanguage={this.changeLanguage}
+                forceUpdate={this.forceAttrUpdate}
                 registerOnForceUpdate={this.registerOnForceUpdate}
 
                 onChange={this.onChange}
@@ -320,20 +321,25 @@ class JsonConfigComponent extends Component {
                 multiEdit={this.props.multiEdit}
                 imagePrefix={this.props.imagePrefix}
 
-                forceUpdate={this.forceUpdate}
-                registerOnForceUpdate={this.registerOnForceUpdate}
-
                 custom={this.props.custom}
                 customObj={this.props.customObj}
                 instanceObj={this.props.instanceObj}
 
+                changeLanguage={this.changeLanguage}
+                forceUpdate={this.forceAttrUpdate}
+                registerOnForceUpdate={this.registerOnForceUpdate}
+
                 onChange={this.onChange}
                 onError={(attr, error) => this.onError(attr, error)}
-            />
+            />;
         }
     }
 
-    forceUpdate = (attr, data) => {
+    changeLanguage = () => {
+        this.forceUpdate();
+    }
+
+    forceAttrUpdate = (attr, data) => {
         if (Array.isArray(attr)) {
             attr.forEach(a =>
                 this.forceUpdateHandlers[a] && this.forceUpdateHandlers[a](data));

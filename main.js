@@ -58,7 +58,7 @@ function startAdapter(options) {
             //console.log('objectChange: ' + id);
             objects[id] = obj;
 
-            if (id === 'system.config') {
+            if (id === 'system.config' && !adapter.config.language) {
                 if (obj.common && obj.common.language) {
                     systemLanguage = obj.common.language;
                     webServer && webServer.setLanguage(systemLanguage);
@@ -95,6 +95,9 @@ function startAdapter(options) {
         adapter.getForeignObject('system.config', (err, obj) => {
             if (!err && obj) {
                 obj.native = obj.native || {};
+                if (adapter.config.language) {
+                    systemLanguage = adapter.config.language;
+                } else
                 if (obj.common && obj.common.language) {
                     systemLanguage = obj.common.language;
                 }

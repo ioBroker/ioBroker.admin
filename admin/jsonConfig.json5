@@ -148,10 +148,14 @@
           "md": 4,
           "lg": 2
         },
-        "myInstance": {
-          "type": 'instance',
-          "adapter": '_dataSources',
-          "sm": 12
+        "language": {
+          "newLine": true,
+          "label": "Language for only this instance",
+          "system": true,
+          "type": 'language',
+          "sm": 12,
+          "md": 4,
+          "lg": 2
         }
       }
     },

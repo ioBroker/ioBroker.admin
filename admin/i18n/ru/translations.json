@@ -76,5 +76,6 @@
   "Insert entry": "Вставить запись",
   "No data in history for selected period": "Нет данных в истории за выбранный период",
   "1 minute": "1 минута",
-  "Discard": "Отказаться"
+  "Discard": "Отказаться",
+  "Language for only this instance": "Язык только для этого экземпляра"
 }

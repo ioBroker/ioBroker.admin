@@ -76,5 +76,6 @@
   "Insert entry": "Insertar entrada",
   "No data in history for selected period": "No hay datos en el historial para el período seleccionado",
   "1 minute": "1 minuto",
-  "Discard": "Descarte"
+  "Discard": "Descarte",
+  "Language for only this instance": "Idioma solo para esta instancia"
 }

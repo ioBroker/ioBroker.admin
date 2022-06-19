@@ -602,6 +602,32 @@ class App extends Router {
                                     window.location.reload();
                                 });
                             } else {
+                                try {
+                                    const adminObj = await this.socket.getObject('system.adapter.' + this.adminInstance)
+                                    // use instance language
+                                    if (adminObj?.native?.language) {
+                                        if (adminObj.native.language !== I18n.getLanguage()) {
+                                            console.log('Language changed to ' + adminObj.native.language);
+                                            I18n.setLanguage(adminObj.native.language);
+                                            if (this.languageSet) {
+                                                window.location.reload();
+                                            } else {
+                                                this.languageSet = true;
+                                            }
+                                        }
+                                    } else if (this.socket.systemLang !== I18n.getLanguage()) {
+                                        console.log('Language changed to ' + this.socket.systemLang);
+                                        I18n.setLanguage(this.socket.systemLang);
+                                        if (this.languageSet) {
+                                            window.location.reload();
+                                        } else {
+                                            this.languageSet = true;
+                                        }
+                                    }
+                                } catch (e) {
+                                    console.error('Cannot read admin settings: ' + e);
+                                }
+
                                 this.setState(newState);
                             }
                         });
@@ -613,8 +639,6 @@ class App extends Router {
                     }
                 },
                 onReady: async objects => {
-                    I18n.setLanguage(this.socket.systemLang);
-
                     // Combine adminGuiConfig with user settings
                     this.adminGuiConfig = Object.assign({admin: {menu: {}, settings: {}, adapters: {}, login: {}}}, this.socket.systemConfig.native?.vendor);
                     this.adminGuiConfig.admin.menu     = this.adminGuiConfig.admin.menu     || {};
@@ -625,6 +649,16 @@ class App extends Router {
                     this.socket.getCurrentInstance()
                         .then(adminInstance => {
                             this.adminInstance = adminInstance;
+                            return this.socket.getObject('system.adapter.' + adminInstance);
+                        })
+                        .then(adminObj => {
+                            // use instance language
+                            if (adminObj?.native?.language) {
+                                I18n.setLanguage(adminObj.native.language);
+                            } else {
+                                I18n.setLanguage(this.socket.systemLang);
+                            }
+                            this.languageSet = true;
                             return this.socket.getIsEasyModeStrict();
                         })
                         .then(async isStrict => {

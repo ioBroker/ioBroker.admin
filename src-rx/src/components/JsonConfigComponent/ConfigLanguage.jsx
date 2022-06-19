@@ -90,8 +90,29 @@ class ConfigLanguage extends ConfigGeneric {
                 renderValue={val => this.getText(item?.label, this.props.schema.noTranslation)}
                 onChange={e => {
                     const value = e.target.value === '_' ? '' : e.target.value;
-                    this.setState({value}, () =>
-                        this.onChange(this.props.attr, value));
+                    this.setState({ value }, () => {
+                        this.onChange(this.props.attr, value);
+                        if (this.props.schema.changeGuiLanguage) {
+                            if (value) {
+                                if (value === I18n.getLanguage()) {
+                                    return;
+                                }
+                                I18n.setLanguage(value);
+                                this.props.changeLanguage && this.props.changeLanguage();
+                            } else {
+                                this.props.socket.getSystemConfig()
+                                    .then(systemConfig => {
+                                        if (systemConfig.common.language === I18n.getLanguage()) {
+                                            return;
+                                        }
+                                        if (systemConfig.common.language) {
+                                            I18n.setLanguage(systemConfig.common.language);
+                                            this.props.changeLanguage && this.props.changeLanguage();
+                                        }
+                                    });
+                            }
+                        }
+                    });
                 }}
             >
                 {this.state.selectOptions?.map(item =>

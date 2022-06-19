@@ -151,7 +151,7 @@ class ConfigPanel extends ConfigGeneric {
             }
 
             return <ItemComponent
-                key={attr + '_' + this.props.index}
+                key={attr + '_' + (this.props.index === undefined ? '' : this.props.index)}
                 index={this.props.index}
                 arrayIndex={this.props.arrayIndex}
                 globalData={this.props.globalData}
@@ -162,6 +162,7 @@ class ConfigPanel extends ConfigGeneric {
                 adapterName={this.props.adapterName}
                 instance={this.props.instance}
                 common={this.props.common}
+                customs={this.props.customs}
                 alive={this.props.alive}
                 themeType={this.props.themeType}
                 themeName={this.props.themeName}
@@ -170,21 +171,22 @@ class ConfigPanel extends ConfigGeneric {
                 systemConfig={this.props.systemConfig}
                 onError={this.props.onError}
                 onChange={this.props.onChange}
-                customs={this.props.customs}
+                multiEdit={this.props.multiEdit}
                 dateFormat={this.props.dateFormat}
                 isFloatComma={this.props.isFloatComma}
                 disabled={disabled}
                 imagePrefix={this.props.imagePrefix}
 
-                registerOnForceUpdate={this.props.registerOnForceUpdate}
+                changeLanguage={this.props.changeLanguage}
                 forceUpdate={this.props.forceUpdate}
+                registerOnForceUpdate={this.props.registerOnForceUpdate}
 
                 customObj={this.props.customObj}
                 instanceObj={this.props.instanceObj}
                 custom={this.props.custom}
 
-                attr={attr}
                 schema={items[attr]}
+                attr={attr}
             />;
         }) : null;
     }
@@ -326,6 +328,7 @@ ConfigPanel.propTypes = {
     multiEdit: PropTypes.bool,
     isParentTab: PropTypes.bool,
     imagePrefix: PropTypes.string,
+    changeLanguage: PropTypes.func,
 
     arrayIndex: PropTypes.number,
     globalData: PropTypes.object,
@@ -334,9 +337,9 @@ ConfigPanel.propTypes = {
     instanceObj: PropTypes.object,
     custom: PropTypes.bool,
 
+    forceUpdate: PropTypes.func,
     onError: PropTypes.func,
     onChange: PropTypes.func,
-    onForceUpdate: PropTypes.func,
     registerOnForceUpdate: PropTypes.func,
 };
 
