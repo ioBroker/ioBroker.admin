@@ -98,7 +98,7 @@ class AddInstanceDialog extends Component {
             open={this.props.open}
             classes={{ paper: classes.paper }}
         >
-            <DialogTitle disableTypography={true}>
+            <DialogTitle>
                 <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
                     {this.t('You are going to add new instance:')} {this.props.adapter}
                     <IconButton size="large" className={classes.closeButton} onClick={this.props.onClose}>

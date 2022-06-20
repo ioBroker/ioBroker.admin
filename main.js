@@ -366,27 +366,29 @@ function writeUpdateInfo(adapter, sources) {
 
         // If multi-repo case
         if (Array.isArray(activeRepo)) {
-            activeRepo.forEach(repo => {
-                if (systemRepos &&
-                    systemRepos.native &&
-                    systemRepos.native.repositories &&
-                    systemRepos.native.repositories[repo] &&
-                    systemRepos.native.repositories[repo].json
-                ) {
-                    Object.assign(sources, systemRepos.native.repositories[repo].json);
-                } else {
-                    adapter.setState('info.updatesNumber', 0, true);
-                    adapter.setState('info.updatesList',  '', true);
-                    adapter.setState('info.newUpdates', false, true);
-                    adapter.setState('info.updatesJson', '{}', true);
-                    adapter.setState('info.lastUpdateCheck', Date.now(), true);
-                    if (systemRepos && systemRepos.native && systemRepos.native.repositories && systemRepos.native.repositories[activeRepo]) {
-                        adapter.log.warn(`Repository cannot be read: Active repo - ${activeRepo}`);
+            if (systemRepos &&
+                systemRepos.native &&
+                systemRepos.native.repositories
+            ) {
+                activeRepo.forEach(repo => {
+                    if (systemRepos.native.repositories[repo] &&
+                        systemRepos.native.repositories[repo].json
+                    ) {
+                        Object.assign(sources, systemRepos.native.repositories[repo].json);
                     } else {
-                        adapter.log.warn('No repository source configured');
+                        adapter.setState('info.updatesNumber', 0, true);
+                        adapter.setState('info.updatesList',  '', true);
+                        adapter.setState('info.newUpdates', false, true);
+                        adapter.setState('info.updatesJson', '{}', true);
+                        adapter.setState('info.lastUpdateCheck', Date.now(), true);
+                        if (systemRepos.native.repositories[activeRepo]) {
+                            adapter.log.warn(`Repository cannot be read: Active repo - ${activeRepo}`);
+                        } else {
+                            adapter.log.warn('No repository source configured');
+                        }
                     }
-                }
-            });
+                });
+            }
         } else if (
             systemRepos &&
             systemRepos.native &&
@@ -406,18 +408,20 @@ function writeUpdateInfo(adapter, sources) {
         adapter.setState('info.lastUpdateCheck', Date.now(), true);
         if (Array.isArray(activeRepo)) {
             let found = false;
-            activeRepo.forEach(repo => {
-                if (systemRepos && systemRepos.native && systemRepos.native.repositories && systemRepos.native.repositories[activeRepo]) {
-                    adapter.log.warn(`Active repository "${repo} cannot be read`);
-                    found = true;
-                }
-            });
-            !found && adapter.log.warn(`No repository source configured. Possible values: ${systemRepos && systemRepos.native ? Object.keys(systemRepos.native.repositories).join(', ') : 'none'}. Active repo(s): "${activeRepo.join('", "')}"`);
+            if (systemRepos && systemRepos.native && systemRepos.native.repositories) {
+                activeRepo.forEach(repo => {
+                    if (systemRepos.native.repositories[activeRepo]) {
+                        adapter.log.warn(`Active repository "${repo} cannot be read`);
+                        found = true;
+                    }
+                });
+            }
+            !found && adapter.log.warn(`No repository source configured. Possible values: ${systemRepos && systemRepos.native && systemRepos.native.repositories ? Object.keys(systemRepos.native.repositories).join(', ') : 'none'}. Active repo(s): "${activeRepo.join('", "')}"`);
         } else {
             if (systemRepos && systemRepos.native && systemRepos.native.repositories && systemRepos.native.repositories[activeRepo]) {
                 adapter.log.warn(`Repository cannot be read. Active repo: ${activeRepo}`);
             } else {
-                adapter.log.warn(`No repository source configured. Possible values: ${systemRepos && systemRepos.native ? Object.keys(systemRepos.native.repositories).join(', ') : 'none'}. Active repo: "${activeRepo}"`);
+                adapter.log.warn(`No repository source configured. Possible values: ${systemRepos && systemRepos.native && systemRepos.native.repositories ? Object.keys(systemRepos.native.repositories).join(', ') : 'none'}. Active repo: "${activeRepo}"`);
             }
         }
         return;

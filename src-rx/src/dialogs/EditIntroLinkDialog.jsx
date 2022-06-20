@@ -184,7 +184,7 @@ class EditIntroLinkDialog extends Component {
                 fullWidth={true}
                 classes={{ paper: classes.paper }}
             >
-                <DialogTitle disableTypography={true}>
+                <DialogTitle>
                     <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
                         {this.props.isNew ? this.props.t('Add new link: ') : this.props.t('Edit link')}
                         <IconButton size="large" className={classes.closeButton} onClick={() => this.props.onClose()}>

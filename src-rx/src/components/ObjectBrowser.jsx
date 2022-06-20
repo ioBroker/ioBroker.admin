@@ -1572,7 +1572,7 @@ class ObjectBrowser extends Component {
             }
         }
 
-        filter.expertMode = props.expertMode !== undefined ? props.expertMode : (window.sessionStorage.getItem('App.expertMode') === 'true');
+        filter.expertMode = props.expertMode !== undefined ? props.expertMode : ((window._sessionStorage || window.sessionStorage).getItem('App.expertMode') === 'true');
         this.tableRef = createRef();
         this.filterRefs = {};
 
@@ -2525,7 +2525,7 @@ class ObjectBrowser extends Component {
         if (name) {
             filter[name] = value;
             if (name === 'expertMode') {
-                window.sessionStorage.setItem('App.expertMode', value ? 'true' : 'false');
+                (window._sessionStorage || window.sessionStorage).setItem('App.expertMode', value ? 'true' : 'false');
             }
         }
 

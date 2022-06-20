@@ -463,6 +463,7 @@ class Adapters extends Component {
         let adapters;
         let installed;
         const currentHost = this.state.currentHost;
+        update = update || this.props.adaptersWorker.isForceUpdate();
 
         return new Promise(resolve => {
             if (!this.state.update && (update || indicateUpdate)) {

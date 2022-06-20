@@ -446,9 +446,7 @@ class App extends Router {
         }
     }
 
-    localStorageGetItem = name => {
-        return this.guiSettings.native[name];
-    };
+    localStorageGetItem = name => this.guiSettings.native.localStorage[name];
 
     localStorageSetItem = (name, value) => {
         if (value === null) {
@@ -457,13 +455,33 @@ class App extends Router {
         if (value === undefined) {
             return this.localStorageRemoveItem(name);
         }
-        this.guiSettings.native[name] = value.toString();
+        this.guiSettings.native.localStorage[name] = value.toString();
         this.localStorageSave();
     };
 
     localStorageRemoveItem = name => {
-        if (this.guiSettings.native.hasOwnProperty(name)) {
-            delete this.guiSettings.native[name];
+        if (this.guiSettings.native.localStorage.hasOwnProperty(name)) {
+            delete this.guiSettings.native.localStorage[name];
+            this.localStorageSave();
+        }
+    };
+
+    sessionStorageGetItem = name => this.guiSettings.native.sessionStorage[name];
+
+    sessionStorageSetItem = (name, value) => {
+        if (value === null) {
+            value = 'null';
+        } else
+        if (value === undefined) {
+            return this.sessionStorageRemoveItem(name);
+        }
+        this.guiSettings.native.sessionStorage[name] = value.toString();
+        this.localStorageSave();
+    };
+
+    sessionStorageRemoveItem = name => {
+        if (this.guiSettings.native.sessionStorage.hasOwnProperty(name)) {
+            delete this.guiSettings.native.sessionStorage[name];
             this.localStorageSave();
         }
     };
@@ -478,17 +496,26 @@ class App extends Router {
 
     getGUISettings() {
         return this.socket.getState(`system.adapter.${this.adminInstance}.guiSettings`)
-            .catch(e => ({val: false}))
+            .catch(() => ({ val: false }))
             .then(state => {
                 if (state && state.val) {
                     return this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`)
                         .then(obj => {
                             this.guiSettings = obj || {type: 'state', common: {type: 'boolean', read: true, write: false, role: 'state'}};
-                            this.guiSettings.native = this.guiSettings.native || {};
+                            this.guiSettings.native = this.guiSettings.native || { localStorage: {}, sessionStorage: {} };
+                            if (!this.guiSettings.native.localStorage) {
+                                this.guiSettings.native = { localStorage: this.guiSettings.native, sessionStorage: {} };
+                            }
+
                             window._localStorage = {
                                 getItem:    this.localStorageGetItem,
                                 setItem:    this.localStorageSetItem,
                                 removeItem: this.localStorageRemoveItem,
+                            };
+                            window._sessionStorage = {
+                                getItem:    this.sessionStorageGetItem,
+                                setItem:    this.sessionStorageSetItem,
+                                removeItem: this.sessionStorageRemoveItem,
                             };
 
                             // this is only settings, that initialized before connection established
@@ -507,6 +534,7 @@ class App extends Router {
                         });
                 } else if (this.state.guiSettings) {
                     window._localStorage = null;
+                    window._sessionStorage = null;
 
                     this.setState({ guiSettings: false });
                 }
@@ -522,11 +550,15 @@ class App extends Router {
                     this.guiSettings = obj || {type: 'state', common: {type: 'boolean', read: true, write: false, role: 'state'}};
 
                     if (ownSettings || !this.guiSettings.native || !Object.keys(this.guiSettings.native).length) {
-                        this.guiSettings.native = {};
-                        const keys = Object.keys(window.localStorage);
-                        keys.forEach(name => {
+                        this.guiSettings.native = { localStorage: {}, sessionStorage: {} };
+                        Object.keys(window.localStorage).forEach(name => {
                             if (name !== 'getItem' && name !== 'setItem' && name !== 'removeItem' && name !== 'clear' && name !== 'key' && name !== 'length') {
-                                this.guiSettings.native[name] = window.localStorage.getItem(name);
+                                this.guiSettings.native.localStorage[name] = window.localStorage.getItem(name);
+                            }
+                        });
+                        Object.keys(window.sessionStorage).forEach(name => {
+                            if (name !== 'getItem' && name !== 'setItem' && name !== 'removeItem' && name !== 'clear' && name !== 'key' && name !== 'length') {
+                                this.guiSettings.native.sessionStorage[name] = window.sessionStorage.getItem(name);
                             }
                         });
                         await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, this.guiSettings);
@@ -538,16 +570,14 @@ class App extends Router {
                 });
         } else if (!enabled && this.guiSettings) {
             window._localStorage = null;
+            window._sessionStorage = null;
 
             // clear localStorage
-            const keys = Object.keys(window.localStorage);
-            let i = keys.length;
+            Object.keys(window.localStorage).forEach(key => window.localStorage.removeItem(key));
+            Object.keys(window.sessionStorage).forEach(key => window.sessionStorage.removeItem(key));
 
-            while (i--) {
-                window.localStorage.removeItem(keys[i]);
-            }
-
-            Object.keys(this.guiSettings.native).forEach(name => window.localStorage.setItem(name, this.guiSettings.native[name]));
+            Object.keys(this.guiSettings.native.localStorage).forEach(name => window.localStorage.setItem(name, this.guiSettings.native.localStorage[name]));
+            Object.keys(this.guiSettings.native.sessionStorage).forEach(name => window.sessionStorage.setItem(name, this.guiSettings.native.sessionStorage[name]));
 
             this.guiSettings = null;
 
@@ -706,7 +736,8 @@ class App extends Router {
 
                                 this.subscribeOnHostsStatus();
 
-                                newState.expertMode = window.sessionStorage.getItem('App.expertMode') ? window.sessionStorage.getItem('App.expertMode') === 'true' : !!newState.systemConfig.common.expertMode;
+                                const storedExpertMode = (window._sessionStorage || window.sessionStorage).getItem('App.expertMode');
+                                newState.expertMode = storedExpertMode ? storedExpertMode === 'true' : !!newState.systemConfig.common.expertMode;
 
                                 // Read user and show him
                                 if (this.socket.isSecure || this.socket.systemConfig.native?.vendor) {
@@ -790,6 +821,7 @@ class App extends Router {
         // restore localstorage
         if (this._localStorage) {
             window._localStorage = null;
+            window._sessionStorage = null;
         }
     }
 
@@ -1471,7 +1503,7 @@ class App extends Router {
             currentTab={this.state.currentTab}
             instance={this.state.instance}
             expertModeFunc={value => {
-                window.sessionStorage.removeItem('App.expertMode');
+                (window._sessionStorage || window.sessionStorage).removeItem('App.expertMode');
                 const systemConfig = JSON.parse(JSON.stringify(this.state.systemConfig));
                 systemConfig.common.expertMode = value;
                 this.setState({ expertMode: value, systemConfig });
@@ -1729,7 +1761,8 @@ class App extends Router {
             </div></ThemeProvider></StyledEngineProvider>;
         }
 
-        const expertModePermanent = !window.sessionStorage.getItem('App.expertMode') || (window.sessionStorage.getItem('App.expertMode') === 'true') === !!this.state.systemConfig.common.expertMode;
+        const storedExpertMode = (window._sessionStorage || window.sessionStorage).getItem('App.expertMode');
+        const expertModePermanent = !storedExpertMode || (storedExpertMode === 'true') === !!this.state.systemConfig.common.expertMode;
 
         return <StyledEngineProvider injectFirst><ThemeProvider theme={this.state.theme}>
             <Paper elevation={0} className={classes.root}>
@@ -1785,17 +1818,17 @@ class App extends Router {
                                         <IconButton size="large"
                                             onClick={() => {
                                                 if (!!this.state.systemConfig.common.expertMode === !this.state.expertMode) {
-                                                    window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
+                                                    (window._sessionStorage || window.sessionStorage).setItem('App.expertMode', !this.state.expertMode);
                                                     this.setState({ expertMode: !this.state.expertMode });
                                                     this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
                                                 } else {
-                                                    if (window.sessionStorage.getItem('App.doNotShowExpertDialog') === 'true') {
-                                                        window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
+                                                    if ((window._sessionStorage || window.sessionStorage).getItem('App.doNotShowExpertDialog') === 'true') {
+                                                        (window._sessionStorage || window.sessionStorage).setItem('App.expertMode', !this.state.expertMode);
                                                         this.setState({ expertMode: !this.state.expertMode });
                                                         this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
                                                     } else {
                                                         expertModeDialogFunc(this.state.expertMode, this.state.themeType, this.state.theme, () => {
-                                                            window.sessionStorage.setItem('App.expertMode', !this.state.expertMode);
+                                                            (window._sessionStorage || window.sessionStorage).setItem('App.expertMode', !this.state.expertMode);
                                                             this.setState({ expertMode: !this.state.expertMode });
                                                             this.refConfigIframe?.contentWindow?.postMessage('updateExpertMode', '*');
                                                         }, () => Router.doNavigate(null, 'system'));

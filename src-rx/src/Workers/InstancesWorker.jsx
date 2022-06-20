@@ -5,6 +5,7 @@ class InstancesWorker {
         this.socket   = socket;
         this.handlers = [];
         this.promise  = null;
+        this.forceUpdate = false;
 
         socket.registerConnectionHandler(this.connectionHandler);
 
@@ -52,16 +53,24 @@ class InstancesWorker {
 
             this.promise = null;
             this.socket.getAdapterInstancesResetCache('');
+            this.forceUpdate = true;
 
             this.handlers.forEach(cb => cb([{ id, obj, type, oldObj }]));
         }
     };
+
+    isForceUpdate() {
+        return this.forceUpdate;
+    }
 
     // be careful with this object. Do not change them.
     getInstances(update) {
         if (!update && this.promise) {
             return this.promise;
         }
+
+        update = update || this.forceUpdate;
+        this.forceUpdate = false;
 
         this.promise = this.socket.getAdapterInstances(update)
             .then(objects => {

@@ -6,6 +6,7 @@ class AdaptersWorker {
         this.handlers = [];
         this.repositoryHandlers = [];
         this.promise  = null;
+        this.forceUpdate = false;
 
         socket.registerConnectionHandler(this.connectionHandler);
         this.connected = this.socket.isConnected();
@@ -53,17 +54,25 @@ class AdaptersWorker {
 
             this.socket.getAdaptersResetCache();
             this.socket.getInstalledResetCache();
+            this.forceUpdate = true;
             this.promise = null;
 
             this.handlers.forEach(cb => cb([{ id, obj, type, oldObj }]));
         }
     };
 
+    isForceUpdate() {
+        return this.forceUpdate;
+    }
+
     // be careful with this object. Do not change them.
     getAdapters(update) {
         if (!update && this.promise) {
             return this.promise;
         }
+
+        update = update || this.forceUpdate;
+        this.forceUpdate = false;
 
         this.promise = this.socket.getAdapters(update)
             .then(objects => {

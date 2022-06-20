@@ -23,7 +23,6 @@ let node = null;
 const useStyles = makeStyles(theme => ({
     root: {
         backgroundColor: theme.palette.background.paper,
-        conso: console.log('Create ' + theme.palette.mode),
         width: '100%',
         height: 'auto',
         display: 'flex',
@@ -53,14 +52,14 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const ExpertModeDialog = ({ boolSettings, func, buttonIcon, themeType }) => {
+const ExpertModeDialog = ({ boolSettings, func, buttonIcon }) => {
     const classes = useStyles();
     const [open, setOpen] = useState(true);
     const [doNotShow, setDoNotShow] = useState(false);
 
     const onClose = () => {
         if (doNotShow) {
-            window.sessionStorage.setItem('App.doNotShowExpertDialog', 'true');
+            (window._sessionStorage || window.sessionStorage).setItem('App.doNotShowExpertDialog', 'true');
         }
 
         setOpen(false);
@@ -155,7 +154,12 @@ export const expertModeDialogFunc = (boolSettings, themeType, theme, func, butto
 
     return root.render(<StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
-            <ExpertModeDialog themeType={themeType} buttonIcon={buttonIcon} boolSettings={boolSettings} func={func} />
+            <ExpertModeDialog
+                themeType={themeType}
+                buttonIcon={buttonIcon}
+                boolSettings={boolSettings}
+                func={func}
+            />
         </ThemeProvider>
     </StyledEngineProvider>);
 }
