@@ -19,6 +19,8 @@ import { Hidden, Tooltip } from '@mui/material';
 import Badge from '@mui/material/Badge';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 
 // @material-ui/icons
 import MenuIcon from '@mui/icons-material/Menu';
@@ -28,6 +30,7 @@ import PictureInPictureAltIcon from '@mui/icons-material/PictureInPictureAlt';
 import UserIcon from '@mui/icons-material/Person';
 import SyncIcon from '@mui/icons-material/CloudSync';
 import SyncIconDisabled from '@mui/icons-material/SyncDisabled';
+import CancelIcon from '@mui/icons-material/Close';
 
 import ExpertIcon from '@iobroker/adapter-react-v5/icons/IconExpert';
 
@@ -1952,7 +1955,11 @@ class App extends Router {
             {this.renderWizardDialog()}
             {this.renderSlowConnectionWarning()}
             {!this.state.connected && <Connecting />}
-            {this.state.showGuiSettings ? <Menu anchorEl={this.state.showGuiSettings} open={true}>
+            {this.state.showGuiSettings ? <Menu
+                anchorEl={this.state.showGuiSettings}
+                open={true}
+                onClose={() => this.setState({ showGuiSettings: null })}
+            >
                 <MenuItem onClick={() => {
                     this.setState({ showGuiSettings: null });
                     this.enableGuiSettings(true)
@@ -1961,6 +1968,10 @@ class App extends Router {
                     this.setState({ showGuiSettings: null });
                     this.enableGuiSettings(true, true);
                 }}>{I18n.t('Use settings of this browser')}</MenuItem>
+                <MenuItem onClick={() => this.setState({ showGuiSettings: null })}>
+                    <ListItemIcon><CancelIcon fontSize="small" /></ListItemIcon>
+                    <ListItemText>{I18n.t('Cancel')}</ListItemText>
+                </MenuItem>
             </Menu> : null}
         </ThemeProvider></StyledEngineProvider>;
     }
