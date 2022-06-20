@@ -25,6 +25,73 @@ const styles = theme => ({
     },
 });
 
+export function getHref(instancesWorker, tab, hostname, protocol, port, hosts, adminInstance, themeName) {
+    return instancesWorker.getInstances()
+        .then(instances => {
+            let adapter = tab.replace(/^tab-/, '');
+            let instNum;
+            const m = adapter.match(/-(\d+)$/);
+            instNum = m ? parseInt(m[1], 10) : null;
+
+            let instance;
+            if (instNum !== null) {
+                adapter = adapter.replace(/-(\d+)$/, '');
+                const name = `system.adapter.${adapter}.${instNum}`;
+                instance = Object.keys(instances).find(id => id === name);
+            } else {
+                const name = `system.adapter.${adapter}.`;
+
+                instance = instances && Object.keys(instances).find(id => id.startsWith(name));
+            }
+            instance = instances && instances[instance];
+
+            if (!instance || !instance.common || !instance.common.adminTab) {
+                console.error(`Cannot find instance ${tab}`);
+
+                return '';
+            }
+
+            // calculate href
+            let href = instance.common.adminTab.link;
+
+            if (!href) {
+                if (instance.common.materializeTab) {
+                    href = `adapter/${adapter}/tab_m.html${instNum !== null && instNum !== undefined ? '?' + instNum : ''}`;
+                } else {
+                    href = `adapter/${adapter}/tab.html${instNum !== null && instNum !== undefined ? '?' + instNum : ''}`;
+                }
+            }
+
+            if (!instance.common.adminTab.singleton && instNum !== null && instNum !== undefined) {
+                href += `${href.includes('?') ? '&' : '?'}instance=${instNum}`;
+            }
+
+            if (href.includes('%')) {
+                // fix for singletons
+                if (instNum === null || instNum === undefined) {
+                    instNum = instance._id.split('.').pop();
+                }
+
+                // replace
+                const hrefs = Utils.replaceLink(href, adapter, instNum, {
+                    hostname,
+                    protocol,
+                    objects: instances,
+                    hosts,
+                    adminInstance,
+                    port,
+                });
+
+                href = hrefs ? hrefs[0]?.url : '';
+            }
+
+            // add at the end the instance, as some adapters make bullshit like: window.location.search.slice(-1) || 0;
+            href += `${href.includes('?') ? '&' : '?'}newReact=true${instNum !== null && instNum !== undefined ? '&' + instNum : ''}&react=${themeName}`;
+
+            return href;
+        });
+}
+
 class CustomTab extends Component {
     constructor(props) {
         super(props);
@@ -35,76 +102,9 @@ class CustomTab extends Component {
         this.refIframe = React.createRef();
         this.registered = false;
 
-        CustomTab.getHref(this.props.instancesWorker, this.props.tab, this.props.hostname, this.props.protocol, this.props.port, this.props.hosts,  this.props.adminInstance, this.props.themeName)
+        getHref(this.props.instancesWorker, this.props.tab, this.props.hostname, this.props.protocol, this.props.port, this.props.hosts,  this.props.adminInstance, this.props.themeName)
             .then(href =>
-                this.setState({href}));
-    }
-
-    static getHref(instancesWorker, tab, hostname, protocol, port, hosts, adminInstance, themeName) {
-        return instancesWorker.getInstances()
-            .then(instances => {
-                let adapter = tab.replace(/^tab-/, '');
-                let instNum;
-                const m = adapter.match(/-(\d+)$/);
-                instNum = m ? parseInt(m[1], 10) : null;
-
-                let instance;
-                if (instNum !== null) {
-                    adapter = adapter.replace(/-(\d+)$/, '');
-                    const name = `system.adapter.${adapter}.${instNum}`;
-                    instance = Object.keys(instances).find(id => id === name);
-                } else {
-                    const name = `system.adapter.${adapter}.`;
-
-                    instance = instances && Object.keys(instances).find(id => id.startsWith(name));
-                }
-                instance = instances && instances[instance];
-
-                if (!instance || !instance.common || !instance.common.adminTab) {
-                    console.error(`Cannot find instance ${tab}`);
-
-                    return '';
-                }
-
-                // calculate href
-                let href = instance.common.adminTab.link;
-
-                if (!href) {
-                    if (instance.common.materializeTab) {
-                        href = `adapter/${adapter}/tab_m.html${instNum !== null && instNum !== undefined ? '?' + instNum : ''}`;
-                    } else {
-                        href = `adapter/${adapter}/tab.html${instNum !== null && instNum !== undefined ? '?' + instNum : ''}`;
-                    }
-                }
-
-                if (!instance.common.adminTab.singleton && instNum !== null && instNum !== undefined) {
-                    href += `${href.includes('?') ? '&' : '?'}instance=${instNum}`;
-                }
-
-                if (href.includes('%')) {
-                    // fix for singletons
-                    if (instNum === null || instNum === undefined) {
-                        instNum = instance._id.split('.').pop();
-                    }
-
-                    // replace
-                    const hrefs = Utils.replaceLink(href, adapter, instNum, {
-                        hostname,
-                        protocol,
-                        objects: instances,
-                        hosts,
-                        adminInstance,
-                        port,
-                    });
-
-                    href = hrefs ? hrefs[0]?.url : '';
-                }
-
-                // add at the end the instance, as some adapters make bullshit like: window.location.search.slice(-1) || 0;
-                href += `${href.includes('?') ? '&' : '?'}newReact=true${instNum !== null && instNum !== undefined ? '&' + instNum : ''}&react=${themeName}`;
-
-                return href;
-            });
+                this.setState({ href }));
     }
 
     componentWillUnmount() {

@@ -46,7 +46,7 @@ class ConfigFile extends ConfigGeneric {
     componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-        this.imagePrefix = this.props.imagePrefix === undefined ? '../../files' : this.props.imagePrefix;
+        this.imagePrefix = this.props.imagePrefix === undefined ? './files' : this.props.imagePrefix;
         this.setState({ value });
     }
 

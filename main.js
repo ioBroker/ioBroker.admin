@@ -145,11 +145,11 @@ function startAdapter(options) {
             }
         } else
         if (obj.command === 'autocomplete') {
-            // jsut for test
+            // just for test
             return obj.callback && adapter.sendTo(obj.from, obj.command, [{value: 1, label: 'first'}, {value: 2, label: 'second'}], obj.callback);
         } else
         if (obj.command === 'fill') {
-            // jsut for test
+            // just for test
             console.log('FILL: ' + JSON.stringify(obj.message));
             return obj.callback && adapter.sendTo(obj.from, obj.command, 'history.0', obj.callback);
         }

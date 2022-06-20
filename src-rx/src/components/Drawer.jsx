@@ -34,7 +34,7 @@ import DragWrapper from './DragWrapper';
 import CustomDragLayer from './CustomDragLayer';
 import { ContextWrapper } from './ContextWrapper';
 import CustomPopper from './CustomPopper';
-import CustomTab from '../tabs/CustomTab';
+import { getHref } from '../tabs/CustomTab';
 import DrawerItem from './DrawerItem';
 import Adapters from '../tabs/Adapters';
 
@@ -569,7 +569,7 @@ class Drawer extends Component {
                     compact={!this.isSwipeable() && state !== STATES.opened}
                     onClick={e => {
                         if (e.ctrlKey || e.shiftKey) {
-                            CustomTab.getHref(this.props.instancesWorker, tab.name, this.props.hostname, this.props.protocol, this.props.port, this.props.hosts, this.props.adminInstance)
+                            getHref(this.props.instancesWorker, tab.name, this.props.hostname, this.props.protocol, this.props.port, this.props.hosts, this.props.adminInstance)
                                 .then(href => {
                                     if (href) {
                                         console.log(href);

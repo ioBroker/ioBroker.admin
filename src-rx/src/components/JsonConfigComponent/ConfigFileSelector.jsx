@@ -124,7 +124,7 @@ class ConfigFileSelector extends ConfigGeneric {
     constructor(props) {
         super(props);
         this.dropzoneRef = React.createRef();
-        this.imagePrefix = this.props.imagePrefix === undefined ? '../../files' : this.props.imagePrefix;
+        this.imagePrefix = this.props.imagePrefix === undefined ? './files' : this.props.imagePrefix;
     }
 
     componentDidMount() {
