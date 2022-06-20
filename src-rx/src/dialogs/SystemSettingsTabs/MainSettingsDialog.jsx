@@ -11,7 +11,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
-import {FormHelperText} from '@mui/material';
+import { FormHelperText } from '@mui/material';
 
 import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';

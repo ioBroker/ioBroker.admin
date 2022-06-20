@@ -94,10 +94,12 @@ const useStyles = makeStyles(theme => ({
     },
     headerText: {
         fontWeight: 'bold',
-        fontSize: 20
+        fontSize: 20,
+        color: theme.palette.mode === 'dark' ? '#DDD' : '#111',
     },
     descriptionHeaderText: {
-        margin: '18px 0'
+        margin: '18px 0',
+        color: theme.palette.mode === 'dark' ? '#CCC' : '#222',
     },
     silver: {
         color: 'silver'
