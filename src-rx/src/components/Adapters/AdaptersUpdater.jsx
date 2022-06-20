@@ -10,7 +10,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
-import {Avatar, CircularProgress} from '@mui/material';
+import { Avatar, CircularProgress } from '@mui/material';
 
 import AdapterUpdateDialog from '../../dialogs/AdapterUpdateDialog';
 
@@ -109,8 +109,8 @@ class AdaptersUpdater extends Component {
                 try {
                     if (semver.gt(version, installed.version)) {
                         news.push({
-                            version: version,
-                            news: adapter.news[version][this.props.lang] || adapter.news[version].en
+                            version,
+                            news: this.props.noTranslation ? adapter.news[version].en : (adapter.news[version][this.props.lang] || adapter.news[version].en)
                         });
                     }
                 } catch (e) {
@@ -147,7 +147,7 @@ class AdaptersUpdater extends Component {
                 </ListItemIcon>
                 <ListItemText
                     primary={adapter}
-                    title={this.getNews(adapter).map(item => item.version + ': ' + item.news).join('\n')}
+                    title={this.getNews(adapter).map(item => `${item.version}: ${item.news}`).join('\n')}
                     secondary={<span>{this.initialVersions[adapter]} → <span className={this.props.classes.toVersion}>{this.props.repository[adapter].version}</span></span>}
                 />
                 {!this.props.finished && !this.props.inProcess && <ListItemSecondaryAction>
@@ -198,6 +198,7 @@ AdaptersUpdater.propTypes = {
     current: PropTypes.string.isRequired,
     updated: PropTypes.array.isRequired,
     finished: PropTypes.bool.isRequired,
+    noTranslation: PropTypes.bool,
 }
 
 export default withStyles(styles)(AdaptersUpdater);

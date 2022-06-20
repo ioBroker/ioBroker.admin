@@ -1495,5 +1495,9 @@
   "Some updates available": "Enkele updates beschikbaar",
   "Use settings of other browsers": "Instellingen van andere browsers gebruiken",
   "Use settings of this browser": "Gebruik instellingen van deze browser",
-  "Synchronize admin settings between all opened browser windows": "Synchroniseer beheerdersinstellingen tussen alle geopende browservensters"
+  "Synchronize admin settings between all opened browser windows": "Synchroniseer beheerdersinstellingen tussen alle geopende browservensters",
+  "Disable/Enable translation": "Vertaling in-/uitschakelen",
+  "Close on finished": "Sluiten bij voltooid",
+  "Stop on error": "Stop bij fout",
+  "Debug info": "Foutopsporingsinformatie"
 }

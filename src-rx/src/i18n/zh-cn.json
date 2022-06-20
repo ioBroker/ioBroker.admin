@@ -1495,5 +1495,9 @@
   "Some updates available": "一些可用的更新",
   "Use settings of other browsers": "使用其他浏览器的设置",
   "Use settings of this browser": "使用此浏览器的设置",
-  "Synchronize admin settings between all opened browser windows": "在所有打开的浏览器窗口之间同步管理设置"
+  "Synchronize admin settings between all opened browser windows": "在所有打开的浏览器窗口之间同步管理设置",
+  "Disable/Enable translation": "禁用/启用翻译",
+  "Close on finished": "完成后关闭",
+  "Stop on error": "错误停止",
+  "Debug info": "调试信息"
 }

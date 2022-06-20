@@ -1495,5 +1495,9 @@
   "Some updates available": "Доступны некоторые обновления",
   "Use settings of other browsers": "Использовать настройки других браузеров",
   "Use settings of this browser": "Использовать настройки этого браузера",
-  "Synchronize admin settings between all opened browser windows": "Синхронизировать настройки администратора между всеми открытыми окнами браузера"
+  "Synchronize admin settings between all opened browser windows": "Синхронизировать настройки администратора между всеми открытыми окнами браузера",
+  "Disable/Enable translation": "Отключить/включить перевод",
+  "Close on finished": "Закрыть по завершении",
+  "Stop on error": "Остановиться на ошибке",
+  "Debug info": "Информация об отладке"
 }

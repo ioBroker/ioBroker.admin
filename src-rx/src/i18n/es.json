@@ -1495,5 +1495,9 @@
   "Some updates available": "Algunas actualizaciones disponibles",
   "Use settings of other browsers": "Usar la configuración de otros navegadores",
   "Use settings of this browser": "Usar la configuración de este navegador",
-  "Synchronize admin settings between all opened browser windows": "Sincronice la configuración de administración entre todas las ventanas abiertas del navegador"
+  "Synchronize admin settings between all opened browser windows": "Sincronice la configuración de administración entre todas las ventanas abiertas del navegador",
+  "Disable/Enable translation": "Deshabilitar/Habilitar traducción",
+  "Close on finished": "Cerrar al terminar",
+  "Stop on error": "Detener por error",
+  "Debug info": "Información de depuración"
 }

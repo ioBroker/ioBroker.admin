@@ -20,6 +20,7 @@ import IconWarning from '@mui/icons-material/Warning';
 import IconError from '@mui/icons-material/Error';
 import IconInfo from '@mui/icons-material/Info';
 import IconWeb from '@mui/icons-material/Public';
+import LanguageIcon from '@mui/icons-material/Language';
 
 import State from '../components/State';
 import {MOBILE_WIDTH} from '../helpers/MobileDialog';
@@ -33,6 +34,14 @@ const styles = theme => {
             right: theme.spacing(1),
             top: theme.spacing(1),
             color: theme.palette.grey[500],
+        },
+        languageButton: {
+            position: 'absolute',
+            right: 52 + parseInt(theme.spacing(1), 10),
+            top: theme.spacing(1)
+        },
+        languageButtonActive: {
+            color: theme.palette.primary.main
         },
         typography: {
             paddingRight: 30
@@ -115,7 +124,7 @@ class AdapterUpdateDialog extends Component {
         this.mobile = window.innerWidth < MOBILE_WIDTH;
 
         this.state = {
-            showMessageDialog: false
+            showMessageDialog: false,
         };
 
         const messages = false; /*[
@@ -202,18 +211,16 @@ class AdapterUpdateDialog extends Component {
                 return;
             }
 
-            result.push(
-                <Grid item key={entry.version}>
-                    <Typography className={this.props.classes.version}>
-                        {entry.version}
-                    </Typography>
-                    {news.map((value, index) => {
-                        return <Typography key={`${entry.version}-${index}`} component="div" variant="body2">
-                            { '• ' + value}
-                        </Typography>;
-                    })}
-                </Grid>
-            );
+            result.push(<Grid item key={entry.version}>
+                <Typography className={this.props.classes.version}>
+                    {entry.version}
+                </Typography>
+                {news.map((value, index) => {
+                    return <Typography key={`${entry.version}-${index}`} component="div" variant="body2">
+                        { '• ' + value}
+                    </Typography>;
+                })}
+            </Grid>);
         });
 
         return result;
@@ -311,9 +318,13 @@ class AdapterUpdateDialog extends Component {
         return messages;
     }
 
-    getText(text) {
+    getText(text, noTranslation) {
         if (text && typeof text === 'object') {
-            return text[this.lang] || text.en;
+            if (noTranslation) {
+                return text.en;
+            } else {
+                return text[this.lang] || text.en;
+            }
         } else {
             return text;
         }
@@ -322,10 +333,10 @@ class AdapterUpdateDialog extends Component {
     renderOneMessage(message, index) {
         return <Grid item key={index}>
             <Typography className={this.props.classes['messageTitle_' + (message.level || 'warn')]}>
-                {this.getText(message.title) || ''}
+                {this.getText(message.title, this.props.noTranslation) || ''}
             </Typography>
             <Typography component="div" variant="body2"  className={this.props.classes.messageText}>
-                {this.getText(message.text) || ''}
+                {this.getText(message.text, this.props.noTranslation) || ''}
             </Typography>
             {message.link ?
                 <Button
@@ -336,7 +347,7 @@ class AdapterUpdateDialog extends Component {
                     startIcon={<IconWeb />}
                     variant="contained"
                     color="grey"
-                >{this.getText(message.linkText) || this.props.t('More info')}</Button>
+                >{this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}</Button>
                 : null}
         </Grid>
     }
@@ -369,13 +380,13 @@ class AdapterUpdateDialog extends Component {
                 open={true}
             >
                 <DialogTitle className={classes.messageDialogTitle}>
-                    {this.getText(message.title) || this.props.t('Please confirm')}
+                    {this.getText(message.title, this.props.noTranslation) || this.props.t('Please confirm')}
                 </DialogTitle>
                 <DialogContent className={classes.messageDialogText}>
                     {message.level === 'warn' ? <IconWarning className={Utils.clsx(classes.messageIcon, classes.messageColor_warn)}/> : null}
                     {message.level === 'error' ? <IconError className={Utils.clsx(classes.messageIcon, classes.messageColor_error)} /> : null}
                     {message.level === 'info' ? <IconInfo className={Utils.clsx(classes.messageIcon, classes.messageColor_info)} /> : null}
-                    {this.getText(message.text)}
+                    {this.getText(message.text, this.props.noTranslation)}
                 </DialogContent>
                 <DialogActions>
                     {message.link ?
@@ -387,7 +398,7 @@ class AdapterUpdateDialog extends Component {
                             startIcon={<IconWeb />}
                             variant="contained"
                             color="secondary"
-                        >{this.getText(message.linkText) || this.props.t('More info')}</Button>
+                        >{this.getText(message.linkText, this.props.noTranslation) || this.props.t('More info')}</Button>
                         : null
                     }
                     {message.link ? <div style={{flexGrow: 1}} /> : null}
@@ -450,6 +461,14 @@ class AdapterUpdateDialog extends Component {
                     <IconButton size="large" className={classes.closeButton} onClick={this.props.onClose}>
                         <CloseIcon />
                     </IconButton>
+                    {I18n.getLanguage() !== 'en' && this.props.toggleTranslation ? <IconButton
+                        size="large"
+                        className={Utils.clsx(classes.languageButton, this.props.noTranslation && classes.languageButtonActive)}
+                        onClick={() => this.props.toggleTranslation()}
+                        title={I18n.t('Disable/Enable translation')}
+                    >
+                        <LanguageIcon />
+                    </IconButton> : null}
                 </Typography>
             </DialogTitle>
             <DialogContent dividers>
@@ -522,6 +541,8 @@ AdapterUpdateDialog.propTypes = {
     adapterObject: PropTypes.object.isRequired,
     dependencies: PropTypes.array,
     news: PropTypes.array,
+    noTranslation: PropTypes.bool,
+    toggleTranslation: PropTypes.func,
     onUpdate: PropTypes.func.isRequired,
     onIgnore: PropTypes.func,
     onClose: PropTypes.func.isRequired,

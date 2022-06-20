@@ -11,13 +11,16 @@ import Dialog from '@mui/material/Dialog';
 import Grid from '@mui/material/Grid';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Toolbar from '@mui/material/Toolbar';
-import { Tooltip } from '@mui/material';
+import {IconButton, Tooltip} from '@mui/material';
 
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 
 import AdaptersUpdater from '../components/Adapters/AdaptersUpdater';
 import Command from '../components/Command';
+import I18n from "@iobroker/adapter-react-v5/i18n";
+import Utils from "@iobroker/adapter-react-v5/Components/Utils";
+import LanguageIcon from "@mui/icons-material/Language";
 
 const styles = theme => {
     return ({
@@ -51,6 +54,14 @@ const styles = theme => {
             content: {
                 padding: 8
             }
+        },
+        languageButton: {
+            position: 'absolute',
+            right: 73,
+            top: 11
+        },
+        languageButtonActive: {
+            color: theme.palette.primary.main
         },
     })
 };
@@ -141,6 +152,14 @@ class AdaptersUpdaterDialog extends Component {
                             this.setState({ selected });
                         }}
                     /></Tooltip>}
+                    {I18n.getLanguage() !== 'en' && this.props.toggleTranslation ? <IconButton
+                        size="large"
+                        className={Utils.clsx(this.props.classes.languageButton, this.props.noTranslation && this.props.classes.languageButtonActive)}
+                        onClick={() => this.props.toggleTranslation()}
+                        title={I18n.t('Disable/Enable translation')}
+                    >
+                        <LanguageIcon />
+                    </IconButton> : null}
                 </div>
             </DialogTitle>
             <DialogContent classes={{ root: this.props.classes.content }} style={{ height: '100%' }}>
@@ -159,19 +178,21 @@ class AdaptersUpdaterDialog extends Component {
                                 socket={this.props.socket}
                                 installed={this.props.installed}
                                 repository={this.props.repository}
+                                noTranslation={this.props.noTranslation}
                                 onUpdateSelected={(selected, updateAvailable) => {
                                     if (updateAvailable) {
                                         this.updateAvailable = updateAvailable;
                                     }
                                     this.setState({ selected });
-                                }} />
+                                }}
+                            />
                         </div>
                     </Grid>
                     {!!this.state.current && <Grid item style={{ height: '100%', overflow: 'hidden', width: 'calc(100% - 260px)', minWidth: 240 }}>
                         <Command
-                            noSpacing={true}
+                            noSpacing
                             key={this.state.current}
-                            ready={true}
+                            ready
                             currentHost={this.props.currentHost}
                             socket={this.props.socket}
                             t={this.props.t}
@@ -257,6 +278,8 @@ AdaptersUpdaterDialog.propTypes = {
     repository: PropTypes.object.isRequired,
     installed: PropTypes.object.isRequired,
     onSetCommandRunning: PropTypes.func.isRequired,
+    noTranslation: PropTypes.bool,
+    toggleTranslation: PropTypes.func,
 }
 
 export default withStyles(styles)(AdaptersUpdaterDialog);

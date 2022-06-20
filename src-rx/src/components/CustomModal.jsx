@@ -3,13 +3,15 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
 import Button from '@mui/material/Button';
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import {Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField} from '@mui/material';
 import { withStyles } from '@mui/styles';
 
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import LanguageIcon from '@mui/icons-material/Language';
 
-import i18n from '@iobroker/adapter-react-v5/i18n';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import I18n from "@iobroker/adapter-react-v5/i18n";
 
 const styles = theme => ({
     modalDialog: {
@@ -26,9 +28,17 @@ const styles = theme => ({
     content: {
         fontSize: 16,
     },
+    languageButton: {
+        position: 'absolute',
+        right: theme.spacing(1),
+        top: theme.spacing(1)
+    },
+    languageButtonActive: {
+        color: theme.palette.primary.main
+    },
 });
 
-const CustomModal = ({ title, fullWidth, help, maxWidth, progress, icon, applyDisabled, applyButton, classes, open, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue, overflowHidden }) => {
+const CustomModal = ({ toggleTranslation, noTranslation, title, fullWidth, help, maxWidth, progress, icon, applyDisabled, applyButton, classes, open, onClose, children, titleButtonApply, titleButtonClose, onApply, textInput, defaultValue, overflowHidden }) => {
     const [value, setValue] = useState(defaultValue);
     useEffect(() => {
         setValue(defaultValue);
@@ -48,7 +58,18 @@ const CustomModal = ({ title, fullWidth, help, maxWidth, progress, icon, applyDi
         onClose={onClose}
         classes={{ paper: classes.modalDialog, /*paper: classes.background*/ }}
     >
-        {title && <DialogTitle>{icon ? <Icon className={classes.titleIcon}/> : null}{title}</DialogTitle>}
+        {title && <DialogTitle>
+            {icon ? <Icon className={classes.titleIcon}/> : null}
+            {title}
+            {I18n.getLanguage() !== 'en' && toggleTranslation ? <IconButton
+                size="large"
+                className={Utils.clsx(classes.languageButton, noTranslation && classes.languageButtonActive)}
+                onClick={() => toggleTranslation()}
+                title={I18n.t('Disable/Enable translation')}
+            >
+                <LanguageIcon />
+            </IconButton> : null}
+        </DialogTitle>}
         <DialogContent className={clsx(overflowHidden ? classes.overflowHidden : null, classes.content)} style={{ paddingTop: 8 }}>
             {textInput && <TextField
                 // className={className}
@@ -74,7 +95,7 @@ const CustomModal = ({ title, fullWidth, help, maxWidth, progress, icon, applyDi
                 variant="contained"
                 color="primary"
             >
-                {i18n.t(titleButtonApply)}
+                {I18n.t(titleButtonApply)}
             </Button>}
             <Button
                 color="grey"
@@ -83,7 +104,7 @@ const CustomModal = ({ title, fullWidth, help, maxWidth, progress, icon, applyDi
                 variant="contained"
                 startIcon={<CloseIcon/>}
             >
-                {i18n.t(titleButtonClose)}
+                {I18n.t(titleButtonClose)}
             </Button>
         </DialogActions>
     </Dialog>;
@@ -112,6 +133,8 @@ CustomModal.propTypes = {
     fullWidth: PropTypes.bool,
     maxWidth: PropTypes.string,
     help: PropTypes.string,
+    noTranslation: PropTypes.bool,
+    toggleTranslation: PropTypes.func,
 };
 
 export default withStyles(styles)(CustomModal);
