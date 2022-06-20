@@ -81,7 +81,7 @@ Please be sure that you forward not only the http/https requests, but the web-so
 ## Used icons
 This project uses icons from [Flaticon](https://www.flaticon.com/).
 
-ioBroker GmbH has a valid license for all of used icons.
+ioBroker GmbH has a valid license for all used icons.
 The icons may not be reused in other projects without the proper flaticon license or flaticon subscription.
 
 <!--
@@ -89,6 +89,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Many GUI fixes done
+
 ### 6.0.6 (2022-06-19)
 * (bluefox) Added file selector with select dialog
 
