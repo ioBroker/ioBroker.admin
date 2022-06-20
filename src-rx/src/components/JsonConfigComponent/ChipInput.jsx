@@ -542,7 +542,7 @@ class ChipInput extends React.Component {
             ...other
         } = this.props;
 
-        const chips = value || this.state.chips;
+        const chips = value || this.state.chips || [];
         const actualInputValue = inputValue != null ? inputValue : this.state.inputValue;
 
         const hasInput = (this.props.value || actualInputValue).length || actualInputValue.length;
