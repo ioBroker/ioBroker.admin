@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.0.7 (2022-06-20)
 * (bluefox) Many GUI fixes done
 
 ### 6.0.6 (2022-06-19)
@@ -104,9 +104,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (bluefox) implemented the resize of columns in some tables
 
 ### 6.0.3 (2022-06-10)
-* (bluefox) Many GUI fixes done
-
-### 6.0.2 (2022-06-08)
 * (bluefox) Many GUI fixes done
 
 ## License
