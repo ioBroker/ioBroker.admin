@@ -295,6 +295,21 @@ const styles = theme => ({
     baseSettingsButton: {
         transform: 'rotate(45deg)',
     },
+    newValue: {
+        animation: '$newValueAnimation 2s ease-in-out'
+    },
+    '@keyframes newValueAnimation': {
+        '0%': {
+            color: '#00f900',
+        },
+        '80%': {
+            color: '#008000',
+        },
+        '100%': {
+            color: theme.palette.mode === 'dark' ? '#fff' : '#000',
+        }
+    },
+
 });
 
 let outputCache = '-';
@@ -316,6 +331,18 @@ const StyledBadge = withStyles((theme) => ({
 }))(Badge);
 
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
+
+function toggleClassName(el, name) {
+    const classNames = el.className.split(' ');
+    const pos = classNames.indexOf(name);
+    if (pos !== -1) {
+        classNames.splice(pos, 1);
+        el.className = classNames.join(' ');
+    }
+    classNames.push(name);
+    //el.className = classNames.join(' ');
+    setTimeout(_classNames => el.className = _classNames, 100, classNames.join(' '));
+}
 
 const HostRow = ({
     //dialogUpgrade,
@@ -359,6 +386,7 @@ const HostRow = ({
         inputCache = input && input.val !== null ? `⇥${input.val}` : '-';
         if (refEvents.current) {
             refEvents.current.innerHTML = `${inputCache} / ${outputCache}`;
+            toggleClassName(refEvents.current, classes.newValue);
         }
     };
 
@@ -366,6 +394,7 @@ const HostRow = ({
         outputCache = output && output.val !== null ? `↦${output.val}` : '-';
         if (refEvents.current) {
             refEvents.current.innerHTML = `${inputCache} / ${outputCache}`;
+            toggleClassName(refEvents.current, classes.newValue);
         }
     };
 
@@ -397,6 +426,7 @@ const HostRow = ({
                 refWarning.current.removeAttribute('title');
                 refWarning.current.classList.remove('warning');
             }
+            toggleClassName(refWarning.current, classes.newValue);
         }
     };
 
@@ -404,6 +434,7 @@ const HostRow = ({
         cpuCache = formatValue(state, '%');
         if (refCpu.current) {
             refCpu.current.innerHTML = cpuCache;
+            toggleClassName(refCpu.current, classes.newValue);
         }
     }
 
@@ -411,6 +442,7 @@ const HostRow = ({
         memCache = formatValue(state, '%');
         if (refMem.current) {
             refMem.current.innerHTML = memCache;
+            toggleClassName(refMem.current, classes.newValue);
         }
     }
 
@@ -422,6 +454,7 @@ const HostRow = ({
         }
         if (refUptime.current) {
             refUptime.current.innerHTML = uptimeCache;
+            toggleClassName(refUptime.current, classes.newValue);
         }
     }
 
@@ -439,6 +472,7 @@ const HostRow = ({
             Object.keys(obj).forEach(nameTab =>
                 Object.keys(obj[nameTab].instances).forEach(_ => count++));
         }
+
         return count;
     };
 
@@ -502,15 +536,15 @@ const HostRow = ({
 
     const onCopy = () => {
         let text = [];
-        refCpu.current && text.push(`CPU: ${refCpu.current.innerHTML}`);
-        refMem.current && text.push(`RAM: ${refMem.current.innerHTML}`);
+        refCpu.current    && text.push(`CPU: ${refCpu.current.innerHTML}`);
+        refMem.current    && text.push(`RAM: ${refMem.current.innerHTML}`);
         refUptime.current && text.push(`${t('Uptime')}: ${refUptime.current.innerHTML}`);
         text.push(`${t('Available')}: ${available}`);
         text.push(`${t('Installed')}: ${installed}`);
-        refEvents.current && text.push(t('Events') + ': ' + refEvents.current.innerHTML);
+        refEvents.current && text.push(`${t('Events')}: ${refEvents.current.innerHTML}`);
 
         hostData && typeof hostData === 'object' && Object.keys(hostData).map(value =>
-            text.push(t(value) + ': ' + (formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')));
+            text.push(`${t(value)}: ${formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--'}`));
 
         Utils.copyToClipboard(text.join('\n'));
         window.alert(t('Copied'));
@@ -606,7 +640,6 @@ const HostRow = ({
                 <Typography className={clsx(classes.flex, classes.hidden1100)} variant="body2" color="textSecondary" component="div">
                     <div className={clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)} >
                         {upgradeAvailable ?
-
                             <Tooltip title={t('Update')}>
                                 <div onClick={(e) => {
                                     e.stopPropagation();

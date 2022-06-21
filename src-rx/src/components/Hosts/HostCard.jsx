@@ -322,6 +322,21 @@ const styles = theme => ({
     baseSettingsButton: {
         transform: 'rotate(45deg)',
     },
+    newValue: {
+        animation: '$newValueAnimation 2s ease-in-out'
+    },
+    '@keyframes newValueAnimation': {
+        '0%': {
+            color: '#00f900',
+        },
+        '80%': {
+            color: '#008000',
+        },
+        '100%': {
+            color: theme.palette.mode === 'dark' ? '#fff' : '#000',
+        }
+    },
+
 });
 
 let outputCache = '-';
@@ -335,6 +350,18 @@ let diskSizeCache = 1;
 let diskWarningCache = 1;
 
 const arrayLogLevel = ['silly', 'debug', 'info', 'warn', 'error'];
+
+function toggleClassName(el, name) {
+    const classNames = el.className.split(' ');
+    const pos = classNames.indexOf(name);
+    if (pos !== -1) {
+        classNames.splice(pos, 1);
+        el.className = classNames.join(' ');
+    }
+    classNames.push(name);
+    setTimeout(_classNames => el.className = _classNames, 100, classNames.join(' '));
+}
+
 
 const HostCard = ({
     //dialogUpgrade,
@@ -378,6 +405,7 @@ const HostCard = ({
         inputCache = input && input.val !== null ? `⇥${input.val}` : '-';
         if (refEvents.current) {
             refEvents.current.innerHTML = `${inputCache} / ${outputCache}`;
+            toggleClassName(refEvents.current, classes.newValue);
         }
     };
 
@@ -385,6 +413,7 @@ const HostCard = ({
         outputCache = output && output.val !== null ? `↦${output.val}` : '-';
         if (refEvents.current) {
             refEvents.current.innerHTML = `${inputCache} / ${outputCache}`;
+            toggleClassName(refEvents.current, classes.newValue);
         }
     };
 
@@ -423,6 +452,7 @@ const HostCard = ({
         cpuCache = formatValue(state, '%');
         if (refCpu.current) {
             refCpu.current.innerHTML = cpuCache;
+            toggleClassName(refCpu.current, classes.newValue);
         }
     }
 
@@ -430,6 +460,7 @@ const HostCard = ({
         memCache = formatValue(state, '%');
         if (refMem.current) {
             refMem.current.innerHTML = memCache;
+            toggleClassName(refMem.current, classes.newValue);
         }
     }
 
@@ -441,6 +472,7 @@ const HostCard = ({
         }
         if (refUptime.current) {
             refUptime.current.innerHTML = uptimeCache;
+            toggleClassName(refUptime.current, classes.newValue);
         }
     }
 
@@ -525,7 +557,7 @@ const HostCard = ({
         refUptime.current && text.push(`${t('Uptime')}: ${refUptime.current.innerHTML}`);
         text.push(`${t('Available')}: ${available}`);
         text.push(`${t('Installed')}: ${installed}`);
-        refEvents.current && text.push(t('Events') + ': ' + refEvents.current.innerHTML);
+        refEvents.current && text.push(`${t('Events')}: ${refEvents.current.innerHTML}`);
 
         hostData && typeof hostData === 'object' && Object.keys(hostData).map(value =>
             text.push(t(value) + ': ' + (formatInfo[value] ? formatInfo[value](hostData[value], t) : hostData[value] || '--')));

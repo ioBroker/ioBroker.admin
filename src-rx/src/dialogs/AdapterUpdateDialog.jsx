@@ -464,7 +464,7 @@ class AdapterUpdateDialog extends Component {
                     {I18n.getLanguage() !== 'en' && this.props.toggleTranslation ? <IconButton
                         size="large"
                         className={Utils.clsx(classes.languageButton, this.props.noTranslation && classes.languageButtonActive)}
-                        onClick={() => this.props.toggleTranslation()}
+                        onClick={this.props.toggleTranslation}
                         title={I18n.t('Disable/Enable translation')}
                     >
                         <LanguageIcon />

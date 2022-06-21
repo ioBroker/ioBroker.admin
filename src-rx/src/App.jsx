@@ -402,6 +402,8 @@ class App extends Router {
                 versionAdmin: '',
 
                 forceUpdateAdapters: 0,
+
+                noTranslation: (window._localStorage || window.localStorage).getItem('App.noTranslation') === 'true',
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -494,6 +496,11 @@ class App extends Router {
         }, 200);
     }
 
+    toggleTranslation = () => {
+        (window._localStorage || window.localStorage).setItem('App.noTranslation', this.state.noTranslation ? 'false' : 'true');
+        this.setState({ noTranslation: !this.state.noTranslation })
+    };
+
     getGUISettings() {
         return this.socket.getState(`system.adapter.${this.adminInstance}.guiSettings`)
             .catch(() => ({ val: false }))
@@ -525,8 +532,9 @@ class App extends Router {
                             } else {
                                 drawerState = this.props.width === 'xs' ? DrawerStates.closed : DrawerStates.opened;
                             }
+                            const noTranslation = (window._localStorage || window.localStorage).getItem('App.noTranslation') === 'true';
 
-                            this.setState({ guiSettings: true, drawerState }, () => {
+                            this.setState({ guiSettings: true, drawerState, noTranslation }, () => {
                                 if (Utils.getThemeName() !== this.state.theme.name) {
                                     this.toggleTheme(Utils.getThemeName());
                                 }
@@ -1284,6 +1292,8 @@ class App extends Router {
                         menuClosed={closed}
                         menuCompact={compact}
                         adminGuiConfig={this.adminGuiConfig}
+                        toggleTranslation={this.toggleTranslation}
+                        noTranslation={this.state.noTranslation}
                     />
                 </Suspense>;
             } else if (this.state.currentTab.tab === 'tab-instances') {
@@ -1416,6 +1426,8 @@ class App extends Router {
                         lang={I18n.getLanguage()}
 
                         hostsWorker={this.hostsWorker}
+                        toggleTranslation={this.toggleTranslation}
+                        noTranslation={this.state.noTranslation}
 
                         themeName={this.state.themeName}
                         theme={this.state.theme}

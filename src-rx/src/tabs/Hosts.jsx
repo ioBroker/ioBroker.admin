@@ -441,8 +441,8 @@ class Hosts extends Component {
                 try {
                     if (semver.gt(version, installed) || all) {
                         news.push({
-                            version: version,
-                            news: adapter.news[version][this.props.lang] || adapter.news[version].en
+                            version,
+                            news: this.props.noTranslation ? adapter.news[version].en : adapter.news[version][this.props.lang] || adapter.news[version].en,
                         });
                     }
                 } catch (e) {
@@ -467,6 +467,8 @@ class Hosts extends Component {
                 textUpdate={this.t('Show instructions')}
                 rightDependencies
                 news={this.getNews()}
+                toggleTranslation={this.props.toggleTranslation}
+                noTranslation={this.props.noTranslation}
                 onUpdate={() =>
                     this.closeHostUpdateDialog(() =>
                         jsControllerDialogFunc(this.props.socket, this.state.hostUpdate, this.props.theme))}
@@ -640,6 +642,8 @@ Hosts.propTypes = {
     hostsWorker: PropTypes.object,
     showAdaptersWarning: PropTypes.func,
     theme: PropTypes.object,
+    noTranslation: PropTypes.bool,
+    toggleTranslation: PropTypes.func,
 };
 
 export default withWidth()(withStyles(styles)(Hosts));

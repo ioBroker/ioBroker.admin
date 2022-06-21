@@ -279,7 +279,6 @@ class Adapters extends Component {
             adapterInstallVersion: '',
             currentHost: this.props.currentHost,
             forceUpdateAdapters: this.props.forceUpdateAdapters,
-            noTranslation: (window._localStorage || window.localStorage).getItem('App.noTranslation') === 'true',
         };
 
         this.rebuildSupported = false;
@@ -1048,7 +1047,7 @@ class Adapters extends Component {
                     if (semver.gt(version, installed.version) || all) {
                         news.push({
                             version,
-                            news: this.state.noTranslation ? adapter.news[version].en : (adapter.news[version][this.props.lang] || adapter.news[version].en)
+                            news: this.props.noTranslation ? adapter.news[version].en : (adapter.news[version][this.props.lang] || adapter.news[version].en)
                         });
                     }
                 } catch (e) {
@@ -1555,11 +1554,8 @@ class Adapters extends Component {
                 lang={this.props.lang}
                 installed={this.state.installed}
                 repository={this.state.repository}
-                toggleTranslation={() => {
-                    (window._localStorage || window.localStorage).setItem('App.noTranslation', this.state.noTranslation ? 'false' : 'true');
-                    this.setState({ noTranslation: !this.state.noTranslation })
-                }}
-                noTranslation={ this.state.noTranslation }
+                toggleTranslation={this.props.toggleTranslation}
+                noTranslation={this.props.noTranslation}
                 onClose={reload =>
                     this.setState({ showUpdater: false }, () =>
                         reload && this.updateAll(true, false))}
@@ -1872,11 +1868,8 @@ class Adapters extends Component {
                     dependencies={this.getDependencies(this.state.adapterToUpdate)}
                     rightDependencies={this.rightDependencies(this.state.adapterToUpdate)}
                     news={this.getNews(this.state.adapterToUpdate)}
-                    toggleTranslation={() => {
-                        (window._localStorage || window.localStorage).setItem('App.noTranslation', this.state.noTranslation ? 'false' : 'true');
-                        this.setState({ noTranslation: !this.state.noTranslation })
-                    }}
-                    noTranslation={ this.state.noTranslation }
+                    toggleTranslation={this.props.toggleTranslation}
+                    noTranslation={ this.props.noTranslation }
                     installedVersion={this.state.installed[this.state.adapterToUpdate]?.version}
                     onUpdate={version => {
                         const adapter = this.state.adapterToUpdate;
@@ -1913,11 +1906,8 @@ class Adapters extends Component {
                     title={this.t('Please select specific version of %s', this.state.adapterInstallVersion)}
                     applyButton={false}
                     onClose={() => this.setState({adapterInstallVersion: ''})}
-                    toggleTranslation={() => {
-                        (window._localStorage || window.localStorage).setItem('App.noTranslation', this.state.noTranslation ? 'false' : 'true');
-                        this.setState({ noTranslation: !this.state.noTranslation })
-                    }}
-                    noTranslation={ this.state.noTranslation }
+                    toggleTranslation={this.props.toggleTranslation}
+                    noTranslation={this.props.noTranslation}
                 >
                     <div className={classes.containerVersion}>
                         {this.getNews(this.state.adapterInstallVersion, true).map(({ version, news }) => {
@@ -1960,6 +1950,8 @@ Adapters.propTypes = {
     expertMode: PropTypes.bool,
     executeCommand: PropTypes.func,
     adminGuiConfig: PropTypes.object,
+    noTranslation: PropTypes.bool,
+    toggleTranslation: PropTypes.func,
 };
 
 export default withStyles(styles)(Adapters);
