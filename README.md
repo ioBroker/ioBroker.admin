@@ -89,7 +89,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.0.8 (2022-06-21)
 * (bluefox) Added multiple choice by `selectSendTo`
 * (bluefox) Added warning if some javascript not saved
 * (bluefox) Some GUI fixes done
@@ -107,9 +107,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.0.4 (2022-06-13)
 * (bluefox) implemented the resize of columns in some tables
-
-### 6.0.3 (2022-06-10)
-* (bluefox) Many GUI fixes done
 
 ## License
 The MIT License (MIT)

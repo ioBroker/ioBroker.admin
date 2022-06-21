@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.0.7",
+    "version": "6.0.8",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.0.8": {
+        "en": "Added multiple choice by `selectSendTo`\nAdded warning if some javascript not saved\nSome GUI fixes done",
+        "de": "Mehrfachauswahl hinzugefügt durch selectSendTo\nWarnung hinzugefügt, wenn einige Javascript nicht gespeichert\nEinige GUI behoben",
+        "ru": "Добавлено несколько вариантов, выбравSendTo\nДобавили предупреждение, если какой-то JavaScript не сохранен\nНекоторые исправления GUI сделаны",
+        "pt": "Adicionado múltipla escolha por selectSendTo\nAdicionado aviso se algum javascript não salvo\nAlgumas correções GUI feitas",
+        "nl": "Vertaling:\nEen waarschuwing als een javascript niet gered is\nSommige GUI reparaties gedaan",
+        "fr": "Ajouté plusieurs choix par selectSendTo\nAjout d ' un avertissement si certains javascript ne sont pas enregistrés\nQuelques corrections de GUI effectuées",
+        "it": "Aggiunta più scelta da selezionareSendTo\nAggiunto avviso se alcuni javascript non salvato\nAlcune correzioni di GUI fatte",
+        "es": "Añadido opción múltiple por selectSendTo\nAdvertencia adicional si algunos javascript no se guardan\nAlguna GUI arreglado",
+        "pl": "Dodała wiele wyboru przez selekcjonera\nWskazane ostrzeżenie, czy niektóre z nich nie zostały uratowane\nNiektóre rozwiązania GUI",
+        "zh-cn": "选用Sendto的多种选择\n增加警告,如果有些手无寸铁的话\n一些古伊特公司做的"
+      },
       "6.0.7": {
         "en": "Many GUI fixes done",
         "de": "Viele GUI Korrekturen erledigt",
@@ -89,18 +101,6 @@
         "es": "Muchas correcciones GUI hechas",
         "pl": "Wiele rozwiązań GUI",
         "zh-cn": "许多古伊克人做的文章"
-      },
-      "6.0.1": {
-        "en": "Many GUI fixes done",
-        "de": "Viele GUI-Korrekturen durchgeführt",
-        "ru": "Сделано множество исправлений графического интерфейса",
-        "pt": "Muitas correções de GUI feitas",
-        "nl": "Veel GUI-fixes gedaan",
-        "fr": "De nombreuses corrections d'interface graphique effectuées",
-        "it": "Molte correzioni della GUI sono state eseguite",
-        "es": "Muchas correcciones de GUI hechas",
-        "pl": "Wykonano wiele poprawek GUI",
-        "zh-cn": "完成了许多 GUI 修复"
       }
     },
     "desc": {
