@@ -327,6 +327,18 @@ class App extends Router {
 
             const theme = this.createTheme();
 
+            // install setter for configNotSaved (used in javascript)
+            Object.defineProperty(window,'configNotSaved',{
+                get: () => this.state.configNotSaved,
+                set: configNotSaved => {
+                    const allStored = !configNotSaved;
+                    if (allStored !== this.state.allStored) {
+                        this.setState({ allStored });
+                    }
+                },
+                configurable: true,
+            });
+
             this.state = {
                 connected: false,
                 progress: 0,
