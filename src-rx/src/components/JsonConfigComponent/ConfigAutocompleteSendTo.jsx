@@ -43,7 +43,7 @@ class ConfigAutocompleteSendTo extends ConfigGeneric {
                 data = null;
             }
 
-            this.props.socket.sendTo(this.props.adapterName + '.' + this.props.instance, this.props.schema.command || 'send', data)
+            this.props.socket.sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.command || 'send', data)
                 .then(list => {
                     if (list && Array.isArray(list)) {
                         list.forEach(item =>

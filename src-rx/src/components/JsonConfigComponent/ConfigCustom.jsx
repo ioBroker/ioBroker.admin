@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import LinearProgress from '@mui/material/LinearProgress';
 import Grid from '@mui/material/Grid';
 
-import i18n from '@iobroker/adapter-react-v5/i18n';
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 const getOrLoadRemote = (remote, shareScope, remoteFallbackUrl = undefined) =>
     new Promise((resolve, reject) => {
@@ -111,16 +111,16 @@ class ConfigCustom extends Component {
             } else {
                 i18nURL = url;
             }
-            const lang = i18n.getLanguage();
+            const lang = I18n.getLanguage();
             const file = `${i18nURL}/i18n/${lang}.json`;
 
             await fetch(file)
                 .then(data => data.json())
-                .then(json => i18n.extendTranslations(json, lang))
+                .then(json => I18n.extendTranslations(json, lang))
                 .catch(error => console.log(`Cannot load i18n "${file}": ${error}`));
         } else if (this.props.schema.i18n && typeof this.props.schema.i18n === 'object') {
             try {
-                i18n.extendTranslations(this.props.schema.i18n);
+                I18n.extendTranslations(this.props.schema.i18n);
             } catch (error) {
                 console.error(`Cannot import i18n: ${error}`);
             }

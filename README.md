@@ -89,6 +89,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Added multiple choice by `selectSendTo`
+* (bluefox) Added warning if some javascript not saved
+* (bluefox) Some GUI fixes done
+
 ### 6.0.7 (2022-06-20)
 * (bluefox) Many GUI fixes done
 

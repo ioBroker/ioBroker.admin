@@ -217,7 +217,9 @@ Possible types:
     - `command` - sendTo command
     - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. This data will be sent to backend
     - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both. This data will be sent to backend if jsonData is not defined.
-    - `!manual` - allow manual editing. Without drop down
+    - `manual` - allow manual editing. Without drop down menu (if instance is offline). Default `true`.
+    - `multiple` - Multiple choice select
+    - `showAllValues` - show item even if no label was found for it (by multiple), default=`true`
     - `noTranslation` - do not translate label of selects  
       To use this option, your adapter must implement message handler:
       The result of command must be an array in form `[{"value": 1, "label": "one"}, ...]`

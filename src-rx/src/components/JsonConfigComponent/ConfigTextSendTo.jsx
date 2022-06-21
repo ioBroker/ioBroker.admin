@@ -39,7 +39,7 @@ class ConfigTextSendTo extends ConfigGeneric {
                 data = null;
             }
 
-            this.props.socket.sendTo(this.props.adapterName + '.' + this.props.instance, this.props.schema.command || 'send', data)
+            this.props.socket.sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.command || 'send', data)
                 .then(text => this.setState({text: text || '', context: this.getContext()}));
         }
     }

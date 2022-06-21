@@ -88,7 +88,7 @@ class ConfigGeneric extends Component {
                 data = null;
             }
 
-            this.props.socket.sendTo(this.props.adapterName + '.' + this.props.instance, this.props.schema.defaultSendTo, data)
+            this.props.socket.sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.defaultSendTo, data)
                 .then(value => {
                     if (value !== null && value !== undefined) {
                         if (this.props.custom) {

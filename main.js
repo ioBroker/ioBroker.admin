@@ -122,7 +122,7 @@ function startAdapter(options) {
     });
 
     adapter.on('message', obj => {
-        if (!obj || !obj.message) {
+        if (!obj) {
             return false;
         }
         if (obj.command === 'checkFiles') {
@@ -152,6 +152,14 @@ function startAdapter(options) {
             // just for test
             console.log('FILL: ' + JSON.stringify(obj.message));
             return obj.callback && adapter.sendTo(obj.from, obj.command, 'history.0', obj.callback);
+        } else
+        if (obj.command === 'selectSendTo') {
+            // just for test
+            return obj.callback && adapter.sendTo(obj.from, obj.command, [
+                {"label": "Afghanistan", "value": "AF"},
+                {"label": "Åland Islands", "value": "AX"},
+                {"label": "Albania", "value": "AL"},
+            ], obj.callback);
         }
 
         socket && socket.sendCommand(obj);
@@ -828,7 +836,7 @@ async function checkNodeJsVersion() {
                 "type": "state",
                 "common": {
                     "role": "state",
-                    "name": {
+                    "value": {
                         "en": "Current node.js version",
                         "de": "Aktuelle node.js Version",
                         "ru": "Текущая версия node.js",
@@ -852,7 +860,7 @@ async function checkNodeJsVersion() {
                 "type": "state",
                 "common": {
                     "role": "state",
-                    "name": {
+                    "value": {
                         "en": "Newest node.js version",
                         "de": "Neueste node.js Version",
                         "ru": "Новейшая версия node.js",
@@ -876,7 +884,7 @@ async function checkNodeJsVersion() {
                 "type": "state",
                 "common": {
                     "role": "state",
-                    "name": {
+                    "value": {
                         "en": "Newest next major node.js version",
                         "de": "Neueste nächste große node.js Version",
                         "ru": "Новейшая следующая версия node.js",
@@ -900,7 +908,7 @@ async function checkNodeJsVersion() {
                 "type": "state",
                 "common": {
                     "role": "state",
-                    "name": {
+                    "value": {
                         "en": "Current npm version",
                         "de": "Aktuelle Version",
                         "ru": "Текущая версия npm",
@@ -924,7 +932,7 @@ async function checkNodeJsVersion() {
                 "type": "state",
                 "common": {
                     "role": "state",
-                    "name": {
+                    "value": {
                         "en": "Newest npm version",
                         "de": "Neueste Version",
                         "ru": "Новейшая версия npm",
@@ -948,7 +956,7 @@ async function checkNodeJsVersion() {
                 "type": "state",
                 "common": {
                     "role": "state",
-                    "name": {
+                    "value": {
                         "en": "Newest next major NPM version",
                         "de": "Neueste nächste große NPM-Version",
                         "ru": "Новейшая следующая крупная версия NPM",
