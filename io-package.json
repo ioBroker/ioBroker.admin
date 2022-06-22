@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.1.0",
+    "version": "6.1.1",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.1.1": {
+        "en": "Corrected russian translations\nPreparations for iobroker cloud",
+        "de": "Korrigierte russische Übersetzungen\nPräparate für Jobrokerwolke",
+        "ru": "Правильные русские переводы\nПодготовка к облаку iobroker",
+        "pt": "Traduções russas corretas\nPreparações para nuvem iobroker",
+        "nl": "Vertaling:\nVoorbereiden voor iobrokerwolk",
+        "fr": "Traductions russes corrigées\nPréparations pour le cloud iobroker",
+        "it": "Traduzioni russe corrette\nPreparazioni per cloud iobroker",
+        "es": "Traducciones rusianas corregidas\nPreparaciones para la nube de yobroker",
+        "pl": "Poprawione tłumaczenia ruszyńskie\nPrzygotowanie do iobroker cloud",
+        "zh-cn": "更正\nA. 准备iobroker云层"
+      },
       "6.1.0": {
         "en": "allowed to use admin behind reverse proxy",
         "de": "erlaubt admin hinter reverse proxy zu verwenden",
@@ -89,18 +101,6 @@
         "es": "implementó el tamaño de las columnas en algunos cuadros",
         "pl": "zastosował resize kolumn w niektórych tablicach",
         "zh-cn": "某些表格中的栏目转化"
-      },
-      "6.0.3": {
-        "en": "Many GUI fixes done",
-        "de": "Viele GUI Korrekturen erledigt",
-        "ru": "Многие исправления GUI сделаны",
-        "pt": "Muitas correções GUI feitas",
-        "nl": "Veel GUI reparaties gedaan",
-        "fr": "Beaucoup de corrections GUI faites",
-        "it": "Molte correzioni di GUI effettuate",
-        "es": "Muchas correcciones GUI hechas",
-        "pl": "Wiele rozwiązań GUI",
-        "zh-cn": "许多古伊克人做的文章"
       }
     },
     "desc": {

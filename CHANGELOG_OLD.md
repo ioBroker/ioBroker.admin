@@ -1,5 +1,13 @@
 ## 5.3.7 (2022-04-10)
 * (bluefox) Changed the charts rendering
+## 6.0.5 (2022-06-18)
+* (bluefox) Added file selector for JSON-Config
+* (bluefox) Added the experimental synchronize function (in expertMode)
+* (bluefox) Many GUI fixes done
+
+## 5.3.7 (2022-04-10)
+* (bluefox) Changed the charts rendering
+
 ## 6.0.4 (2022-06-13)
 * (bluefox) implemented the resize of columns in some tables
 

@@ -108,13 +108,13 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.1.1 (2022-06-22)
 * (bluefox) Corrected russian translations
 * (bluefox) Preparations for iobroker cloud
 
 ### 6.1.0 (2022-06-22)
 * (bluefox) allowed to use admin behind reverse proxy
-* (bluefox) Added new JsonConfig components: Slider, Room selector, Function selector 
+* (bluefox) Added new JsonConfig components: Slider, Room selector, Function selector
 
 ### 6.0.8 (2022-06-21)
 * (bluefox) Added multiple choice by `selectSendTo`
@@ -126,11 +126,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.0.6 (2022-06-19)
 * (bluefox) Added file selector with select dialog
-
-### 6.0.5 (2022-06-18)
-* (bluefox) Added file selector for JSON-Config
-* (bluefox) Added the experimental synchronize function (in expertMode)
-* (bluefox) Many GUI fixes done
 
 ## License
 The MIT License (MIT)
