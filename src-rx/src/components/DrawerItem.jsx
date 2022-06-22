@@ -20,14 +20,14 @@ const styles = theme => ({
         background: theme.palette.primary.main,
         color: theme.palette.mode === 'light' ? 'white' : Utils.invertColor(theme.palette.primary.main, true),
         '&:hover': {
-            color: theme.palette.text.secondary
-        }
+            color: theme.palette.primary.main,
+            '& $selectedIcon': {
+                color: theme.palette.primary.main,
+            }
+        },
     },
     selectedIcon: {
         color: theme.palette.mode === 'light' ? 'white' : Utils.invertColor(theme.palette.primary.main, true),
-        '&:hover': {
-            color: theme.palette.text.secondary
-        }
     },
     compactBadge: {
         paddingLeft: 12,
