@@ -8,7 +8,7 @@ import { withStyles } from '@mui/styles';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { InputAdornment, LinearProgress, TextField } from '@mui/material';
-import { Skeleton } from '@mui/lab';
+import Skeleton from '@mui/material/Skeleton';
 
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ViewListIcon from '@mui/icons-material/ViewList';

@@ -5,8 +5,7 @@ import semver from 'semver';
 
 import { withStyles } from '@mui/styles';
 
-import { Fab, Snackbar, Tooltip, Grid, LinearProgress } from '@mui/material';
-import { Skeleton } from '@mui/lab';
+import { Fab, Snackbar, Tooltip, Grid, LinearProgress, Skeleton } from '@mui/material';
 
 import AddIcon from '@mui/icons-material/Add';
 import CheckIcon from '@mui/icons-material/Check';

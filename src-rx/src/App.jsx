@@ -656,7 +656,7 @@ class App extends Router {
                                 });
                             } else {
                                 try {
-                                    const adminObj = await this.socket.getObject('system.adapter.' + this.adminInstance)
+                                    const adminObj = await this.socket.getObject('system.adapter.' + this.adminInstance);
                                     // use instance language
                                     if (adminObj?.native?.language) {
                                         if (adminObj.native.language !== I18n.getLanguage()) {

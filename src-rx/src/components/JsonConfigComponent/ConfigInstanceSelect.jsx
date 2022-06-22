@@ -33,6 +33,8 @@ class ConfigInstanceSelect extends ConfigGeneric {
                 if (this.props.schema.adapter === '_dataSources') {
                     // get only "data-sources", like history, sql, influx
                     instances = instances.filter(instance => instance && instance.common && instance.common.getHistory);
+                } else if (this.props.schema.adapter) {
+                    instances = instances.filter(instance => instance && instance._id.startsWith('system.adapter.' + this.props.schema.adapter + '.'));
                 }
 
                 selectOptions = instances.map(instance => ({

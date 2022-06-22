@@ -14,7 +14,7 @@ import { Grid } from '@mui/material';
 import { IconButton } from '@mui/material';
 import { Link } from '@mui/material';
 import { Typography } from '@mui/material';
-import { Skeleton } from '@mui/lab';
+import { Skeleton } from '@mui/material';
 
 import CheckIcon from '@mui/icons-material/Check';
 import EditIcon from '@mui/icons-material/Create';
