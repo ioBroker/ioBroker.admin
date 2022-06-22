@@ -110,6 +110,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### 6.1.0 (2022-06-22)
 * (bluefox) allowed to use admin behind reverse proxy
+* (bluefox) Added new JsonConfig components: Slider, Room selector, Function selector 
 
 ### 6.0.8 (2022-06-21)
 * (bluefox) Added multiple choice by `selectSendTo`
