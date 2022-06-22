@@ -28,14 +28,15 @@ Possible types:
   - `max` - maximal value
   - `step` - step
 
-- `color`
+- `color` - color picker
 
-- `checkbox`
+- `checkbox` - show checkbox
 
-- `!slider`               
+- `slider` - show slider              
   - `min` - (default 0)
   - `max` - (default 100)
-  - `step` - (default 1)
+  - `step` - (default `(max - min) / 100`)
+  - `unit` - Unit of slider
 
 - `ip` - bind address
   - `listenOnAllPorts` - add 0.0.0.0 to option
@@ -45,11 +46,11 @@ Possible types:
 - `user` - Select user from system.user. (With color and icon)
   - `short` - no system.user.
 
-- `!room` - Select room from enum.room (With color and icon)
-  - `short` - no system.room.
+- `room` - Select room from `enum.room` (With color and icon)
+  - `short` - no `enum.rooms.`
 
-- `!func` - Select function from enum.func (With color and icon)
-  - `short` - no system.func.
+- `func` - Select function from `enum.func` (With color and icon)
+  - `short` - no `enum.func.`
 
 - `select` 
   - `options` - `[{label: {en: "option 1"}, value: 1}, ...]`

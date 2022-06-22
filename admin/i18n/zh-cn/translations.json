@@ -77,5 +77,8 @@
   "No data in history for selected period": "所选期间的历史记录中没有数据",
   "1 minute": "1分钟",
   "Discard": "丢弃",
-  "Language for only this instance": "仅此实例的语言"
+  "Language for only this instance": "仅此实例的语言",
+  "Global path": "全局路径",
+  "Instance": "实例",
+  "Instance path behind proxy": ""
 }

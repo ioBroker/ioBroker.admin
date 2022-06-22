@@ -77,5 +77,8 @@
   "No data in history for selected period": "Geen gegevens in geschiedenis voor geselecteerde periode",
   "1 minute": "1 minuut",
   "Discard": "Weggooien",
-  "Language for only this instance": "Taal voor alleen deze instantie"
+  "Language for only this instance": "Taal voor alleen deze instantie",
+  "Global path": "Globaal pad",
+  "Instance": "Voorbeeld",
+  "Instance path behind proxy": ""
 }

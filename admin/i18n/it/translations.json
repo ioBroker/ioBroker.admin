@@ -77,5 +77,8 @@
   "No data in history for selected period": "Nessun dato nella cronologia per il periodo selezionato",
   "1 minute": "1 minuto",
   "Discard": "Scartare",
-  "Language for only this instance": "Linguaggio solo per questa istanza"
+  "Language for only this instance": "Linguaggio solo per questa istanza",
+  "Global path": "Percorso globale",
+  "Instance": "Esempio",
+  "Instance path behind proxy": ""
 }

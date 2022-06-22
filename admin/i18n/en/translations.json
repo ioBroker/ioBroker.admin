@@ -77,5 +77,8 @@
   "No data in history for selected period": "No data in history for selected period",
   "1 minute": "1 minute",
   "Discard": "Discard",
-  "Language for only this instance": "Language for only this instance"
+  "Language for only this instance": "Language for only this instance",
+  "Global path": "Global path",
+  "Instance": "Instance",
+  "Instance path behind proxy": "Instance path behind proxy"
 }

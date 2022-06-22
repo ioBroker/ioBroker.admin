@@ -77,5 +77,8 @@
   "No data in history for selected period": "Нет данных в истории за выбранный период",
   "1 minute": "1 минута",
   "Discard": "Отказаться",
-  "Language for only this instance": "Язык только для этого экземпляра"
+  "Language for only this instance": "Язык только для этого экземпляра",
+  "Global path": "Глобальный путь",
+  "Instance": "Экземпляр",
+  "Instance path behind proxy": "Путь к инстанции за прокси"
 }

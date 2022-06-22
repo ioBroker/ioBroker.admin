@@ -77,5 +77,8 @@
   "No data in history for selected period": "Brak danych w historii dla wybranego okresu",
   "1 minute": "1 minuta",
   "Discard": "Odrzucać",
-  "Language for only this instance": "Język tylko dla tego wystąpienia"
+  "Language for only this instance": "Język tylko dla tego wystąpienia",
+  "Global path": "Globalna ścieżka",
+  "Instance": "Instancja",
+  "Instance path behind proxy": ""
 }

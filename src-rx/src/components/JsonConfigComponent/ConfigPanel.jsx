@@ -24,6 +24,7 @@ import ConfigCustom from './ConfigCustom';
 import ConfigDatePicker from './ConfigDatePicker';
 import ConfigFile from './ConfigFile';
 import ConfigFileSelector from './ConfigFileSelector';
+import ConfigFunc from './ConfigFunc';
 import ConfigIP from './ConfigIP';
 import ConfigImageUpload from './ConfigImageUpload';
 import ConfigInstanceSelect from './ConfigInstanceSelect';
@@ -33,10 +34,12 @@ import ConfigNumber from './ConfigNumber';
 import ConfigObjectId from './ConfigObjectId';
 import ConfigPassword from './ConfigPassword';
 import ConfigPattern from './ConfigPattern';
+import ConfigRoom from './ConfigRoom';
 import ConfigSelect from './ConfigSelect';
 import ConfigSelectSendTo from './ConfigSelectSendTo';
 import ConfigSendto from './ConfigSendto';
 import ConfigSetState from './ConfigSetState';
+import ConfigSlider from './ConfigSlider';
 import ConfigStaticDivider from './ConfigStaticDivider';
 import ConfigStaticHeader from './ConfigStaticHeader';
 import ConfigStaticImage from './ConfigStaticImage';
@@ -64,6 +67,7 @@ const components = {
     divider: ConfigStaticDivider,
     file: ConfigFile,
     fileSelector: ConfigFileSelector,
+    func: ConfigFunc,
     header: ConfigStaticHeader,
     image: ConfigImageUpload,
     instance: ConfigInstanceSelect,
@@ -74,10 +78,12 @@ const components = {
     objectId: ConfigObjectId,
     password: ConfigPassword,
     pattern: ConfigPattern,
+    room: ConfigRoom,
     select: ConfigSelect,
     selectSendTo: ConfigSelectSendTo,
     sendTo: ConfigSendto,
     setState: ConfigSetState,
+    slider: ConfigSlider,
     staticImage: ConfigStaticImage,
     staticLink: ConfigStaticText,
     staticText: ConfigStaticText,

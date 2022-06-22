@@ -226,7 +226,8 @@
     "loginBackgroundImage": false,
     "loginHideLogo": false,
     "loginMotto": "",
-    "language": ""
+    "language": "",
+    "reverseProxy": []
   },
   "objects": [],
   "instanceObjects": [

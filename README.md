@@ -78,6 +78,25 @@ If this option is disabled, the simple configuration page could be accessed unde
 ## Reverse proxy
 Please be sure that you forward not only the http/https requests, but the web-socket traffic too. It is essential for communication.
 
+From version 6.1.0 you have the possibility to tune intro page for usage with reverse proxy.
+### Example 
+Your `ioBroker.admin` runs on port 8081 behind reverse proxy with domain `iobroker.mydomain.com` under path `/ioBrokerAdmin/`. 
+And you set up e.g. nginx to forward the requests to the `http://local-iobroker.IP:8081`. 
+
+Same is with your web instance: `https://iobroker.mydomain.com/ioBrokerWeb/ => http://local-iobroker.IP:8082`.
+And with rest-api instance: `https://iobroker.mydomain.com/ioBrokerAPI/ => http://local-iobroker.IP:8093`.
+
+You can add following lines into Reverse Proxy tab to let Intro tab run behind reverse proxy properly:
+
+| Global path       | Instance      | Instance path behind proxy |
+|-------------------|---------------|----------------------------|
+| `/ioBrokerAdmin/` | `web.0`       | `/ioBrokerWeb/`            |
+|                   | `rest-api.0`  | `/ioBrokerAPI/`            |
+|                   | `admin.0`     | `/ioBrokerAdmin/`          |
+|                   | `eventlist.0` | `/ioBrokerWeb/eventlist/`  |
+
+So all links of instances that use web server, like `eventlist`, `vis`, `material` and so on will use `https://iobroker.mydomain.com/ioBrokerWeb/` path
+
 ## Used icons
 This project uses icons from [Flaticon](https://www.flaticon.com/).
 
@@ -89,6 +108,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) allowed to use admin behind reverse proxy
+
 ### 6.0.8 (2022-06-21)
 * (bluefox) Added multiple choice by `selectSendTo`
 * (bluefox) Added warning if some javascript not saved

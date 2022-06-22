@@ -83,9 +83,7 @@ const formatInfo = {
 };
 
 class Intro extends Component {
-
     constructor(props) {
-
         super(props);
 
         this.state = {
@@ -98,8 +96,10 @@ class Intro extends Component {
             editLinkIndex: -1,
             openSnackBar: false,
             hasUnsavedChanges: false,
+            reverseProxy: null,
         };
 
+        this.currentProxyPath = window.location.pathname; // e.g. /admin/
         this.promises = {};
 
         this.introLinksOriginal = null;
@@ -108,6 +108,13 @@ class Intro extends Component {
         this.t = props.t;
 
         this.getData();
+    }
+
+    componentDidMount() {
+        // read reverse proxy settings
+        this.props.socket.getObject('system.adapter.' + this.props.adminInstance)
+            .then(obj =>
+                this.setState({ reverseProxy: obj?.native?.reverseProxy || [] }));
     }
 
     activateEditMode() {
@@ -194,6 +201,7 @@ class Intro extends Component {
                     color={instance.color}
                     reveal={instance.info}
                     edit={this.state.edit}
+                    reverseProxy={this.state.reverseProxy}
                     offline={hostData && hostData.alive === false}
                     enabled={enabled}
                     disabled={!hostData || typeof hostData !== 'object'}
@@ -300,7 +308,7 @@ class Intro extends Component {
             buttons.push(<Fab
                 key="add"
                 color="primary"
-                className={classes.button + ' ' + classes.addButton}
+                className={`${classes.button} ${classes.addButton}`}
                 onClick={() =>
                     this.setState({
                         editLink: true,
@@ -315,7 +323,7 @@ class Intro extends Component {
                 key="save"
                 color="primary"
                 disabled={!this.state.hasUnsavedChanges}
-                className={classes.button + ' ' + classes.saveButton}
+                className={`${classes.button} ${classes.saveButton}`}
                 onClick={() => this.saveCards()}
             >
                 <CheckIcon />
@@ -324,7 +332,7 @@ class Intro extends Component {
             buttons.push(<Fab
                 key="close"
                 color="primary"
-                className={classes.button + ' ' + classes.closeButton}
+                className={`${classes.button} ${classes.closeButton}`}
                 onClick={() => this.deactivateEditMode()}
             >
                 <CloseIcon />
@@ -405,6 +413,27 @@ class Intro extends Component {
             });
     }
 
+    applyReverseProxy(webReverseProxyPath, instances, instance) {
+        webReverseProxyPath && webReverseProxyPath.paths.forEach(item => {
+            if (item.instance === instance.id) {
+                instance.link = item.path;
+            } else if (item.instance.startsWith('web.')) {
+                // if this is a web instance, check if it is the same as the current instance
+                const _obj = instances.find(o => o._id === 'system.adapter.' + item.instance);
+                if (_obj?.native?.port && (instance.link || instance.url).includes(':' + _obj.native.port)) {
+                    // replace
+                    const regExp = new RegExp(`^.*:${_obj.native.port}/`);
+                    if (instance.link) {
+                        instance.link = instance.link.replace(regExp, item.path);
+                    } else if (instance.url) {
+                        instance.url = instance.url.replace(regExp, item.path);
+                    }
+                    console.log(instance.link || instance.url);
+                }
+            }
+        });
+    }
+
     getInstances(update, hosts, systemConfig) {
         hosts = hosts || this.state.hosts;
 
@@ -475,7 +504,7 @@ class Intro extends Component {
                             instance.name        = (common.titleLang ? common.titleLang[this.props.lang] || common.titleLang.en : common.title) + (linkName === '_default' ? '' : ' ' + linkName);
                             instance.color       = link.color || '';
                             instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
-                            instance.image       = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
+                            instance.image       = common.icon ? `adapter/${common.name}/${common.icon}` : 'img/no-image.png';
 
                             /*let protocol = this.props.protocol;
                             let port     = this.props.port;
@@ -494,9 +523,16 @@ class Intro extends Component {
                                 hosts,
                             }) || [];
 
+                            let webReverseProxyPath;
+                            if (this.state.reverseProxy && this.state.reverseProxy.length) {
+                                webReverseProxyPath = this.state.reverseProxy.find(item => item.globalPath === this.currentProxyPath);
+                            }
                             if (_urls.length === 1) {
                                 instance.link = _urls[0].url;
                                 instance.port = _urls[0].port;
+
+                                this.applyReverseProxy(webReverseProxyPath, instances, instance);
+
                                 // if link already exists => ignore
                                 const lll = introInstances.find(item => item.link === instance.link);
                                 if (!lll) {
@@ -507,13 +543,15 @@ class Intro extends Component {
                             } else if (_urls.length > 1) {
                                 _urls.forEach(url => {
                                     const lll = introInstances.find(item => item.link === url.url);
+                                    this.applyReverseProxy(webReverseProxyPath, instances, url);
 
                                     if (!lll) {
                                         introInstances.push({...instance, link: url.url, port: url.port});
                                     } else {
                                         console.log(`Double links: "${instance.id}" and "${lll.id}"`);
                                     }
-                                })
+
+                                });
                             }
                         });
                     }
@@ -647,19 +685,18 @@ class Intro extends Component {
 
         return [
             <ul style={{ textTransform: 'none'}}>
-                {
-                    hostData && typeof hostData === 'object' && Object.keys(hostData)
-                        .filter(id => !id.startsWith('_'))
-                        .map(value => <li key={value}>
-                            {hostData && typeof hostData === 'object' ?
-                                <span>
-                                    <span className={classes.bold}>{this.t(value)}: </span>
-                                    {(formatInfo[value] ? formatInfo[value](hostData[value], this.t) : hostData[value] || '--')}
-                                </span>
-                                :
-                                <Skeleton />
-                            }
-                        </li>)
+                {hostData && typeof hostData === 'object' && Object.keys(hostData)
+                    .filter(id => !id.startsWith('_'))
+                    .map(value => <li key={value}>
+                        {hostData && typeof hostData === 'object' ?
+                            <span>
+                                <span className={classes.bold}>{this.t(value)}: </span>
+                                {(formatInfo[value] ? formatInfo[value](hostData[value], this.t) : hostData[value] || '--')}
+                            </span>
+                            :
+                            <Skeleton />
+                        }
+                    </li>)
                 }
             </ul>,
             hostData && typeof hostData === 'object' && Object.keys(hostData).reduce((acom, item) => acom + `${this.t(item)}:${(formatInfo[item] ? formatInfo[item](hostData[item], this.t) : hostData[item] || '--')}\n`)
@@ -670,12 +707,7 @@ class Intro extends Component {
         let hosts;
         let systemConfig;
 
-        return this.props.socket.getCurrentInstance()
-            .catch(e => 'admin.0')
-            .then(adminInstance => {
-                this.adminInstance = adminInstance;
-                return this.props.socket.getSystemConfig(update);
-            })
+        return this.props.socket.getSystemConfig(update)
             .then(_systemConfig => {
                 systemConfig = _systemConfig;
                 return this.props.socket.getCompactHosts(update);

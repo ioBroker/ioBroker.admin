@@ -176,7 +176,7 @@ class ConfigTable extends ConfigGeneric {
     itemTable(attrItem, data, idx) {
         const { value, systemConfig } = this.state;
         const { schema } = this.props;
-        const schemaForAttribute = schema.items.find(el => el.attr === attrItem);
+        const schemaForAttribute = schema.items && schema.items.find(el => el.attr === attrItem);
 
         if (!schemaForAttribute) {
             return null;
@@ -265,7 +265,7 @@ class ConfigTable extends ConfigGeneric {
         const { order, orderBy } = this.state;
         return <TableHead>
             <TableRow>
-                {schema.items.map(headCell => (
+                {schema.items && schema.items.map(headCell => (
                     <TableCell
                         style={{ width: typeof headCell.width === 'string' && headCell.width.endsWith('%') ? headCell.width : headCell.width }}
                         key={headCell.attr}
@@ -372,7 +372,7 @@ class ConfigTable extends ConfigGeneric {
         const newValue = JSON.parse(JSON.stringify(this.state.value));
         const visibleValue = JSON.parse(JSON.stringify(this.state.visibleValue));
 
-        const newItem = schema.items.reduce((accumulator, currentValue) => {
+        const newItem = schema.items && schema.items.reduce((accumulator, currentValue) => {
             let defaultValue;
             if (currentValue.defaultFunc) {
                 if (this.props.custom) {
@@ -471,11 +471,11 @@ class ConfigTable extends ConfigGeneric {
                                 hover
                                 key={idx}
                             >
-                                {schema.items.map(headCell => {
-                                    return <TableCell key={headCell.attr + '_' + idx} align="left">
+                                {schema.items && schema.items.map(headCell =>
+                                    <TableCell key={headCell.attr + '_' + idx} align="left">
                                         {this.itemTable(headCell.attr, value[idx], idx)}
-                                    </TableCell>;
-                                })}
+                                    </TableCell>
+                                )}
                                 {!schema.noDelete && <TableCell align="left" className={classes.buttonCell}>
                                     {!doAnyFilterSet && !this.state.orderBy ? (i ? <Tooltip title={I18n.t('ra_Move up')}>
                                         <IconButton size="small" onClick={() => this.onMoveUp(idx)}>

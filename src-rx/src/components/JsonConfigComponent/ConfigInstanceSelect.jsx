@@ -41,6 +41,16 @@ class ConfigInstanceSelect extends ConfigGeneric {
                     label: `${instance.common.name} [${instance._id.replace(/^system\.adapter\./, '')}]`
                 }));
 
+                selectOptions.sort((a, b) => {
+                    if (a.value > b.value) {
+                        return 1;
+                    } else if (a.value < b.value) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                });
+
                 selectOptions.unshift({ label: I18n.t(ConfigGeneric.NONE_LABEL), value: ConfigGeneric.NONE_VALUE });
                 if (this.props.schema.all) {
                     selectOptions.unshift({ label: I18n.t('sch_all'), value: '*' });
@@ -104,7 +114,7 @@ class ConfigInstanceSelect extends ConfigGeneric {
         const item = this.state.selectOptions?.find(item => item.value === this.state.value);
 
         return <FormControl className={this.props.classes.fullWidth} key={this.props.attr} variant="standard">
-            <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel>
+            {this.props.schema.label ? <InputLabel shrink>{this.getText(this.props.schema.label)}</InputLabel> : null }
             <Select
                 variant="standard"
                 error={!!error}
