@@ -486,8 +486,8 @@ class Hosts extends Component {
             renderCard: this.state.viewMode ? <HostCard
                 systemConfig={this.props.systemConfig}
                 key={_id}
-                setEditDialog={() => this.setState({editDialog: { index: idx, dialogName: name }})}
-                setBaseSettingsDialog={() => this.setBaseSettingsDialog({ index: idx, dialogName: name })}
+                setEditDialog={() => this.setState({ editDialog: { index: idx, dialogName: name } })}
+                setBaseSettingsDialog={() =>  this.setState({ baseSettingsDialog: { index: idx, dialogName: name }})}
                 hostsWorker={this.props.hostsWorker}
                 expertMode={this.props.expertMode}
                 socket={this.props.socket}
@@ -515,14 +515,8 @@ class Hosts extends Component {
             renderRow: !this.state.viewMode ? <HostRow
                 systemConfig={this.props.systemConfig}
                 key={_id}
-                setEditDialog={() => this.setState({editDialog: {
-                    index: idx,
-                    dialogName: name
-                }})}
-                setBaseSettingsDialog={() =>  this.setState({baseSettingsDialog: {
-                    index: idx,
-                    dialogName: name
-                }})}
+                setEditDialog={() => this.setState({ editDialog: { index: idx, dialogName: name } })}
+                setBaseSettingsDialog={() =>  this.setState({ baseSettingsDialog: { index: idx, dialogName: name }})}
                 hostsWorker={this.props.hostsWorker}
                 expertMode={this.props.expertMode}
                 socket={this.props.socket}

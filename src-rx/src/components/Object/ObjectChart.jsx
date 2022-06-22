@@ -639,11 +639,11 @@ class ObjectChart extends Component {
                     formatter: (value, index) => {
                         const date = new Date(value);
                         if (this.chart.withSeconds) {
-                            return padding2(date.getHours()) + ':' + padding2(date.getMinutes()) + ':' + padding2(date.getSeconds());
+                            return `${padding2(date.getHours())}:${padding2(date.getMinutes())}:${padding2(date.getSeconds())}`;
                         } else if (this.chart.withTime) {
-                            return padding2(date.getHours()) + ':' + padding2(date.getMinutes()) + '\n' + padding2(date.getDate()) + '.' + padding2(date.getMonth() + 1);
+                            return `${padding2(date.getHours())}:${padding2(date.getMinutes())}\n${padding2(date.getDate())}.${padding2(date.getMonth() + 1)}`;
                         } else {
-                            return padding2(date.getDate()) + '.' + padding2(date.getMonth() + 1) + '\n' + date.getFullYear();
+                            return `${padding2(date.getDate())}.${padding2(date.getMonth() + 1)}\n${date.getFullYear()}`;
                         }
                     }
                 }

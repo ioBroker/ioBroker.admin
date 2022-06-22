@@ -426,7 +426,6 @@ const HostRow = ({
                 refWarning.current.removeAttribute('title');
                 refWarning.current.classList.remove('warning');
             }
-            toggleClassName(refWarning.current, classes.newValue);
         }
     };
 
