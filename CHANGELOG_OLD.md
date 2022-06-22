@@ -1,5 +1,11 @@
 ## 5.3.7 (2022-04-10)
 * (bluefox) Changed the charts rendering
+## 6.0.4 (2022-06-13)
+* (bluefox) implemented the resize of columns in some tables
+
+## 5.3.7 (2022-04-10)
+* (bluefox) Changed the charts rendering
+
 ## 6.0.3 (2022-06-10)
 * (bluefox) Many GUI fixes done
 

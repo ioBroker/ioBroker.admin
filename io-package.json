@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.0.8",
+    "version": "6.1.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.1.0": {
+        "en": "allowed to use admin behind reverse proxy",
+        "de": "erlaubt admin hinter reverse proxy zu verwenden",
+        "ru": "разрешено использовать админ за обратным прокси",
+        "pt": "permitido usar o admin por trás do proxy reverso",
+        "nl": "_",
+        "fr": "permis d'utiliser administrateur derrière proxy inverse",
+        "it": "permesso di utilizzare admin dietro proxy inverso",
+        "es": "permitido utilizar administración detrás del proxy inverso",
+        "pl": "pozwoliło to na użycie adminu za odwrotną proxy",
+        "zh-cn": "允许使用逆向转化剂的旗帜"
+      },
       "6.0.8": {
         "en": "Added multiple choice by `selectSendTo`\nAdded warning if some javascript not saved\nSome GUI fixes done",
         "de": "Mehrfachauswahl hinzugefügt durch selectSendTo\nWarnung hinzugefügt, wenn einige Javascript nicht gespeichert\nEinige GUI behoben",
@@ -79,18 +91,6 @@
         "zh-cn": "某些表格中的栏目转化"
       },
       "6.0.3": {
-        "en": "Many GUI fixes done",
-        "de": "Viele GUI Korrekturen erledigt",
-        "ru": "Многие исправления GUI сделаны",
-        "pt": "Muitas correções GUI feitas",
-        "nl": "Veel GUI reparaties gedaan",
-        "fr": "Beaucoup de corrections GUI faites",
-        "it": "Molte correzioni di GUI effettuate",
-        "es": "Muchas correcciones GUI hechas",
-        "pl": "Wiele rozwiązań GUI",
-        "zh-cn": "许多古伊克人做的文章"
-      },
-      "6.0.2": {
         "en": "Many GUI fixes done",
         "de": "Viele GUI Korrekturen erledigt",
         "ru": "Многие исправления GUI сделаны",

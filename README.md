@@ -108,7 +108,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.1.0 (2022-06-22)
 * (bluefox) allowed to use admin behind reverse proxy
 
 ### 6.0.8 (2022-06-21)
@@ -126,9 +126,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (bluefox) Added file selector for JSON-Config
 * (bluefox) Added the experimental synchronize function (in expertMode)
 * (bluefox) Many GUI fixes done
-
-### 6.0.4 (2022-06-13)
-* (bluefox) implemented the resize of columns in some tables
 
 ## License
 The MIT License (MIT)
