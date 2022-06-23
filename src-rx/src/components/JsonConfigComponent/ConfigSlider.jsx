@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 
-import { Box, TextField, Typography, Slider } from '@mui/material';
+import { Box, Typography, Slider } from '@mui/material';
 
 import ConfigGeneric from './ConfigGeneric';
 

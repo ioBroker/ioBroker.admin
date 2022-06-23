@@ -1,3 +1,9 @@
+/**
+ * Copyright 2022, bluefox <dogafox@gmail.com>
+ *
+ * MIT License
+ *
+ **/
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles} from '@mui/styles';

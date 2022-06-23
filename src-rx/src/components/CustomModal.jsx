@@ -11,7 +11,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import LanguageIcon from '@mui/icons-material/Language';
 
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
-import I18n from "@iobroker/adapter-react-v5/i18n";
+import I18n from '@iobroker/adapter-react-v5/i18n';
 
 const styles = theme => ({
     modalDialog: {

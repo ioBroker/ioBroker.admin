@@ -321,10 +321,15 @@ class Instances extends Component {
         return newState;
     }
 
-    getInstances = async data => {
+    getInstances = async () => {
         const start = Date.now();
         let instances = [];
         let instancesWorker = await this.props.instancesWorker.getInstances();
+
+        if (!instancesWorker) {
+            window.alert('Cannot read instances!');
+            return;
+        }
 
         instances = Object.values(instancesWorker);
 

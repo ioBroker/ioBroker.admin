@@ -241,7 +241,7 @@ class Hosts extends Component {
 
     componentWillUnmount() {
         this.props.hostsWorker.unregisterHandler(this.updateHosts);
-        this.props.hostsWorker.unregisterHandler(this.updateHostsAlive);
+        this.props.hostsWorker.unregisterAliveHandler(this.updateHostsAlive);
     }
 
     getHostsData = (hosts, _alive) => {

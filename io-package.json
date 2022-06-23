@@ -227,7 +227,10 @@
     "loginHideLogo": false,
     "loginMotto": "",
     "language": "",
-    "reverseProxy": []
+    "reverseProxy": [],
+    "loadingBackgroundColor": "",
+    "loadingHideLogo": false,
+    "loadingBackgroundImage": ""
   },
   "objects": [],
   "instanceObjects": [

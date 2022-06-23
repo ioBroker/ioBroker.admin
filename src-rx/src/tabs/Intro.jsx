@@ -96,6 +96,8 @@ class Intro extends Component {
             openSnackBar: false,
             hasUnsavedChanges: false,
             reverseProxy: null,
+            alive: {},
+            hostsData: {}
         };
 
         this.currentProxyPath = window.location.pathname; // e.g. /admin/
@@ -105,16 +107,80 @@ class Intro extends Component {
         this.deactivatedOriginal = null;
 
         this.t = props.t;
-
-        this.getData();
     }
 
     componentDidMount() {
-        // read reverse proxy settings
-        this.props.socket.getObject('system.adapter.' + this.props.adminInstance)
-            .then(obj =>
-                this.setState({ reverseProxy: obj?.native?.reverseProxy || [] }));
+        this.getData()
+            .then(() => {
+                this.props.instancesWorker.registerHandler(this.getDataDelayed);
+                this.props.hostsWorker.registerHandler(this.updateHosts);
+                this.props.hostsWorker.registerAliveHandler(this.updateHostsAlive);
+                // read reverse proxy settings
+                this.props.socket.getObject('system.adapter.' + this.props.adminInstance)
+                    .then(obj =>
+                        this.setState({ reverseProxy: obj?.native?.reverseProxy || [] }));
+            });
     }
+
+    componentWillUnmount() {
+        this.getDataTimeout && clearTimeout(this.getDataTimeout);
+
+        this.props.instancesWorker.unregisterHandler(this.getDataDelayed);
+        this.props.hostsWorker.unregisterHandler(this.updateHosts);
+        this.props.hostsWorker.unregisterAliveHandler(this.updateHostsAlive);
+    }
+
+    updateHostsAlive = events => {
+        let alive = JSON.parse(JSON.stringify(this.state.alive));
+        let hostsId = [];
+
+        // if some host deleted
+        if (events.find(event => event.type === 'delete')) {
+            // get all information anew
+            return this.getDataDelayed();
+        } else {
+            // update alive status
+            events.forEach(event => {
+                if ((!!alive[event.id]) !== (!!event.alive)) {
+                    alive[event.id] = event.alive;
+                    hostsId.push(event.id);
+                }
+            });
+        }
+
+        if (hostsId.length) {
+            const hostsData = JSON.parse(JSON.stringify(this.state.hostsData));
+
+            Promise.all(hostsId.map(id => this.getHostData(id, alive[id])))
+                .then(results => {
+                    results.forEach(res => hostsData[res.id] = res.data);
+                    this.setState({ alive, hostsData });
+                });
+        }
+    };
+
+    updateHosts = (events, obj) => {
+        if (!Array.isArray(events)) {
+            events = [{ id: events, obj, type: obj ? 'changed' : 'delete' }];
+        }
+        let hostsId = [];
+
+        // if host deleted
+        if (events.find(event => !event.obj)) {
+            return this.getDataDelayed();
+        } else {
+            hostsId = events.map(event => event.id);
+        }
+        if (hostsId.length) {
+            const hostsData = JSON.parse(JSON.stringify(this.state.hostsData));
+
+            Promise.all(hostsId.map(id => this.getHostData(id)))
+                .then(results => {
+                    results.forEach(res => hostsData[res.id] = res.data);
+                    this.setState({ hostsData });
+                });
+        }
+    };
 
     activateEditMode() {
         let systemConfig;
@@ -379,36 +445,55 @@ class Intro extends Component {
             });
     }
 
+    getHostData(hostId, isAlive) {
+        return new Promise((resolve, reject) => {
+            if (isAlive !== undefined) {
+                return resolve({ val: isAlive });
+            } else {
+                return this.props.socket.getState(hostId + '.alive')
+                    .then(state => resolve(state))
+                    .catch(e => reject(e));
+            }
+        })
+            .then(alive => {
+                if (alive && alive.val) {
+                    return this.props.socket.getHostInfo(hostId, false, 10000);
+                } else {
+                    return { alive: false };
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                return error;
+            })
+            .then(data => {
+                if (data && typeof data === 'object' && data.alive !== false) {
+                    data.alive = true;
+                }
+
+                return this.props.socket.getForeignStates(hostId + '.versions.*')
+                    .then(states => {
+                        Object.keys(states).forEach(id =>
+                            data['_' + id.split('.').pop()] = states[id].val);
+                        return data;
+                    });
+            })
+            .then(data =>
+                ({ id: hostId, data }));
+    }
+
     getHostsData(hosts) {
-        const promises = hosts.map(obj =>
-            this.props.socket.getState(obj._id + '.alive')
-                .then(alive => {
-                    if (alive && alive.val) {
-                        return this.props.socket.getHostInfo(obj._id, false, 10000);
-                    } else {
-                        return { alive: false };
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    return error;
-                })
-                .then(data => {
-                    return this.props.socket.getForeignStates(obj._id + '.versions.*')
-                        .then(states => {
-                            Object.keys(states).forEach(id =>
-                                data['_' + id.split('.').pop()] = states[id].val);
-                            return data;
-                        });
-                })
-                .then(data =>
-                    ({ id: obj._id, data })));
+        const promises = hosts.map(obj => this.getHostData(obj._id));
 
         return Promise.all(promises)
             .then(results => {
                 const hostsData = {};
-                results.forEach(res => hostsData[res.id] = res.data);
-                return hostsData;
+                const alive = {};
+                results.forEach(res => {
+                    hostsData[res.id] = res.data;
+                    alive[res.id] = res.data.alive;
+                });
+                return { hostsData, alive };
             });
     }
 
@@ -702,6 +787,14 @@ class Intro extends Component {
         ];
     }
 
+    getDataDelayed = () => {
+        this.getDataTimeout && clearTimeout(this.getDataTimeout);
+        this.getDataTimeout = setTimeout(() => {
+            this.getDataTimeout = null;
+            this.getData(true);
+        }, 300);
+    }
+
     getData(update) {
         let hosts;
         let systemConfig;
@@ -725,8 +818,10 @@ class Intro extends Component {
                 // hosts data could last a long time, so show some results to user now and then get the info about hosts
                 return this.getHostsData(hosts);
             })
-            .then(hostsData =>
-                this.setState({ hostsData }))
+            .then(newState =>
+                new Promise(resolve =>
+                    this.setState(newState, () =>
+                        resolve())))
             .catch(error => window.alert('Cannot get data: ' + error));
     }
 
@@ -780,6 +875,8 @@ Intro.propTypes = {
     t: PropTypes.func,
     lang: PropTypes.string,
     toggleActivation: PropTypes.func,
+    instancesWorker: PropTypes.object,
+    hostsWorker: PropTypes.object,
 
     hostname: PropTypes.string,
     protocol: PropTypes.string,

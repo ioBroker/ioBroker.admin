@@ -466,8 +466,8 @@ class ConfigFileSelector extends ConfigGeneric {
                         <div className={this.props.classes.uploadCenterTextAndIcon}>
                             <UploadIcon className={this.props.classes.uploadCenterIcon} />
                             <div className={this.props.classes.uploadCenterText}>{
-                                this.state.uploadFile === 'dragging' ? I18n.t('Drop file here') :
-                                    I18n.t('Place your files here or click here to open the browse dialog')}</div>
+                                this.state.uploadFile === 'dragging' ? I18n.t('ra_Drop file here') :
+                                    I18n.t('ra_Place your files here or click here to open the browse dialog')}</div>
                         </div>
                     </div> : null}
                     {element}

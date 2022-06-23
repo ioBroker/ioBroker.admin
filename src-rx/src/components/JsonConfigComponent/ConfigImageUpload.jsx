@@ -6,8 +6,10 @@ import InputLabel from '@mui/material/InputLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 
+import UploadImage from '@iobroker/adapter-react-v5/Components/UploadImage';
+import I18n from '@iobroker/adapter-react-v5/i18n';
+
 import ConfigGeneric from './ConfigGeneric';
-import UploadImage from '../UploadImage';
 
 const styles = theme => ({
     fullWidth: {
@@ -18,7 +20,7 @@ const styles = theme => ({
     }
 });
 
-class ConfigCertificateSelect extends ConfigGeneric {
+class ConfigImageUpload extends ConfigGeneric {
     constructor(props) {
         super(props);
         this.imageRef = React.createRef();
@@ -47,7 +49,7 @@ class ConfigCertificateSelect extends ConfigGeneric {
         }
         let url = `files/${this.props.adapterName}.${this.props.instance}/${this.props.attr}?t=${this.index}`;
         if (window.location.port === '3000') {
-            url = window.location.protocol + '//' + window.location.hostname + ':8081/' + url;
+            url = `${window.location.protocol}//${window.location.hostname}:8081/${url}`;
         }
 
         return url;
@@ -96,7 +98,7 @@ class ConfigCertificateSelect extends ConfigGeneric {
                             });
                     }
                 }}
-                t={this.props.t}
+                t={I18n.t}
             />
             {this.props.schema.help ? <FormHelperText>{this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}</FormHelperText> : null}
             {this.props.schema.base64 ?  null : <img
@@ -110,7 +112,7 @@ class ConfigCertificateSelect extends ConfigGeneric {
     }
 }
 
-ConfigCertificateSelect.propTypes = {
+ConfigImageUpload.propTypes = {
     socket: PropTypes.object.isRequired,
     themeType: PropTypes.string,
     themeName: PropTypes.string,
@@ -122,4 +124,4 @@ ConfigCertificateSelect.propTypes = {
     onChange: PropTypes.func,
 };
 
-export default withStyles(styles)(ConfigCertificateSelect);
+export default withStyles(styles)(ConfigImageUpload);

@@ -315,7 +315,7 @@ class App extends Router {
         this.expireInSec = null;
         this.expireInSecInterval = null;
         this.expireText = I18n.t('Session expire in %s', '%s');
-        this.adminGuiConfig = { admin: {menu: {}, settings: {}, adapters: {}, login: {}} };
+        this.adminGuiConfig = { admin: {menu: {}, settings: {}, adapters: {}, login: {} } };
 
         if (!query.login) {
             let drawerState = (window._localStorage || window.localStorage).getItem('App.drawerState');
@@ -1355,6 +1355,8 @@ class App extends Router {
                         hostname={this.state.hostname}
                         port={this.state.port}
                         adminInstance={this.adminInstance}
+                        instancesWorker={this.instancesWorker}
+                        hostsWorker={this.hostsWorker}
 
                         showAlert={(message, type) => this.showAlert(message, type)}
                         socket={this.socket}
@@ -1743,9 +1745,11 @@ class App extends Router {
         }
 
         if (this.state.login) {
-            return <StyledEngineProvider injectFirst><ThemeProvider theme={this.state.theme}>
-                <Login t={I18n.t} />
-            </ThemeProvider></StyledEngineProvider>;
+            return <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={this.state.theme}>
+                    <Login t={I18n.t} />
+                </ThemeProvider>
+            </StyledEngineProvider>;
         } else
         if (!this.state.ready) {
             return <StyledEngineProvider injectFirst><ThemeProvider theme={this.state.theme}>

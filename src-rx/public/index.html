@@ -28,7 +28,7 @@
             };
 
             setTimeout(() => {
-                script.src = window.location.port === '3000' ? window.location.protocol + '//' + window.location.hostname + ':8081/lib/js/socket.io.js' : '%PUBLIC_URL%/lib/js/socket.io.js';
+                script.src = window.location.port === '3000' ? `${window.location.protocol}//${window.location.hostname}:8081/lib/js/socket.io.js` : '%PUBLIC_URL%/lib/js/socket.io.js';
             }, 1000);
 
             document.head.appendChild(script);
@@ -43,17 +43,17 @@
             window.loginLogo      = '@@loginLogo@@';
             window.loginLink      = '@@loginLink@@';
             window.loginTitle     = '@@loginTitle@@';
-            window.vendorPrefix   = '@@vendorPrefix@@';
             window.loginBackgroundColor = '@@loginBackgroundColor@@';
-            window.disableDataReporting = '@@disableDataReporting@@';
             window.loginBackgroundImage = '@@loginBackgroundImage@@';
+
+            window.vendorPrefix   = '@@vendorPrefix@@';
+            window.disableDataReporting = '@@disableDataReporting@@';
+
+            window.loadingBackgroundColor = '@@loadingBackgroundColor@@';
+            window.loadingBackgroundImage = '@@loadingBackgroundImage@@';
+            window.loadingHideLogo = '@@loadingHideLogo@@';
         </script>
         <style>
-            body {
-                background-color: @@loginBackgroundColor@@;
-                background-image: url('@@loginBackgroundImage@@');
-                background-size: cover;
-            }
             .root {
                 background-color: rgba(255, 255, 255, 0.87);
                 border-radius: 10px;
@@ -74,6 +74,28 @@
             }
         </style>
         <script>
+            if (window.location.search.includes('?login')) {
+                // apply image and background color to the whole page as fast as possible
+                const body = document.getElement('body');
+                if (window.loginBackgroundColor !== '@@loginBackgroundColor@@' && window.loginBackgroundColor) {
+                    body.style.backgroundColor = window.loginBackgroundColor;
+                }
+                if (window.loginBackgroundImage !== '@@loginBackgroundImage@@' && window.loginBackgroundImage) {
+                    body.style.backgroundImage = 'url(' + window.loginBackgroundImage + ')';
+                    body.style.backgroundSize  = 'cover';
+                }
+            } else {
+                // apply image and background color to the whole page as fast as possible
+                const body = document.getElement('body');
+                if (window.loadingBackgroundColor !== '@@loadingBackgroundColor@@' && window.loadingBackgroundColor) {
+                    body.style.backgroundColor = window.loadingBackgroundColor;
+                }
+                if (window.loadingBackgroundImage !== '@@loadingBackgroundImage@@' && window.loadingBackgroundImage) {
+                    body.style.backgroundImage = 'url(' + window.loadingBackgroundImage + ')';
+                    body.style.backgroundSize  = 'cover';
+                }
+            }
+
             window.addEventListener('load', function load(event) {
                 window.removeEventListener('load', load, false);
 
