@@ -108,7 +108,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.1.2 (2022-06-23)
 * (bluefox) Added settings to define loading screen
 
 ### 6.1.1 (2022-06-22)
@@ -126,9 +126,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.0.7 (2022-06-20)
 * (bluefox) Many GUI fixes done
-
-### 6.0.6 (2022-06-19)
-* (bluefox) Added file selector with select dialog
 
 ## License
 The MIT License (MIT)
