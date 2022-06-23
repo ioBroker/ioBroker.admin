@@ -87,7 +87,7 @@ class Login extends Component {
         this.formRef = React.createRef();
 
         // apply image
-        const body = window.document.getElement('body');
+        const body = window.document.body;
         body.style.backgroundColor = window.loginBackgroundColor;
         body.style.backgroundImage = window.loginBackgroundImage;
         body.style.backgroundSize  = 'cover';

@@ -74,9 +74,9 @@
             }
         </style>
         <script>
+            const body = document.body;
             if (window.location.search.includes('?login')) {
                 // apply image and background color to the whole page as fast as possible
-                const body = document.getElement('body');
                 if (window.loginBackgroundColor !== '@@loginBackgroundColor@@' && window.loginBackgroundColor) {
                     body.style.backgroundColor = window.loginBackgroundColor;
                 }
@@ -86,7 +86,6 @@
                 }
             } else {
                 // apply image and background color to the whole page as fast as possible
-                const body = document.getElement('body');
                 if (window.loadingBackgroundColor !== '@@loadingBackgroundColor@@' && window.loadingBackgroundColor) {
                     body.style.backgroundColor = window.loadingBackgroundColor;
                 }
