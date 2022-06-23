@@ -1,5 +1,8 @@
 ## 5.3.7 (2022-04-10)
 * (bluefox) Changed the charts rendering
+## 5.3.7 (2022-04-10)
+* (bluefox) Changed the charts rendering
+
 ## 6.0.6 (2022-06-19)
 * (bluefox) Added file selector with select dialog
 

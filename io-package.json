@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.1.2",
+    "version": "6.1.3",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.1.3": {
+        "en": "Added settings to define loading screen",
+        "de": "Einstellungen hinzugefügt, um das Ladebild zu definieren",
+        "ru": "Добавлены настройки для определения экрана загрузки",
+        "pt": "Configurações adicionadas para definir a tela de carregamento",
+        "nl": "Aangepaste setting om ladingen te definiëren",
+        "fr": "Paramètres ajoutés pour définir l'écran de chargement",
+        "it": "Aggiunte impostazioni per definire lo schermo di caricamento",
+        "es": "Ajustes adicionales para definir la pantalla de carga",
+        "pl": "Dodrukowanie ekranu",
+        "zh-cn": "界定装载检查的附加环境"
+      },
       "6.1.1": {
         "en": "Corrected russian translations\nPreparations for iobroker cloud",
         "de": "Korrigierte russische Übersetzungen\nPräparate für Jobrokerwolke",

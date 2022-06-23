@@ -108,7 +108,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.1.3 (2022-06-23)
 * (bluefox) Added settings to define loading screen
 
 ### 6.1.1 (2022-06-22)
