@@ -46,7 +46,7 @@ function ucFirst(str) {
 }
 
 const styles = theme => ({
-    /*root: {
+    root: {
         flexShrink: 0,
         transition: theme.transitions.create('width', {
             easing: theme.transitions.easing.easeOut,
@@ -54,7 +54,7 @@ const styles = theme => ({
         }),
         display: 'flex',
         flexDirection: 'column',
-    },*/
+    },
     rootFullWidth: {
         width: DRAWER_FULL_WIDTH,
     },
@@ -617,7 +617,7 @@ class Drawer extends Component {
 
         if (this.isSwipeable()) {
             return <SwipeableDrawer
-                className="iob-drawer" //classes.root}
+                className={classes.root}
                 anchor="left"
                 open={this.props.state !== STATES.closed}
                 onClose={() => this.props.onStateChange(STATES.closed)}
@@ -649,7 +649,7 @@ class Drawer extends Component {
             </SwipeableDrawer>;
         } else {
             return <MaterialDrawer
-                className={clsx('iob-drawer' || classes.root, this.props.state !== STATES.opened ? classes.rootCompactWidth : classes.rootFullWidth)}
+                className={clsx(classes.root, this.props.state !== STATES.opened ? classes.rootCompactWidth : classes.rootFullWidth)}
                 variant="persistent"
                 anchor="left"
                 open={this.props.state !== STATES.closed}
