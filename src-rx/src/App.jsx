@@ -403,10 +403,12 @@ class App extends Router {
 
                 cmd: null,
                 cmdDialog: false,
-                wizard: true,
+                commandHost: null,
                 commandError: false,
-                performed: false,
                 commandRunning: false,
+
+                wizard: true,
+                performed: false,
 
                 discoveryAlive: false,
 
@@ -1301,7 +1303,7 @@ class App extends Router {
                         t={I18n.t}
                         lang={I18n.getLanguage()}
                         expertMode={this.state.expertMode}
-                        executeCommand={(cmd, cb) => this.executeCommand(cmd, cb)}
+                        executeCommand={(cmd, host, cb) => this.executeCommand(cmd, host, cb)}
                         commandRunning={this.state.commandRunning}
                         onSetCommandRunning={commandRunning => this.setState({ commandRunning })}
                         menuOpened={opened}
@@ -1339,7 +1341,7 @@ class App extends Router {
                         isFloatComma={this.state.systemConfig.common.isFloatComma}
                         width={this.props.width}
                         configStored={value => this.allStored(value)}
-                        executeCommand={(cmd, cb) => this.executeCommand(cmd, cb)}
+                        executeCommand={(cmd, host, cb) => this.executeCommand(cmd, host, cb)}
                         inBackgroundCommand={this.state.commandError || this.state.performed}
 
                         onRegisterIframeRef={ref => this.refConfigIframe = ref}
@@ -1453,7 +1455,7 @@ class App extends Router {
                         t={I18n.t}
                         navigate={Router.doNavigate}
                         currentHost={this.state.currentHost}
-                        executeCommand={(cmd, cb) => this.executeCommand(cmd, cb)}
+                        executeCommand={(cmd, host, cb) => this.executeCommand(cmd, host, cb)}
                         systemConfig={this.state.systemConfig}
                         showAdaptersWarning={this.showAdaptersWarning}
                     />
@@ -1620,14 +1622,20 @@ class App extends Router {
         });
     }
 
-    executeCommand(cmd, callback = false) {
+    executeCommand(cmd, host, callback) {
+        if (typeof host === 'boolean') {
+            callback = host;
+            host = null;
+        }
+
         if (this.state.performed || this.state.commandError) {
             return this.setState({
                 cmd: null,
                 cmdDialog: false,
                 commandError: false,
                 performed: false,
-                callback: false
+                callback: false,
+                commandHost: null,
             }, () => {
                 this.setState({
                     cmd,
@@ -1640,7 +1648,8 @@ class App extends Router {
             this.setState({
                 cmd,
                 cmdDialog: true,
-                callback
+                callback,
+                commandHost: host
             });
         }
     }
@@ -1651,7 +1660,8 @@ class App extends Router {
             cmdDialog: false,
             commandError: false,
             performed: false,
-            callback: false
+            callback: false,
+            commandHost: null,
         }, () => cb && cb());
     }
 
@@ -1686,7 +1696,7 @@ class App extends Router {
                 inBackground={this.state.commandError || this.state.performed}
                 commandError={this.state.commandError}
                 socket={this.socket}
-                currentHost={this.state.currentHost}
+                currentHost={this.state.commandHost || this.state.currentHost}
                 ready={this.state.ready}
                 t={I18n.t}
             /> : null;

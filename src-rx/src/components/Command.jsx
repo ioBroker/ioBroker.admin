@@ -90,7 +90,7 @@ class Command extends Component {
 
         this.setState({ activeCmdId });
 
-        this.props.socket.cmdExec(this.props.currentHost, this.props.cmd, activeCmdId)
+        this.props.socket.cmdExec(this.props.host, this.props.cmd, activeCmdId)
             .catch(error =>
                 console.log(error));
     }
@@ -294,7 +294,7 @@ Command.defaultProps = {
 
 Command.propTypes = {
     noSpacing: PropTypes.bool,
-    currentHost: PropTypes.string.isRequired,
+    host: PropTypes.string.isRequired,
     callback: PropTypes.bool,
     socket: PropTypes.object.isRequired,
     onFinished: PropTypes.func.isRequired,

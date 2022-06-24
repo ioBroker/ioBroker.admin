@@ -73,7 +73,7 @@ class CommandDialog extends Component {
                     noSpacing={true}
                     key="command"
                     ready={this.props.ready}
-                    currentHost={this.props.currentHost}
+                    host={this.props.host}
                     socket={this.props.socket}
                     t={this.props.t}
                     inBackground={this.props.inBackground}
@@ -140,7 +140,7 @@ CommandDialog.propTypes = {
     inBackground: PropTypes.bool,
     commandError: PropTypes.bool,
     socket: PropTypes.object.isRequired,
-    currentHost: PropTypes.string.isRequired,
+    host: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(CommandDialog);

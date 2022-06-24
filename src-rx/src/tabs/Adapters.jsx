@@ -802,7 +802,7 @@ class Adapters extends Component {
                 }
             }
             const host = (this.state.addInstanceHost || this.state.currentHost).replace(/^system\.host\./, '');
-            this.props.executeCommand(`${customUrl ? 'url' : 'add'} ${adapter} ${instance ? instance + ' ' : ''}--host ${host} ${debug ? '--debug' : ''}`, true);
+            this.props.executeCommand(`${customUrl ? 'url' : 'add'} ${adapter} ${instance ? instance + ' ' : ''}--host ${host} ${debug ? '--debug' : ''}`, host, true);
         }
     }
 
