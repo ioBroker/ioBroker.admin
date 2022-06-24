@@ -71,7 +71,7 @@ function EnumEditDialog(props) {
     const getShortId = _id => _id.split('.').pop();
 
     const name2Id = name =>
-        name.replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_');
+        name.replace(Utils.FORBIDDEN_CHARS, '_').replace(/\s/g, '_').replace(/\./g, '_').replace(/,/g, '_').replace(/__/g, '_').replace(/__/g, '_');
 
     const getText = text =>
         text && typeof text === 'object' ? text[props.lang] || text.en : text || '';
