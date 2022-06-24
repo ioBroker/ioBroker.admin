@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.1.4",
+    "version": "6.1.5",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.1.5": {
+        "en": "Some GUI fixes done",
+        "de": "Einige GUI behoben",
+        "ru": "Некоторые исправления GUI сделаны",
+        "pt": "Algumas correções GUI feitas",
+        "nl": "Sommige GUI reparaties gedaan",
+        "fr": "Quelques corrections de GUI effectuées",
+        "it": "Alcune correzioni di GUI fatte",
+        "es": "Alguna GUI arreglado",
+        "pl": "Niektóre rozwiązania GUI",
+        "zh-cn": "一些古伊特公司做的"
+      },
       "6.1.4": {
         "en": "Added settings to define loading screen",
         "de": "Einstellungen hinzugefügt, um das Ladebild zu definieren",
@@ -89,18 +101,6 @@
         "es": "Seleccionedor de archivo añadido con diálogo selecto",
         "pl": "Wybrane pliki z wybranym dialogiem",
         "zh-cn": "增聘档案员"
-      },
-      "6.0.5": {
-        "en": "Added file selector for JSON-Config\nAdded the experimental synchronize function (in expertMode)\nMany GUI fixes done",
-        "de": "Dateiauswahl für JSON-Config hinzugefügt\nHinzugefügt die experimentelle Synchronisierungsfunktion (in expertMode)\nViele GUI Korrekturen erledigt",
-        "ru": "Добавлена подборка файлов для JSON-Config\nДобавлена экспериментальная функция синхронизации (в expertMode)\nМногие исправления GUI сделаны",
-        "pt": "Seletor de arquivo adicionado para JSON-Config\nAdicionado a função de sincronização experimental (em expertMode)\nMuitas correções GUI feitas",
-        "nl": "Voeg een dossierselectie toe voor JSON-Config\nVoegde de experimentele synchroniserende functie toe\nVeel GUI reparaties gedaan",
-        "fr": "Ajout du sélecteur de fichier pour JSON-Config\nAjout de la fonction de synchronisation expérimentale (en expertMode)\nBeaucoup de corrections GUI faites",
-        "it": "Selettore di file aggiunto per JSON-Config\nAggiunta la funzione di sincronizzazione sperimentale (in espertoMode)\nMolte correzioni di GUI effettuate",
-        "es": "Seleccionedor de archivo añadido para JSON-Config\nAñadido la función de sincronización experimental (en expertMode)\nMuchas correcciones GUI hechas",
-        "pl": "Wybrane pliki JSON-Config\nFunkcja synchronizacji eksperymentalnej (ang. in expertMode)\nWiele rozwiązań GUI",
-        "zh-cn": "增聘档案公司代理\n增加试验同步功能(专家Mode)\n许多古伊克人做的文章"
       }
     },
     "desc": {
