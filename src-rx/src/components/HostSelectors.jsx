@@ -251,7 +251,7 @@ class HostSelectors extends Component {
                 anchorEl={this.state.anchorEl}
                 keepMounted
                 open={!!this.state.anchorEl}
-                onClose={() => this.setState({anchorEl: null})}
+                onClose={() => this.setState({ anchorEl: null })}
             >
                 {this.state.hosts.map(({ _id, common: { name, icon, color } }, idx) =>
                     <MenuItem
@@ -264,7 +264,7 @@ class HostSelectors extends Component {
                             if (this.props.currentHost !== this.state.hosts[idx]._id) {
                                 this.props.setCurrentHost(this.state.hosts[idx].common.name, this.state.hosts[idx]._id);
                             }
-                            this.setState({anchorEl: null});
+                            this.setState({ anchorEl: null });
                         }}>
                         <div style={{
                             display: 'flex',

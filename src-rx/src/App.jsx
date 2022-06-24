@@ -1915,6 +1915,9 @@ class App extends Router {
                                     </Tooltip> : null }
                                     <IsVisible name="admin.appBar.hostSelector" config={this.adminGuiConfig}>
                                         <HostSelectors
+                                            tooltip={this.state.currentTab.tab !== 'tab-instances' &&
+                                                this.state.currentTab.tab !== 'tab-adapters' &&
+                                                this.state.currentTab.tab !== 'tab-logs' ? I18n.t('You can change host on Instances, Adapters or Logs pages') : undefined}
                                             expertMode={this.state.expertMode}
                                             socket={this.socket}
                                             hostsWorker={this.hostsWorker}

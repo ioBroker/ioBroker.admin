@@ -1499,5 +1499,6 @@
   "Disable/Enable translation": "Vertaling in-/uitschakelen",
   "Close on finished": "Sluiten bij voltooid",
   "Stop on error": "Stop bij fout",
-  "Debug info": "Foutopsporingsinformatie"
+  "Debug info": "Foutopsporingsinformatie",
+  "You can change host on Instances, Adapters or Logs pages": "U kunt de host wijzigen op de pagina's Instances, Adapters of Logs"
 }

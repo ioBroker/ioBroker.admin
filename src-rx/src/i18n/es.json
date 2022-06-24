@@ -1499,5 +1499,6 @@
   "Disable/Enable translation": "Deshabilitar/Habilitar traducción",
   "Close on finished": "Cerrar al terminar",
   "Stop on error": "Detener por error",
-  "Debug info": "Información de depuración"
+  "Debug info": "Información de depuración",
+  "You can change host on Instances, Adapters or Logs pages": "Puede cambiar el host en las páginas Instancias, Adaptadores o Registros"
 }

@@ -478,27 +478,27 @@ class Markdown extends Component {
         this.mounted = true;
         this.state.text && this.parseText(this.state.text);
         this.props.socket && this.props.socket.getRepository()
-            .then(repo => this.setState({adapterNews: repo[this.props.adapter]?.news}))
+            .then(repo => this.setState({ adapterNews: repo[this.props.adapter]?.news }))
     }
 
     UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
         if (this.props.path !== nextProps.path) {
-            this.mounted && this.setState({notFound: false, parts :[]});
+            this.mounted && this.setState({ notFound: false, parts: [] });
             this.load(nextProps.path);
         } else if (this.props.text !== nextProps.text) {
-            this.setState({text: nextProps.text});
+            this.setState({ text: nextProps.text });
             if (!nextProps.text) {
                 if (this.props.path !== nextProps.path) {
-                    this.mounted && this.setState({notFound: false, parts :[]});
+                    this.mounted && this.setState({ notFound: false, parts: [] });
                     this.load(nextProps.path);
                 }
             } else {
-                this.mounted && this.setState({text: nextProps.text}, () =>
+                this.mounted && this.setState({ text: nextProps.text }, () =>
                     this.parseText());
             }
         } else
         if (this.props.language !== nextProps.language) {
-            this.mounted && this.setState({notFound: false, parts :[]});
+            this.mounted && this.setState({ notFound: false, parts: [] });
             this.load(null, nextProps.language);
         }
     }

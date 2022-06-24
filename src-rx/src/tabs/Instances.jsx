@@ -341,12 +341,9 @@ class Instances extends Component {
         let mem = host ? host.val : 0;
         for (let i = 0; i < instances.length; i++) {
             let inst = instances[i];
-            if (!inst || !inst.common) {
-                return
+            if (!inst || !inst.common || inst.common.host !== this.props.currentHostName) {
+                continue;
             }
-            /*if (inst.common.host !== this.props.currentHostName) {
-                return
-            }*/
             if (inst.common.enabled && inst.common.mode === 'daemon') {
                 memRssId = inst._id + '.memRss';
                 this.states[memRssId] = this.states[memRssId] || (await this.props.socket.getState(memRssId));
@@ -1255,7 +1252,7 @@ class Instances extends Component {
             (this.state.hostData['Disk free'] ? `${this.t('Disk free')}: ${Math.round(this.state.hostData['Disk free'] / (this.state.hostData['Disk size'] / 100))}%, ` : '') +
             `${this.t('Total RAM usage')}: ${this.state.mem} Mb / ` +
             `${this.t('Free')}: ${this.state.percent}% = ${this.state.memFree} Mb ` +
-            `[${this.t('Host')}: ${this.props.currentHostName} - ${this.state.processes} ${this.t('processes')}]` : null;
+            `[${this.t('Host')}: ${this.props.currentHostName} - ${this.state.processes} ${this.state.processes === 1 ? this.t('process'):  this.t('processes')}]` : null;
 
         return <TabContainer>
             <TabHeader>

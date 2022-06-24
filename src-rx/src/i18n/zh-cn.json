@@ -1499,5 +1499,6 @@
   "Disable/Enable translation": "禁用/启用翻译",
   "Close on finished": "完成后关闭",
   "Stop on error": "错误停止",
-  "Debug info": "调试信息"
+  "Debug info": "调试信息",
+  "You can change host on Instances, Adapters or Logs pages": "您可以在实例、适配器或日志页面上更改主机"
 }

@@ -2,7 +2,7 @@
   " for %s": " для %s",
   "%s added to %s": "%s добавлен в %s",
   "%s object(s) processed": "Обработано объектов: %s",
-  "%s processes": "%s процессов",
+  "%s processes": "%s процесс(ов)",
   "%s was imported": "%s был импортирован",
   "(without prefix)": "(без префикса)",
   "1 %d days ago": "%d день назад",
@@ -1089,7 +1089,7 @@
   "Default Repository": "Репозиторий по умолчанию",
   "Total RAM usage": "Общее использование ОЗУ",
   "Free": "Свободно",
-  "processes": "процессов",
+  "processes": "процесс(ов)",
   "Show / hide List": "Показать / скрыть список",
   "Reload": "Перезагрузить",
   "RAM limit": "Ограничение RAM",
@@ -1499,5 +1499,6 @@
   "Disable/Enable translation": "Отключить/включить перевод",
   "Close on finished": "Закрыть по завершении",
   "Stop on error": "Остановиться на ошибке",
-  "Debug info": "Информация об отладке"
+  "Debug info": "Информация об отладке",
+  "You can change host on Instances, Adapters or Logs pages": "Вы можете изменить хост на страницах Настройки, Драйверы или Журнал."
 }
