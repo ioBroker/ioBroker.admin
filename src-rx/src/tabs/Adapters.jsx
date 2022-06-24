@@ -478,8 +478,8 @@ class Adapters extends Component {
                 adapters = _adapters;
                 return this.props.socket.getInstalled(currentHost, update, this.state.readTimeoutMs)
                     .catch(e => {
-                        window.alert('Cannot getInstalled: ' + e);
-                        e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
+                        window.alert(`Cannot getInstalled from "${currentHost}" (timeout ${this.state.readTimeoutMs}ms): ${e}`);
+                        e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
                         return null;
                     });
             })
@@ -488,7 +488,7 @@ class Adapters extends Component {
                 return this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: (bigUpdate || indicateUpdate) }, update, this.state.readTimeoutMs)
                     .catch(e => {
                         window.alert('Cannot getRepository: ' + e);
-                        e.toString().includes('timeout') && this.setState({showSlowConnectionWarning: true});
+                        e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
                         return null;
                     })
             })
@@ -699,26 +699,27 @@ class Adapters extends Component {
 
         this.cache.listOfVisibleAdapter = null;
 
-        this.setState({
-            repository,
-            installed,
-            ratings,
-            filterTiles,
-            categoriesTiles,
-            installedList,
-            instances,
-            updateList,
-            viewMode,
-            list,
-            lastUpdate: Date.now(),
-            hostData,
-            hostOs,
-            nodeJsVersion,
-            categories: categoriesSorted,
-            categoriesExpanded,
-            init: true,
-            update: false
-        });
+        return new Promise(resolve =>
+            this.setState({
+                repository,
+                installed,
+                ratings,
+                filterTiles,
+                categoriesTiles,
+                installedList,
+                instances,
+                updateList,
+                viewMode,
+                list,
+                lastUpdate: Date.now(),
+                hostData,
+                hostOs,
+                nodeJsVersion,
+                categories: categoriesSorted,
+                categoriesExpanded,
+                init: true,
+                update: false
+            }, () => resolve()));
     }
 
     getAdaptersInfo = (update, indicateUpdate) => {
@@ -777,7 +778,7 @@ class Adapters extends Component {
                     this.uuid = ratings?.uuid || null;
                     // BF (2022.02.09)  TODO: Remove all "rebuild" stuff later (when js-controller 4.x will be mainstream)
                     // this.rebuildSupported = false;// rebuild || false; Rebuild is no more supported from js-controller 4.0
-                    this.calculateInfo(instances, ratings, hostData);
+                    return this.calculateInfo(instances, ratings, hostData);
                 })
                 .catch(error => window.alert('Cannot get adapters info: ' + error));
         } else {
@@ -1244,7 +1245,14 @@ class Adapters extends Component {
         if (this.inputRef.current) {
             this.inputRef.current.value = '';
         }
-        this.setState({filteredList: null, updateList: false, filterConnectionType: false, installedList: false, search: ''}, () => this.filterAdapters());
+        this.setState({
+            filteredList: null,
+            updateList: false,
+            filterConnectionType: false,
+            installedList: false,
+            search: ''
+        }, () =>
+            this.filterAdapters());
     }
 
     getRows(descHidden) {
@@ -1732,7 +1740,8 @@ class Adapters extends Component {
                                     onClick={() => {
                                         (window._localStorage || window.localStorage).removeItem('Adapter.search');
                                         this.inputRef.current.value = '';
-                                        this.setState({ search: '' }, () => this.filterAdapters());
+                                        this.setState({ search: '' }, () =>
+                                            this.filterAdapters());
                                     }}
                                 >
                                     <CloseIcon />

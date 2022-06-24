@@ -324,7 +324,6 @@ class IntroCard extends Component {
     }
 
     renderContent() {
-
         const { classes } = this.props;
 
         if (!this.props.camera || this.props.camera === 'text') {

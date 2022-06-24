@@ -70,6 +70,10 @@ const styles = theme => ({
     nodeUpdate: {
         opacity: 0.6,
     },
+    instanceNumber: {
+        opacity: 0.7,
+        fontSize: 16,
+    }
 });
 
 const formatInfo = {
@@ -246,7 +250,7 @@ class Intro extends Component {
 
     getInstancesCards() {
         return this.state.instances.map(instance => {
-            const enabled = !this.state.deactivated.includes(instance.id + '_' + instance.linkName);
+            const enabled = !this.state.deactivated.includes(`${instance.id}_${instance.linkName}`);
             if (enabled || this.state.edit) {
                 let linkText = instance.link ? instance.link.replace(/^https?:\/\//, '') : '';
                 const pos = linkText.indexOf('/');
@@ -254,13 +258,19 @@ class Intro extends Component {
                     linkText = linkText.substring(0, pos);
                 }
 
+                let isShowInstance = isFinite(instance.id.split('.').pop());
+                if (isShowInstance) {
+                    // try to find second instance of same type
+                    isShowInstance = !!this.state.instances.find(inst => inst.id !== instance.id && instance.id.split('.')[0] === inst.id.split('.')[0]);
+                }
+
                 const hostData = this.state.hostsData ? this.state.hostsData[instance.id] : null;
 
                 return <IntroCard
-                    key={instance.id + '_' + instance.link}
+                    key={`${instance.id}_${instance.link}`}
                     socket={this.props.socket}
                     image={instance.image}
-                    title={instance.name}
+                    title={<><span>{instance.name}</span>{isShowInstance ? <span className={this.props.classes.instanceNumber}>.{instance.id.split('.').pop()}</span> : null}</>}
                     action={{ link: instance.link, text: linkText }}
                     t={this.props.t}
                     color={instance.color}
@@ -646,6 +656,16 @@ class Intro extends Component {
                         instance.linkName = instance.link.replace('https://', '').replace('http://', '').replace(/^[^_]+:/, '');
                     }
                 });
+
+                introInstances.sort((a, b) => {
+                    if (a.id > b.id) {
+                        return 1;
+                    }
+                    if (a.id < b.id) {
+                        return -1;
+                    }
+                    return 0;
+                })
 
                 Object.keys(hosts).forEach(key => {
                     const obj = hosts[key];
