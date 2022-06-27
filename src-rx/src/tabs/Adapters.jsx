@@ -251,7 +251,7 @@ class Adapters extends Component {
             addInstanceError: false,
             addInstanceAdapter: '',
             addInstanceId: 'auto',
-            addInstanceHost: '',
+            addInstanceHostName: '',
             adapterDeletionDialog: false,
             adapterDeletionAdapter: null,
             update: false,
@@ -791,7 +791,7 @@ class Adapters extends Component {
             this.setState({
                 addInstanceDialog: true,
                 addInstanceAdapter: adapter,
-                addInstanceHost: this.state.currentHost.replace(/^system\.host\./, '')
+                addInstanceHostName: this.state.currentHost.replace(/^system\.host\./, '')
             });
         } else {
             if (instance && !customUrl) {
@@ -801,7 +801,7 @@ class Adapters extends Component {
                     return this.setState({ addInstanceError: true });
                 }
             }
-            const host = (this.state.addInstanceHost || this.state.currentHost).replace(/^system\.host\./, '');
+            const host = (this.state.addInstanceHostName || this.state.currentHost).replace(/^system\.host\./, '');
             this.props.executeCommand(`${customUrl ? 'url' : 'add'} ${adapter} ${instance ? instance + ' ' : ''}--host ${host} ${debug ? '--debug' : ''}`, host, true);
         }
     }
@@ -856,12 +856,12 @@ class Adapters extends Component {
         });
     }
 
-    handleHostsChange(event) {
-        this.setState({addInstanceHost: event.target.value.replace(/^system\.host\./, '')});
+    handleHostsChange(hostName) {
+        this.setState({ addInstanceHostName: hostName.replace(/^system\.host\./, '') });
     }
 
     handleInstanceChange(event) {
-        this.setState({addInstanceId: event.target.value});
+        this.setState({ addInstanceId: event.target.value });
     }
 
     static updateAvailable(oldVersion, newVersion) {
@@ -1839,13 +1839,13 @@ class Adapters extends Component {
                     instancesWorker={this.props.instancesWorker}
                     repository={this.state.repository}
                     dependencies={this.getDependencies(this.state.addInstanceAdapter)}
-                    currentHost={this.state.addInstanceHost}
+                    currentHost={'system.host.' + this.state.addInstanceHostName}
                     currentInstance={this.state.addInstanceId}
                     t={this.t}
                     onClick={async () =>
                         await this.addInstance(this.state.addInstanceAdapter, this.state.addInstanceId)}
                     onClose={() => this.closeAddInstanceDialog()}
-                    onHostChange={event => this.handleHostsChange(event)}
+                    onHostChange={hostName => this.handleHostsChange(hostName)}
                     onInstanceChange={event => this.handleInstanceChange(event)}
                 />
             }

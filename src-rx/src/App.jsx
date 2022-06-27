@@ -1617,9 +1617,8 @@ class App extends Router {
         this.setState({
             dataNotStoredDialog: false,
             allStored: true
-        }, () => {
-            this.handleNavigation(this.state.dataNotStoredTab);
-        });
+        }, () =>
+            this.handleNavigation(this.state.dataNotStoredTab));
     }
 
     executeCommand(cmd, host, callback) {
@@ -1636,20 +1635,20 @@ class App extends Router {
                 performed: false,
                 callback: false,
                 commandHost: null,
-            }, () => {
+            }, () =>
                 this.setState({
                     cmd,
                     cmdDialog: true,
-                    callback
-                });
-            });
+                    callback,
+                }));
         } else {
             console.log('Execute: ' + cmd);
+
             this.setState({
                 cmd,
                 cmdDialog: true,
                 callback,
-                commandHost: host
+                commandHost: host || this.state.currentHost,
             });
         }
     }
@@ -1696,7 +1695,7 @@ class App extends Router {
                 inBackground={this.state.commandError || this.state.performed}
                 commandError={this.state.commandError}
                 socket={this.socket}
-                currentHost={this.state.commandHost || this.state.currentHost}
+                host={this.state.commandHost || this.state.currentHost}
                 ready={this.state.ready}
                 t={I18n.t}
             /> : null;

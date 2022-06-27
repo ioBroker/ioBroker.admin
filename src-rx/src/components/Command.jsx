@@ -90,7 +90,7 @@ class Command extends Component {
 
         this.setState({ activeCmdId });
 
-        this.props.socket.cmdExec(this.props.host, this.props.cmd, activeCmdId)
+        this.props.socket.cmdExec(this.props.host.startsWith('system.host.') ? this.props.host : ('system.host.' + this.props.host), this.props.cmd, activeCmdId)
             .catch(error =>
                 console.log(error));
     }

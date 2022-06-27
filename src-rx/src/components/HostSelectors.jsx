@@ -220,7 +220,7 @@ class HostSelectors extends Component {
             <Tooltip title={this.props.tooltip || I18n.t('Change current host')} classes={{ popper: this.props.classes.tooltip }}>
                 <span>
                     <Button
-                        color="grey"
+                        //color="grey"
                         className={this.props.classes.button}
                         style={{
                             background: selectedHostObj?.common?.color || 'none',

@@ -117,7 +117,8 @@ class AddInstanceDialog extends Component {
                         socket={this.props.socket}
                         hostsWorker={this.props.hostsWorker}
                         currentHost={this.props.currentHost}
-                        setCurrentHost={(hostName, host) => this.props.onHostChange(host._id.replace(/^system\.host\./, ''))}
+                        setCurrentHost={(hostName, hostId) =>
+                            this.props.onHostChange(hostId.replace(/^system\.host\./, ''))}
                     />
                     <FormControl variant="standard" className={classes.formControl}>
                         <InputLabel id="instance-label">{this.t('Instance')}</InputLabel>
