@@ -616,6 +616,7 @@ class App extends Router {
     componentDidMount() {
         if (!this.state.login) {
             window.addEventListener('hashchange', this.onHashChanged, false);
+
             if (!this.state.currentTab.tab) {
                 this.handleNavigation('tab-intro');
             } else {
@@ -759,6 +760,7 @@ class App extends Router {
 
                                 this.adaptersWorker.registerRepositoryHandler(this.repoChangeHandler);
                                 this.adaptersWorker.registerHandler(this.adaptersChangeHandler);
+                                this.hostsWorker.registerHandler(this.updateHosts);
 
                                 this.subscribeOnHostsStatus();
 
@@ -837,6 +839,7 @@ class App extends Router {
 
         this.adaptersWorker && this.adaptersWorker.unregisterRepositoryHandler(this.repoChangeHandler);
         this.adaptersWorker && this.adaptersWorker.unregisterHandler(this.adaptersChangeHandler);
+        this.hostsWorker && this.hostsWorker.unregisterHandler(this.updateHosts);
 
         this.pingAuth && clearTimeout(this.pingAuth);
         this.pingAuth = null;
@@ -850,6 +853,35 @@ class App extends Router {
             window._sessionStorage = null;
         }
     }
+
+    updateHosts = (hostId, obj) => {
+        const hosts = JSON.parse(JSON.stringify(this.state.hosts));
+
+        if (!Array.isArray(hostId)) {
+            hostId = { id: hostId, obj, type: obj ? 'changed' : 'delete' };
+        }
+
+        Promise.all(hostId.map(async event => {
+            const elementFind = hosts.find(host => host._id === event.id);
+            if (elementFind) {
+                const index = hosts.indexOf(elementFind);
+                if (event.obj) {
+                    // updated
+                    hosts[index] = event.obj;
+                } else {
+                    // deleted
+                    hosts.splice(index, 1);
+                }
+            } else {
+                // new
+                hosts.push(event.obj);
+            }
+        }))
+            .then(() => {
+                const newState = { hosts };
+                this.setState(newState);
+            });
+    };
 
     repoChangeHandler = () => {
         this.readRepoAndInstalledInfo(this.state.currentHost, null, true)
