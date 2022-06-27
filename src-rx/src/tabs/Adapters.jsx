@@ -802,12 +802,12 @@ class Adapters extends Component {
                 }
             }
             const host = (this.state.addInstanceHostName || this.state.currentHost).replace(/^system\.host\./, '');
-            this.props.executeCommand(`${customUrl ? 'url' : 'add'} ${adapter} ${instance ? instance + ' ' : ''}--host ${host} ${debug ? '--debug' : ''}`, host, true);
+            this.props.executeCommand(`${customUrl ? 'url' : 'add'} ${adapter} ${instance ? instance + ' ' : ''}--host ${host} ${debug || this.props.expertMode ? '--debug' : ''}`, host, true);
         }
     }
 
     upload(adapter) {
-        this.props.executeCommand('upload ' + adapter);
+        this.props.executeCommand(`upload ${adapter}${this.props.expertMode ? ' --debug' : ''}`);
     }
 
     /*rebuild(adapter) {
@@ -815,11 +815,11 @@ class Adapters extends Component {
     }*/
 
     delete(adapter, deleteCustom) {
-        this.props.executeCommand(`del ${adapter}${deleteCustom ? ' --custom' : ''}`);
+        this.props.executeCommand(`del ${adapter}${deleteCustom ? ' --custom' : ''}${this.props.expertMode ? ' --debug' : ''}`);
     }
 
     update(adapter, version) {
-        this.props.executeCommand(`upgrade ${adapter}@${version}`);
+        this.props.executeCommand(`upgrade ${adapter}@${version}${this.props.expertMode ? ' --debug' : ''}`);
     }
 
     closeAddInstanceDialog() {

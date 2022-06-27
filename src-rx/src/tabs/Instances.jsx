@@ -812,7 +812,7 @@ class Instances extends Component {
 
     onDeleteInstance = (instance, deleteCustom) => {
         this.setState({ deleting: instance.id }, () =>
-            this.props.executeCommand(`del ${instance.id}${deleteCustom ? ' --custom' : ''}`));
+            this.props.executeCommand(`del ${instance.id}${deleteCustom ? ' --custom' : ''}${this.props.expertMode ? ' --debug' : ''}`));
     }
 
     setCompact = instance =>
