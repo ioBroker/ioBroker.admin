@@ -345,14 +345,12 @@ function toggleClassName(el, name) {
 }
 
 const HostRow = ({
-    //dialogUpgrade,
-    //title,
     _id,
     alive,
     available,
     classes,
     color,
-    currentHost,
+    isCurrentHost,
     description,
     events,
     executeCommandRemove,
@@ -417,7 +415,9 @@ const HostRow = ({
         } else if (name.endsWith('diskWarning')) {
             diskWarningCache = state?.val || 0;
         }
+
         warning = (diskFreeCache / diskSizeCache) * 100 <= diskWarningCache;
+
         if (refWarning.current) {
             if (warning) {
                 refWarning.current.setAttribute('title', t('Warning: Free space on disk is low'));
@@ -531,7 +531,7 @@ const HostRow = ({
     const [logLevelValue, setLogLevelValue] = useState(null);
     const [logLevelValueSelect, setLogLevelValueSelect] = useState(null);
 
-    const upgradeAvailable = (currentHost || alive) && Adapters.updateAvailable(installed, available);
+    const upgradeAvailable = true || (isCurrentHost || alive) && Adapters.updateAvailable(installed, available);
 
     const onCopy = () => {
         let text = [];
@@ -577,9 +577,8 @@ const HostRow = ({
                 variant="standard"
                 value={logLevelValueSelect}
                 fullWidth
-                onChange={el => {
-                    setLogLevelValueSelect(el.target.value)
-                }}
+                onChange={el =>
+                    setLogLevelValueSelect(el.target.value)}
             >
                 {arrayLogLevel.map(el => <MenuItem key={el} value={el}>
                     {t(el)}
@@ -599,7 +598,7 @@ const HostRow = ({
         onMouseMove={openDialogLogLevel ? null : () => setFocused(true)}
         key={_id} className={clsx(classes.root, hidden ? classes.hidden : '')}>
         {customModal}
-        <div className={clsx(classes.wrapperFlex, !alive && classes.cursorNoDrop)} onClick={openDialogLogLevel ? null : () => setCollapse((bool) => !bool)}>
+        <div className={clsx(classes.wrapperFlex, !alive && classes.cursorNoDrop)} onClick={openDialogLogLevel ? null : () => setCollapse(bool => !bool)}>
             <div className={classes.wrapperColor}>
                 <div className={clsx(classes.onOff, alive ? classes.green : classes.red)} />
                 {alive && <div className={classes.dotLine} />}
@@ -640,15 +639,20 @@ const HostRow = ({
                     <div className={clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)} >
                         {upgradeAvailable ?
                             <Tooltip title={t('Update')}>
-                                <div onClick={(e) => {
-                                    e.stopPropagation();
-                                    openHostUpdateDialog()
-                                }} className={classes.buttonUpdate}><IconButton
-                                    className={classes.buttonUpdateIcon}
-                                    size="small"
+                                <div
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        openHostUpdateDialog()
+                                    }}
+                                    className={classes.buttonUpdate}
                                 >
+                                    <IconButton
+                                        className={classes.buttonUpdateIcon}
+                                        size="small"
+                                    >
                                         <RefreshIcon />
-                                    </IconButton>{available}</div>
+                                    </IconButton>{available}
+                                </div>
                             </Tooltip> :
                             available
                         }</div>
@@ -662,7 +666,7 @@ const HostRow = ({
                 <div className={classes.marginTop10}>
                     <Typography component={'span'} className={classes.enableButton}>
                         <IconButton size="large"
-                            onClick={(e) => {
+                            onClick={e => {
                                 e.stopPropagation();
                                 setEditDialog(true);
                             }}
@@ -673,7 +677,7 @@ const HostRow = ({
                         {expertMode &&
                             <Tooltip title={t('Host Base Settings')}>
                                 <div>
-                                    <IconButton size="large" disabled={!alive} onClick={(e) => {
+                                    <IconButton size="large" disabled={!alive} onClick={e => {
                                         setBaseSettingsDialog();
                                         e.stopPropagation();
                                     }}>
@@ -684,7 +688,7 @@ const HostRow = ({
                         }
                         <Tooltip title={t('Restart host')}>
                             <div>
-                                <IconButton size="large" disabled={!alive} onClick={(e) => {
+                                <IconButton size="large" disabled={!alive} onClick={e => {
                                     e.stopPropagation();
                                     socket.restartController(_id)
                                         .catch(e => window.alert(`Cannot restart: ${e}`));
@@ -695,7 +699,7 @@ const HostRow = ({
                         </Tooltip>
                         {expertMode && logLevelValue ?
                             <Tooltip title={`${t('loglevel')} ${logLevelValue}`}>
-                                <IconButton size="large" onClick={(event) => {
+                                <IconButton size="large" onClick={event => {
                                     event.stopPropagation();
                                     setOpenDialogLogLevel(true);
                                 }}>
@@ -707,10 +711,15 @@ const HostRow = ({
                         }
                         <Tooltip title={t('Remove')}>
                             <span>
-                                <IconButton size="large" disabled={alive || currentHost} title={alive || currentHost ? t('You cannot delete host, when it is alive') : ''} onClick={(e) => {
-                                    executeCommandRemove();
-                                    e.stopPropagation();
-                                }}>
+                                <IconButton
+                                    size="large"
+                                    disabled={alive || isCurrentHost}
+                                    title={alive || isCurrentHost ? t('You cannot delete host, when it is alive') : ''}
+                                    onClick={e => {
+                                        executeCommandRemove();
+                                        e.stopPropagation();
+                                    }}
+                                >
                                     <DeleteIcon />
                                 </IconButton>
                             </span>
@@ -724,7 +733,7 @@ const HostRow = ({
                 <CardContent className={classes.cardContentInfo}>
                     {description}
                     <Tooltip title={t('Copy')}>
-                        <IconButton size="large" onClick={() => onCopy()} style={{position: 'absolute', top: 8, right: 8 }}>
+                        <IconButton size="large" onClick={() => onCopy()} style={{ position: 'absolute', top: 8, right: 8 }}>
                             <CopyIcon />
                         </IconButton>
                     </Tooltip>
@@ -732,12 +741,13 @@ const HostRow = ({
                 <div className={classes.footerBlock}>
                 </div>
             </div>}
-    </div>
+    </div>;
 }
 
 HostRow.propTypes = {
     t: PropTypes.func,
     systemConfig: PropTypes.object,
+    isCurrentHost: PropTypes.bool,
 };
 
 export default withStyles(styles)(HostRow);

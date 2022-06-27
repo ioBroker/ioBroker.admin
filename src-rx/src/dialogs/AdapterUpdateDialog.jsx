@@ -407,7 +407,7 @@ class AdapterUpdateDialog extends Component {
                             return <Button
                                 variant="contained"
                                 onClick={() =>
-                                    this.setState({showMessageDialog: false}, () =>
+                                    this.setState({ showMessageDialog: false }, () =>
                                         this.props.onUpdate(version))}
                                 color="primary"
                                 startIcon={<CheckIcon/>}
@@ -419,7 +419,7 @@ class AdapterUpdateDialog extends Component {
                                 className={classes['messageTitle_' + (message.level || 'warn')]}
                                 variant="contained"
                                 onClick={() =>
-                                    this.setState({showMessageDialog: false}, () =>
+                                    this.setState({ showMessageDialog: false }, () =>
                                         this.props.onUpdate(version))}
                                 color="primary"
                                 startIcon={<CheckIcon/>}
@@ -429,7 +429,7 @@ class AdapterUpdateDialog extends Component {
                         } else if (button === 'cancel') {
                             return <Button
                                 variant="contained"
-                                onClick={() => this.setState({showMessageDialog: false})}
+                                onClick={() => this.setState({ showMessageDialog: false })}
                                 startIcon={<CloseIcon />}
                                 color="grey"
                             >
@@ -457,7 +457,7 @@ class AdapterUpdateDialog extends Component {
             {this.renderMessageDialog()}
             <DialogTitle>
                 <Typography component="h2" variant="h6" classes={{ root: classes.typography }}>
-                    {this.t('Update "%s" to v%s', this.props.adapter, version)}
+                    <div style={{ width: 'calc(100% - 60px)'}}>{this.t('Update "%s" to v%s', this.props.adapter, version) }</div>
                     <IconButton size="large" className={classes.closeButton} onClick={this.props.onClose}>
                         <CloseIcon />
                     </IconButton>
@@ -513,7 +513,7 @@ class AdapterUpdateDialog extends Component {
                     disabled={!this.props.rightDependencies || !version || !this.props.adapterObject}
                     onClick={() => {
                         if (this.messages && this.messages.find(message => message.buttons)) {
-                            this.setState({showMessageDialog: true});
+                            this.setState({ showMessageDialog: true });
                         } else {
                             this.props.onUpdate(version);
                         }
@@ -552,4 +552,4 @@ AdapterUpdateDialog.propTypes = {
     t: PropTypes.func.isRequired
 }
 
-export default  withStyles(styles)(AdapterUpdateDialog);
+export default withStyles(styles)(AdapterUpdateDialog);

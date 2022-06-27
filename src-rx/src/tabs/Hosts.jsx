@@ -221,13 +221,17 @@ class Hosts extends Component {
         };
     }
     // cache translations
-    t = (word, arg1) => {
+    t = (word, arg1, arg2) => {
+        if (arg1 !== undefined && arg2 !== undefined && !wordCache[`${word} ${arg1} ${arg2}`]) {
+            wordCache[`${word} ${arg1} ${arg2}`] = this.props.t(word, arg1, arg2);
+        } else
         if (arg1 !== undefined && !wordCache[`${word} ${arg1}`]) {
             wordCache[`${word} ${arg1}`] = this.props.t(word, arg1);
         } else if (!wordCache[word]) {
             wordCache[word] = this.props.t(word);
         }
-        return arg1 !== undefined ? wordCache[`${word} ${arg1}`] : wordCache[word];
+
+        return arg1 !== undefined && arg2 !== undefined ? wordCache[`${word} ${arg1} ${arg2}`] : (arg1 !== undefined ? wordCache[`${word} ${arg1}`] : wordCache[word]);
     };
 
 
@@ -427,8 +431,8 @@ class Hosts extends Component {
         this.setState({ hostUpdateDialog: false, hostUpdate: null}, cb);
     };
 
-    openHostUpdateDialog = (hostName, cb) => {
-        this.setState({ hostUpdateDialog: true, hostUpdate: hostName}, cb);
+    openHostUpdateDialog = (hostUpdate, cb) => {
+        this.setState({ hostUpdateDialog: true, hostUpdate }, cb);
     };
 
     getNews = (value, all = false) => {
@@ -469,9 +473,11 @@ class Hosts extends Component {
                 news={this.getNews()}
                 toggleTranslation={this.props.toggleTranslation}
                 noTranslation={this.props.noTranslation}
-                onUpdate={() =>
+                onUpdate={() => {
+                    const hostUpdate = this.state.hostUpdate;
                     this.closeHostUpdateDialog(() =>
-                        jsControllerDialogFunc(this.props.socket, this.state.hostUpdate, this.props.theme))}
+                        jsControllerDialogFunc(this.props.socket, hostUpdate, this.props.theme))
+                }}
                 onClose={() => this.closeHostUpdateDialog()}
             />;
         }
@@ -487,7 +493,7 @@ class Hosts extends Component {
                 systemConfig={this.props.systemConfig}
                 key={_id}
                 setEditDialog={() => this.setState({ editDialog: { index: idx, dialogName: name } })}
-                setBaseSettingsDialog={() =>  this.setState({ baseSettingsDialog: { index: idx, dialogName: name }})}
+                setBaseSettingsDialog={() => this.setState({ baseSettingsDialog: { index: idx, dialogName: name }})}
                 hostsWorker={this.props.hostsWorker}
                 expertMode={this.props.expertMode}
                 socket={this.props.socket}
@@ -504,8 +510,7 @@ class Hosts extends Component {
                 formatInfo={formatInfo}
                 available={this.state.repository['js-controller']?.version || '-'}
                 executeCommandRemove={() => this.props.executeCommand(`host remove ${name}`)}
-                dialogUpgrade={() => jsControllerDialogFunc(this.props.socket, _id, this.props.theme)}
-                currentHost={this.props.currentHost === _id}
+                isCurrentHost={this.props.currentHost === _id}
                 installed={installedVersion}
                 events={'- / -'}
                 t={this.t}
@@ -516,7 +521,7 @@ class Hosts extends Component {
                 systemConfig={this.props.systemConfig}
                 key={_id}
                 setEditDialog={() => this.setState({ editDialog: { index: idx, dialogName: name } })}
-                setBaseSettingsDialog={() =>  this.setState({ baseSettingsDialog: { index: idx, dialogName: name }})}
+                setBaseSettingsDialog={() => this.setState({ baseSettingsDialog: { index: idx, dialogName: name }})}
                 hostsWorker={this.props.hostsWorker}
                 expertMode={this.props.expertMode}
                 socket={this.props.socket}
@@ -529,8 +534,7 @@ class Hosts extends Component {
                 getLogLevelIcon={getLogLevelIcon}
                 openHostUpdateDialog={() => this.openHostUpdateDialog(name)}
                 executeCommandRemove={() => this.props.executeCommand(`host remove ${name}`)}
-                dialogUpgrade={() => jsControllerDialogFunc(this.props.socket, _id, this.props.theme)}
-                currentHost={this.props.currentHost === _id}
+                isCurrentHost={this.props.currentHost === _id}
                 description={getHostDescriptionAll(_id, this.t, this.props.classes, this.state.hostsData)[1]}
                 hostData={this.state.hostsData[_id]}
                 formatInfo={formatInfo}
@@ -638,6 +642,7 @@ Hosts.propTypes = {
     theme: PropTypes.object,
     noTranslation: PropTypes.bool,
     toggleTranslation: PropTypes.func,
+    currentHost: PropTypes.string,
 };
 
 export default withWidth()(withStyles(styles)(Hosts));

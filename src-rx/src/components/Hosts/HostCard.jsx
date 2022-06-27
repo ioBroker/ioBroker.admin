@@ -364,7 +364,6 @@ function toggleClassName(el, name) {
 
 
 const HostCard = ({
-    //dialogUpgrade,
     _id,
     alive,
     available,
@@ -372,7 +371,7 @@ const HostCard = ({
     color,
     connected,
     connectedToHost,
-    currentHost,
+    isCurrentHost,
     description,
     events,
     executeCommandRemove,
@@ -548,7 +547,7 @@ const HostCard = ({
     const [logLevelValue, setLogLevelValue] = useState(null);
     const [logLevelValueSelect, setLogLevelValueSelect] = useState(null);
 
-    const upgradeAvailable = (currentHost || alive) && Adapters.updateAvailable(installed, available);
+    const upgradeAvailable = (isCurrentHost || alive) && Adapters.updateAvailable(installed, available);
 
     const onCopy = () => {
         let text = [];
@@ -724,7 +723,7 @@ const HostCard = ({
                             </IconButton>
                         </Tooltip>
                     }
-                    {!alive && !currentHost ? <Tooltip title={t('Remove')}>
+                    {!alive && !isCurrentHost ? <Tooltip title={t('Remove')}>
                         <IconButton size="large" onClick={executeCommandRemove}>
                             <DeleteIcon />
                         </IconButton>
@@ -744,6 +743,7 @@ const HostCard = ({
 HostCard.propTypes = {
     t: PropTypes.func,
     systemConfig: PropTypes.object,
+    isCurrentHost: PropTypes.bool,
 };
 
 export default withStyles(styles)(HostCard);

@@ -123,10 +123,10 @@ const JsControllerDialog = ({ socket, hostId, theme }) => {
     const [location, setLocation] = useState('');
     const [os, setOS] = useState('');
 
-    socket.getHostInfoShort(hostId)
+    open && (!location || !os) && socket.getHostInfoShort(hostId)
         .then(data => {
-            data.location && setLocation(data.location);
-            setOS(data.os); // win32, linux, darwin, freebsd, android
+            data.location && data.location !== location && setLocation(data.location);
+            data.os && data.os !== os && setOS(data.os); // win32, linux, darwin, freebsd, android
         })
         .catch(e =>
             window.alert(`Cannot get information about host "${hostId}": ${e}`));
@@ -143,8 +143,8 @@ const JsControllerDialog = ({ socket, hostId, theme }) => {
         }
     };
 
-    const fallbackCopyTextToClipboard = (text) => {
-        const textArea = document.createElement("textarea");
+    const fallbackCopyTextToClipboard = text => {
+        const textArea = document.createElement('textarea');
         textArea.value = text;
         document.body.appendChild(textArea);
         textArea.focus();
@@ -163,22 +163,26 @@ const JsControllerDialog = ({ socket, hostId, theme }) => {
         } catch (e) {
             // ignore
         }
-    }
+    };
+
     const copyTextToClipboard = (text) => {
         if (!navigator.clipboard) {
-            fallbackCopyTextToClipboard(text);
-            return;
+            return fallbackCopyTextToClipboard(text);
         }
-        navigator.clipboard.writeText(text).then(function () {
-            console.log('Async: Copying to clipboard was successful!');
-        }, function (err) {
-            console.error('Async: Could not copy text: ', err);
-        });
+
+        navigator.clipboard.writeText(text)
+            .then(() => console.log('Async: Copying to clipboard was successful!'),
+                    err => console.error('Async: Could not copy text: ', err));
+    };
+
+    if (!open) {
+        return null;
     }
+
     return <ThemeProvider theme={theme}>
         <Dialog
             onClose={onClose}
-            open={open}
+            open={true}
             classes={{ paper: classes.paper }}
         >
             <DialogTitle>{I18n.t('js-controller upgrade instructions')}</DialogTitle>
@@ -192,10 +196,8 @@ const JsControllerDialog = ({ socket, hostId, theme }) => {
                     <div className={classes.standardText}>{I18n.t('Due to the different hardware and platforms under which ioBroker runs, the js-controller has to be updated manually. Further details can be found in the appropriate section.')}</div>
 
                     <h2 className={classes.h2}>{I18n.t('General information for all platforms')}</h2>
-                    <div className={classes.standardText}>{I18n.t('For an update from js-controller 1.x to 2.x please always read the information at')} <a href="https://forum.iobroker.net/topic/26759/js-controller-2-jetzt-f%C3%BCr-alle-im-stable" target="_blank">forum</a>.
-</div>
-                    <div className={classes.standardText}>{I18n.t('Otherwise please update the slaves first with an update of master-slave systems and the master last!')}
-                    </div>
+                    <div className={classes.standardText}>{I18n.t('For an update from js-controller 1.x to 2.x please always read the information at')} <a href="https://forum.iobroker.net/topic/26759/js-controller-2-jetzt-f%C3%BCr-alle-im-stable" target="_blank">forum</a>.</div>
+                    <div className={classes.standardText}>{I18n.t('Otherwise please update the slaves first with an update of master-slave systems and the master last!')}</div>
                     {os !== 'win32' && <><h2 className={classes.h2}>{I18n.t('Linux/macOS (new installer)')}</h2>
                         <div className={classes.standardText}>{I18n.t('This is the recommended option')}</div>
 
@@ -220,13 +222,17 @@ iob start`
                             <div className={classes.standardTextSmall}>iob upgrade self</div>
                             <div className={classes.standardTextSmall}>iob start</div>
                         </pre>
-                            <div className={clsx(classes.standardTextSmall2)}>{I18n.t('or reboot server, then ioBroker should restart and you can be sure that all old processes were finished.')}</div>
-                            <div className={clsx(classes.standardTextSmall2)}>{I18n.t('If the upgrade command displays Access Rights / Permission errors, then please use the install fixer')}</div>
-                            <pre className={classes.pre}>
-                            <IconButton size="small" onClick={() => {
-                                window.alert(I18n.t('Copied'))
-                                copyTextToClipboard(`curl -sL https://iobroker.net/fix.sh | bash -`);
-                            }} className={classes.copyButton}>
+                        <div className={clsx(classes.standardTextSmall2)}>{I18n.t('or reboot server, then ioBroker should restart and you can be sure that all old processes were finished.')}</div>
+                        <div className={clsx(classes.standardTextSmall2)}>{I18n.t('If the upgrade command displays Access Rights / Permission errors, then please use the install fixer')}</div>
+                        <pre className={classes.pre}>
+                            <IconButton
+                                size="small"
+                                onClick={() => {
+                                    window.alert(I18n.t('Copied'))
+                                    copyTextToClipboard(`curl -sL https://iobroker.net/fix.sh | bash -`);
+                                }}
+                                className={classes.copyButton}
+                            >
                                 <IconCopy />
                             </IconButton>
                             <div className={classes.standardTextSmall}>curl -sL https://iobroker.net/fix.sh | bash -</div>
@@ -239,7 +245,7 @@ iob start`
                         <div className={classes.standardText}>{I18n.t('Please execute the following commands in an SSH shell (console):')}</div>
                         <pre className={classes.pre}>
                             <IconButton size="small" onClick={() => {
-                                window.alert(I18n.t('Copied'))
+                                window.alert(I18n.t('Copied'));
                                 copyTextToClipboard(
                                     `cd ${location || '/opt/iobroker'}
 iob backup
@@ -271,18 +277,23 @@ iob start
                         <h2 className={classes.h2}>{I18n.t('Windows (manually installed)')}</h2>
                         <div className={classes.standardText}>{I18n.t('A manual installation is done with administrator rights. Please start a cmd.exe command line window as an administrator (right-click on cmd.exe and execute as administrator) and execute the following commands:')}</div>
                         <pre className={classes.pre}>
-                            <IconButton size="small" onClick={() => {
-                                window.alert(I18n.t('Copied'))
-                                copyTextToClipboard(
-                                    `cd ${(location || 'C:\\iobroker').replace(/\//g, '\\')}
+                            <IconButton
+                                size="small"
+                                onClick={() => {
+                                    window.alert(I18n.t('Copied'));
+                                    copyTextToClipboard(
+                                        `cd ${(location || 'C:\\iobroker').replace(/\//g, '\\')}
 iob backup
 iob stop
 iob status
 iob update
 iob upgrade self
 `
-                                );
-                            }} className={classes.copyButton}>
+                                    );
+                                }}
+
+                                className={classes.copyButton}
+                            >
                                 <IconCopy />
                             </IconButton>
                             <div className={classes.standardTextSmall}>cd {(location || 'C:\\iobroker').replace(/\//g, '\\')} {!location ? I18n.t('(or where ioBroker was installed)') : null}</div>
@@ -296,13 +307,13 @@ iob upgrade self
                     </>}
                     <Accordion style={{paddingTop:14}}>
                         <AccordionSummary
-                        className={classes.accordionSummary}
+                            className={classes.accordionSummary}
                             expandIcon={<ExpandMoreIcon />}
                         >
                             <h2 className={classes.h22}>{I18n.t('Emergency Linux / macOS / Windows')}</h2>
                         </AccordionSummary>
                         <AccordionDetails
-                        className={classes.accordionDetails}>
+                            className={classes.accordionDetails}>
                             <div className={classes.standardText}>{I18n.t('(manual reinstallation, if somehow nothing works after the update)')}</div>
                             <div className={classes.standardText}>{I18n.t('On Windows first please call in the start menu under "ioBroker" the command line of the relevant ioBroker instance. The correct directory is then set automatically. On Linux or macOS please go to the ioBroker directory.')}</div>
 
@@ -312,13 +323,17 @@ iob upgrade self
 
                             <div className={classes.standardTextSmall2}>{I18n.t('For systems created with the new Linux installer:')}</div>
                             <pre className={classes.pre}>
-                                <IconButton size="small" onClick={() => {
-                                    window.alert(I18n.t('Copied'))
-                                    copyTextToClipboard(
-                                        `cd ${os === 'win32' ? (location || 'C:\\iobroker').replace(/\//g, '\\') : (location || '/opt/iobroker')}
+                                <IconButton
+                                    size="small"
+                                    onClick={() => {
+                                        window.alert(I18n.t('Copied'));
+                                        copyTextToClipboard(
+                                            `cd ${os === 'win32' ? (location || 'C:\\iobroker').replace(/\//g, '\\') : (location || '/opt/iobroker')}
 sudo -u iobroker -H npm install iobroker.js-controller`
-                                    );
-                                }} className={classes.copyButton}>
+                                        );
+                                    }}
+                                    className={classes.copyButton}
+                                >
                                     <IconCopy />
                                 </IconButton>
                                 <div className={classes.standardTextSmall}>cd {os === 'win32' ? (location || 'C:\\iobroker').replace(/\//g, '\\') : (location || '/opt/iobroker')}</div>
@@ -328,7 +343,6 @@ sudo -u iobroker -H npm install iobroker.js-controller`
                             <div className={classes.standardText}>{I18n.t('This way is only necessary in very few cases and please consult the forum beforehand!')}</div>
                         </AccordionDetails>
                     </Accordion>
-
                 </Card>
             </DialogContent>
             <DialogActions>
