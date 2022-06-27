@@ -7,7 +7,7 @@
         "@babel/plugin-proposal-decorators": "^7.17.12",
         "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
         "@fnando/sparkline": "^0.3.10",
-        "@iobroker/adapter-react-v5": "^3.1.14",
+        "@iobroker/adapter-react-v5": "^3.1.15",
         "@iobroker/admin-component-easy-access": "^0.3.2",
         "@iobroker/socket-client": "^1.1.8",
         "@mui/icons-material": "^5.8.0",

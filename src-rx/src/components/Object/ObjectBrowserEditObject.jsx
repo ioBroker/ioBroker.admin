@@ -411,7 +411,8 @@ class ObjectBrowserEditObject extends Component {
     buttonAddKey(nameKey, cb) {
         const { classes } = this.props;
         return <div
-            className={classes.marginBlock}>
+            className={classes.marginBlock}
+        >
             <Button
                 className={classes.buttonAdd}
                 variant="contained"
@@ -422,7 +423,7 @@ class ObjectBrowserEditObject extends Component {
     }
 
     buttonRemoveKey(nameKey, cb) {
-        const {t, classes} = this.props;
+        const { t, classes } = this.props;
         return <Tooltip title={t('Remove attribute %s', nameKey)}>
             <div className={classes.close} onClick={cb}/>
         </Tooltip>;
@@ -442,7 +443,7 @@ class ObjectBrowserEditObject extends Component {
                 'mixed'
             ];
             const disabled = false;
-            const {classes, t, roleArray, obj} = this.props;
+            const { classes, t, roleArray, obj } = this.props;
             const checkState = obj.type === 'state';
             const checkRole = obj.type === 'channel' || obj.type === 'device' || checkState;
 
@@ -455,7 +456,7 @@ class ObjectBrowserEditObject extends Component {
                             label={t('Name')}
                             className={clsx(classes.marginBlock, classes.textField)}
                             fullWidth
-                            value={Utils.getObjectNameFromObj(json, I18n.getLanguage())}
+                            value={Utils.getObjectNameFromObj(json, I18n.getLanguage(), null, false, true)}
                             onChange={el => this.setCommonItem(json, 'name', el.target.value)}
                         /> :
                         this.buttonAddKey('name', () => this.setCommonItem(json, 'name', ''))
