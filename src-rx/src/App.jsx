@@ -1951,15 +1951,19 @@ class App extends Router {
 
                                 {this.renderLoggedUser()}
 
-                                {this.state.drawerState !== 0 &&
+                                {this.state.drawerState !== 0 && !this.state.expertMode &&
                                     <Grid container className={clsx(this.state.drawerState !== 0 && classes.avatarVisible, classes.avatarNotVisible)} spacing={1} alignItems="center">
                                         {(!this.state.user || this.props.width === 'xs' || this.props.width === 'sm') &&
                                             <Hidden xsDown>
                                                 <div className={classes.wrapperName}>
                                                     <Typography>admin</Typography>
-                                                    {!this.adminGuiConfig.icon && this.state.versionAdmin && <Typography className={classes.styleVersion} style={{color: this.state.themeType === 'dark' ? '#ffffff80' : '#00000080'}}>v{this.state.versionAdmin}</Typography>}
+                                                    {!this.adminGuiConfig.icon && this.state.versionAdmin &&
+                                                        <Typography className={classes.styleVersion} style={{ color: this.state.themeType === 'dark' ? '#ffffff80' : '#00000080' }}>
+                                                            v{this.state.versionAdmin}
+                                                        </Typography>}
                                                 </div>
-                                            </Hidden>}
+                                            </Hidden>
+                                        }
                                         <Grid item>
                                             <a href="/#easy" onClick={event => event.preventDefault()} style={{ color: 'inherit', textDecoration: 'none' }}>
                                                 {this.adminGuiConfig.icon ?
