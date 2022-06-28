@@ -671,10 +671,11 @@ const HostCard = ({
                 {t('Available')}: <div className={clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)} >
                     {upgradeAvailable ?
                         <Tooltip title={t('Update')}>
-                            <div onClick={openHostUpdateDialog} className={classes.buttonUpdate}><IconButton
-                                className={classes.buttonUpdateIcon}
-                                size="small"
-                            >
+                            <div onClick={openHostUpdateDialog} className={classes.buttonUpdate}>
+                                <IconButton
+                                    className={classes.buttonUpdateIcon}
+                                    size="small"
+                                >
                                 <RefreshIcon />
                             </IconButton>{available}</div>
                         </Tooltip> :

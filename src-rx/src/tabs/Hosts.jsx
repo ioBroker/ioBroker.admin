@@ -234,7 +234,6 @@ class Hosts extends Component {
         return arg1 !== undefined && arg2 !== undefined ? wordCache[`${word} ${arg1} ${arg2}`] : (arg1 !== undefined ? wordCache[`${word} ${arg1}`] : wordCache[word]);
     };
 
-
     componentDidMount() {
         this.readInfo()
             .then(() => {
@@ -253,7 +252,7 @@ class Hosts extends Component {
             if (_alive[obj._id]) {
                 return this.props.socket.getHostInfo(obj._id, null, this.state.readTimeoutMs)
                     .catch(error => {
-                        console.error('Cannot get getHostInfo:' + error);
+                        console.error('Cannot get getHostInfo: ' + error);
                         error.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
                         return error;
                     })
@@ -427,13 +426,11 @@ class Hosts extends Component {
         }
     };
 
-    closeHostUpdateDialog = cb => {
+    closeHostUpdateDialog = cb =>
         this.setState({ hostUpdateDialog: false, hostUpdate: null}, cb);
-    };
 
-    openHostUpdateDialog = (hostUpdate, cb) => {
+    openHostUpdateDialog = (hostUpdate, cb) =>
         this.setState({ hostUpdateDialog: true, hostUpdate }, cb);
-    };
 
     getNews = (value, all = false) => {
         const adapter = this.state.repository['js-controller'];
@@ -476,7 +473,7 @@ class Hosts extends Component {
                 onUpdate={() => {
                     const hostUpdate = this.state.hostUpdate;
                     this.closeHostUpdateDialog(() =>
-                        jsControllerDialogFunc(this.props.socket, hostUpdate, this.props.theme))
+                        jsControllerDialogFunc(this.props.socket, hostUpdate, this.props.theme, this.state.repository['js-controller'].version))
                 }}
                 onClose={() => this.closeHostUpdateDialog()}
             />;
