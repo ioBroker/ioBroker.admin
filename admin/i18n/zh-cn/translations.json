@@ -80,5 +80,7 @@
   "Language for only this instance": "仅此实例的语言",
   "Global path": "全局路径",
   "Instance": "实例",
-  "Instance path behind proxy": ""
+  "Instance path behind proxy": "",
+  "Loading backgroun": "加载背景",
+  "Background color of the loading screen": "载入画面的背景色"
 }

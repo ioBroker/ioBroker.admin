@@ -80,5 +80,7 @@
   "Language for only this instance": "Язык только для этого экземпляра",
   "Global path": "Глобальный путь",
   "Instance": "Экземпляр",
-  "Instance path behind proxy": "Путь к инстанции за прокси"
+  "Instance path behind proxy": "Путь к инстанции за прокси",
+  "Loading backgroun": "Загрузка фона",
+  "Background color of the loading screen": "Цвет фона экрана загрузки"
 }

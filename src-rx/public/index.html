@@ -74,26 +74,28 @@
             }
         </style>
         <script>
-            const body = document.body;
-            if (window.location.search.includes('?login')) {
-                // apply image and background color to the whole page as fast as possible
-                if (window.loginBackgroundColor !== '@@loginBackgroundColor@@' && window.loginBackgroundColor) {
-                    body.style.backgroundColor = window.loginBackgroundColor;
+            setTimeout(() => {
+                const body = document.body;
+                if (window.location.search.includes('?login')) {
+                    // apply image and background color to the whole page as fast as possible
+                    if (window.loginBackgroundColor && window.loginBackgroundColor.indexOf('loginBackgroundColor') === -1) {
+                        body.style.backgroundColor = window.loginBackgroundColor;
+                    }
+                    if (window.loginBackgroundImage && window.loginBackgroundImage.indexOf('loginBackgroundImage') === -1) {
+                        body.style.backgroundImage = 'url(' + window.loginBackgroundImage + ')';
+                        body.style.backgroundSize  = 'cover';
+                    }
+                } else {
+                    // apply image and background color to the whole page as fast as possible
+                    if (window.loadingBackgroundColor && window.loadingBackgroundColor.indexOf('loadingBackgroundColor') === -1) {
+                        body.style.backgroundColor = window.loadingBackgroundColor;
+                    }
+                    if (window.loadingBackgroundImage && window.loadingBackgroundImage.indexOf('loadingBackgroundImage') === -1) {
+                        body.style.backgroundImage = 'url(' + window.loadingBackgroundImage + ')';
+                        body.style.backgroundSize  = 'cover';
+                    }
                 }
-                if (window.loginBackgroundImage !== '@@loginBackgroundImage@@' && window.loginBackgroundImage) {
-                    body.style.backgroundImage = 'url(' + window.loginBackgroundImage + ')';
-                    body.style.backgroundSize  = 'cover';
-                }
-            } else {
-                // apply image and background color to the whole page as fast as possible
-                if (window.loadingBackgroundColor !== '@@loadingBackgroundColor@@' && window.loadingBackgroundColor) {
-                    body.style.backgroundColor = window.loadingBackgroundColor;
-                }
-                if (window.loadingBackgroundImage !== '@@loadingBackgroundImage@@' && window.loadingBackgroundImage) {
-                    body.style.backgroundImage = 'url(' + window.loadingBackgroundImage + ')';
-                    body.style.backgroundSize  = 'cover';
-                }
-            }
+            }, 0);
 
             window.addEventListener('load', function load(event) {
                 window.removeEventListener('load', load, false);

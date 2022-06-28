@@ -80,5 +80,7 @@
   "Language for only this instance": "Idioma solo para esta instancia",
   "Global path": "Ruta mundial",
   "Instance": "Instancia",
-  "Instance path behind proxy": ""
+  "Instance path behind proxy": "",
+  "Loading backgroun": "Cargando fondo",
+  "Background color of the loading screen": "Color de fondo de la pantalla de carga"
 }
