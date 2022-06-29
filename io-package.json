@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.1.6",
+    "version": "6.1.7",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.1.7": {
+        "en": "Some GUI fixes done",
+        "de": "Einige GUI behoben",
+        "ru": "Некоторые исправления GUI сделаны",
+        "pt": "Algumas correções GUI feitas",
+        "nl": "Sommige GUI reparaties gedaan",
+        "fr": "Quelques corrections de GUI effectuées",
+        "it": "Alcune correzioni di GUI fatte",
+        "es": "Alguna GUI arreglado",
+        "pl": "Niektóre rozwiązania GUI",
+        "zh-cn": "一些古伊特公司做的"
+      },
       "6.1.6": {
         "en": "Some GUI fixes done",
         "de": "Einige GUI behoben",
@@ -89,18 +101,6 @@
         "es": "Muchas correcciones GUI hechas",
         "pl": "Wiele rozwiązań GUI",
         "zh-cn": "许多古伊克人做的文章"
-      },
-      "6.0.6": {
-        "en": "Added file selector with select dialog",
-        "de": "Dateiauswahl mit Auswahldialog hinzugefügt",
-        "ru": "Добавлена подборка файлов с помощью выбранного диалога",
-        "pt": "Seletor de arquivo adicionado com caixa de diálogo selecionada",
-        "nl": "Geadviseerd bestandselselselectie",
-        "fr": "Ajout du sélecteur de fichier avec la boîte de dialogue",
-        "it": "Aggiunto selettore di file con selezionare la finestra di dialogo",
-        "es": "Seleccionedor de archivo añadido con diálogo selecto",
-        "pl": "Wybrane pliki z wybranym dialogiem",
-        "zh-cn": "增聘档案员"
       }
     },
     "desc": {

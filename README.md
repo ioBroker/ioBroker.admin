@@ -108,7 +108,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.1.7 (2022-06-29)
 * (bluefox) Some GUI fixes done
 
 ### 6.1.6 (2022-06-27)
@@ -124,11 +124,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.1.0 (2022-06-22)
 * (bluefox) allowed to use admin behind reverse proxy
 * (bluefox) Added new JsonConfig components: Slider, Room selector, Function selector
-
-### 6.0.8 (2022-06-21)
-* (bluefox) Added multiple choice by `selectSendTo`
-* (bluefox) Added warning if some javascript not saved
-* (bluefox) Some GUI fixes done
 
 ## License
 The MIT License (MIT)

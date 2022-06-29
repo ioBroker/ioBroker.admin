@@ -1,5 +1,13 @@
 ## 5.3.7 (2022-04-10)
 * (bluefox) Changed the charts rendering
+## 6.0.8 (2022-06-21)
+* (bluefox) Added multiple choice by `selectSendTo`
+* (bluefox) Added warning if some javascript not saved
+* (bluefox) Some GUI fixes done
+
+## 5.3.7 (2022-04-10)
+* (bluefox) Changed the charts rendering
+
 ## 5.3.7 (2022-04-10)
 * (bluefox) Changed the charts rendering
 
