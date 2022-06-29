@@ -193,10 +193,10 @@ class AdaptersUpdaterDialog extends Component {
                             noSpacing
                             key={this.state.current}
                             ready
-                            currentHost={this.props.currentHost}
+                            host={this.props.currentHost}
                             socket={this.props.socket}
                             t={this.props.t}
-                            cmd={'upgrade ' + this.state.current + '@' + this.state.currentVersion + (this.state.debug ? ' --debug' : '')}
+                            cmd={`upgrade ${this.state.current}@${this.state.currentVersion}${this.state.debug ? ' --debug' : ''}`}
                             onFinished={() => this.onAdapterFinished()}
                             errorFunc={() => {
                                 if (this.state.stopOnError) {

@@ -820,7 +820,7 @@ const DiscoveryDialog = ({ themeType, themeName, socket, dateFormat, currentHost
                                     noSpacing
                                     key={`${currentInstall}-${cmdName}`}
                                     ready
-                                    currentHost={currentHost}
+                                    host={currentHost}
                                     logsRead={finishInstall ? logs[selected[selectLogsIndex]] || ['skipped'] : null}
                                     showElement={!finishInstall}
                                     socket={socket}
