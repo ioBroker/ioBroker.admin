@@ -265,6 +265,17 @@ class ObjectBrowserEditObject extends Component {
                     delete obj.common.alias;
                 }
             }
+
+            if (obj.common?.min !== undefined && typeof obj.common.min !== 'number') {
+                obj.common.min = parseFloat(obj.common.min);
+            }
+            if (obj.common?.max !== undefined && typeof obj.common.max !== 'number') {
+                obj.common.max = parseFloat(obj.common.max);
+            }
+            if (obj.common?.step !== undefined && typeof obj.common.step !== 'number') {
+                obj.common.step = parseFloat(obj.common.step);
+            }
+
             return obj;
         } catch (e) {
             return null;
@@ -272,8 +283,8 @@ class ObjectBrowserEditObject extends Component {
     }
 
     onChange(value, cb) {
-        const newState = {text: value};
         const json = this.prepareObject(value);
+        const newState = { text: value };
         if (json) {
             newState.changed = this.originalObj !== JSON.stringify(json, null, 2);
             if (this.state.error) {
@@ -308,6 +319,16 @@ class ObjectBrowserEditObject extends Component {
                 }
             }
 
+            if (obj.common?.min !== undefined && typeof obj.common.min !== 'number') {
+                obj.common.min = parseFloat(obj.common.min);
+            }
+            if (obj.common?.max !== undefined && typeof obj.common.max !== 'number') {
+                obj.common.max = parseFloat(obj.common.max);
+            }
+            if (obj.common?.step !== undefined && typeof obj.common.step !== 'number') {
+                obj.common.step = parseFloat(obj.common.step);
+            }
+
             this.props.onClose(obj);
         } catch (error) {
             console.log.error('Cannot parse: ' + this.state.text);
@@ -315,10 +336,37 @@ class ObjectBrowserEditObject extends Component {
     }
 
     renderTabs() {
-        return <Tabs className={this.props.classes.tabsPadding} value={this.state.tab} onChange={(e, tab) => {
-            (window._localStorage || window.localStorage).setItem((this.props.dialogName || 'App') + '.editTab', tab);
-            this.setState({tab});
-        }}>
+        return <Tabs
+            className={this.props.classes.tabsPadding}
+            value={this.state.tab}
+            onChange={(e, tab) => {
+                (window._localStorage || window.localStorage).setItem((this.props.dialogName || 'App') + '.editTab', tab);
+
+                if (tab === 'object') {
+                    try {
+                        const obj = JSON.parse(this.state.text);
+                        let changed = false;
+                        if (obj.common?.min !== undefined && typeof obj.common.min !== 'number') {
+                            obj.common.min = parseFloat(obj.common.min);
+                            changed = true;
+                        }
+                        if (obj.common?.max !== undefined && typeof obj.common.max !== 'number') {
+                            obj.common.max = parseFloat(obj.common.max);
+                            changed = true;
+                        }
+                        if (obj.common?.step !== undefined && typeof obj.common.step !== 'number') {
+                            obj.common.step = parseFloat(obj.common.step);
+                            changed = true;
+                        }
+                        changed && this.setState({text: JSON.stringify(obj, null, 2)});
+                    } catch (e) {
+                        // ignore
+                    }
+                }
+
+                this.setState({ tab });
+            }}
+        >
             <Tab value="common" label={this.props.t('Common')}/>
             <Tab value="object" label={this.props.t('Object data')}/>
             {this.props.obj._id.startsWith('alias.0') && this.props.obj.type === 'state' &&
@@ -410,15 +458,16 @@ class ObjectBrowserEditObject extends Component {
 
     buttonAddKey(nameKey, cb) {
         const { classes } = this.props;
-        return <div
-            className={classes.marginBlock}
-        >
+        return <div className={classes.marginBlock}>
             <Button
                 className={classes.buttonAdd}
                 variant="contained"
                 color="secondary"
                 startIcon={<AddIcon/>}
-                onClick={cb}>{nameKey}</Button>
+                onClick={cb}
+            >
+                {nameKey}
+            </Button>
         </div>;
     }
 
@@ -865,8 +914,9 @@ class ObjectBrowserEditObject extends Component {
             aria-labelledby="edit-value-dialog-title"
             aria-describedby="edit-value-dialog-description"
         >
-            <DialogTitle id="edit-value-dialog-title">{this.props.t('Edit object:')} <span
-                className={this.props.classes.id}>{this.props.obj._id}</span></DialogTitle>
+            <DialogTitle id="edit-value-dialog-title">
+                {this.props.t('Edit object:')} <span className={this.props.classes.id}>{this.props.obj._id}</span>
+            </DialogTitle>
 
             {this.renderTabs()}
             {this.renderCopyDialog()}
