@@ -25,3 +25,5 @@ src/js/words.js
 /package-lock.json
 /src-rx/.eslintcache
 /src-admin/package-lock.json
+/src-rx/public_aes
+/src-rx/public/js/adapter-settings-aes.js
