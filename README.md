@@ -108,8 +108,8 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
-* (bluefox) Corrected the host update instructions 
+### 6.1.8 (2022-07-01)
+* (bluefox) Corrected the host update instructions
 
 ### 6.1.7 (2022-06-29)
 * (bluefox) Some GUI fixes done
@@ -123,10 +123,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.1.1 (2022-06-22)
 * (bluefox) Corrected russian translations
 * (bluefox) Preparations for iobroker cloud
-
-### 6.1.0 (2022-06-22)
-* (bluefox) allowed to use admin behind reverse proxy
-* (bluefox) Added new JsonConfig components: Slider, Room selector, Function selector
 
 ## License
 The MIT License (MIT)
