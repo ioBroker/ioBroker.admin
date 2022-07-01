@@ -1983,7 +1983,7 @@ class App extends Router {
 
                                 {this.renderLoggedUser()}
 
-                                {this.state.drawerState !== 0 && !this.state.expertMode &&
+                                {this.state.drawerState !== 0 && !this.state.expertMode && window.innerWidth > 400 &&
                                     <Grid container className={clsx(this.state.drawerState !== 0 && classes.avatarVisible, classes.avatarNotVisible)} spacing={1} alignItems="center">
                                         {(!this.state.user || this.props.width === 'xs' || this.props.width === 'sm') &&
                                             <Hidden xsDown>

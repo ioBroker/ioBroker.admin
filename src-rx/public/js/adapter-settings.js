@@ -285,7 +285,7 @@ function preInit () {
             common = null;
         }
 
-        socket.emit('getObject', id, function (err, oldObj) {
+        socket.emit('getObject', id, async function (err, oldObj) {
             oldObj = oldObj || {};
 
             for (var a in native) {
@@ -296,7 +296,7 @@ function preInit () {
                         typeof oldObj.encryptedNative === 'object' &&
                         oldObj.encryptedNative instanceof Array &&
                         oldObj.encryptedNative.indexOf(a) !== -1) {
-                        oldObj.native[a] = encrypt(oldObj.native[a]);
+                        oldObj.native[a] = await encrypt(oldObj.native[a]);
                     }
                 }
             }
@@ -425,7 +425,7 @@ function preInit () {
     }
 
     function loadSettings(callback) {
-        socket.emit('getObject', id, function (err, res) {
+        socket.emit('getObject', id, async function (err, res) {
             if (!err && res && res.native) {
                 $('.adapter-instance').html(adapter + '.' + instance);
                 $('.adapter-config').html('system.adapter.' + adapter + '.' + instance);
@@ -438,7 +438,7 @@ function preInit () {
                     if (res.encryptedNative && typeof res.encryptedNative === 'object' && res.encryptedNative instanceof Array) {
                         for (var i = 0; i < res.encryptedNative.length; i++) {
                             if (res.native[res.encryptedNative[i]]) {
-                                res.native[res.encryptedNative[i]] = decrypt(res.native[res.encryptedNative[i]]);
+                                res.native[res.encryptedNative[i]] = await decrypt(res.native[res.encryptedNative[i]]);
                             }
                         }
                     } else {
@@ -2412,6 +2412,40 @@ function table2values(divId) {
 
 /**
  * Decrypt the password/value with given key
+ * @param key - Secret key
+ * @param value - value to decrypt
+ */
+function decryptLegacy(key, value) {
+    if (value === undefined) {
+        value = key;
+        key = systemSecret;
+    }
+    var result = '';
+    for(var i = 0; i < value.length; i++) {
+        result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+    }
+    return result;
+}
+
+/**
+ * Encrypt the password/value with given key
+ * @param key - Secret key
+ * @param value - value to encrypt
+ */
+function encryptLegacy(key, value) {
+    if (value === undefined) {
+        value = key;
+        key = systemSecret;
+    }
+    var result = '';
+    for (var i = 0; i < value.length; i++) {
+        result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+    }
+    return result;
+}
+
+/**
+ * Decrypt the password/value with given key
  *  Usage:
  *  ```
  *     function load(settings, onChange) {
@@ -2427,18 +2461,51 @@ function table2values(divId) {
  * @param {string} value - value to decrypt
  * @returns {string}
  */
-function decrypt(key, value) {
+async function decrypt(key, value) {
     if (value === undefined) {
         value = key;
         key = systemSecret;
     }
-    var result = '';
-    for(var i = 0; i < value.length; i++) {
-        result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+
+    if (typeof value !== 'string') {
+        return value;
     }
-    return result;
+
+    // if not encrypted as aes-192 or key not a valid 48 digit hex -> fallback
+    if (!value.startsWith(`$/aes-256-cbc:`) || !/^[0-9a-f]{64}$/.test(key)) {
+        return decryptLegacy(key, value);
+    }
+
+    var textParts = value.split(':', 3);
+    // var algorithm = textParts[0];
+    var valueEncBytes = new Uint8Array(hex2array(textParts[2]));
+
+    var iv = new Uint8Array(hex2array(textParts[1]));
+    var _key = await window.crypto.subtle.importKey('raw', hex2array(key), { name: 'AES-CBC' }, true, ['encrypt', 'decrypt']);
+    var dec = await window.crypto.subtle.decrypt({ name: 'AES-CBC', iv }, _key, valueEncBytes.buffer);
+    var decBytes = new Uint8Array(dec);
+    return new TextDecoder().decode(decBytes);
 }
 
+function hex2array(hex) {
+    var bytes = new Uint8Array(Math.ceil(hex.length / 2));
+    for (var i = 0; i < bytes.length; i++) {
+        bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
+    }
+    return bytes;
+}
+
+function array2hex(bytes) {
+    var convertedBack = '';
+    for (var i = 0; i < bytes.length; i++) {
+        if (bytes[i] < 16) {
+            convertedBack += '0';
+        }
+        convertedBack += bytes[i].toString(16);
+    }
+
+    return convertedBack;
+}
 /**
  * Encrypt the password/value with given key
  *  Usage:
@@ -2457,16 +2524,35 @@ function decrypt(key, value) {
  * @param {string} value - value to encrypt
  * @returns {string}
  */
-function encrypt(key, value) {
+async function encrypt(key, value, _iv) {
     if (value === undefined) {
         value = key;
         key = systemSecret;
     }
-    var result = '';
-    for (var i = 0; i < value.length; i++) {
-        result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+
+    if (typeof value !== 'string') {
+        return value;
     }
-    return result;
+
+    if (!/^[0-9a-f]{64}$/.test(key)) {
+        // key length is not matching for AES-192-CBC or key is no valid hex - fallback to old encryption
+        return encryptLegacy(key, value);
+    }
+
+    var valueBytes = new TextEncoder().encode(value);
+    var iv;
+    if (_iv) {
+        iv = hex2array(_iv);
+    } else {
+        iv = new Uint8Array(16);
+        window.crypto.getRandomValues(iv);
+    }
+
+    var _key = await window.crypto.subtle.importKey('raw', hex2array(key), { name: 'AES-CBC' }, true, ['encrypt', 'decrypt']);
+    var enc = await window.crypto.subtle.encrypt({name: 'AES-CBC', iv}, _key, valueBytes);
+    var encBytes = new Uint8Array(enc);
+
+    return `$/aes-256-cbc:${array2hex(iv)}:${array2hex(encBytes)}`;
 }
 
 // current Theme Style for Adapter CSS settings
