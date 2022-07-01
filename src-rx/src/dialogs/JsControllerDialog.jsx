@@ -16,6 +16,7 @@ import { makeStyles } from '@mui/styles';
 
 import CloseIcon from '@mui/icons-material/Close';
 import DescriptionIcon from '@mui/icons-material/Description';
+import copy from 'copy-to-clipboard';
 
 import I18n from '@iobroker/adapter-react-v5/i18n';
 
@@ -114,7 +115,14 @@ const useStyles = makeStyles(theme => ({
     accordionDetails:{
         display: 'flex',
         flexDirection: 'column'
-
+    },
+    code: {
+        backgroundColor: theme.palette.mode === 'dark' ? '#123456' : '#93bbe7',
+        padding: '0 3px 0 3px',
+    },
+    copyButton: {
+        width: 31,
+        height: 16,
     }
 }));
 
@@ -154,7 +162,7 @@ const JsControllerDialog = ({ socket, hostId, theme, version }) => {
             node = null;
         }
     };
-
+/*
     const fallbackCopyTextToClipboard = text => {
         const textArea = document.createElement('textarea');
         textArea.value = text;
@@ -163,10 +171,10 @@ const JsControllerDialog = ({ socket, hostId, theme, version }) => {
         textArea.select();
 
         try {
-            const successful = document.execCommand('copy');
+            const successful = document.execCommand('copyTextToClipboard');
             successful && window.alert(I18n.t('Copied'));
         } catch (err) {
-            console.error('Fallback: Oops, unable to copy', err);
+            console.error('Fallback: Oops, unable to copyTextToClipboard', err);
         }
 
         try {
@@ -175,15 +183,18 @@ const JsControllerDialog = ({ socket, hostId, theme, version }) => {
             // ignore
         }
     };
-
+*/
     const copyTextToClipboard = text => {
-        if (!navigator.clipboard) {
+        copy(text);
+        window.alert(I18n.t('Copied'));
+
+        /*if (!navigator.clipboard) {
             return fallbackCopyTextToClipboard(text);
         }
 
         navigator.clipboard.writeText(text)
             .then(() => window.alert(I18n.t('Copied')),
-                    err => console.error('Async: Could not copy text: ', err));
+                    err => console.error('Async: Could not copyTextToClipboard text: ', err));*/
     };
 
     useEffect(() => {
@@ -197,7 +208,7 @@ const JsControllerDialog = ({ socket, hostId, theme, version }) => {
                         .then(response => response.text())
                         .then(_readme => {
                             let _os = data.os || os;
-                            let _location = data.location || location;
+                            let _location = (data.location || location).replace(/\\/g, '/');
                             if (_os === 'win32') {
                                 _readme = removeChapter(_readme, 'linux', 'windows');
                             } else {
@@ -218,9 +229,14 @@ const JsControllerDialog = ({ socket, hostId, theme, version }) => {
                                     }
                                     button = button.replace(/^\n\r/, '').replace(/^\n/, '');
                                     if (small) {
-                                        parts.push(<IconButton onClick={() => copyTextToClipboard(button)}><IconCopy /></IconButton>);
+                                        parts.push(<IconButton key={'b' + parts.length} onClick={() => copyTextToClipboard(button)}><IconCopy /></IconButton>);
                                     } else {
-                                        parts.push(<Button variant="contained" onClick={() => copyTextToClipboard(button)} startIcon={<IconCopy />}>{I18n.t('Copy to clipboard')}</Button>);
+                                        parts.push(<Button
+                                            key={'b' + parts.length}
+                                            variant="contained"
+                                            onClick={() => copyTextToClipboard(button)}
+                                            startIcon={<IconCopy />}
+                                        >{I18n.t('Copy to clipboard')}</Button>);
                                     }
                                     parts.push(text);
                                 } else {
@@ -240,10 +256,15 @@ const JsControllerDialog = ({ socket, hostId, theme, version }) => {
         return null;
     }
 
-    const renderReadme = () => <>{readme.map(text => typeof text === 'object' ? text : <ReactMarkdown components={{
-            em: ({node, ...props}) => <IconButton onClick={() => copyTextToClipboard(props.children[0])}><IconCopy /></IconButton>,
+    const renderReadme = () => <>{readme.map((text, i) => typeof text === 'object' ? text : <ReactMarkdown
+        key={'t_' + i}
+        components={{
+            em: ({node, ...props}) => <IconButton className={classes.copyButton} onClick={() => copyTextToClipboard(props.children[0])}><IconCopy /></IconButton>,
             a: ({node, ...props}) => <a style={{ color: 'inherit' }} {...props} />,
-        }}>{text}</ReactMarkdown>)}</>;
+            code: ({node, inline, className, children, ...props}) => <code className={classes.code} {...props} >{children}</code>,
+        }}
+    >{text}</ReactMarkdown>)}</>;
+
     const renderText = () => <Card className={classes.root}>
         <div className={classes.standardText}>{I18n.t('Due to the different hardware and platforms under which ioBroker runs, the js-controller has to be updated manually. Further details can be found in the appropriate section.')}</div>
 

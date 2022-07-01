@@ -531,7 +531,7 @@ const HostRow = ({
     const [logLevelValue, setLogLevelValue] = useState(null);
     const [logLevelValueSelect, setLogLevelValueSelect] = useState(null);
 
-    const upgradeAvailable = (isCurrentHost || alive) && Adapters.updateAvailable(installed, available);
+    const upgradeAvailable = true || (isCurrentHost || alive) && Adapters.updateAvailable(installed, available);
 
     const onCopy = () => {
         let text = [];
