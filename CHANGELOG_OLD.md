@@ -1,5 +1,12 @@
 ## 5.3.7 (2022-04-10)
 * (bluefox) Changed the charts rendering
+## 6.1.1 (2022-06-22)
+* (bluefox) Corrected russian translations
+* (bluefox) Preparations for iobroker cloud
+
+## 5.3.7 (2022-04-10)
+* (bluefox) Changed the charts rendering
+
 ## 6.1.0 (2022-06-22)
 * (bluefox) allowed to use admin behind reverse proxy
 * (bluefox) Added new JsonConfig components: Slider, Room selector, Function selector
