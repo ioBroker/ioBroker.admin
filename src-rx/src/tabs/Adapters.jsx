@@ -1374,7 +1374,7 @@ class Adapters extends Component {
                         this.cache.adapters[value] = {
                             title,
                             desc: adapter.desc ? adapter.desc[this.props.lang] || adapter.desc['en'] || adapter.desc : '',
-                            image: installed ? '.' + installed.localIcon : adapter.extIcon,
+                            image: installed && this.state.adapters['system.adapter.' + value] ? '.' + installed.localIcon : adapter.extIcon,
                             connectionType: adapter.connectionType ? adapter.connectionType : '-',
                             updateAvailable: this.state.updateAvailable.includes(value),
                             rightDependencies: this.rightDependencies(value),
