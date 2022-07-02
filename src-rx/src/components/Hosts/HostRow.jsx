@@ -308,8 +308,7 @@ const styles = theme => ({
         '100%': {
             color: theme.palette.mode === 'dark' ? '#fff' : '#000',
         }
-    },
-
+    }
 });
 
 let outputCache = '-';

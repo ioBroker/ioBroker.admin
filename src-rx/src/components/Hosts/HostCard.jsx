@@ -668,7 +668,7 @@ const HostCard = ({
                 <div className={classes.displayFlex}>{t('Uptime')}: <div ref={refUptime} className={classes.marginLeft5}>{'-d -h'}</div></div>
             </Typography>
             <Typography variant="body2" color="textSecondary" component="div" className={classes.wrapperAvailable}>
-                {t('Available')}: <div className={clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)} >
+                {t('Available')} js-controller: <div className={clsx(upgradeAvailable && classes.greenText, classes.curdContentFlexCenter)} >
                     {upgradeAvailable ?
                         <Tooltip title={t('Update')}>
                             <div onClick={openHostUpdateDialog} className={classes.buttonUpdate}>
@@ -683,7 +683,7 @@ const HostCard = ({
                     }</div>
             </Typography>
             <Typography variant="body2" color="textSecondary" component="p">
-                {t('Installed')}: {installed}
+                {t('Installed')} js-controller: {installed}
             </Typography>
             <Typography variant="body2" color="textSecondary" component="div">
                 <div className={classes.displayFlex}>{t('Events')}: <div ref={refEvents} className={classes.marginLeft5}>{events}</div></div>

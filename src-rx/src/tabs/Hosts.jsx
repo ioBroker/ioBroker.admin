@@ -119,6 +119,11 @@ const styles = theme => ({
             display: 'none !important'
         },
     },
+    jsController: {
+        fontSize: 12,
+        opacity: 0.4,
+        display: 'block'
+    },
 });
 
 let wordCache = {};
@@ -615,8 +620,8 @@ class Hosts extends Component {
                                 <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>CPU</div>
                                 <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>RAM</div>
                                 <div className={clsx(classes.tabHeaderItem, classes.hidden800)}>{this.t('Uptime')}</div>
-                                <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{this.t('Available')}</div>
-                                <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{this.t('Installed')}</div>
+                                <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{this.t('Available')}<div className={classes.jsController}>js-controller</div></div>
+                                <div className={clsx(classes.tabHeaderItem, classes.hidden1100)}>{this.t('Installed')}<div className={classes.jsController}>js-controller</div></div>
                                 <div className={clsx(classes.tabHeaderItem, classes.hidden600)}>{this.t('Events')}</div>
                                 <div className={clsx(classes.tabHeaderItemButton, expertMode && classes.widthButtons)} />
                             </div>
