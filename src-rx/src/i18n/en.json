@@ -1500,5 +1500,6 @@
   "Close on finished": "Close on finished",
   "Stop on error": "Stop on error",
   "Debug info": "Debug info",
-  "You can change host on Instances, Adapters or Logs pages": "You can change host on Instances, Adapters or Logs pages"
+  "You can change host on Instances, Adapters or Logs pages": "You can change host on Instances, Adapters or Logs pages",
+  "Waiting for connection of ioBroker...": "Waiting for connection of ioBroker..."
 }

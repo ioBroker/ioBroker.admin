@@ -1,7 +1,8 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { MapContainer as LeafletMap, TileLayer } from 'react-leaflet';
+import { MapContainer, TileLayer } from 'react-leaflet';
+import { useMap } from 'react-leaflet/hooks';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
 
 import { withStyles } from '@mui/styles';
@@ -39,6 +40,12 @@ const styles = theme => ({
         borderRadius: 5
     }
 });
+
+function MyMapComponent(props) {
+    const map = useMap();
+    props.addMap && props.addMap(map);
+    return null;
+}
 
 class MainSettingsDialog extends Component {
     constructor(props) {
@@ -218,26 +225,26 @@ class MainSettingsDialog extends Component {
     }
 
     onMap = map => {
-        this.map = map;
-        const center = [
-            parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude  : 50) || 0,
-            parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : 10) || 0
-        ];
+        if (!this.map || this.map !== map) {
+            this.map = map;
+            const center = [
+                parseFloat(this.props.data.common.latitude  !== undefined ? this.props.data.common.latitude  : 50) || 0,
+                parseFloat(this.props.data.common.longitude !== undefined ? this.props.data.common.longitude : 10) || 0
+            ];
 
-        this.marker = window.L.marker(
-            center,
-            {
-                draggable: true,
-                title: 'Resource location',
-                alt: 'Resource Location',
-                riseOnHover: true
-            }
-        )
-            .addTo(map)
-            .bindPopup('Popup for any custom information.')
-            .on({
-                dragend: evt => this.onMarkerDragend(evt)
-            });
+            this.marker = window.L.marker(
+                center,
+                {
+                    draggable: true,
+                    title: 'Resource location',
+                    alt: 'Resource Location',
+                    riseOnHover: true
+                }
+            )
+                .addTo(map)
+                .bindPopup('Popup for any custom information.')
+                .on({ dragend: evt => this.onMarkerDragend(evt) });
+        }
     }
 
     getSelect(e, i) {
@@ -357,24 +364,30 @@ class MainSettingsDialog extends Component {
         this.doChange(id, value);
     }
 
-    onChangeCity = (evt) => {
+    onChangeCity = evt => {
         this.onChangeText(evt, 'city');
-        const provider = new OpenStreetMapProvider();
 
-        provider.search({ query: evt.target.value })
-            .then(results => {
-                if (results[0]) {
-                    setTimeout(() => {
-                        this.onChangeInput(results[0].y, 'latitude');
-                        this.onChangeInput(results[0].x, 'longitude');
-                        this.onChangeInput(23, 'zoom');
-                        this.map.flyTo(
-                            [results[0].y, results[0].x]
-                        );
-                        this.marker.setLatLng([results[0].y, results[0].x]);
-                    }, 1200);
-                }
-            });
+        this.cityTimer && clearTimeout(this.cityTimer);
+
+        this.cityTimer = setTimeout(() => {
+            this.cityTimer = null;
+            const provider = new OpenStreetMapProvider();
+
+            provider.search({ query: evt.target.value })
+                .then(results => {
+                    if (results[0]) {
+                        setTimeout(() => {
+                            this.onChangeInput(results[0].y, 'latitude');
+                            this.onChangeInput(results[0].x, 'longitude');
+                            this.onChangeInput(23, 'zoom');
+                            this.map.flyTo(
+                                [results[0].y, results[0].x]
+                            );
+                            this.marker.setLatLng([results[0].y, results[0].x]);
+                        }, 1200);
+                    }
+                });
+        }, 500);
     }
 
     handleChange = (evt, selectId) => {
@@ -388,16 +401,16 @@ class MainSettingsDialog extends Component {
         }
     }
 
-    doChange = (name, value) => {
+    doChange = (name, value, cb) => {
         let newData = JSON.parse(JSON.stringify(this.props.data))
         newData.common[name] = value;
-        this.props.onChange(newData);
+        this.props.onChange(newData, null, () => cb && cb());
     }
 
     onMarkerDragend = evt => {
-        const ll = evt.target._latlng;
-        this.doChange('latitude',  ll.lat);
-        this.doChange('longitude', ll.lng);
+        const ll = JSON.parse(JSON.stringify(evt.target._latlng));
+        this.doChange('latitude',  ll.lat, () =>
+            this.doChange('longitude', ll.lng));
     }
 
     render() {
@@ -420,7 +433,7 @@ class MainSettingsDialog extends Component {
                     </Grid>
                 </Grid>
                 <Grid item lg={6} md={12} style={{ width: '100%' }}>
-                    <LeafletMap
+                    <MapContainer
                         className={classes.map}
                         center={center}
                         zoom={zoom}
@@ -432,12 +445,10 @@ class MainSettingsDialog extends Component {
                         dragging={true}
                         animate={true}
                         easeLinearity={0.35}
-                        whenCreated={this.onMap}
                     >
-                        <TileLayer
-                            url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
-                        />
-                    </LeafletMap>
+                        <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"/>
+                        <MyMapComponent addMap={map => this.onMap(map)}/>
+                    </MapContainer>
                 </Grid>
             </Grid>
             <Grid container spacing={6}>
@@ -455,7 +466,7 @@ class MainSettingsDialog extends Component {
                             label={this.props.t('City:')}
                             value={this.props.data.common.city}
                             InputLabelProps={{ shrink: true }}
-                            InputProps={{readOnly: false}}
+                            InputProps={{ readOnly: false }}
                             onChange={evt => this.onChangeCity(evt)}
                         />
                     </FormControl>

@@ -1500,5 +1500,6 @@
   "Close on finished": "Закрыть по завершении",
   "Stop on error": "Остановиться на ошибке",
   "Debug info": "Информация об отладке",
-  "You can change host on Instances, Adapters or Logs pages": "Вы можете изменить хост на страницах Настройки, Драйверы или Журнал."
+  "You can change host on Instances, Adapters or Logs pages": "Вы можете изменить хост на страницах Настройки, Драйверы или Журнал.",
+  "Waiting for connection of ioBroker...": "Ожидание подключения ioBroker..."
 }

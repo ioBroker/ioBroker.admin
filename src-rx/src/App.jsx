@@ -21,6 +21,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import CircularProgress from '@mui/material/CircularProgress';
 
 // @material-ui/icons
 import MenuIcon from '@mui/icons-material/Menu';
@@ -422,6 +423,9 @@ class App extends Router {
                 forceUpdateAdapters: 0,
 
                 noTranslation: (window._localStorage || window.localStorage).getItem('App.noTranslation') === 'true',
+
+                cloudNotConnected: false,
+                cloudReconnect: 0,
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -637,10 +641,30 @@ class App extends Router {
                     } else if (progress === PROGRESS.READY) {
                         // BF: (2022.05.09) here must be this.socket.getVersion(true), but I have no Idea, why it does not work :(
                         this.socket._socket.emit('getVersion', async (err, version) => {
+                            if (err) {
+                                console.error(`Cannot read version: ${err}`);
+                                if (err === 'ioBroker is not connected') {
+                                    setInterval(() => {
+                                        if (this.state.cloudReconnect > 0) {
+                                            this.setState({ cloudReconnect: this.state.cloudReconnect - 1 });
+                                        } else {
+                                            window.location.reload();
+                                        }
+                                    }, 1000);
+
+                                    return this.setState({
+                                        cloudNotConnected: true,
+                                        cloudReconnect: 10,
+                                    });
+                                } else if (!version) {
+                                    return window.alert(err);
+                                }
+                            }
+
                             console.log(`Stored version: ${this.state.versionAdmin}, new version: ${version}`);
                             if (this.state.versionAdmin && this.state.versionAdmin !== version) {
-                                window.alert('New adapter version detected. Reloading...')
-                                setTimeout(() => window.location.reload(), 500)
+                                window.alert('New adapter version detected. Reloading...');
+                                setTimeout(() => window.location.reload(), 500);
                             }
 
                             // read settings anew
@@ -1770,6 +1794,30 @@ class App extends Router {
     render() {
         const { classes } = this.props;
         const small = this.props.width === 'xs' || this.props.width === 'sm';
+
+        if (this.state.cloudNotConnected) {
+            return <StylesProvider generateClassName={generateClassName}>
+                <StyledEngineProvider injectFirst>
+                    <ThemeProvider theme={this.state.theme}>
+                        <div style={{
+                            width: '100%',
+                            height: '100%',
+                            textAlign: 'center',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: this.state.themeType === 'dark' ? '#1a1a1a' : '#fafafa',
+                            color: this.state.themeType === 'dark' ? '#fafafa' : '#1a1a1a',
+                        }}>
+                            <div style={{ width: 300, height: 100 }}>
+                                <CircularProgress />
+                                <div style={{ fontSize: 16 }}>{I18n.t('Waiting for connection of ioBroker...')} <span style={{ fontSize: 18 }}>{this.state.cloudReconnect}</span></div>
+                            </div>
+                        </div>
+                    </ThemeProvider>
+                </StyledEngineProvider>
+            </StylesProvider>;
+        }
 
         if (this.state.hasGlobalError) {
             const message = this.state.hasGlobalError.message;

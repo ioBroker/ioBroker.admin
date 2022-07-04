@@ -83,7 +83,7 @@ if (!window.disableDataReporting && window.location.port !== '3000') {
 } else {
     window.onerror = function (error) {
         const errText = error.toString();
-        if (errText && versionChanged.find(error => errText.includes(error))) {
+        if (errText && versionChanged.find(e => errText.includes(e))) {
             const message = error.message;
             const stack = error.stack;
             console.error('Try to detect admin version change:');

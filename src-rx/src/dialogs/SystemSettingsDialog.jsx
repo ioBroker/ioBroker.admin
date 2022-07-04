@@ -383,7 +383,7 @@ class SystemSettingsDialog extends Component {
         return <div className={this.props.classes.tabPanel}>
             <MyComponent
                 adminGuiConfig={this.props.adminGuiConfig}
-                onChange={(data, dataAux) => this.onChangedTab(tab.data, data, tab.dataAux, dataAux)}
+                onChange={(data, dataAux, cb) => this.onChangedTab(tab.data, data, tab.dataAux, dataAux, cb)}
                 data={this.state[tab.data]}
                 dataAux={this.state[tab.dataAux]}
                 handle={tab.handle}
@@ -406,7 +406,7 @@ class SystemSettingsDialog extends Component {
         Router.doNavigate(null, 'system', newTab);
     }
 
-    onChangedTab(id, data, idAux, dataAux) {
+    onChangedTab(id, data, idAux, dataAux, cb) {
         let state = { ...this.state };
         if (data) {
             state[id] = data;
@@ -414,7 +414,7 @@ class SystemSettingsDialog extends Component {
         if (dataAux) {
             state[idAux] = dataAux;
         }
-        this.setState(state);
+        this.setState(state, () => cb & cb());
     }
 
     render() {

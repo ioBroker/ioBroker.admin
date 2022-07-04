@@ -120,7 +120,7 @@ const useStyles = makeStyles(theme => ({
         backgroundColor: theme.palette.mode === 'dark' ? '#123456' : '#93bbe7',
         padding: '0 3px 0 3px',
     },
-    copyButton: {
+    copyButtonSmall: {
         width: 31,
         height: 16,
     }
@@ -224,7 +224,7 @@ const JsControllerDialog = ({ socket, hostId, theme, version }) => {
                                     let [button, text] = chapter.split('-->');
                                     let small = false;
                                     if (button.startsWith(' small')) {
-                                        button = button.replace(/^  small /, '');
+                                        button = button.replace(/^ {2}small /, '');
                                         small = true;
                                     }
                                     button = button.replace(/^\n\r/, '').replace(/^\n/, '');
@@ -259,7 +259,8 @@ const JsControllerDialog = ({ socket, hostId, theme, version }) => {
     const renderReadme = () => <>{readme.map((text, i) => typeof text === 'object' ? text : <ReactMarkdown
         key={'t_' + i}
         components={{
-            em: ({node, ...props}) => <IconButton className={classes.copyButton} onClick={() => copyTextToClipboard(props.children[0])}><IconCopy /></IconButton>,
+            em: ({node, ...props}) => <IconButton className={classes.copyButtonSmall} onClick={() => copyTextToClipboard(props.children[0])}><IconCopy /></IconButton>,
+            // eslint-disable-next-line jsx-a11y/anchor-has-content
             a: ({node, ...props}) => <a style={{ color: 'inherit' }} {...props} />,
             code: ({node, inline, className, children, ...props}) => <code className={classes.code} {...props} >{children}</code>,
         }}

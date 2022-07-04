@@ -1500,5 +1500,6 @@
   "Close on finished": "Fermer sur terminé",
   "Stop on error": "Arrêt sur erreur",
   "Debug info": "Les informations de débogage",
-  "You can change host on Instances, Adapters or Logs pages": "Vous pouvez changer d'hôte sur les pages Instances, Adaptateurs ou Journaux"
+  "You can change host on Instances, Adapters or Logs pages": "Vous pouvez changer d'hôte sur les pages Instances, Adaptateurs ou Journaux",
+  "Waiting for connection of ioBroker...": "En attente de connexion d'ioBroker..."
 }

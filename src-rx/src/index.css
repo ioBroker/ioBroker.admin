@@ -81,3 +81,8 @@ body {
   0%   {background: #588042FF;}
   100% {background: #00000000;}
 }
+
+/* hide link on maps */
+.leaflet-control-attribution {
+  display: none;
+}
