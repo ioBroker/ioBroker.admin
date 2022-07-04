@@ -1501,5 +1501,6 @@
   "Stop on error": "Stop bij fout",
   "Debug info": "Foutopsporingsinformatie",
   "You can change host on Instances, Adapters or Logs pages": "U kunt de host wijzigen op de pagina's Instances, Adapters of Logs",
-  "Waiting for connection of ioBroker...": "Wachten op verbinding van ioBroker..."
+  "Waiting for connection of ioBroker...": "Wachten op verbinding van ioBroker...",
+  "ioBroker is not connected": "ioBroker is niet verbonden"
 }

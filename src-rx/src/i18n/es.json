@@ -1501,5 +1501,6 @@
   "Stop on error": "Detener por error",
   "Debug info": "Información de depuración",
   "You can change host on Instances, Adapters or Logs pages": "Puede cambiar el host en las páginas Instancias, Adaptadores o Registros",
-  "Waiting for connection of ioBroker...": "Esperando la conexión de ioBroker..."
+  "Waiting for connection of ioBroker...": "Esperando la conexión de ioBroker...",
+  "ioBroker is not connected": "ioBroker no está conectado"
 }

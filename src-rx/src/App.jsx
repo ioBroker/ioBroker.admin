@@ -851,7 +851,24 @@ class App extends Router {
                 //onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
                 onError: error => {
                     console.error(error);
-                    this.showAlert(error, 'error');
+                    error = error.message || error.toString();
+                    if (error === 'ioBroker is not connected') {
+                        this.showAlert(I18n.t(error), 'error');
+                        setInterval(() => {
+                            if (this.state.cloudReconnect > 0) {
+                                this.setState({ cloudReconnect: this.state.cloudReconnect - 1 });
+                            } else {
+                                window.location.reload();
+                            }
+                        }, 1000);
+
+                        return this.setState({
+                            cloudNotConnected: true,
+                            cloudReconnect: 10,
+                        });
+                    } else {
+                        this.showAlert(error, 'error');
+                    }
                 }
             });
         }
@@ -1771,6 +1788,16 @@ class App extends Router {
         }
     }
 
+    renderAlertSnackbar() {
+        return <Snackbar
+            className={this.props.classes['alert_' + this.state.alertType]}
+            open={this.state.alert}
+            autoHideDuration={6000}
+            onClose={() => this.handleAlertClose()}
+            message={this.state.alertMessage}
+        />
+    }
+
     renderConfirmDialog() {
         /*return <ConfirmDialog
             onClose={() => this.closeDataNotStoredDialog()}
@@ -1814,6 +1841,7 @@ class App extends Router {
                                 <div style={{ fontSize: 16 }}>{I18n.t('Waiting for connection of ioBroker...')} <span style={{ fontSize: 18 }}>{this.state.cloudReconnect}</span></div>
                             </div>
                         </div>
+                        {this.renderAlertSnackbar()}
                     </ThemeProvider>
                 </StyledEngineProvider>
             </StylesProvider>;
@@ -1842,6 +1870,7 @@ class App extends Router {
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={this.state.theme}>
                         <Login t={I18n.t} />
+                        {this.renderAlertSnackbar()}
                     </ThemeProvider>
                 </StyledEngineProvider>
             </StylesProvider>;
@@ -1853,6 +1882,7 @@ class App extends Router {
                         {window.vendorPrefix === 'PT' ? <LoaderPT theme={this.state.themeType}/> :null}
                         {window.vendorPrefix && window.vendorPrefix !== 'PT' && window.vendorPrefix !== '@@vendorPrefix@@' ? <LoaderVendor theme={this.state.themeType}/> :null}
                         {!window.vendorPrefix || window.vendorPrefix === '@@vendorPrefix@@' ? <Loader theme={this.state.themeType} /> : null}
+                        {this.renderAlertSnackbar()}
                     </ThemeProvider>
                 </StyledEngineProvider>
             </StylesProvider>;
@@ -2116,13 +2146,7 @@ class App extends Router {
                         >
                             {this.getCurrentTab()}
                         </Paper>
-                        <Snackbar
-                            className={this.props.classes['alert_' + this.state.alertType]}
-                            open={this.state.alert}
-                            autoHideDuration={6000}
-                            onClose={() => this.handleAlertClose()}
-                            message={this.state.alertMessage}
-                        />
+                        {this.renderAlertSnackbar()}
                     </Paper>
                     {this.getCurrentDialog()}
                     {this.renderConfirmDialog()}
