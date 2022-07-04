@@ -1,5 +1,11 @@
 ## 5.3.7 (2022-04-10)
 * (bluefox) Changed the charts rendering
+## 6.1.4 (2022-06-23)
+* (bluefox) Added settings to define loading screen
+
+## 5.3.7 (2022-04-10)
+* (bluefox) Changed the charts rendering
+
 ## 6.1.1 (2022-06-22)
 * (bluefox) Corrected russian translations
 * (bluefox) Preparations for iobroker cloud

@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.1.9",
+    "version": "6.1.10",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.1.10": {
+        "en": "Fixed issue with map",
+        "de": "Problem mit Karte behoben",
+        "ru": "Исправлена проблема с картой",
+        "pt": "Problema fixo com mapa",
+        "nl": "Vertaling:",
+        "fr": "Numéro fixe avec carte",
+        "it": "Problema fisso con mappa",
+        "es": "Edición fija con mapa",
+        "pl": "Pytanie z mapą",
+        "zh-cn": "固定问题,地图"
+      },
       "6.1.9": {
         "en": "Some GUI fixes done",
         "de": "Einige GUI behoben",
@@ -89,18 +101,6 @@
         "es": "Traducciones rusianas corregidas\nPreparaciones para la nube de yobroker",
         "pl": "Poprawione tłumaczenia ruszyńskie\nPrzygotowanie do iobroker cloud",
         "zh-cn": "更正\nA. 准备iobroker云层"
-      },
-      "6.1.0": {
-        "en": "allowed to use admin behind reverse proxy",
-        "de": "erlaubt admin hinter reverse proxy zu verwenden",
-        "ru": "разрешено использовать админ за обратным прокси",
-        "pt": "permitido usar o admin por trás do proxy reverso",
-        "nl": "_",
-        "fr": "permis d'utiliser administrateur derrière proxy inverse",
-        "it": "permesso di utilizzare admin dietro proxy inverso",
-        "es": "permitido utilizar administración detrás del proxy inverso",
-        "pl": "pozwoliło to na użycie adminu za odwrotną proxy",
-        "zh-cn": "允许使用逆向转化剂的旗帜"
       }
     },
     "desc": {

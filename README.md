@@ -108,7 +108,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.1.10 (2022-07-04)
 * (bluefox) Fixed issue with map
 
 ### 6.1.9 (2022-07-02)
@@ -122,9 +122,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.1.6 (2022-06-27)
 * (bluefox) Some GUI fixes done
-
-### 6.1.4 (2022-06-23)
-* (bluefox) Added settings to define loading screen
 
 ## License
 The MIT License (MIT)
