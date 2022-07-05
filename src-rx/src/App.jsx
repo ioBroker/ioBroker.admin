@@ -853,19 +853,21 @@ class App extends Router {
                     console.error(error);
                     error = error.message || error.toString();
                     if (error === 'ioBroker is not connected') {
-                        this.showAlert(I18n.t(error), 'error');
-                        setInterval(() => {
-                            if (this.state.cloudReconnect > 0) {
-                                this.setState({ cloudReconnect: this.state.cloudReconnect - 1 });
-                            } else {
-                                window.location.reload();
-                            }
-                        }, 1000);
+                        if (!this.state.cloudNotConnected) {
+                            this.showAlert(I18n.t(error), 'error');
+                            setInterval(() => {
+                                if (this.state.cloudReconnect > 0) {
+                                    this.setState({ cloudReconnect: this.state.cloudReconnect - 1 });
+                                } else {
+                                    window.location.reload();
+                                }
+                            }, 1000);
 
-                        return this.setState({
-                            cloudNotConnected: true,
-                            cloudReconnect: 10,
-                        });
+                            return this.setState({
+                                cloudNotConnected: true,
+                                cloudReconnect: 10,
+                            });
+                        }
                     } else {
                         this.showAlert(error, 'error');
                     }

@@ -6,13 +6,13 @@ import * as SentryIntegrations from '@sentry/integrations';
 
 import theme from '@iobroker/adapter-react-v5/Theme';
 // import Utils from '@iobroker/adapter-react-v5/Components/Utils';
-import { Utils } from '@iobroker/adapter-react-v5';
+import {Utils} from '@iobroker/adapter-react-v5';
 import App from './App';
 
 import './index.css';
-import { ContextWrapperProvider } from './components/ContextWrapper';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers';
+import {ContextWrapperProvider} from './components/ContextWrapper';
+import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
+import {LocalizationProvider} from '@mui/x-date-pickers';
 
 window.adapterName = 'admin';
 
@@ -23,14 +23,15 @@ function build() {
     const container = document.getElementById('root');
     const root = createRoot(container);
     return root.render(
-        <StyledEngineProvider injectFirst><ThemeProvider theme={theme(themeName)}>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <ContextWrapperProvider>
-                    <App onThemeChange={_themeName => {
-                        themeName = _themeName;
-                        build();
-                    }} />
-                </ContextWrapperProvider>
+        <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={theme(themeName)}>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <ContextWrapperProvider>
+                        <App onThemeChange={_themeName => {
+                            themeName = _themeName;
+                            build();
+                        }}/>
+                    </ContextWrapperProvider>
                 </LocalizationProvider>
             </ThemeProvider>
         </StyledEngineProvider>
