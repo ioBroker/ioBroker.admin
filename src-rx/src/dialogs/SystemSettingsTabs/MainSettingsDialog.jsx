@@ -358,11 +358,19 @@ class MainSettingsDialog extends Component {
     onChangeText = (evt, id) => {
         const value = evt.target.value;
         this.onChangeInput(value, id);
+
+        if (id === 'longitude' || id === 'latitude') {
+            this.latLongTimer && clearTimeout(this.latLongTimer);
+            this.latLongTimer = setTimeout(() => {
+                this.latLongTimer = null;
+                this.map.flyTo([this.props.data.common.latitude, this.props.data.common.longitude]);
+                this.marker.setLatLng([this.props.data.common.latitude, this.props.data.common.longitude]);
+            }, 500);
+        }
     }
 
-    onChangeInput = (value, id) => {
-        this.doChange(id, value);
-    }
+    onChangeInput = (value, id, cb) =>
+        this.doChange(id, value, cb);
 
     onChangeCity = evt => {
         this.onChangeText(evt, 'city');
@@ -376,15 +384,15 @@ class MainSettingsDialog extends Component {
             provider.search({ query: evt.target.value })
                 .then(results => {
                     if (results[0]) {
-                        setTimeout(() => {
-                            this.onChangeInput(results[0].y, 'latitude');
-                            this.onChangeInput(results[0].x, 'longitude');
-                            this.onChangeInput(23, 'zoom');
-                            this.map.flyTo(
-                                [results[0].y, results[0].x]
-                            );
-                            this.marker.setLatLng([results[0].y, results[0].x]);
-                        }, 1200);
+                        setTimeout(() =>
+                            this.onChangeInput(results[0].y, 'latitude', () =>
+                                this.onChangeInput(results[0].x, 'longitude', () =>
+                                    this.onChangeInput(23, 'zoom', () => {
+                                        this.map.flyTo([results[0].y, results[0].x]);
+                                        this.marker.setLatLng([results[0].y, results[0].x]);
+                                    })
+                                )
+                            ), 1200);
                     }
                 });
         }, 500);
@@ -404,7 +412,8 @@ class MainSettingsDialog extends Component {
     doChange = (name, value, cb) => {
         let newData = JSON.parse(JSON.stringify(this.props.data))
         newData.common[name] = value;
-        this.props.onChange(newData, null, () => cb && cb());
+        this.props.onChange(newData, null, () =>
+            cb && cb());
     }
 
     onMarkerDragend = evt => {
