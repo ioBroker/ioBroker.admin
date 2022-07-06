@@ -414,7 +414,7 @@ class SystemSettingsDialog extends Component {
         if (dataAux) {
             state[idAux] = dataAux;
         }
-        this.setState(state, () => cb & cb());
+        this.setState(state, () => cb && cb());
     }
 
     render() {
