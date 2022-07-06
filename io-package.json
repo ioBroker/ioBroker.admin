@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.1.10",
+    "version": "6.1.11",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.1.11": {
+        "en": "Fixed GUI issues\nRelease candidate 1",
+        "de": "Fehler behoben\nRelease Kandidat 1",
+        "ru": "Исправлены проблемы с GUI\nВыпуск кандидата 1",
+        "pt": "Problemas de interface gráfica fixa\nCandidato de lançamento 1",
+        "nl": "GUI problemen\nLaat de kandidaat vrij. 1",
+        "fr": "Problèmes d'interface graphique fixes\nCandidat à la libération 1",
+        "it": "Problemi di GUI fissi\nCandidato di rilascio 1",
+        "es": "Cuestiones de interfaz gráfica fija\nEl candidato a la liberación 1",
+        "pl": "Wskaźnik GUI\nKandydatka 1",
+        "zh-cn": "九. 混合的古伊问题\n释放候选人 导 言"
+      },
       "6.1.10": {
         "en": "Fixed issue with map",
         "de": "Problem mit Karte behoben",
@@ -89,18 +101,6 @@
         "es": "Ajustes adicionales para definir la pantalla de carga",
         "pl": "Dodrukowanie ekranu",
         "zh-cn": "界定装载检查的附加环境"
-      },
-      "6.1.1": {
-        "en": "Corrected russian translations\nPreparations for iobroker cloud",
-        "de": "Korrigierte russische Übersetzungen\nPräparate für Jobrokerwolke",
-        "ru": "Правильные русские переводы\nПодготовка к облаку iobroker",
-        "pt": "Traduções russas corretas\nPreparações para nuvem iobroker",
-        "nl": "Vertaling:\nVoorbereiden voor iobrokerwolk",
-        "fr": "Traductions russes corrigées\nPréparations pour le cloud iobroker",
-        "it": "Traduzioni russe corrette\nPreparazioni per cloud iobroker",
-        "es": "Traducciones rusianas corregidas\nPreparaciones para la nube de yobroker",
-        "pl": "Poprawione tłumaczenia ruszyńskie\nPrzygotowanie do iobroker cloud",
-        "zh-cn": "更正\nA. 准备iobroker云层"
       }
     },
     "desc": {
