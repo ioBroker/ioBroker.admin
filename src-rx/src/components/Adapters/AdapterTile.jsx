@@ -28,6 +28,12 @@ import IsVisible from '../IsVisible';
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
+function MyImage(props) {
+    const {src, alt, style, ...other} = props;
+    const img = props.style.backgroundImage.substring(5, props.style.backgroundImage.length - 2);
+    return <img src={img} alt={alt} {...other} onError={() => {this.onerror = null; this.src = './img/no-image.png';}} />;
+}
+
 const styles = theme => ({
     root: {
         position: 'relative',
@@ -378,7 +384,8 @@ const AdapterTile = ({
         >
             <CardMedia
                 className={classes.img}
-                component="img"
+                component={MyImage}
+                src={image || 'img/no-image.png'}
                 image={image || 'img/no-image.png'}
             />
             <div className={clsx(classes.adapter, (stat || versionDate) && classes.adapterWithAgo)}>{adapter}</div>
