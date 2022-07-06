@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import semver from 'semver';
+import moment from 'moment';
 
 import { withStyles } from '@mui/styles';
 
@@ -27,94 +28,107 @@ import {MOBILE_WIDTH} from '../helpers/MobileDialog';
 import I18n from '@iobroker/adapter-react-v5/i18n';
 import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
-const styles = theme => {
-    return ({
-        closeButton: {
-            position: 'absolute',
-            right: theme.spacing(1),
-            top: theme.spacing(1),
-            color: theme.palette.grey[500],
-        },
-        languageButton: {
-            position: 'absolute',
-            right: 52 + parseInt(theme.spacing(1), 10),
-            top: theme.spacing(1)
-        },
-        languageButtonActive: {
-            color: theme.palette.primary.main
-        },
-        typography: {
-            paddingRight: 30
-        },
-        version: {
-            background: '#4dabf5',
-            borderRadius: 3,
-            paddingLeft: 10,
-            fontWeight: 'bold',
-            color: theme.palette.mode === 'dark' ? 'black' : 'white'
-        },
+import 'moment/locale/de';
+import 'moment/locale/es';
+import 'moment/locale/fr';
+import 'moment/locale/it';
+import 'moment/locale/nl';
+import 'moment/locale/pl';
+import 'moment/locale/pt';
+import 'moment/locale/ru';
+import 'moment/locale/zh-cn';
+
+const styles = theme => ({
+    closeButton: {
+        position: 'absolute',
+        right: theme.spacing(1),
+        top: theme.spacing(1),
+        color: theme.palette.grey[500],
+    },
+    languageButton: {
+        position: 'absolute',
+        right: 52 + parseInt(theme.spacing(1), 10),
+        top: theme.spacing(1)
+    },
+    languageButtonActive: {
+        color: theme.palette.primary.main
+    },
+    typography: {
+        paddingRight: 30
+    },
+    version: {
+        background: '#4dabf5',
+        borderRadius: 3,
+        paddingLeft: 10,
+        fontWeight: 'bold',
+        color: theme.palette.mode === 'dark' ? 'black' : 'white'
+    },
+    wrapperButton: {
+    },
+    '@media screen and (max-width: 465px)': {
         wrapperButton: {
+            '& *': {
+                fontSize: 10
+            }
         },
-        '@media screen and (max-width: 465px)': {
-            wrapperButton: {
-                '& *': {
-                    fontSize: 10
-                }
-            },
+    },
+    '@media screen and (max-width: 380px)': {
+        wrapperButton: {
+            '& *': {
+                fontSize: 9
+            }
         },
-        '@media screen and (max-width: 380px)': {
-            wrapperButton: {
-                '& *': {
-                    fontSize: 9
-                }
-            },
-        },
-        messageText: {
+    },
+    messageText: {
 
-        },
-        messageIcon: {
-            width: 32,
-            height: 32,
-            marginRight: 8
-        },
-        messageColor_warn: {
-            color: '#cb7642',
-        },
-        messageColor_error: {
-            color: '#f5614d',
-        },
-        messageColor_info: {
-            color: '#5abd29',
-        },
-        messageTitle_warn: {
-            background: '#cb7642',
-            borderRadius: 3,
-            paddingLeft: 10,
-            fontWeight: 'bold',
-            color: theme.palette.mode === 'dark' ? 'black' : 'white'
-        },
-        messageTitle_error: {
-            background: '#f5614d',
-            borderRadius: 3,
-            paddingLeft: 10,
-            fontWeight: 'bold',
-            color: theme.palette.mode === 'dark' ? 'black' : 'white'
-        },
-        messageTitle_info: {
-            background: '#5abd29',
-            borderRadius: 3,
-            paddingLeft: 10,
-            fontWeight: 'bold',
-            color: theme.palette.mode === 'dark' ? 'black' : 'white'
-        },
-        messageDialogText: {
-            fontSize: 18
-        },
-        messageDialogTitle: {
+    },
+    messageIcon: {
+        width: 32,
+        height: 32,
+        marginRight: 8
+    },
+    messageColor_warn: {
+        color: '#cb7642',
+    },
+    messageColor_error: {
+        color: '#f5614d',
+    },
+    messageColor_info: {
+        color: '#5abd29',
+    },
+    messageTitle_warn: {
+        background: '#cb7642',
+        borderRadius: 3,
+        paddingLeft: 10,
+        fontWeight: 'bold',
+        color: theme.palette.mode === 'dark' ? 'black' : 'white'
+    },
+    messageTitle_error: {
+        background: '#f5614d',
+        borderRadius: 3,
+        paddingLeft: 10,
+        fontWeight: 'bold',
+        color: theme.palette.mode === 'dark' ? 'black' : 'white'
+    },
+    messageTitle_info: {
+        background: '#5abd29',
+        borderRadius: 3,
+        paddingLeft: 10,
+        fontWeight: 'bold',
+        color: theme.palette.mode === 'dark' ? 'black' : 'white'
+    },
+    messageDialogText: {
+        fontSize: 18
+    },
+    messageDialogTitle: {
 
-        }
-    })
-};
+    },
+    versionTime: {
+        fontSize: 'smaller',
+        opacity: 0.5,
+        marginLeft: 4,
+    },
+});
 
 class AdapterUpdateDialog extends Component {
     constructor(props) {
@@ -173,6 +187,7 @@ class AdapterUpdateDialog extends Component {
             this.props.adapterObject?.version
         );
         this.lang = I18n.getLanguage();
+        moment.locale(this.lang);
     }
 
     getDependencies() {
@@ -213,7 +228,7 @@ class AdapterUpdateDialog extends Component {
 
             result.push(<Grid item key={entry.version}>
                 <Typography className={this.props.classes.version}>
-                    {entry.version}
+                    {entry.version}{this.props.adapterObject?.version === entry.version ? <span className={this.props.classes.versionTime}>({moment(this.props.adapterObject.versionDate).fromNow()})</span> : ''}
                 </Typography>
                 {news.map((value, index) => {
                     return <Typography key={`${entry.version}-${index}`} component="div" variant="body2">

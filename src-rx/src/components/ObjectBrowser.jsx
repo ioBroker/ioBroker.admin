@@ -1314,18 +1314,21 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
             valFull.push({ t: texts.lc, v: state.lc ? Utils.formatDate(new Date(state.lc), dateFormat) : '' });
         }
         if (state.from) {
-            let from = (state.from || '');
+            let from = state.from.toString();
             if (from.startsWith('system.adapter.')) {
                 from = from.substring(15);
             }
             valFull.push({ t: texts.from, v: from });
         }
         if (state.user) {
-            let user = (state.user || '');
+            let user = state.user.toString();
             if (user.startsWith('system.user.')) {
                 user = user.substring(12);
             }
             valFull.push({ t: texts.user, v: user });
+        }
+        if (state.c) {
+            valFull.push({ t: texts.c, v: state.c});
         }
         valFull.push({ t: texts.quality, v: Utils.quality2text(state.q || 0).join(', '), nbr: true });
     }
@@ -1686,6 +1689,7 @@ class ObjectBrowser extends Component {
             lc:                       props.t('ra_tooltip_lc'),
             from:                     props.t('ra_tooltip_from'),
             user:                     props.t('ra_tooltip_user'),
+            c:                        props.t('ra_tooltip_comment'),
             quality:                  props.t('ra_tooltip_quality'),
             editObject:               props.t('ra_tooltip_editObject'),
             deleteObject:             props.t('ra_tooltip_deleteObject'),
