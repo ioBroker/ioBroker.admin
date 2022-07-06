@@ -108,6 +108,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Fixed GUI issues
+* (bluefox) Release candidate 1
+
 ### 6.1.10 (2022-07-04)
 * (bluefox) Fixed issue with map
 
