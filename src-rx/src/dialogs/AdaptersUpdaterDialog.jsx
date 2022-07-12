@@ -179,6 +179,7 @@ class AdaptersUpdaterDialog extends Component {
                                 installed={this.props.installed}
                                 repository={this.props.repository}
                                 noTranslation={this.props.noTranslation}
+                                toggleTranslation={this.props.toggleTranslation}
                                 onUpdateSelected={(selected, updateAvailable) => {
                                     if (updateAvailable) {
                                         this.updateAvailable = updateAvailable;

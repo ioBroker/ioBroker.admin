@@ -10,9 +10,25 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
-import { Avatar, CircularProgress } from '@mui/material';
+import {
+    Avatar, Button,
+    CircularProgress,
+    Dialog, DialogActions,
+    DialogContent,
+    DialogTitle,
+    Grid,
+    IconButton,
+    Typography
+} from '@mui/material';
 
 import AdapterUpdateDialog from '../../dialogs/AdapterUpdateDialog';
+import CloseIcon from '@mui/icons-material/Close';
+import LanguageIcon from '@mui/icons-material/Language';
+import InfoIcon from '@mui/icons-material/Info';
+
+import I18n from '@iobroker/adapter-react-v5/i18n';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import moment from "moment";
 
 const styles = theme => ({
     smallAvatar: {
@@ -39,6 +55,36 @@ const styles = theme => ({
             paddingLeft:2
         }
     },
+    wrapperButton: {
+    },
+    typography: {
+        paddingRight: 30
+    },
+    versions: {
+        minWidth: 110,
+        display: 'inline-block',
+    },
+    closeButton: {
+        position: 'absolute',
+        right: theme.spacing(1),
+        top: theme.spacing(1),
+        color: theme.palette.grey[500],
+    },
+    languageButton: {
+        position: 'absolute',
+        right: 52 + parseInt(theme.spacing(1), 10),
+        top: theme.spacing(1)
+    },
+    languageButtonActive: {
+        color: theme.palette.primary.main
+    },
+    versionHeader: {
+        background: '#4dabf5',
+        borderRadius: 3,
+        paddingLeft: 10,
+        fontWeight: 'bold',
+        color: theme.palette.mode === 'dark' ? 'black' : 'white'
+    },
 });
 
 class AdaptersUpdater extends Component {
@@ -51,6 +97,7 @@ class AdaptersUpdater extends Component {
 
         this.state = {
             current: this.props.current,
+            showNews: null,
         };
 
         this.currentRef = React.createRef();
@@ -99,18 +146,18 @@ class AdaptersUpdater extends Component {
         return updateAvailable;
     }
 
-    getNews(value) {
-        const adapter   = this.props.repository[value];
-        const installed = this.props.installed[value];
+    getNews(adapter) {
+        const adapterObj = this.props.repository[adapter];
+        const installed  = this.props.installed[adapter];
         const news = [];
 
-        if (installed && adapter && adapter.news) {
-            Object.keys(adapter.news).forEach(version => {
+        if (installed && adapterObj && adapterObj.news) {
+            Object.keys(adapterObj.news).forEach(version => {
                 try {
                     if (semver.gt(version, installed.version)) {
                         news.push({
                             version,
-                            news: this.props.noTranslation ? adapter.news[version].en : (adapter.news[version][this.props.lang] || adapter.news[version].en)
+                            news: this.props.noTranslation ? adapterObj.news[version].en : (adapterObj.news[version][this.props.lang] || adapterObj.news[version].en)
                         });
                     }
                 } catch (e) {
@@ -148,7 +195,23 @@ class AdaptersUpdater extends Component {
                 <ListItemText
                     primary={adapter}
                     title={this.getNews(adapter).map(item => `${item.version}: ${item.news}`).join('\n')}
-                    secondary={<span>{this.initialVersions[adapter]} → <span className={this.props.classes.toVersion}>{this.props.repository[adapter].version}</span></span>}
+                    secondary={<span>
+                        <div className={this.props.classes.versions}>
+                            {this.initialVersions[adapter]} → <span className={this.props.classes.toVersion}>{this.props.repository[adapter].version}</span>
+                        </div>
+                        <IconButton
+                            title={I18n.t('Show change log')}
+                            onClick={() =>
+                                this.setState({ showNews: {
+                                    adapter,
+                                    version: this.props.repository[adapter].version,
+                                    fromVersion: this.initialVersions[adapter]
+                                }})}
+                            size="small"
+                        >
+                            <InfoIcon />
+                        </IconButton>
+                    </span>}
                 />
                 {!this.props.finished && !this.props.inProcess && <ListItemSecondaryAction>
                     <Checkbox
@@ -178,9 +241,115 @@ class AdaptersUpdater extends Component {
         </React.Fragment>;
     }
 
+    getReactNews(adapter) {
+        const adapterObj = this.props.repository[adapter];
+        const installed  = this.props.installed[adapter];
+        const result = [];
+
+        if (installed && adapterObj && adapterObj.news) {
+            Object.keys(adapterObj.news).forEach(version => {
+                try {
+                    if (semver.gt(version, installed.version) && adapterObj.news[version]) {
+                        const newsText = this.props.noTranslation ?
+                            (adapterObj.news[version].en || '') :
+                            (adapterObj.news[version][this.props.lang] || adapterObj.news[version].en || '');
+
+                        const news = newsText.split('\n')
+                            .map(line => line
+                                .trim()
+                                .replace(/^\*\s?/, '')
+                                .replace(/<!--[^>]*->/, '')
+                                .replace(/<! -[^>]*->/, '')
+                                .trim()
+                            )
+                            .filter(line => !!line);
+
+                        result.push(<Grid item key={version}>
+                            <Typography className={this.props.classes.versionHeader}>
+                                {version}{this.props.adapterObject?.version === version ?
+                                    <span className={this.props.classes.versionTime}>({moment(this.props.adapterObject.versionDate).fromNow()})</span> : ''}
+                            </Typography>
+                            {news.map((value, index) => {
+                                return <Typography key={`${version}-${index}`} component="div" variant="body2">
+                                    { `• ${this.props.noTranslation ? adapterObj.news[version].en : (adapterObj.news[version][this.props.lang] || adapterObj.news[version].en)}`}
+                                </Typography>;
+                            })}
+                        </Grid>);
+                    }
+                } catch (e) {
+                    // ignore it
+                    console.warn(`Cannot compare "${version}" and "${installed.version}"`);
+                }
+            });
+        }
+
+        return result;
+    }
+
+    renderShowNews() {
+        if (this.state.showNews) {
+            const news = this.getReactNews(this.state.showNews.adapter);
+
+            return <Dialog
+                onClose={() => this.setState({ showNews: null })}
+                open={true}
+            >
+                <DialogTitle>
+                    <Typography component="h2" variant="h6" classes={{ root: this.props.classes.typography }}>
+                        <div style={{ width: 'calc(100% - 60px)'}}>{I18n.t('Update "%s" to v%s', this.state.showNews.adapter, this.state.showNews.version)}</div>
+                        <IconButton size="large" className={this.props.classes.closeButton} onClick={() => this.setState({ showNews: null })}>
+                            <CloseIcon />
+                        </IconButton>
+                        {I18n.getLanguage() !== 'en' && this.props.toggleTranslation ? <IconButton
+                            size="large"
+                            className={Utils.clsx(this.props.classes.languageButton, this.props.noTranslation && this.props.classes.languageButtonActive)}
+                            onClick={this.props.toggleTranslation}
+                            title={I18n.t('Disable/Enable translation')}
+                        >
+                            <LanguageIcon />
+                        </IconButton> : null}
+                    </Typography>
+                </DialogTitle>
+                <DialogContent dividers>
+                    <Grid
+                        container
+                        direction="column"
+                        spacing={2}
+                        wrap="nowrap"
+                    >
+                        {news.length ? <Grid item>
+                            <Typography variant="h6" gutterBottom>{I18n.t('Change log')}</Typography>
+                            <Grid
+                                container
+                                spacing={2}
+                                direction="column"
+                                wrap="nowrap"
+                            >
+                                {news}
+                            </Grid>
+                        </Grid> : I18n.t('No change log available')}
+                    </Grid>
+                </DialogContent>
+                <DialogActions className={this.props.classes.wrapperButton}>
+                    <Button
+                        variant="contained"
+                        onClick={() => this.setState({ showNews: null })}
+                        color="grey"
+                        startIcon={<CloseIcon />}
+                    >
+                        {this.mobile ? null : I18n.t('Close')}
+                    </Button>
+                </DialogActions>
+            </Dialog>;
+        } else {
+            return null;
+        }
+    }
+
     render() {
         return <List className={this.props.classes.root}>
             {this.updateAvailable.map(adapter => this.renderOneAdapter(adapter))}
+            {this.renderShowNews()}
         </List>;
     }
 }
@@ -199,6 +368,7 @@ AdaptersUpdater.propTypes = {
     updated: PropTypes.array.isRequired,
     finished: PropTypes.bool.isRequired,
     noTranslation: PropTypes.bool,
+    toggleTranslation: PropTypes.func,
 }
 
 export default withStyles(styles)(AdaptersUpdater);

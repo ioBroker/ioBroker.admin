@@ -1502,5 +1502,6 @@
   "Debug info": "调试信息",
   "You can change host on Instances, Adapters or Logs pages": "您可以在实例、适配器或日志页面上更改主机",
   "Waiting for connection of ioBroker...": "等待连接 ioBroker...",
-  "ioBroker is not connected": "ioBroker 未连接"
+  "ioBroker is not connected": "ioBroker 未连接",
+  "Show change log": "显示更改日志"
 }

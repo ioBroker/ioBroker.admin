@@ -1502,5 +1502,6 @@
   "Debug info": "Debug-Info",
   "You can change host on Instances, Adapters or Logs pages": "Man kann den Host auf den Seiten Instanzen, Adapter oder Protokolle ändern",
   "Waiting for connection of ioBroker...": "Warten auf Verbindung von ioBroker...",
-  "ioBroker is not connected": "ioBroker ist nicht verbunden"
+  "ioBroker is not connected": "ioBroker ist nicht verbunden",
+  "Show change log": "Änderungsprotokoll anzeigen"
 }
