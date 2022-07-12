@@ -152,7 +152,7 @@
           "newLine": true,
           "label": "Language for only this instance",
           "system": true,
-          "type": 'language',
+          "type": "language",
           "sm": 12,
           "md": 4,
           "lg": 2

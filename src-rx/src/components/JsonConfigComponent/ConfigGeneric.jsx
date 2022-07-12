@@ -432,13 +432,13 @@ class ConfigGeneric extends Component {
             try {
                 if (this.props.custom) {
                     // eslint-disable-next-line no-new-func
-                    const f = new Function('data', 'originalData', '_system', 'instanceObj', 'customObj', '_socket', 'return `' + pattern.replace(/`/g, '\\`') + '`');
-                    const result = f(this.props.data, this.props.originalData, this.props.systemConfig, this.props.instanceObj,  this.props.customObj, this.props.socket);
+                    const f = new Function('data', 'originalData',  'arrayIndex', 'globalData', '_system', 'instanceObj', 'customObj', '_socket', 'return `' + pattern.replace(/`/g, '\\`') + '`');
+                    const result = f(this.props.data, this.props.originalData, this.props.arrayIndex, this.props.globalData, this.props.systemConfig, this.props.instanceObj,  this.props.customObj, this.props.socket, this.props.arrayIndex, this.props.globalData);
                     return result;
                 } else {
                     // eslint-disable-next-line no-new-func
-                    const f = new Function('data', 'originalData', '_system', '_alive', '_common', '_socket', 'return `' + pattern.replace(/`/g, '\\`') + '`');
-                    return f(this.props.data, this.props.originalData, this.props.systemConfig, this.props.alive, this.props.common, this.props.socket);
+                    const f = new Function('data', 'originalData',  'arrayIndex', 'globalData', '_system', '_alive', '_common', '_socket', 'return `' + pattern.replace(/`/g, '\\`') + '`');
+                    return f(this.props.data, this.props.originalData, this.props.arrayIndex, this.props.globalData, this.props.systemConfig, this.props.alive, this.props.common, this.props.socket);
                 }
             } catch (e) {
                 console.error(`Cannot execute ${pattern}: ${e}`);

@@ -174,7 +174,7 @@ class ConfigTable extends ConfigGeneric {
     }
 
     itemTable(attrItem, data, idx) {
-        const { value, systemConfig } = this.state;
+        const { value } = this.state;
         const { schema } = this.props;
         const schemaForAttribute = schema.items && schema.items.find(el => el.attr === attrItem);
 
@@ -201,9 +201,10 @@ class ConfigTable extends ConfigGeneric {
             themeName={this.props.themeName}
             data={data}
             table
-            custom
+            custom={this.props.custom}
             schema={schemaItem}
-            systemConfig={systemConfig}
+            systemConfig={this.props.systemConfig}
+            originalData={this.props.originalData}
             customs={this.props.customs}
             onChange={(attr, valueChange) => {
                 const newObj = JSON.parse(JSON.stringify(value));

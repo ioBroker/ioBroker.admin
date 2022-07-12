@@ -154,6 +154,7 @@ function startAdapter(options) {
             return obj.callback && adapter.sendTo(obj.from, obj.command, 'history.0', obj.callback);
         } else
         if (obj.command === 'selectSendTo') {
+            adapter.log.info('SelectSendTo: ' + JSON.stringify(obj.message));
             // just for test
             return obj.callback && adapter.sendTo(obj.from, obj.command, [
                 {"label": "Afghanistan", "value": "AF"},
