@@ -450,10 +450,6 @@ class Instances extends Component {
             instance.version = common.version || null;
             instance.stoppedWhenWebExtension = instance.obj.common.mode === 'daemon' ? instance.obj.common.webExtension : undefined;
 
-            if (instance.adapter === 'openweathermap') {
-                debugger;
-            }
-
             if (instance.stoppedWhenWebExtension) {
                 const eId = this.states[instance.id + '.info.extension'] || (await this.props.socket.getState(instance.id + '.info.extension'));
                 instance.stoppedWhenWebExtension = eId ? eId.val : undefined;
