@@ -110,6 +110,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 ## Changelog
 ### **WORK IN PROGRESS**
 * (bluefox) Fixed GUI issues
+* (bluefox) Release candidate 2
 
 ### 6.1.11 (2022-07-06)
 * (bluefox) Fixed GUI issues
