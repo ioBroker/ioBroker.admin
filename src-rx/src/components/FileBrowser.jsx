@@ -231,8 +231,13 @@ const styles = theme => ({
         width: BUTTON_WIDTH,
         height: ROW_HEIGHT,
         minWidth: BUTTON_WIDTH,
-        verticalAlign: 'top',
+        verticalAlign: 'middle',
+        textAlign: 'center',
         padding: 0,
+        borderRadius: BUTTON_WIDTH / 2,
+        '&:hover': {
+            backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)',
+        },
         '& span': {
             paddingTop: 9,
         },
@@ -240,7 +245,17 @@ const styles = theme => ({
             width: 14,
             height: 14,
             fontSize: '1rem',
+            marginTop: -3,
+            verticalAlign: 'middle',
+            color: theme.palette.mode === 'dark' ? '#EEE' : '#111',
         },
+    },
+    itemDownloadEmptyTable: {
+        display: 'inline-block',
+        width: BUTTON_WIDTH,
+        height: ROW_HEIGHT,
+        minWidth: BUTTON_WIDTH,
+        padding: 0,
     },
     itemAclButtonTable: {
         width: BUTTON_WIDTH,
@@ -934,7 +949,7 @@ class FileBrowser extends Component {
             <Hidden smDown>
                 {this.state.viewType === TABLE && this.props.expertMode ? <div className={this.props.classes[`itemDeleteButton${this.state.viewType}`]} /> : null}
             </Hidden>
-            {this.state.viewType === TABLE && this.props.allowDownload ? <div className={this.props.classes[`itemDownloadButton${this.state.viewType}`]} /> : null}
+            {this.state.viewType === TABLE && this.props.allowDownload ? <div className={this.props.classes[`itemDownloadEmpty${this.state.viewType}`]} /> : null}
 
             {this.state.viewType === TABLE && this.props.allowDelete && this.state.folders[item.id] && this.state.folders[item.id].length ?
                 <IconButton
@@ -1135,15 +1150,17 @@ class FileBrowser extends Component {
                     :
                     <div className={this.props.classes[`itemDeleteButton${this.state.viewType}`]} />}
             </Hidden>
-            {this.state.viewType === TABLE && this.props.allowDownload ? <IconButton
-                download
+            {this.state.viewType === TABLE && this.props.allowDownload ? <a
+                className={Utils.clsx('MuiButtonBase-root', 'MuiIconButton-root', 'MuiIconButton-sizeLarge', this.props.classes.itemDownloadButtonTable)}
+                tabIndex="0"
+                download={item.id}
                 href={this.imagePrefix + item.id}
-                className={this.props.classes[`itemDownloadButton${this.state.viewType}`]}
-                onClick={e => e.stopPropagation()}
-                size="large"
+                onClick={e => {
+                    e.stopPropagation();
+                }}
             >
                 <DownloadIcon />
-            </IconButton> : null}
+            </a> : null}
 
             {this.state.viewType === TABLE &&
                 this.props.allowDelete &&
