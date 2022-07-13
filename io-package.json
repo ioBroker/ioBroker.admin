@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.1.12",
+    "version": "6.2.0",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.2.0": {
+        "en": "Release 6.2",
+        "de": "6.2",
+        "ru": "Релиз 6.2",
+        "pt": "Lançamento 6.2",
+        "nl": "Los 6,2",
+        "fr": "Sortie 6.2",
+        "it": "Rilasciare 6.2",
+        "es": "Liberación 6.2",
+        "pl": "Wydanie 6.2",
+        "zh-cn": "第6.2条"
+      },
       "6.1.12": {
         "en": "Fixed GUI issues\nRelease candidate 2",
         "de": "Fehler behoben\nRelease Kandidat 2",
@@ -79,18 +91,6 @@
         "zh-cn": "修改东道国政府最新指示"
       },
       "6.1.7": {
-        "en": "Some GUI fixes done",
-        "de": "Einige GUI behoben",
-        "ru": "Некоторые исправления GUI сделаны",
-        "pt": "Algumas correções GUI feitas",
-        "nl": "Sommige GUI reparaties gedaan",
-        "fr": "Quelques corrections de GUI effectuées",
-        "it": "Alcune correzioni di GUI fatte",
-        "es": "Alguna GUI arreglado",
-        "pl": "Niektóre rozwiązania GUI",
-        "zh-cn": "一些古伊特公司做的"
-      },
-      "6.1.6": {
         "en": "Some GUI fixes done",
         "de": "Einige GUI behoben",
         "ru": "Некоторые исправления GUI сделаны",
