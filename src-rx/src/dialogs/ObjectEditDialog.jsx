@@ -77,9 +77,7 @@ class ObjectEditDialog extends Component {
                     language="json"
                     theme={this.props.themeName === 'dark' ? 'vs-dark' : 'vs-light'}
                     value={this.state.code}
-                    options={{
-                        selectOnLineNumbers: true
-                    }}
+                    options={{ selectOnLineNumbers: true }}
                     onChange={(newValue, e) => this.onChange(newValue, e)}
                     editorDidMount={(editor, monaco) => this.editorDidMount(editor, monaco)}
                 />

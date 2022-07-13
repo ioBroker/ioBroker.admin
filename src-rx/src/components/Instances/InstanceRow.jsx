@@ -1,7 +1,19 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
-import clsx from 'clsx';
+import parser from 'cron-parser';
+import cronstrue from 'cronstrue';
+
+import 'cronstrue/locales/en';
+import 'cronstrue/locales/de';
+import 'cronstrue/locales/es';
+import 'cronstrue/locales/fr';
+import 'cronstrue/locales/it';
+import 'cronstrue/locales/nl';
+import 'cronstrue/locales/pl';
+import 'cronstrue/locales/pt_BR';
+import 'cronstrue/locales/ru';
+import 'cronstrue/locales/zh_CN';
 
 import {
     Accordion, AccordionDetails, AccordionSummary, Avatar,
@@ -33,6 +45,7 @@ import ComplexCron from '@iobroker/adapter-react-v5/Dialogs/ComplexCron';
 import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 import TextWithIcon from '@iobroker/adapter-react-v5/Components/TextWithIcon';
 import SelectWithIcon from '@iobroker/adapter-react-v5/Components/SelectWithIcon';
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 import InstanceInfo from './InstanceInfo';
 import State from '../State';
@@ -862,19 +875,39 @@ const InstanceRow = ({
         }}
     /> : null;
 
+    let next;
+    let prev;
+    if (instance.mode === 'schedule' &&instance.schedule && instance.enabled) {
+        next = new Date(parser.parseExpression(instance.schedule).next());
+        prev = new Date(parser.parseExpression(instance.schedule).prev());
+    }
+
     const stateTooltip = [
         item.stoppedWhenWebExtension !== undefined ? <State key={1} state={true} >{t('Runs as web-extension')}</State> : '',
         instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined ? <State key={2} state={item.connectedToHost} >{t('Connected to host')}</State> : '',
         instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined ? <State key={3} state={item.alive} >{t('Heartbeat')}</State> : '',
         item.connected !== null && item.stoppedWhenWebExtension === undefined ? <State key={4} state={!!item.connected}>
             {typeof item.connected === 'string' ? t('Connected:') + ' ' + (item.connected || '-') : t('Connected to device or service')}
-        </State> : ''
-    ];
+        </State> : '',
+        instance.mode === 'schedule' && instance.schedule ? <State key={5} state={instance.enabled}>CRON: {cronstrue.toString(instance.schedule, { locale: lang })}</State> : null,
+        next ? <State key={6} state={true} >{t('Next start: %s', next.toLocaleDateString(lang) + ' ' + next.toLocaleTimeString(lang))}</State> : null,
+        prev ? <State key={7} state={true} >{t('Last start: %s', prev.toLocaleDateString(lang) + ' ' + prev.toLocaleTimeString(lang))}</State> : null
+    ].filter(el => el);
+
+    const modeIcon = <div
+        className={Utils.clsx(
+            classes.smallAvatar,
+            classes.statusIndicator,
+            instance.mode === 'daemon' || instance.mode === 'schedule' ? classes[status] : classes.transparent,
+            item.connectedToHost && item.alive && item.connected === false && classes.orangeDevice
+        )}>
+        {getModeIcon(instance.mode, status, classes['statusIcon_' + status], item.stoppedWhenWebExtension)}
+    </div>;
 
     return <Accordion
         key={key}
         square
-        classes={{root: deleting ? classes.deleting : ''}}
+        classes={{ root: deleting ? classes.deleting : '' }}
         expanded={expanded === instance.id && !deleting}
         onChange={() => {
             if (openDialogCron ||
@@ -897,7 +930,7 @@ const InstanceRow = ({
                 content:  desktop ? classes.desktopRowContent : undefined,
                 expandIcon: desktop ? classes.desktopButton : undefined,
             }}
-            className={clsx(
+            className={Utils.clsx(
                 (!item.running || instance.mode !== 'daemon' || item.stoppedWhenWebExtension !== undefined) && (idx % 2 === 0 ? classes.instanceStateNotEnabled1 : classes.instanceStateNotEnabled2),
                 item.running && instance.mode === 'daemon' && item.stoppedWhenWebExtension === undefined && (!item.connectedToHost || !item.alive) && (idx % 2 === 0 ? classes.instanceStateNotAlive1 : classes.instanceStateNotAlive2),
                 item.running && item.connectedToHost && item.alive && item.connected === false && (idx % 2 === 0 ? classes.instanceStateAliveNotConnected1 : classes.instanceStateAliveNotConnected2),
@@ -932,22 +965,16 @@ const InstanceRow = ({
             />}
             <Grid container spacing={1} alignItems="center" direction="row" wrap="nowrap" className={classes.rowGridLine}>
                 <div className={classes.gridStyle}>
-                    <Tooltip title={<span style={{ display: 'flex', flexDirection: 'column' }} classes={{ popper: classes.tooltip }}>{stateTooltip}</span>}>
-                        <div
-                            className={clsx(
-                                classes.smallAvatar,
-                                classes.statusIndicator,
-                                instance.mode === 'daemon' || instance.mode === 'schedule' ? classes[status] : classes.transparent,
-                                item.connectedToHost && item.alive && item.connected === false && classes.orangeDevice
-                            )}>
-                            {getModeIcon(instance.mode, status, classes['statusIcon_' + status], item.stoppedWhenWebExtension)}
-                        </div>
-                    </Tooltip>
+                    {stateTooltip.length ?
+                        <Tooltip title={<span style={{ display: 'flex', flexDirection: 'column' }} classes={{ popper: classes.tooltip }}>{stateTooltip}</span>}>
+                            {modeIcon}
+                        </Tooltip>
+                        : modeIcon}
                     <Avatar
                         variant="square"
                         alt={instance.id}
                         src={instance.image}
-                        className={clsx(classes.instanceIcon, desktop && classes.desktopIcon)}
+                        className={Utils.clsx(classes.instanceIcon, desktop && classes.desktopIcon)}
                     />
                     <div className={classes.instanceId}>{instance.id}</div>
                 </div>
@@ -965,7 +992,7 @@ const InstanceRow = ({
                                 }
                             }}
                             onFocus={event => event.stopPropagation()}
-                            className={clsx(classes.button, instance.canStart ?
+                            className={Utils.clsx(classes.button, instance.canStart ?
                                 (item.running ? classes.enabled : classes.disabled) : classes.hide)}
                         >
                             {item.running ? <PauseIcon /> : <PlayArrowIcon />}
@@ -980,7 +1007,7 @@ const InstanceRow = ({
                                     <IconButton
                                         disabled={!instance.config}
                                         size="small"
-                                        className={clsx(classes.button, !instance.config && classes.hiddenOpacity)}
+                                        className={Utils.clsx(classes.button, !instance.config && classes.hiddenOpacity)}
                                         onClick={event => {
                                             event.stopPropagation();
                                             openConfig(id);
@@ -1002,7 +1029,7 @@ const InstanceRow = ({
                                 extendObject('system.adapter.' + instance.id, {});
                             }}
                             onFocus={event => event.stopPropagation()}
-                            className={clsx(classes.button, !instance.canStart && classes.hide)}
+                            className={Utils.clsx(classes.button, !instance.canStart && classes.hide)}
                             disabled={!item.running}
                         >
                             <RefreshIcon />
@@ -1014,7 +1041,7 @@ const InstanceRow = ({
                         <div>
                             <IconButton
                                 size="small"
-                                className={clsx(classes.button, (!instance.links || !instance.links[0]) && classes.hide)}
+                                className={Utils.clsx(classes.button, (!instance.links || !instance.links[0]) && classes.hide)}
                                 disabled={!item.running}
                                 onClick={event => {
                                     event.stopPropagation();
@@ -1035,7 +1062,7 @@ const InstanceRow = ({
                     </Tooltip>
                 </IsVisible>
 
-                <Typography className={clsx(classes.secondaryHeading, classes.hidden800)} component="div">
+                <Typography className={Utils.clsx(classes.secondaryHeading, classes.hidden800)} component="div">
                     <div
                         onMouseMove={() => handlerEdit(true)}
                         onMouseEnter={() => handlerEdit(true)}
@@ -1045,7 +1072,7 @@ const InstanceRow = ({
                         <Tooltip title={t('Edit')} classes={{ popper: classes.tooltip }}>
                             <IconButton
                                 size="small"
-                                className={clsx(classes.button, !visibleEdit && classes.hiddenOpacity)}
+                                className={Utils.clsx(classes.button, !visibleEdit && classes.hiddenOpacity)}
                                 onClick={event => {
                                     event.stopPropagation();
                                     setOpenDialogText(true);
@@ -1057,7 +1084,7 @@ const InstanceRow = ({
                     </div>
                 </Typography>
                 {expertMode &&
-                    <div className={clsx(classes.hidden1250, (instance.mode !== 'daemon' || !item.running) && classes.invisible)} >
+                    <div className={Utils.clsx(classes.hidden1250, (instance.mode !== 'daemon' || !item.running) && classes.invisible)} >
                         <InstanceInfo
                             icon={<ImportExportIcon />}
                             tooltip={t('events')}
@@ -1076,12 +1103,12 @@ const InstanceRow = ({
                 }
                 {expertMode &&
                     <Tooltip title={item.logLevelObject === item.logLevel ? `${t('loglevel')} ${item.logLevel}` : `${t('saved:')} ${item.logLevelObject} / ${t('actual:')} ${item.logLevel}`} classes={{ popper: classes.tooltip }}>
-                        <Avatar className={clsx(classes.smallAvatar, classes.hidden380, classes[item.logLevel])}>
+                        <Avatar className={Utils.clsx(classes.smallAvatar, classes.hidden380, classes[item.logLevel])}>
                             {item.loglevelIcon}
                         </Avatar>
                     </Tooltip>
                 }
-                <Grid item className={clsx(classes.hidden1050, classes.width150, (instance.mode !== 'daemon' || !item.running) && classes.invisible)}>
+                <Grid item className={Utils.clsx(classes.hidden1050, classes.width150, (instance.mode !== 'daemon' || !item.running) && classes.invisible)}>
                     <InstanceInfo
                         icon={<MemoryIcon />}
                         tooltip={t('RAM usage')}
@@ -1089,7 +1116,7 @@ const InstanceRow = ({
                         {(instance.mode === 'daemon' && item.running ? getMemory(id) : '-.--') + ' MB'}
                     </InstanceInfo>
                 </Grid>
-                {hosts.length > 1 || (hosts.length && hosts[0].common?.name !== instance.host) ? <Grid item className={clsx(classes.hidden1230)}>
+                {hosts.length > 1 || (hosts.length && hosts[0].common?.name !== instance.host) ? <Grid item className={Utils.clsx(classes.hidden1230)}>
                     {<TextWithIcon value={instance.host} list={hosts} removePrefix="system.host." themeType={themeType} t={t} lang={lang}/>}
                 </Grid> : null}
             </Grid>
@@ -1097,14 +1124,14 @@ const InstanceRow = ({
                 <Tooltip title="sentry" classes={{ popper: classes.tooltip }}>
                     <IconButton
                         size="small"
-                        className={clsx(classes.button, expertMode && item.checkSentry ? null : classes.hide)}
+                        className={Utils.clsx(classes.button, expertMode && item.checkSentry ? null : classes.hide)}
                         onClick={e => {
                             e.stopPropagation();
                             setSentry(instance);
                         }}
                     >
                         <CardMedia
-                            className={clsx(classes.sentry, !item.sentry && classes.contrast0)}
+                            className={Utils.clsx(classes.sentry, !item.sentry && classes.contrast0)}
                             component="img"
                             image={item.sentry ? sentry : noSentry}
                         />
@@ -1116,7 +1143,7 @@ const InstanceRow = ({
                     <Tooltip title={t('compact groups')} classes={{ popper: classes.tooltip }}>
                         <IconButton
                             size="small"
-                            className={clsx(classes.button, expertMode && item.checkCompact ? null : classes.hide)}
+                            className={Utils.clsx(classes.button, expertMode && item.checkCompact ? null : classes.hide)}
                             onClick={e => {
                                 e.stopPropagation();
                                 setCompact(instance);
@@ -1147,7 +1174,7 @@ const InstanceRow = ({
                         </InstanceInfo>
                     </Grid>
                     <Grid container item direction="column" xs={12} sm={6} md={4} className={classes.paddingRight200}>
-                        {expertMode && <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
+                        {expertMode && <div className={Utils.clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={item.loglevelIcon} tooltip={item.logLevelObject === item.logLevel ? `${t('loglevel')} ${item.logLevel}` : `${t('saved:')} ${item.logLevelObject} / ${t('actual:')} ${item.logLevel}`}>
                                 {item.logLevelObject === item.logLevel ? item.logLevel : `${item.logLevelObject} / ${item.logLevel}`}
                             </InstanceInfo>
@@ -1184,7 +1211,7 @@ const InstanceRow = ({
                                 {(instance.mode === 'daemon' && item.running ? getMemory(id) : '-.--') + ' MB'}
                             </InstanceInfo>
                         </Grid>
-                        {item.modeSchedule && <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
+                        {item.modeSchedule && <div className={Utils.clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={<ScheduleIcon />} tooltip={t('schedule_group')}>
                                 {getSchedule(id) || '-'}
                             </InstanceInfo>
@@ -1202,7 +1229,7 @@ const InstanceRow = ({
                             </Tooltip>
                         </div>}
                         {expertMode && (instance.mode === 'daemon') &&
-                            <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
+                            <div className={Utils.clsx(classes.displayFlex, classes.maxWidth300)}>
                                 <InstanceInfo
                                     icon={<ScheduleIcon className={classes.scheduleIcon} />}
                                     tooltip={t('restart')}
@@ -1224,7 +1251,7 @@ const InstanceRow = ({
                             </div>
                         }
                         {expertMode &&
-                            <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
+                            <div className={Utils.clsx(classes.displayFlex, classes.maxWidth300)}>
                                 <InstanceInfo
                                     icon={<MemoryIcon className={classes.ram} />}
                                     tooltip={t('RAM limit')}
@@ -1246,7 +1273,7 @@ const InstanceRow = ({
                             </div>
                         }
                         {expertMode && item.checkCompact && item.compact && item.supportCompact &&
-                            <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
+                            <div className={Utils.clsx(classes.displayFlex, classes.maxWidth300)}>
                                 <InstanceInfo icon={<ViewCompactIcon className={classes.marginRight} color="inherit" />} tooltip={t('compact groups')}>
                                     {item.compactGroup === 1 ? 'default' : item.compactGroup === '0' ? "controller" : !item.compactGroup ? 'default' : item.compactGroup || 'default'}
                                 </InstanceInfo>
@@ -1264,7 +1291,7 @@ const InstanceRow = ({
                                 </Tooltip>
                             </div>
                         }
-                        {expertMode && <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
+                        {expertMode && <div className={Utils.clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={<LowPriorityIcon className={classes.marginRight} color="inherit" />} tooltip={t('Start order (tier)')}>
                                 {instance.adapter === 'admin' ? t('Always first') : t(arrayTier.find(el => el.value === item.tier)?.desc || arrayTier[2])}
                             </InstanceInfo>
@@ -1281,7 +1308,7 @@ const InstanceRow = ({
                                 </IconButton>
                             </Tooltip> : null}
                         </div>}
-                        <div className={clsx(classes.maxWidth300, classes.visible800)}>
+                        <div className={Utils.clsx(classes.maxWidth300, classes.visible800)}>
                             <InstanceInfo >
                                 {item.name}
                             </InstanceInfo>
@@ -1298,7 +1325,7 @@ const InstanceRow = ({
                                 </IconButton>
                             </Tooltip>
                         </div>
-                        {hosts.length > 1 || (hosts.length && hosts[0].common?.name !== instance.host) ? <div className={clsx(classes.displayFlex, classes.maxWidth300)}>
+                        {hosts.length > 1 || (hosts.length && hosts[0].common?.name !== instance.host) ? <div className={Utils.clsx(classes.displayFlex, classes.maxWidth300)}>
                             <InstanceInfo icon={<HostIcon className={classes.marginRight} />} tooltip={t('Host for this instance')}>
                                 {<TextWithIcon value={instance.host} list={hosts} removePrefix="system.host." themeType={themeType} t={t} lang={lang}/>}
                             </InstanceInfo>
@@ -1352,14 +1379,14 @@ const InstanceRow = ({
                         <Tooltip title="sentry" classes={{ popper: classes.tooltip }}>
                             <IconButton
                                 size="small"
-                                className={clsx(classes.button, expertMode && item.checkSentry ? null : classes.hide)}
+                                className={Utils.clsx(classes.button, expertMode && item.checkSentry ? null : classes.hide)}
                                 onClick={e => {
                                     e.stopPropagation();
                                     setSentry(instance);
                                 }}
                             >
                                 <CardMedia
-                                    className={clsx(classes.sentry, !item.sentry && classes.contrast0)}
+                                    className={Utils.clsx(classes.sentry, !item.sentry && classes.contrast0)}
                                     component="img"
                                     image={sentry}
                                 />
@@ -1371,7 +1398,7 @@ const InstanceRow = ({
                             <Tooltip title={t('compact groups')} classes={{ popper: classes.tooltip }}>
                                 <IconButton
                                     size="small"
-                                    className={clsx(classes.button, expertMode && item.checkCompact ? null : classes.hide)}
+                                    className={Utils.clsx(classes.button, expertMode && item.checkCompact ? null : classes.hide)}
                                     onClick={e => {
                                         e.stopPropagation();
                                         setCompact(instance);

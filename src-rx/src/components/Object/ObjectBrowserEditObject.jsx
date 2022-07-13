@@ -664,7 +664,7 @@ class ObjectBrowserEditObject extends Component {
                     }
                 </div>
                 {typeof json.common.icon !== 'undefined' ?
-                    <div className={classes.flex}>
+                    <div className={classes.flex} style={{ flexGrow: 1 }}>
                         <UploadImage
                             disabled={disabled}
                             maxSize={10 * 1024}
@@ -957,7 +957,7 @@ class ObjectBrowserEditObject extends Component {
                     disabled={this.state.error || this.state.changed}
                     title={this.props.t('Create a copy of this object')}
                 ><IconCopy/></Button>
-                <div style={{flexGrow: 1}}/>
+                <div style={{ flexGrow: 1 }}/>
                 {this.state.tab === 'object' && <Button
                     color="grey"
                     onClick={e => this.onCopy(e)}

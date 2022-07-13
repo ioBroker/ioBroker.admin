@@ -1503,5 +1503,7 @@
   "You can change host on Instances, Adapters or Logs pages": "Вы можете изменить хост на страницах Настройки, Драйверы или Журнал.",
   "Waiting for connection of ioBroker...": "Ожидание подключения ioBroker...",
   "ioBroker is not connected": "ioBroker не подключен",
-  "Show change log": "Показать журнал изменений"
+  "Show change log": "Показать журнал изменений",
+  "Next start: %s": "Следующий старт: %s",
+  "Last start: %s": "Последний старт: %s"
 }

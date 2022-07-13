@@ -445,6 +445,7 @@ class Instances extends Component {
             instance.materialize = common.adminUI.config === 'materialize';
             instance.compactMode = common.runAsCompactMode || false;
             instance.mode = common.mode || null;
+            instance.schedule = common.schedule || null;
             instance.loglevel = common.loglevel || null;
             instance.adapter = common.name || null;
             instance.version = common.version || null;

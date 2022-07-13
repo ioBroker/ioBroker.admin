@@ -1,5 +1,4 @@
 import { Component, createRef } from 'react';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import Dropzone from 'react-dropzone';
 import { Cropper } from 'react-cropper';
@@ -11,6 +10,8 @@ import IconButton from '@mui/material/IconButton';
 import IconClose from '@mui/icons-material/Close';
 import CropIcon from '@mui/icons-material/Crop';
 import { FaFileUpload as UploadIcon } from 'react-icons/fa';
+
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 // import 'cropperjs/dist/cropper.css';
 const cropperStyles = `
@@ -467,7 +468,7 @@ class UploadImage extends Component {
             }}
         >
             {({ getRootProps, getInputProps }) => <div
-                className={clsx(
+                className={Utils.clsx(
                     classes.uploadDiv,
                     uploadFile === 'dragging' && classes.uploadDivDragging,
                     classes.dropZone,
@@ -476,7 +477,7 @@ class UploadImage extends Component {
                 )}
                 {...getRootProps()}>
                 <input {...getInputProps()} />
-                <div className={clsx(classes.uploadCenterDiv, error && classes.error)}>
+                <div className={Utils.clsx(classes.uploadCenterDiv, error && classes.error)}>
                     {!icon ? <div className={classes.uploadCenterTextAndIcon}>
                             <UploadIcon className={classes.uploadCenterIcon} />
                             <div className={classes.uploadCenterText}>{

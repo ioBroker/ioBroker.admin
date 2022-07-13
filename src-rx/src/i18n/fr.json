@@ -1503,5 +1503,7 @@
   "You can change host on Instances, Adapters or Logs pages": "Vous pouvez changer d'hôte sur les pages Instances, Adaptateurs ou Journaux",
   "Waiting for connection of ioBroker...": "En attente de connexion d'ioBroker...",
   "ioBroker is not connected": "ioBroker n'est pas connecté",
-  "Show change log": "Afficher le journal des modifications"
+  "Show change log": "Afficher le journal des modifications",
+  "Next start: %s": "Prochain démarrage : %s",
+  "Last start: %s": "Dernier démarrage : %s"
 }
