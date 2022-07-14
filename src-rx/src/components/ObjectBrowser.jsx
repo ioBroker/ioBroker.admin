@@ -3174,17 +3174,17 @@ class ObjectBrowser extends Component {
                         </IconButton>
                     </div>
                 </Tooltip>
-                {this.props.showExpertButton &&
-                <Tooltip title={this.props.t('ra_expertMode')}>
-                    <IconButton
-                        key="expertMode"
-                        color={this.state.filter.expertMode ? 'secondary' : 'default'}
-                        onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
-                        size="large"
-                    >
-                        <IconExpert />
-                    </IconButton>
-                </Tooltip>
+                {this.props.showExpertButton && !this.props.expertMode &&
+                    <Tooltip title={this.props.t('ra_expertMode')}>
+                        <IconButton
+                            key="expertMode"
+                            color={this.state.filter.expertMode ? 'secondary' : 'default'}
+                            onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}
+                            size="large"
+                        >
+                            <IconExpert />
+                        </IconButton>
+                    </Tooltip>
                 }
                 {!this.props.disableColumnSelector &&
                 <Tooltip title={this.props.t('ra_Configure visible columns')}>
