@@ -877,9 +877,23 @@ const InstanceRow = ({
 
     let next;
     let prev;
-    if (instance.mode === 'schedule' &&instance.schedule && instance.enabled) {
-        next = new Date(parser.parseExpression(instance.schedule).next());
-        prev = new Date(parser.parseExpression(instance.schedule).prev());
+    let cronText;
+    if (instance.mode === 'schedule' && instance.schedule) {
+        try {
+            cronText = cronstrue.toString(instance.schedule, { locale: lang });
+        } catch (e) {
+            cronText = instance.schedule;
+        }
+
+        if (instance.enabled) {
+            try {
+                next = new Date(parser.parseExpression(instance.schedule).next());
+                prev = new Date(parser.parseExpression(instance.schedule).prev());
+            } catch (e) {
+                next = null;
+                prev = null;
+            }
+        }
     }
 
     const stateTooltip = [
@@ -889,7 +903,7 @@ const InstanceRow = ({
         item.connected !== null && item.stoppedWhenWebExtension === undefined ? <State key={4} state={!!item.connected}>
             {typeof item.connected === 'string' ? t('Connected:') + ' ' + (item.connected || '-') : t('Connected to device or service')}
         </State> : '',
-        instance.mode === 'schedule' && instance.schedule ? <State key={5} state={instance.enabled}>CRON: {cronstrue.toString(instance.schedule, { locale: lang })}</State> : null,
+        cronText ? <State key={5} state={instance.enabled}>CRON: {cronText}</State> : null,
         next ? <State key={6} state={true} >{t('Next start: %s', next.toLocaleDateString(lang) + ' ' + next.toLocaleTimeString(lang))}</State> : null,
         prev ? <State key={7} state={true} >{t('Last start: %s', prev.toLocaleDateString(lang) + ' ' + prev.toLocaleTimeString(lang))}</State> : null
     ].filter(el => el);
