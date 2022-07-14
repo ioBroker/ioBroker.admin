@@ -30,18 +30,6 @@
         "pl": "Wydanie 6.2",
         "zh-cn": "第6.2条"
       },
-      "6.2.0": {
-        "en": "Release 6.2",
-        "de": "6.2",
-        "ru": "Релиз 6.2",
-        "pt": "Lançamento 6.2",
-        "nl": "Los 6,2",
-        "fr": "Sortie 6.2",
-        "it": "Rilasciare 6.2",
-        "es": "Liberación 6.2",
-        "pl": "Wydanie 6.2",
-        "zh-cn": "第6.2条"
-      },
       "6.1.12": {
         "en": "Fixed GUI issues\nRelease candidate 2",
         "de": "Fehler behoben\nRelease Kandidat 2",
