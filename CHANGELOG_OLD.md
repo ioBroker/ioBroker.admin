@@ -1,5 +1,11 @@
 ## 5.3.7 (2022-04-10)
 * (bluefox) Changed the charts rendering
+## 6.1.10 (2022-07-04)
+* (bluefox) Fixed issue with map
+
+## 5.3.7 (2022-04-10)
+* (bluefox) Changed the charts rendering
+
 ## 6.1.9 (2022-07-02)
 * (bluefox) Some GUI fixes done
 

@@ -108,7 +108,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.2.3 (2022-07-18)
 * (AlCalzone) Implemented AES-192 encryption and decryption in GUI
 
 ### 6.2.2 (2022-07-18)
@@ -124,9 +124,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.1.11 (2022-07-06)
 * (bluefox) Fixed GUI issues
 * (bluefox) Release candidate 1
-
-### 6.1.10 (2022-07-04)
-* (bluefox) Fixed issue with map
 
 ## License
 The MIT License (MIT)
