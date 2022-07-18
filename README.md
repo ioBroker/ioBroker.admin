@@ -108,6 +108,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (AlCalzone) Implemented AES-192 encryption and decryption in GUI
+
 ### 6.2.2 (2022-07-18)
 * (bluefox) Corrected JSON config table and login page
 
