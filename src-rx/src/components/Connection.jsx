@@ -2287,7 +2287,7 @@ class Connection {
             return Promise.reject(NOT_CONNECTED);
         }
         return new Promise(resolve =>
-            this._socket.emit('sendToHost', host, 'getNotifications', {category}, notifications =>
+            this._socket.emit('sendToHost', host, 'getNotifications', { category }, notifications =>
                 resolve(notifications)));
     }
 

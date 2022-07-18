@@ -1031,6 +1031,55 @@ function getData(adapter, callback) {
     });
 }
 
+async function checkRevokedVersions(repository) {
+    try {
+        const adapters = Object.keys(repository);
+        const instances = await adapter.getObjectViewAsync('system', 'instance', {startkey: 'system.adapter.', endkey: 'system.adapter.\u9999'});
+
+        repository.dwd.blockedVersions = ['<=2.8.3'];
+
+        for (let a = 0; a < adapters.length; a++) {
+            const _adapter = adapters[a];
+            if (repository[_adapter].blockedVersions) {
+                // read current version
+                try {
+                    if (Array.isArray(repository[_adapter].blockedVersions)) {
+                        const instance = instances.rows.find(item => item.value.common.name === _adapter && item.value.common.enabled);
+                        if (instance && instance.value.common && instance.value.common.version) {
+                            for (let i = 0; i < repository[_adapter].blockedVersions.length; i++) {
+                                if (semver.satisfies(instance.value.common.version, repository[_adapter].blockedVersions[i])) {
+                                    // stop all instances
+                                    for (let k = 0; k < instances.rows.length; k++) {
+                                        const obj = instances.rows[k].value;
+                                        if (obj.common.enabled && obj.common.name === _adapter) {
+                                            obj.common.enabled = false;
+                                            await adapter.setForeignObjectAsync(obj._id, obj);
+                                            adapter.log.warn(`Instance ${obj._id.replace('system.adapter.', '')} was disabled because blocked. Please update ${_adapter} to newer or available version`);
+                                            adapter.sendToHost(obj.common.host, 'addNotification', {
+                                                scope: 'system',
+                                                category: 'accessErrors', // change to 'blocked' when js-controller 4.1. released
+                                                instance: obj._id,
+                                                message: `Instance version was blocked`,
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        _adapter.log.error(`Invalid blockedVersions for ${_adapter}: ${JSON.stringify(repository[_adapter].blockedVersions)}. Expected array like ["<= 3.17.4"] or also ["~3.14.0", "~3.15.0", "~3.16.0"]`);
+                    }
+                } catch (e) {
+                    _adapter.log.error('Cannot check revoked versions: ' + e);
+                    // ignore
+                }
+            }
+        }
+    } catch (e) {
+        adapter.log.error('Cannot check revoked versions: ' + e);
+    }
+}
+
 // update icons by all known default objects. Remove this function after 2 years (BF: 2021.04.20)
 function updateIcons() {
     if (fs.existsSync(utils.controllerDir + '/io-package.json')) {
@@ -1066,7 +1115,8 @@ function updateRegister(isForce) {
                     repos.native &&
                     repos.native.repositories &&
                     repos.native.repositories[active] &&
-                    Date.now() < repos.ts + adapter.config.autoUpdate * ONE_HOUR_MS) {
+                    Date.now() < repos.ts + adapter.config.autoUpdate * ONE_HOUR_MS
+                ) {
                     exists = true;
                 }
 
@@ -1083,6 +1133,8 @@ function updateRegister(isForce) {
                             adapter.log.info('Repository received successfully.');
 
                             socket && socket.repoUpdated();
+                            checkRevokedVersions(_repository)
+                                .then(() => {});
                         }
 
                         // start next cycle
