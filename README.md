@@ -108,6 +108,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Corrected JSON config table and login page
+
 ### 6.2.1 (2022-07-14)
 * (bluefox) Release 6.2
 
