@@ -1040,11 +1040,11 @@ async function checkRevokedVersions(repository) {
             const _adapter = adapters[a];
             if (repository[_adapter].blockedVersions) {
                 // read current version
-                try {
-                    if (Array.isArray(repository[_adapter].blockedVersions)) {
-                        const instance = instances.rows.find(item => item.value.common.name === _adapter && item.value.common.enabled);
-                        if (instance && instance.value.common && instance.value.common.version) {
-                            for (let i = 0; i < repository[_adapter].blockedVersions.length; i++) {
+                if (Array.isArray(repository[_adapter].blockedVersions)) {
+                    const instance = instances.rows.find(item => item.value.common.name === _adapter && item.value.common.enabled);
+                    if (instance && instance.value.common && instance.value.common.version) {
+                        for (let i = 0; i < repository[_adapter].blockedVersions.length; i++) {
+                            try {
                                 if (semver.satisfies(instance.value.common.version, repository[_adapter].blockedVersions[i])) {
                                     // stop all instances
                                     for (let k = 0; k < instances.rows.length; k++) {
@@ -1057,19 +1057,19 @@ async function checkRevokedVersions(repository) {
                                                 scope: 'system',
                                                 category: 'accessErrors', // change to 'blocked' when js-controller 4.1. released
                                                 instance: obj._id,
-                                                message: `Instance version was blocked`,
+                                                message: `Instance version was blocked. Please check for updates and update before restarting the instance`,
                                             });
                                         }
                                     }
                                 }
+                            } catch (e) {
+                                _adapter.log.error('Cannot check revoked versions: ' + repository[_adapter].blockedVersions[i]);
+                                // ignore
                             }
                         }
-                    } else {
-                        _adapter.log.error(`Invalid blockedVersions for ${_adapter}: ${JSON.stringify(repository[_adapter].blockedVersions)}. Expected array like ["<= 3.17.4"] or also ["~3.14.0", "~3.15.0", "~3.16.0"]`);
                     }
-                } catch (e) {
-                    _adapter.log.error('Cannot check revoked versions: ' + e);
-                    // ignore
+                } else {
+                    _adapter.log.error(`Invalid blockedVersions for ${_adapter}: ${JSON.stringify(repository[_adapter].blockedVersions)}. Expected array like ["<= 3.17.4"] or also ["~3.14.0", "~3.15.0", "~3.16.0"]`);
                 }
             }
         }
