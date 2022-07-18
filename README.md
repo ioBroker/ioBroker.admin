@@ -108,7 +108,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.2.2 (2022-07-18)
 * (bluefox) Corrected JSON config table and login page
 
 ### 6.2.1 (2022-07-14)
@@ -124,9 +124,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.1.10 (2022-07-04)
 * (bluefox) Fixed issue with map
-
-### 6.1.9 (2022-07-02)
-* (bluefox) Some GUI fixes done
 
 ## License
 The MIT License (MIT)
