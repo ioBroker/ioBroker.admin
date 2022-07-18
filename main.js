@@ -1036,8 +1036,6 @@ async function checkRevokedVersions(repository) {
         const adapters = Object.keys(repository);
         const instances = await adapter.getObjectViewAsync('system', 'instance', {startkey: 'system.adapter.', endkey: 'system.adapter.\u9999'});
 
-        repository.dwd.blockedVersions = ['<=2.8.3'];
-
         for (let a = 0; a < adapters.length; a++) {
             const _adapter = adapters[a];
             if (repository[_adapter].blockedVersions) {
