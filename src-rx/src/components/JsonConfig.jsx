@@ -42,6 +42,32 @@ const styles = {
 
 /**
  * Decrypt the password/value with given key
+ * @param key - Secret key
+ * @param value - value to decrypt
+ */
+function decryptLegacy(key, value) {
+    let result = '';
+    for (let i = 0; i < value.length; i++) {
+        result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+    }
+    return result;
+}
+
+/**
+ * Encrypt the password/value with given key
+ * @param key - Secret key
+ * @param value - value to encrypt
+ */
+function encryptLegacy(key, value) {
+    let result = '';
+    for (let i = 0; i < value.length; i++) {
+        result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+    }
+    return result;
+}
+
+/**
+ * Decrypt the password/value with given key
  *  Usage:
  *  ```
  *     function load(settings, onChange) {
@@ -58,11 +84,26 @@ const styles = {
  * @returns {string}
  */
 function decrypt(key, value) {
-    let result = '';
-    for (let i = 0; i < value.length; i++) {
-        result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+    if (typeof value !== 'string') {
+        return value;
     }
-    return result;
+
+    // if not encrypted as aes-192 or key not a valid 48 digit hex -> fallback
+    if (!value.startsWith(`$/aes-192-cbc:`) || !/^[0-9a-f]{48}$/.test(key)) {
+        return decryptLegacy(key, value);
+    }
+
+    // algorithm:iv:encryptedValue
+    const textParts = value.split(':', 3);
+
+    const _key = window.CryptoJS.enc.Hex.parse(key);
+    const iv = window.CryptoJS.enc.Hex.parse(textParts[1]);
+
+    const cipherParams = window.CryptoJS.lib.CipherParams.create({ ciphertext: window.CryptoJS.enc.Hex.parse(textParts[2]) });
+
+    const decryptedBinary = window.CryptoJS.AES.decrypt(cipherParams, _key, { iv });
+
+    return window.CryptoJS.enc.Utf8.stringify(decryptedBinary);
 }
 
 /**
@@ -81,14 +122,44 @@ function decrypt(key, value) {
  *  ```
  * @param {string} key - Secret key
  * @param {string} value - value to encrypt
+ * @param {string} _iv - optional initial vector for tests
  * @returns {string}
  */
-function encrypt(key, value) {
-    let result = '';
-    for (let i = 0; i < value.length; i++) {
-        result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+function encrypt(key, value, _iv) {
+    if (typeof value !== 'string') {
+        return value;
     }
-    return result;
+
+    if (!/^[0-9a-f]{48}$/.test(key)) {
+        // key length is not matching for AES-192-CBC or key is no valid hex - fallback to old encryption
+        return encryptLegacy(key, value);
+    }
+
+    let iv;
+    if (_iv) {
+        iv = window.CryptoJS.enc.Hex.parse(_iv);
+    } else {
+        iv = window.CryptoJS.lib.WordArray.random(128 / 8);
+    }
+
+    const _key = window.CryptoJS.enc.Hex.parse(key);
+    const encrypted = window.CryptoJS.AES.encrypt(value, _key, { iv }).ciphertext;
+
+    return `$/aes-192-cbc:${window.CryptoJS.enc.Hex.stringify(iv)}:${encrypted}`;
+}
+
+function loadScript(src, id) {
+    if (!id || !document.getElementById(id)) {
+        return new Promise(resolve => {
+            const script = document.createElement('script');
+            script.setAttribute('id', id);
+            script.onload = resolve;
+            script.src = src;
+            document.getElementsByTagName('head')[0].appendChild(script);
+        });
+    } else {
+        return document.getElementById(id).onload;
+    }
 }
 
 class JsonConfig extends Router {
@@ -194,7 +265,8 @@ class JsonConfig extends Router {
                 // decode all native attributes listed in obj.encryptedNative
                 if (Array.isArray(obj.encryptedNative)) {
                     return this.props.socket.getSystemConfig()
-                        .then(systemConfig => {
+                        .then(async systemConfig => {
+                            await loadScript('../../lib/js/crypto-js/crypto-js.js', 'crypto-js');
                             this.secret = systemConfig.native.secret;
 
                             obj.encryptedNative.forEach(attr => {
@@ -265,6 +337,8 @@ class JsonConfig extends Router {
                 const encryptedObj = JSON.parse(JSON.stringify(obj));
                 // encode all native attributes listed in obj.encryptedNative
                 if (Array.isArray(encryptedObj.encryptedNative)) {
+                    await loadScript('../../lib/js/crypto-js/crypto-js.js', 'crypto-js');
+
                     encryptedObj.encryptedNative.forEach(attr => {
                         if (encryptedObj.native[attr]) {
                             encryptedObj.native[attr] = encrypt(this.secret, encryptedObj.native[attr]);

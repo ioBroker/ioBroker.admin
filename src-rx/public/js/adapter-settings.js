@@ -424,6 +424,34 @@ function preInit () {
         }
     }
 
+    function _load(native, onChange) {
+        load(native, onChange);
+
+        // init selects
+        if (isMaterialize) {
+            $('select').select();
+            M.updateTextFields();
+
+            // workaround for materialize checkbox problem
+            $('input[type="checkbox"]+span').off('click').on('click', function (event) {
+                var $input = $(this).prev();
+                if (!$input.prop('disabled')) {
+                    $input.prop('checked', !$input.prop('checked')).trigger('change');
+                    // prevent propagation to prevent original handling from reverting our value change
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                }
+            });
+        }
+    }
+
+    function loadScript(src, onload) {
+        var script = document.createElement('script');
+        script.onload = onload
+        script.src = src;
+        document.getElementsByTagName('head')[0].appendChild(script);
+    }
+
     function loadSettings(callback) {
         socket.emit('getObject', id, async function (err, res) {
             if (!err && res && res.native) {
@@ -436,11 +464,16 @@ function preInit () {
                 } else {
                     // decode all native attributes listed in res.encryptedNative
                     if (res.encryptedNative && typeof res.encryptedNative === 'object' && res.encryptedNative instanceof Array) {
-                        for (var i = 0; i < res.encryptedNative.length; i++) {
-                            if (res.native[res.encryptedNative[i]]) {
-                                res.native[res.encryptedNative[i]] = await decrypt(res.native[res.encryptedNative[i]]);
+                        // load crypto library
+                        loadScript('../../lib/js/crypto-js/crypto-js.js', function () {
+                            for (var i = 0; i < res.encryptedNative.length; i++) {
+                                if (res.native[res.encryptedNative[i]]) {
+                                    res.native[res.encryptedNative[i]] = decrypt(res.native[res.encryptedNative[i]]);
+                                }
                             }
-                        }
+
+                            _load(res.native, onChange);
+                        });
                     } else {
                         var idx = supportedFeatures.indexOf('ADAPTER_AUTO_DECRYPT_NATIVE');
                         if (idx !== -1) {
@@ -449,23 +482,7 @@ function preInit () {
                         }
                     }
 
-                    load(res.native, onChange);
-                    // init selects
-                    if (isMaterialize) {
-                        $('select').select();
-                        M.updateTextFields();
-
-                        // workaround for materialize checkbox problem
-                        $('input[type="checkbox"]+span').off('click').on('click', function (event) {
-                            var $input = $(this).prev();
-                            if (!$input.prop('disabled')) {
-                                $input.prop('checked', !$input.prop('checked')).trigger('change');
-                                // prevent propagation to prevent original handling from reverting our value change
-                                event.preventDefault();
-                                event.stopImmediatePropagation();
-                            }
-                        });
-                    }
+                    _load(res.native, onChange);
                 }
                 if (typeof callback === 'function') {
                     callback();
@@ -2421,7 +2438,7 @@ function decryptLegacy(key, value) {
         key = systemSecret;
     }
     var result = '';
-    for(var i = 0; i < value.length; i++) {
+    for (var i = 0; i < value.length; i++) {
         result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
     }
     return result;
@@ -2472,40 +2489,23 @@ async function decrypt(key, value) {
     }
 
     // if not encrypted as aes-192 or key not a valid 48 digit hex -> fallback
-    if (!value.startsWith(`$/aes-256-cbc:`) || !/^[0-9a-f]{64}$/.test(key)) {
+    if (!value.startsWith(`$/aes-192-cbc:`) || !/^[0-9a-f]{48}$/.test(key)) {
         return decryptLegacy(key, value);
     }
 
+    // algorithm:iv:encryptedValue
     var textParts = value.split(':', 3);
-    // var algorithm = textParts[0];
-    var valueEncBytes = new Uint8Array(hex2array(textParts[2]));
 
-    var iv = new Uint8Array(hex2array(textParts[1]));
-    var _key = await window.crypto.subtle.importKey('raw', hex2array(key), { name: 'AES-CBC' }, true, ['encrypt', 'decrypt']);
-    var dec = await window.crypto.subtle.decrypt({ name: 'AES-CBC', iv }, _key, valueEncBytes.buffer);
-    var decBytes = new Uint8Array(dec);
-    return new TextDecoder().decode(decBytes);
+    var _key = CryptoJS.enc.Hex.parse(key);
+    var iv = CryptoJS.enc.Hex.parse(textParts[1]);
+
+    var cipherParams = CryptoJS.lib.CipherParams.create({ ciphertext: CryptoJS.enc.Hex.parse(textParts[2]) });
+
+    var decryptedBinary = CryptoJS.AES.decrypt(cipherParams, _key, { iv: iv });
+
+    return CryptoJS.enc.Utf8.stringify(decryptedBinary);
 }
 
-function hex2array(hex) {
-    var bytes = new Uint8Array(Math.ceil(hex.length / 2));
-    for (var i = 0; i < bytes.length; i++) {
-        bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
-    }
-    return bytes;
-}
-
-function array2hex(bytes) {
-    var convertedBack = '';
-    for (var i = 0; i < bytes.length; i++) {
-        if (bytes[i] < 16) {
-            convertedBack += '0';
-        }
-        convertedBack += bytes[i].toString(16);
-    }
-
-    return convertedBack;
-}
 /**
  * Encrypt the password/value with given key
  *  Usage:
@@ -2522,6 +2522,7 @@ function array2hex(bytes) {
  *  ```
  * @param {string} key - Secret key
  * @param {string} value - value to encrypt
+ * @param {string} _iv - optional initial vector for tests
  * @returns {string}
  */
 async function encrypt(key, value, _iv) {
@@ -2534,25 +2535,22 @@ async function encrypt(key, value, _iv) {
         return value;
     }
 
-    if (!/^[0-9a-f]{64}$/.test(key)) {
+    if (!/^[0-9a-f]{48}$/.test(key)) {
         // key length is not matching for AES-192-CBC or key is no valid hex - fallback to old encryption
         return encryptLegacy(key, value);
     }
 
-    var valueBytes = new TextEncoder().encode(value);
     var iv;
     if (_iv) {
-        iv = hex2array(_iv);
+        iv = CryptoJS.enc.Hex.parse(_iv);
     } else {
-        iv = new Uint8Array(16);
-        window.crypto.getRandomValues(iv);
+        iv = CryptoJS.lib.WordArray.random(128 / 8);
     }
 
-    var _key = await window.crypto.subtle.importKey('raw', hex2array(key), { name: 'AES-CBC' }, true, ['encrypt', 'decrypt']);
-    var enc = await window.crypto.subtle.encrypt({name: 'AES-CBC', iv}, _key, valueBytes);
-    var encBytes = new Uint8Array(enc);
+    var _key = CryptoJS.enc.Hex.parse(key);
+    var encrypted = CryptoJS.AES.encrypt(value, _key, { iv: iv }).ciphertext;
 
-    return `$/aes-256-cbc:${array2hex(iv)}:${array2hex(encBytes)}`;
+    return `$/aes-192-cbc:${window.CryptoJS.enc.Hex.stringify(iv)}:${encrypted}`;
 }
 
 // current Theme Style for Adapter CSS settings

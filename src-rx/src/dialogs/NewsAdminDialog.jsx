@@ -133,7 +133,7 @@ function checkConditions(condition, installedVersion) {
         const vers1 = condition.substring(8, condition.indexOf(',')).trim();
         const vers2 = condition.substring(condition.indexOf(',') + 1, condition.length - 1).trim();
         try {
-            return semver.gt(vers1, installedVersion) && semver.gt(vers2,  installedVersion);
+            return semver.gt(vers1, installedVersion) && semver.gt(vers2, installedVersion);
         } catch (e) {
             return false;
         }

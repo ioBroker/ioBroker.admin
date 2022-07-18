@@ -24,6 +24,7 @@
         "buffer": "^6.0.3",
         "clsx": "^1.2.1",
         "cron-parser": "^4.5.0",
+        "crypto-js": "^4.1.1",
         "cronstrue": "^2.11.0",
         "date-fns": "^2.28.0",
         "echarts": "^5.3.2",

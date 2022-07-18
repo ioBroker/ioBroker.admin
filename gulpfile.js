@@ -104,7 +104,7 @@ function copyFiles() {
     return del([
         dest + '**/*',
         'admin/custom/**/*',
-        // srcRx + 'public/lib/js/crypto-js/*',
+        srcRx + 'public/lib/js/crypto-js/*',
     ])
         .then(() => Promise.all([
             gulp.src([
@@ -128,8 +128,8 @@ function copyFiles() {
                 .pipe(gulp.dest('admin/')),
 
             // copy crypto-js
-            // gulp.src([`${srcRx}node_modules/crypto-js/*`, `!${srcRx}node_modules/crypto-js/CONTRIBUTING.md`, `!${srcRx}node_modules/crypto-js/README.md`])
-            //     .pipe(gulp.dest(dest + 'lib/js/crypto-js')),
+            gulp.src([`${srcRx}node_modules/crypto-js/*.*`, `!${srcRx}node_modules/crypto-js/CONTRIBUTING.md`, `!${srcRx}node_modules/crypto-js/README.md`])
+                 .pipe(gulp.dest(dest + 'lib/js/crypto-js')),
 
             gulp.src([
                 `${srcRx}build/static/js/*.js`,
