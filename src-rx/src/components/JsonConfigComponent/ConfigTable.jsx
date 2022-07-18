@@ -201,7 +201,7 @@ class ConfigTable extends ConfigGeneric {
             themeName={this.props.themeName}
             data={data}
             table
-            custom={this.props.custom}
+            custom
             schema={schemaItem}
             systemConfig={this.props.systemConfig}
             originalData={this.props.originalData}
@@ -266,10 +266,10 @@ class ConfigTable extends ConfigGeneric {
         const { order, orderBy } = this.state;
         return <TableHead>
             <TableRow>
-                {schema.items && schema.items.map(headCell => (
+                {schema.items && schema.items.map((headCell, i) =>
                     <TableCell
                         style={{ width: typeof headCell.width === 'string' && headCell.width.endsWith('%') ? headCell.width : headCell.width }}
-                        key={headCell.attr}
+                        key={headCell.attr + '_' + i}
                         align="left"
                         sortDirection={orderBy === headCell.attr ? order : false}
                     >
@@ -324,7 +324,7 @@ class ConfigTable extends ConfigGeneric {
                             >{this.state.filterOn.includes(headCell.attr) ? <IconFilterOff /> : <IconFilterOn />}</IconButton> : null}
                         </div>
                     </TableCell>
-                ))}
+                )}
                 {!schema.noDelete && <TableCell style={{ paddingLeft: 20, paddingRight: 20, width: buttonsWidth, textAlign: 'right' }} padding="checkbox">
                     <IconButton disabled size="small">
                         <DeleteIcon />
@@ -470,7 +470,7 @@ class ConfigTable extends ConfigGeneric {
                         {visibleValue.map((idx, i) =>
                             <TableRow
                                 hover
-                                key={idx}
+                                key={idx + '_' + i}
                             >
                                 {schema.items && schema.items.map(headCell =>
                                     <TableCell key={headCell.attr + '_' + idx} align="left">
