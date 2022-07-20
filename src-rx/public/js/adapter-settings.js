@@ -295,7 +295,8 @@ function preInit () {
                     if (oldObj.encryptedNative &&
                         typeof oldObj.encryptedNative === 'object' &&
                         oldObj.encryptedNative instanceof Array &&
-                        oldObj.encryptedNative.indexOf(a) !== -1) {
+                        oldObj.encryptedNative.indexOf(a) !== -1
+                    ) {
                         oldObj.native[a] = await encrypt(oldObj.native[a]);
                     }
                 }
@@ -463,7 +464,7 @@ function preInit () {
                     typeof noConfigDialog === 'undefined' && alert('Please implement save function in your admin/index.html');
                 } else {
                     // decode all native attributes listed in res.encryptedNative
-                    if (res.encryptedNative && typeof res.encryptedNative === 'object' && res.encryptedNative instanceof Array) {
+                    if (res.encryptedNative && typeof res.encryptedNative === 'object' && res.encryptedNative instanceof Array && res.encryptedNative.length) {
                         // load crypto library
                         loadScript('../../lib/js/crypto-js/crypto-js.js', function () {
                             for (var i = 0; i < res.encryptedNative.length; i++) {
@@ -2550,7 +2551,7 @@ async function encrypt(key, value, _iv) {
     var _key = CryptoJS.enc.Hex.parse(key);
     var encrypted = CryptoJS.AES.encrypt(value, _key, { iv: iv }).ciphertext;
 
-    return `$/aes-192-cbc:${window.CryptoJS.enc.Hex.stringify(iv)}:${encrypted}`;
+    return `$/aes-192-cbc:${CryptoJS.enc.Hex.stringify(iv)}:${encrypted}`;
 }
 
 // current Theme Style for Adapter CSS settings
