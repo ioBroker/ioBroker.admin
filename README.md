@@ -108,7 +108,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.2.4 (2022-07-20)
 * (bluefox) Corrected yahka settings
 
 ### 6.2.3 (2022-07-18)
@@ -123,10 +123,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.1.12 (2022-07-12)
 * (bluefox) Fixed GUI issues
 * (bluefox) Release candidate 2
-
-### 6.1.11 (2022-07-06)
-* (bluefox) Fixed GUI issues
-* (bluefox) Release candidate 1
 
 ## License
 The MIT License (MIT)
