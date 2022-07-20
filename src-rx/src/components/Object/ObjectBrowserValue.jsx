@@ -35,6 +35,8 @@ import IconCheck from '@mui/icons-material/Check';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 
+import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+
 import ObjectChart from './ObjectChart';
 
 const styles = theme => ({
@@ -84,6 +86,12 @@ const styles = theme => ({
             }
         },
     },
+    ackCheckbox: {
+        marginLeft: 4,
+    },
+    dialog: {
+        minHeight: window.clientHeight - 50 > 500 ? 500 : window.clientHeight - 50,
+    },
 });
 
 const AntSwitch = withStyles((theme) => ({
@@ -117,7 +125,9 @@ const AntSwitch = withStyles((theme) => ({
         opacity: 1,
         backgroundColor: theme.palette.common.white,
     },
-    checked: {},
+    checked: {
+
+    }
 }))(Switch);
 
 class ObjectBrowserValue extends Component {
@@ -322,6 +332,14 @@ class ObjectBrowserValue extends Component {
     }
 
     render() {
+        const ackCheckbox = <FormControlLabel
+            className={Utils.clsx(this.props.classes.formControl, !this.props.expertMode ? this.props.classes.ackCheckbox : '')}
+            control={ <Checkbox
+                defaultChecked={ false }
+                onChange={ e => this.ack = e.target.checked }/> }
+            label={ this.props.t('Acknowledged') }
+        />;
+
         return <Dialog
             open={ true }
             maxWidth={ this.state.type === 'number' || this.state.type === 'boolean' || this.state.type === 'states' ? (this.state.chart && this.state.chartEnabled ? 'lg' : null) : 'md'}
@@ -330,26 +348,38 @@ class ObjectBrowserValue extends Component {
             onClose={ () => this.props.onClose() }
             aria-labelledby="edit-value-dialog-title"
             aria-describedby="edit-value-dialog-description"
+            classes={{ root: this.state.type === 'json' ? this.props.classes.dialog : '' }}
         >
             <DialogTitle id="edit-value-dialog-title">
                 { this.props.t('Write value') }
                 { this.props.object.common?.write === false ? <span className={this.props.classes.readOnlyText}>({this.props.t('read only')})</span> : null }
                 {/*this.state.chart ? <div style={{flexGrow: 1}}/> : null*/}
                 { this.state.chart ? <Fab
-                    style={{float: 'right'}}
+                    style={{ float: 'right' }}
                     size="small"
                     color={this.state.chartEnabled ? 'primary' : 'default'}
                     onClick={() => {
                     (window._localStorage || window.localStorage).setItem('App.chartSetValue', this.state.chartEnabled ? 'false' : 'true');
-                    this.setState({chartEnabled: !this.state.chartEnabled});
+                    this.setState({ chartEnabled: !this.state.chartEnabled });
                 }}><ChartIcon /></Fab> : null }
+                { this.state.type === 'json' ?
+                    <IconButton
+                        style={{ float: 'right' }}
+                        onClick={() => {
+                            (window._localStorage || window.localStorage).setItem('App.fullScreen', this.state.fullScreen ? 'false' : 'true');
+                            this.setState({ fullScreen: !this.state.fullScreen })
+                        }}
+                    >{
+                        this.state.fullScreen ? <FullscreenExitIcon/> : <FullscreenIcon/>
+                    }
+                    </IconButton> : null}
             </DialogTitle>
             <DialogContent>
                 <form className={ this.props.classes.dialogForm } noValidate autoComplete="off" onSubmit={() => false} style={{height: '100%'}}>
-                    <Grid container direction="row" spacing={2} style={{height: '100%'}}>
+                    <Grid container direction="row" spacing={2} style={{ height: '100%' }}>
                         <Grid item xs={this.state.chart && this.state.chartEnabled ? 6 : 12} style={{ height: '100%' }}>
                             <Grid container direction="column" spacing={2} style={{ marginTop: 0, height: '100%' }}>
-                                <Grid item>
+                                {this.props.expertMode ? <Grid item>
                                     <Grid container direction="row" spacing={2} style={{ marginTop: 0 }}>
                                         { this.props.expertMode ? <Grid item><FormControl className={ this.props.classes.formControl }>
                                             <InputLabel>{ this.props.t('Value type') }</InputLabel>
@@ -373,17 +403,9 @@ class ObjectBrowserValue extends Component {
                                             </Select>
                                         </FormControl></Grid> : null }
                                         { this.state.type === 'json' ? <Grid item flex={1}></Grid> : null}
-                                        { this.state.type === 'json' ? <Grid item>
-                                            <IconButton onClick={() => {
-                                                (window._localStorage || window.localStorage).setItem('App.fullScreen', this.state.fullScreen ? 'false' : 'true');
-                                                this.setState({fullScreen: !this.state.fullScreen})
-                                            }}>{
-                                                this.state.fullScreen ? <FullscreenExitIcon/> : <FullscreenIcon/>
-                                            }
-                                            </IconButton></Grid> : null}
                                     </Grid>
-                                </Grid>
-                                <Grid item flex={this.state.type === 'json' && this.state.fullScreen ? 1 : undefined}>
+                                </Grid> : null}
+                                <Grid item flex={this.state.type === 'json' && this.state.fullScreen ? 1 : undefined} style={{ paddingTop: 0 }}>
                                     { this.state.type === 'boolean' ?
                                         /*<FormControl component="fieldset" className={ this.props.classes.formControl }>
                                             <FormControlLabel
@@ -450,15 +472,9 @@ class ObjectBrowserValue extends Component {
                                         )
                                     }
                                 </Grid >
-                                <Grid item>
-                                    <FormControlLabel
-                                        className={ this.props.classes.formControl }
-                                        control={ <Checkbox
-                                            defaultChecked={ false }
-                                            onChange={ e => this.ack = e.target.checked }/> }
-                                        label={ this.props.t('Acknowledged') }
-                                    />
-                                </Grid>
+
+                                {this.props.expertMode ?
+                                    <Grid item>{ackCheckbox}</Grid> : null}
 
                                 { this.props.expertMode ? <Grid item><FormControl variant="standard" className={ this.props.classes.quality }>
                                     <InputLabel>{ this.props.t('Quality') }</InputLabel>
@@ -510,6 +526,8 @@ class ObjectBrowserValue extends Component {
                 </form>
             </DialogContent>
             <DialogActions className={this.props.classes.wrapperButton}>
+                {!this.props.expertMode ? ackCheckbox : null}
+                {!this.props.expertMode ? <div style={{ flexGrow: 1 }} /> : null}
                 <Button
                     variant="contained"
                     onClick={ e => this.onUpdate(e) }

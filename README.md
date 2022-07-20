@@ -108,6 +108,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Corrected yahka settings
+
 ### 6.2.3 (2022-07-18)
 * (AlCalzone) Implemented AES-192 encryption and decryption in GUI
 
