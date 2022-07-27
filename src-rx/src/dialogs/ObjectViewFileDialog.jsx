@@ -51,6 +51,7 @@ const styles = theme => ({
         border: '1px solid white',
         borderRadius: 5,
         padding: '8px 16px',
+        marginRight: theme.spacing(1),
     }
 });
 

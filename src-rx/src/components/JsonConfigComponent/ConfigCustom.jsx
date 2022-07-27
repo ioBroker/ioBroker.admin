@@ -94,9 +94,10 @@ class ConfigCustom extends Component {
         }
 
         let url;
-        if (this.props.schema.url.startsWith('http:') || this.props.schema.url.startsWith('https:')) {
+        /*if (this.props.schema.url.startsWith('http:') || this.props.schema.url.startsWith('https:')) {
             url = this.props.schema.url;
-        } else if (this.props.schema.url.startsWith('./')) {
+        } else */
+        if (this.props.schema.url.startsWith('./')) {
             url = `${window.location.protocol}//${window.location.host}${this.props.schema.url.replace(/^\./, '')}`;
         } else {
             url = `${window.location.protocol}//${window.location.host}/adapter/${this.props.adapterName}/${this.props.schema.url}`;
