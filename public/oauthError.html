@@ -1,0 +1,47 @@
+<html>
+<head>
+    <title>OAuth timeout</title>
+    <script>
+        var SUPPORTED_LANGUAGES = ['en', 'de', 'es', 'fr', 'it', 'pl', 'nl', 'pt', 'ru', 'zh-CN'];
+        var lang = '%LANGUAGE%';
+        if (lang.startsWith('%')) {
+            lang = navigator.language || navigator.userLanguage;
+            if (lang !== 'zh-cn') {
+                lang = lang.substring(0, 2)
+            }
+            if (!SUPPORTED_LANGUAGES.includes(lang)) {
+                lang = 'en';
+            }
+        }
+
+    </script>
+    <style>
+        .error {
+            color: red;
+        }
+        .body-light {
+            background-color: #FFF;
+            color: #000;
+        }
+        .body-dark {
+            background-color: #000;
+            color: #FFF;
+        }
+
+    </style>
+</head>
+<body>
+    <h1 class="translate">OAuth timeout</h1>
+    <p><span class="translate">The OAuth authorization process has timed out.</span> <b class="translate">You can close this window now.</b></p>
+    <div class="error translate">%ERROR%</div>
+</body>
+<script>
+    var themeType = window.localStorage.getItem('App.themeType');
+    themeType = themeType || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    if (themeType === 'dark') {
+        window.document.body.className += 'body-dark';
+    } else {
+        window.document.body.className += 'body-light';
+    }
+</script>
+</html>

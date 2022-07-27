@@ -156,14 +156,6 @@
           "sm": 12,
           "md": 4,
           "lg": 2
-        },
-        "_send": {
-          "newLine": true,
-          "label": "SEND",
-          type: "sendto",
-          "command": "url",
-          "openUrl": true,
-          "window": "netatmo"
         }
       }
     },
