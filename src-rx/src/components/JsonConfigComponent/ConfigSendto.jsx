@@ -25,11 +25,93 @@ const styles = theme => ({
     }
 });
 
+function ip2int(ip) {
+    return ip.split('.').reduce((ipInt, octet) => (ipInt << 8) + parseInt(octet, 10), 0) >>> 0;
+}
+
+// copied from iobroker.admin/src-rx/src/Utils.js
+function findNetworkAddressOfHost(obj, localIp) {
+    const networkInterfaces = obj?.native?.hardware?.networkInterfaces;
+    if (!networkInterfaces) {
+        return null;
+    }
+
+    let hostIp;
+    Object.keys(networkInterfaces).forEach(inter =>
+        networkInterfaces[inter].forEach(ip => {
+            if (ip.internal) {
+                return;
+            } else if (localIp.includes(':') && ip.family !== 'IPv6') {
+                return;
+            } else if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
+                return;
+            }
+            if (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/)) { // if DNS name
+                hostIp = ip.address;
+            } else {
+                if (ip.family === 'IPv4' && localIp.includes('.') &&
+                    (ip2int(localIp) & ip2int(ip.netmask)) === (ip2int(ip.address) & ip2int(ip.netmask))) {
+                    hostIp = ip.address;
+                } else {
+                    hostIp = ip.address;
+                }
+            }
+        }));
+
+    if (!hostIp) {
+        Object.keys(networkInterfaces).forEach(inter => {
+            networkInterfaces[inter].forEach(ip => {
+                if (ip.internal) {
+                    return;
+                } else if (localIp.includes(':') && ip.family !== 'IPv6') {
+                    return;
+                } else if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
+                    return;
+                }
+                if (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/)) { // if DNS name
+                    hostIp = ip.address;
+                } else {
+                    hostIp = ip.address;
+                }
+            });
+        });
+    }
+
+    if (!hostIp) {
+        Object.keys(networkInterfaces).forEach(inter => {
+            networkInterfaces[inter].forEach(ip => {
+                if (ip.internal) {
+                    return;
+                }
+                hostIp = ip.address;
+            });
+        });
+    }
+
+    return hostIp;
+}
+
+
 class ConfigSendto extends ConfigGeneric {
-    componentDidMount() {
+    async componentDidMount() {
         super.componentDidMount();
 
-        this.setState( {_error: '', _message: ''});
+        let hostname = window.location.hostname;
+        if (this.props.schema.openUrl) {
+            // read admin host
+            const adminInstance = await this.props.socket.getCurrentInstance();
+            const instanceObj = await this.props.socket.getObject(`system.adapter.${adminInstance}`);
+            const hostObj = await this.props.socket.getObject(`system.host.${instanceObj.common.host}`);
+
+            const ip = findNetworkAddressOfHost(hostObj, window.location.hostname);
+            if (ip) {
+                hostname = ip + ':' + window.location.port;
+            } else {
+                console.warn(`Cannot find suitable IP in host ${instanceObj.common.host} for ${instanceObj._id}`);
+                return null;
+            }
+        }
+        this.setState( { _error: '', _message: '', hostname });
     }
 
     renderErrorDialog() {
@@ -51,9 +133,14 @@ class ConfigSendto extends ConfigGeneric {
     _onClick() {
         this.props.onCommandRunning(true);
 
+        const _origin = `${window.location.protocol}//${this.state.hostname}${window.location.pathname.replace(/\/index\.html$/, '')}`
+
         let data = this.props.schema.data;
         if (data === undefined && this.props.schema.jsonData) {
-            data = this.getPattern(this.props.schema.jsonData, {}, this.props.data);
+            data = this.getPattern(this.props.schema.jsonData, {}, {
+                _origin,
+                ...this.props.data
+            });
             try {
                 data = JSON.parse(data);
             } catch (e) {
@@ -62,6 +149,9 @@ class ConfigSendto extends ConfigGeneric {
         }
         if (data === undefined) {
             data = null;
+        }
+        if (this.props.schema.openUrl && !data) {
+            data = { _origin: `${window.location.protocol}//${this.state.hostname}${window.location.pathname.replace(/\/index\.html$/, '')}` };
         }
 
         this.props.socket.sendTo(
@@ -81,6 +171,9 @@ class ConfigSendto extends ConfigGeneric {
                         this.setState({_error: response.error ? I18n.t(response.error) : I18n.t('ra_Error')});
                     }
                 } else {
+                    if (response?.openUrl && this.props.schema.openUrl) {
+                        window.open(response.openUrl, response.window || this.props.schema.window || '_blank');
+                    } else
                     if (response?.result && this.props.schema.result && this.props.schema.result[response.result]) {
                         let text = this.getText(this.props.schema.result[response.result]);
                         if (response.args) {

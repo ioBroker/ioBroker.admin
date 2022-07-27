@@ -126,12 +126,14 @@ Possible types:
     - `pattern` - my pattern
 
 - `sendto` - button that sends request to instance (https://github.com/iobroker-community-adapters/ioBroker.email/blob/master/admin/index_m.html#L128)
-    - `command` - (Default 'send')
-    - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`
+    - `command` - (Default `send`)
+    - `jsonData` - string - `{"subject1": "${data.subject}", "options1": {"host": "${data.host}"}}`. You can use special variable `_origin` to send to instance the caller URL, like `http://localhost:8081/admin`.
     - `data` - object - `{"subject1": 1, "data": "static"}`. You can specify jsonData or data, but not both.
     - `result` - `{result1: {en: 'A'}, result2: {en: 'B'}}`
     - `error` - `{error1: {en: 'E'}, error2: {en: 'E2'}}`
-    - `variant` - `contained`, `outlined`, ''
+    - `variant` - `contained`, `outlined` or nothing
+    - `openUrl` - if true - open URL in new tab, if response contains attribute `openUrl`, like `{"openUrl": "http://1.2.3.4:80/aaa", "window": "_blank"}`
+    - `window` - if `openUrl` is true, this is name of new window. Could be overwritten if response consist `window` attribute.
       `this.props.socket.sendTo(adapterName.instance, command || 'send', data, result => {});`
 
 - `setState` - button that set instance's state

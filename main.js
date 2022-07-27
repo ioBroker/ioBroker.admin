@@ -84,15 +84,13 @@ function startAdapter(options) {
         socket && socket.objectChange(id, obj);
     });
 
-    adapter.on('stateChange', (id, state) => {
-        socket && socket.stateChange(id, state);
-    });
+    adapter.on('stateChange', (id, state) =>
+        socket && socket.stateChange(id, state));
 
-    adapter.on('fileChange', (id, fileName, size) => {
-        socket && socket.fileChange(id, fileName, size);
-    });
+    adapter.on('fileChange', (id, fileName, size) =>
+        socket && socket.fileChange(id, fileName, size));
 
-    adapter.on('ready', () => {
+    adapter.on('ready', () =>
         adapter.getForeignObject('system.config', (err, obj) => {
             if (!err && obj) {
                 obj.native = obj.native || {};
@@ -119,8 +117,7 @@ function startAdapter(options) {
             }
 
             // adapter.subscribeForeignFiles('*', '*');
-        });
-    });
+        }));
 
     adapter.on('message', obj => {
         if (!obj) {
@@ -162,6 +159,11 @@ function startAdapter(options) {
                 {"label": "Åland Islands", "value": "AX"},
                 {"label": "Albania", "value": "AL"},
             ], obj.callback);
+        } else
+        if (obj.command === 'url') {
+            adapter.log.info('url: ' + JSON.stringify(obj.message));
+            // just for test
+            return obj.callback && adapter.sendTo(obj.from, obj.command, { openUrl: obj.message._origin }, obj.callback);
         }
 
         socket && socket.sendCommand(obj);

@@ -7,6 +7,7 @@ import { Buffer } from 'buffer';
 import AceEditor from 'react-ace';
 import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/mode-json';
+import 'ace-builds/src-noconflict/mode-json5';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-noconflict/theme-chrome';
 import 'ace-builds/src-noconflict/ext-language_tools';
@@ -55,7 +56,7 @@ const styles = theme => ({
 
 export const EXTENSIONS = {
     images: ['png', 'jpg', 'svg', 'jpeg', 'bmp'],
-    code:   ['js', 'json', 'md'],
+    code:   ['js', 'json', 'json5', 'md'],
     txt:    ['log', 'txt', 'html', 'css', 'xml'],
 };
 
@@ -187,10 +188,12 @@ class FileViewer extends Component {
             .catch(e => window.alert('Cannot write file: ' + e));
     }
 
-    getEditFile(ext) {
+    static getEditFile(ext) {
         switch (ext) {
             case 'json':
                 return 'json';
+            case 'json5':
+                return 'json5';
             case 'js':
                 return 'javascript';
             case 'html':
@@ -219,7 +222,7 @@ class FileViewer extends Component {
             }
         } else if (this.state.code !== null || this.state.text !== null || this.state.editing) {
             return <AceEditor
-                mode={this.getEditFile(this.props.formatEditFile)}
+                mode={FileViewer.getEditFile(this.props.formatEditFile)}
                 width="100%"
                 height="100%"
                 theme={this.props.themeName === 'dark' ? 'clouds_midnight' : 'chrome'}

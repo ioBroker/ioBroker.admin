@@ -209,7 +209,6 @@ const styles = theme => ({
 });
 
 class IntroCard extends Component {
-
     constructor(props) {
         super(props);
 
@@ -300,9 +299,7 @@ class IntroCard extends Component {
     }
 
     handleExpandClick() {
-        this.setState({
-            expanded: !this.state.expanded
-        });
+        this.setState({ expanded: !this.state.expanded });
     }
 
     handleImageLoad() {
@@ -394,12 +391,13 @@ class IntroCard extends Component {
             md={4}
             lg={3}
             className={classes.root}
-        ><Link
-            href={!this.props.edit && this.props.action && this.props.action.link ? this.props.action.link : null}
-            underline="none"
-            target="_blank"
-            rel="noopener noreferrer"
         >
+            <Link
+                href={!this.props.edit && this.props.action && this.props.action.link ? this.props.action.link : null}
+                underline="none"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
                 <Card className={classes.card} onClick={e => {
                     e.stopPropagation();
                     if (!this.props.edit && this.props.camera && this.props.camera !== 'text') {

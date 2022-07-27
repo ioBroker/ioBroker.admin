@@ -1015,6 +1015,7 @@ class FileBrowser extends Component {
     getFileIcon(ext) {
         switch (ext) {
             case 'json':
+            case 'json5':
                 return <JsonIcon className={this.props.classes[`itemIcon${this.state.viewType}`]} />;
 
             case 'css':
@@ -1044,6 +1045,7 @@ class FileBrowser extends Component {
     static getEditFile(ext) {
         switch (ext) {
             case 'json':
+            case 'json5':
             case 'js':
             case 'html':
             case 'txt':

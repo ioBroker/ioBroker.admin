@@ -43,7 +43,6 @@ const STYLES = {
 }
 
 class Utils {
-
     /**
      * Format bytes to MB or GB
      * @param {!number} bytes
@@ -301,6 +300,7 @@ class Utils {
         } else {
             hostname = currentHostname;
         }
+
         return hostname;
     }
 

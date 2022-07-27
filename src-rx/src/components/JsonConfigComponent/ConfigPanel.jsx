@@ -81,6 +81,7 @@ const components = {
     room: ConfigRoom,
     select: ConfigSelect,
     selectSendTo: ConfigSelectSendTo,
+    sendto: ConfigSendto,
     sendTo: ConfigSendto,
     setState: ConfigSetState,
     slider: ConfigSlider,
