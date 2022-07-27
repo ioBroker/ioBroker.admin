@@ -73,7 +73,8 @@ const styles = theme => ({
         opacity: 0.2
     },
     flex: {
-        display: 'flex'
+        display: 'flex',
+        alignItems: 'baseline',
     },
     filteredOut: {
         padding: 10,
@@ -81,7 +82,7 @@ const styles = theme => ({
         textAlign: 'center'
     },
     buttonEmpty: {
-        width: 30,
+        width: 34,
         display: 'inline-block'
     },
     buttonCell: {
@@ -261,7 +262,7 @@ class ConfigTable extends ConfigGeneric {
         return stabilizedThis.map(el => el[0]);
     }
 
-    enhancedTableHead(buttonsWidth) {
+    enhancedTableHead(buttonsWidth, doAnyFilterSet) {
         const { schema, classes } = this.props;
         const { order, orderBy } = this.state;
         return <TableHead>
@@ -274,6 +275,13 @@ class ConfigTable extends ConfigGeneric {
                         sortDirection={orderBy === headCell.attr ? order : false}
                     >
                         <div className={classes.flex}>
+                            {!i && !schema.noDelete ? <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')}>
+                                <span>
+                                    <IconButton size="small" color="primary" disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter} onClick={this.onAdd}>
+                                        <AddIcon />
+                                    </IconButton>
+                                </span>
+                            </Tooltip> : null}
                             {headCell.sort && <TableSortLabel
                                 active
                                 className={clsx(orderBy !== headCell.attr && classes.silver)}
@@ -455,17 +463,10 @@ class ConfigTable extends ConfigGeneric {
                         {this.getText(schema.label)}
                     </Typography>
                 </Toolbar> : null}
-                {!schema.noDelete ? <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')}>
-                    <span>
-                        <IconButton disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter} onClick={this.onAdd}>
-                            <AddIcon />
-                        </IconButton>
-                    </span>
-                </Tooltip> : null}
             </div>
             <TableContainer>
                 <Table className={classes.table} size="small">
-                    {this.enhancedTableHead(!doAnyFilterSet && !this.state.orderBy ? 120 : 64)}
+                    {this.enhancedTableHead(!doAnyFilterSet && !this.state.orderBy ? 120 : 64, doAnyFilterSet)}
                     <TableBody>
                         {visibleValue.map((idx, i) =>
                             <TableRow
@@ -495,6 +496,18 @@ class ConfigTable extends ConfigGeneric {
                                     </Tooltip>
                                 </TableCell>}
                             </TableRow>)}
+                        {!schema.noDelete && visibleValue.length >= (schema.showSecondAddAt || 5) ?
+                            <TableRow>
+                                <TableCell colSpan={schema.items.length + 1}>
+                                    <Tooltip title={doAnyFilterSet ? I18n.t('ra_Cannot add items with set filter') : I18n.t('ra_Add row')}>
+                                        <span>
+                                            <IconButton size="small" color="primary" disabled={!!doAnyFilterSet && !this.props.schema.allowAddByFilter} onClick={this.onAdd}>
+                                                <AddIcon />
+                                            </IconButton>
+                                        </span>
+                                    </Tooltip>
+                                </TableCell>
+                            </TableRow> : null}
                     </TableBody>
                 </Table>
                 {!visibleValue.length && value.length ?
