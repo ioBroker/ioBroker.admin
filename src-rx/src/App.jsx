@@ -1747,8 +1747,8 @@ class App extends Router {
                 toggleTheme={this.toggleTheme}
                 t={I18n.t}
                 lang={I18n.getLanguage()}
-                onClose={() =>
-                    this.setState({ wizard: false })}
+                onClose={redirect => this.setState({ wizard: false }, () =>
+                    redirect && setTimeout(() => window.location = redirect, 2000))}
             />;
         }
     }

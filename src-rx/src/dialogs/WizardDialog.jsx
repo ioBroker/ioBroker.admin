@@ -265,15 +265,14 @@ class WizardDialog extends Component {
                 await this.props.socket.setObject(this.adminInstance._id, this.adminInstance);
 
                 // redirect to https or http
-                setTimeout(() => {
-                    if (this.adminInstance.native.secure) {
-                        window.location = `https://${window.location.host}/#tab-adapters${discovery ? '/discovery' : ''}`;
-                    } else {
-                        window.location = `http://${window.location.host}/#tab-adapters${discovery ? '/discovery' : ''}`;
-                    }
-                }, 1000);
+                let redirect;
+                if (this.adminInstance.native.secure) {
+                    redirect = `https://${window.location.host}/#tab-adapters${discovery ? '/discovery' : ''}`;
+                } else {
+                    redirect = `http://${window.location.host}/#tab-adapters${discovery ? '/discovery' : ''}`;
+                }
 
-                this.props.onClose();
+                this.props.onClose(redirect);
             } else {
                 Router.doNavigate('tab-adapters', discovery ? 'discovery' : undefined);
                 this.props.onClose();
@@ -291,10 +290,10 @@ class WizardDialog extends Component {
                 <div className={this.props.classes.finalText}>{this.props.t('Have fun automating your home with')}</div>
                 <img src={LongLogo} alt="ioBroker" className={this.props.classes.finalLongLogo}/>
             </div>
-            <Toolbar className={ this.props.classes.toolbar }>
-                <div className={ this.props.classes.grow }/>
-                <Button variant="contained" color="primary" onClick={ async () => await this.onClose() } startIcon={<CheckIcon/>}>{ this.props.t('Finish') }</Button>
-                <div className={ this.props.classes.grow }/>
+            <Toolbar className={this.props.classes.toolbar}>
+                <div className={this.props.classes.grow}/>
+                <Button variant="contained" color="primary" onClick={async () => await this.onClose()} startIcon={<CheckIcon/>}>{this.props.t('Finish')}</Button>
+                <div className={this.props.classes.grow}/>
             </Toolbar>
         </div>;
     }
