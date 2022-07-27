@@ -25,7 +25,6 @@ import Snackbar from '@mui/material/Snackbar';
 import Checkbox from '@mui/material/Checkbox';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
@@ -39,8 +38,9 @@ import Fab from '@mui/material/Fab';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import Slider from '@mui/material/Slider';
-import Typography from '@mui/material/Typography';
+// import ListItemButton from '@mui/material/ListItemButton';
+// import Slider from '@mui/material/Slider';
+// import Typography from '@mui/material/Typography';
 
 // Icons
 import IconEdit from '@mui/icons-material/Edit';
@@ -794,11 +794,56 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
         const common = data.obj && data.obj.common;
 
         if (customFilter) {
-            if (customFilter.type && customFilter.type !== data.obj.type) {
-                filteredOut = true;
-            } else
-            if (customFilter.common && customFilter.common.custom) {
-                if (!common || !common.custom || (customFilter.common.custom !== true && !common.custom[customFilter.common.custom])) {
+            if (customFilter.type) {
+                if (typeof customFilter.type === 'string') {
+                    if (customFilter.type !== data.obj.type) {
+                        filteredOut = true;
+                    }
+                } else if (Array.isArray(customFilter.type)) {
+                    if (!customFilter.type.includes(data.obj.type)) {
+                        filteredOut = true;
+                    }
+                }
+            }
+            if (!filteredOut && customFilter.common?.type) {
+                if (!common || !common.type) {
+                    filteredOut = true;
+                } else if (typeof customFilter.common.type === 'string') {
+                    if (customFilter.common.type !== common.type) {
+                        filteredOut = true;
+                    }
+                } else if (Array.isArray(customFilter.common.type)) {
+                    if (!customFilter.type.includes(common.type)) {
+                        filteredOut = true;
+                    }
+                }
+            }
+            if (!filteredOut && customFilter.common?.role) {
+                if (!common || !common.role) {
+                    filteredOut = true;
+                } else if (typeof customFilter.common.role === 'string') {
+                    if (common.role.startsWith(customFilter.common.role)) {
+                        filteredOut = true;
+                    }
+                } else if (Array.isArray(customFilter.common.role)) {
+                    if (!customFilter.common.role.find(role => customFilter.role.includes(role))) {
+                        filteredOut = true;
+                    }
+                }
+            }
+            if (!filteredOut && customFilter.common?.custom) {
+                if (!common || !common.custom) {
+                    filteredOut = true;
+                } else
+                if (customFilter.common.custom === '_dataSources') {
+                    // TODO: make it configurable
+                    if (!Object.keys(common.custom).find(id => id.startsWith('history.') || id.startsWith('sql.') || id.startsWith('influxdb.'))) {
+                        filteredOut = true;
+                    }
+                } else
+                if (customFilter.common.custom !== true &&
+                    !Object.keys(common.custom).find(id => id.startsWith(customFilter.common.custom))
+                ) {
                     filteredOut = true;
                 }
             }
@@ -1671,7 +1716,7 @@ class ObjectBrowser extends Component {
             columns,
             columnsForAdmin: null,
             columnsSelectorShow: false,
-            columnsAuto: (window._localStorage || window.localStorage).getItem(`${props.dialogName || 'App'}.columnsAuto`) !== 'false',
+            columnsAuto: true, // (window._localStorage || window.localStorage).getItem(`${props.dialogName || 'App'}.columnsAuto`) !== 'false',
             columnsWidths,
             columnsDialogTransparent: 100,
             columnsEditCustomDialog: null,
@@ -2053,6 +2098,7 @@ class ObjectBrowser extends Component {
      * @private
      * @param {boolean} isLast
      */
+    /*
     _renderDefinedList(isLast) {
         const cols = [...this.possibleCols];
         cols.unshift('id');
@@ -2080,14 +2126,12 @@ class ObjectBrowser extends Component {
                         this.setState({ columns });
                     }
                 }} key={id}>
-                    {/* <ListItemIcon> */}
                     <Checkbox
                         edge="start"
                         disabled={id === 'id' || this.state.columnsAuto}
                         checked={id === 'id' || (this.state.columnsAuto ? this.visibleCols.includes(id) : (this.state.columns && this.state.columns.includes(id)))}
                         disableRipple
                     />
-                    {/* </ListItemIcon> */}
                     <ListItemText primary={this.texts['filter_' + id] || this.props.t('ra_' + id)} />
                     <ListItemSecondaryAction>
                         <FormControl
@@ -2114,6 +2158,7 @@ class ObjectBrowser extends Component {
                 </ListItemButton>
             );
     }
+    */
 
     /**
      * Renders the columns selector.
@@ -2128,9 +2173,9 @@ class ObjectBrowser extends Component {
                 open={true}
                 classes={{ root: Utils.clsx(this.props.classes.dialogColumns, this.props.classes['transparent_' + this.state.columnsDialogTransparent]) }}
             >
-                <DialogTitle className={this.props.classes.fontSizeTitle}>{this.props.t('ra_Configure visible columns')}</DialogTitle>
+                <DialogTitle className={this.props.classes.fontSizeTitle}>{this.props.t('ra_Configure')}</DialogTitle>
                 <DialogContent className={this.props.classes.fontSizeTitle}>
-                    <FormControlLabel
+                    {/*<FormControlLabel
                         className={this.props.classes.switchColumnAuto}
                         control={<Switch checked={this.state.columnsAuto} onChange={() => {
                             (window._localStorage || window.localStorage).setItem((this.props.dialogName || 'App') + '.columnsAuto', this.state.columnsAuto ? 'false' : 'true');
@@ -2148,7 +2193,7 @@ class ObjectBrowser extends Component {
                             }
                         }} />}
                         label={this.props.t('ra_Auto (no custom columns)')}
-                    />
+                    />*/}
                     <FormControlLabel
                         className={this.props.classes.switchColumnAuto}
                         control={<Switch checked={this.state.foldersFirst} onChange={() => {
@@ -2165,7 +2210,7 @@ class ObjectBrowser extends Component {
                         }} />}
                         label={this.props.t('ra_Show lines between rows')}
                     />
-                    <Typography classes={{ root: this.props.classes.dialogColumnsLabel }}>{this.props.t('ra_Transparent dialog')}</Typography>
+                    {/*<Typography classes={{ root: this.props.classes.dialogColumnsLabel }}>{this.props.t('ra_Transparent dialog')}</Typography>
                     <Slider classes={{ root: this.props.classes.width100 }} value={this.state.columnsDialogTransparent} min={20} max={100} step={10} onChange={(event, newValue) =>
                         this.setState({ columnsDialogTransparent: newValue })
                     } />
@@ -2225,7 +2270,7 @@ class ObjectBrowser extends Component {
                             )
                         )}
                         {this._renderDefinedList(true)}
-                    </List>
+                    </List>*/}
                 </DialogContent>
                 <DialogActions>
                     <Button
@@ -3187,10 +3232,10 @@ class ObjectBrowser extends Component {
                     </Tooltip>
                 }
                 {!this.props.disableColumnSelector &&
-                <Tooltip title={this.props.t('ra_Configure visible columns')}>
+                <Tooltip title={this.props.t('ra_Configure')}>
                     <IconButton
                         key="columnSelector"
-                        color={this.state.columnsAuto ? 'primary' : 'default'}
+                        // color={this.state.columnsAuto ? 'primary' : 'default'}
                         onClick={() => this.setState({ columnsSelectorShow: true })}
                         size="large"
                     >
@@ -5022,7 +5067,17 @@ ObjectBrowser.propTypes = {
     modalNewObject: PropTypes.func,     // modal add object
     modalEditOfAccessControl: PropTypes.func, //modal Edit Of Access Control
     onObjectDelete: PropTypes.func,     // optional function (id, hasChildren, objectExists) {  }
-    customFilter: PropTypes.object,     // optional {common: {custom: true}} or {common: {custom: 'sql.0'}}
+    customFilter: PropTypes.object,     // optional
+                                        // `{common: {custom: true}}` - show only objects with some custom settings
+                                        // `{common: {custom: 'sql.0'}}` - show only objects with sql.0 custom settings (only of the specific instance)
+                                        // `{common: {custom: '_dataSources'}}` - show only objects of adapters `influxdb' or 'sql' or 'history'
+                                        // `{common: {custom: 'adapterName.'}}` - show only objects of custom settings of specific adapter (all instances)
+                                        // `{type: 'channel'}` - show only channels
+                                        // `{type: ['channel', 'device']}` - show only channels and devices
+                                        // `{common: {type: 'number'}` - show only states of type 'number
+                                        // `{common: {type: ['number', 'string']}` - show only states of type 'number and string
+                                        // `{common: {role: 'switch']}` - show only states with roles starting from switch
+                                        // `{common: {role: ['switch', 'button]}` - show only states with roles starting from `switch` and `button`
     objectBrowserValue: PropTypes.object,
     objectBrowserEditObject: PropTypes.object,
     objectBrowserEditRole: PropTypes.object, // on Edit role
