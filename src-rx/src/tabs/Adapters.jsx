@@ -1648,6 +1648,15 @@ class Adapters extends Component {
             }, 200);
         }
 
+        const formatNews = news => {
+            const lines = (news || '').toString()
+                .split('\n')
+                .map(line => line.trim().replace(/^\*/, '').replace(/\*$/, '').trim().replace(/\r/, ''))
+                .filter(line => line);
+
+            return <ul>{lines.map((line, index) => <li key={index}>{line}</li>)}</ul>;
+        };
+
         return <TabContainer>
             {this.state.update &&
                 <Grid item>
@@ -1926,7 +1935,7 @@ class Adapters extends Component {
                             }}>
                                 <ListItemText
                                     primary={version}
-                                    secondary={news}
+                                    secondary={formatNews(news)}
                                 />
                             </div>
                         })}
