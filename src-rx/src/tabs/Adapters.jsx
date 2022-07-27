@@ -1651,7 +1651,14 @@ class Adapters extends Component {
         const formatNews = news => {
             const lines = (news || '').toString()
                 .split('\n')
-                .map(line => line.trim().replace(/^\*/, '').replace(/\*$/, '').trim().replace(/\r/, ''))
+                .map(line => line
+                    .trim()
+                    .replace(/^\*+/, '')
+                    .replace(/^-/, '')
+                    .replace(/\*+$/, '')
+                    .replace(/\r/g, '')
+                    .trim()
+                )
                 .filter(line => line);
 
             return <ul>{lines.map((line, index) => <li key={index}>{line}</li>)}</ul>;
