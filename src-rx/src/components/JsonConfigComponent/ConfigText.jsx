@@ -18,13 +18,13 @@ class ConfigText extends ConfigGeneric {
     componentDidMount() {
         super.componentDidMount();
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-        this.setState({ value });
+        this.setState({ value, tempValue: { value, ts: Date.now() } });
     }
 
     static getDerivedStateFromProps(props, state) {
         const value = ConfigGeneric.getValue(props.data, props.attr);
-        if (value === null || value === undefined || value.toString().trim() !== (state.value ||  '').toString().trim()) {
-            return {value};
+        if (value === null || value === undefined || value.toString().trim() !== (state.tempValue ||  '').toString().trim()) {
+            return { tempValue: { value, ts: Date.now() } };
         } else {
             return null;
         }
@@ -32,6 +32,17 @@ class ConfigText extends ConfigGeneric {
 
     renderItem(error, disabled, defaultValue) {
         let isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_VALUE;
+
+        if (this.state.tempValue.value !== this.state.value) {
+            this.updateTimeout && clearTimeout(this.updateTimeout);
+            this.updateTimeout = setTimeout(() => {
+                this.updateTimeout = null;
+                this.setState({ value: this.state.tempValue.value });
+            }, 30)
+        } else if (this.updateTimeout) {
+            clearTimeout(this.updateTimeout);
+            this.updateTimeout = null;
+        }
 
         if (isIndeterminate) {
             const arr = [...this.state.value].map(item => ({label: item.toString(), value: item}));
