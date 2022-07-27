@@ -3577,7 +3577,7 @@ class ObjectBrowser extends Component {
                         }
                     }
                 })
-                .catch(e => this.showError(e));
+                .catch(e => console.warn('Cannot read history: ' + e));
         }
     }
 
