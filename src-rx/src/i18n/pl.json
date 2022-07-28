@@ -1507,5 +1507,9 @@
   "Next start: %s": "Następny początek: %s",
   "Last start: %s": "Ostatni start: %s",
   "Save configuration?": "Zapisać konfigurację?",
-  "Cannot save configuration because of error in configuration": "Nie można zapisać konfiguracji z powodu błędu w konfiguracji"
+  "Cannot save configuration because of error in configuration": "Nie można zapisać konfiguracji z powodu błędu w konfiguracji",
+  "Bookmark admin": "Strona administratora zakładek",
+  "Go to admin now": "Przejdź teraz do administratora",
+  "Redirect in %s second(s)": "Przekieruj za %s sekund",
+  "Waiting for admin restart...": "Oczekiwanie na ponowne uruchomienie administratora..."
 }

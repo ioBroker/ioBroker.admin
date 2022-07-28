@@ -1507,5 +1507,9 @@
   "Next start: %s": "Prossimo inizio: %s",
   "Last start: %s": "Ultimo inizio: %s",
   "Save configuration?": "Salva configurazione?",
-  "Cannot save configuration because of error in configuration": "Impossibile salvare la configurazione a causa di un errore nella configurazione"
+  "Cannot save configuration because of error in configuration": "Impossibile salvare la configurazione a causa di un errore nella configurazione",
+  "Bookmark admin": "Aggiungi ai preferiti la pagina di amministrazione",
+  "Go to admin now": "Vai all'amministratore ora",
+  "Redirect in %s second(s)": "Reindirizzamento tra %s secondi",
+  "Waiting for admin restart...": "In attesa del riavvio dell'amministratore..."
 }

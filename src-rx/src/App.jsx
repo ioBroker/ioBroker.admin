@@ -22,6 +22,12 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
 
 // @material-ui/icons
 import MenuIcon from '@mui/icons-material/Menu';
@@ -426,6 +432,9 @@ class App extends Router {
 
                 cloudNotConnected: false,
                 cloudReconnect: 0,
+
+                showRedirect: false,
+                redirectCountDown: 0,
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -1747,9 +1756,57 @@ class App extends Router {
                 toggleTheme={this.toggleTheme}
                 t={I18n.t}
                 lang={I18n.getLanguage()}
-                onClose={redirect => this.setState({ wizard: false }, () =>
-                    redirect && setTimeout(() => window.location = redirect, 2000))}
+                onClose={redirect => {
+                    this.setState({ wizard: false, showRedirect: redirect, redirectCountDown: 10 }, () => {
+                        if (this.state.showRedirect) {
+                            setInterval(() => {
+                                if (this.state.redirectCountDown > 0) {
+                                    this.setState({ redirectCountDown: this.state.redirectCountDown - 1 });
+                                } else {
+                                    window.location = this.state.showRedirect;
+                                }
+                            }, 1000);
+                        }
+                    })
+                }}
             />;
+        }
+    }
+
+    showRedirectDialog() {
+        if (this.state.showRedirect) {
+            return <Dialog
+                open={true}
+                onClose={() => {}}
+            >
+                <DialogTitle>{I18n.t('Waiting for admin restart...')}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {I18n.t('Redirect in %s second(s)', this.state.redirectCountDown)}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    {window.sidebar || (window.opera && window.print) || (document.all && window.external?.AddFavorite) ? <Button onClick={() => {
+                        if (window.sidebar) {
+                            // Firefox
+                            window.sidebar.addPanel('ioBroker.admin', this.state.showRedirect, '');
+                        } else if (window.opera && window.print) {
+                            // Opera
+                            var elem = document.createElement('a');
+                            elem.setAttribute('href', this.state.showRedirect);
+                            elem.setAttribute('title', 'ioBroker.admin');
+                            elem.setAttribute('rel', 'sidebar');
+                            elem.click(); //this.title=document.title;
+                        } else if (document.all) {
+                            // ie
+                            window.external.AddFavorite(this.state.showRedirect, 'ioBroker.admin');
+                        }
+                    }}>{I18n.t('Bookmark admin')}</Button> : null}
+                    <Button variant="contained">{I18n.t('Go to admin now')}</Button>
+                </DialogActions>
+            </Dialog>
+        } else {
+            return null;
         }
     }
 
@@ -2154,8 +2211,9 @@ class App extends Router {
                     {this.renderConfirmDialog()}
                     {this.renderCommandDialog()}
                     {this.renderWizardDialog()}
+                    {this.showRedirectDialog()}
                     {this.renderSlowConnectionWarning()}
-                    {!this.state.connected && <Connecting />}
+                    {!this.state.connected && !this.state.redirectCountDown ? <Connecting /> : null}
                     {this.state.showGuiSettings ? <Menu
                         anchorEl={this.state.showGuiSettings}
                         open={true}

@@ -1507,5 +1507,9 @@
   "Next start: %s": "下一个开始： %s",
   "Last start: %s": "最后开始： %s",
   "Save configuration?": "保存配置？",
-  "Cannot save configuration because of error in configuration": "由于配置错误，无法保存配置"
+  "Cannot save configuration because of error in configuration": "由于配置错误，无法保存配置",
+  "Bookmark admin": "书签管理页面",
+  "Go to admin now": "立即进入管理",
+  "Redirect in %s second(s)": "5 秒后重定向",
+  "Waiting for admin restart...": "等待管理员重启..."
 }

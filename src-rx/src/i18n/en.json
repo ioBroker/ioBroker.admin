@@ -1507,5 +1507,9 @@
   "Next start: %s": "Next start: %s",
   "Last start: %s": "Last start: %s",
   "Save configuration?": "Save configuration?",
-  "Cannot save configuration because of error in configuration": "Cannot save configuration because of error in configuration"
+  "Cannot save configuration because of error in configuration": "Cannot save configuration because of error in configuration",
+  "Bookmark admin": "Bookmark admin page",
+  "Go to admin now": "Go to admin now",
+  "Redirect in %s second(s)": "Redirect in %s second(s)",
+  "Waiting for admin restart...": "Waiting for admin restart..."
 }

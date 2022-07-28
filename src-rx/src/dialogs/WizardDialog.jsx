@@ -147,17 +147,17 @@ class WizardDialog extends Component {
                             .then(obj =>
                                 this.setState( { activeStep: this.state.activeStep + 1 + (obj.common.licenseConfirmed ? 0 : 0) }))
                     }>
-                    { this.props.t('Start wizard') } <PlayArrowIcon className={ this.props.classes.playIcon }/></Button>
-                <div className={ this.props.classes.grow }/>
+                    {this.props.t('Start wizard')} <PlayArrowIcon className={ this.props.classes.playIcon }/></Button>
+                <div className={this.props.classes.grow}/>
             </Toolbar>
         </div>;
     }
 
     renderLicense() {
         return <WizardLicenseTab
-            t={ this.props.t }
-            socket={ this.props.socket }
-            themeName={ this.props.themeName }
+            t={this.props.t}
+            socket={this.props.socket}
+            themeName={ this.props.themeName}
             onDone={ settings => {
                 this.props.socket.getSystemConfig(true)
                     .then(obj => {
@@ -167,7 +167,7 @@ class WizardDialog extends Component {
                         }
                         return this.props.socket.setSystemConfig(obj);
                     })
-                    .then(() => this.setState( {activeStep: this.state.activeStep + 1 }));
+                    .then(() => this.setState( { activeStep: this.state.activeStep + 1 }));
             } }
         />;
     }

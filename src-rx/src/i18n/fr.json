@@ -1507,5 +1507,9 @@
   "Next start: %s": "Prochain démarrage : %s",
   "Last start: %s": "Dernier démarrage : %s",
   "Save configuration?": "Enregistrer la configuration ?",
-  "Cannot save configuration because of error in configuration": "Impossible d'enregistrer la configuration en raison d'une erreur de configuration"
+  "Cannot save configuration because of error in configuration": "Impossible d'enregistrer la configuration en raison d'une erreur de configuration",
+  "Bookmark admin": "Marquer la page d'administration",
+  "Go to admin now": "Allez à l'admin maintenant",
+  "Redirect in %s second(s)": "Rediriger dans %s seconde(s)",
+  "Waiting for admin restart...": "En attente du redémarrage de l'administrateur..."
 }

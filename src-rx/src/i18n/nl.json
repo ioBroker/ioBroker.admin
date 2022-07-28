@@ -1507,5 +1507,9 @@
   "Next start: %s": "Volgende begin: %s",
   "Last start: %s": "Laatste start: %s",
   "Save configuration?": "Configuratie opslaan?",
-  "Cannot save configuration because of error in configuration": "Kan configuratie niet opslaan vanwege een fout in de configuratie"
+  "Cannot save configuration because of error in configuration": "Kan configuratie niet opslaan vanwege een fout in de configuratie",
+  "Bookmark admin": "Bladwijzer maken voor beheerderspagina",
+  "Go to admin now": "Ga nu naar admin",
+  "Redirect in %s second(s)": "Omleiden in %s seconde(n)",
+  "Waiting for admin restart...": "Wachten op herstart beheerder..."
 }
