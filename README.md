@@ -108,7 +108,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.2.5 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 
 ### 6.2.4 (2022-07-20)
@@ -122,10 +122,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.2.1 (2022-07-14)
 * (bluefox) Release 6.2
-
-### 6.1.12 (2022-07-12)
-* (bluefox) Fixed GUI issues
-* (bluefox) Release candidate 2
 
 ## License
 The MIT License (MIT)
