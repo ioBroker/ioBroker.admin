@@ -1505,5 +1505,7 @@
   "ioBroker is not connected": "ioBroker is niet verbonden",
   "Show change log": "Wijzigingslogboek weergeven",
   "Next start: %s": "Volgende begin: %s",
-  "Last start: %s": "Laatste start: %s"
+  "Last start: %s": "Laatste start: %s",
+  "Save configuration?": "Configuratie opslaan?",
+  "Cannot save configuration because of error in configuration": "Kan configuratie niet opslaan vanwege een fout in de configuratie"
 }

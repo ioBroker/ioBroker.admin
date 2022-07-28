@@ -187,6 +187,10 @@ class ConfigSendto extends ConfigGeneric {
                             window.alert(I18n.t('ra_Ok'));
                         }
                     }
+
+                    if (response?.saveConfig) {
+                        this.props.onChange(null, null, null, true);
+                    }
                 }
             })
             .catch(e => {

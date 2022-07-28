@@ -1505,5 +1505,7 @@
   "ioBroker is not connected": "ioBroker is not connected",
   "Show change log": "Show change log",
   "Next start: %s": "Next start: %s",
-  "Last start: %s": "Last start: %s"
+  "Last start: %s": "Last start: %s",
+  "Save configuration?": "Save configuration?",
+  "Cannot save configuration because of error in configuration": "Cannot save configuration because of error in configuration"
 }

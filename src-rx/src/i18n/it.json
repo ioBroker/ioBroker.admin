@@ -1505,5 +1505,7 @@
   "ioBroker is not connected": "ioBroker non è connesso",
   "Show change log": "Mostra registro modifiche",
   "Next start: %s": "Prossimo inizio: %s",
-  "Last start: %s": "Ultimo inizio: %s"
+  "Last start: %s": "Ultimo inizio: %s",
+  "Save configuration?": "Salva configurazione?",
+  "Cannot save configuration because of error in configuration": "Impossibile salvare la configurazione a causa di un errore nella configurazione"
 }

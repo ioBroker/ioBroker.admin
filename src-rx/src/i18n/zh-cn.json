@@ -1505,5 +1505,7 @@
   "ioBroker is not connected": "ioBroker 未连接",
   "Show change log": "显示更改日志",
   "Next start: %s": "下一个开始： %s",
-  "Last start: %s": "最后开始： %s"
+  "Last start: %s": "最后开始： %s",
+  "Save configuration?": "保存配置？",
+  "Cannot save configuration because of error in configuration": "由于配置错误，无法保存配置"
 }

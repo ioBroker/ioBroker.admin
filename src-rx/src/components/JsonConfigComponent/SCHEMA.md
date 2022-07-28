@@ -132,7 +132,7 @@ Possible types:
     - `result` - `{result1: {en: 'A'}, result2: {en: 'B'}}`
     - `error` - `{error1: {en: 'E'}, error2: {en: 'E2'}}`
     - `variant` - `contained`, `outlined` or nothing
-    - `openUrl` - if true - open URL in new tab, if response contains attribute `openUrl`, like `{"openUrl": "http://1.2.3.4:80/aaa", "window": "_blank"}`
+    - `openUrl` - if true - open URL in new tab, if response contains attribute `openUrl`, like `{"openUrl": "http://1.2.3.4:80/aaa", "window": "_blank", "saveConfig": true}`. If `saveConfig` is true, the user will be requested to save the configuration.
     - `window` - if `openUrl` is true, this is name of new window. Could be overwritten if response consist `window` attribute.
       `this.props.socket.sendTo(adapterName.instance, command || 'send', data, result => {});`
 

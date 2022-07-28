@@ -126,23 +126,27 @@ class JsonConfigComponent extends Component {
         }
     }
 
-    onChange = (data, value, cb) => {
+    onChange = (data, value, cb, saveConfig) => {
         if (this.props.onValueChange) {
-            this.props.onValueChange(data, value);
+            this.props.onValueChange(data, value, saveConfig);
             cb && cb();
         } else {
-            const state = {data};
+            if (data) {
+                const state = { data };
 
-            const _data = {};
-            // remove all attributes starting with "_"
-            Object.keys(data).forEach(attr => !attr.startsWith('_') && (_data[attr] = data[attr]));
+                const _data = {};
+                // remove all attributes starting with "_"
+                Object.keys(data).forEach(attr => !attr.startsWith('_') && (_data[attr] = data[attr]));
 
-            state.changed = JSON.stringify(_data) !== this.state.originalData;
+                state.changed = JSON.stringify(_data) !== this.state.originalData;
 
-            this.setState({state}, () => {
-                this.props.onChange(_data, state.changed);
-                cb && cb();
-            });
+                this.setState({ state }, () => {
+                    this.props.onChange(_data, state.changed, saveConfig);
+                    cb && cb();
+                });
+            } else if (saveConfig) {
+                this.props.onChange(null, null, saveConfig);
+            }
         }
     }
 

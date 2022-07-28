@@ -1505,5 +1505,7 @@
   "ioBroker is not connected": "ioBroker n'est pas connecté",
   "Show change log": "Afficher le journal des modifications",
   "Next start: %s": "Prochain démarrage : %s",
-  "Last start: %s": "Dernier démarrage : %s"
+  "Last start: %s": "Dernier démarrage : %s",
+  "Save configuration?": "Enregistrer la configuration ?",
+  "Cannot save configuration because of error in configuration": "Impossible d'enregistrer la configuration en raison d'une erreur de configuration"
 }

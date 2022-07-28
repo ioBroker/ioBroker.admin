@@ -155,15 +155,15 @@ function startAdapter(options) {
             adapter.log.info('SelectSendTo: ' + JSON.stringify(obj.message));
             // just for test
             return obj.callback && adapter.sendTo(obj.from, obj.command, [
-                {"label": "Afghanistan", "value": "AF"},
-                {"label": "Åland Islands", "value": "AX"},
-                {"label": "Albania", "value": "AL"},
+                {label: 'Afghanistan', value: 'AF'},
+                {label: 'Åland Islands', value: 'AX'},
+                {label: 'Albania', value: 'AL'},
             ], obj.callback);
         } else
         if (obj.command === 'url') {
             adapter.log.info('url: ' + JSON.stringify(obj.message));
             // just for test
-            return obj.callback && adapter.sendTo(obj.from, obj.command, { openUrl: obj.message._origin }, obj.callback);
+            return obj.callback && adapter.sendTo(obj.from, obj.command, { openUrl: obj.message._origin, saveConfig: true }, obj.callback);
         }
 
         socket && socket.sendCommand(obj);

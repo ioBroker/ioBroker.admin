@@ -1505,5 +1505,7 @@
   "ioBroker is not connected": "ioBroker не подключен",
   "Show change log": "Показать журнал изменений",
   "Next start: %s": "Следующий старт: %s",
-  "Last start: %s": "Последний старт: %s"
+  "Last start: %s": "Последний старт: %s",
+  "Save configuration?": "Сохранить конфигурацию?",
+  "Cannot save configuration because of error in configuration": "Невозможно сохранить конфигурацию из-за ошибки в конфигурации"
 }

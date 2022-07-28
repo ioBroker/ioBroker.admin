@@ -174,6 +174,7 @@ class JsonConfig extends Router {
             changed: false,
             confirmDialog: false,
             theme: theme(props.themeName), // buttons require special theme
+            saveConfigDialog: false,
         };
 
         this.getInstanceObject()
@@ -288,13 +289,28 @@ class JsonConfig extends Router {
             return null;
         }
         return <ConfirmDialog
-            title={ I18n.t('Please confirm') }
-            text={ I18n.t('Some data are not stored. Discard?') }
-            ok={ I18n.t('Discard') }
-            cancel={ I18n.t('Cancel') }
+            title={I18n.t('Please confirm')}
+            text={I18n.t('Some data are not stored. Discard?')}
+            ok={I18n.t('Discard')}
+            cancel={I18n.t('Cancel')}
             onClose={isYes =>
-                this.setState({ confirmDialog: false}, () => isYes && Router.doNavigate(null))}
+                this.setState({ confirmDialog: false }, () => isYes && Router.doNavigate(null))}
         />;
+    }
+
+    renderSaveConfigDialog() {
+        if (!this.state.saveConfigDialog) {
+            return null;
+        } else {
+            return <ConfirmDialog
+                title={I18n.t('Please confirm')}
+                text={typeof this.state.saveConfigDialog === 'string' ? this.state.saveConfigDialog : I18n.t('Save configuration?')}
+                ok={I18n.t('ra_Save')}
+                cancel={I18n.t('ra_Cancel')}
+                onClose={isYes =>
+                    this.setState({ saveConfigDialog: false }, () => isYes && this.onSave(true))}
+            />;
+        }
     }
 
     findAttr(attr, schema) {
@@ -382,6 +398,7 @@ class JsonConfig extends Router {
         return <div className={this.props.classes.root}>
             {this.renderConfirmDialog()}
             {this.getExportImportButtons()}
+            {this.renderSaveConfigDialog()}
             <JsonConfigComponent
                 className={ classes.scroll }
                 socket={this.props.socket}
@@ -398,7 +415,20 @@ class JsonConfig extends Router {
                 data={this.state.data}
                 updateData={this.state.updateData}
                 onError={error => this.setState({ error })}
-                onChange={(data, changed) => this.setState({ data, changed })}
+                onChange={(data, changed, saveConfigDialog) => {
+                    if (saveConfigDialog && this.state.error) {
+                        window.alert(I18n.t('Cannot save configuration because of error in configuration'));
+                        saveConfigDialog = false;
+                    }
+                    if (saveConfigDialog && !this.state.changed) {
+                        saveConfigDialog = false;
+                    }
+                    if (data && changed) {
+                        this.setState({ data, changed, saveConfigDialog });
+                    } else if (saveConfigDialog) {
+                        this.setState({ saveConfigDialog });
+                    }
+                }}
             />
             <SaveCloseButtons
                 isIFrame={false}
