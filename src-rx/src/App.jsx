@@ -1802,7 +1802,7 @@ class App extends Router {
                             window.external.AddFavorite(this.state.showRedirect, 'ioBroker.admin');
                         }
                     }}>{I18n.t('Bookmark admin')}</Button> : null}
-                    <Button variant="contained">{I18n.t('Go to admin now')}</Button>
+                    {this.state.redirectCountDown ? <Button variant="contained" onClick={() => window.location = this.state.showRedirect}>{I18n.t('Go to admin now')}</Button> : null}
                 </DialogActions>
             </Dialog>
         } else {
