@@ -108,8 +108,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### 6.2.5 (2022-07-28)
+### **WORK IN PROGRESS**
 * (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
 
 ### 6.2.4 (2022-07-20)
 * (bluefox) Corrected yahka settings

@@ -2479,7 +2479,7 @@ function encryptLegacy(key, value) {
  * @param {string} value - value to decrypt
  * @returns {string}
  */
-async function decrypt(key, value) {
+function decrypt(key, value) {
     if (value === undefined) {
         value = key;
         key = systemSecret;
@@ -2526,7 +2526,7 @@ async function decrypt(key, value) {
  * @param {string} _iv - optional initial vector for tests
  * @returns {string}
  */
-async function encrypt(key, value, _iv) {
+function encrypt(key, value, _iv) {
     if (value === undefined) {
         value = key;
         key = systemSecret;

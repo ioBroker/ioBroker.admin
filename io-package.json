@@ -18,18 +18,6 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "6.2.5": {
-        "en": "Implemented Oauth2 workflow for adapters",
-        "de": "Implementierter Oauth2-Workflow für Adapter",
-        "ru": "Реализованный рабочий процесс Oauth2 для адаптеров",
-        "pt": "Fluxo de trabalho Oauth2 implementado para adaptadores",
-        "nl": "Vertaling:",
-        "fr": "Débit de travail Oauth2 pour adaptateurs",
-        "it": "Flusso di lavoro Oauth2 implementato per adattatori",
-        "es": "Flujo de trabajo Oauth2 aplicado para adaptadores",
-        "pl": "Poprawa Oauth2 dla adapterów",
-        "zh-cn": "执行适应人员奥考特2工作流程"
-      },
       "6.2.4": {
         "en": "Corrected yahka settings",
         "de": "Korrigierte yahka-Einstellungen",
