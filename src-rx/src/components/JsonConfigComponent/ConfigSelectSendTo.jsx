@@ -89,7 +89,7 @@ class ConfigSelectSendTo extends ConfigGeneric {
 
             this.props.socket.sendTo(`${this.props.adapterName}.${this.props.instance}`, this.props.schema.command || 'send', data)
                 .then(list =>
-                    this.setState({list, context: this.getContext()}));
+                    this.setState({ list, context: this.getContext() }));
         } else {
             const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
 
@@ -156,7 +156,7 @@ class ConfigSelectSendTo extends ConfigGeneric {
         if (!this.state.list) {
             return <CircularProgress size="small"/>;
         } else {
-            const selectOptions = (this.state.list || [])
+            const selectOptions = this.state.list
                 .filter(item => {
                     if (!item.hidden) {
                         return true;
@@ -170,7 +170,7 @@ class ConfigSelectSendTo extends ConfigGeneric {
             const item = selectOptions.find(item => item.value === value);
 
             return <FormControl variant="standard" className={this.props.classes.fullWidth}>
-                <InputLabel>{this.getText(this.props.schema.label)}</InputLabel>
+                { this.props.schema.label ? <InputLabel>{this.getText(this.props.schema.label)}</InputLabel> : null }
                 <Select
                     variant="standard"
                     error={!!error}
