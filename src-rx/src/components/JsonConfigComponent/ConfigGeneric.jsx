@@ -421,7 +421,8 @@ class ConfigGeneric extends Component {
         }
     }
 
-    getPattern(pattern) {
+    getPattern(pattern, data) {
+        data = data || this.props.data;
         if (!pattern) {
             return '';
         } else {
@@ -433,12 +434,11 @@ class ConfigGeneric extends Component {
                 if (this.props.custom) {
                     // eslint-disable-next-line no-new-func
                     const f = new Function('data', 'originalData',  'arrayIndex', 'globalData', '_system', 'instanceObj', 'customObj', '_socket', 'return `' + pattern.replace(/`/g, '\\`') + '`');
-                    const result = f(this.props.data, this.props.originalData, this.props.arrayIndex, this.props.globalData, this.props.systemConfig, this.props.instanceObj,  this.props.customObj, this.props.socket, this.props.arrayIndex, this.props.globalData);
-                    return result;
+                    return f(data, this.props.originalData, this.props.arrayIndex, this.props.globalData, this.props.systemConfig, this.props.instanceObj,  this.props.customObj, this.props.socket, this.props.arrayIndex, this.props.globalData);
                 } else {
                     // eslint-disable-next-line no-new-func
                     const f = new Function('data', 'originalData',  'arrayIndex', 'globalData', '_system', '_alive', '_common', '_socket', 'return `' + pattern.replace(/`/g, '\\`') + '`');
-                    return f(this.props.data, this.props.originalData, this.props.arrayIndex, this.props.globalData, this.props.systemConfig, this.props.alive, this.props.common, this.props.socket);
+                    return f(data, this.props.originalData, this.props.arrayIndex, this.props.globalData, this.props.systemConfig, this.props.alive, this.props.common, this.props.socket);
                 }
             } catch (e) {
                 console.error(`Cannot execute ${pattern}: ${e}`);

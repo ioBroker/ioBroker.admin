@@ -137,7 +137,7 @@ class ConfigSendto extends ConfigGeneric {
 
         let data = this.props.schema.data;
         if (data === undefined && this.props.schema.jsonData) {
-            data = this.getPattern(this.props.schema.jsonData, {}, {
+            data = this.getPattern(this.props.schema.jsonData, {
                 _origin,
                 ...this.props.data
             });

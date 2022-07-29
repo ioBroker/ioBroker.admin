@@ -75,7 +75,7 @@ class ConfigSelectSendTo extends ConfigGeneric {
         if (this.props.alive) {
             let data = this.props.schema.data;
             if (data === undefined && this.props.schema.jsonData) {
-                data = this.getPattern(this.props.schema.jsonData, {}, this.props.data);
+                data = this.getPattern(this.props.schema.jsonData);
                 try {
                     data = JSON.parse(data);
                 } catch (e) {
