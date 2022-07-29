@@ -9,7 +9,7 @@ import Utils from '@iobroker/adapter-react-v5/Components/Utils';
 
 import ConfigGeneric from './ConfigGeneric';
 
-const styles = theme => ({
+const styles = () => ({
     indeterminate: {
         opacity: 0.5
     },
@@ -40,8 +40,8 @@ class ConfigNumber extends ConfigGeneric {
     componentDidMount() {
         super.componentDidMount();
         const _value = ConfigGeneric.getValue(this.props.data, this.props.attr);
-        this.setState({ _value });
-        //this.props.registerOnForceUpdate(this.props.attr, this.onUpdate);
+        this.setState({ _value: _value.toString(), oldValue: _value.toString() });
+        // this.props.registerOnForceUpdate(this.props.attr, this.onUpdate);
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -51,7 +51,11 @@ class ConfigNumber extends ConfigGeneric {
             return null;
         }
         const _value = ConfigGeneric.getValue(props.data, props.attr);
-        if (_value === null || _value === undefined || _value.toString() !== parseFloat(state._value).toString()) {
+        if (_value === null || _value === undefined ||
+            state.oldValue === null || state.oldValue === undefined ||
+            (_value.toString() !== parseFloat(state._value).toString() &&
+             _value.toString() !== state.oldValue.toString())
+        ) {
             return { _value };
         } else {
             return null;
@@ -61,8 +65,19 @@ class ConfigNumber extends ConfigGeneric {
     renderItem(error, disabled, defaultValue) {
         let isIndeterminate = Array.isArray(this.state.value) || this.state.value === ConfigGeneric.DIFFERENT_VALUE;
 
+        if (this.state.oldValue !== null && this.state.oldValue !== undefined) {
+            this.updateTimeout && clearTimeout(this.updateTimeout);
+            this.updateTimeout = setTimeout(() => {
+                this.updateTimeout = null;
+                this.setState({ oldValue: null });
+            }, 30);
+        } else if (this.updateTimeout) {
+            clearTimeout(this.updateTimeout);
+            this.updateTimeout = null;
+        }
+
         if (isIndeterminate) {
-            const arr = [...this.state.value].map(item => ({label: item.toString(), value: item}));
+            const arr = [...this.state.value].map(item => ({ label: item.toString(), value: item }));
             arr.unshift({label: I18n.t(ConfigGeneric.DIFFERENT_LABEL), value: ConfigGeneric.DIFFERENT_VALUE});
 
             return <Autocomplete
@@ -136,11 +151,13 @@ class ConfigNumber extends ConfigGeneric {
                             this.onError(this.props.attr); // clear error
                         }
 
-                        this.setState({ _value }, () => {
-                            if (_value.trim() === parseFloat(_value).toString()) {
-                                this.onChange(this.props.attr, parseFloat(_value) || 0);
-                            }
-                        });
+                        if (this.state._value !== _value) {
+                            this.setState({ _value, oldValue: this.state._value }, () => {
+                                if (_value.trim() === parseFloat(_value).toString()) {
+                                    this.onChange(this.props.attr, parseFloat(_value) || 0);
+                                }
+                            });
+                        }
                     }}
                     placeholder={this.getText(this.props.schema.placeholder)}
                     label={this.getText(this.props.schema.label)}
