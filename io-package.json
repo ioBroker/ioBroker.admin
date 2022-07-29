@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.2.6",
+    "version": "6.2.7",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.2.7": {
+        "en": "Corrected the Text input field in JSON configuration",
+        "de": "Das Eingabefeld Text in JSON-Konfiguration korrigiert",
+        "ru": "Исправлена поле ввода текста в конфигурации JSON",
+        "pt": "Corrigido o campo de entrada de texto na configuração JSON",
+        "nl": "Vertaling:",
+        "fr": "Correction du champ d'entrée Texte dans la configuration JSON",
+        "it": "Corretto il campo di input del testo nella configurazione JSON",
+        "es": "Corregido el campo de entrada Texto en configuración JSON",
+        "pl": "Wprowadzono pole wejściowe w konfiguracji JSON",
+        "zh-cn": "修改了联索行动组合中的文本投入领域"
+      },
       "6.2.6": {
         "en": "Implemented Oauth2 workflow for adapters\nCorrected encrypt/decrypt functions",
         "de": "Implementierter Oauth2-Workflow für Adapter\nKorrigierte Verschlüsselungs-/Entschlüsselungsfunktionen",
@@ -89,18 +101,6 @@
         "es": "Cuestiones de interfaz gráfica fija\nCandidato a la liberación 2",
         "pl": "Wskaźnik GUI\nWynik 2",
         "zh-cn": "九. 混合的古伊问题\n附录2"
-      },
-      "6.1.11": {
-        "en": "Fixed GUI issues\nRelease candidate 1",
-        "de": "Fehler behoben\nRelease Kandidat 1",
-        "ru": "Исправлены проблемы с GUI\nВыпуск кандидата 1",
-        "pt": "Problemas de interface gráfica fixa\nCandidato de lançamento 1",
-        "nl": "GUI problemen\nLaat de kandidaat vrij. 1",
-        "fr": "Problèmes d'interface graphique fixes\nCandidat à la libération 1",
-        "it": "Problemi di GUI fissi\nCandidato di rilascio 1",
-        "es": "Cuestiones de interfaz gráfica fija\nEl candidato a la liberación 1",
-        "pl": "Wskaźnik GUI\nKandydatka 1",
-        "zh-cn": "九. 混合的古伊问题\n释放候选人 导 言"
       }
     },
     "desc": {
