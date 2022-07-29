@@ -1,6 +1,6 @@
 {
     "name": "src-rx",
-    "version": "6.2.8",
+    "version": "6.2.9",
     "private": true,
     "dependencies": {
         "@babel/plugin-proposal-class-properties": "^7.17.12",

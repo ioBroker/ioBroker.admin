@@ -108,7 +108,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.2.9 (2022-07-29)
 * (bluefox) Corrected the Text input field in JSON configuration
 
 ### 6.2.6 (2022-07-28)
