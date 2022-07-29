@@ -4,17 +4,21 @@ import { withStyles } from '@mui/styles';
 
 import Button from '@mui/material/Button';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import Icon from '@iobroker/adapter-react-v5/Components/Icon';
-import DialogError from '@iobroker/adapter-react-v5/Dialogs/Error';
-import DialogMessage from '@iobroker/adapter-react-v5/Dialogs/Message';
-import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
-import ConfigGeneric from './ConfigGeneric';
 import IconWarning from '@mui/icons-material/Warning';
 import IconError from '@mui/icons-material/Error';
 import IconInfo from '@mui/icons-material/Info';
+import IconAuth from '@mui/icons-material/Key';
+import IconSend from '@mui/icons-material/Send';
+import IconWeb from '@mui/icons-material/Public';
 
-const styles = theme => ({
+import { I18n, Icon } from '@iobroker/adapter-react-v5';
+import DialogError from '@iobroker/adapter-react-v5/Dialogs/Error';
+import DialogMessage from '@iobroker/adapter-react-v5/Dialogs/Message';
+import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
+
+import ConfigGeneric from './ConfigGeneric';
+
+const styles = () => ({
     fullWidth: {
         width: '100%'
     },
@@ -105,7 +109,7 @@ class ConfigSendto extends ConfigGeneric {
 
             const ip = findNetworkAddressOfHost(hostObj, window.location.hostname);
             if (ip) {
-                hostname = ip + ':' + window.location.port;
+                hostname = `${ip}:${window.location.port}`;
             } else {
                 console.warn(`Cannot find suitable IP in host ${instanceObj.common.host} for ${instanceObj._id}`);
                 return null;
@@ -230,22 +234,45 @@ class ConfigSendto extends ConfigGeneric {
         />;
     }
 
+    getIcon() {
+        let icon = null;
+        if (this.props.schema.icon === 'auth') {
+            icon = <IconAuth />;
+        } else if (this.props.schema.icon === 'send') {
+            icon = <IconSend />;
+        } else if (this.props.schema.icon === 'web') {
+            icon = <IconWeb />;
+        } else if (this.props.schema.icon === 'warning') {
+            icon = <IconWarning />;
+        } else if (this.props.schema.icon === 'error') {
+            icon = <IconError />;
+        } else if (this.props.schema.icon === 'info') {
+            icon = <IconInfo />;
+        } else if (this.props.schema.icon) {
+            icon = <Icon src={this.props.schema.icon} />;
+        }
+
+        return icon;
+    }
+
     renderItem(error, disabled, defaultValue) {
+        let icon = this.getIcon();
+
         return <div className={this.props.classes.fullWidth}>
             <Button
                 variant={this.props.schema.variant || undefined}
                 color={this.props.schema.color || 'grey'}
                 className={this.props.classes.fullWidth}
                 disabled={disabled}
+                startIcon={icon}
                 onClick={() => {
                     if (this.props.schema.confirm) {
-                        this.setState({confirmDialog: true});
+                        this.setState({ confirmDialog: true });
                     } else {
                         this._onClick();
                     }
                 }}
             >
-                {this.props.schema.icon ? <Icon src={this.props.schema.icon} className={this.props.classes.icon}/> : null}
                 {this.getText(this.props.schema.label, this.props.schema.noTranslation)}
             </Button>
             {this.renderErrorDialog()}

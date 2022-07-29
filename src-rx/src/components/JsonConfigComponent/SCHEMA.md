@@ -135,6 +135,7 @@ Possible types:
     - `openUrl` - if true - open URL in new tab, if response contains attribute `openUrl`, like `{"openUrl": "http://1.2.3.4:80/aaa", "window": "_blank", "saveConfig": true}`. If `saveConfig` is true, the user will be requested to save the configuration.
     - `window` - if `openUrl` is true, this is name of new window. Could be overwritten if response consist `window` attribute.
       `this.props.socket.sendTo(adapterName.instance, command || 'send', data, result => {});`
+    - `icon` - if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`. You can use `base64` icons. (Request via issue if you need more icons)
 
 - `setState` - button that set instance's state
     - `id` - 'info.test'
@@ -151,7 +152,7 @@ Possible types:
     - `label` - multi-language text
     - `href` - link. Link could be dynamic like `#tab-objects/customs/${data.parentId}`
     - `button` - show link as button
-    - `icon` - icon for button
+  - `icon` - if icon should be shown: `auth`, `send`, `web`, `warning`, `error`, `info`. You can use `base64` icons. (Request via issue if you need more icons)
 
 - `staticImage` - static image
     - `href` - optional HTTP link
