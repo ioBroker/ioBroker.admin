@@ -6,6 +6,9 @@
 ## 5.3.7 (2022-04-10)
 * (bluefox) Changed the charts rendering
 
+## 5.3.7 (2022-04-10)
+* (bluefox) Changed the charts rendering
+
 ## 6.2.1 (2022-07-14)
 * (bluefox) Release 6.2
 
