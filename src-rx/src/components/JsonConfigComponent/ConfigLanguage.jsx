@@ -67,10 +67,10 @@ class ConfigLanguage extends ConfigGeneric {
         const value = ConfigGeneric.getValue(this.props.data, this.props.attr);
         const languages = [...LANGUAGES];
         if (this.props.schema.system) {
-            languages.unshift({value: '', label: I18n.t('ra_System language')});
+            languages.unshift({ value: '', label: I18n.t('ra_System language') });
         }
 
-        this.setState({value: value || I18n.getLanguage(), selectOptions: languages});
+        this.setState({ value: this.props.schema.system ? (value || '') : (value || I18n.getLanguage()), selectOptions: languages });
     }
 
     renderItem(error, disabled, defaultValue) {
