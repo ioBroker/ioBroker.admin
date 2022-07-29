@@ -41,6 +41,8 @@ function findNetworkAddressOfHost(obj, localIp) {
     }
 
     let hostIp;
+
+    // check ipv4 addresses
     Object.keys(networkInterfaces).forEach(inter =>
         networkInterfaces[inter].forEach(ip => {
             if (ip.internal) {
@@ -50,9 +52,10 @@ function findNetworkAddressOfHost(obj, localIp) {
             } else if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
                 return;
             }
-            if (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/)) { // if DNS name
+            // if ip4 and not docker or wsl
+            if (ip.family === 'IPv4' && !ip.address.startsWith('172') && (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/))) { // if DNS name
                 hostIp = ip.address;
-            } else {
+            } else if (!hostIp) {
                 if (ip.family === 'IPv4' && localIp.includes('.') &&
                     (ip2int(localIp) & ip2int(ip.netmask)) === (ip2int(ip.address) & ip2int(ip.netmask))) {
                     hostIp = ip.address;
@@ -61,6 +64,30 @@ function findNetworkAddressOfHost(obj, localIp) {
                 }
             }
         }));
+
+    // check ipv6 addresses
+    if (!hostIp) {
+        Object.keys(networkInterfaces).forEach(inter =>
+            networkInterfaces[inter].forEach(ip => {
+                if (ip.internal) {
+                    return;
+                } else if (localIp.includes(':') && ip.family !== 'IPv6') {
+                    return;
+                } else if (localIp.includes('.') && !localIp.match(/[^.\d]/) && ip.family !== 'IPv4') {
+                    return;
+                }
+                if (ip.family === 'IPv6' && (localIp === '127.0.0.0' || localIp === 'localhost' || localIp.match(/[^.\d]/))) { // if DNS name
+                    hostIp = ip.address;
+                } else if (!hostIp) {
+                    if (ip.family === 'IPv4' && localIp.includes('.') &&
+                        (ip2int(localIp) & ip2int(ip.netmask)) === (ip2int(ip.address) & ip2int(ip.netmask))) {
+                        hostIp = ip.address;
+                    } else {
+                        hostIp = ip.address;
+                    }
+                }
+            }));
+    }
 
     if (!hostIp) {
         Object.keys(networkInterfaces).forEach(inter => {
@@ -137,12 +164,14 @@ class ConfigSendto extends ConfigGeneric {
     _onClick() {
         this.props.onCommandRunning(true);
 
-        const _origin = `${window.location.protocol}//${this.state.hostname}${window.location.pathname.replace(/\/index\.html$/, '')}`
+        const _origin = `${window.location.protocol}//${window.location.host}${window.location.pathname.replace(/\/index\.html$/, '')}`
+        const _originIp = `${window.location.protocol}//${this.state.hostname.split(':').length > 3 ? `[${this.state.hostname}]` : this.state.hostname}${window.location.pathname.replace(/\/index\.html$/, '')}`
 
         let data = this.props.schema.data;
         if (data === undefined && this.props.schema.jsonData) {
             data = this.getPattern(this.props.schema.jsonData, {
                 _origin,
+                _originIp,
                 ...this.props.data
             });
             try {
@@ -155,7 +184,10 @@ class ConfigSendto extends ConfigGeneric {
             data = null;
         }
         if (this.props.schema.openUrl && !data) {
-            data = { _origin: `${window.location.protocol}//${this.state.hostname}${window.location.pathname.replace(/\/index\.html$/, '')}` };
+            data = {
+                _origin,
+                _originIp,
+            }
         }
 
         this.props.socket.sendTo(
