@@ -66,6 +66,7 @@
     "docs/",
     "www/",
     "www-react/",
+    "public/",
     "io-package.json",
     "LICENSE",
     "main.js"
