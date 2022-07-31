@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.2.11",
+    "version": "6.2.12",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.2.12": {
+        "en": "Corrected the Text input field in JSON configuration",
+        "de": "Das Eingabefeld Text in JSON-Konfiguration korrigiert",
+        "ru": "Исправлена поле ввода текста в конфигурации JSON",
+        "pt": "Corrigido o campo de entrada de texto na configuração JSON",
+        "nl": "Vertaling:",
+        "fr": "Correction du champ d'entrée Texte dans la configuration JSON",
+        "it": "Corretto il campo di input del testo nella configurazione JSON",
+        "es": "Corregido el campo de entrada Texto en configuración JSON",
+        "pl": "Wprowadzono pole wejściowe w konfiguracji JSON",
+        "zh-cn": "修改了联索行动组合中的文本投入领域"
+      },
       "6.2.6": {
         "en": "Implemented Oauth2 workflow for adapters\nCorrected encrypt/decrypt functions",
         "de": "Implementierter Oauth2-Workflow für Adapter\nKorrigierte Verschlüsselungs-/Entschlüsselungsfunktionen",
