@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.2.12",
+    "version": "6.2.13",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.2.13": {
+        "en": "Corrected JSON config",
+        "de": "JSON config korrigiert",
+        "ru": "Правильный конфиг JSON",
+        "pt": "Configuração JSON corrigida",
+        "nl": "Quality over Quantity (QoQ) Releases Vertaling:",
+        "fr": "Correction de la configuration JSON",
+        "it": "Corretto JSON config",
+        "es": "Corregido JSON config",
+        "pl": "Zgoda JSON",
+        "zh-cn": "惩教所"
+      },
       "6.2.12": {
         "en": "Corrected the Text input field in JSON configuration",
         "de": "Das Eingabefeld Text in JSON-Konfiguration korrigiert",
@@ -89,18 +101,6 @@
         "es": "Liberación 6.2",
         "pl": "Wydanie 6.2",
         "zh-cn": "第6.2条"
-      },
-      "6.1.12": {
-        "en": "Fixed GUI issues\nRelease candidate 2",
-        "de": "Fehler behoben\nRelease Kandidat 2",
-        "ru": "Исправлены проблемы с GUI\nВыпуск кандидата 2",
-        "pt": "Problemas de interface gráfica fixa\nCandidato de lançamento 2",
-        "nl": "GUI problemen\nLaat kandidaat 2",
-        "fr": "Problèmes d'interface graphique fixes\nCandidat à la sortie 2",
-        "it": "Problemi di GUI fissi\nCandidato di rilascio 2",
-        "es": "Cuestiones de interfaz gráfica fija\nCandidato a la liberación 2",
-        "pl": "Wskaźnik GUI\nWynik 2",
-        "zh-cn": "九. 混合的古伊问题\n附录2"
       }
     },
     "desc": {
