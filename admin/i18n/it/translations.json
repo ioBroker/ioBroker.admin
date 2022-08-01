@@ -80,7 +80,8 @@
   "Language for only this instance": "Linguaggio solo per questa istanza",
   "Global path": "Percorso globale",
   "Instance": "Esempio",
-  "Instance path behind proxy": "",
+  "Instance path behind proxy": "Percorso dell'istanza dietro il proxy",
   "Loading backgroun": "Sfondo di caricamento",
-  "Background color of the loading screen": "Colore di sfondo della schermata di caricamento"
+  "Background color of the loading screen": "Colore di sfondo della schermata di caricamento",
+  "Loading background": "Caricamento dello sfondo"
 }

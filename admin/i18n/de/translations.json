@@ -82,5 +82,6 @@
   "Instance": "instanz",
   "Instance path behind proxy": "Instanzpfad hinter Proxy",
   "Loading backgroun": "Hintergrund wird geladen",
-  "Background color of the loading screen": "Hintergrundfarbe des Ladebildschirms"
+  "Background color of the loading screen": "Hintergrundfarbe des Ladebildschirms",
+  "Loading background": "Hintergrund beim Laden"
 }

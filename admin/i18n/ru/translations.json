@@ -82,5 +82,6 @@
   "Instance": "Экземпляр",
   "Instance path behind proxy": "Путь к инстанции за прокси",
   "Loading backgroun": "Загрузка фона",
-  "Background color of the loading screen": "Цвет фона экрана загрузки"
+  "Background color of the loading screen": "Цвет фона экрана загрузки",
+  "Loading background": "Фон загрузки"
 }

@@ -80,7 +80,8 @@
   "Language for only this instance": "Taal voor alleen deze instantie",
   "Global path": "Globaal pad",
   "Instance": "Voorbeeld",
-  "Instance path behind proxy": "",
+  "Instance path behind proxy": "Instantiepad achter proxy",
   "Loading backgroun": "Achtergrond laden",
-  "Background color of the loading screen": "Achtergrondkleur van het laadscherm"
+  "Background color of the loading screen": "Achtergrondkleur van het laadscherm",
+  "Loading background": "Achtergrond laden"
 }
