@@ -39,7 +39,10 @@ const styles = () => ({
 class ConfigNumber extends ConfigGeneric {
     componentDidMount() {
         super.componentDidMount();
-        const _value = ConfigGeneric.getValue(this.props.data, this.props.attr);
+        let _value = ConfigGeneric.getValue(this.props.data, this.props.attr);
+        if (_value === null || _value === undefined) {
+            _value = '';
+        }
         this.setState({ _value: _value.toString(), oldValue: _value.toString() });
         // this.props.registerOnForceUpdate(this.props.attr, this.onUpdate);
     }
