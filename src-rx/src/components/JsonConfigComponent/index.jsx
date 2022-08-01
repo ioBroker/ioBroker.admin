@@ -132,16 +132,16 @@ class JsonConfigComponent extends Component {
             cb && cb();
         } else {
             if (data) {
-                const state = { data };
+                const newState = { data };
 
                 const _data = {};
                 // remove all attributes starting with "_"
                 Object.keys(data).forEach(attr => !attr.startsWith('_') && (_data[attr] = data[attr]));
 
-                state.changed = JSON.stringify(_data) !== this.state.originalData;
+                newState.changed = JSON.stringify(_data) !== this.state.originalData;
 
-                this.setState({ state }, () => {
-                    this.props.onChange(_data, state.changed, saveConfig);
+                this.setState(newState, () => {
+                    this.props.onChange(_data, newState.changed, saveConfig);
                     cb && cb();
                 });
             } else if (saveConfig) {

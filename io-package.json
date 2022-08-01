@@ -230,7 +230,7 @@
     "reverseProxy": [],
     "loadingBackgroundColor": "",
     "loadingHideLogo": false,
-    "loadingBackgroundImage": ""
+    "loadingBackgroundImage": false
   },
   "objects": [],
   "instanceObjects": [

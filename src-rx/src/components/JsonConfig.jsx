@@ -420,12 +420,12 @@ class JsonConfig extends Router {
                         window.alert(I18n.t('Cannot save configuration because of error in configuration'));
                         saveConfigDialog = false;
                     }
-                    if (saveConfigDialog && !this.state.changed) {
+                    if (saveConfigDialog && !this.state.changed && !changed) {
                         saveConfigDialog = false;
                     }
-                    if (data && changed) {
+                    if (data) {
                         this.setState({ data, changed, saveConfigDialog });
-                    } else if (saveConfigDialog) {
+                    } else if (saveConfigDialog !== undefined) {
                         this.setState({ saveConfigDialog });
                     }
                 }}
