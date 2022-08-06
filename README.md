@@ -115,6 +115,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+
+### __WORK IN PROGRESS__
+* (Apollon77) Fix for OAuth2 authentication response success page
+
 ### 6.2.13 (2022-08-01)
 * (bluefox) Corrected JSON config
 
