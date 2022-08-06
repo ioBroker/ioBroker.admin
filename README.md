@@ -115,8 +115,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-
-### __WORK IN PROGRESS__
+### 6.2.14 (2022-08-06)
 * (Apollon77) Fix for OAuth2 authentication response success page
 
 ### 6.2.13 (2022-08-01)
@@ -131,9 +130,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.2.4 (2022-07-20)
 * (bluefox) Corrected yahka settings
-
-### 6.2.3 (2022-07-18)
-* (AlCalzone) Implemented AES-192 encryption and decryption in GUI
 
 ## License
 The MIT License (MIT)

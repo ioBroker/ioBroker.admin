@@ -1,5 +1,11 @@
 ## 5.3.7 (2022-04-10)
 * (bluefox) Changed the charts rendering
+## 6.2.3 (2022-07-18)
+* (AlCalzone) Implemented AES-192 encryption and decryption in GUI
+
+## 5.3.7 (2022-04-10)
+* (bluefox) Changed the charts rendering
+
 ## 6.2.2 (2022-07-18)
 * (bluefox) Corrected JSON config table and login page
 
