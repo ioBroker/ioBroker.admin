@@ -15,7 +15,7 @@ Since Admin 6.2.14 there is a convenience support for OAuth authentication flows
 ### Sending user to the Authorization server
 In JSON-Config you can use the sendTo component to send a message to your adapter which then as response return an URL. The component can then open this URL automatically in a new tab/window.
 
-**This only works if the URL for redirecting back after the authentication do not need to be specified hardcided in the configurationnof the client!** 
+**This only works if the URL for redirecting back after the authentication do not need to be specified hardcoded in the configurationnof the client!** 
 
 ```json
 "_authenticate": {
