@@ -1362,7 +1362,7 @@
   "Instance settings": "Instance settings",
   "only in this browser session": "only in this browser session",
   "Do not show this dialog in this browser session any more": "Do not show this dialog in this browser session any more",
-  "Active repo is \"%s\"": "Active repository is \"%s\"",
+  "Active repo is \"%s\"": "WARNING: Current repository is \"%s\". Use at own risk!",
   "Log level will be reset to the saved level after the restart of the controller": "Log level will be reset to the saved level after the restart of the controller",
   "You can set the log level permanently in the base host settings": "You can set the log level permanently in the host base settings",
   "Update \"%s\" to v%s": "Update \"%s\" to v%s",

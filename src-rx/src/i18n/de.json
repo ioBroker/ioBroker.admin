@@ -1362,7 +1362,7 @@
   "Instance settings": "Instanzeinstellungen",
   "only in this browser session": "nur in dieser Browsersitzung",
   "Do not show this dialog in this browser session any more": "Diesen Dialog in dieser Browsersitzung nicht mehr anzeigen",
-  "Active repo is \"%s\"": "Aktives Repository ist \"%s\"",
+  "Active repo is \"%s\"": "WARNUNG: Aktuelles Repository ist \"%s\". Benutzung auf eigene Gefahr!",
   "Log level will be reset to the saved level after the restart of the controller": "Die Protokollebene wird nach dem Neustart der Steuerung auf die gespeicherte Ebene zurückgesetzt",
   "You can set the log level permanently in the base host settings": "Sie können die Protokollstufe dauerhaft in den Host-Basiseinstellungen festlegen",
   "Update \"%s\" to v%s": "Aktualisieren \"%s\" auf v%s",

@@ -1362,7 +1362,7 @@
   "Instance settings": "Configuración de instancia",
   "only in this browser session": "solo en esta sesión de navegador",
   "Do not show this dialog in this browser session any more": "No mostrar más este cuadro de diálogo en esta sesión del navegador",
-  "Active repo is \"%s\"": "El repositorio activo es \"%s\"",
+  "Active repo is \"%s\"": "ADVERTENCIA: El repositorio actual es \"%s\". ¡utilícelo bajo su propio riesgo!",
   "Log level will be reset to the saved level after the restart of the controller": "El nivel de registro se restablecerá al nivel guardado después del reinicio del controlador.",
   "You can set the log level permanently in the base host settings": "Puede establecer el nivel de registro de forma permanente en la configuración base del host",
   "Update \"%s\" to v%s": "Actualizar \"%s\" a v%s",
