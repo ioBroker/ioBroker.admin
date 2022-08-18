@@ -18,18 +18,6 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
-      "6.2.15": {
-        "en": "Corrected many GUI issues\nAdded `stable` flag for repositories\nAdded reset button for repositories",
-        "de": "Viele GUI Probleme korrigiert\nHinzugefügt stabile Flagge für Repositories\nReset-Taste für Repositories hinzugefügt",
-        "ru": "Исправлено множество вопросов GUI\nДобавлен стабильный флаг для репозиторий\nДобавлена кнопка сброса для репозиторий",
-        "pt": "Corrigido muitos problemas de GUI\nBandeira estável adicionada para repositórios\nAdicionado botão de reset para repositórios",
-        "nl": "Vertaling:\nVoeg een stabiele vlag toe voor herplaatsingen\nVoeg de resetknop toe voor terugbetaling",
-        "fr": "Correction de nombreux problèmes d'interface graphique\nDrapeau stable ajouté pour les dépôts\nBouton de réinitialisation ajouté pour les dépôts",
-        "it": "Corretto molti problemi GUI\nAggiunto bandiera stabile per repository\nAggiunto pulsante di reset per repository",
-        "es": "Corregidos muchos problemas de GUI\nAñadido bandera estable para repositorios\nBotón de reinicio añadido para los repositorios",
-        "pl": "Wykład wiele problemów z GUI\nFlaga zastępowania\nAdded reset button",
-        "zh-cn": "纠正许多古伊人的问题\n增加存放地的稳定旗帜\n存放处的存放地点"
-      },
       "6.2.14": {
         "en": "Fix for OAuth2 authentication response success page",
         "de": "Fix für OAuth2 Authentifizierung Antwort Erfolgsseite",
