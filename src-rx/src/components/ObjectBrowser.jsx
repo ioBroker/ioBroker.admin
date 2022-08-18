@@ -1662,14 +1662,14 @@ class ObjectBrowser extends Component {
         }
         selected = selected.map(id => id.replace(/["']/g, '')).filter(id => id);
 
-        let columns = (window._localStorage || window.localStorage).getItem(`${props.dialogName || 'App'}.columns`);
+        let columns = null; // (window._localStorage || window.localStorage).getItem(`${props.dialogName || 'App'}.columns`);
         try {
             columns = columns ? JSON.parse(columns) : null;
         } catch (e) {
             columns = null;
         }
 
-        let columnsWidths = (window._localStorage || window.localStorage).getItem(`${props.dialogName || 'App'}.columnsWidths`);
+        let columnsWidths =  null; // (window._localStorage || window.localStorage).getItem(`${props.dialogName || 'App'}.columnsWidths`);
         try {
             columnsWidths = columnsWidths ? JSON.parse(columnsWidths) : {};
         } catch (e) {
