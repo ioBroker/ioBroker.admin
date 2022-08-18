@@ -115,10 +115,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### 6.2.15 (2022-08-18)
+### **WORK IN PROGRESS**
 * (bluefox) Corrected many GUI issues
 * (bluefox) Added `stable` flag for repositories
 * (bluefox) Added reset button for repositories
+* (bluefox) Improved `writeFile` function for socket communication
 
 ### 6.2.14 (2022-08-06)
 * (Apollon77) Fix for OAuth2 authentication response success page

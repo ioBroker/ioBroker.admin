@@ -280,9 +280,16 @@ function SocketClient () {
 
         id++;
 
-        if (name === 'writeFile' && typeof arg3 !== 'string') {
-            // _adapter, filename, data, callback
-            arg3 = arg3 && btoa(String.fromCharCode.apply(null, new Uint8Array(arg3)));
+        if (name === 'writeFile' && typeof arg3 !== 'string' && arg3) {
+            // Arguments: arg1,     arg2,     arg3, arg4
+            // Arguments: _adapter, filename, data, callback
+            let binary = '';
+            const bytes = new Uint8Array(arg3);
+            const len = bytes.byteLength;
+            for (let i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            arg3 = window.btoa(binary);
         }
 
         try {
