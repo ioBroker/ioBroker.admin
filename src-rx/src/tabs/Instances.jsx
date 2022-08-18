@@ -445,7 +445,7 @@ class Instances extends Component {
             instance.materialize = common.adminUI.config === 'materialize';
             instance.compactMode = common.runAsCompactMode || false;
             instance.mode = common.mode || null;
-            instance.schedule = common.schedule || null;
+            instance.schedule = common.schedule === undefined || common.schedule === null ? null : common.schedule;
             instance.loglevel = common.loglevel || null;
             instance.adapter = common.name || null;
             instance.version = common.version || null;
@@ -800,8 +800,8 @@ class Instances extends Component {
         } else {
             this.props.socket.getObject('system.adapter.' + instance.id)
                 .then(obj => {
-                    if (obj.common.schedule) {
-                        delete obj.common.schedule;
+                    if (obj.common.schedule !== '') {
+                        obj.common.schedule = '';
                         return this.props.socket.setObject(obj._id, obj);
                     }
                 });
@@ -825,7 +825,7 @@ class Instances extends Component {
         } else {
             this.props.socket.getObject('system.adapter.' + instance.id)
                 .then(obj => {
-                    if (obj.common.restartSchedule) {
+                    if (obj.common.restartSchedule !== '') {
                         obj.common.restartSchedule = '';
                         return this.props.socket.setObject(obj._id, obj);
                     }
