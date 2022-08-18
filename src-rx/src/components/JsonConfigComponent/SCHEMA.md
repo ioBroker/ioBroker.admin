@@ -32,7 +32,7 @@ Possible types:
 
 - `checkbox` - show checkbox
 
-- `slider` - show slider              
+- `slider` - show slider (only Admin6)              
   - `min` - (default 0)
   - `max` - (default 100)
   - `step` - (default `(max - min) / 100`)
@@ -46,10 +46,10 @@ Possible types:
 - `user` - Select user from system.user. (With color and icon)
   - `short` - no system.user.
 
-- `room` - Select room from `enum.room` (With color and icon)
+- `room` - Select room from `enum.room` (With color and icon) - (only Admin6)
   - `short` - no `enum.rooms.`
 
-- `func` - Select function from `enum.func` (With color and icon)
+- `func` - Select function from `enum.func` (With color and icon) - (only Admin6)
   - `short` - no `enum.func.`
 
 - `select` 
@@ -173,7 +173,7 @@ Possible types:
 - `certificate`
     - `certType` - on of: `public`, `private`, `chained`
 
-- `custom`
+- `custom` (only Admin6)
     - `name` - Component name that will be provided via props, like ComponentInstancesEditor
     - `url` - Location of component
         - `custom/customComponents.js`: in this case the files will be loaded from `/adapter/ADAPTER_NAME/custom/customComponents.js`
@@ -193,7 +193,7 @@ Possible types:
     - `complex` - show CRON with "minutes", "seconds" and so on
     - `simple` - show simple CRON settings
 
-- `fileSelector`
+- `fileSelector` (only Admin6)
     - `pattern` - File extension pattern. Allowed `**/*.ext` to show all files from sub-folders too, `*.ext` to show from root folder or `folderName/*.ext` to show all files in sub-folder `folderName`. Default `**/*.*`.
     - `objectID` - Object ID of type `meta`. You can use special placeholder `%INSTANCE%`: like `myAdapter.%INSTANCE%.files`
     - `upload` - path, where the uploaded files will be stored. Like `folderName`. If not defined, no upload field will be show. To upload in root set this field to `/`.
@@ -204,7 +204,7 @@ Possible types:
     - `noNone` - Do not show `none` option
     - `noSize` - Do not show size of files
 
-- `file`
+- `file` (only Admin6)
   Input field with file selector
     - `disableEdit` - if user can manually enter the file name and not only through select dialog
     - `limitPath` - limit selection to one specific object of type `meta` and following path (not mandatory)
