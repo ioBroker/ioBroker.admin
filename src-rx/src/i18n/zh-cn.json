@@ -1511,5 +1511,9 @@
   "Bookmark admin": "书签管理页面",
   "Go to admin now": "立即进入管理",
   "Redirect in %s second(s)": "5 秒后重定向",
-  "Waiting for admin restart...": "等待管理员重启..."
+  "Waiting for admin restart...": "等待管理员重启...",
+  "Add new line to the repository list": "将新行添加到存储库列表",
+  "Restore repository list to default": "将存储库列表恢复为默认值",
+  "Active": "积极的",
+  "Drag and drop to reorder": "拖放以重新排序"
 }

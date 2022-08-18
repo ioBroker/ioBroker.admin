@@ -1511,5 +1511,9 @@
   "Bookmark admin": "Bookmark admin page",
   "Go to admin now": "Go to admin now",
   "Redirect in %s second(s)": "Redirect in %s second(s)",
-  "Waiting for admin restart...": "Waiting for admin restart..."
+  "Waiting for admin restart...": "Waiting for admin restart...",
+  "Add new line to the repository list": "Add new line to the repository list",
+  "Restore repository list to default": "Restore repository list to default",
+  "Active": "Active",
+  "Drag and drop to reorder": "Drag and drop to reorder"
 }

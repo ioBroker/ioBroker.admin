@@ -1511,5 +1511,9 @@
   "Bookmark admin": "Strona administratora zakładek",
   "Go to admin now": "Przejdź teraz do administratora",
   "Redirect in %s second(s)": "Przekieruj za %s sekund",
-  "Waiting for admin restart...": "Oczekiwanie na ponowne uruchomienie administratora..."
+  "Waiting for admin restart...": "Oczekiwanie na ponowne uruchomienie administratora...",
+  "Add new line to the repository list": "Dodaj nową linię do listy repozytoriów",
+  "Restore repository list to default": "Przywróć listę repozytoriów do wartości domyślnych",
+  "Active": "Aktywny",
+  "Drag and drop to reorder": "Przeciągnij i upuść, aby zmienić kolejność"
 }

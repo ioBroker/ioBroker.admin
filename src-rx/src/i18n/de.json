@@ -1511,5 +1511,9 @@
   "Bookmark admin": "Lesezeichen-Admin-Seite",
   "Go to admin now": "Gehen Sie jetzt zu Admin",
   "Redirect in %s second(s)": "Weiterleitung in %s Sekunde(n)",
-  "Waiting for admin restart...": "Warten auf Admin-Neustart..."
+  "Waiting for admin restart...": "Warten auf Admin-Neustart...",
+  "Add new line to the repository list": "Neue Zeile zur Repository-Liste hinzufügen",
+  "Restore repository list to default": "Repository-Liste auf Standard zurücksetzen",
+  "Active": "Aktiv",
+  "Drag and drop to reorder": "Ziehen und ablegen zum Neuordnen"
 }

@@ -1,18 +1,19 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withStyles } from '@mui/styles';
 
 import { MapContainer, TileLayer } from 'react-leaflet';
 import { useMap } from 'react-leaflet/hooks';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
 
-import { withStyles } from '@mui/styles';
 import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
-import { FormHelperText } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import FormHelperText from '@mui/material/FormHelperText';
 
 import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
 import withWidth from '@iobroker/adapter-react-v5/Components/withWidth';
@@ -27,7 +28,7 @@ const styles = theme => ({
         overflow: 'auto',
         overflowX: 'hidden',
         padding: 15,
-        //backgroundColor: blueGrey[ 50 ]
+        // backgroundColor: blueGrey[ 50 ]
     },
     formControl: {
         marginRight: theme.spacing(1),
@@ -126,6 +127,7 @@ class MainSettingsDialog extends Component {
                 title: 'Currency sign',
                 translate: false,
                 allowText: true,
+                autocomplete: true,
                 values: [
                     {
                         id: '€',
@@ -262,6 +264,30 @@ class MainSettingsDialog extends Component {
         // if disabled by vendor settings
         if (this.props.adminGuiConfig.admin.settings && this.props.adminGuiConfig.admin.settings[e.id] === false) {
             return null;
+        }
+
+        if (e.autocomplete && e.values) {
+            return <Grid item sm={6} xs={12} key={i}>
+                <Autocomplete
+                    variant="standard"
+                    freeSolo
+                    options={e.values}
+                    inputValue={value.toString()}
+                    onChange={(evt, newValue) => {
+                        const id = this.getSettings()[i].id;
+                        this.doChange(id, newValue ? newValue.id : '');
+                    }}
+                    onInputChange={(event, newValue) => {
+                        const id = this.getSettings()[i].id;
+                        this.doChange(id, newValue);
+                    }}
+                    getOptionLabel={option =>
+                        e.translate ? this.props.t(option.title || option.id) : option.title || option.id}
+                    renderOption={(props, option) => <li {...props}>{e.translate ? this.props.t(option.title || option.id) : option.title || option.id}</li>}
+                    renderInput={params =>
+                        <TextField {...params} variant="standard" label={this.props.t(e.title)} />}
+                />
+            </Grid>;
         }
 
         // If value is not in known values, show text input

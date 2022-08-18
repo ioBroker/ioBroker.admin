@@ -1511,5 +1511,9 @@
   "Bookmark admin": "Bladwijzer maken voor beheerderspagina",
   "Go to admin now": "Ga nu naar admin",
   "Redirect in %s second(s)": "Omleiden in %s seconde(n)",
-  "Waiting for admin restart...": "Wachten op herstart beheerder..."
+  "Waiting for admin restart...": "Wachten op herstart beheerder...",
+  "Add new line to the repository list": "Nieuwe regel toevoegen aan de repositorylijst",
+  "Restore repository list to default": "Repository-lijst terugzetten naar standaard",
+  "Active": "Actief",
+  "Drag and drop to reorder": "Slepen en neerzetten om opnieuw te ordenen"
 }

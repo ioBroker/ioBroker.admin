@@ -1,9 +1,9 @@
 // RepositoriesDialog
-import {Component} from 'react';
+import { Component} from 'react';
 import clsx from 'clsx';
-import {withStyles} from '@mui/styles';
+import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
-import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc';
+import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 
 import Checkbox from '@mui/material/Checkbox';
 import Fab from '@mui/material/Fab';
@@ -18,6 +18,7 @@ import Paper from '@mui/material/Paper';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DragHandleIcon from '@mui/icons-material/Menu';
+import RestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 
 import I18n from '@iobroker/adapter-react-v5/i18n';
 import ConfirmDialog from '@iobroker/adapter-react-v5/Dialogs/Confirm';
@@ -70,7 +71,11 @@ const styles = theme => ({
             border: '2px solid #FF0000',
             borderRadius: 4
         }
-    }
+    },
+    fabButton: {
+        marginRight: theme.spacing(1),
+        width: 44,
+    },
 });
 
 function repoToArray(repos) {
@@ -281,6 +286,27 @@ class RepositoriesDialog extends Component {
         this.props.onChange(newData);
     };
 
+    onRestore = () => {
+        let newData = JSON.parse(JSON.stringify(this.props.data))
+        newData.native.repositories = {
+            stable: {
+                link: 'http://download.iobroker.net/sources-dist.json',
+            },
+            beta: {
+                link: 'http://download.iobroker.net/sources-dist-latest.json',
+            }
+        };
+        let newConfig = JSON.parse(JSON.stringify(this.props.dataAux));
+        if (!this.props.multipleRepos) {
+            newConfig.common.activeRepo = 'stable';
+            return newConfig;
+        } else {
+            newConfig.common.activeRepo = ['stable'];
+        }
+
+        this.props.onChange(newData, newConfig);
+    };
+
     getUpdateDefaultRepo = (newRepo, newData, oldTitle, newTitle) => {
         let newConfig = JSON.parse(JSON.stringify(this.props.dataAux));
         if (!this.props.multipleRepos) {
@@ -376,9 +402,18 @@ class RepositoriesDialog extends Component {
                     color="primary"
                     aria-label="add"
                     onClick={this.onAdd}
-                    className="small_size"
+                    className={classes.fabButton}
+                    title={this.props.t('Add new line to the repository list')}
                 >
                     <AddIcon/>
+                </Fab>
+                <Fab
+                    size="small"
+                    onClick={this.onRestore}
+                    className={classes.fabButton}
+                    title={this.props.t('Restore repository list to default')}
+                >
+                    <RestoreIcon/>
                 </Fab>
                 <Paper variant="outlined" className={classes.descriptionPanel}/>
             </div>

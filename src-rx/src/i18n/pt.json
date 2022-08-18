@@ -1511,5 +1511,9 @@
   "Bookmark admin": "Página de administração de favoritos",
   "Go to admin now": "Vá para o administrador agora",
   "Redirect in %s second(s)": "Redirecionar em %s segundos",
-  "Waiting for admin restart...": "Aguardando a reinicialização do administrador..."
+  "Waiting for admin restart...": "Aguardando a reinicialização do administrador...",
+  "Add new line to the repository list": "Adicionar nova linha à lista de repositórios",
+  "Restore repository list to default": "Restaurar a lista de repositórios para o padrão",
+  "Active": "Ativo",
+  "Drag and drop to reorder": "Arraste e solte para reordenar"
 }

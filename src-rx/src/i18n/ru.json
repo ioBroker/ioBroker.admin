@@ -1511,5 +1511,9 @@
   "Bookmark admin": "Добавить страницу администратора в закладки",
   "Go to admin now": "Перейти к администратору сейчас",
   "Redirect in %s second(s)": "Перенаправление через %s сек.",
-  "Waiting for admin restart...": "Ожидание перезапуска админки..."
+  "Waiting for admin restart...": "Ожидание перезапуска админки...",
+  "Add new line to the repository list": "Добавить новую строку в список репозиториев",
+  "Restore repository list to default": "Восстановить список репозиториев по умолчанию",
+  "Active": "Активно",
+  "Drag and drop to reorder": "Перетащите, чтобы изменить порядок"
 }
