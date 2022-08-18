@@ -115,7 +115,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.2.16 (2022-08-18)
 * (bluefox) Corrected many GUI issues
 * (bluefox) Added `stable` flag for repositories
 * (bluefox) Added reset button for repositories
