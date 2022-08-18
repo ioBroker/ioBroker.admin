@@ -31,7 +31,15 @@ const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0
 function MyImage(props) {
     const {src, alt, style, ...other} = props;
     const img = props.style.backgroundImage.substring(5, props.style.backgroundImage.length - 2);
-    return <img src={img} alt={alt} {...other} onError={() => {this.onerror = null; this.src = './img/no-image.png';}} />;
+    return <img src={img} alt={alt} {...other} onError={e => {
+        if (this) {
+            this.onerror = null;
+            this.src = './img/no-image.png';
+        } else if (e.target) {
+            e.target.onerror = null;
+            e.target.src = './img/no-image.png';
+        }
+    }} />;
 }
 
 const styles = theme => ({

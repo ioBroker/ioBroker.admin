@@ -9,7 +9,7 @@
         "@fnando/sparkline": "^0.3.10",
         "@iobroker/adapter-react-v5": "^3.1.27",
         "@iobroker/admin-component-easy-access": "^0.3.2",
-        "@iobroker/socket-client": "^1.1.11",
+        "@iobroker/socket-client": "^1.1.12",
         "@mui/icons-material": "^5.8.4",
         "@mui/lab": "^5.0.0-alpha.92",
         "@mui/material": "^5.10.1",

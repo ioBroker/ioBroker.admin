@@ -1515,5 +1515,6 @@
   "Add new line to the repository list": "Добавить новую строку в список репозиториев",
   "Restore repository list to default": "Восстановить список репозиториев по умолчанию",
   "Active": "Активно",
-  "Drag and drop to reorder": "Перетащите, чтобы изменить порядок"
+  "Drag and drop to reorder": "Перетащите, чтобы изменить порядок",
+  "Mark it as stable if you want to hide warning on adapters tab": "Отметьте его как стабильный, если вы хотите скрыть предупреждение на вкладке адаптеров."
 }

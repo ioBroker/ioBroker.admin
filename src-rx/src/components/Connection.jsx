@@ -134,7 +134,10 @@ class Connection {
      * @returns {boolean} True if running in a web adapter or in a socketio adapter.
      */
     static isWeb() {
-        return window.adapterName === 'material' || window.adapterName === 'vis' || window.socketUrl !== undefined;
+        return window.adapterName === 'material' ||
+            window.adapterName === 'vis' ||
+            window.adapterName === 'echarts-show' ||
+            window.socketUrl !== undefined;
     }
 
     /**
@@ -172,29 +175,51 @@ class Connection {
         let host = this.props.host;
         let port = this.props.port;
         let protocol = this.props.protocol.replace(':', '');
+        let path = window.location.pathname;
 
-        // if web adapter, socket io could be on other port or even host
-        if (window.socketUrl) {
-            let parts = window.socketUrl.split(':');
-            host = parts[0] || host;
-            port = parts[1] || port;
-            if (host.includes('://')) {
-                parts = host.split('://');
-                protocol = parts[0];
-                host = parts[1];
+        if (
+            window.location.hostname === 'iobroker.net' ||
+            window.location.hostname === 'iobroker.pro'
+        ) {
+            path = '';
+        } else {
+            // if web adapter, socket io could be on other port or even host
+            if (window.socketUrl) {
+                let parts = window.socketUrl.split(':');
+                host = parts[0] || host;
+                port = parts[1] || port;
+                if (host.includes('://')) {
+                    parts = host.split('://');
+                    protocol = parts[0];
+                    host = parts[1];
+                }
+            }
+            // get current path
+            const pos = path.lastIndexOf('/');
+            if (pos !== -1) {
+                path = path.substring(0, pos + 1);
+            }
+
+            if (Connection.isWeb()) {
+                // remove one level, like echarts, vis, .... We have here: '/echarts/'
+                const parts = path.split('/');
+                if (parts.length > 2) {
+                    parts.pop();
+                    parts.pop();
+                    path = parts.join('/');
+                    if (!path.endsWith('/')) {
+                        path += '/';
+                    }
+                }
             }
         }
-        // get current path
-        let path = window.location.pathname;
-        const pos = path.lastIndexOf('/');
-        if (pos !== -1) {
-            path = path.substring(0, pos + 1);
-        }
+
         const url = port ? `${protocol}://${host}:${port}${path}` : `${protocol}://${host}${path}`;
 
         this._socket = window.io.connect(
             url,
             {
+                path: path.endsWith('/') ? path + 'socket.io' : path + '/socket.io',
                 query: 'ws=true',
                 name: this.props.name,
                 timeout: this.props.ioTimeout
@@ -701,11 +726,16 @@ class Connection {
      * Sets the given state value.
      * @param {string} id The state ID.
      * @param {string | number | boolean | ioBroker.State | ioBroker.SettableState | null} val The state value.
+     * @param {boolean | null} ack Acknowledge flag
      * @returns {Promise<void>}
      */
-    setState(id, val) {
+    setState(id, val, ack) {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
+        }
+
+        if (typeof ack === 'boolean') {
+            val = { val, ack };
         }
 
         return new Promise((resolve, reject) =>
@@ -2513,6 +2543,45 @@ class Connection {
         });
 
         return this._promises.installedCompact[host];
+    }
+
+    // returns very optimized information for adapters to minimize connection load
+    // reads only version of installed adapter
+    getCompactSystemRepositories(update, cmdTimeout) {
+        if (Connection.isWeb()) {
+            return Promise.reject('Allowed only in admin');
+        }
+
+        this._promises.installedCompact = this._promises.installedCompact || {};
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises.getCompactSystemRepositories = new Promise((resolve, reject) => {
+            let timeout = setTimeout(() => {
+                if (timeout) {
+                    timeout = null;
+                    reject('getCompactSystemRepositories timeout');
+                }
+            }, cmdTimeout || this.props.cmdTimeout);
+
+            this._socket.emit('getCompactSystemRepositories', data => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    if (data === PERMISSION_ERROR) {
+                        reject('May not read "getCompactSystemRepositories"');
+                    } else if (!data) {
+                        reject('Cannot read "getCompactSystemRepositories"');
+                    } else {
+                        resolve(data);
+                    }
+                }
+            });
+        });
+
+        return this._promises.getCompactSystemRepositories;
     }
 
     getInstalledResetCache(host) {

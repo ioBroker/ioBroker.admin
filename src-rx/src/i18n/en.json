@@ -1515,5 +1515,6 @@
   "Add new line to the repository list": "Add new line to the repository list",
   "Restore repository list to default": "Restore repository list to default",
   "Active": "Active",
-  "Drag and drop to reorder": "Drag and drop to reorder"
+  "Drag and drop to reorder": "Drag and drop to reorder",
+  "Mark it as stable if you want to hide warning on adapters tab": "Mark it as stable if you want to hide warning on adapters tab"
 }

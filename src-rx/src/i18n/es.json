@@ -1515,5 +1515,6 @@
   "Add new line to the repository list": "Agregar nueva línea a la lista de repositorios",
   "Restore repository list to default": "Restaurar la lista de repositorios a los valores predeterminados",
   "Active": "Activo",
-  "Drag and drop to reorder": "Arrastra y suelta para reordenar"
+  "Drag and drop to reorder": "Arrastra y suelta para reordenar",
+  "Mark it as stable if you want to hide warning on adapters tab": "Márquelo como estable si desea ocultar la advertencia en la pestaña de adaptadores"
 }

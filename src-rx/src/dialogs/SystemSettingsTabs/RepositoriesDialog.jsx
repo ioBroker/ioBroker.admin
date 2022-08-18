@@ -57,6 +57,9 @@ const styles = theme => ({
     enableColumn: {
         width: 110
     },
+    stableColumn: {
+        width: 80
+    },
     buttonColumn: {
         width: 80
     },
@@ -79,18 +82,17 @@ const styles = theme => ({
 });
 
 function repoToArray(repos) {
-    return Utils.objectMap(repos, (repo, name) => {
-        return {
-            title: name,
-            link: repo.link,
-        }
-    });
+    return Utils.objectMap(repos, (repo, name) => ({
+        title: name,
+        link: repo.link,
+        stable: repo.stable,
+    }));
 }
 
 function arrayToRepo(array) {
     let result = {};
     for (let k in array) {
-        result[array[k].title] = {link: array[k].link};
+        result[array[k].title] = { link: array[k].link, stable: array[k].stable };
     }
 
     return result;
@@ -109,7 +111,7 @@ const SortableItem = SortableElement(({
   t,
   dataAux,
   onDelete,
-  onChangeText,
+  onValueChanged,
   onChangeActiveRepo
 }) => <TableRow className="float_row">
     <TableCell className={clsx(classes.dragColumn, 'float_cell')} title={t('Drag and drop to reorder')}>
@@ -157,6 +159,14 @@ const SortableItem = SortableElement(({
             }}
         /> : null}
     </TableCell>
+    <TableCell className={clsx(classes.stableColumn, 'float_cell')}>
+        <Checkbox
+            disabled={item.title === 'stable' || item.title === 'beta'}
+            title={I18n.t('Mark it as stable if you want to hide warning on adapters tab')}
+            checked={item.title === 'stable' ? true : (item.title === 'beta' ? false : item.stable)}
+            onChange={evt => onValueChanged(evt.target.checked, item.title, 'stable')}
+        />
+    </TableCell>
     <TableCell className={clsx(classes.nameRow, 'float_cell')}>
         <TextField
             variant="standard"
@@ -164,7 +174,7 @@ const SortableItem = SortableElement(({
             InputLabelProps={{ shrink: true }}
             InputProps={{ readOnly: false }}
             className={clsx(classes.input, 'xs-centered')}
-            onChange={evt => onChangeText(evt, item.title, 'title')}
+            onChange={evt => onValueChanged(evt.target.value, item.title, 'title')}
         />
     </TableCell>
     <TableCell className={clsx('grow_cell', 'float_cell')}>
@@ -175,7 +185,7 @@ const SortableItem = SortableElement(({
             InputLabelProps={{ shrink: true }}
             InputProps={{ readOnly: false }}
             className={clsx(classes.input, 'xs-centered')}
-            onChange={evt => onChangeText(evt, item.title, 'link')}
+            onChange={evt => onValueChanged(evt.target.value, item.title, 'link')}
         />
     </TableCell>
     <TableCell className={clsx(classes.buttonColumn, 'float_cell')}>
@@ -190,12 +200,13 @@ const SortableItem = SortableElement(({
     </TableCell>
 </TableRow>);
 
-const SortableList = SortableContainer(({items, classes, multipleRepos, t, error, adminGuiConfig, dataAux, onDelete, onChangeText, onChangeActiveRepo, repositories}) => {
+const SortableList = SortableContainer(({items, classes, multipleRepos, t, error, adminGuiConfig, dataAux, onDelete, onValueChanged, onChangeActiveRepo, repositories}) => {
     return <Table className={classes.table}>
         <TableHead>
             <TableRow className="float_row">
                 <TableCell className={clsx(classes.dragColumn, 'float_cell')}/>
                 <TableCell className={clsx(classes.enableColumn, 'float_cell')}>{multipleRepos ? I18n.t('Active') : ''}</TableCell>
+                <TableCell className={clsx(classes.stableColumn, 'float_cell')}>{I18n.t('Stable')}</TableCell>
                 <TableCell className={clsx(classes.nameRow, 'float_cell')}>
                     {t('name')}
                 </TableCell>
@@ -220,7 +231,7 @@ const SortableList = SortableContainer(({items, classes, multipleRepos, t, error
                     dataAux={dataAux}
                     repositories={repositories}
                     onDelete={onDelete}
-                    onChangeText={onChangeText}
+                    onValueChanged={onValueChanged}
                     onChangeActiveRepo={onChangeActiveRepo}
                 />)}
         </TableBody>
@@ -239,22 +250,22 @@ class RepositoriesDialog extends Component {
         };
     }
 
-    onChangeText = (evt, id, name) => {
-        const value = evt.target.value;
+    onValueChanged = (value, id, name) => {
         let newData = JSON.parse(JSON.stringify(this.props.data))
         let array = repoToArray(newData.native.repositories);
         const item = array.find(element => element.title === id);
         const oldTitle = item.title;
         item[name] = value;
         newData.native.repositories = arrayToRepo(array);
-        this.props.onChange(newData);
+
+        let newConfig;
         if (((typeof this.props.dataAux.common.activeRepo === 'string' && this.props.dataAux.common.activeRepo === id) ||
-             (typeof this.props.dataAux.common.activeRepo !== 'string' && this.props.dataAux.common.activeRepo.includes(id))) &&
+                (typeof this.props.dataAux.common.activeRepo !== 'string' && this.props.dataAux.common.activeRepo.includes(id))) &&
             name === 'title') {
-            this.props.onChange(newData, this.getUpdateDefaultRepo(value, newData, oldTitle, value));
-        } else {
-            this.props.onChange(newData);
+            newConfig = this.getUpdateDefaultRepo(value, newData, oldTitle, value);
         }
+
+        this.props.onChange(newData, newConfig);
     };
 
     onDelete = id => {
@@ -432,7 +443,7 @@ class RepositoriesDialog extends Component {
                     dataAux={this.props.dataAux}
                     repositories={this.props.data.native.repositories}
                     onDelete={this.onDelete}
-                    onChangeText={this.onChangeText}
+                    onValueChanged={this.onValueChanged}
                     onChangeActiveRepo={this.onChangeActiveRepo}
                 />
             </TableContainer>

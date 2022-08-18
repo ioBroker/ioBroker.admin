@@ -219,7 +219,7 @@ const styles = theme => ({
     },
     notStableRepo: {
         background: theme.palette.mode === 'dark' ? '#8a7e00' : '#fdee20',
-        color: '#111',
+        color: '#000',
         fontSize: 14,
         padding: '2px 8px',
         borderRadius: 5
@@ -229,7 +229,7 @@ const styles = theme => ({
         flexFlow: 'wrap',
         overflow: 'auto',
         justifyContent: 'center'
-    }
+    },
 });
 
 class Adapters extends Component {
@@ -244,6 +244,7 @@ class Adapters extends Component {
             instances: {},
             categories: [],
             hostData: {},
+            compactRepositories: null,
             hostOs: '',
             nodeJsVersion: '',
             init: false,
@@ -515,10 +516,11 @@ class Adapters extends Component {
         }
     }
 
-    calculateInfo(instances, ratings, hostData) {
-        hostData  = hostData  || this.state.hostData;
-        ratings   = ratings   || this.state.ratings;
-        instances = instances || this.state.instances;
+    calculateInfo(instances, ratings, hostData, compactRepositories) {
+        hostData            = hostData            || this.state.hostData;
+        ratings             = ratings             || this.state.ratings;
+        instances           = instances           || this.state.instances;
+        compactRepositories = compactRepositories || this.state.compactRepositories;
 
         const adapters = this.state.adapters;
 
@@ -706,6 +708,7 @@ class Adapters extends Component {
                 ratings,
                 filterTiles,
                 categoriesTiles,
+                compactRepositories,
                 installedList,
                 instances,
                 updateList,
@@ -735,6 +738,7 @@ class Adapters extends Component {
 
             let hostData;
             let ratings;
+            let instances;
 
             return new Promise(resolve => {
                 if (!this.state.update || indicateUpdate) {
@@ -771,14 +775,22 @@ class Adapters extends Component {
                             return {};
                         });
                 })
-                .then(instances => {
+                .then(_instances => {
+                    instances = _instances;
+                    return this.props.socket.getCompactSystemRepositories(update)
+                        .catch(e => {
+                            window.alert('Cannot read getCompactSystemRepositories: ' + e);
+                            return {};
+                        });
+                })
+                .then(compactRepositories => {
                     // simulation
                     // setTimeout(() => this.setState({showSlowConnectionWarning: true}), 5000);
 
                     this.uuid = ratings?.uuid || null;
                     // BF (2022.02.09)  TODO: Remove all "rebuild" stuff later (when js-controller 4.x will be mainstream)
                     // this.rebuildSupported = false;// rebuild || false; Rebuild is no more supported from js-controller 4.0
-                    return this.calculateInfo(instances, ratings, hostData);
+                    return this.calculateInfo(instances, ratings, hostData, compactRepositories);
                 })
                 .catch(error => window.alert('Cannot get adapters info: ' + error));
         } else {
@@ -1027,9 +1039,9 @@ class Adapters extends Component {
                 currentRating={this.state.showSetRating.rating}
                 onClose={repository => {
                     if (repository) {
-                        this.setState({showSetRating: null, repository});
+                        this.setState({ showSetRating: null, repository });
                     } else {
-                        this.setState({showSetRating: null});
+                        this.setState({ showSetRating: null });
                     }
                 }}
                 uuid={this.uuid}
@@ -1666,6 +1678,30 @@ class Adapters extends Component {
             return <ul>{lines.map((line, index) => <li key={index}>{line}</li>)}</ul>;
         };
 
+        // fast check if active repo is stable
+        let stableRepo = (typeof this.props.systemConfig.common.activeRepo === 'string' && this.props.systemConfig.common.activeRepo === 'stable') ||
+            (this.props.systemConfig.common.activeRepo && typeof this.props.systemConfig.common.activeRepo !== 'string' && this.props.systemConfig.common.activeRepo.includes('stable'));
+
+        // if repositories are available
+        if (this.state.compactRepositories && this.state.compactRepositories.native && this.state.compactRepositories.native.repositories) {
+            // old style with just one active repository
+            if (typeof this.props.systemConfig.common.activeRepo === 'string' && this.props.systemConfig.common.activeRepo !== 'stable') {
+                if (this.state.compactRepositories.native.repositories[this.props.systemConfig.common.activeRepo]) {
+                    stableRepo = this.state.compactRepositories.native.repositories[this.props.systemConfig.common.activeRepo].stable;
+                }
+            } else
+            // new style with multiple active repositories
+            if (this.props.systemConfig.common.activeRepo && typeof this.props.systemConfig.common.activeRepo !== 'string') {
+                // if any active repo is not stable, show warning
+                if (this.props.systemConfig.common.activeRepo.find(repo => repo !== 'stable' &&
+                    (!this.state.compactRepositories.native.repositories[repo] ||
+                    !this.state.compactRepositories.native.repositories[repo].stable))
+                ) {
+                    stableRepo = false;
+                }
+            }
+        }
+
         return <TabContainer>
             {this.state.update &&
                 <Grid item>
@@ -1799,10 +1835,9 @@ class Adapters extends Component {
                 </IsVisible>
             </TabHeader>
             {this.state.viewMode && this.props.systemConfig && this.props.systemConfig.common && <TabContent>
-                {(typeof this.props.systemConfig.common.activeRepo === 'string' && this.props.systemConfig.common.activeRepo !== 'stable') ||
-                (this.props.systemConfig.common.activeRepo && typeof this.props.systemConfig.common.activeRepo !== 'string' && !this.props.systemConfig.common.activeRepo.includes('stable')) ?
-                    <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}</div> : null}
-                <TableContainer className={clsx(classes.container, this.props.systemConfig.common.activeRepo !== 'stable' ? classes.containerNotFullHeight : classes.containerFullHeight)}>
+                {!stableRepo ?
+                    <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', Array.isArray(this.props.systemConfig.common.activeRepo) ? this.props.systemConfig.common.activeRepo.join(', ') : this.props.systemConfig.common.activeRepo)}</div> : null}
+                <TableContainer className={clsx(classes.container, !stableRepo ? classes.containerNotFullHeight : classes.containerFullHeight)}>
                     <Table stickyHeader size="small" className={classes.table}>
                         <TableHead>
                             <TableRow>
@@ -1842,8 +1877,7 @@ class Adapters extends Component {
             {this.renderSlowConnectionWarning()}
 
             {!this.state.viewMode && this.props.systemConfig.common && this.props.systemConfig.common.activeRepo && <>
-                {(typeof this.props.systemConfig.common.activeRepo === 'string' && this.props.systemConfig.common.activeRepo !== 'stable') ||
-                 (this.props.systemConfig.common.activeRepo && typeof this.props.systemConfig.common.activeRepo !== 'string' && !this.props.systemConfig.common.activeRepo.includes('stable')) ? <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', this.props.systemConfig.common.activeRepo)}</div> : null}
+                {!stableRepo ? <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', Array.isArray(this.props.systemConfig.common.activeRepo) ? this.props.systemConfig.common.activeRepo.join(', ') : this.props.systemConfig.common.activeRepo)}</div> : null}
                 <div className={this.props.classes.viewModeDiv}>{this.getTiles()}</div>
             </>}
 

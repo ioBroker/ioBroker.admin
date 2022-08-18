@@ -407,14 +407,16 @@ class SystemSettingsDialog extends Component {
     }
 
     onChangedTab(id, data, idAux, dataAux, cb) {
-        let state = { ...this.state };
-        if (data) {
-            state[id] = data;
+        if (data || dataAux) {
+            let state = { ...this.state };
+            if (data) {
+                state[id] = data;
+            }
+            if (dataAux) {
+                state[idAux] = dataAux;
+            }
+            this.setState(state, () => cb && cb());
         }
-        if (dataAux) {
-            state[idAux] = dataAux;
-        }
-        this.setState(state, () => cb && cb());
     }
 
     render() {

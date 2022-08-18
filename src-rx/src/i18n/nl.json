@@ -1515,5 +1515,6 @@
   "Add new line to the repository list": "Nieuwe regel toevoegen aan de repositorylijst",
   "Restore repository list to default": "Repository-lijst terugzetten naar standaard",
   "Active": "Actief",
-  "Drag and drop to reorder": "Slepen en neerzetten om opnieuw te ordenen"
+  "Drag and drop to reorder": "Slepen en neerzetten om opnieuw te ordenen",
+  "Mark it as stable if you want to hide warning on adapters tab": "Markeer het als stabiel als u de waarschuwing op het tabblad Adapters wilt verbergen"
 }

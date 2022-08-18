@@ -1515,5 +1515,6 @@
   "Add new line to the repository list": "将新行添加到存储库列表",
   "Restore repository list to default": "将存储库列表恢复为默认值",
   "Active": "积极的",
-  "Drag and drop to reorder": "拖放以重新排序"
+  "Drag and drop to reorder": "拖放以重新排序",
+  "Mark it as stable if you want to hide warning on adapters tab": "如果要在适配器选项卡上隐藏警告，请将其标记为稳定"
 }
