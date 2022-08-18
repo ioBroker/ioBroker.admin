@@ -878,11 +878,13 @@ class Adapters extends Component {
         let result = [];
 
         if (adapter) {
-            const dependencies = adapter.dependencies;
+            const dependencies = [
+                ...(adapter.dependencies || []),
+                ...(adapter.globalDependencies || []),
+            ];
             const nodeVersion = adapter.node;
 
             dependencies && dependencies.length && dependencies.forEach(dependency => {
-
                 const entry = {
                     name:             '',
                     version:          null,
