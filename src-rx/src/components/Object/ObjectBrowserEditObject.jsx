@@ -496,6 +496,18 @@ class ObjectBrowserEditObject extends Component {
             const checkState = obj.type === 'state';
             const checkRole = obj.type === 'channel' || obj.type === 'device' || checkState;
 
+            let iconPath;
+            if (typeof json.common.icon !== 'undefined') {
+                iconPath = json.type === 'instance' || json.type === 'adapter' ? `./adapter/${json.common.name}/${json.common.icon}` : json.common.icon;
+                if (!iconPath.startsWith('.') && !iconPath.startsWith('/') && !iconPath.startsWith('data:')) {
+                    const parts = obj._id.split('.');
+                    if (parts[0] === 'system') {
+                        iconPath = `adapter/${parts[2]}${iconPath.startsWith('/') ? '' : '/'}${iconPath}`;
+                    } else {
+                        iconPath = `adapter/${parts[0]}${iconPath.startsWith('/') ? '' : '/'}${iconPath}`;
+                    }
+                }
+            }
             return <div className={classes.commonTabWrapper}>
                 <div className={classes.commonWrapper}>
                     {typeof json.common.name !== 'undefined' ?
@@ -668,7 +680,7 @@ class ObjectBrowserEditObject extends Component {
                         <UploadImage
                             disabled={disabled}
                             maxSize={10 * 1024}
-                            icon={json.type === 'instance' || json.type === 'adapter' ? `./adapter/${json.common.name}/${json.common.icon}` : json.common.icon}
+                            icon={iconPath}
                             removeIconFunc={() => this.setCommonItem(json, 'icon', '')}
                             onChange={(base64) => this.setCommonItem(json, 'icon', base64)}
                             t={t}
@@ -679,7 +691,7 @@ class ObjectBrowserEditObject extends Component {
                         {this.buttonAddKey('icon', () => this.setCommonItem(json, 'icon', ''))}
                     </div>
                 }
-            </div>
+            </div>;
         } catch (e) {
             return <div>{this.props.t('Cannot parse JSON!')}</div>;
         }
