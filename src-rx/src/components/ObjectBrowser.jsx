@@ -3131,7 +3131,7 @@ class ObjectBrowser extends Component {
             <div key={4}>{t('ra_Folder → Device → Channel → State')}</div>,
             <div key={5}>{t('ra_Device → Channel → State')}</div>,
             <div key={6}>{t('ra_Channel → State')}</div>,
-            <div key={7} style={{height: 10}}/>,
+            <div key={7} style={{ height: 10 }}/>,
             <div key={8}>{t('ra_Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}</div>,
             <div key={9}>{t('ra_The experts may create objects everywhere but from second level (e.g. "vis.0" or "javascript.0").')}</div>,
         ];
@@ -3139,6 +3139,7 @@ class ObjectBrowser extends Component {
         if (this.state.selected.length || this.state.selectedNonObject) {
             const id = this.state.selected[0] || this.state.selectedNonObject;
             if (id.split('.').length < 2 || (this.objects[id] && this.objects[id]?.type === 'state')) {
+                // show default tooltip
             } else {
                 if (this.state.filter.expertMode) {
                     switch (this.objects[id]?.type) {
@@ -3146,6 +3147,9 @@ class ObjectBrowser extends Component {
                             value = [
                                 <div key={1}>{t('ra_Only following structures of objects are available:')}</div>,
                                 <div key={5}>{t('ra_Device → Channel → State')}</div>,
+                                <div key={7} style={{ height: 10 }}/>,
+                                <div key={8}>{t('ra_Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}</div>,
+                                <div key={9}>{t('ra_The experts may create objects everywhere but from second level (e.g. "vis.0" or "javascript.0").')}</div>,
                             ];
                             break
                         case 'folder':
@@ -3154,12 +3158,18 @@ class ObjectBrowser extends Component {
                                 <div key={2}>{t('ra_Folder → State')}</div>,
                                 <div key={3}>{t('ra_Folder → Channel → State')}</div>,
                                 <div key={4}>{t('ra_Folder → Device → Channel → State')}</div>,
+                                <div key={7} style={{ height: 10 }}/>,
+                                <div key={8}>{t('ra_Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}</div>,
+                                <div key={9}>{t('ra_The experts may create objects everywhere but from second level (e.g. "vis.0" or "javascript.0").')}</div>,
                             ];
                             break
                         case 'channel':
                             value = [
                                 <div key={1}>{t('ra_Only following structures of objects are available:')}</div>,
                                 <div key={1}>{t('ra_Channel → State')}</div>,
+                                <div key={7} style={{ height: 10 }}/>,
+                                <div key={8}>{t('ra_Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}</div>,
+                                <div key={9}>{t('ra_The experts may create objects everywhere but from second level (e.g. "vis.0" or "javascript.0").')}</div>,
                             ];
                             break
                         default:
@@ -3168,12 +3178,19 @@ class ObjectBrowser extends Component {
                 } else if (id.startsWith('alias.0') || id.startsWith('0_userdata')) {
                     value = [
                         <div key={1}>{t('ra_Only following structures of objects are available:')}</div>,
+                        <div key={2}>{t('ra_Folder → State')}</div>,
+                        <div key={3}>{t('ra_Folder → Channel → State')}</div>,
+                        <div key={4}>{t('ra_Folder → Device → Channel → State')}</div>,
+                        <div key={5}>{t('ra_Device → Channel → State')}</div>,
+                        <div key={6}>{t('ra_Channel → State')}</div>,
+                        <div key={7} style={{ height: 10 }}/>,
                         <div key={7}>{t('ra_Non-experts may create new objects only in "0_userdata.0" or "alias.0".')}</div>,
                         <div key={8}>{t('ra_The experts may create objects everywhere but from second level (e.g. "vis.0" or "javascript.0").')}</div>,
                     ]
                 }
             }
         }
+
         return value.length ? value : t('ra_Add new child object to selected parent');
     }
 
