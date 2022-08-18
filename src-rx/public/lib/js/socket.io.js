@@ -2,7 +2,7 @@
  * ioBroker WebSockets
  * Copyright 2020-2022, bluefox <dogafox@gmail.com>
  * Released under the MIT License.
- * v 0.2.3 (2022_01_29)
+ * v 1.1.2 (2022_08_18)
  */
 /* jshint -W097 */
 /* jshint strict: false */
@@ -37,6 +37,13 @@ const ERRORS = {
     1015: 'TLS handshake fail' 		// Transport Layer Security handshake failure
 };
 
+// every time create a new socket
+function connect(url, options) {
+    const socket = new SocketClient();
+    socket.connect(url, options);
+    return socket;
+}
+
 // possible events: connect, disconnect, reconnect, error, connect_error
 function SocketClient () {
     const handlers      = {};
@@ -61,8 +68,25 @@ function SocketClient () {
         error: text => console.error(`[${new Date().toISOString()}] ${text}`)
     };
 
+    this.getQuery = _url => {
+        const query = _url.split('?')[1] || '';
+        const parts = query.split('&');
+        const result = {};
+        for (let p = 0; p < parts.length; p++) {
+            const parts1 = parts[p].split('=');
+            result[parts1[0]] = parts1[1];
+        }
+        return result;
+    };
+
     this.connect = (_url, _options) => {
         this.log.debug('Try to connect');
+
+        // remove hash
+        if (_url) {
+            _url = _url.split('#')[0];
+        }
+
         id = 0;
         connectTimer && clearInterval(connectTimer);
         connectTimer = null;
@@ -91,8 +115,24 @@ function SocketClient () {
                 url = window.location.protocol + '//' + window.location.host  + '/' + parts.join('/');
             }
 
+            // extract all query attributes
+            const query = this.getQuery(url);
+            if (query.sid) {
+                delete query.sid;
+            }
+
+            if (query.hasOwnProperty('')) {
+                delete query[''];
+            }
+
             let u = url.replace(/^http/, 'ws').split('?')[0] + '?sid=' + sessionID;
-            if (options && options.name) {
+
+            // Apply query to new url
+            if (Object.keys(query).length) {
+                u += '&' + Object.keys(query).map(attr => query[attr] === undefined ? attr : attr + '=' + query[attr]).join('&');
+            }
+
+            if (options && options.name && !query.name) {
                 u += '&name=' + encodeURIComponent(options.name);
             }
             // "ws://www.example.com/socketserver"
@@ -397,4 +437,6 @@ function SocketClient () {
 }
 
 // eslint-disable-next-line no-undef
-window.io = new SocketClient();
+window.io = {
+    connect: connect
+};
