@@ -115,7 +115,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.2.15 (2022-08-18)
 * (bluefox) Corrected many GUI issues
 * (bluefox) Added `stable` flag for repositories
 * (bluefox) Added reset button for repositories
@@ -132,9 +132,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 ### 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
-
-### 6.2.4 (2022-07-20)
-* (bluefox) Corrected yahka settings
 
 ## License
 The MIT License (MIT)

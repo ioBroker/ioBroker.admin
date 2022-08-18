@@ -1,5 +1,11 @@
 ## 5.3.7 (2022-04-10)
 * (bluefox) Changed the charts rendering
+## 6.2.4 (2022-07-20)
+* (bluefox) Corrected yahka settings
+
+## 5.3.7 (2022-04-10)
+* (bluefox) Changed the charts rendering
+
 ## 6.2.3 (2022-07-18)
 * (AlCalzone) Implemented AES-192 encryption and decryption in GUI
 
