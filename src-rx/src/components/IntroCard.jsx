@@ -398,14 +398,17 @@ class IntroCard extends Component {
                 target="_blank"
                 rel="noopener noreferrer"
             >
-                <Card className={classes.card} onClick={e => {
-                    e.stopPropagation();
-                    if (!this.props.edit && this.props.camera && this.props.camera !== 'text') {
-                        this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
-                        this.cameraUpdateTimer = null;
-                        this.setState({ dialog: true });
-                    }
-                }}>
+                <Card
+                    className={classes.card}
+                    onClick={e => {
+                        e.stopPropagation();
+                        if (!this.props.edit && this.props.camera && this.props.camera !== 'text') {
+                            this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
+                            this.cameraUpdateTimer = null;
+                            this.setState({ dialog: true });
+                        }
+                    }}
+                >
                     {
                         this.props.reveal && !this.props.offline &&
                         <Button

@@ -261,7 +261,8 @@ class Intro extends Component {
                 let isShowInstance = isFinite(instance.id.split('.').pop());
                 if (isShowInstance) {
                     // try to find second instance of same type
-                    isShowInstance = !!this.state.instances.find(inst => inst.id !== instance.id && instance.id.split('.')[0] === inst.id.split('.')[0]);
+                    isShowInstance = !!this.state.instances.find(inst =>
+                        inst.id !== instance.id && instance.name === inst.name && instance.id.split('.')[0] === inst.id.split('.')[0]);
                 }
 
                 const hostData = this.state.hostsData ? this.state.hostsData[instance.id] : null;
@@ -528,6 +529,47 @@ class Intro extends Component {
         });
     }
 
+    addLinks(link, common, instanceId, instance, objects, hosts, instances, introInstances) {
+        const _urls = Utils.replaceLink(link, common.name, instanceId, {
+            objects,
+            hostname:      this.props.hostname,
+            protocol:      this.props.protocol,
+            port:          this.props.port,
+            adminInstance: this.props.adminInstance,
+            hosts,
+        }) || [];
+
+        let webReverseProxyPath;
+        if (this.state.reverseProxy && this.state.reverseProxy.length) {
+            webReverseProxyPath = this.state.reverseProxy.find(item => item.globalPath === this.currentProxyPath);
+        }
+        if (_urls.length === 1) {
+            instance.link = _urls[0].url;
+            instance.port = _urls[0].port;
+
+            this.applyReverseProxy(webReverseProxyPath, instances, instance);
+
+            // if link already exists => ignore
+            const lll = introInstances.find(item => item.link === instance.link);
+            if (!lll) {
+                introInstances.push(instance);
+            } else {
+                console.log(`Double links: "${instance.id}" and "${lll.id}"`);
+            }
+        } else if (_urls.length > 1) {
+            _urls.forEach(url => {
+                const lll = introInstances.find(item => item.link === url.url);
+                this.applyReverseProxy(webReverseProxyPath, instances, url);
+
+                if (!lll) {
+                    introInstances.push({...instance, link: url.url, port: url.port});
+                } else {
+                    console.log(`Double links: "${instance.id}" and "${lll.id}"`);
+                }
+            });
+        }
+    }
+
     getInstances(update, hosts, systemConfig) {
         hosts = hosts || this.state.hosts;
 
@@ -591,7 +633,7 @@ class Intro extends Component {
                             let link = links[linkName];
                             const instance = {};
                             if (typeof link === 'string') {
-                                link = {link};
+                                link = { link };
                             }
 
                             instance.id          = obj._id.replace('system.adapter.', '') + (linkName === '_default' ? '' : ' ' + linkName);
@@ -607,46 +649,24 @@ class Intro extends Component {
                             if (!hostname) {
                                 return;
                             }*/
+                            this.addLinks(link.link, common, instanceId, instance, objects, hosts, instances, introInstances);
+                        });
+                    }
+                    if (common && (common.enabled || common.onlyWWW) && common.name !== 'admin' && (common.welcomeScreen || common.welcomeScreenPro)) {
+                        let links = [];
+                        common.welcomeScreen && links.push(common.welcomeScreen);
+                        common.welcomeScreenPro && links.push(common.welcomeScreenPro);
 
-                            const _urls = Utils.replaceLink(link.link, common.name, instanceId, {
-                                objects,
-                                hostname:      this.props.hostname,
-                                protocol:      this.props.protocol,
-                                port:          this.props.port,
-                                adminInstance: this.props.adminInstance,
-                                hosts,
-                            }) || [];
+                        links.forEach(link => {
+                            const instance = {};
+                            instance.id          = obj._id.replace('system.adapter.', '') + '/' + link.link;
+                            instance.name        = link.name;
+                            instance.color       = link.color || '';
+                            instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
+                            instance.image       = common.icon ? `adapter/${common.name}/${common.icon}` : 'img/no-image.png';
+                            instance.order       = link.order;
 
-                            let webReverseProxyPath;
-                            if (this.state.reverseProxy && this.state.reverseProxy.length) {
-                                webReverseProxyPath = this.state.reverseProxy.find(item => item.globalPath === this.currentProxyPath);
-                            }
-                            if (_urls.length === 1) {
-                                instance.link = _urls[0].url;
-                                instance.port = _urls[0].port;
-
-                                this.applyReverseProxy(webReverseProxyPath, instances, instance);
-
-                                // if link already exists => ignore
-                                const lll = introInstances.find(item => item.link === instance.link);
-                                if (!lll) {
-                                    introInstances.push(instance);
-                                } else {
-                                    console.log(`Double links: "${instance.id}" and "${lll.id}"`);
-                                }
-                            } else if (_urls.length > 1) {
-                                _urls.forEach(url => {
-                                    const lll = introInstances.find(item => item.link === url.url);
-                                    this.applyReverseProxy(webReverseProxyPath, instances, url);
-
-                                    if (!lll) {
-                                        introInstances.push({...instance, link: url.url, port: url.port});
-                                    } else {
-                                        console.log(`Double links: "${instance.id}" and "${lll.id}"`);
-                                    }
-
-                                });
-                            }
+                            this.addLinks(`%web_protocol%://%web_bind%:%web_port%/${link.link}`, common, instanceId, instance, objects, hosts, instances, introInstances);
                         });
                     }
                 });
@@ -658,6 +678,16 @@ class Intro extends Component {
                 });
 
                 introInstances.sort((a, b) => {
+                    if (a.order !== undefined || b.order !== undefined) {
+                        a.order = a.order === undefined ? 1000 : a.order;
+                        b.order = b.order === undefined ? 1000 : b.order;
+                        if (a.order < b.order) {
+                            return -1;
+                        } else if (a.order > b.order) {
+                            return 1;
+                        }
+                    }
+
                     if (a.id > b.id) {
                         return 1;
                     }
