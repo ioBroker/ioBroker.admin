@@ -1516,5 +1516,5 @@
   "Restore repository list to default": "Repository-lijst terugzetten naar standaard",
   "Active": "Actief",
   "Drag and drop to reorder": "Slepen en neerzetten om opnieuw te ordenen",
-  "Mark it as stable if you want to hide warning on adapters tab": "Markeer het als stabiel als u de waarschuwing op het tabblad Adapters wilt verbergen"
+  "Flag will be automatically detected as repository will be read for the first time": "Vlag wordt automatisch gedetecteerd omdat de repository voor de eerste keer wordt gelezen"
 }

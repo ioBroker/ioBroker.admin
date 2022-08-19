@@ -1516,5 +1516,5 @@
   "Restore repository list to default": "Repository-Liste auf Standard zurücksetzen",
   "Active": "Aktiv",
   "Drag and drop to reorder": "Ziehen und ablegen zum Neuordnen",
-  "Mark it as stable if you want to hide warning on adapters tab": "Markieren Sie es als stabil, wenn Sie die Warnung auf der Registerkarte \"Adapter\" ausblenden möchten"
+  "Flag will be automatically detected as repository will be read for the first time": "Das Flag wird automatisch erkannt, wenn das Repository zum ersten Mal gelesen wird"
 }

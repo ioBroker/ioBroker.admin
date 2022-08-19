@@ -1516,5 +1516,5 @@
   "Restore repository list to default": "Restore repository list to default",
   "Active": "Active",
   "Drag and drop to reorder": "Drag and drop to reorder",
-  "Mark it as stable if you want to hide warning on adapters tab": "Mark it as stable if you want to hide warning on adapters tab"
+  "Flag will be automatically detected as repository will be read for the first time": "Flag will be automatically detected as repository will be read for the first time"
 }

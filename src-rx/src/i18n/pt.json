@@ -1516,5 +1516,5 @@
   "Restore repository list to default": "Restaurar a lista de repositórios para o padrão",
   "Active": "Ativo",
   "Drag and drop to reorder": "Arraste e solte para reordenar",
-  "Mark it as stable if you want to hide warning on adapters tab": "Marque-o como estável se quiser ocultar o aviso na guia adaptadores"
+  "Flag will be automatically detected as repository will be read for the first time": "O sinalizador será detectado automaticamente, pois o repositório será lido pela primeira vez"
 }

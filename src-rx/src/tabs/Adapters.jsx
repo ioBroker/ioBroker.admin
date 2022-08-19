@@ -572,6 +572,9 @@ class Adapters extends Component {
             if (value === 'hosts') {
                 return;
             }
+            if (value.startsWith('_')) {
+                return;
+            }
             const adapter = repository[value];
             if (adapter.keywords) {
                 adapter.keywords = adapter.keywords.map(word => word.toLowerCase());
@@ -1701,22 +1704,53 @@ class Adapters extends Component {
             );
 
         // if repositories are available
-        if (this.state.compactRepositories && this.state.compactRepositories.native && this.state.compactRepositories.native.repositories) {
+        const repositories = this.state.compactRepositories?.native?.repositories;
+        if (repositories) {
             // old style with just one active repository
-            if (typeof this.props.systemConfig.common.activeRepo === 'string' && !this.props.systemConfig.common.activeRepo.toLowerCase().startsWith('stable')) {
-                if (this.state.compactRepositories.native.repositories[this.props.systemConfig.common.activeRepo]) {
-                    stableRepo = this.state.compactRepositories.native.repositories[this.props.systemConfig.common.activeRepo].stable;
+            if (typeof this.props.systemConfig.common.activeRepo === 'string') {
+                // Todo (BF 2022.08.19): remove this check after one month. Flag will be stored in _repoInfo
+                if (!this.props.systemConfig.common.activeRepo.toLowerCase().startsWith('stable') &&
+                    repositories[this.props.systemConfig.common.activeRepo]?.json?._repoInfo
+                ) {
+                    stableRepo = repositories[this.props.systemConfig.common.activeRepo].json?._repoInfo.stable;
                 }
             } else
             // new style with multiple active repositories
             if (this.props.systemConfig.common.activeRepo && typeof this.props.systemConfig.common.activeRepo !== 'string') {
                 // if any active repo is not stable, show warning
-                if (this.props.systemConfig.common.activeRepo.find(repo => !repo.toLowerCase().startsWith('stable') &&
-                    (!this.state.compactRepositories.native.repositories[repo] ||
-                    !this.state.compactRepositories.native.repositories[repo].stable))
-                ) {
-                    stableRepo = false;
+                // Todo (BF 2022.08.19): remove this check after one month. Flag will be stored in _repoInfo
+                stableRepo = !this.props.systemConfig.common.activeRepo.find(repo => !repo.toLowerCase().startsWith('stable') &&
+                    (!repositories[repo] ||
+                    !repositories[repo].json?._repoInfo?.stable));
+            }
+        }
+        let repoName;
+        if (!stableRepo) {
+            repoName = Array.isArray(this.props.systemConfig.common.activeRepo) ? this.props.systemConfig.common.activeRepo.join(', ') : this.props.systemConfig.common.activeRepo;
+            // old style with just one active repository
+            if (typeof this.props.systemConfig.common.activeRepo === 'string') {
+                const repoInfo = repositories[this.props.systemConfig.common.activeRepo]?.json?._repoInfo;
+                if (repoInfo?.name) {
+                    if (repoInfo.name && typeof repoInfo.name === 'object') {
+                        repoName = repoInfo.name[this.props.lang] || repoInfo.name.en;
+                    } else {
+                        repoName = repoInfo.name;
+                    }
                 }
+            } else
+            // new style with multiple active repositories
+            if (this.props.systemConfig.common.activeRepo && typeof this.props.systemConfig.common.activeRepo !== 'string') {
+                repoName = this.props.systemConfig.common.activeRepo.map(repo => {
+                    const repoInfo = repositories[repo]?.json?._repoInfo;
+                    if (repoInfo?.name) {
+                        if (repoInfo.name && typeof repoInfo.name === 'object') {
+                            return repoInfo.name[this.props.lang] || repoInfo.name.en;
+                        } else {
+                            return repoInfo.name;
+                        }
+                    }
+                    return repo;
+                }).join(', ');
             }
         }
 
@@ -1854,7 +1888,7 @@ class Adapters extends Component {
             </TabHeader>
             {this.state.viewMode && this.props.systemConfig && this.props.systemConfig.common && <TabContent>
                 {!stableRepo ?
-                    <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', Array.isArray(this.props.systemConfig.common.activeRepo) ? this.props.systemConfig.common.activeRepo.join(', ') : this.props.systemConfig.common.activeRepo)}</div> : null}
+                    <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', repoName)}</div> : null}
                 <TableContainer className={clsx(classes.container, !stableRepo ? classes.containerNotFullHeight : classes.containerFullHeight)}>
                     <Table stickyHeader size="small" className={classes.table}>
                         <TableHead>
@@ -1895,7 +1929,7 @@ class Adapters extends Component {
             {this.renderSlowConnectionWarning()}
 
             {!this.state.viewMode && this.props.systemConfig.common && this.props.systemConfig.common.activeRepo && <>
-                {!stableRepo ? <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', Array.isArray(this.props.systemConfig.common.activeRepo) ? this.props.systemConfig.common.activeRepo.join(', ') : this.props.systemConfig.common.activeRepo)}</div> : null}
+                {!stableRepo ? <div className={this.props.classes.notStableRepo}>{this.t('Active repo is "%s"', repoName)}</div> : null}
                 <div className={this.props.classes.viewModeDiv}>{this.getTiles()}</div>
             </>}
 

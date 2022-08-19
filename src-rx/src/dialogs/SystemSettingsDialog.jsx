@@ -77,6 +77,7 @@ class SystemSettingsDialog extends Component {
             multipleRepos: false,
             licenseManager: false,
             host: '',
+            repoInfo: {},
         };
         this.getSettings(this.state.currentHost);
     }
@@ -99,15 +100,20 @@ class SystemSettingsDialog extends Component {
                 systemRepositories = systemRepositories || {};
                 systemRepositories.native = systemRepositories.native || {};
                 systemRepositories.native.repositories = systemRepositories.native.repositories || {};
+                newState.repoInfo = {};
 
                 Object.keys(systemRepositories.native.repositories).forEach(repo => {
-                    if (systemRepositories.native.repositories[repo] &&
-                        systemRepositories.native.repositories[repo].json) {
-                        delete systemRepositories.native.repositories[repo].json;
-                    }
-                    if (systemRepositories.native.repositories[repo] &&
-                        systemRepositories.native.repositories[repo].hash) {
-                        delete systemRepositories.native.repositories[repo].hash;
+                    if (systemRepositories.native.repositories[repo]) {
+                        if (systemRepositories.native.repositories[repo].json) {
+                            newState.repoInfo[repo] = systemRepositories.native.repositories[repo].json._repoInfo;
+                            delete systemRepositories.native.repositories[repo].json;
+                        }
+                        if (systemRepositories.native.repositories[repo].hash) {
+                            delete systemRepositories.native.repositories[repo].hash;
+                        }
+                        if (systemRepositories.native.repositories[repo].time) {
+                            delete systemRepositories.native.repositories[repo].time;
+                        }
                     }
                 });
 
@@ -219,11 +225,16 @@ class SystemSettingsDialog extends Component {
 
                     // merge new and existing info
                     Object.keys(newRepo).forEach(repo => {
-                        if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].json) {
-                            newRepo[repo].json = systemRepositories.native.repositories[repo].json;
-                        }
-                        if (systemRepositories.native.repositories[repo] && systemRepositories.native.repositories[repo].hash) {
-                            newRepo[repo].hash = systemRepositories.native.repositories[repo].hash;
+                        if (systemRepositories.native.repositories[repo]) {
+                            if (systemRepositories.native.repositories[repo].json) {
+                                newRepo[repo].json = systemRepositories.native.repositories[repo].json;
+                            }
+                            if (systemRepositories.native.repositories[repo].hash) {
+                                newRepo[repo].hash = systemRepositories.native.repositories[repo].hash;
+                            }
+                            if (systemRepositories.native.repositories[repo].time) {
+                                newRepo[repo].time = systemRepositories.native.repositories[repo].time;
+                            }
                         }
                     });
                     if (JSON.stringify(this.state.systemRepositories.native.repositories) !== JSON.stringify(newRepo)) {
@@ -397,6 +408,7 @@ class SystemSettingsDialog extends Component {
                 groups={groups}
                 multipleRepos={this.state.multipleRepos}
                 activeRepo={this.state.systemConfig.common.activeRepo}
+                repoInfo={this.state.repoInfo}
                 histories={histories}
                 themeName={this.props.themeName}
                 themeType={this.props.themeType}

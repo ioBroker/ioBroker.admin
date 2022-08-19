@@ -1516,5 +1516,5 @@
   "Restore repository list to default": "Восстановить список репозиториев по умолчанию",
   "Active": "Активно",
   "Drag and drop to reorder": "Перетащите, чтобы изменить порядок",
-  "Mark it as stable if you want to hide warning on adapters tab": "Отметьте его как стабильный, если вы хотите скрыть предупреждение на вкладке адаптеров."
+  "Flag will be automatically detected as repository will be read for the first time": "Флаг будет автоматически обнаружен, так как репозиторий будет прочитан в первый раз"
 }

@@ -48,7 +48,12 @@ const CustomSelectButton = ({ arrayItem, title, onClick, value, contained, butto
                         onClick(name);
                         setAnchorEl(null);
                     }}>
-                    {icons && <MaterialDynamicIcon objIconBool iconName={name} className={classes.icon} />}{typeof name === 'number' ? name : (noTranslation ? name : t(name + translateSuffix))}
+                    {icons && <MaterialDynamicIcon
+                        objIconBool
+                        iconName={name}
+                        className={classes.icon}
+                    />}
+                    {typeof name === 'number' ? name : (noTranslation ? name : t(name + translateSuffix))}
                 </MenuItem>
             })}
         </Menu>

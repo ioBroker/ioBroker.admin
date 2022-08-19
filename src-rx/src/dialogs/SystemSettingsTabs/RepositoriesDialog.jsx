@@ -13,6 +13,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Tooltip from '@mui/material/Tooltip';
 import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
 import AddIcon from '@mui/icons-material/Add';
@@ -85,14 +86,13 @@ function repoToArray(repos) {
     return Utils.objectMap(repos, (repo, name) => ({
         title: name,
         link: repo.link,
-        stable: repo.stable,
     }));
 }
 
 function arrayToRepo(array) {
     let result = {};
     for (let k in array) {
-        result[array[k].title] = { link: array[k].link, stable: array[k].stable };
+        result[array[k].title] = { link: array[k].link };
     }
 
     return result;
@@ -112,7 +112,8 @@ const SortableItem = SortableElement(({
   dataAux,
   onDelete,
   onValueChanged,
-  onChangeActiveRepo
+  onChangeActiveRepo,
+  repoInfo,
 }) => <TableRow className="float_row">
     <TableCell className={clsx(classes.dragColumn, 'float_cell')} title={t('Drag and drop to reorder')}>
         <DragHandle t={t}/>
@@ -161,12 +162,15 @@ const SortableItem = SortableElement(({
         /> : null}
     </TableCell>
     <TableCell className={clsx(classes.stableColumn, 'float_cell')}>
-        <Checkbox
-            disabled={item.title.toLowerCase().startsWith('stable') || item.title.toLowerCase().startsWith('beta')}
-            title={I18n.t('Mark it as stable if you want to hide warning on adapters tab')}
-            checked={item.title.toLowerCase().startsWith('stable') ? true : (item.title.toLowerCase().startsWith('beta') ? false : item.stable)}
-            onChange={evt => onValueChanged(evt.target.checked, item.title, 'stable')}
-        />
+        <Tooltip title={I18n.t('Flag will be automatically detected as repository will be read for the first time')}>
+            <span>
+                <Checkbox
+                    disabled
+                    checked={repoInfo[item.title]?.stable}
+                    indeterminate={!repoInfo[item.title]}
+                />
+            </span>
+        </Tooltip>
     </TableCell>
     <TableCell className={clsx(classes.nameRow, 'float_cell')}>
         <TextField
@@ -201,7 +205,20 @@ const SortableItem = SortableElement(({
     </TableCell>
 </TableRow>);
 
-const SortableList = SortableContainer(({items, classes, multipleRepos, t, error, adminGuiConfig, dataAux, onDelete, onValueChanged, onChangeActiveRepo, repositories}) => {
+const SortableList = SortableContainer(({
+    items,
+    classes,
+    multipleRepos,
+    t,
+    error,
+    adminGuiConfig,
+    dataAux,
+    onDelete,
+    onValueChanged,
+    onChangeActiveRepo,
+    repositories,
+    repoInfo,
+}) => {
     return <Table className={classes.table}>
         <TableHead>
             <TableRow className="float_row">
@@ -230,6 +247,7 @@ const SortableList = SortableContainer(({items, classes, multipleRepos, t, error
                     adminGuiConfig={adminGuiConfig}
                     error={error}
                     dataAux={dataAux}
+                    repoInfo={repoInfo}
                     repositories={repositories}
                     onDelete={onDelete}
                     onValueChanged={onValueChanged}
@@ -308,6 +326,32 @@ class RepositoriesDialog extends Component {
                 link: 'http://download.iobroker.net/sources-dist-latest.json',
             }
         };
+        // Store old information if already read
+        const oldStable = Object.keys(this.props.data.native.repositories).find(name => this.props.data.native.repositories[name].link === newData.native.repositories.stable.link);
+        if (oldStable) {
+            if (newData.native.repositories.stable.json) {
+                newData.native.repositories.stable.json = this.props.data.native.repositories[oldStable].json;
+            }
+            if (newData.native.repositories.stable.hash) {
+                newData.native.repositories.stable.hash = this.props.data.native.repositories[oldStable].hash;
+            }
+            if (newData.native.repositories.stable.time) {
+                newData.native.repositories.stable.time = this.props.data.native.repositories[oldStable].time;
+            }
+        }
+        const oldBeta = Object.keys(this.props.data.native.repositories).find(name => this.props.data.native.repositories[name].link === newData.native.repositories.beta.link);
+        if (oldBeta) {
+            if (newData.native.repositories.beta.json) {
+                newData.native.repositories.beta.json = this.props.data.native.repositories[oldBeta].json;
+            }
+            if (newData.native.repositories.beta.hash) {
+                newData.native.repositories.beta.hash = this.props.data.native.repositories[oldBeta].hash;
+            }
+            if (newData.native.repositories.beta.time) {
+                newData.native.repositories.beta.time = this.props.data.native.repositories[oldBeta].time;
+            }
+        }
+
         let newConfig = JSON.parse(JSON.stringify(this.props.dataAux));
         if (!this.props.multipleRepos) {
             newConfig.common.activeRepo = 'stable';
@@ -442,6 +486,7 @@ class RepositoriesDialog extends Component {
                     t={this.props.t}
                     adminGuiConfig={this.props.adminGuiConfig}
                     dataAux={this.props.dataAux}
+                    repoInfo={this.props.repoInfo}
                     repositories={this.props.data.native.repositories}
                     onDelete={this.onDelete}
                     onValueChanged={this.onValueChanged}
@@ -457,6 +502,7 @@ RepositoriesDialog.propTypes = {
     data: PropTypes.object,
     dataAux: PropTypes.object,
     multipleRepos: PropTypes.bool,
+    repoInfo: PropTypes.object,
 };
 
 export default withWidth()(withStyles(styles)(RepositoriesDialog));

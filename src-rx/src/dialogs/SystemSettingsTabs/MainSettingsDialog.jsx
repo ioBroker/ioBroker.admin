@@ -428,7 +428,7 @@ class MainSettingsDialog extends Component {
         const value = evt.target.value;
         const id = this.getSettings()[selectId].id;
 
-        if (id === 'activeRepo' && value !== 'stable' && value !== 'default') {
+        if (id === 'activeRepo' && !value.toLowerCase().startsWith('stable') && !value.toLowerCase().includes('default')) {
             this.setState({ confirm: true, confirmValue: value });
         } else {
             this.doChange(id, value);

@@ -1516,5 +1516,5 @@
   "Restore repository list to default": "Restaurer la liste des référentiels par défaut",
   "Active": "Actif",
   "Drag and drop to reorder": "Glisser-déposer pour réorganiser",
-  "Mark it as stable if you want to hide warning on adapters tab": "Marquez-le comme stable si vous souhaitez masquer l'avertissement sur l'onglet adaptateurs"
+  "Flag will be automatically detected as repository will be read for the first time": "L'indicateur sera automatiquement détecté car le référentiel sera lu pour la première fois"
 }
