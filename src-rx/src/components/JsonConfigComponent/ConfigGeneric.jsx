@@ -416,7 +416,7 @@ class ConfigGeneric extends Component {
                 href={link}
                 target="_blank"
                 rel="noreferrer"
-                style={{color: this.props.themeType === 'dark' ? '#eee' : '#111'}}
+                style={{ color: this.props.themeType === 'dark' ? '#a147ff' : '#5b238f', textDecoration: 'underline' }}
             >{this.getText(text, noTranslation)}</a>;
         }
     }

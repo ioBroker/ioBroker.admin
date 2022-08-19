@@ -15,11 +15,15 @@ import IconInfo from '@mui/icons-material/Info';
 
 import ConfigGeneric from './ConfigGeneric';
 
-const styles = () => ({
+const styles = theme => ({
     fullWidth: {
         height: '100%',
         width: '100%',
-    }
+    },
+    link: {
+        textDecoration: 'underline',
+        color: theme.palette.mode === 'dark' ? '#a147ff' : '#5b238f',
+    },
 });
 
 class ConfigStaticText extends ConfigGeneric {
@@ -62,12 +66,13 @@ class ConfigStaticText extends ConfigGeneric {
                 {this.getText(this.props.schema.text || this.props.schema.label, this.props.schema.noTranslation)}
             </Button>
         } else {
-
-            return <span onClick={this.props.schema.href ? () => {
-                // calculate one more time just before call
-                const href = this.props.schema.href ? this.getText(this.props.schema.href, true) : null;
-                href && window.open(href, '_blank');
-            } : null}>
+            return <span
+                className={this.props.schema.href ? this.props.classes.link : ''}
+                onClick={this.props.schema.href ? () => {
+                    // calculate one more time just before call
+                    const href = this.props.schema.href ? this.getText(this.props.schema.href, true) : null;
+                    href && window.open(href, '_blank');
+                } : null}>
                 {this.getText(this.props.schema.text || this.props.schema.label)}
             </span>;
         }
