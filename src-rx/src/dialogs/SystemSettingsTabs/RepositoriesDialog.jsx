@@ -142,15 +142,16 @@ const SortableItem = SortableElement(({
                         return indexA - indexB;
                     });
 
-                    showWarning = item.title === 'beta';
+                    showWarning = item.title.toLowerCase().startsWith('beta');
                 } else {
                     newData.common.activeRepo.splice(pos, 1);
                 }
-                if (item.title === 'beta' && newData.common.activeRepo.includes('stable')) {
-                    pos = newData.common.activeRepo.indexOf('stable');
+
+                if (item.title.toLowerCase().startsWith('beta') && newData.common.activeRepo.find(r => r.toLowerCase().startsWith('stable'))) {
+                    pos = newData.common.activeRepo.findIndex(r => r.toLowerCase().startsWith('stable'));
                     newData.common.activeRepo.splice(pos, 1);
-                } else if (item.title === 'stable' && newData.common.activeRepo.includes('beta')) {
-                    pos = newData.common.activeRepo.indexOf('beta');
+                } else if (item.title.toLowerCase().startsWith('stable') && newData.common.activeRepo.find(r => r.toLowerCase().startsWith('beta'))) {
+                    pos = newData.common.activeRepo.findIndex(r => r.toLowerCase().startsWith('beta'));
                     newData.common.activeRepo.splice(pos, 1);
                 }
 
@@ -161,9 +162,9 @@ const SortableItem = SortableElement(({
     </TableCell>
     <TableCell className={clsx(classes.stableColumn, 'float_cell')}>
         <Checkbox
-            disabled={item.title === 'stable' || item.title === 'beta'}
+            disabled={item.title.toLowerCase().startsWith('stable') || item.title.toLowerCase().startsWith('beta')}
             title={I18n.t('Mark it as stable if you want to hide warning on adapters tab')}
-            checked={item.title === 'stable' ? true : (item.title === 'beta' ? false : item.stable)}
+            checked={item.title.toLowerCase().startsWith('stable') ? true : (item.title.toLowerCase().startsWith('beta') ? false : item.stable)}
             onChange={evt => onValueChanged(evt.target.checked, item.title, 'stable')}
         />
     </TableCell>

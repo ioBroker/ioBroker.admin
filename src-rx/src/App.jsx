@@ -435,6 +435,8 @@ class App extends Router {
 
                 showRedirect: false,
                 redirectCountDown: 0,
+
+                triggerAdapterUpdate: 0,
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -1371,6 +1373,7 @@ class App extends Router {
 
                 return <Suspense fallback={<Connecting />}>
                     <Adapters
+                        triggerUpdate={this.state.triggerAdapterUpdate}
                         key={`adapters`}
                         forceUpdateAdapters={this.state.forceUpdateAdapters}
                         theme={this.state.theme}
@@ -1612,7 +1615,12 @@ class App extends Router {
             themeType={this.state.themeType}
             theme={this.state.theme}
             key="systemSettings"
-            onClose={() => Router.doNavigate(null)}
+            onClose={repoChanged => {
+                Router.doNavigate(null);
+                if (repoChanged) {
+                    this.setState({ triggerAdapterUpdate: this.state.triggerAdapterUpdate + 1})
+                }
+            }}
             lang={this.state.lang}
             showAlert={(message, type) => this.showAlert(message, type)}
             socket={this.socket}

@@ -198,6 +198,7 @@ class SystemSettingsDialog extends Component {
     }
 
     onSave() {
+        let repoChanged = false;
         this.setState({saving: true}, () =>
             this.props.socket.getSystemConfig(true)
                 .then(systemConfig => {
@@ -225,8 +226,13 @@ class SystemSettingsDialog extends Component {
                             newRepo[repo].hash = systemRepositories.native.repositories[repo].hash;
                         }
                     });
-                    systemRepositories.native.repositories = newRepo;
-                    return this.props.socket.setObject('system.repositories', systemRepositories);
+                    if (JSON.stringify(this.state.systemRepositories.native.repositories) !== JSON.stringify(newRepo)) {
+                        systemRepositories.native.repositories = newRepo;
+                        repoChanged = true;
+                        return this.props.socket.setObject('system.repositories', systemRepositories);
+                    } else {
+                        return Promise.resolve();
+                    }
                 })
                 .then(() => this.props.socket.getObject('system.licenses'))
                 .then(systemLicenses => {
@@ -271,7 +277,7 @@ class SystemSettingsDialog extends Component {
                 .then(() => {
                     // this.getSettings();
                     alert(this.props.t('Settings saved'));
-                    this.props.onClose();
+                    this.props.onClose(repoChanged);
                     if (this.state.systemConfig.common.expertMode !== JSON.parse(this.originalConfig).common.expertMode) {
                         this.props.expertModeFunc(this.state.systemConfig.common.expertMode);
                     }
@@ -450,7 +456,7 @@ class SystemSettingsDialog extends Component {
             onClose={(e, reason) => {
                 if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
                     if (changed) {
-                        this.setState({confirmExit: true});
+                        this.setState({ confirmExit: true });
                     } else {
                         this.props.onClose();
                     }

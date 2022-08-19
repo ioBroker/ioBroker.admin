@@ -280,6 +280,7 @@ class Adapters extends Component {
             adapterInstallVersion: '',
             currentHost: this.props.currentHost,
             forceUpdateAdapters: this.props.forceUpdateAdapters,
+            triggerUpdate: props.triggerUpdate,
         };
 
         this.rebuildSupported = false;
@@ -474,7 +475,7 @@ class Adapters extends Component {
             }
         })
             .then(() => this.props.adaptersWorker.getAdapters(update))
-            .catch(e => window.alert('Cannot getAdapters: ' + e))
+            .catch(e => window.alert(`Cannot getAdapters: ${e}`))
             .then(_adapters => {
                 adapters = _adapters;
                 return this.props.socket.getInstalled(currentHost, update, this.state.readTimeoutMs)
@@ -488,7 +489,7 @@ class Adapters extends Component {
                 installed = _installed;
                 return this.props.socket.getRepository(currentHost, { repo: this.props.systemConfig.common.activeRepo, update: (bigUpdate || indicateUpdate) }, update, this.state.readTimeoutMs)
                     .catch(e => {
-                        window.alert('Cannot getRepository: ' + e);
+                        window.alert(`Cannot getRepository: ${e}`);
                         e.toString().includes('timeout') && this.setState({ showSlowConnectionWarning: true });
                         return null;
                     })
@@ -1624,6 +1625,14 @@ class Adapters extends Component {
             return <LinearProgress />;
         }
 
+        // update adapters, because repository could be changed
+        if (this.state.triggerUpdate !== this.props.triggerUpdate) {
+            setTimeout(() => {
+                this.setState({ triggerUpdate: this.props.triggerUpdate }, () =>
+                    this.updateAll(true));
+            }, 100);
+        }
+
         if (this.state.dialog === 'readme' && this.state.dialogProp) {
             const adapter = this.state.repository[this.state.dialogProp] || null;
 
@@ -1679,13 +1688,22 @@ class Adapters extends Component {
         };
 
         // fast check if active repo is stable
-        let stableRepo = (typeof this.props.systemConfig.common.activeRepo === 'string' && this.props.systemConfig.common.activeRepo === 'stable') ||
-            (this.props.systemConfig.common.activeRepo && typeof this.props.systemConfig.common.activeRepo !== 'string' && this.props.systemConfig.common.activeRepo.includes('stable'));
+        let stableRepo =
+            (
+                typeof this.props.systemConfig.common.activeRepo === 'string' &&
+                this.props.systemConfig.common.activeRepo.toLowerCase().startsWith('stable')
+            )
+            ||
+            (
+                this.props.systemConfig.common.activeRepo &&
+                typeof this.props.systemConfig.common.activeRepo !== 'string' &&
+                this.props.systemConfig.common.activeRepo.find(r => r.toLowerCase().startsWith('stable'))
+            );
 
         // if repositories are available
         if (this.state.compactRepositories && this.state.compactRepositories.native && this.state.compactRepositories.native.repositories) {
             // old style with just one active repository
-            if (typeof this.props.systemConfig.common.activeRepo === 'string' && this.props.systemConfig.common.activeRepo !== 'stable') {
+            if (typeof this.props.systemConfig.common.activeRepo === 'string' && !this.props.systemConfig.common.activeRepo.toLowerCase().startsWith('stable')) {
                 if (this.state.compactRepositories.native.repositories[this.props.systemConfig.common.activeRepo]) {
                     stableRepo = this.state.compactRepositories.native.repositories[this.props.systemConfig.common.activeRepo].stable;
                 }
@@ -1693,7 +1711,7 @@ class Adapters extends Component {
             // new style with multiple active repositories
             if (this.props.systemConfig.common.activeRepo && typeof this.props.systemConfig.common.activeRepo !== 'string') {
                 // if any active repo is not stable, show warning
-                if (this.props.systemConfig.common.activeRepo.find(repo => repo !== 'stable' &&
+                if (this.props.systemConfig.common.activeRepo.find(repo => !repo.toLowerCase().startsWith('stable') &&
                     (!this.state.compactRepositories.native.repositories[repo] ||
                     !this.state.compactRepositories.native.repositories[repo].stable))
                 ) {
@@ -2013,6 +2031,7 @@ Adapters.propTypes = {
     adminGuiConfig: PropTypes.object,
     noTranslation: PropTypes.bool,
     toggleTranslation: PropTypes.func,
+    triggerUpdate: PropTypes.number,
 };
 
 export default withStyles(styles)(Adapters);

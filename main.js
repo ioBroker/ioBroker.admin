@@ -423,7 +423,7 @@ function writeUpdateInfo(adapter, sources) {
             if (systemRepos && systemRepos.native && systemRepos.native.repositories) {
                 activeRepo.forEach(repo => {
                     if (systemRepos.native.repositories[activeRepo]) {
-                        adapter.log.warn(`Active repository "${repo} cannot be read`);
+                        adapter.log.warn(`Active repository "${repo}" cannot be read`);
                         found = true;
                     }
                 });
@@ -607,13 +607,13 @@ function updateNews() {
             oldEtag = state && state.val;
             return axios.get('https://iobroker.live/repo/news-hash.json', {timeout: 13000, validateStatus: status => status < 400})
                 .then(response => response.data)
-                .catch(error => adapter.log.warn('Cannot update news: ' + (error.response ? error.response.data : (error.message || error.code))));
+                .catch(error => adapter.log.warn(`Cannot update news: ${error.response ? error.response.data : (error.message || error.code)}`));
         }).then(etag => {
             if (etag && etag.hash !== oldEtag) {
                 newEtag = etag.hash;
                 return axios.get('https://iobroker.live/repo/news.json', {timeout: 14000, validateStatus: status => status < 400})
                     .then(response => response.data)
-                    .catch(error => adapter.log.warn('Cannot update news_: ' + (error.response ? error.response.data : (error.message || error.code))));
+                    .catch(error => adapter.log.warn(`Cannot update news_: ${error.response ? error.response.data : (error.message || error.code)}`));
             } else {
                 newEtag = oldEtag;
                 return Promise.resolve([]);
@@ -824,163 +824,163 @@ async function checkNodeJsVersion() {
             type: 'channel',
             common: {
                 name: {
-                    "en": "Node.js/Npm versions",
-                    "de": "Node.js/Npm Versionen",
-                    "ru": "Node.js/Npm версии",
-                    "pt": "Versões Node.js/Npm",
-                    "nl": "Node.js/Npm versions",
-                    "fr": "Node.js/Npm versions",
-                    "it": "Node.js/Npm versioni",
-                    "es": "Node.js/Npm versiones",
-                    "pl": "Wersja node.js/Npm",
-                    "zh-cn": "页: 1"
+                    en: 'Node.js/Npm versions',
+                    de: 'Node.js/Npm Versionen',
+                    ru: 'Node.js/Npm версии',
+                    pt: 'Versões Node.js/Npm',
+                    nl: 'Node.js/Npm versions',
+                    fr: 'Node.js/Npm versions',
+                    it: 'Node.js/Npm versioni',
+                    es: 'Node.js/Npm versiones',
+                    pl: 'Wersja node.js/Npm',
+                    'zh-cn': '页: 1'
                 }
             }
         });
         const states = [
             {
-                "_id": "nodeCurrent",
-                "type": "state",
-                "common": {
-                    "role": "state",
-                    "value": {
-                        "en": "Current node.js version",
-                        "de": "Aktuelle node.js Version",
-                        "ru": "Текущая версия node.js",
-                        "pt": "Versão atual do node.js",
-                        "nl": "Current Node",
-                        "fr": "Version actuelle node.js",
-                        "it": "Versione attuale node.js",
-                        "es": "Versión actual node.js",
-                        "pl": "Aktualna wersja.js",
-                        "zh-cn": "目前没有。"
+                _id: 'nodeCurrent',
+                type: 'state',
+                common: {
+                    role: 'state',
+                    value: {
+                        en: 'Current node.js version',
+                        de: 'Aktuelle node.js Version',
+                        ru: 'Текущая версия node.js',
+                        pt: 'Versão atual do node.js',
+                        nl: 'Current Node',
+                        fr: 'Version actuelle node.js',
+                        it: 'Versione attuale node.js',
+                        es: 'Versión actual node.js',
+                        pl: 'Aktualna wersja.js',
+                        'zh-cn': '目前没有。'
                     },
-                    "type": "string",
-                    "read": true,
-                    "write": false,
-                    "def": ""
+                    type: 'string',
+                    read: true,
+                    write: false,
+                    def: ''
                 },
-                "native": {}
+                native: {}
             },
             {
-                "_id": "nodeNewest",
-                "type": "state",
-                "common": {
-                    "role": "state",
-                    "value": {
-                        "en": "Newest node.js version",
-                        "de": "Neueste node.js Version",
-                        "ru": "Новейшая версия node.js",
-                        "pt": "Mais recente versão node.js",
-                        "nl": "Nieuwste node",
-                        "fr": "Nouvelle version node.js",
-                        "it": "Nuova versione node.js",
-                        "es": "Versión más reciente node.js",
-                        "pl": "Najnowsza wersja węzła.js",
-                        "zh-cn": "最新版本"
+                _id: 'nodeNewest',
+                type: 'state',
+                common: {
+                    role: 'state',
+                    value: {
+                        en: 'Newest node.js version',
+                        de: 'Neueste node.js Version',
+                        ru: 'Новейшая версия node.js',
+                        pt: 'Mais recente versão node.js',
+                        nl: 'Nieuwste node',
+                        fr: 'Nouvelle version node.js',
+                        it: 'Nuova versione node.js',
+                        es: 'Versión más reciente node.js',
+                        pl: 'Najnowsza wersja węzła.js',
+                        'zh-cn': '最新版本'
                     },
-                    "type": "string",
-                    "read": true,
-                    "write": false,
-                    "def": ""
+                    type: 'string',
+                    read: true,
+                    write: false,
+                    def: ''
                 },
-                "native": {}
+                native: {}
             },
             {
-                "_id": "nodeNewestNext",
-                "type": "state",
-                "common": {
-                    "role": "state",
-                    "value": {
-                        "en": "Newest next major node.js version",
-                        "de": "Neueste nächste große node.js Version",
-                        "ru": "Новейшая следующая версия node.js",
-                        "pt": "Mais nova versão principal node.js",
-                        "nl": "Nieuwste volgende grote node",
-                        "fr": "Nouvelle prochaine version node.js",
-                        "it": "Nuova versione principale node.js",
-                        "es": "Versión más reciente node.js",
-                        "pl": "Najnowsza wersja węzła.js",
-                        "zh-cn": "今后最新的重要内容。"
+                _id: 'nodeNewestNext',
+                type: 'state',
+                common: {
+                    role: 'state',
+                    value: {
+                        en: 'Newest next major node.js version',
+                        de: 'Neueste nächste große node.js Version',
+                        ru: 'Новейшая следующая версия node.js',
+                        pt: 'Mais nova versão principal node.js',
+                        nl: 'Nieuwste volgende grote node',
+                        fr: 'Nouvelle prochaine version node.js',
+                        it: 'Nuova versione principale node.js',
+                        es: 'Versión más reciente node.js',
+                        pl: 'Najnowsza wersja węzła.js',
+                        'zh-cn': '今后最新的重要内容。'
                     },
-                    "type": "string",
-                    "read": true,
-                    "write": false,
-                    "def": ""
+                    type: 'string',
+                    read: true,
+                    write: false,
+                    def: ''
                 },
-                "native": {}
+                native: {}
             },
             {
-                "_id": "npmCurrent",
-                "type": "state",
-                "common": {
-                    "role": "state",
-                    "value": {
-                        "en": "Current npm version",
-                        "de": "Aktuelle Version",
-                        "ru": "Текущая версия npm",
-                        "pt": "Versão actual npm",
-                        "nl": "Current Npm versie",
-                        "fr": "Version actuelle npm",
-                        "it": "Versione npm attuale",
-                        "es": "Versión actual npm",
-                        "pl": "Aktualna wersja",
-                        "zh-cn": "目前的印本"
+                _id: 'npmCurrent',
+                type: 'state',
+                common: {
+                    role: 'state',
+                    value: {
+                        en: 'Current npm version',
+                        de: 'Aktuelle Version',
+                        ru: 'Текущая версия npm',
+                        pt: 'Versão actual npm',
+                        nl: 'Current Npm versie',
+                        fr: 'Version actuelle npm',
+                        it: 'Versione npm attuale',
+                        es: 'Versión actual npm',
+                        pl: 'Aktualna wersja',
+                        'zh-cn': '目前的印本'
                     },
-                    "type": "string",
-                    "read": true,
-                    "write": false,
-                    "def": ""
+                    type: 'string',
+                    read: true,
+                    write: false,
+                    def: ''
                 },
-                "native": {}
+                native: {}
             },
             {
-                "_id": "npmNewest",
-                "type": "state",
-                "common": {
-                    "role": "state",
-                    "value": {
-                        "en": "Newest npm version",
-                        "de": "Neueste Version",
-                        "ru": "Новейшая версия npm",
-                        "pt": "Versão mais recente npm",
-                        "nl": "Newest Npm versie",
-                        "fr": "Nouvelle version npm",
-                        "it": "Nuova versione npm",
-                        "es": "Versión más reciente npm",
-                        "pl": "Wersja nowa",
-                        "zh-cn": "最新版本"
+                _id: 'npmNewest',
+                type: 'state',
+                common: {
+                    role: 'state',
+                    value: {
+                        en: 'Newest npm version',
+                        de: 'Neueste Version',
+                        ru: 'Новейшая версия npm',
+                        pt: 'Versão mais recente npm',
+                        nl: 'Newest Npm versie',
+                        fr: 'Nouvelle version npm',
+                        it: 'Nuova versione npm',
+                        es: 'Versión más reciente npm',
+                        pl: 'Wersja nowa',
+                        'zh-cn': '最新版本'
                     },
-                    "type": "string",
-                    "read": true,
-                    "write": false,
-                    "def": ""
+                    type: 'string',
+                    read: true,
+                    write: false,
+                    def: ''
                 },
-                "native": {}
+                native: {}
             },
             {
-                "_id": "npmNewestNext",
-                "type": "state",
-                "common": {
-                    "role": "state",
-                    "value": {
-                        "en": "Newest next major NPM version",
-                        "de": "Neueste nächste große NPM-Version",
-                        "ru": "Новейшая следующая крупная версия NPM",
-                        "pt": "Mais nova versão principal do NPM",
-                        "nl": "NPM",
-                        "fr": "La version la plus récente",
-                        "it": "Nuova versione NPM",
-                        "es": "Versión NPM más reciente",
-                        "pl": "Nowa wersja NPM",
-                        "zh-cn": "下一次主要国家预防计划"
+                _id: 'npmNewestNext',
+                type: 'state',
+                common: {
+                    role: 'state',
+                    value: {
+                        en: 'Newest next major NPM version',
+                        de: 'Neueste nächste große NPM-Version',
+                        ru: 'Новейшая следующая крупная версия NPM',
+                        pt: 'Mais nova versão principal do NPM',
+                        nl: 'NPM',
+                        fr: 'La version la plus récente',
+                        it: 'Nuova versione NPM',
+                        es: 'Versión NPM más reciente',
+                        pl: 'Nowa wersja NPM',
+                        'zh-cn': '下一次主要国家预防计划'
                     },
-                    "type": "string",
-                    "read": true,
-                    "write": false,
-                    "def": ""
+                    type: 'string',
+                    read: true,
+                    write: false,
+                    def: ''
                 },
-                "native": {}
+                native: {}
             }
         ];
 
@@ -1092,7 +1092,7 @@ function updateIcons() {
             if (obj.common && obj.common.icon && obj.common.icon.length > 50) {
                 const cObj = await adapter.getForeignObjectAsync(obj._id);
                 if (cObj && (!cObj.common.icon || cObj.common.icon.length < 50)) {
-                    adapter.log.debug('Update icon for ' + cObj._id);
+                    adapter.log.debug(`Update icon for ${cObj._id}`);
                     cObj.common.icon = obj.common.icon;
                     await adapter.setForeignObjectAsync(cObj._id, cObj);
                 }
