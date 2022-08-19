@@ -14,20 +14,20 @@ User interface for configuration and administration of ioBroker.
 **This adapter uses Sentry libraries to automatically report exceptions and code errors to the developers.** For more details and for information how to disable the error reporting see [Sentry-Plugin Documentation](https://github.com/ioBroker/plugin-sentry#plugin-sentry)! Sentry reporting is used starting with js-controller 3.0.
 
 ## Using common.localLink
-- %ip% - ioBroker ip address (address of the admin)
-- %secure% or %protocol% - read from `native.secure` the value and use http or https
-- %web_protocol% - looking for the first instance of web (e.g. web.0) and get `native.secure` from `system.adapter.web.0`
-- %instance% - instance of the adapter
-- %someField% - get someField from `native` of this adapter instance
-- %web.0_bind% - get native.bind from `system.adapter.web.0`
-- %native_someField% - get someField from `native` of this adapter instance
+- `%ip%` - ioBroker ip address (address of the admin)
+- `%secure%` or `%protocol%` - read from `native.secure` the value and use http or https
+- `%web_protocol%` - looking for the first instance of web (e.g. web.0) and get `native.secure` from `system.adapter.web.0`
+- `%instance%` - instance of the adapter
+- `%someField%` - get someField from `native` of this adapter instance
+- `%web.0_bind%` - get native.bind from `system.adapter.web.0`
+- `%native_someField%` - get someField from `native` of this adapter instance
 
 ## Scheduled restart
 Some adapters are not stable or connection disappear after one or two days.
 To fix this there is a scheduled restart setting.
 To activate scheduled restart just define CRON condition when to restart adapter.
 
-It is suggested to restart in the night, when no one use the adapter, e.g. "0 3 * * *" - at 3:00 every day.
+It is suggested to restart in the night, when no one use the adapter, e.g. `0 3 * * *` - at 3:00 every day.
 
 ## Let's Encrypt Certificates
 Let’s Encrypt is a free, automated, and open certificate authority brought to you by the non-profit Internet Security Research Group (ISRG).
@@ -115,6 +115,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Corrected GUI bug on intro tab
+
 ### 6.2.16 (2022-08-18)
 * (bluefox) Corrected many GUI issues
 * (bluefox) Added `stable` flag for repositories

@@ -232,7 +232,6 @@ function SocketClient () {
 
                         this.pending = [];
                     }
-
                 } else if (args) {
                     handlers[name] && handlers[name].forEach(cb => cb.call(this, args[0], args[1], args[2], args[3], args[4]));
                 } else {

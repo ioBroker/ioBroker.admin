@@ -384,6 +384,11 @@ class IntroCard extends Component {
             this.cameraUpdateTimer = null;
         }
 
+        let buttonTitle = this.props.action.text || this.props.t('Link');
+        if (typeof buttonTitle === 'object') {
+            buttonTitle = buttonTitle[this.props.lang] || buttonTitle.en;
+        }
+
         return <Grid
             item
             xs={12}
@@ -451,7 +456,7 @@ class IntroCard extends Component {
                             this.props.action && this.props.action.link &&
                             <CardActions className={classes.action}>
                                 <div className={classes.colorOrange}>
-                                    {this.props.action.text || this.props.title || this.props.t('Link')}
+                                    {buttonTitle}
                                 </div>
                             </CardActions>
                         }
@@ -527,6 +532,7 @@ IntroCard.propTypes = {
     socket: PropTypes.object,
     offline: PropTypes.bool,
     t: PropTypes.func,
+    lang: PropTypes.string,
 };
 
 export default withStyles(styles)(IntroCard);

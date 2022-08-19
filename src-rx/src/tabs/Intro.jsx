@@ -233,12 +233,12 @@ class Intro extends Component {
 
         const deactivated = JSON.parse(JSON.stringify(this.state.deactivated));
 
-        const pos = deactivated.indexOf(id + '_' + linkName);
+        const pos = deactivated.indexOf(`${id}_${linkName}`);
 
         if (pos !== -1) {
             deactivated.splice(pos, 1);
         } else {
-            deactivated.push(id + '_' + linkName);
+            deactivated.push(`${id}_${linkName}`);
             deactivated.sort();
         }
 
@@ -274,6 +274,7 @@ class Intro extends Component {
                     title={<><span>{instance.name}</span>{isShowInstance ? <span className={this.props.classes.instanceNumber}>.{instance.id.split('.').pop()}</span> : null}</>}
                     action={{ link: instance.link, text: linkText }}
                     t={this.props.t}
+                    lang={this.props.lang}
                     color={instance.color}
                     reveal={instance.info}
                     edit={this.state.edit}
@@ -482,7 +483,7 @@ class Intro extends Component {
                     data.alive = true;
                 }
 
-                return this.props.socket.getForeignStates(hostId + '.versions.*')
+                return this.props.socket.getForeignStates(`${hostId}.versions.*`)
                     .then(states => {
                         Object.keys(states).forEach(id =>
                             data['_' + id.split('.').pop()] = states[id].val);
@@ -514,7 +515,7 @@ class Intro extends Component {
                 instance.link = item.path;
             } else if (item.instance.startsWith('web.')) {
                 // if this is a web instance, check if it is the same as the current instance
-                const _obj = instances.find(o => o._id === 'system.adapter.' + item.instance);
+                const _obj = instances.find(o => o._id === `system.adapter.${item.instance}`);
                 if (_obj?.native?.port && (instance.link || instance.url).includes(':' + _obj.native.port)) {
                     // replace
                     const regExp = new RegExp(`^.*:${_obj.native.port}/`);
@@ -660,7 +661,7 @@ class Intro extends Component {
                         links.forEach(link => {
                             const instance = {};
                             instance.id          = obj._id.replace('system.adapter.', '') + '/' + link.link;
-                            instance.name        = link.name;
+                            instance.name        = link.name && typeof link.name === 'object' ? (link.name[this.props.lang] || link.name.en) : link.name || '';
                             instance.color       = link.color || '';
                             instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
                             instance.image       = common.icon ? `adapter/${common.name}/${common.icon}` : 'img/no-image.png';
@@ -702,10 +703,9 @@ class Intro extends Component {
                     const common = obj && obj.common;
 
                     if (common) {
-                        const instance   = {};
-
+                        const instance    = {};
                         instance.id       = obj._id;
-                        instance.name     = common.name;
+                        instance.name     = common.name && typeof common.name === 'object' ? (common.name[this.props.lang] || common.name.en) : (common.name || '');
                         instance.color    = '';
                         instance.image    = common.icon || 'img/no-image.png';
                         instance.info     = this.t('Info');
@@ -717,17 +717,17 @@ class Intro extends Component {
 
                 const _deactivated = [];
                 deactivated.forEach(id => {
-                    if (introInstances.find(instance => id === instance.id + '_' + instance.linkName)) {
+                    if (introInstances.find(instance => id === `${instance.id}_${instance.linkName}`)) {
                         _deactivated.push(id);
                     }
                 });
                 deactivated = _deactivated;
 
-                return {instances: introInstances, deactivated};
+                return { instances: introInstances, deactivated };
             })
             .catch(error => {
                 console.log(error);
-                return {instances: [],  deactivated: []};
+                return { instances: [],  deactivated: [] };
             });
     }
 
@@ -888,7 +888,7 @@ class Intro extends Component {
                 new Promise(resolve =>
                     this.setState(newState, () =>
                         resolve())))
-            .catch(error => window.alert('Cannot get data: ' + error));
+            .catch(error => window.alert(`Cannot get data: ${error}`));
     }
 
     render() {

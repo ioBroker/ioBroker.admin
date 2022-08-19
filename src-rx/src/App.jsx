@@ -287,6 +287,7 @@ class App extends Router {
                 this.showAlert(message.toString(), 'info');
             }
         };
+
         // init translations
         this.translations = {
             'en': require('@iobroker/adapter-react-v5/i18n/en'),
@@ -588,7 +589,7 @@ class App extends Router {
                 .then(async obj => {
                     await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, { val: true, ack: true });
 
-                    this.guiSettings = obj || {type: 'state', common: {type: 'boolean', read: true, write: false, role: 'state'}};
+                    this.guiSettings = obj || { type: 'state', common: { type: 'boolean', read: true, write: false, role: 'state' }};
 
                     if (ownSettings || !this.guiSettings.native || !Object.keys(this.guiSettings.native).length) {
                         this.guiSettings.native = { localStorage: {}, sessionStorage: {} };
@@ -702,7 +703,7 @@ class App extends Router {
                                     // use instance language
                                     if (adminObj?.native?.language) {
                                         if (adminObj.native.language !== I18n.getLanguage()) {
-                                            console.log('Language changed to ' + adminObj.native.language);
+                                            console.log(`Language changed to ${adminObj.native.language}`);
                                             I18n.setLanguage(adminObj.native.language);
                                             if (this.languageSet) {
                                                 window.location.reload();
@@ -711,7 +712,7 @@ class App extends Router {
                                             }
                                         }
                                     } else if (this.socket.systemLang !== I18n.getLanguage()) {
-                                        console.log('Language changed to ' + this.socket.systemLang);
+                                        console.log(`Language changed to ${this.socket.systemLang}`);
                                         I18n.setLanguage(this.socket.systemLang);
                                         if (this.languageSet) {
                                             window.location.reload();
