@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.2.16",
+    "version": "6.2.17",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.2.17": {
+        "en": "Corrected GUI bug on intro tab",
+        "de": "Korrigiert GUI Bug auf Intro Tab",
+        "ru": "Исправлена ошибка GUI на вкладке intro",
+        "pt": "Bug GUI corrigido na guia intro",
+        "nl": "Vertaling:",
+        "fr": "Correction du bug GUI sur l'onglet intro",
+        "it": "Corretto bug GUI sulla scheda intro",
+        "es": "Corregido error GUI en la pestaña de entrada",
+        "pl": "Wprowadzimy błąd GUI w internecie",
+        "zh-cn": "对古伊布图的更正"
+      },
       "6.2.16": {
         "en": "Corrected many GUI issues\nAdded `stable` flag for repositories\nAdded reset button for repositories\nImproved `writeFile` function for socket communication",
         "de": "Viele GUI Probleme korrigiert\nHinzugefügt stabile Flagge für Repositories\nReset-Taste für Repositories hinzugefügt\nVerbessertes Schreiben Dateifunktion für Steckdosenkommunikation",
@@ -89,18 +101,6 @@
         "es": "Ajustes corregidos de yahka",
         "pl": "Poprawiona ustawa",
         "zh-cn": "A. 修 卫"
-      },
-      "6.2.3": {
-        "en": "Implemented AES-192 encryption and decryption in GUI",
-        "de": "AES-192 Verschlüsselung und Entschlüsselung in GUI",
-        "ru": "Реализовано шифрование AES-192 и расшифровка в GUI",
-        "pt": "Implementado criptografia AES-192 e descriptografia em GUI",
-        "nl": "Vertaling:",
-        "fr": "Mise en œuvre du chiffrement et du décryptage AES-192 dans GUI",
-        "it": "Implementato AES-192 crittografia e decrittografia in GUI",
-        "es": "Cifrado y descifrado AES-192 implementado en GUI",
-        "pl": "Poprawione szyfrowanie AES-192 oraz deszyfrowanie w GUI",
-        "zh-cn": "AES-192 加密和加密集团"
       }
     },
     "desc": {
