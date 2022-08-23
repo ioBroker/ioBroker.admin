@@ -1,184 +1,80 @@
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
 
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
 ## 6.2.4 (2022-07-20)
 * (bluefox) Corrected yahka settings
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
 
 ## 6.2.3 (2022-07-18)
 * (AlCalzone) Implemented AES-192 encryption and decryption in GUI
 
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
 ## 6.2.2 (2022-07-18)
 * (bluefox) Corrected JSON config table and login page
 
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
 ## 6.2.1 (2022-07-14)
 * (bluefox) Release 6.2
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
 
 ## 6.1.12 (2022-07-12)
 * (bluefox) Fixed GUI issues
 * (bluefox) Release candidate 2
 
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
 ## 6.1.11 (2022-07-06)
 * (bluefox) Fixed GUI issues
 * (bluefox) Release candidate 1
 
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
 ## 6.1.10 (2022-07-04)
 * (bluefox) Fixed issue with map
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
 
 ## 6.1.9 (2022-07-02)
 * (bluefox) Some GUI fixes done
 
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
 ## 6.1.8 (2022-07-01)
 * (bluefox) Corrected the host update instructions
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
 
 ## 6.1.7 (2022-06-29)
 * (bluefox) Some GUI fixes done
 
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
 ## 6.1.6 (2022-06-27)
 * (bluefox) Some GUI fixes done
 
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
 ## 6.1.4 (2022-06-23)
 * (bluefox) Added settings to define loading screen
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
 
 ## 6.1.1 (2022-06-22)
 * (bluefox) Corrected russian translations
 * (bluefox) Preparations for iobroker cloud
 
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
 ## 6.1.0 (2022-06-22)
 * (bluefox) allowed to use admin behind reverse proxy
 * (bluefox) Added new JsonConfig components: Slider, Room selector, Function selector
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
 
 ## 6.0.8 (2022-06-21)
 * (bluefox) Added multiple choice by `selectSendTo`
 * (bluefox) Added warning if some javascript not saved
 * (bluefox) Some GUI fixes done
 
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
 ## 6.0.7 (2022-06-20)
 * (bluefox) Many GUI fixes done
 
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
 ## 6.0.6 (2022-06-19)
 * (bluefox) Added file selector with select dialog
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
 
 ## 6.0.5 (2022-06-18)
 * (bluefox) Added file selector for JSON-Config
 * (bluefox) Added the experimental synchronize function (in expertMode)
 * (bluefox) Many GUI fixes done
 
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
 ## 6.0.4 (2022-06-13)
 * (bluefox) implemented the resize of columns in some tables
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
 
 ## 6.0.3 (2022-06-10)
 * (bluefox) Many GUI fixes done
 
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
 ## 6.0.2 (2022-06-08)
 * (bluefox) Many GUI fixes done
 
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
 ## 6.0.1 (2022-06-07)
 * (bluefox) Many GUI fixes done
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
 
 ## 6.0.0 (2022-06-03)
 * (bluefox) Breaking changes: no admin@v4(material) interface. Only react interface is possible.
@@ -189,41 +85,23 @@
 * (bluefox) Added run/stop buttons in instance settings dialog
 * (bluefox) Added support for the file change events
 
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
 ## 5.4.9 (2022-05-12)
 * (bluefox) Corrected charts
 * (bluefox) Corrected socket command getObjects
 
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
 ## 5.4.8 (2022-05-09)
 * (bluefox) Corrected some errors in Object Browser
 
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
 ## 5.4.7 (2022-05-09)
 * (bluefox) Reload GUI if new admin version detected
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
 
 ## 5.4.6 (2022-05-09)
 * (bluefox) Corrected readLogs command
 * (bluefox) Corrected file deletion
 
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
-
 ## 5.4.3 (2022-05-06)
 * (bluefox) Used common sockets (could be buggy)
 * (bluefox) Added chips to JSON config
-
-## 5.3.7 (2022-04-10)
-* (bluefox) Changed the charts rendering
 
 ## 5.3.8 (2022-04-14)
 * (Apollon77) Changed the datapoint history list
