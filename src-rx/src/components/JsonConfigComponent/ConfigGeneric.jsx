@@ -268,13 +268,15 @@ class ConfigGeneric extends Component {
                     if (dep.onChange) {
                         const val = ConfigGeneric.getValue(data, dep.attr);
 
-                        const newValue = this.props.custom ?
-                            this.executeCustom(dep.onChange.calculateFunc, data, this.props.customObj, this.props.instanceObj, this.props.arrayIndex, this.props.globalData)
-                            :
-                            this.execute(dep.onChange.calculateFunc, val, data, this.props.arrayIndex, this.props.globalData);
+                        let _newValue;
+                        if (this.props.custom) {
+                            _newValue = this.executeCustom(dep.onChange.calculateFunc, data, this.props.customObj, this.props.instanceObj, this.props.arrayIndex, this.props.globalData);
+                        } else {
+                            _newValue = this.execute(dep.onChange.calculateFunc, val, data, this.props.arrayIndex, this.props.globalData);
+                        }
 
-                        if (newValue !== val) {
-                            ConfigGeneric.setValue(data, dep.attr, newValue);
+                        if (_newValue !== val) {
+                            ConfigGeneric.setValue(data, dep.attr, _newValue);
                             changed.push(dep.attr);
                         }
                     }
@@ -318,7 +320,7 @@ class ConfigGeneric extends Component {
                 this.props.onChange(attr, newValue);
 
                 changed && changed.length && changed.forEach((_attr,  i) =>
-                    setTimeout(() => this.props.onChange(_attr, ConfigGeneric.getValue(data, attr)), i * 50));
+                    setTimeout(() => this.props.onChange(_attr, ConfigGeneric.getValue(data, _attr)), i * 50));
             } else {
                 this.props.onChange(data, undefined, () =>
                     changed.length && this.props.forceUpdate(changed, data));
