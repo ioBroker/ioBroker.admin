@@ -1,6 +1,12 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.2.12 (2022-07-31)
+* (bluefox) Corrected the Text input field in JSON configuration
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
 
 ## 6.2.4 (2022-07-20)
 * (bluefox) Corrected yahka settings

@@ -115,9 +115,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.2.18 (2022-08-24)
 * (bluefox) Corrected GUI bugs on custom settings
-* 
+*
+
 ### 6.2.17 (2022-08-19)
 * (bluefox) Corrected GUI bug on intro tab
 
@@ -132,9 +133,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.2.13 (2022-08-01)
 * (bluefox) Corrected JSON config
-
-### 6.2.12 (2022-07-31)
-* (bluefox) Corrected the Text input field in JSON configuration
 
 ## License
 The MIT License (MIT)

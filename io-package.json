@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.2.17",
+    "version": "6.2.18",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.2.18": {
+        "en": "Corrected GUI bugs on custom settings\n",
+        "de": "Korrigierte GUI Fehler auf benutzerdefinierten Einstellungen\n",
+        "ru": "Исправлены ошибки GUI на настройках\n",
+        "pt": "Corrigido bugs GUI em configurações personalizadas\n",
+        "nl": "Quality over Quantity (QoQ) Releases Vertaling:\n",
+        "fr": "Correction des bugs GUI sur les paramètres personnalisés\n",
+        "it": "Corretti bug GUI sulle impostazioni personalizzate\n",
+        "es": "Errores corregidos de GUI en ajustes personalizados\n",
+        "pl": "Oczywiście korygowane błędy GUI na temat zwyczajowych ustawień\n",
+        "zh-cn": "A. 对古伊人的习惯环境的更正\n"
+      },
       "6.2.17": {
         "en": "Corrected GUI bug on intro tab",
         "de": "Korrigiert GUI Bug auf Intro Tab",
@@ -89,18 +101,6 @@
         "es": "Flujo de trabajo Oauth2 aplicado para adaptadores\nFunciones corregidas de encriptación/decriptación",
         "pl": "Poprawa Oauth2 dla adapterów\nPoprawa szyfrowania/ deszyfrowania funkcji",
         "zh-cn": "执行适应人员奥考特2工作流程\n更正加密/德加密职能"
-      },
-      "6.2.4": {
-        "en": "Corrected yahka settings",
-        "de": "Korrigierte yahka-Einstellungen",
-        "ru": "Исправлены настройки yahka",
-        "pt": "Configurações de yahka corrigidas",
-        "nl": "Quality over Quantity (QoQ) Releases Vertaling:",
-        "fr": "Paramètres de yahka corrigés",
-        "it": "Impostazioni yahka corrette",
-        "es": "Ajustes corregidos de yahka",
-        "pl": "Poprawiona ustawa",
-        "zh-cn": "A. 修 卫"
       }
     },
     "desc": {
