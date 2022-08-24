@@ -31,11 +31,11 @@ class ConfigGeneric extends Component {
 
         this.isError = {};
 
-        if (this.props.schema) {
-            if (this.props.custom) {
-                this.defaultValue = this.props.schema.defaultFunc ? this.executeCustom(this.props.schema.defaultFunc, this.props.schema.default, this.props.data, this.props.instanceObj, this.props.arrayIndex, this.props.globalData) : this.props.schema.default;
+        if (props.schema) {
+            if (props.custom) {
+                this.defaultValue = props.schema.defaultFunc ? this.executeCustom(props.schema.defaultFunc, props.schema.default, props.data, props.instanceObj, props.arrayIndex, props.globalData) : props.schema.default;
             } else {
-                this.defaultValue = this.props.schema.defaultFunc ? this.execute(this.props.schema.defaultFunc, this.props.schema.default, this.props.data, this.props.arrayIndex, this.props.globalData) : this.props.schema.default;
+                this.defaultValue = props.schema.defaultFunc ? this.execute(props.schema.defaultFunc, props.schema.default, props.data, props.arrayIndex, props.globalData) : props.schema.default;
             }
         }
 
@@ -52,7 +52,7 @@ class ConfigGeneric extends Component {
                 setTimeout(() => {
                     if (this.props.custom) {
                         this.props.onChange(this.props.attr, this.defaultValue, () =>
-                            this.props.forceUpdate([this.props.attr], this.props.data));
+                            setTimeout(() => this.props.forceUpdate([this.props.attr], this.props.data), 100));
                         //this.onChange(this.props.attr, this.defaultValue);
                     } else {
                         ConfigGeneric.setValue(this.props.data, this.props.attr, this.defaultValue);
@@ -218,10 +218,26 @@ class ConfigGeneric extends Component {
                         }
 
                         ConfigGeneric.setValue(data, this.state.confirmAttr, this.state.confirmNewValue);
-                        this.setState({confirmDialog: false, confirmDepAttr: null, confirmDepNewValue: null, confirmNewValue: null, confirmAttr: null, confirmOldValue: null, confirmData: null}, () =>
+                        this.setState({
+                            confirmDialog: false,
+                            confirmDepAttr: null,
+                            confirmDepNewValue: null,
+                            confirmNewValue: null,
+                            confirmAttr: null,
+                            confirmOldValue: null,
+                            confirmData: null,
+                        }, () =>
                             this.props.onChange(data));
                     } else {
-                        this.setState({confirmDialog: false, confirmDepAttr: null, confirmDepNewValue: null, confirmNewValue: null, confirmAttr: null, confirmOldValue: null, confirmData: null});
+                        this.setState({
+                            confirmDialog: false,
+                            confirmDepAttr: null,
+                            confirmDepNewValue: null,
+                            confirmNewValue: null,
+                            confirmAttr: null,
+                            confirmOldValue: null,
+                            confirmData: null,
+                        });
                     }
                 })
             }

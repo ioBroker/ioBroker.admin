@@ -289,10 +289,10 @@ class JsonConfig extends Router {
             return null;
         }
         return <ConfirmDialog
-            title={I18n.t('Please confirm')}
-            text={I18n.t('Some data are not stored. Discard?')}
-            ok={I18n.t('Discard')}
-            cancel={I18n.t('Cancel')}
+            title={I18n.t('ra_Please confirm')}
+            text={I18n.t('ra_Some data are not stored. Discard?')}
+            ok={I18n.t('ra_Discard')}
+            cancel={I18n.t('ra_Cancel')}
             onClose={isYes =>
                 this.setState({ confirmDialog: false }, () => isYes && Router.doNavigate(null))}
         />;
@@ -303,7 +303,7 @@ class JsonConfig extends Router {
             return null;
         } else {
             return <ConfirmDialog
-                title={I18n.t('Please confirm')}
+                title={I18n.t('ra_Please confirm')}
                 text={typeof this.state.saveConfigDialog === 'string' ? this.state.saveConfigDialog : I18n.t('Save configuration?')}
                 ok={I18n.t('ra_Save')}
                 cancel={I18n.t('ra_Cancel')}

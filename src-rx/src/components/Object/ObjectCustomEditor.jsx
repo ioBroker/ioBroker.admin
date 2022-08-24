@@ -62,6 +62,7 @@ const styles = theme => ({
         maxWidth: 800,
         display: 'inline-block',
         verticalAlign: 'top',
+        paddingTop: 16,
     },
 
     accordionOdd: {
@@ -286,7 +287,7 @@ class ObjectCustomEditor extends Component {
     }
 
     getDefaultValues(instance, obj) {
-        const defaultValues = {enabled: false};
+        const defaultValues = { enabled: false };
         const adapter = instance.split('.')[0];
 
         if (this.jsonConfigs[adapter] && !this.jsonConfigs[adapter].disabled) {
@@ -438,10 +439,18 @@ class ObjectCustomEditor extends Component {
                 }
                 (window._localStorage || window.localStorage).setItem('App.customsExpanded', JSON.stringify(expanded));
                 pos === -1 && (window._localStorage || window.localStorage).setItem('App.customsLastExpanded', instance);
-                this.setState({expanded});
+                this.setState({ expanded });
             }}
         >
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} data-id={ instance } className={i % 2 ? (enabled ? this.props.classes.accordionHeaderEnabledOdd : this.props.classes.accordionHeaderOdd) : (enabled ? this.props.classes.accordionHeaderEnabledEven : this.props.classes.accordionHeaderEven)}>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                data-id={instance}
+                className={i % 2 ?
+                    (enabled ? this.props.classes.accordionHeaderEnabledOdd : this.props.classes.accordionHeaderOdd)
+                    :
+                    (enabled ? this.props.classes.accordionHeaderEnabledEven : this.props.classes.accordionHeaderEven)
+            }
+            >
                 <img src={ icon } className={ this.props.classes.headingIcon } alt="" />
                 <Typography className={ this.props.classes.heading }>{ this.props.t('Settings %s', instance)}</Typography>
                 <div className={ clsx(this.props.classes.titleEnabled, 'titleEnabled', enabled ? this.props.classes.enabledVisible : this.props.classes.enabledInvisible) }>{
@@ -457,7 +466,8 @@ class ObjectCustomEditor extends Component {
                             checked={ !!enabled }
                             disabled={disabled}
                             onChange={e => {
-                                const newValues = JSON.parse(JSON.stringify(this.state.newValues));
+                                this.cachedNewValues = this.cachedNewValues || this.state.newValues;
+                                const newValues = JSON.parse(JSON.stringify(this.cachedNewValues));
 
                                 newValues[instance] = newValues[instance] || {};
                                 if (isIndeterminate || e.target.checked) {
@@ -469,8 +479,11 @@ class ObjectCustomEditor extends Component {
                                         delete newValues[instance];
                                     }
                                 }
-                                this.setState({newValues, hasChanges: this.isChanged(newValues)}, () =>
-                                    this.props.onChange && this.props.onChange(this.state.hasChanges));
+                                this.cachedNewValues = newValues;
+                                this.setState({ newValues, hasChanges: this.isChanged(newValues) }, () => {
+                                    this.cachedNewValues = null;
+                                    this.props.onChange && this.props.onChange(this.state.hasChanges);
+                                });
                             }}/>}
                         label={this.props.t('Enabled')}
                     />
@@ -495,8 +508,9 @@ class ObjectCustomEditor extends Component {
                             onError={error =>
                                 this.setState({error}, () => this.props.onError && this.props.onError(error))}
                             onValueChange={(attr, value) => {
-                                console.log(attr + ' => ' + value);
-                                const newValues = JSON.parse(JSON.stringify(this.state.newValues));
+                                this.cachedNewValues = this.cachedNewValues || this.state.newValues;
+                                console.log(`${attr} => ${value}`);
+                                const newValues = JSON.parse(JSON.stringify(this.cachedNewValues));
                                 newValues[instance] = newValues[instance] || {};
                                 if (JSON.stringify(ConfigGeneric.getValue(this.commonConfig[instance], attr)) === JSON.stringify(value)) {
                                     ConfigGeneric.setValue(newValues[instance], attr, null);
@@ -506,8 +520,11 @@ class ObjectCustomEditor extends Component {
                                 } else {
                                     ConfigGeneric.setValue(newValues[instance], attr, value);
                                 }
-                                this.setState({ newValues, hasChanges: this.isChanged(newValues) }, () =>
-                                    this.props.onChange && this.props.onChange(this.state.hasChanges));
+                                this.cachedNewValues = newValues;
+                                this.setState({ newValues, hasChanges: this.isChanged(newValues) }, () => {
+                                    this.cachedNewValues = null;
+                                    this.props.onChange && this.props.onChange(this.state.hasChanges);
+                                });
                             }}
                         /> : null}
 
@@ -698,7 +715,7 @@ class ObjectCustomEditor extends Component {
 
         this.saveOneState([...this.props.objectIDs], () => {
             this.changedItems = [];
-            this.newValues = {};
+            this.cachedNewValues = {};
             this.commonConfig = this.getCommonConfig();
             this.setState({ confirmed: false, hasChanges: false, newValues: {}}, () => {
                 this.props.reportChangedIds(this.changedIds);
