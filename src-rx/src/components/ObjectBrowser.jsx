@@ -791,22 +791,22 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
     const data = item.data;
 
     if (data && data.id) {
-        const common = data.obj && data.obj.common;
+        const common = data.obj?.common;
 
         if (customFilter) {
             if (customFilter.type) {
                 if (typeof customFilter.type === 'string') {
-                    if (customFilter.type !== data.obj.type) {
+                    if (!data.obj || customFilter.type !== data.obj.type) {
                         filteredOut = true;
                     }
                 } else if (Array.isArray(customFilter.type)) {
-                    if (!customFilter.type.includes(data.obj.type)) {
+                    if (!data.obj || !customFilter.type.includes(data.obj.type)) {
                         filteredOut = true;
                     }
                 }
             }
             if (!filteredOut && customFilter.common?.type) {
-                if (!common || !common.type) {
+                if (!common?.type) {
                     filteredOut = true;
                 } else if (typeof customFilter.common.type === 'string') {
                     if (customFilter.common.type !== common.type) {
@@ -819,7 +819,7 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
                 }
             }
             if (!filteredOut && customFilter.common?.role) {
-                if (!common || !common.role) {
+                if (!common?.role) {
                     filteredOut = true;
                 } else if (typeof customFilter.common.role === 'string') {
                     if (common.role.startsWith(customFilter.common.role)) {
@@ -832,7 +832,7 @@ function applyFilter(item, filters, lang, objects, context, counter, customFilte
                 }
             }
             if (!filteredOut && customFilter.common?.custom) {
-                if (!common || !common.custom) {
+                if (!common?.custom) {
                     filteredOut = true;
                 } else
                 if (customFilter.common.custom === '_dataSources') {
@@ -1669,7 +1669,7 @@ class ObjectBrowser extends Component {
             columns = null;
         }
 
-        let columnsWidths =  null; // (window._localStorage || window.localStorage).getItem(`${props.dialogName || 'App'}.columnsWidths`);
+        let columnsWidths = null; // (window._localStorage || window.localStorage).getItem(`${props.dialogName || 'App'}.columnsWidths`);
         try {
             columnsWidths = columnsWidths ? JSON.parse(columnsWidths) : {};
         } catch (e) {
@@ -1803,13 +1803,34 @@ class ObjectBrowser extends Component {
 
     loadAllObjects(update) {
         const props = this.props;
+        let objects;
 
-        return new Promise(resolve => this.setState({updating: true}, () => resolve()))
+        return new Promise(resolve => this.setState({ updating: true }, () => resolve()))
             .then(() => this.props.objectsWorker ?
                 this.props.objectsWorker.getObjects(update) :
                 props.socket.getObjects(update, true))
-            .then(objects => {
-                this.systemConfig = objects['system.config'] || {};
+            .then(_objects => {
+                objects = _objects;
+                if (props.types && props.types[0] !== 'state') {
+                    if (props.length >= 1) {
+                        console.error('more than one type does not supported! Use filterFunc instead');
+                    }
+                    return props.socket.getObjectView(null, null, props.types[0]);
+                } else {
+                    return !objects['system.config'] ? props.socket.getObject('system.config')
+                        .then(obj => ({ 'system.config': obj })) : Promise.resolve(null);
+                }
+            })
+            .then(moreObjects => {
+                this.systemConfig = objects['system.config'] || moreObjects['system.config'] || {};
+
+                if (moreObjects) {
+                    if (moreObjects['system.config']) {
+                        delete moreObjects['system.config'];
+                    }
+                    Object.assign(objects, moreObjects);
+                }
+
                 this.systemConfig.common = this.systemConfig.common || {};
                 this.systemConfig.common.defaultNewAcl = this.systemConfig.common.defaultNewAcl || {};
                 this.systemConfig.common.defaultNewAcl.owner = this.systemConfig.common.defaultNewAcl.owner || 'system.user.admin';
@@ -1839,6 +1860,7 @@ class ObjectBrowser extends Component {
                     this.objects = {};
                     Object.keys(objects).forEach(id => {
                         const type = objects[id] && objects[id].type;
+                        // include "folder" types too
                         if (type && (
                             type === 'channel'  ||
                             type === 'device'   ||
@@ -2512,7 +2534,7 @@ class ObjectBrowser extends Component {
     subscribe(id) {
         if (!this.subscribes.includes(id)) {
             this.subscribes.push(id);
-            console.log('+ subscribe ' + id);
+            console.log(`+ subscribe ${id}`);
             !this.pausedSubscribes && this.props.socket.subscribeState(id, this.onStateChange);
         }
     }
@@ -2528,7 +2550,7 @@ class ObjectBrowser extends Component {
             if (this.states[id]) {
                 delete this.states[id];
             }
-            console.log('- unsubscribe ' + id);
+            console.log(`- unsubscribe ${id}`);
             this.props.socket.unsubscribeState(id, this.onStateChange);
 
             if (this.pausedSubscribes) {
@@ -3763,7 +3785,12 @@ class ObjectBrowser extends Component {
 
             // const hasIcons = !!enums.find(item => item.icon);
 
-            return <Dialog className={this.props.classes.enumDialog} onClose={() => this.setState({ enumDialog: null })} aria-labelledby="enum-dialog-title" open={true}>
+            return <Dialog
+                className={this.props.classes.enumDialog}
+                onClose={() => this.setState({ enumDialog: null })}
+                aria-labelledby="enum-dialog-title"
+                open={!0} // true
+            >
                 <DialogTitle id="enum-dialog-title">
                     {type === 'func' ? this.props.t('ra_Define functions') : this.props.t('ra_Define rooms')}
                     <Fab
@@ -4886,13 +4913,26 @@ class ObjectBrowser extends Component {
             onNewObject={obj =>
                 this.props.socket.setObject(obj._id, obj)
                     .then(() => this.setState({ editObjectDialog: obj._id }, () => this.onSelect(obj._id)))
-                    .catch(e => this.showError('Cannot write object: ' + e))}
+                    .catch(e => this.showError(`Cannot write object: ${e}`))}
             onClose={obj => {
-                this.setState({ editObjectDialog: '' });
                 if (obj) {
+                    let updateAlias;
+                    if (this.state.editObjectDialog.startsWith('alias.')) {
+                        if (JSON.stringify(this.objects[this.state.editObjectDialog].common?.alias) !== JSON.stringify(obj.common?.alias)) {
+                            updateAlias = this.state.editObjectDialog;
+                        }
+                    }
+
                     this.props.socket.setObject(obj._id, obj)
-                        .catch(e => this.showError('Cannot write object: ' + e));
+                        .then(() => {
+                            if (updateAlias && this.subscribes.includes(updateAlias)) {
+                                this.unsubscribe(updateAlias);
+                                setTimeout(() => this.subscribe(updateAlias), 100);
+                            }
+                        })
+                        .catch(e => this.showError(`Cannot write object: ${e}`));
                 }
+                this.setState({ editObjectDialog: '' });
             }}
         />
     }

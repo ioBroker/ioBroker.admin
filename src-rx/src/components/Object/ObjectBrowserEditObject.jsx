@@ -331,7 +331,7 @@ class ObjectBrowserEditObject extends Component {
 
             this.props.onClose(obj);
         } catch (error) {
-            console.log.error('Cannot parse: ' + this.state.text);
+            console.log.error(`Cannot parse: ${this.state.text}`);
         }
     }
 
@@ -409,7 +409,7 @@ class ObjectBrowserEditObject extends Component {
                 const selectRead = this.state.selectRead;
                 const selectWrite = this.state.selectWrite;
                 const selectId = this.state.selectId;
-                this.setState({selectId: false, selectRead: false, selectWrite: false}, () => {
+                this.setState({ selectId: false, selectRead: false, selectWrite: false }, () => {
                     if (selectRead) {
                         this.setAliasItem(json, 'id.read', id);
                     } else if (selectWrite) {
@@ -419,7 +419,7 @@ class ObjectBrowserEditObject extends Component {
                     }
                 });
             }}
-            onClose={() => this.setState({selectId: false, selectRead: false, selectWrite: false})}
+            onClose={() => this.setState({ selectId: false, selectRead: false, selectWrite: false })}
         />;
     }
 
@@ -870,7 +870,7 @@ class ObjectBrowserEditObject extends Component {
                 open={true}
                 maxWidth="md"
                 fullWidth
-                onClose={() => this.setState({showCopyDialog: false})}
+                onClose={() => this.setState({ showCopyDialog: false })}
             >
                 <DialogTitle>{this.props.t('Enter new ID for this object')}</DialogTitle>
                 <DialogContent>
