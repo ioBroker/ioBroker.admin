@@ -271,7 +271,14 @@ class Intro extends Component {
                     key={`${instance.id}_${instance.link}`}
                     socket={this.props.socket}
                     image={instance.image}
-                    title={<><span>{instance.name}</span>{isShowInstance ? <span className={this.props.classes.instanceNumber}>.{instance.id.split('.').pop()}</span> : null}</>}
+                    title={<>
+                        <span style={instance.name && instance.name.length > 12 ? { fontSize: '1rem' } : undefined}>
+                            {instance.name}
+                        </span>
+                        {isShowInstance ? <span className={this.props.classes.instanceNumber}>
+                            .{instance.id.split('.').pop()}
+                        </span> : null}
+                    </>}
                     action={{ link: instance.link, text: linkText }}
                     t={this.props.t}
                     lang={this.props.lang}
