@@ -116,7 +116,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.2.19 (2022-08-27)
 * (bluefox) Corrected some issues
 
 ### 6.2.18 (2022-08-24)
@@ -133,9 +133,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.2.14 (2022-08-06)
 * (Apollon77) Fix for OAuth2 authentication response success page
-
-### 6.2.13 (2022-08-01)
-* (bluefox) Corrected JSON config
 
 ## License
 The MIT License (MIT)
