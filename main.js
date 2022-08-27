@@ -703,6 +703,11 @@ function main(adapter) {
     adapter.config.autoUpdate = parseInt(adapter.config.autoUpdate, 10) || 0;
     if (adapter.config.autoUpdate && adapter.config.autoUpdate < 4) {
         adapter.config.autoUpdate = 4; // only every 4 hours is minimal update interval
+    } else
+    if (adapter.config.autoUpdate > 590) { // 0x7FFFFFFF / ONE_HOUR_MS = 596
+        adapter.config.autoUpdate = 590; // max interval is 2147483647 milliseconds
+    }
+
     }
 
     adapter.config.autoUpdate && updateRegister();
@@ -1166,7 +1171,10 @@ function updateRegister(isForce) {
                         }
                     });
                 } else if (adapter.config.autoUpdate) {
-                    const interval = repos.ts + adapter.config.autoUpdate * ONE_HOUR_MS - Date.now() + 1;
+                    let interval = repos.ts + adapter.config.autoUpdate * ONE_HOUR_MS - Date.now() + 1;
+                    if (interval > 0x7fffffff) {
+                        interval = 0x7fffffff;
+                    }
                     adapter.log.debug(`Next repo update on ${new Date(Date.now() + interval).toLocaleString()}`);
                     adapter.timerRepo && clearTimeout(adapter.timerRepo);
                     adapter.timerRepo = setTimeout(() => {

@@ -130,10 +130,6 @@
             {
               "label": "every 2 weeks",
               "value": 336
-            },
-            {
-              "label": "monthly",
-              "value": 720
             }
           ],
           "sm": 12,
