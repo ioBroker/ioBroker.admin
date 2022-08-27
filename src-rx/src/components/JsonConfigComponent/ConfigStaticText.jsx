@@ -22,7 +22,9 @@ const styles = theme => ({
     },
     link: {
         textDecoration: 'underline',
-        color: theme.palette.mode === 'dark' ? '#a147ff' : '#5b238f',
+        color: theme.palette.mode === 'dark' ? '#4dabf5' : '#254e72',
+        cursor: 'pointer',
+
     },
 });
 
