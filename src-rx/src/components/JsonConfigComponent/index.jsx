@@ -151,16 +151,23 @@ class JsonConfigComponent extends Component {
     }
 
     onError = (attr, error) => {
-        const errors = JSON.parse(JSON.stringify(this.state.errors));
+        this.errorChached = this.errorChached || JSON.parse(JSON.stringify(this.state.errors));
+        const errors = this.errorChached;
         if (error) {
             errors[attr] = error;
         } else {
             delete errors[attr];
         }
 
-        if (JSON.stringify(errors) !== JSON.parse(JSON.stringify(this.state.errors))) {
-            this.setState({errors}, () =>
-                this.props.onError(!!Object.keys(this.state.errors).length));
+        if (JSON.stringify(errors) !== JSON.stringify(this.state.errors)) {
+            this.errorTimeout && clearTimeout(this.errorTimeout);
+            this.errorTimeout = setTimeout(() => this.setState({ errors: this.errorChached }, () => {
+                this.errorTimeout = null;
+                this.errorChached = null;
+                this.props.onError(!!Object.keys(this.state.errors).length);
+            }), 50);
+        } else {
+            this.errorChached = null;
         }
     }
 

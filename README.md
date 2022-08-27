@@ -79,6 +79,7 @@ If this option is disabled, the simple configuration page could be accessed unde
 Please be sure that you forward not only the http/https requests, but the web-socket traffic too. It is essential for communication.
 
 From version 6.1.0 you have the possibility to tune intro page for usage with reverse proxy.
+
 ### Example 
 Your `ioBroker.admin` runs on port 8081 behind reverse proxy with domain `iobroker.mydomain.com` under path `/ioBrokerAdmin/`. 
 And you set up e.g. nginx to forward the requests to the `http://local-iobroker.IP:8081`. 

@@ -434,6 +434,7 @@ class JsonConfig extends Router {
                 isIFrame={false}
                 dense={true}
                 paddingLeft={0}
+                newReact
                 theme={this.state.theme}
                 noTextOnButtons={this.props.width === 'xs' || this.props.width === 'sm' || this.props.width === 'md'}
                 changed={this.state.error || this.state.changed}
