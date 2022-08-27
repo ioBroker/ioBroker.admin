@@ -708,8 +708,6 @@ function main(adapter) {
         adapter.config.autoUpdate = 590; // max interval is 2147483647 milliseconds
     }
 
-    }
-
     adapter.config.autoUpdate && updateRegister();
 
     updateNews();

@@ -894,6 +894,14 @@ class Adapters extends Component {
         let result = [];
 
         if (adapter) {
+            if (adapter.dependencies && !Array.isArray(adapter.dependencies)) {
+                adapter.dependencies = [adapter.dependencies];
+            }
+
+            if (adapter.globalDependencies && !Array.isArray(adapter.globalDependencies)) {
+                adapter.globalDependencies = [adapter.globalDependencies];
+            }
+
             const dependencies = [
                 ...(adapter.dependencies || []),
                 ...(adapter.globalDependencies || []),
