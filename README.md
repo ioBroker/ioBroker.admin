@@ -116,9 +116,11 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Corrected some issues
+
 ### 6.2.18 (2022-08-24)
 * (bluefox) Corrected GUI bugs on custom settings
-*
 
 ### 6.2.17 (2022-08-19)
 * (bluefox) Corrected GUI bug on intro tab

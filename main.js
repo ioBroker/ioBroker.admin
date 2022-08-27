@@ -793,7 +793,7 @@ async function checkNodeJsVersion() {
     try {
         result.npmCurrent = await getNpmVersion();
     } catch (error) {
-        adapter.log.warn('Cannot get current npm version: ' + error);
+        adapter.log.warn(`Cannot get current npm version: ${error}`);
     }
 
     // https://nodejs.org/download/release/index.json
