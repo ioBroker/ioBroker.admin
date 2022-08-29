@@ -175,6 +175,10 @@ class AdaptersUpdater extends Component {
         if ((this.props.finished || this.props.inProcess) && !checked) {
             return null;
         }
+        if (!this.props.installed[adapter]) {
+            // during installation this adapter was uninstalled
+            return null;
+        }
         const image = '.' + this.props.installed[adapter].localIcon;
 
         return <React.Fragment key={adapter}>
