@@ -542,7 +542,10 @@ class ChipInput extends React.Component {
             ...other
         } = this.props;
 
-        const chips = value || this.state.chips || [];
+        let chips = value || this.state.chips || [];
+        if (!Array.isArray(chips)) {
+            chips = (chips || '').toString().split(/[,\s]+/).map(c => c.trim());
+        }
         const actualInputValue = inputValue != null ? inputValue : this.state.inputValue;
 
         const hasInput = (this.props.value || actualInputValue).length || actualInputValue.length;
@@ -560,7 +563,7 @@ class ChipInput extends React.Component {
                     isDisabled: !!disabled,
                     isReadOnly: readOnly,
                     isFocused: this.state.focusedChip === i,
-                    handleClick: () => this.setState({focusedChip: i}),
+                    handleClick: () => this.setState({ focusedChip: i }),
                     handleDelete: () => this.handleDeleteChip(chip, i),
                     className: classes.chip
                 },
