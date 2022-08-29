@@ -1,6 +1,13 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.2.14 (2022-08-06)
+* (Apollon77) Fix for OAuth2 authentication response success page
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.2.13 (2022-08-01)
 * (bluefox) Corrected JSON config
 

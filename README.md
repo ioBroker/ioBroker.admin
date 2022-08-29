@@ -116,7 +116,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.2.20 (2022-08-29)
 * (bluefox) Corrected GUI issues
 
 ### 6.2.19 (2022-08-27)
@@ -133,9 +133,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 * (bluefox) Added `stable` flag for repositories
 * (bluefox) Added reset button for repositories
 * (bluefox) Improved `writeFile` function for socket communication
-
-### 6.2.14 (2022-08-06)
-* (Apollon77) Fix for OAuth2 authentication response success page
 
 ## License
 The MIT License (MIT)
