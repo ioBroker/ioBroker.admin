@@ -823,9 +823,8 @@ async function checkNodeJsVersion() {
         }
 
         // find newest suggested version
-        const npmNewestNext = response.data.find(item => item.npm.startsWith(CURRENT_MAX_MAJOR_NPM + '.'));
-        const npmCurrentMajor = result.npmCurrent.split('.')[0];
-        const npmNewest = response.data.find(item => item.npm.startsWith(npmCurrentMajor + '.'));
+        const npmNewestNext = nodeNewestNext || response.data.find(item => item.npm.startsWith(`${CURRENT_MAX_MAJOR_NPM}.`));
+        const npmNewest = response.data.find(item => item.version === process.version);
         if (npmNewestNext) {
             result.npmNewestNext = npmNewestNext.npm;
         }
@@ -833,7 +832,7 @@ async function checkNodeJsVersion() {
             result.npmNewest = npmNewest.npm;
         }
 
-        const prefix = 'system.host.' + adapter.common.host + '.versions';
+        const prefix = `system.host.${adapter.common.host}.versions`;
 
         await adapter.setForeignObjectNotExistsAsync(prefix, {
             type: 'channel',
