@@ -1314,6 +1314,9 @@ function formatValue(id, state, obj, texts, dateFormat, isFloatComma) {
                 // we don't know what is that, so leave it as it is
             }
         } else {
+            if (v > 946681200 && v < 946681200000) { // '2000-01-01T00:00:00' => 946681200000
+                v *= 1000; // may be the time is in seconds (UNIX time)
+            }
             // null and undefined could not be here. See `let v = (isCommon && isCommon.type === 'file') ....` above
             v = v ? new Date(v).toString() : v;
         }
