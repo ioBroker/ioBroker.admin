@@ -708,6 +708,18 @@ function main(adapter) {
         adapter.config.autoUpdate = 590; // max interval is 2147483647 milliseconds
     }
 
+    // check info.connected
+    adapter.getObjectAsync('info.connected')
+        .then(obj => {
+            if (!obj) {
+                let packageJson = JSON.parse(fs.readFileSync(__dirname + '/io-package.json').toString('utf8'));
+                const obj = packageJson.instanceObjects.find(o => o._id === 'info.connected');
+                if (obj) {
+                    return adapter.setObjectAsync(obj._id, obj);
+                }
+            }
+        });
+
     adapter.config.autoUpdate && updateRegister();
 
     updateNews();

@@ -274,6 +274,16 @@ const styles = theme => ({
     }
 });
 
+const DEFAULT_GUI_SETTINGS_OBJECT = {
+    type: 'state',
+    common: {
+        type: 'boolean',
+        read: true,
+        write: false,
+        role: 'state',
+    },
+};
+
 class App extends Router {
     constructor(props) {
         super(props);
@@ -587,9 +597,7 @@ class App extends Router {
         if (enabled && !this.guiSettings) {
             return this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`)
                 .then(async obj => {
-                    await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, { val: true, ack: true });
-
-                    this.guiSettings = obj || { type: 'state', common: { type: 'boolean', read: true, write: false, role: 'state' }};
+                    this.guiSettings = obj || DEFAULT_GUI_SETTINGS_OBJECT;
 
                     if (ownSettings || !this.guiSettings.native || !Object.keys(this.guiSettings.native).length) {
                         this.guiSettings.native = { localStorage: {}, sessionStorage: {} };
@@ -604,28 +612,47 @@ class App extends Router {
                             }
                         });
                         await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, this.guiSettings);
+                        await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, { val: true, ack: true });
                     } else {
+                        await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, { val: true, ack: true });
                         window.location.reload();
                     }
 
                     await this.getGUISettings();
                 });
         } else if (!enabled && this.guiSettings) {
-            window._localStorage = null;
-            window._sessionStorage = null;
+            this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`)
+                .then(async obj => {
+                    if (!obj) {
+                        try {
+                            // create object if not exists
+                            await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, DEFAULT_GUI_SETTINGS_OBJECT);
+                        } catch (e) {
+                            console.error(`Cannot create system.adapter.${this.adminInstance}.guiSettings": ${e}`);
+                        }
+                    }
+                    window._localStorage = null;
+                    window._sessionStorage = null;
 
-            // clear localStorage
-            Object.keys(window.localStorage).forEach(key => window.localStorage.removeItem(key));
-            Object.keys(window.sessionStorage).forEach(key => window.sessionStorage.removeItem(key));
+                    // clear localStorage
+                    Object.keys(window.localStorage).forEach(key => window.localStorage.removeItem(key));
+                    Object.keys(window.sessionStorage).forEach(key => window.sessionStorage.removeItem(key));
 
-            Object.keys(this.guiSettings.native.localStorage).forEach(name => window.localStorage.setItem(name, this.guiSettings.native.localStorage[name]));
-            Object.keys(this.guiSettings.native.sessionStorage).forEach(name => window.sessionStorage.setItem(name, this.guiSettings.native.sessionStorage[name]));
+                    Object.keys(this.guiSettings.native.localStorage).forEach(name => window.localStorage.setItem(name, this.guiSettings.native.localStorage[name]));
+                    Object.keys(this.guiSettings.native.sessionStorage).forEach(name => window.sessionStorage.setItem(name, this.guiSettings.native.sessionStorage[name]));
 
-            this.guiSettings = null;
+                    this.guiSettings = null;
 
-            return this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, { val: false, ack: true })
-                .catch(e => window.alert('Cannot disable settings'))
-                .then(() => this.setState({ guiSettings: false }));
+                    try {
+                        await this.socket.setState(`system.adapter.${this.adminInstance}.guiSettings`, {
+                            val: false,
+                            ack: true
+                        });
+                    } catch (e) {
+                        window.alert(`Cannot disable settings: ${e}`);
+                    }
+                    this.setState({ guiSettings: false });
+                });
         }
     }
 

@@ -407,30 +407,6 @@
         "def": ""
       },
       "native": {}
-    },
-    {
-      "_id": "guiSettings",
-      "type": "state",
-      "common": {
-        "role": "state",
-        "name": {
-          "en": "GUI settings",
-          "de": "GUI Einstellungen",
-          "ru": "GUI настройки",
-          "pt": "Configurações de interface",
-          "nl": "GUI setting",
-          "fr": "Paramètres graphiques",
-          "it": "Impostazioni GUI",
-          "es": "Ajustes de interfaz",
-          "pl": "GUI setting",
-          "zh-cn": "古伊特环境"
-        },
-        "type": "boolean",
-        "read": true,
-        "write": false,
-        "def": false
-      },
-      "native": {}
     }
   ]
 }
