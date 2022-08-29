@@ -23,10 +23,9 @@ class ConfigColor extends ConfigGeneric {
             open={this.state.showColorDialog}>
             <ChromePicker
                 color={this.state.colorDialogValue}
-                onChange={value => {
-                    this.setState({colorDialogValue: value}, () =>
-                        this.onChange(this.props.attr, ColorPicker.getColor(this.state.colorDialogValue, true)));
-                }}
+                onChange={value =>
+                    this.setState({ colorDialogValue: value }, () =>
+                        this.onChange(this.props.attr, ColorPicker.getColor(this.state.colorDialogValue, true)))}
             />
         </Dialog>;
     }
@@ -45,7 +44,7 @@ class ConfigColor extends ConfigGeneric {
                 style={{minWidth: 100, width: 'calc(100% - 8px)'}}
                 label={this.getText(this.props.schema.label)}
                 value={value || ''}
-                onClick={() => this.setState({showColorDialog: true, colorDialogValue: value})}
+                onClick={() => !this.props.schema.readOnly && this.setState({ showColorDialog: true, colorDialogValue: value || '' })}
                 onChange={e => {
                     const color = e.target.value;
                     this.onChange(this.props.attr, color);
@@ -55,7 +54,8 @@ class ConfigColor extends ConfigGeneric {
                         //paddingLeft: noPadding ? 0 : 8,
                         backgroundColor: value,
                         color: textColor ? '#FFF' : '#000'
-                    }
+                    },
+                    readOnly: this.props.schema.readOnly || false,
                 }}
                 InputProps={{
                     endAdornment: value ?
@@ -70,7 +70,7 @@ class ConfigColor extends ConfigGeneric {
                         </IconButton>
                         : undefined,
                 }}
-                InputLabelProps={{shrink: true}}
+                InputLabelProps={{ shrink: true }}
             />
         </>;
     }

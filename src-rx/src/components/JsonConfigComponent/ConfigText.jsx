@@ -70,6 +70,10 @@ class ConfigText extends ConfigGeneric {
                     {...params}
                     error={!!error}
                     placeholder={this.getText(this.props.schema.placeholder)}
+                    inputProps={{
+                        maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
+                        readOnly: this.props.schema.readOnly || false,
+                    }}
                     label={this.getText(this.props.schema.label)}
                     helperText={this.renderHelp(this.props.schema.help, this.props.schema.helpLink, this.props.schema.noTranslation)}
                     disabled={!!disabled}
@@ -82,7 +86,10 @@ class ConfigText extends ConfigGeneric {
                 value={this.state.value === null || this.state.value === undefined ? '' : this.state.value}
                 error={!!error}
                 disabled={!!disabled}
-                inputProps={{maxLength: this.props.schema.maxLength || this.props.schema.max || undefined}}
+                inputProps={{
+                    maxLength: this.props.schema.maxLength || this.props.schema.max || undefined,
+                    readOnly: this.props.schema.readOnly || false,
+                }}
                 onChange={e => {
                     const value = e.target.value;
                     this.setState({ value, oldValue: this.state.value }, () =>
