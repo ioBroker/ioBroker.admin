@@ -184,7 +184,7 @@ class ObjectCustomEditor extends Component {
     }
 
     getCustomTemplate(adapter) {
-        const ad = this.props.objects['system.adapter.' + adapter] ? JSON.parse(JSON.stringify(this.props.objects['system.adapter.' + adapter])) : null;
+        const ad = this.props.objects[`system.adapter.${adapter}`] ? JSON.parse(JSON.stringify(this.props.objects[`system.adapter.${adapter}`])) : null;
 
         if (!ad) {
             console.error(`Cannot find adapter "${ad}"`);
@@ -264,8 +264,7 @@ class ObjectCustomEditor extends Component {
             try {
                 // eslint-disable-next-line no-new-func
                 const f = new Function('data', 'originalData', '_system', 'instanceObj', 'customObj', '_socket', func.includes('return') ? func : 'return ' + func);
-                const result = f(data || this.props.data, this.props.originalData, this.props.systemConfig, instanceObj, customObj, this.props.socket);
-                data[attr] = result;
+                data[attr] = f(data || this.props.data, this.props.originalData, this.props.systemConfig, instanceObj, customObj, this.props.socket);
             } catch (e) {
                 console.error(`Cannot execute ${func}: ${e}`);
                 data[attr] = !items[attr] || items[attr].default === undefined ? null: items[attr].default;
@@ -302,6 +301,7 @@ class ObjectCustomEditor extends Component {
                         defaultValues[attr] = items[attr].default;
                     }
                 });
+
                 // now init default that must be calculated
                 attrs.forEach(async attr => {
                     if (items[attr].defaultFunc) {
@@ -333,6 +333,10 @@ class ObjectCustomEditor extends Component {
 
                 if (custom) {
                     Object.keys(custom).forEach(_attr => {
+                        // remove all temporary values
+                        if (_attr.startsWith('_')) {
+                            return;
+                        }
                         if (commons[inst][_attr] === undefined) {
                             commons[inst][_attr] = custom[_attr];
                         } else if (commons[inst][_attr] !== custom[_attr]) {
@@ -351,6 +355,9 @@ class ObjectCustomEditor extends Component {
                     _default.enabled = false;
 
                     Object.keys(_default).forEach(_attr => {
+                        if (_attr.startsWith('_')) {
+                            return;
+                        }
                         if (commons[inst][_attr] === undefined) {
                             commons[inst][_attr] = _default[_attr];
                         } else if (commons[inst][_attr] !== _default[_attr]) {
@@ -583,11 +590,11 @@ class ObjectCustomEditor extends Component {
             // save all objects
             const keys = Object.keys(_objects);
             if (!keys.length) {
-                this.setState({maxOids: null}, () =>
+                this.setState({ maxOids: null }, () =>
                     this.props.onProgress(false));
                 cb && cb();
             } else {
-                this.setState({progress: Math.round(((this.state.maxOids - keys.length) / this.state.maxOids) * 50) + 50});
+                this.setState({ progress: Math.round(((this.state.maxOids - keys.length) / this.state.maxOids) * 50) + 50 });
                 const id = keys.shift();
                 if (JSON.stringify(_objects[id].common) !== JSON.stringify(_oldObjects[id].common)) {
                     !this.changedIds.includes(id) && this.changedIds.push(id);
@@ -613,12 +620,12 @@ class ObjectCustomEditor extends Component {
         } else {
             const maxOids = this.state.maxOids || ids.length;
             if (this.state.maxOids === null) {
-                this.setState({maxOids: ids.length}, () =>
+                this.setState({ maxOids: ids.length }, () =>
                     this.props.onProgress(true));
             }
 
             // 0 - 50
-            this.setState({progress: Math.round(((maxOids - ids.length) / maxOids) * 50)});
+            this.setState({ progress: Math.round(((maxOids - ids.length) / maxOids) * 50) });
 
             const id = ids.shift();
             this.getObject(_objects, _oldObjects, id)
@@ -665,6 +672,12 @@ class ObjectCustomEditor extends Component {
                                 // provide defaults
                                 let _default = this.getDefaultValues(instance, obj);
                                 obj.common.custom[instance] = JSON.parse(JSON.stringify(_default || {}));
+                                // remove all temporary values
+                                Object.keys(obj.common.custom[instance]).forEach(attr => {
+                                    if (attr.startsWith('_')) {
+                                        delete obj.common.custom[instance][attr];
+                                    }
+                                });
                             }
 
                             obj.common.custom[instance].enabled = true;
@@ -672,7 +685,9 @@ class ObjectCustomEditor extends Component {
                             Object.keys(newValues).forEach(attr => {
                                 // if not different
                                 if (!Array.isArray(newValues[attr]) || (newValues[attr][0] && typeof newValues[attr][0] === 'object')) {
-                                    obj.common.custom[instance][attr] = newValues[attr];
+                                    if (!attr.startsWith('_')) {
+                                        obj.common.custom[instance][attr] = newValues[attr];
+                                    }
                                 }
                             });
                         }
@@ -710,7 +725,7 @@ class ObjectCustomEditor extends Component {
     onSave = cb => {
         if (this.props.objectIDs.length > 10 && !this.state.confirmed) {
             this.cb = cb;
-            return this.setState({showConfirmation: true});
+            return this.setState({ showConfirmation: true });
         }
 
         this.saveOneState([...this.props.objectIDs], () => {
