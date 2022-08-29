@@ -1737,7 +1737,7 @@ class Adapters extends Component {
             repoName = Array.isArray(this.props.systemConfig.common.activeRepo) ? this.props.systemConfig.common.activeRepo.join(', ') : this.props.systemConfig.common.activeRepo;
             // old style with just one active repository
             if (typeof this.props.systemConfig.common.activeRepo === 'string') {
-                const repoInfo = repositories[this.props.systemConfig.common.activeRepo]?.json?._repoInfo;
+                const repoInfo = repositories && repositories[this.props.systemConfig.common.activeRepo]?.json?._repoInfo;
                 if (repoInfo?.name) {
                     if (repoInfo.name && typeof repoInfo.name === 'object') {
                         repoName = repoInfo.name[this.props.lang] || repoInfo.name.en;
@@ -1749,7 +1749,7 @@ class Adapters extends Component {
             // new style with multiple active repositories
             if (this.props.systemConfig.common.activeRepo && typeof this.props.systemConfig.common.activeRepo !== 'string') {
                 repoName = this.props.systemConfig.common.activeRepo.map(repo => {
-                    const repoInfo = repositories[repo]?.json?._repoInfo;
+                    const repoInfo = repositories && repositories[repo]?.json?._repoInfo;
                     if (repoInfo?.name) {
                         if (repoInfo.name && typeof repoInfo.name === 'object') {
                             return repoInfo.name[this.props.lang] || repoInfo.name.en;
