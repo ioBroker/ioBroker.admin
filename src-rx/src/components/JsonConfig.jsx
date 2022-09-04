@@ -251,6 +251,15 @@ class JsonConfig extends Router {
                 if (data.file !== undefined) {
                     data = data.file;
                 }
+                if (data?.type === 'Buffer') {
+                    let binary = '';
+                    let bytes = new Uint8Array(data.data);
+                    let len = bytes.byteLength;
+                    for (let i = 0; i < len; i++) {
+                        binary += String.fromCharCode(bytes[i]);
+                    }
+                    data = binary;
+                }
                 try {
                     return JSON5.parse(data);
                 } catch (e) {

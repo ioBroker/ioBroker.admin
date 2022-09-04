@@ -282,7 +282,7 @@ class LogsWorker {
 
         this.promise = this.socket.getLogs(this.currentHost, 200)
             .then(lines => {
-                if (lines === 'permissionError') {
+                if (lines === 'permissionError' || lines?.error !== undefined) {
                     this.logs = [];
 
                     window.alert('Cannot get logs: no permission');

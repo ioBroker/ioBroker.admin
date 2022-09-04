@@ -23,9 +23,7 @@ class JsonConfigComponent extends Component {
         this.state = {
             originalData: JSON.stringify(this.props.data),
             changed: false,
-            errors: {
-
-            },
+            errors: {},
             updateData: this.props.updateData,
             systemConfig: null,
             alive: false,
@@ -159,13 +157,14 @@ class JsonConfigComponent extends Component {
             delete errors[attr];
         }
 
+        this.errorTimeout && clearTimeout(this.errorTimeout);
         if (JSON.stringify(errors) !== JSON.stringify(this.state.errors)) {
-            this.errorTimeout && clearTimeout(this.errorTimeout);
-            this.errorTimeout = setTimeout(() => this.setState({ errors: this.errorChached }, () => {
-                this.errorTimeout = null;
-                this.errorChached = null;
-                this.props.onError(!!Object.keys(this.state.errors).length);
-            }), 50);
+            this.errorTimeout = setTimeout(() =>
+                this.setState({ errors: this.errorChached }, () => {
+                    this.errorTimeout = null;
+                    this.errorChached = null;
+                    this.props.onError(!!Object.keys(this.state.errors).length);
+                }), 50);
         } else {
             this.errorChached = null;
         }
