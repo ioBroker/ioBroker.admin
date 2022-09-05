@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.2.20",
+    "version": "6.2.21",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.2.21": {
+        "en": "Corrected small JSON config issue",
+        "de": "Korrektur kleiner JSON config Ausgabe",
+        "ru": "Исправлена небольшая проблема JSON config",
+        "pt": "Corrigido pequeno problema de configuração JSON",
+        "nl": "Quality over Quantity (QoQ) Releases Vertaling:",
+        "fr": "Correction du petit problème de configuration JSON",
+        "it": "Corretto piccolo problema di configurazione JSON",
+        "es": "Corregido pequeño número de configuración JSON",
+        "pl": "Kwalifikacja małego JSON",
+        "zh-cn": "小企业家协会"
+      },
       "6.2.20": {
         "en": "Corrected GUI issues",
         "de": "Korrigierte GUI-Ausgaben",
@@ -89,18 +101,6 @@
         "es": "Fijación para la página de éxito de respuesta de autenticación OAuth2",
         "pl": "Fix for OAuth2 (ang.)",
         "zh-cn": "OAuth2 核证反应成功页"
-      },
-      "6.2.13": {
-        "en": "Corrected JSON config",
-        "de": "JSON config korrigiert",
-        "ru": "Правильный конфиг JSON",
-        "pt": "Configuração JSON corrigida",
-        "nl": "Quality over Quantity (QoQ) Releases Vertaling:",
-        "fr": "Correction de la configuration JSON",
-        "it": "Corretto JSON config",
-        "es": "Corregido JSON config",
-        "pl": "Zgoda JSON",
-        "zh-cn": "惩教所"
       }
     },
     "desc": {

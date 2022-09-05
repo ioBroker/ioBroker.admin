@@ -1,6 +1,16 @@
 ## 6.2.6 (2022-07-28)
 * (bluefox) Implemented Oauth2 workflow for adapters
 * (bluefox) Corrected encrypt/decrypt functions
+## 6.2.16 (2022-08-18)
+* (bluefox) Corrected many GUI issues
+* (bluefox) Added `stable` flag for repositories
+* (bluefox) Added reset button for repositories
+* (bluefox) Improved `writeFile` function for socket communication
+
+## 6.2.6 (2022-07-28)
+* (bluefox) Implemented Oauth2 workflow for adapters
+* (bluefox) Corrected encrypt/decrypt functions
+
 ## 6.2.14 (2022-08-06)
 * (Apollon77) Fix for OAuth2 authentication response success page
 

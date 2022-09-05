@@ -116,7 +116,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 6.2.21 (2022-09-05)
 * (bluefox) Corrected small JSON config issue
 
 ### 6.2.20 (2022-08-29)
@@ -130,12 +130,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.2.17 (2022-08-19)
 * (bluefox) Corrected GUI bug on intro tab
-
-### 6.2.16 (2022-08-18)
-* (bluefox) Corrected many GUI issues
-* (bluefox) Added `stable` flag for repositories
-* (bluefox) Added reset button for repositories
-* (bluefox) Improved `writeFile` function for socket communication
 
 ## License
 The MIT License (MIT)
