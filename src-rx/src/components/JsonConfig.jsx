@@ -184,7 +184,7 @@ class JsonConfig extends Router {
                     JsonConfigComponent.loadI18n(this.props.socket, schema?.i18n, this.props.adapterName)
                         .then(() => {
                             if (obj) {
-                                this.setState({schema, data: obj.native, common: obj.common});
+                                this.setState({ schema, data: obj.native, common: obj.common });
                             } else {
                                 window.alert(`Instance system.adapter.${this.props.adapterName}.${this.props.instance} not found!`);
                             }
@@ -200,10 +200,10 @@ class JsonConfig extends Router {
         if (f) {
             let r = new FileReader();
             r.onload = async e => {
-                let contents = e.target.result;
+                const contents = e.target.result;
                 try {
-                    let json = JSON.parse(contents);
-                    this.setState({data: json});
+                    let data = JSON.parse(contents);
+                    this.setState({ data, changed: JSON.stringify(data) !== JSON.stringify(this.state.originalData) });
                 } catch (err) {
                     window.alert(I18n.t('[JsonConfig] Failed to parse JSON file'));
                 }
@@ -230,7 +230,7 @@ class JsonConfig extends Router {
             </Tooltip>
             <Tooltip title={this.props.t('Export setting to JSON file')}>
                 <Fab size="small" classes={{root: this.props.classes.button}} onClick={() => {
-                    Utils.generateFile(this.props.adapterName + '.' + this.props.instance + '.json', this.state.data);
+                    Utils.generateFile(`${this.props.adapterName}.${this.props.instance}.json`, this.state.data);
                 }}>
                     <PublishIcon style={{ transform: 'rotate(180deg)' }} />
                 </Fab>
