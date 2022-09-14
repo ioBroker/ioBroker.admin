@@ -282,6 +282,7 @@ const DEFAULT_GUI_SETTINGS_OBJECT = {
         write: false,
         role: 'state',
     },
+    native: {}
 };
 
 class App extends Router {
@@ -549,8 +550,7 @@ class App extends Router {
         return this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`)
             .then(async obj => {
                 if (!obj) {
-                    obj = {type: 'state', common: {type: 'boolean', read: true, write: false, role: 'state'}};
-                    obj.native = {localStorage: {}, sessionStorage: {}};
+                    obj = JSON.parse(JSON.stringify(DEFAULT_GUI_SETTINGS_OBJECT));
                     await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, obj);
                 }
 
@@ -599,14 +599,13 @@ class App extends Router {
                     this.setState({ guiSettings: false });
                 }
             });
-        }
     }
 
     enableGuiSettings(enabled, ownSettings) {
         if (enabled && !this.guiSettings) {
             return this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`)
                 .then(async obj => {
-                    this.guiSettings = obj || DEFAULT_GUI_SETTINGS_OBJECT;
+                    this.guiSettings = obj || JSON.parse(JSON.stringify(DEFAULT_GUI_SETTINGS_OBJECT));
 
                     if (ownSettings || !this.guiSettings.native || !Object.keys(this.guiSettings.native).length) {
                         this.guiSettings.native = { localStorage: {}, sessionStorage: {} };

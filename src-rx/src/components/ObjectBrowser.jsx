@@ -3776,7 +3776,8 @@ class ObjectBrowser extends Component {
                 name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop(), this.props.lang),
                 value: id,
                 icon: getSelectIdIcon(this.objects, id, this.imagePrefix)
-            }));
+            }))
+                .sort((a, b) => a.name > b.name ? 1 : -1);
 
             enums.forEach(item => {
                 if (item.icon && typeof item.icon == 'string') {
