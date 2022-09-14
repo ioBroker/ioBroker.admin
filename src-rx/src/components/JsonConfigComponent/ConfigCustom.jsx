@@ -30,8 +30,8 @@ const getOrLoadRemote = (remote, shareScope, remoteFallbackUrl = undefined) =>
                         window[remote].__initialized = true;
                     }
                 } else {
-                    console.error('Cannot load ' + remote);
-                    return reject('Cannot load ' + remote);
+                    console.error(`Cannot load ${remote}`);
+                    return reject(`Cannot load ${remote}`);
                 }
                 // resolve promise so marking remote as loaded
                 resolve(window[remote]);

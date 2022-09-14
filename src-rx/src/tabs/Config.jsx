@@ -164,17 +164,17 @@ class Config extends Component {
     }
 
     onObjectChange = (id, obj) => {
-        if (id === 'system.adapter.' + this.props.adapter + '.' + this.props.instance) {
+        if (id === `system.adapter.${this.props.adapter}.${this.props.instance}`) {
             this.setState({ running: obj?.common?.onlyWWW || obj?.common?.enabled, canStart: !obj?.common?.onlyWWW });
         }
     };
 
     onStateChange = (id, state) => {
-        if (id === 'system.adapter.' + this.props.adapter + '.' + this.props.instance + '.alive') {
+        if (id === `system.adapter.${this.props.adapter}.${this.props.instance}.alive`) {
             this.setState({ alive: state ? state.val : false });
-        } else if (id === 'system.adapter.' + this.props.adapter + '.' + this.props.instance + '.connected') {
+        } else if (id === `system.adapter.${this.props.adapter}.${this.props.instance}.connected`) {
             this.setState({ connectedToHost: state ? state.val : false });
-        } else if (id === this.props.adapter + '.' + this.props.instance + '.info.connection') {
+        } else if (id === `${this.props.adapter}.${this.props.instance}.info.connection`) {
             this.setState({ connected: state ? state.val : null });
         }
     };
@@ -183,7 +183,7 @@ class Config extends Component {
         const eventFunc = window.removeEventListener ? 'removeEventListener' : 'detachEvent';
         const emit = window[eventFunc];
         const eventName = eventFunc === 'detachEvent' ? 'onmessage' : 'message';
-        this.props.socket.unsubscribeObject('system.adapter.' + this.props.adapter + '.' + this.props.instance, this.onObjectChange);
+        this.props.socket.unsubscribeObject(`system.adapter.${this.props.adapter}.${this.props.instance}`, this.onObjectChange);
 
         emit(eventName, event => this.closeConfig(event), false);
 

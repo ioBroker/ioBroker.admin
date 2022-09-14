@@ -50,6 +50,7 @@ class ObjectEditDialog extends Component {
         console.log('editorDidMount', editor);
         editor.focus();
     }
+
     onChange(newValue, e) {
         console.log('onChange', newValue, e);
     }

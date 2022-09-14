@@ -215,9 +215,6 @@ class ObjectChart extends Component {
         this.divRef       = createRef();
 
         this.chart        = {};
-
-        this.onChange = this.onChange.bind(this);
-        this.onResize = this.onResize.bind(this);
     }
 
     componentDidMount() {

@@ -146,12 +146,12 @@ class StatisticsDialog extends Component {
                         mode="json"
                         width="100%"
                         height="100%"
-                        showPrintMargin={true}
-                        showGutter={true}
-                        highlightActiveLine={true}
+                        showPrintMargin
+                        showGutter
+                        highlightActiveLine
+                        readOnly
                         theme={this.props.themeType === 'dark' ? 'clouds_midnight' : 'chrome'}
                         value={JSON.stringify(this.props.dataAux, null, 2)}
-                        onChange={newValue => this.onChange(newValue)}
                         name="UNIQUE_ID_OF_DIV"
                         fontSize={14}
                         setOptions={{
@@ -161,7 +161,7 @@ class StatisticsDialog extends Component {
                             showLineNumbers: true,
                             tabSize: 2,
                         }}
-                        editorProps={{$blockScrolling: true}}
+                        editorProps={{ $blockScrolling: true }}
                     />
                 </Grid>
             </Grid>

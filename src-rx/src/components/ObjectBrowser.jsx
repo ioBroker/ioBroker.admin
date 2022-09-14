@@ -2459,7 +2459,7 @@ class ObjectBrowser extends Component {
 
         if (Array.isArray(id)) {
             id.forEach(event => {
-                console.log('> objectChange ' + event.id);
+                console.log(`> objectChange ${event.id}`);
 
                 if (event.obj && typeof this.props.filterFunc === 'function' && !this.props.filterFunc(event.obj)) {
                     return;
@@ -2486,7 +2486,7 @@ class ObjectBrowser extends Component {
                 }
             });
         } else {
-            console.log('> objectChange ' + id);
+            console.log(`> objectChange ${id}`);
             this.objects = this.objects || [];
 
             if (obj && typeof this.props.filterFunc === 'function' && !this.props.filterFunc(obj)) {

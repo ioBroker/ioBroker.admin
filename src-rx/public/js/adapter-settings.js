@@ -462,6 +462,7 @@ function preInit () {
                 res.common && res.common.name && $('.adapter-name').html(res.common.name);
                 if (typeof load === 'undefined') {
                     typeof noConfigDialog === 'undefined' && alert('Please implement save function in your admin/index.html');
+                    typeof callback === 'function' && callback();
                 } else {
                     // decode all native attributes listed in res.encryptedNative
                     if (res.encryptedNative && typeof res.encryptedNative === 'object' && res.encryptedNative instanceof Array && res.encryptedNative.length) {
@@ -474,6 +475,7 @@ function preInit () {
                             }
 
                             _load(res.native, onChange);
+                            typeof callback === 'function' && callback();
                         });
                     } else {
                         var idx = supportedFeatures.indexOf('ADAPTER_AUTO_DECRYPT_NATIVE');
@@ -481,17 +483,12 @@ function preInit () {
                             // if no encryptedNative exists the feature is irrelevant, remove for compatibility reasons
                             supportedFeatures.splice(idx, 1);
                         }
+                        _load(res.native, onChange);
+                        typeof callback === 'function' && callback();
                     }
-
-                    _load(res.native, onChange);
-                }
-                if (typeof callback === 'function') {
-                    callback();
                 }
             } else {
-                if (typeof callback === 'function') {
-                    callback();
-                }
+                typeof callback === 'function' && callback();
                 alert('error loading settings for ' + id + '\n\n' + err);
             }
         });

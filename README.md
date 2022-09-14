@@ -116,6 +116,9 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Corrected admin4 adapter settings
+
 ### 6.2.21 (2022-09-05)
 * (bluefox) Corrected small JSON config issue
 

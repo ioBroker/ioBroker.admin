@@ -546,44 +546,52 @@ class App extends Router {
     };
 
     getGUISettings() {
-        return this.socket.getState(`system.adapter.${this.adminInstance}.guiSettings`)
-            .catch(() => ({ val: false }))
-            .then(state => {
+        return this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`)
+            .then(async obj => {
+                if (!obj) {
+                    obj = {type: 'state', common: {type: 'boolean', read: true, write: false, role: 'state'}};
+                    obj.native = {localStorage: {}, sessionStorage: {}};
+                    await this.socket.setObject(`system.adapter.${this.adminInstance}.guiSettings`, obj);
+                }
+
+                let state;
+                try {
+                    state = await this.socket.getState(`system.adapter.${this.adminInstance}.guiSettings`);
+                } catch (e) {
+                    state = { val: false };
+                }
                 if (state && state.val) {
-                    return this.socket.getObject(`system.adapter.${this.adminInstance}.guiSettings`)
-                        .then(obj => {
-                            this.guiSettings = obj || {type: 'state', common: {type: 'boolean', read: true, write: false, role: 'state'}};
-                            this.guiSettings.native = this.guiSettings.native || { localStorage: {}, sessionStorage: {} };
-                            if (!this.guiSettings.native.localStorage) {
-                                this.guiSettings.native = { localStorage: this.guiSettings.native, sessionStorage: {} };
-                            }
+                    this.guiSettings = obj;
+                    this.guiSettings.native = this.guiSettings.native || {localStorage: {}, sessionStorage: {}};
+                    if (!this.guiSettings.native.localStorage) {
+                        this.guiSettings.native = {localStorage: this.guiSettings.native, sessionStorage: {}};
+                    }
 
-                            window._localStorage = {
-                                getItem:    this.localStorageGetItem,
-                                setItem:    this.localStorageSetItem,
-                                removeItem: this.localStorageRemoveItem,
-                            };
-                            window._sessionStorage = {
-                                getItem:    this.sessionStorageGetItem,
-                                setItem:    this.sessionStorageSetItem,
-                                removeItem: this.sessionStorageRemoveItem,
-                            };
+                    window._localStorage = {
+                        getItem:    this.localStorageGetItem,
+                        setItem:    this.localStorageSetItem,
+                        removeItem: this.localStorageRemoveItem,
+                    };
+                    window._sessionStorage = {
+                        getItem:    this.sessionStorageGetItem,
+                        setItem:    this.sessionStorageSetItem,
+                        removeItem: this.sessionStorageRemoveItem,
+                    };
 
-                            // this is only settings, that initialized before connection established
-                            let drawerState = this.guiSettings.native['App.drawerState'];
-                            if (drawerState) {
-                                drawerState = parseInt(drawerState, 10);
-                            } else {
-                                drawerState = this.props.width === 'xs' ? DrawerStates.closed : DrawerStates.opened;
-                            }
-                            const noTranslation = (window._localStorage || window.localStorage).getItem('App.noTranslation') === 'true';
+                    // this is only settings, that initialized before connection established
+                    let drawerState = this.guiSettings.native['App.drawerState'];
+                    if (drawerState) {
+                        drawerState = parseInt(drawerState, 10);
+                    } else {
+                        drawerState = this.props.width === 'xs' ? DrawerStates.closed : DrawerStates.opened;
+                    }
+                    const noTranslation = (window._localStorage || window.localStorage).getItem('App.noTranslation') === 'true';
 
-                            this.setState({ guiSettings: true, drawerState, noTranslation }, () => {
-                                if (Utils.getThemeName() !== this.state.theme.name) {
-                                    this.toggleTheme(Utils.getThemeName());
-                                }
-                            });
-                        });
+                    this.setState({ guiSettings: true, drawerState, noTranslation }, () => {
+                        if (Utils.getThemeName() !== this.state.theme.name) {
+                            this.toggleTheme(Utils.getThemeName());
+                        }
+                    });
                 } else if (this.state.guiSettings) {
                     window._localStorage = null;
                     window._sessionStorage = null;
@@ -591,6 +599,7 @@ class App extends Router {
                     this.setState({ guiSettings: false });
                 }
             });
+        }
     }
 
     enableGuiSettings(enabled, ownSettings) {
