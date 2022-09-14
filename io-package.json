@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.2.21",
+    "version": "6.2.22",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,18 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.2.22": {
+        "en": "Corrected admin4 adapter settings",
+        "de": "Korrigierte Admin4-Adaptereinstellungen",
+        "ru": "Исправлены настройки админ4 адаптера",
+        "pt": "Definições corretas do adaptador admin4",
+        "nl": "Vertaling:",
+        "fr": "Paramètres d'adaptateur admin4 corrigés",
+        "it": "Impostazioni dell'adattatore admin4 corrette",
+        "es": "Ajustes corregidos del adaptador",
+        "pl": "Poprawiony admin4",
+        "zh-cn": "适应的适应环境"
+      },
       "6.2.21": {
         "en": "Corrected small JSON config issue",
         "de": "Korrektur kleiner JSON config Ausgabe",
@@ -89,18 +101,6 @@
         "es": "Corregidos muchos problemas de GUI\nAñadido bandera estable para repositorios\nBotón de reinicio añadido para los repositorios\nMejor escritura Función de archivo para la comunicación de socket",
         "pl": "Wykład wiele problemów z GUI\nFlaga zastępowania\nAdded reset button\nPoprawiony tekst Funkcja File dla komunikacji gniazdowej",
         "zh-cn": "纠正许多古伊人的问题\n增加存放地的稳定旗帜\n存放处的存放地点\n改进 简讯功能"
-      },
-      "6.2.14": {
-        "en": "Fix for OAuth2 authentication response success page",
-        "de": "Fix für OAuth2 Authentifizierung Antwort Erfolgsseite",
-        "ru": "Исправление для страницы успеха аутентификации OAuth2",
-        "pt": "Corrigir para a página de sucesso de resposta de autenticação OAuth2",
-        "nl": "Vertaling:",
-        "fr": "Correction de la page de réussite de la réponse à l'authentification OAuth2",
-        "it": "Fix per la pagina di successo della risposta di autenticazione OAuth2",
-        "es": "Fijación para la página de éxito de respuesta de autenticación OAuth2",
-        "pl": "Fix for OAuth2 (ang.)",
-        "zh-cn": "OAuth2 核证反应成功页"
       }
     },
     "desc": {
