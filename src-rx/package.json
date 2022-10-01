@@ -12,7 +12,7 @@
         "@iobroker/socket-client": "^1.1.14",
         "@mui/icons-material": "^5.10.3",
         "@mui/lab": "^5.0.0-alpha.97",
-        "@mui/material": "^5.10.3",
+        "@mui/material": "^5.10.7",
         "@mui/styles": "^5.10.7",
         "@mui/x-data-grid": "^5.17.1",
         "@react-leaflet/core": "^2.0.1",
