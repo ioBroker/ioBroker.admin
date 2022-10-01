@@ -26,7 +26,7 @@
         "cron-parser": "^4.6.0",
         "crypto-js": "^4.1.1",
         "cronstrue": "^2.11.0",
-        "date-fns": "^2.29.2",
+        "date-fns": "^2.29.3",
         "echarts": "^5.3.3",
         "echarts-for-react": "^3.0.2",
         "json5": "^2.2.1",
