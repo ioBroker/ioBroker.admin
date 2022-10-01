@@ -23,7 +23,7 @@
     "setup"
   ],
   "dependencies": {
-    "@iobroker/adapter-core": "^2.6.2",
+    "@iobroker/adapter-core": "^2.6.6",
     "@iobroker/ws-server": "^2.1.0",
     "@iobroker/socket-classes": "^0.5.3",
     "body-parser": "^1.20.0",
