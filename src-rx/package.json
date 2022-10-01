@@ -14,7 +14,7 @@
         "@mui/lab": "^5.0.0-alpha.97",
         "@mui/material": "^5.10.7",
         "@mui/styles": "^5.10.7",
-        "@mui/x-data-grid": "^5.17.1",
+        "@mui/x-data-grid": "^5.17.5",
         "@react-leaflet/core": "^2.0.1",
         "@sentry/browser": "^7.12.1",
         "@sentry/integrations": "^7.12.1",
