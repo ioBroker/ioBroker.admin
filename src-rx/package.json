@@ -15,7 +15,7 @@
         "@mui/material": "^5.10.7",
         "@mui/styles": "^5.10.7",
         "@mui/x-data-grid": "^5.17.5",
-        "@react-leaflet/core": "^2.0.1",
+        "@react-leaflet/core": "^2.1.0",
         "@sentry/browser": "^7.12.1",
         "@sentry/integrations": "^7.12.1",
         "@testing-library/jest-dom": "^5.16.5",
