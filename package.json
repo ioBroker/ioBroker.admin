@@ -37,7 +37,7 @@
     "passport-local": "^1.0.0",
     "axios": "^0.27.2",
     "semver": "^7.3.7",
-    "ws": "^8.8.1",
+    "ws": "^8.9.0",
     "mime": "^3.0.0"
   },
   "devDependencies": {
