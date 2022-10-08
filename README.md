@@ -116,6 +116,10 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
+
+### __WORK IN PROGRESS__
+* (Apollon77) Prepare for future js-controller versions
+
 ### 6.2.22 (2022-09-14)
 * (bluefox) Corrected admin4 adapter settings
 

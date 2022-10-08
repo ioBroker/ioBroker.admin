@@ -13,18 +13,18 @@
 /* jslint node: true */
 'use strict';
 
-const semver      = require('semver');
-const axios       = require('axios');
-const fs          = require('fs');
-const cp          = require('child_process');
+const semver = require('semver');
+const axios = require('axios');
+const fs = require('fs');
+const cp = require('child_process');
 
-const utils       = require('@iobroker/adapter-core'); // Get common adapter utils
-const tools 	  = require(utils.controllerDir + '/lib/tools.js');
+const utils = require('@iobroker/adapter-core'); // Get common adapter utils
+const getInstalledInfo = utils.commonTools.getInstalledInfo;
 const SocketAdmin = require('@iobroker/socket-classes').SocketAdmin;
-const ws          = require('@iobroker/ws-server');
+const ws = require('@iobroker/ws-server');
 
 const adapterName = require('./package.json').name.split('.').pop();
-const Web         = require('./lib/web');
+const Web = require('./lib/web');
 
 const ONE_HOUR_MS = 3600000;
 const ERROR_PERMISSION = 'permissionError';
@@ -439,7 +439,7 @@ function writeUpdateInfo(adapter, sources) {
         return;
     }
 
-    let installed = tools.getInstalledInfo();
+    let installed = getInstalledInfo();
     let list  = [];
     let updatesJson = {};
     let newUpdateIndicator = false;
