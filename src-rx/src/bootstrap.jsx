@@ -60,6 +60,7 @@ const ignoreErrors = [
     'Can\'t find variable: servConn',      // Error from info adapter
     'LPContentScriptFeatures',             // ignore safari extension errors
     'window.webkit.messageHandlers',       // ignore safari extension errors
+    'has no target',                       // ignore alias errors
 ];
 
 if (!window.disableDataReporting && window.location.port !== '3000') {

@@ -25,7 +25,7 @@
   "dependencies": {
     "@iobroker/adapter-core": "^2.6.7",
     "@iobroker/ws-server": "^2.1.0",
-    "@iobroker/socket-classes": "^0.5.4",
+    "@iobroker/socket-classes": "^1.0.1",
     "body-parser": "^1.20.1",
     "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
@@ -36,8 +36,8 @@
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "axios": "^0.27.2",
-    "semver": "^7.3.8",
-    "ws": "^8.9.0",
+    "semver": "^7.3.7",
+    "ws": "^8.8.1",
     "mime": "^3.0.0"
   },
   "devDependencies": {
