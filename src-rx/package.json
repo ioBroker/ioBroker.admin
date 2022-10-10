@@ -11,7 +11,7 @@
         "@iobroker/admin-component-easy-access": "^0.3.2",
         "@iobroker/socket-client": "^1.1.14",
         "@mui/icons-material": "^5.10.6",
-        "@mui/lab": "^5.0.0-alpha.97",
+        "@mui/lab": "^5.0.0-alpha.102",
         "@mui/material": "^5.10.7",
         "@mui/styles": "^5.10.7",
         "@mui/x-data-grid": "^5.17.5",
