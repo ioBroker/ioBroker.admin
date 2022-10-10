@@ -439,18 +439,10 @@ If no schema provided, the schema must be created automatically from data.
 If element has no attribute `type`, assume it has default type 'panel'.
 
 ## i18n
-1. User can provide translations directly in label like:
-```
-{
-   "type": "text",
-   "label: {
-        "en": "Label",
-        "de": "Taxt"
-    }
-}
-```
 
-2. User can provide texts from files.
+There are several options to provide the translations. Only the first one is compatible to our COmmunity Translation Tool Weblate, so it should be favoured over the others!
+
+1. User can provide texts from files.
 
 On the top level of structure set `i18n: true` and provide files in admin:
 - admin/i18n/de/translations.json
@@ -471,6 +463,17 @@ or
 - admin/customI18n/de.json
 - admin/customI18n/en.json
 - ...
+
+2. User can provide translations directly in label like:
+```
+{
+   "type": "text",
+   "label: {
+        "en": "Label",
+        "de": "Taxt"
+    }
+}
+```
 
 3. User can provide translations in i18n attribute:
 ```
