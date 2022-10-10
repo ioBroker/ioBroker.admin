@@ -96,7 +96,7 @@
         "@honkhonk/vite-plugin-svgr": "^1.1.0",
         "@originjs/vite-plugin-commonjs": "^1.0.3",
         "@dilesoft/vite-plugin-federation-dynamic": "^1.1.9",
-        "eslint": "^8.24.0",
+        "eslint": "^8.25.0",
         "eslint-config-react-app": "^7.0.1"
     }
 }
