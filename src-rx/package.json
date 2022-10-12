@@ -31,7 +31,7 @@
         "echarts-for-react": "^3.0.2",
         "json5": "^2.2.1",
         "leaflet": "^1.9.2",
-        "leaflet-geosearch": "^3.6.1",
+        "leaflet-geosearch": "^3.7.0",
         "lodash": "^4.17.21",
         "moment": "^2.29.4",
         "ol": "^7.1.0",
