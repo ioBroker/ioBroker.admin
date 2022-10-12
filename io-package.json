@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "version": "6.2.22",
+    "version": "6.2.23",
     "titleLang": {
       "en": "Admin",
       "de": "Admin",
@@ -18,6 +18,19 @@
     "connectionType": "local",
     "dataSource": "push",
     "news": {
+      "6.2.23": {
+        "en": "Prepare for future js-controller versions\nCorrected deletion of objects",
+        "de": "Bereiten Sie sich auf zukünftige js-Controller-Versionen\nKorrigierte Löschung von Objekten",
+        "ru": "Подготовьтесь к будущим версиям js-controller\nИсправлено удаление объектов",
+        "pt": "Prepare-se para futuras versões js-controller\nEliminação correta de objetos",
+        "nl": "Bereid je voor op toekomstige Js-controller versie\nVerwijdering van objecten",
+        "fr": "Préparez-vous pour les versions futures de js-controller\nSuppression corrigée des objets",
+        "it": "Prepararsi per le future versioni js-controller\nCancellazione corretta degli oggetti",
+        "es": "Prepararse para futuras versiones js-controller\nEliminación corregida de objetos",
+        "pl": "Prepare for future js-controller version\nOczyszczenie delecji obiektów",
+        "uk": "Підготовка до майбутніх версій js-controller\nВиправлено видалення об'єктів",
+        "zh-cn": "今后防污版本的编制\n更正"
+      },
       "6.2.22": {
         "en": "Corrected admin4 adapter settings",
         "de": "Korrigierte Admin4-Adaptereinstellungen",
@@ -89,18 +102,6 @@
         "es": "Corregido error GUI en la pestaña de entrada",
         "pl": "Wprowadzimy błąd GUI w internecie",
         "zh-cn": "对古伊布图的更正"
-      },
-      "6.2.16": {
-        "en": "Corrected many GUI issues\nAdded `stable` flag for repositories\nAdded reset button for repositories\nImproved `writeFile` function for socket communication",
-        "de": "Viele GUI Probleme korrigiert\nHinzugefügt stabile Flagge für Repositories\nReset-Taste für Repositories hinzugefügt\nVerbessertes Schreiben Dateifunktion für Steckdosenkommunikation",
-        "ru": "Исправлено множество вопросов GUI\nДобавлен стабильный флаг для репозиторий\nДобавлена кнопка сброса для репозиторий\nУлучшено письмо Функция файла для розетки",
-        "pt": "Corrigido muitos problemas de GUI\nBandeira estável adicionada para repositórios\nAdicionado botão de reset para repositórios\nGravação melhorada Função de arquivo para comunicação de soquete",
-        "nl": "Vertaling:\nVoeg een stabiele vlag toe voor herplaatsingen\nVoeg de resetknop toe voor terugbetaling\nImproviserend geschreven Veldfunctie voor socket communicatie",
-        "fr": "Correction de nombreux problèmes d'interface graphique\nDrapeau stable ajouté pour les dépôts\nBouton de réinitialisation ajouté pour les dépôts\nAmélioration de l ' écriture Fonction de fichier pour la communication de socket",
-        "it": "Corretto molti problemi GUI\nAggiunto bandiera stabile per repository\nAggiunto pulsante di reset per repository\nScrittura migliorata Funzione file per la comunicazione socket",
-        "es": "Corregidos muchos problemas de GUI\nAñadido bandera estable para repositorios\nBotón de reinicio añadido para los repositorios\nMejor escritura Función de archivo para la comunicación de socket",
-        "pl": "Wykład wiele problemów z GUI\nFlaga zastępowania\nAdded reset button\nPoprawiony tekst Funkcja File dla komunikacji gniazdowej",
-        "zh-cn": "纠正许多古伊人的问题\n增加存放地的稳定旗帜\n存放处的存放地点\n改进 简讯功能"
       }
     },
     "desc": {

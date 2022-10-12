@@ -116,8 +116,7 @@ The icons may not be reused in other projects without the proper flaticon licens
 -->
 
 ## Changelog
-
-### __WORK IN PROGRESS__
+### 6.2.23 (2022-10-12)
 * (Apollon77) Prepare for future js-controller versions
 * (bluefox) Corrected deletion of objects
 
@@ -132,9 +131,6 @@ The icons may not be reused in other projects without the proper flaticon licens
 
 ### 6.2.19 (2022-08-27)
 * (bluefox) Corrected some issues
-
-### 6.2.18 (2022-08-24)
-* (bluefox) Corrected GUI bugs on custom settings
 
 ## License
 The MIT License (MIT)
