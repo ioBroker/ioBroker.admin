@@ -1147,54 +1147,54 @@ class ObjectChart extends Component {
                 </Select>
             </FormControl>
             <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[this.props.lang]}>
-                <div className={ classes.toolbarTimeGrid }>
+                <div className={classes.toolbarTimeGrid}>
                     <DatePicker
-                        className={ classes.toolbarDate }
-                        disabled={ this.state.relativeRange !== 'absolute' }
+                        className={classes.toolbarDate}
+                        disabled={this.state.relativeRange !== 'absolute'}
                         disableToolbar
                         variant="inline"
                         margin="normal"
                         inputFormat={this.state.dateFormat}
                         //format="fullDate"
-                        label={ this.props.t('Start date') }
-                        value={ new Date(this.state.min) }
+                        label={this.props.t('Start date')}
+                        value={new Date(this.state.min)}
                         onChange={date => this.setStartDate(date)}
                         renderInput={params => <TextField className={this.props.classes.dateInput} variant="standard" {...params} />}
                     />
                     <TimePicker
-                        disabled={ this.state.relativeRange !== 'absolute' }
-                        className={ classes.toolbarTime }
+                        disabled={this.state.relativeRange !== 'absolute'}
+                        className={classes.toolbarTime}
                         margin="normal"
                         //format="fullTime24h"
-                        ampm={ false }
-                        label={ this.props.t('Start time') }
-                        value={ new Date(this.state.min) }
+                        ampm={false}
+                        label={this.props.t('Start time')}
+                        value={new Date(this.state.min)}
                         onChange={date => this.setStartDate(date)}
                         renderInput={params => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
                     />
                 </div>
-                <div className={ classes.toolbarTimeGrid }>
+                <div className={classes.toolbarTimeGrid}>
                     <DatePicker
-                        disabled={ this.state.relativeRange !== 'absolute' }
-                        className={ classes.toolbarDate }
+                        disabled={this.state.relativeRange !== 'absolute'}
+                        className={classes.toolbarDate}
                         disableToolbar
                         inputFormat={this.state.dateFormat}
                         variant="inline"
                         //format="fullDate"
                         margin="normal"
-                        label={ this.props.t('End date') }
-                        value={ new Date(this.state.max) }
+                        label={this.props.t('End date')}
+                        value={new Date(this.state.max)}
                         onChange={date => this.setEndDate(date)}
                         renderInput={params => <TextField className={this.props.classes.dateInput} variant="standard" {...params} />}
                     />
                     <TimePicker
-                        disabled={ this.state.relativeRange !== 'absolute' }
-                        className={ classes.toolbarTime }
+                        disabled={this.state.relativeRange !== 'absolute'}
+                        className={classes.toolbarTime}
                         margin="normal"
                         //format="fullTime24h"
-                        ampm={ false }
-                        label={ this.props.t('End time') }
-                        value={ new Date(this.state.max) }
+                        ampm={false}
+                        label={this.props.t('End time')}
+                        value={new Date(this.state.max)}
                         onChange={date => this.setEndDate(date)}
                         renderInput={params => <TextField className={this.props.classes.timeInput} variant="standard" {...params} />}
                     />

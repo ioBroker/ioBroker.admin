@@ -11,11 +11,11 @@ import I18n from '@iobroker/adapter-react-v5/i18n';
 import CustomModal from '../CustomModal';
 
 import AceEditor from 'react-ace';
-import 'ace-builds/webpack-resolver';
-import 'ace-builds/src-noconflict/mode-json';
-import 'ace-builds/src-noconflict/theme-clouds_midnight';
-import 'ace-builds/src-noconflict/theme-chrome';
-import 'ace-builds/src-noconflict/ext-language_tools';
+import 'ace-builds/src-min-noconflict/mode-json';
+import 'ace-builds/src-min-noconflict/worker-json';
+import 'ace-builds/src-min-noconflict/theme-clouds_midnight';
+import 'ace-builds/src-min-noconflict/theme-chrome';
+import 'ace-builds/src-min-noconflict/ext-language_tools';
 
 const styles = theme => ({
     fullWidth: {

@@ -323,6 +323,7 @@ class App extends Router {
             'it': require('./i18n/it'),
             'es': require('./i18n/es'),
             'pl': require('./i18n/pl'),
+            'uk': require('./i18n/uk'),
             'zh-cn': require('./i18n/zh-cn'),
         };
         // merge together

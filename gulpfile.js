@@ -47,6 +47,9 @@ function build() {
     fs.writeFileSync(src + 'public/lib/js/sparkline.js',     fs.readFileSync(src + 'node_modules/@fnando/sparkline/dist/sparkline.js'));
     fs.writeFileSync(src + 'public/lib/js/sparkline.js.map', fs.readFileSync(src + 'node_modules/@fnando/sparkline/dist/sparkline.js.map'));
 
+    let ace = __dirname + '/src-rx/node_modules/ace-builds/src-min-noconflict/';
+    fs.writeFileSync(__dirname + '/src-rx/public/lib/js/ace/worker-json.js', fs.readFileSync(ace + 'worker-json.js'));
+
     const version = JSON.parse(fs.readFileSync(__dirname + '/package.json').toString('utf8')).version;
     const data    = JSON.parse(fs.readFileSync(src + 'package.json').toString('utf8'));
 
