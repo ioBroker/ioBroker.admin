@@ -78,6 +78,10 @@ class MainSettingsDialog extends Component {
                         title: 'русский'
                     },
                     {
+                        id: 'uk',
+                        title: 'український'
+                    },
+                    {
                         id: 'pt',
                         title: 'Portugues'
                     },

@@ -310,6 +310,7 @@ class App extends Router {
             'it': require('@iobroker/adapter-react-v5/i18n/it'),
             'es': require('@iobroker/adapter-react-v5/i18n/es'),
             'pl': require('@iobroker/adapter-react-v5/i18n/pl'),
+            'uk': require('@iobroker/adapter-react-v5/i18n/uk'),
             'zh-cn': require('@iobroker/adapter-react-v5/i18n/zh-cn'),
         };
 
