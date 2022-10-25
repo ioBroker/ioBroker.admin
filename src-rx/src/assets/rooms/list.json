@@ -51,7 +51,7 @@
     "_id": "workspace",
     "name": {
       "en": "Workspace",
-      "ru": "Рабочая Среда",
+      "ru": "Кабинет",
       "de": "Arbeitszimmer",
       "fr": "Espace De Travail",
       "it": "Area Di Lavoro",
@@ -67,7 +67,7 @@
     "_id": "driveway",
     "name": {
       "en": "Driveway",
-      "ru": "Дорога",
+      "ru": "Подъезд",
       "de": "Auffahrt",
       "fr": "Allée",
       "it": "Viale",
@@ -83,7 +83,7 @@
     "_id": "outdoors",
     "name": {
       "en": "Outdoors",
-      "ru": "На Улице",
+      "ru": "Улица",
       "de": "Außenbereich",
       "fr": "En Plein Air",
       "it": "All'Aperto",
@@ -99,7 +99,7 @@
     "_id": "bathroom",
     "name": {
       "en": "Bathroom",
-      "ru": "Ванная Комната",
+      "ru": "Ванная",
       "de": "Badezimmer",
       "fr": "Salle De Bains",
       "it": "Bagno",
@@ -179,7 +179,7 @@
     "_id": "hall",
     "name": {
       "en": "Hall",
-      "ru": "Зал",
+      "ru": "Холл",
       "de": "Diele",
       "fr": "Salle",
       "it": "Sala",
@@ -211,7 +211,7 @@
     "_id": "ground_floor",
     "name": {
       "en": "Ground Floor",
-      "ru": "Первый Этаж",
+      "ru": "Первый этаж",
       "de": "Erdgeschoss",
       "fr": "Rez-De-Chaussée",
       "it": "Piano Terra",
@@ -243,7 +243,7 @@
     "_id": "dining_room",
     "name": {
       "en": "Dining Room",
-      "ru": "Столовая",
+      "ru": "Столовая комната",
       "de": "Esszimmer",
       "fr": "Salle À Manger",
       "it": "Sala Da Pranzo",
@@ -355,7 +355,7 @@
     "_id": "guest_bathroom",
     "name": {
       "en": "Guest Bathroom",
-      "ru": "Гостевая Комната",
+      "ru": "Гостевая ванная",
       "de": "Gäste-WC",
       "fr": "Salle De Bains Invité",
       "it": "Guest Bathroom",
@@ -371,7 +371,7 @@
     "_id": "guest_room",
     "name": {
       "en": "Guest Room",
-      "ru": "Гостевая Комната",
+      "ru": "Гостевая комната",
       "de": "Gästezimmer",
       "fr": "Chambre D'Amis",
       "it": "Stanza Degli Ospiti",
@@ -403,7 +403,7 @@
     "_id": "home_theater",
     "name": {
       "en": "Home Theater",
-      "ru": "Домашний Театр",
+      "ru": "Кинозал",
       "de": "Heimkino",
       "fr": "Cinéma Maison",
       "it": "Home Theater",
@@ -435,7 +435,7 @@
     "_id": "chamber",
     "name": {
       "en": "Chamber",
-      "ru": "Камера",
+      "ru": "Хранилище",
       "de": "Kammer",
       "fr": "Chambre",
       "it": "Camera",
@@ -448,26 +448,26 @@
     "icon": "Chamber"
   },
   {
-    "_id": "basement,_cellar",
+    "_id": "basement",
     "name": {
-      "en": "Basement, Cellar",
-      "ru": "Подвал, Погреб",
+      "en": "Basement",
+      "ru": "Подвал",
       "de": "Keller",
-      "fr": "Sous-Sol, Cave",
-      "it": "Taverna, Cantina",
-      "nl": "Kelder, Kelder",
-      "pl": "Piwnica, Piwnica",
-      "pt": "Porão, Adega",
-      "es": "Sótano, Bodega",
-      "zh-cn": "地下室，地窖"
+      "fr": "Sous-Sol",
+      "it": "Taverna",
+      "nl": "Kelder",
+      "pl": "Piwnica",
+      "pt": "Porão",
+      "es": "Sótano",
+      "zh-cn": "地下室"
     },
     "icon": "Basement"
   },
   {
     "_id": "nursery",
     "name": {
-      "en": "Nursery",
-      "ru": "Питомник",
+      "en": "Kids",
+      "ru": "Детская",
       "de": "Kinderzimmer",
       "fr": "Garderie",
       "it": "Asilo",
@@ -515,7 +515,7 @@
     "_id": "upstairs",
     "name": {
       "en": "Upstairs",
-      "ru": "Вверх По Лестнице",
+      "ru": "Верхний этаж",
       "de": "Obergeschoss",
       "fr": "En Haut",
       "it": "Di Sopra",
@@ -563,7 +563,7 @@
     "_id": "rear_wall",
     "name": {
       "en": "Rear Wall",
-      "ru": "Задняя Стенка",
+      "ru": "Задний забор",
       "de": "Rückwand",
       "fr": "Paroi Arrière",
       "it": "Parete Posteriore",
@@ -595,7 +595,7 @@
     "_id": "sleeping_area",
     "name": {
       "en": "Sleeping Area",
-      "ru": "Спальное Место",
+      "ru": "Комната для сна",
       "de": "Schlafbereich",
       "fr": "Coin Montagne",
       "it": "Area Sleeping",
@@ -611,7 +611,7 @@
     "_id": "bedroom",
     "name": {
       "en": "Bedroom",
-      "ru": "Спальная Комната",
+      "ru": "Спальня",
       "de": "Schlafzimmer",
       "fr": "Chambre",
       "it": "Camera Da Letto",
@@ -627,7 +627,7 @@
     "_id": "shed",
     "name": {
       "en": "Shed",
-      "ru": "Сбрасывать",
+      "ru": "Сарай",
       "de": "Schuppen",
       "fr": "Hangar",
       "it": "Capannone",
@@ -643,7 +643,7 @@
     "_id": "swimming_pool",
     "name": {
       "en": "Swimming Pool",
-      "ru": "Плавательный Бассейн",
+      "ru": "Бассейн",
       "de": "Schwimmbad",
       "fr": "Piscine",
       "it": "Piscina",
@@ -659,7 +659,7 @@
     "_id": "dining",
     "name": {
       "en": "Dining",
-      "ru": "Обеденный",
+      "ru": "Обеденная",
       "de": "Speis",
       "fr": "À Manger",
       "it": "Cenare",
@@ -675,7 +675,7 @@
     "_id": "playroom",
     "name": {
       "en": "Playroom",
-      "ru": "Игровая Комната",
+      "ru": "Игровая",
       "de": "Spielzimmer",
       "fr": "Salle De Jeux",
       "it": "Stanza Dei Giochi",
@@ -707,7 +707,7 @@
     "_id": "equipment_room",
     "name": {
       "en": "Equipment Room",
-      "ru": "Оборудование Номера",
+      "ru": "Техническая комната",
       "de": "Technikraum",
       "fr": "Salle D'Équipement",
       "it": "Stanza Degli Attrezzi",
@@ -771,7 +771,7 @@
     "_id": "locker_room",
     "name": {
       "en": "Locker Room",
-      "ru": "Камера Хранения",
+      "ru": "Кладовка",
       "de": "Umkleideraum",
       "fr": "Vestiaire",
       "it": "Spogliatoio",
@@ -835,7 +835,7 @@
     "_id": "washroom",
     "name": {
       "en": "Washroom",
-      "ru": "Уборная",
+      "ru": "Умывальная",
       "de": "Waschraum",
       "fr": "Toilettes",
       "it": "Bagno",
@@ -880,10 +880,10 @@
     "icon": "Workshop"
   },
   {
-    "_id": "windscreen",
+    "_id": "vestibule",
     "name": {
-      "en": "Windscreen",
-      "ru": "Ветровое Стекло",
+      "en": "Vestibule",
+      "ru": "Прихожая",
       "de": "Windfang",
       "fr": "Pare-Brise",
       "it": "Parabrezza",
@@ -899,7 +899,7 @@
     "_id": "living_area",
     "name": {
       "en": "Living Area",
-      "ru": "Жилая Площадь",
+      "ru": "Зал",
       "de": "Wohnbereich",
       "fr": "Salon",
       "it": "Zona Giorno",
@@ -910,22 +910,6 @@
       "zh-cn": "生活区域"
     },
     "icon": "Living Area"
-  },
-  {
-    "_id": "living_room",
-    "name": {
-      "en": "Living Room",
-      "ru": "Гостинная",
-      "de": "Wohnzimmer",
-      "fr": "Le Salon",
-      "it": "Soggiorno",
-      "nl": "Woonkamer",
-      "pl": "Salon",
-      "pt": "Sala De Estar",
-      "es": "Sala De Estar",
-      "zh-cn": "客厅"
-    },
-    "icon": "Living Room"
   },
   {
     "_id": "living_room",
