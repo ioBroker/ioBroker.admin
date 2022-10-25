@@ -1245,7 +1245,7 @@ class Adapters extends Component {
                     this.setState({ showSetRating: { adapter: value, version: installed && installed.version, rating: adapter.rating}})}
                 onAddInstance={() =>
                     licenseDialogFunc(adapter.license === 'MIT', this.props.theme, async result =>
-                        result && await this.addInstance(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')
+                        result && await this.addInstance(value), (adapter.extIcon || adapter.icon || '').split('/master')[0] + '/master/LICENSE')
                 }
                 onDeletion={() => this.openAdapterDeletionDialog(value)}
                 onInfo={() => this.openInfoDialog(value)}
@@ -1559,7 +1559,7 @@ class Adapters extends Component {
                         this.setState({ showSetRating: { adapter: value, version: installed && installed.version, rating: adapter.rating}})}
                     onAddInstance={() =>
                         licenseDialogFunc(adapter.license === 'MIT', this.props.theme, async result =>
-                            result && await this.addInstance(value), (adapter.extIcon || '').split('/master')[0] + '/master/LICENSE')}//
+                            result && await this.addInstance(value), (adapter.extIcon || adapter.icon || '').split('/master')[0] + '/master/LICENSE')}//
                     onDeletion={() => this.openAdapterDeletionDialog(value)}
                     onInfo={() => this.openInfoDialog(value)}
                     //onRebuild={() => this.rebuild(value)}

@@ -448,10 +448,10 @@
     "icon": "Chamber"
   },
   {
-    "_id": "basement",
+    "_id": "cellar",
     "name": {
-      "en": "Basement",
-      "ru": "Подвал",
+      "en": "Cellar",
+      "ru": "Погреб",
       "de": "Keller",
       "fr": "Sous-Sol",
       "it": "Taverna",

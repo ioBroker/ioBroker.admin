@@ -77,11 +77,7 @@ const LicenseDialog = ({ url, cb, theme }) => {
                     {loading ?
                         <LinearProgress/>
                         :
-                        <pre className={classes.pre} style={
-                            Utils.getThemeName() === 'dark' ||
-                            Utils.getThemeName() === 'blue' ?
-                                {color: 'black'} :
-                                null}>
+                        <pre className={classes.pre}>
                             {text}
                         </pre>
                     }
