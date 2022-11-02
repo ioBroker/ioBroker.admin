@@ -3069,7 +3069,7 @@ class ObjectBrowser extends Component {
         if (this.state.showExportDialog === false) {
             return null;
         } else {
-            return <Dialog open={true}>
+            return <Dialog open={!0}>
                 <DialogTitle>{this.props.t('Select type of export')}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -3079,9 +3079,9 @@ class ObjectBrowser extends Component {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button color="grey"    variant="outlined" onClick={() => this.setState({showExportDialog: false}, () => this._exportObjects(true))}>{this.props.t('ra_All objects')}</Button>
-                    <Button color="primary" variant="contained" autoFocus onClick={() => this.setState({showExportDialog: false}, () => this._exportObjects(false))}>{this.props.t('ra_Only selected')}</Button>
-                    <Button color="grey"    variant="contained" onClick={() => this.setState({showExportDialog: false})} startIcon={<IconClose/>}>{this.props.t('ra_Cancel')}</Button>
+                    <Button color="grey"    variant="outlined" onClick={() => this.setState({ showExportDialog: false }, () => this._exportObjects(true))}>{this.props.t('ra_All objects')} ({Object.keys(this.objects).length})</Button>
+                    <Button color="primary" variant="contained" autoFocus onClick={() => this.setState({showExportDialog: false}, () => this._exportObjects(false))}>{this.props.t('ra_Only selected')} ({this.state.showExportDialog})</Button>
+                    <Button color="grey"    variant="contained" onClick={() => this.setState({ showExportDialog: false })} startIcon={<IconClose/>}>{this.props.t('ra_Cancel')}</Button>
                 </DialogActions>
             </Dialog>;
         }
