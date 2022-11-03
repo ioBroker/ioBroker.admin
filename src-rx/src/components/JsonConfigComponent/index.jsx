@@ -60,8 +60,22 @@ class JsonConfigComponent extends Component {
                         return `${path}/${lang}.json`;
                     } else {
                         return socket.fileExists(adapterName + '.admin', `${path}/${lang}/translations.json`)
-                            .then(exists =>
-                                exists ? `${path}/${lang}/translations.json` : '')
+                            .then(exists => exists ? `${path}/${lang}/translations.json` : '')
+                            .then(fileName => {
+                                if (!fileName && lang !== 'en') {
+                                    // fallback to english
+                                    return socket.fileExists(adapterName + '.admin', `${path}/en.json`)
+                                        .then(exists => {
+                                            if (exists) {
+                                                return `${path}/en.json`;
+                                            } else {
+                                                return socket.fileExists(adapterName + '.admin', `${path}/en/translations.json`)
+                                                    .then(exists => exists ? `${path}/en/translations.json` : '');
+                                            }
+                                        });
+                                }
+                                return fileName;
+                            });
                     }
                 })
                 .then(fileName => {
@@ -78,7 +92,7 @@ class JsonConfigComponent extends Component {
                                 } catch (e) {
                                     console.error(`Cannot parse language file "${adapterName}.admin/${fileName}: ${e}`);
                                 }
-                            })
+                            });
                     } else {
                         console.warn(`Cannot find i18n for ${adapterName} / ${fileName}`);
                         return Promise.resolve();

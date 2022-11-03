@@ -12,8 +12,7 @@ import { makeStyles } from '@mui/styles';
 import IconClose from '@mui/icons-material/Close';
 import IconCheck from '@mui/icons-material/Check';
 
-import I18n from '@iobroker/adapter-react-v5/i18n';
-import Utils from '@iobroker/adapter-react-v5/Components/Utils';
+import { I18n } from '@iobroker/adapter-react-v5';
 
 let node = null;
 
