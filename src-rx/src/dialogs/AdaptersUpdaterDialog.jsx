@@ -11,7 +11,7 @@ import Dialog from '@mui/material/Dialog';
 import Grid from '@mui/material/Grid';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Toolbar from '@mui/material/Toolbar';
-import {IconButton, Tooltip} from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';

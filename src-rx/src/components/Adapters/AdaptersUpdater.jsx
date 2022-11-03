@@ -275,7 +275,7 @@ class AdaptersUpdater extends Component {
                             </Typography>
                             {news.map((value, index) => {
                                 return <Typography key={`${version}-${index}`} component="div" variant="body2">
-                                    { `• ${this.props.noTranslation ? adapterObj.news[version].en : (adapterObj.news[version][this.props.lang] || adapterObj.news[version].en)}`}
+                                    { `• ${value}`}
                                 </Typography>;
                             })}
                         </Grid>);
@@ -296,7 +296,7 @@ class AdaptersUpdater extends Component {
 
             return <Dialog
                 onClose={() => this.setState({ showNews: null })}
-                open={true}
+                open={!0}
             >
                 <DialogTitle>
                     <Typography component="h2" variant="h6" classes={{ root: this.props.classes.typography }}>
