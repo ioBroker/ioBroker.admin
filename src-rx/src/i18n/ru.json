@@ -1386,7 +1386,7 @@
   "Save & Close": "Сохранить и закрыть",
   "API key": "Ключ API",
   "Restart works only if controller started as system service.": "Перезагрузка работает только в том случае, если контроллер запущен как системная служба.",
-  "Edit config for %s states": "Редактировать конфиг для %s состояний",
+  "Edit config for %s states": "Редактировать настройки для %s состояний",
   "IP is domain or more than one address": "IP - это домен или несколько адресов",
   "Folder": "Папка",
   "Enum parameters": "Параметры категории",

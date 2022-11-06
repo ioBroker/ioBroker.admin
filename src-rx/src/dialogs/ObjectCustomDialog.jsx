@@ -171,13 +171,13 @@ class ObjectCustomDialog extends MobileDialog {
             ok={ I18n.t('Yes') }
             cancel={ I18n.t('Cancel') }
             onClose={isYes =>
-                this.setState({ confirmDialog: false}, () => isYes && this.props.onClose())}
+                this.setState({ confirmDialog: false }, () => isYes && this.props.onClose())}
         />;
     }
 
     onClose() {
         if (this.state.hasChanges) {
-            this.setState({confirmDialog: true});
+            this.setState({ confirmDialog: true });
         } else {
             this.props.onClose();
         }
