@@ -245,15 +245,16 @@ class AdaptersUpdater extends Component {
         </React.Fragment>;
     }
 
-    getReactNews(adapter) {
+    getReactNews(adapter, fromVersion) {
         const adapterObj = this.props.repository[adapter];
         const installed  = this.props.installed[adapter];
+        fromVersion = fromVersion || installed.version;
         const result = [];
 
         if (installed && adapterObj && adapterObj.news) {
             Object.keys(adapterObj.news).forEach(version => {
                 try {
-                    if (semver.gt(version, installed.version) && adapterObj.news[version]) {
+                    if (semver.gt(version, fromVersion) && adapterObj.news[version]) {
                         const newsText = this.props.noTranslation ?
                             (adapterObj.news[version].en || '') :
                             (adapterObj.news[version][this.props.lang] || adapterObj.news[version].en || '');
@@ -282,7 +283,7 @@ class AdaptersUpdater extends Component {
                     }
                 } catch (e) {
                     // ignore it
-                    console.warn(`Cannot compare "${version}" and "${installed.version}"`);
+                    console.warn(`Cannot compare "${version}" and "${fromVersion}"`);
                 }
             });
         }
@@ -292,7 +293,7 @@ class AdaptersUpdater extends Component {
 
     renderShowNews() {
         if (this.state.showNews) {
-            const news = this.getReactNews(this.state.showNews.adapter);
+            const news = this.getReactNews(this.state.showNews.adapter, this.state.showNews.fromVersion);
 
             return <Dialog
                 onClose={() => this.setState({ showNews: null })}
